@@ -19,6 +19,7 @@ package org.sonar.java.model.springcontext;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.JavaFrontend;
+import org.sonar.java.SemanticReportScanner;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
@@ -52,7 +53,7 @@ class SpringContextModelTest {
     when(sonarComponents.getJavaClasspath()).thenReturn(TestClasspathUtils.DEFAULT_MODULE.getClassPath());
     when(sonarComponents.getModuleKey()).thenReturn("a");
 
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, mock(Measurer.class), new NoOpTelemetry(), mock(JavaResourceLocator.class), null);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, mock(Measurer.class), new NoOpTelemetry(), mock(JavaResourceLocator.class), null, new SemanticReportScanner());
     frontend.scan(
       List.of(
         TestUtils.inputFile("src/test/files/springcontext/SpringBootApp.java"),
