@@ -71,6 +71,9 @@ Each run directory contains only `report.md`. Its summary shows scan status,
 file and finding counts, total/known/unknown identifiers, unknown percentages,
 timings, error telemetry, shared and differing findings, and retention. A
 per-file table compares identifier counts and the change in unknown percentage.
+The summary also reports files with no unknown identifiers, improved/unchanged/
+regressed file counts, and the net change in unknown identifiers. A top-five
+table highlights the largest contributors to unknown identifiers in either run.
 The rule table includes only rules with findings; the count of
 rules with no findings is summarized separately. Finding locations and messages
 are included below the tables. Scanner failure diagnostics appear in the report
@@ -97,3 +100,6 @@ than averaging file percentages; files with no identifiers show `N/A`.
 Percentage-point changes are candidate minus current, so negative values mean
 fewer unresolved identifiers. A known symbol is not proof of fully correct
 semantic resolution, and these metrics do not count distinct object properties.
+Files with no unknown identifiers must have at least one identifier. Files with
+zero identifiers in either run have no comparable percentage and are reported
+separately from improved, unchanged, and regressed files.

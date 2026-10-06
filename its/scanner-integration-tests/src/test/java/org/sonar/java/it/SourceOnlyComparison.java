@@ -165,7 +165,10 @@ final class SourceOnlyComparison {
     int shared = current.findings().size() - comparison.currentOnly().size();
     report.append("\n| Comparison metric | Value |\n|---|---:|\n")
       .append("| Change in unknown identifiers (percentage points) | ").append(change(currentUnknown, candidateUnknown)).append(" |\n")
-      .append("| Rules compared | ").append(comparison.rules().size()).append(" |\n")
+      .append("| Net change in unknown identifier count | ").append(String.format(Locale.ROOT, "%+d",
+        candidate.semantics().totals().unknown() - current.semantics().totals().unknown())).append(" |\n");
+    appendFileChanges(report, current.semantics(), candidate.semantics());
+    report.append("| Rules compared | ").append(comparison.rules().size()).append(" |\n")
       .append("| Rules with findings | ").append(comparison.rules().stream().filter(row -> row.current() > 0 || row.candidate() > 0).count()).append(" |\n")
       .append("| Shared findings | ").append(shared).append(" |\n")
       .append("| Current-only findings | ").append(comparison.currentOnly().size()).append(" |\n")
@@ -174,6 +177,7 @@ final class SourceOnlyComparison {
     if (current.findings().isEmpty() || candidate.findings().isEmpty()) {
       report.append("\nAt least one scan reported no findings; agreement alone does not establish detection quality.\n");
     }
+    appendTopUnknownFiles(report, current.semantics(), candidate.semantics());
     appendFileSemantics(report, current.semantics(), candidate.semantics());
     report.append("\n## Rules with findings\n\n| Rule | Current | Candidate | Shared | Current only | Candidate only | Retention |\n")
       .append("|---|---:|---:|---:|---:|---:|---:|\n");
@@ -198,6 +202,7 @@ final class SourceOnlyComparison {
       .append("- Identifier counts come from the semantic report: known = total − unknown. They count identifier occurrences, not distinct fields or properties.\n")
       .append("- Unknown percentage = unknown / total × 100. The project percentage uses aggregate counts, not an average of file percentages. No identifiers means N/A.\n")
       .append("- Per-file counts are current / candidate. A negative change in unknown percentage means fewer unresolved identifiers; it does not prove semantic correctness.\n")
+      .append("- Files with no unknown identifiers must contain at least one identifier; their percentage uses all analyzed files. Files with zero identifiers are excluded from improved/unchanged/regressed counts.\n")
       .append("- Configured rules may be disabled when dependencies are absent; zero findings do not prove a rule ran.\n")
       .append("- Scan times are individual wall-time samples, including engine setup.\n");
     return report.toString();
@@ -229,6 +234,63 @@ final class SourceOnlyComparison {
     appendMetric(report, "Unknown identifiers", current == null ? "N/A" : current.totals().unknown(), candidate == null ? "N/A" : candidate.totals().unknown());
     appendMetric(report, "Unknown identifiers (%)", identifierPercentage(current == null ? null : current.totals().unknownPercentage()),
       identifierPercentage(candidate == null ? null : candidate.totals().unknownPercentage()));
+    appendMetric(report, "Files with no unknown identifiers", filesWithNoUnknowns(current), filesWithNoUnknowns(candidate));
+  }
+
+  private static String filesWithNoUnknowns(SemanticReport semantics) {
+    if (semantics == null) {
+      return "N/A";
+    }
+    long count = semantics.files().values().stream().filter(counts -> counts.total() > 0 && counts.unknown() == 0).count();
+    int files = semantics.files().size();
+    return count + " / " + files + " (" + identifierPercentage(files == 0 ? null : 100.0 * count / files) + ")";
+  }
+
+  private static void appendFileChanges(StringBuilder report, SemanticReport current, SemanticReport candidate) {
+    int improved = 0;
+    int unchanged = 0;
+    int regressed = 0;
+    int unavailable = 0;
+    for (String path : current.files().keySet()) {
+      Double before = current.files().get(path).unknownPercentage();
+      Double after = candidate.files().get(path).unknownPercentage();
+      if (before == null || after == null) {
+        unavailable++;
+      } else if (after < before) {
+        improved++;
+      } else if (after > before) {
+        regressed++;
+      } else {
+        unchanged++;
+      }
+    }
+    report.append("| Files improved (unknown %) | ").append(improved).append(" |\n")
+      .append("| Files unchanged (unknown %) | ").append(unchanged).append(" |\n")
+      .append("| Files regressed (unknown %) | ").append(regressed).append(" |\n")
+      .append("| Files without comparable identifier percentages | ").append(unavailable).append(" |\n");
+  }
+
+  private static void appendTopUnknownFiles(StringBuilder report, SemanticReport current, SemanticReport candidate) {
+    var paths = current.files().keySet().stream()
+      .filter(path -> current.files().get(path).unknown() > 0 || candidate.files().get(path).unknown() > 0)
+      .sorted(Comparator.comparingInt((String path) -> Math.max(current.files().get(path).unknown(), candidate.files().get(path).unknown()))
+        .reversed().thenComparing(Comparator.naturalOrder()))
+      .limit(5).toList();
+    report.append("\n## Top files contributing unknown identifiers\n\n")
+      .append("Top five by the largest unknown count in either run. Values are **current / candidate**.\n\n");
+    if (paths.isEmpty()) {
+      report.append("None.\n");
+      return;
+    }
+    report.append("| File | Unknown identifiers | Share of project unknown identifiers |\n|---|---:|---:|\n");
+    for (String path : paths) {
+      int before = current.files().get(path).unknown();
+      int after = candidate.files().get(path).unknown();
+      report.append("| ").append(escape(path)).append(" | ").append(before).append(" / ").append(after).append(" | ")
+        .append(identifierPercentage(current.totals().unknown() == 0 ? null : 100.0 * before / current.totals().unknown()))
+        .append(" / ").append(identifierPercentage(candidate.totals().unknown() == 0 ? null : 100.0 * after / candidate.totals().unknown()))
+        .append(" |\n");
+    }
   }
 
   private static void appendFileSemantics(StringBuilder report, SemanticReport current, SemanticReport candidate) {
