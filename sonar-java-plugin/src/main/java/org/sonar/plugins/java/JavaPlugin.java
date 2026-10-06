@@ -31,6 +31,7 @@ import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.DefaultModuleMetadata;
 import org.sonar.java.JavaConstants;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.SemanticReportScanner;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.classpath.ClasspathProperties;
@@ -85,6 +86,7 @@ public class JavaPlugin implements Plugin {
       JavaRulesDefinition.class,
       SpringContextModel.class,
       SonarComponents.class,
+      SemanticReportScanner.class,
       DefaultJavaResourceLocator.class,
       PropertyDefinition.builder(JavaVersion.ENABLE_PREVIEW)
         .name("Enable JDK's latest preview feature")
