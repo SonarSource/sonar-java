@@ -51,6 +51,7 @@ class NoCompilationComparisonTest {
 
   private static final Map<String, String> CANDIDATE_PROPERTIES = Map.of();
   private static final String SOURCE_ROOT = "sonar-xml-plugin/src/main/java";
+  private static final String SEMANTIC_REPORT_PROPERTY = "sonar.java.internal.semantic.report";
   private static final List<String> TELEMETRY_KEYS = List.of(
     "java.analysis.main.success.size_chars",
     "java.analysis.main.success.type_error_count",
@@ -73,6 +74,7 @@ class NoCompilationComparisonTest {
     assertThat(result.success()).as("Source-only smoke scan: %s", result.error()).isTrue();
     assertThat(result.findings()).hasSize(1);
     assertThat(result.findings().getFirst().rule()).isEqualTo("java:S1116");
+    assertThat(result.semantics().totals().total()).isPositive();
   }
 
   @Test
@@ -124,6 +126,7 @@ class NoCompilationComparisonTest {
     if (CANDIDATE_PROPERTIES.isEmpty()) {
       assertThat(comparison.currentOnly()).isEmpty();
       assertThat(comparison.candidateOnly()).isEmpty();
+      assertThat(candidate.semantics()).isEqualTo(current.semantics());
     }
   }
 
@@ -139,13 +142,15 @@ class NoCompilationComparisonTest {
 
   private static SourceOnlyComparison.Run scan(SonarServerContext context, Path project, String sourceRoot, String label,
                                                Map<String, String> candidateProperties, List<String> expectedFiles) {
+    Path semanticReportPath = semanticReportPath(project, label);
     var properties = new TreeMap<>(Map.of(
       "sonar.sources", sourceRoot,
       "sonar.java.source", "21",
       "sonar.java.jdkHome", System.getProperty("java.home"),
       "sonar.java.skipUnchanged", "false",
       "sonar.internal.analysis.autoscan", "false",
-      "sonar.internal.analysis.autoscan.filtering", "false"));
+      "sonar.internal.analysis.autoscan.filtering", "false",
+      SEMANTIC_REPORT_PROPERTY, semanticReportPath.toString()));
     candidateProperties.forEach((key, value) -> {
       if (properties.containsKey(key) || key.endsWith("binaries") || key.endsWith("libraries")) {
         throw new IllegalArgumentException("Candidate properties must preserve source-only comparison settings: " + key);
@@ -155,6 +160,9 @@ class NoCompilationComparisonTest {
     StringBuilder logs = new StringBuilder("Scanner properties: ").append(properties).append('\n');
     long start = System.nanoTime();
     try {
+      Files.createDirectories(semanticReportPath.getParent());
+      Files.deleteIfExists(semanticReportPath);
+      System.out.println(label + " semantic report: " + semanticReportPath);
       var result = ScannerRunner.run(context, ScannerInput.create("source-only-comparison", project)
         .withScannerProperties(properties).build(), ScannerRunnerConfig.builder().withLogsPrintedToStdOut(false).build());
       long scanMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
@@ -180,9 +188,11 @@ class NoCompilationComparisonTest {
         }
       }
       boolean complete = files.equals(expectedFiles);
+      SemanticReport semantics = SemanticReport.read(semanticReportPath, expectedFiles);
       return new SourceOnlyComparison.Run(label, complete, scanMillis, files, findings, telemetry,
+        semantics,
         complete ? null : "Indexed files differ from the intended production Java files. Expected: " + expectedFiles + "; actual: " + files);
-    } catch (RuntimeException e) {
+    } catch (IOException | RuntimeException e) {
       var stacktrace = new StringWriter();
       e.printStackTrace(new PrintWriter(stacktrace));
       return failed(label, TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start), stacktrace.toString());
@@ -190,7 +200,20 @@ class NoCompilationComparisonTest {
   }
 
   private static SourceOnlyComparison.Run failed(String label, long scanMillis, String error) {
-    return new SourceOnlyComparison.Run(label, false, scanMillis, List.of(), List.of(), Map.of(), error);
+    return new SourceOnlyComparison.Run(label, false, scanMillis, List.of(), List.of(), Map.of(), null, error);
+  }
+
+  static Path semanticReportPath(Path project, String label) {
+    String configured = System.getProperty(SEMANTIC_REPORT_PROPERTY);
+    if (configured == null || label.equals("smoke")) {
+      return project.resolve("semantic-report.json").toAbsolutePath();
+    }
+    Path base = Path.of(configured).toAbsolutePath();
+    String name = base.getFileName().toString();
+    int extension = name.lastIndexOf('.');
+    String prefix = extension < 0 ? name : name.substring(0, extension);
+    String suffix = extension < 0 ? "" : name.substring(extension);
+    return base.resolveSibling(prefix + "-" + label + suffix);
   }
 
   private static SourceOnlyComparison.Finding finding(Issue issue) {
