@@ -16,10 +16,13 @@
  */
 package org.sonar.java;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -104,6 +107,7 @@ class JavaFrontendTest {
   private ClasspathForTest javaTestClasspath;
   private TestIssueFilter mainCodeIssueScannerAndFilter = new TestIssueFilter();
   private TestIssueFilter testCodeIssueScannerAndFilter = new TestIssueFilter();
+  private final SemanticReportScanner semanticReportScanner = new SemanticReportScanner();
 
   private SonarComponents sonarComponents;
   private SensorContextTester sensorContext;
@@ -180,7 +184,7 @@ class JavaFrontendTest {
 
   @Test
   void scanning_empty_project_should_be_logged_in_batch() {
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), new Measurer(sensorContext, mock(NoSonarFilter.class)), new NoOpTelemetry(), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), new Measurer(sensorContext, mock(NoSonarFilter.class)), new NoOpTelemetry(), mock(JavaResourceLocator.class), null, semanticReportScanner, mainCodeIssueScannerAndFilter);
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 
     assertThat(filterOutAnalysisProgress(logTester.logs(Level.INFO))).containsExactly(
@@ -189,6 +193,83 @@ class JavaFrontendTest {
       "No \"Test\" source files to scan.",
       "No \"Generated\" source files to scan."
     );
+  }
+
+  @Test
+  void semantic_report_contains_sorted_file_counts_and_percentages() throws IOException {
+    Path report = temp.resolve("semantic-report.json");
+    MapSettings settings = new MapSettings();
+    settings.setProperty(SonarComponents.SONAR_SEMANTIC_REPORT, report.toString());
+    sensorContext = SensorContextTester.create(temp.toFile().getAbsoluteFile());
+    sensorContext.setSettings(settings);
+    List<InputFile> inputFiles = List.of(
+      addFile(temp, "class Z { Missing value; }", sensorContext),
+      addFile(temp, "class A { int value; }", sensorContext));
+
+    scan(settings, SONARQUBE_RUNTIME, inputFiles);
+    assertThat(report).doesNotExist();
+    semanticReportScanner.writeReport(report, temp);
+
+    JsonObject result = JsonParser.parseString(Files.readString(report)).getAsJsonObject();
+    var files = result.getAsJsonArray("files");
+    assertThat(files).hasSize(2);
+    assertThat(files.get(0).getAsJsonObject().get("path").getAsString()).isEqualTo("A.java");
+    assertThat(files.get(1).getAsJsonObject().get("path").getAsString()).isEqualTo("Z.java");
+    int total = result.get("totalNumberOfIdentifier").getAsInt();
+    int unknown = result.get("totalNumberOfUnknownIdentifier").getAsInt();
+    assertThat(total).isEqualTo(files.get(0).getAsJsonObject().get("numberOfIdentifier").getAsInt()
+      + files.get(1).getAsJsonObject().get("numberOfIdentifier").getAsInt());
+    assertThat(unknown).isEqualTo(files.get(0).getAsJsonObject().get("numberOfUnknownIdentifier").getAsInt()
+      + files.get(1).getAsJsonObject().get("numberOfUnknownIdentifier").getAsInt());
+    assertThat(files.get(0).getAsJsonObject().get("numberOfUnknownIdentifier").getAsInt()).isZero();
+    assertThat(files.get(1).getAsJsonObject().get("numberOfUnknownIdentifier").getAsInt()).isPositive();
+    assertThat(files.get(0).getAsJsonObject().get("percentageOfUnknownIdentifier").getAsDouble()).isZero();
+    JsonObject zFile = files.get(1).getAsJsonObject();
+    assertThat(zFile.get("percentageOfUnknownIdentifier").getAsDouble())
+      .isEqualTo(Math.round(100_000d * zFile.get("numberOfUnknownIdentifier").getAsInt()
+        / zFile.get("numberOfIdentifier").getAsInt()) / 1_000d);
+    assertThat(result.get("globalPercentageOfUnknownIdentifier").getAsDouble())
+      .isEqualTo(Math.round(100_000d * unknown / total) / 1_000d);
+  }
+
+  @Test
+  void semantic_report_handles_empty_project() throws IOException {
+    Path report = temp.resolve("semantic-report.json");
+    MapSettings settings = new MapSettings();
+    settings.setProperty(SonarComponents.SONAR_SEMANTIC_REPORT, report.toString());
+
+    scan(settings, SONARQUBE_RUNTIME, Collections.emptyList());
+    assertThat(report).doesNotExist();
+    semanticReportScanner.writeReport(report, temp);
+
+    JsonObject result = JsonParser.parseString(Files.readString(report)).getAsJsonObject();
+    assertThat(result.get("totalNumberOfIdentifier").getAsInt()).isZero();
+    assertThat(result.get("totalNumberOfUnknownIdentifier").getAsInt()).isZero();
+    assertThat(result.get("globalPercentageOfUnknownIdentifier").getAsDouble()).isZero();
+    assertThat(result.getAsJsonArray("files")).isEmpty();
+  }
+
+  @Test
+  void semantic_report_collects_files_across_frontend_instances() throws IOException {
+    Path report = temp.resolve("semantic-report.json");
+    MapSettings settings = new MapSettings();
+    settings.setProperty(SonarComponents.SONAR_SEMANTIC_REPORT, report.toString());
+    Path firstModule = Files.createDirectory(temp.resolve("a-module"));
+    Path secondModule = Files.createDirectory(temp.resolve("b-module"));
+
+    sensorContext = SensorContextTester.create(firstModule.toFile());
+    sensorContext.setSettings(settings);
+    scan(settings, SONARQUBE_RUNTIME, List.of(addFile(firstModule, "class Shared {}", sensorContext)));
+    sensorContext = SensorContextTester.create(secondModule.toFile());
+    sensorContext.setSettings(settings);
+    scan(settings, SONARQUBE_RUNTIME, List.of(addFile(secondModule, "class Shared {}", sensorContext)));
+
+    assertThat(report).doesNotExist();
+    semanticReportScanner.writeReport(report, temp);
+    var files = JsonParser.parseString(Files.readString(report)).getAsJsonObject().getAsJsonArray("files");
+    assertThat(files).hasSize(2);
+    assertThat(files.get(0).getAsJsonObject().get("path").getAsString()).isEqualTo("a-module/Shared.java");
+    assertThat(files.get(1).getAsJsonObject().get("path").getAsString()).isEqualTo("b-module/Shared.java");
   }
 
   @Test
@@ -255,6 +336,8 @@ class JavaFrontendTest {
       mock(Measurer.class),
       new NoOpTelemetry(),
       mock(JavaResourceLocator.class),
+      null,
+      semanticReportScanner,
       mainCodeIssueScannerAndFilter
     );
 
@@ -289,6 +372,8 @@ class JavaFrontendTest {
       mock(Measurer.class),
       new NoOpTelemetry(),
       mock(JavaResourceLocator.class),
+      null,
+      semanticReportScanner,
       mainCodeIssueScannerAndFilter
     );
 
@@ -323,6 +408,8 @@ class JavaFrontendTest {
       mock(Measurer.class),
       new NoOpTelemetry(),
       mock(JavaResourceLocator.class),
+      null,
+      semanticReportScanner,
       mainCodeIssueScannerAndFilter
     );
 
@@ -356,6 +443,8 @@ class JavaFrontendTest {
       mock(Measurer.class),
       new NoOpTelemetry(),
       mock(JavaResourceLocator.class),
+      null,
+      semanticReportScanner,
       mainCodeIssueScannerAndFilter
     );
 
@@ -389,6 +478,8 @@ class JavaFrontendTest {
       mock(Measurer.class),
       new NoOpTelemetry(),
       mock(JavaResourceLocator.class),
+      null,
+      semanticReportScanner,
       mainCodeIssueScannerAndFilter
     );
 
@@ -415,6 +506,8 @@ class JavaFrontendTest {
       mock(Measurer.class),
       new NoOpTelemetry(),
       mock(JavaResourceLocator.class),
+      null,
+      semanticReportScanner,
       mainCodeIssueScannerAndFilter
     );
 
@@ -793,6 +886,7 @@ class JavaFrontendTest {
       new NoOpTelemetry(),
       mock(JavaResourceLocator.class),
       null,
+      semanticReportScanner,
       sonarComponents.mainChecks().toArray(new JavaCheck[0]));
     frontend.scan(inputFiles, Collections.emptyList(), Collections.emptyList());
 
