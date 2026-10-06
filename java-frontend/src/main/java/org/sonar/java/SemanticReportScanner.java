@@ -37,7 +37,7 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 @SonarLintSide
 public class SemanticReportScanner implements JavaFileScanner {
 
-  private final Map<String, IdentifierCounts> files = new TreeMap<>();
+  private final Map<Path, IdentifierCounts> files = new TreeMap<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -52,10 +52,11 @@ public class SemanticReportScanner implements JavaFileScanner {
         super.visitIdentifier(tree);
       }
     });
-    files.put(context.getInputFile().absolutePath(), counts);
+    files.put(Path.of(context.getInputFile().uri()).toAbsolutePath().normalize(), counts);
   }
 
   public void writeReport(Path reportPath, Path projectRoot) {
+    Path normalizedProjectRoot = projectRoot.toAbsolutePath().normalize();
     int total = files.values().stream().mapToInt(counts -> counts.total).sum();
     int unknown = files.values().stream().mapToInt(counts -> counts.unknown).sum();
     try (JsonWriter writer = new JsonWriter(Files.newBufferedWriter(reportPath, StandardCharsets.UTF_8))) {
@@ -65,10 +66,10 @@ public class SemanticReportScanner implements JavaFileScanner {
       writer.name("totalNumberOfUnknownIdentifier").value(unknown);
       writer.name("globalPercentageOfUnknownIdentifier").value(percentage(unknown, total));
       writer.name("files").beginArray();
-      for (Map.Entry<String, IdentifierCounts> file : files.entrySet()) {
+      for (Map.Entry<Path, IdentifierCounts> file : files.entrySet()) {
         IdentifierCounts counts = file.getValue();
         writer.beginObject();
-        writer.name("path").value(projectRoot.relativize(Path.of(file.getKey())).toString().replace('\\', '/'));
+        writer.name("path").value(normalizedProjectRoot.relativize(file.getKey()).toString().replace('\\', '/'));
         writer.name("numberOfIdentifier").value(counts.total);
         writer.name("numberOfUnknownIdentifier").value(counts.unknown);
         writer.name("percentageOfUnknownIdentifier").value(percentage(counts.unknown, counts.total));

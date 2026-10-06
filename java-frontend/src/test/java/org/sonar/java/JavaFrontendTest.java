@@ -250,6 +250,24 @@ class JavaFrontendTest {
   }
 
   @Test
+  void semantic_report_uses_file_uri_for_project_relative_path() throws IOException {
+    Path file = Files.createFile(temp.resolve("A.java"));
+    Path report = temp.resolve("semantic-report.json");
+    InputFile inputFile = mock(InputFile.class);
+    when(inputFile.uri()).thenReturn(file.toUri());
+    when(inputFile.absolutePath()).thenReturn(temp.getParent().resolve("elsewhere/A.java").toString());
+    JavaFileScannerContext context = mock(JavaFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getTree()).thenReturn(mock(CompilationUnitTree.class));
+
+    semanticReportScanner.scanFile(context);
+    semanticReportScanner.writeReport(report, temp);
+
+    var files = JsonParser.parseString(Files.readString(report)).getAsJsonObject().getAsJsonArray("files");
+    assertThat(files.get(0).getAsJsonObject().get("path").getAsString()).isEqualTo("A.java");
+  }
+
+  @Test
   void semantic_report_collects_files_across_frontend_instances() throws IOException {
     Path report = temp.resolve("semantic-report.json");
     MapSettings settings = new MapSettings();
