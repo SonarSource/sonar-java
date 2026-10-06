@@ -25,6 +25,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.sonar.api.scanner.ScannerSide;
@@ -49,7 +51,7 @@ public class SemanticReportScanner implements JavaFileScanner {
         if (!tree.isUnnamedVariable()) {
           counts.total++;
           if (tree.symbol().isUnknown()) {
-            counts.unknown++;
+            counts.unknownIdentifiers.add(new UnknownIdentifier(tree.name(), tree.firstToken().range().toString(), tree.parent().kind().toString()));
           }
         }
         super.visitIdentifier(tree);
@@ -61,7 +63,7 @@ public class SemanticReportScanner implements JavaFileScanner {
   public void writeReport(Path reportPath, Path projectRoot) {
     Path normalizedProjectRoot = normalizePath(projectRoot);
     int total = files.values().stream().mapToInt(counts -> counts.total).sum();
-    int unknown = files.values().stream().mapToInt(counts -> counts.unknown).sum();
+    int unknown = files.values().stream().mapToInt(counts -> counts.unknownIdentifiers.size()).sum();
     try (JsonWriter writer = new JsonWriter(Files.newBufferedWriter(reportPath, StandardCharsets.UTF_8))) {
       writer.setIndent("  ");
       writer.beginObject();
@@ -74,8 +76,17 @@ public class SemanticReportScanner implements JavaFileScanner {
         writer.beginObject();
         writer.name("path").value(normalizedProjectRoot.relativize(file.getKey()).toString().replace('\\', '/'));
         writer.name("numberOfIdentifier").value(counts.total);
-        writer.name("numberOfUnknownIdentifier").value(counts.unknown);
-        writer.name("percentageOfUnknownIdentifier").value(percentage(counts.unknown, counts.total));
+        writer.name("numberOfUnknownIdentifier").value(counts.unknownIdentifiers.size());
+        writer.name("percentageOfUnknownIdentifier").value(percentage(counts.unknownIdentifiers.size(), counts.total));
+        writer.name("unknownIdentifiers").beginArray();
+        for (UnknownIdentifier identifier : counts.unknownIdentifiers) {
+          writer.beginObject();
+          writer.name("name").value(identifier.name());
+          writer.name("range").value(identifier.range());
+          writer.name("parentKind").value(identifier.parentKind());
+          writer.endObject();
+        }
+        writer.endArray();
         writer.endObject();
       }
       writer.endArray();
@@ -103,6 +114,9 @@ public class SemanticReportScanner implements JavaFileScanner {
 
   private static class IdentifierCounts {
     int total;
-    int unknown;
+    final List<UnknownIdentifier> unknownIdentifiers = new ArrayList<>();
+  }
+
+  private record UnknownIdentifier(String name, String range, String parentKind) {
   }
 }

@@ -222,9 +222,16 @@ class JavaFrontendTest {
     assertThat(unknown).isEqualTo(files.get(0).getAsJsonObject().get("numberOfUnknownIdentifier").getAsInt()
       + files.get(1).getAsJsonObject().get("numberOfUnknownIdentifier").getAsInt());
     assertThat(files.get(0).getAsJsonObject().get("numberOfUnknownIdentifier").getAsInt()).isZero();
+    assertThat(files.get(0).getAsJsonObject().getAsJsonArray("unknownIdentifiers")).isEmpty();
     assertThat(files.get(1).getAsJsonObject().get("numberOfUnknownIdentifier").getAsInt()).isPositive();
     assertThat(files.get(0).getAsJsonObject().get("percentageOfUnknownIdentifier").getAsDouble()).isZero();
     JsonObject zFile = files.get(1).getAsJsonObject();
+    var unknownIdentifiers = zFile.getAsJsonArray("unknownIdentifiers");
+    assertThat(unknownIdentifiers).hasSize(zFile.get("numberOfUnknownIdentifier").getAsInt());
+    JsonObject missing = unknownIdentifiers.get(0).getAsJsonObject();
+    assertThat(missing.get("name").getAsString()).isEqualTo("Missing");
+    assertThat(missing.get("range").getAsString()).isEqualTo("(1:11)-(1:18)");
+    assertThat(missing.get("parentKind").getAsString()).isEqualTo("VARIABLE");
     assertThat(zFile.get("percentageOfUnknownIdentifier").getAsDouble())
       .isEqualTo(Math.round(100_000d * zFile.get("numberOfUnknownIdentifier").getAsInt()
         / zFile.get("numberOfIdentifier").getAsInt()) / 1_000d);
