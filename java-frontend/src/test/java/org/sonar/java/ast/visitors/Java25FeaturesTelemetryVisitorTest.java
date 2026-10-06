@@ -22,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.JavaFrontend;
+import org.sonar.java.SemanticReportScanner;
 import org.sonar.java.Measurer;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaVersionImpl;
@@ -48,7 +49,7 @@ class Java25FeaturesTelemetryVisitorTest {
     Telemetry telemetry = mock(Telemetry.class);
 
 
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(25), mockSonarComponents(), mock(Measurer.class), telemetry, null, null);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(25), mockSonarComponents(), mock(Measurer.class), telemetry, null, null, new SemanticReportScanner());
     frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
 
     verify(telemetry).aggregateAsCounter(TelemetryKey.JAVA_FEATURE_MODULE_IMPORT, 1);
@@ -62,7 +63,7 @@ class Java25FeaturesTelemetryVisitorTest {
     Telemetry telemetry = mock(Telemetry.class);
 
 
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(24), mockSonarComponents(), mock(Measurer.class), telemetry, null, null);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(24), mockSonarComponents(), mock(Measurer.class), telemetry, null, null, new SemanticReportScanner());
     frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
 
     verify(telemetry, times(0)).aggregateAsCounter(TelemetryKey.JAVA_FEATURE_MODULE_IMPORT, 1);
