@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -142,7 +143,41 @@ class SourceOnlyComparisonTest {
     var empty = new SourceOnlyComparison.Run("scan", true, 12, List.of("src/Example.java"), List.of(), Map.of(), semantics(0, 0), null);
     String report = SourceOnlyComparison.markdown(SourceOnlyComparison.compare(empty, empty, true, List.of()));
     assertThat(report).contains("| Known identifiers | 0 | 0 |", "| Unknown identifiers (%) | N/A | N/A |",
-      "| Change in unknown identifiers (percentage points) | N/A |");
+      "| Change in unknown identifiers (percentage points) | N/A |", "| Files with no unknown identifiers | 0 / 1 (0.000%) | 0 / 1 (0.000%) |",
+      "| Files without comparable identifier percentages | 1 |");
+  }
+
+  @Test
+  void summarizes_file_progress_and_largest_unknown_contributors() {
+    var current = semanticRun(Map.of("A.java", new SemanticReport.Counts(10, 4), "B.java", new SemanticReport.Counts(10, 0),
+      "C.java", new SemanticReport.Counts(5, 1), "D.java", new SemanticReport.Counts(0, 0)));
+    var candidate = semanticRun(Map.of("A.java", new SemanticReport.Counts(10, 1), "B.java", new SemanticReport.Counts(10, 2),
+      "C.java", new SemanticReport.Counts(5, 1), "D.java", new SemanticReport.Counts(0, 0)));
+    String report = SourceOnlyComparison.markdown(SourceOnlyComparison.compare(current, candidate, false, List.of()));
+
+    assertThat(report).contains("| Files with no unknown identifiers | 1 / 4 (25.000%) | 0 / 4 (0.000%) |",
+      "| Net change in unknown identifier count | -1 |", "| Files improved (unknown %) | 1 |", "| Files unchanged (unknown %) | 1 |",
+      "| Files regressed (unknown %) | 1 |", "| Files without comparable identifier percentages | 1 |",
+      "| A.java | 4 / 1 | 80.000% / 25.000% |", "| B.java | 0 / 2 | 0.000% / 50.000% |");
+    assertThat(report.indexOf("## Top files contributing unknown identifiers")).isLessThan(report.indexOf("## Semantics per file"));
+  }
+
+  @Test
+  void limits_top_contributors_to_five_and_handles_no_unknowns() {
+    var current = semanticRun(Map.of("A.java", new SemanticReport.Counts(10, 1), "B.java", new SemanticReport.Counts(10, 2),
+      "C.java", new SemanticReport.Counts(10, 3), "D.java", new SemanticReport.Counts(10, 4),
+      "E.java", new SemanticReport.Counts(10, 5), "F.java", new SemanticReport.Counts(10, 6)));
+    var knownFiles = new TreeMap<String, SemanticReport.Counts>();
+    current.files().forEach(path -> knownFiles.put(path, new SemanticReport.Counts(10, 0)));
+    var candidate = semanticRun(knownFiles);
+    String report = SourceOnlyComparison.markdown(SourceOnlyComparison.compare(current, candidate, false, List.of()));
+    String contributors = report.substring(report.indexOf("## Top files contributing unknown identifiers"), report.indexOf("## Semantics per file"));
+
+    assertThat(contributors).contains("| F.java | 6 / 0 | 28.571% / N/A |", "| B.java | 2 / 0 |").doesNotContain("| A.java |");
+    assertThat(contributors.indexOf("| F.java |")).isLessThan(contributors.indexOf("| E.java |"));
+    String allKnown = SourceOnlyComparison.markdown(SourceOnlyComparison.compare(candidate, candidate, true, List.of()));
+    assertThat(allKnown).contains("| Files with no unknown identifiers | 6 / 6 (100.000%) | 6 / 6 (100.000%) |",
+      "Values are **current / candidate**.\n\nNone.");
   }
 
   @Test
@@ -176,5 +211,12 @@ class SourceOnlyComparisonTest {
   private static SemanticReport semantics(int total, int unknown) {
     var counts = new SemanticReport.Counts(total, unknown);
     return new SemanticReport(counts, Map.of("src/Example.java", counts));
+  }
+
+  private static SourceOnlyComparison.Run semanticRun(Map<String, SemanticReport.Counts> files) {
+    var totals = new SemanticReport.Counts(files.values().stream().mapToInt(SemanticReport.Counts::total).sum(),
+      files.values().stream().mapToInt(SemanticReport.Counts::unknown).sum());
+    return new SourceOnlyComparison.Run("scan", true, 12, files.keySet().stream().sorted().toList(), List.of(), Map.of(),
+      new SemanticReport(totals, files), null);
   }
 }
