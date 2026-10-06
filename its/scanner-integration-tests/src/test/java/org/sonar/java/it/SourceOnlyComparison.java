@@ -43,7 +43,7 @@ final class SourceOnlyComparison {
   }
 
   record Run(String label, boolean success, long scanMillis, List<String> files, List<Finding> findings,
-             Map<String, String> telemetry, String error) {
+             Map<String, String> telemetry, SemanticReport semantics, String error) {
   }
 
   record RuleResult(String rule, int current, int candidate, int shared, int currentOnly, int candidateOnly, Double retention) {
@@ -80,6 +80,9 @@ final class SourceOnlyComparison {
     }
     if (!new TreeSet<>(current.files()).equals(new TreeSet<>(candidate.files()))) {
       return invalid(current, candidate, placeholder, "The scans indexed different files; agreement metrics are unavailable.");
+    }
+    if (current.semantics() == null || candidate.semantics() == null) {
+      return invalid(current, candidate, placeholder, "A semantic report is missing; comparison metrics are unavailable.");
     }
 
     var candidateOnly = sorted(candidate.findings());
@@ -144,6 +147,7 @@ final class SourceOnlyComparison {
     Run candidate = comparison.candidate();
     appendMetric(report, "Scan status", current.success() ? "SUCCESS" : "FAILED", candidate.success() ? "SUCCESS" : "FAILED");
     appendMetric(report, "Java files analyzed", current.files().size(), candidate.files().size());
+    appendSemanticSummary(report, current.semantics(), candidate.semantics());
     appendMetric(report, "Findings", current.findings().size(), candidate.findings().size());
     appendMetric(report, "Scan time (ms)", current.scanMillis(), candidate.scanMillis());
     appendMetric(report, "Source characters analyzed", telemetry(current, "success.size_chars"), telemetry(candidate, "success.size_chars"));
@@ -156,8 +160,11 @@ final class SourceOnlyComparison {
       appendFailure(report, candidate);
       return report.toString();
     }
+    Double currentUnknown = current.semantics().totals().unknownPercentage();
+    Double candidateUnknown = candidate.semantics().totals().unknownPercentage();
     int shared = current.findings().size() - comparison.currentOnly().size();
     report.append("\n| Comparison metric | Value |\n|---|---:|\n")
+      .append("| Change in unknown identifiers (percentage points) | ").append(change(currentUnknown, candidateUnknown)).append(" |\n")
       .append("| Rules compared | ").append(comparison.rules().size()).append(" |\n")
       .append("| Rules with findings | ").append(comparison.rules().stream().filter(row -> row.current() > 0 || row.candidate() > 0).count()).append(" |\n")
       .append("| Shared findings | ").append(shared).append(" |\n")
@@ -167,6 +174,7 @@ final class SourceOnlyComparison {
     if (current.findings().isEmpty() || candidate.findings().isEmpty()) {
       report.append("\nAt least one scan reported no findings; agreement alone does not establish detection quality.\n");
     }
+    appendFileSemantics(report, current.semantics(), candidate.semantics());
     report.append("\n## Rules with findings\n\n| Rule | Current | Candidate | Shared | Current only | Candidate only | Retention |\n")
       .append("|---|---:|---:|---:|---:|---:|---:|\n");
     for (RuleResult row : comparison.rules()) {
@@ -187,6 +195,9 @@ final class SourceOnlyComparison {
       .append("- Both modes use sources and the JDK, without project bytecode or dependency JARs.\n")
       .append("- Retention measures agreement with current source-only findings, not accuracy.\n")
       .append("- Undefined-type errors are a diagnostic count, not resolution coverage. Missing telemetry is shown as N/A.\n")
+      .append("- Identifier counts come from the semantic report: known = total − unknown. They count identifier occurrences, not distinct fields or properties.\n")
+      .append("- Unknown percentage = unknown / total × 100. The project percentage uses aggregate counts, not an average of file percentages. No identifiers means N/A.\n")
+      .append("- Per-file counts are current / candidate. A negative change in unknown percentage means fewer unresolved identifiers; it does not prove semantic correctness.\n")
       .append("- Configured rules may be disabled when dependencies are absent; zero findings do not prove a rule ran.\n")
       .append("- Scan times are individual wall-time samples, including engine setup.\n");
     return report.toString();
@@ -202,6 +213,37 @@ final class SourceOnlyComparison {
 
   private static String percentage(Double value) {
     return value == null ? "N/A" : String.format(Locale.ROOT, "%.1f%%", value * 100);
+  }
+
+  private static String identifierPercentage(Double value) {
+    return value == null ? "N/A" : String.format(Locale.ROOT, "%.3f%%", value);
+  }
+
+  private static String change(Double current, Double candidate) {
+    return current == null || candidate == null ? "N/A" : String.format(Locale.ROOT, "%+.3f", candidate - current);
+  }
+
+  private static void appendSemanticSummary(StringBuilder report, SemanticReport current, SemanticReport candidate) {
+    appendMetric(report, "Identifiers (total)", current == null ? "N/A" : current.totals().total(), candidate == null ? "N/A" : candidate.totals().total());
+    appendMetric(report, "Known identifiers", current == null ? "N/A" : current.totals().known(), candidate == null ? "N/A" : candidate.totals().known());
+    appendMetric(report, "Unknown identifiers", current == null ? "N/A" : current.totals().unknown(), candidate == null ? "N/A" : candidate.totals().unknown());
+    appendMetric(report, "Unknown identifiers (%)", identifierPercentage(current == null ? null : current.totals().unknownPercentage()),
+      identifierPercentage(candidate == null ? null : candidate.totals().unknownPercentage()));
+  }
+
+  private static void appendFileSemantics(StringBuilder report, SemanticReport current, SemanticReport candidate) {
+    report.append("\n## Semantics per file\n\nCounts and percentages are **current / candidate**. Change is candidate minus current.\n\n")
+      .append("| File | Total identifiers | Known identifiers | Unknown identifiers | Unknown % | Change (pp) |\n")
+      .append("|---|---:|---:|---:|---:|---:|\n");
+    for (String path : new TreeSet<>(current.files().keySet())) {
+      SemanticReport.Counts before = current.files().get(path);
+      SemanticReport.Counts after = candidate.files().get(path);
+      report.append("| ").append(escape(path)).append(" | ").append(before.total()).append(" / ").append(after.total())
+        .append(" | ").append(before.known()).append(" / ").append(after.known())
+        .append(" | ").append(before.unknown()).append(" / ").append(after.unknown())
+        .append(" | ").append(identifierPercentage(before.unknownPercentage())).append(" / ").append(identifierPercentage(after.unknownPercentage()))
+        .append(" | ").append(change(before.unknownPercentage(), after.unknownPercentage())).append(" |\n");
+    }
   }
 
   private static void appendFindings(StringBuilder report, String title, List<Finding> findings) {
