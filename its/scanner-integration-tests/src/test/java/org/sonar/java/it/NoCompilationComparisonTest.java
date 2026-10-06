@@ -16,7 +16,6 @@
  */
 package org.sonar.java.it;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.sonar.orchestrator.locator.FileLocation;
 import com.sonarsource.scanner.integrationtester.dsl.ActiveRule;
@@ -40,7 +39,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.io.TempDir;
@@ -53,7 +51,6 @@ class NoCompilationComparisonTest {
 
   private static final Map<String, String> CANDIDATE_PROPERTIES = Map.of();
   private static final String SOURCE_ROOT = "sonar-xml-plugin/src/main/java";
-  private static Path reportDirectory;
   private static final List<String> TELEMETRY_KEYS = List.of(
     "java.analysis.main.success.size_chars",
     "java.analysis.main.success.type_error_count",
@@ -63,13 +60,6 @@ class NoCompilationComparisonTest {
   @TempDir
   Path workspace;
 
-  @BeforeAll
-  static void createResultsDirectory() throws IOException {
-    reportDirectory = SourceOnlyComparison.createRunDirectory(repositoryRoot()
-      .resolve("its/scanner-integration-tests/src/test/java/org/sonar/java/it/results"));
-    System.out.println("Source-only analysis results: " + reportDirectory);
-  }
-
   @Test
   void scanner_accepts_sources_without_binaries_or_libraries() throws IOException {
     Path project = workspace.resolve("smoke");
@@ -78,8 +68,7 @@ class NoCompilationComparisonTest {
     Files.writeString(project.resolve("Other.java"), "class Other {}");
 
     var context = serverContext(List.of(activeRule(repositoryRoot(), "S1116")));
-    var result = scan(context, project, ".", "smoke", Map.of(), List.of("Example.java", "Other.java"),
-      reportDirectory.resolve("smoke"));
+    var result = scan(context, project, ".", "smoke", Map.of(), List.of("Example.java", "Other.java"));
 
     assertThat(result.success()).as("Source-only smoke scan: %s", result.error()).isTrue();
     assertThat(result.findings()).hasSize(1);
@@ -117,8 +106,11 @@ class NoCompilationComparisonTest {
     }
     assertThat(rules).isNotEmpty();
     var context = serverContext(rules);
-    var current = scan(context, currentProject, SOURCE_ROOT, "current", Map.of(), expectedFiles, reportDirectory);
-    var candidate = scan(context, candidateProject, SOURCE_ROOT, "candidate", CANDIDATE_PROPERTIES, expectedFiles, reportDirectory);
+    Path reportDirectory = SourceOnlyComparison.createRunDirectory(root
+      .resolve("its/scanner-integration-tests/src/test/java/org/sonar/java/it/results"));
+    System.out.println("Source-only analysis results: " + reportDirectory);
+    var current = scan(context, currentProject, SOURCE_ROOT, "current", Map.of(), expectedFiles);
+    var candidate = scan(context, candidateProject, SOURCE_ROOT, "candidate", CANDIDATE_PROPERTIES, expectedFiles);
     var comparison = SourceOnlyComparison.compare(current, candidate, CANDIDATE_PROPERTIES.isEmpty(),
       rules.stream().map(rule -> rule.ruleKey().toString()).toList());
     SourceOnlyComparison.write(reportDirectory, comparison);
@@ -146,7 +138,7 @@ class NoCompilationComparisonTest {
   }
 
   private static SourceOnlyComparison.Run scan(SonarServerContext context, Path project, String sourceRoot, String label,
-                                               Map<String, String> candidateProperties, List<String> expectedFiles, Path reportDirectory) throws IOException {
+                                               Map<String, String> candidateProperties, List<String> expectedFiles) {
     var properties = new TreeMap<>(Map.of(
       "sonar.sources", sourceRoot,
       "sonar.java.source", "21",
@@ -160,7 +152,6 @@ class NoCompilationComparisonTest {
       }
       properties.put(key, value);
     });
-    Files.createDirectories(reportDirectory);
     StringBuilder logs = new StringBuilder("Scanner properties: ").append(properties).append('\n');
     long start = System.nanoTime();
     try {
@@ -176,7 +167,7 @@ class NoCompilationComparisonTest {
         });
       }
       if (!(result instanceof ScannerResultSuccess success) || result.exitCode() != 0) {
-        return failed(label, scanMillis, "Scanner exited with code " + result.exitCode());
+        return failed(label, scanMillis, "Scanner exited with code " + result.exitCode() + "\n" + logs);
       }
       var output = success.scannerOutputReader();
       var files = output.getFiles().stream().map(file -> normalize(file.relativePath())).sorted().toList();
@@ -190,14 +181,11 @@ class NoCompilationComparisonTest {
       }
       boolean complete = files.equals(expectedFiles);
       return new SourceOnlyComparison.Run(label, complete, scanMillis, files, findings, telemetry,
-        complete ? null : "Indexed files differ from the intended production Java files. See diff.json.");
+        complete ? null : "Indexed files differ from the intended production Java files. Expected: " + expectedFiles + "; actual: " + files);
     } catch (RuntimeException e) {
       var stacktrace = new StringWriter();
       e.printStackTrace(new PrintWriter(stacktrace));
-      logs.append(stacktrace);
-      return failed(label, TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start), e.toString());
-    } finally {
-      Files.writeString(reportDirectory.resolve(label + ".log"), logs);
+      return failed(label, TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start), stacktrace.toString());
     }
   }
 
@@ -209,7 +197,7 @@ class NoCompilationComparisonTest {
     String path = issue instanceof com.sonarsource.scanner.integrationtester.dsl.issue.FileIssue fileIssue
       ? normalize(fileIssue.componentPath()) : "<project>";
     Integer line = issue instanceof TextRangeIssue rangeIssue ? rangeIssue.line() : null;
-    return new SourceOnlyComparison.Finding(issue.ruleKey(), path, line, issue.message(), new Gson().toJsonTree(issue));
+    return new SourceOnlyComparison.Finding(issue.ruleKey(), path, line, issue.message());
   }
 
   private static String normalize(String path) {
