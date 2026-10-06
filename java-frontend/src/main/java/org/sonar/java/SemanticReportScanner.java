@@ -46,9 +46,11 @@ public class SemanticReportScanner implements JavaFileScanner {
     context.getTree().accept(new BaseTreeVisitor() {
       @Override
       public void visitIdentifier(IdentifierTree tree) {
-        counts.total++;
-        if (tree.symbol().isUnknown()) {
-          counts.unknown++;
+        if (!tree.isUnnamedVariable()) {
+          counts.total++;
+          if (tree.symbol().isUnknown()) {
+            counts.unknown++;
+          }
         }
         super.visitIdentifier(tree);
       }
