@@ -91,6 +91,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   public static final String SONAR_AUTOSCAN_CHECK_FILTERING = "sonar.internal.analysis.autoscan.filtering";
   public static final String SONAR_BATCH_SIZE_KEY = "sonar.java.experimental.batchModeSizeInKB";
   public static final String SONAR_FILE_BY_FILE = "sonar.java.fileByFile";
+  public static final String SONAR_SEMANTIC_REPORT = "sonar.java.internal.semantic.report";
   /**
    * Describes if an optimized analysis of unchanged by skipping some rules is enabled.
    * By default, the property is not set (null), leaving SQ/SC to decide whether to enable this behavior.
@@ -692,6 +693,10 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
   public Configuration getConfiguration() {
     return context.config();
+  }
+
+  public Optional<String> getSemanticReportPath() {
+    return context.config().get(SONAR_SEMANTIC_REPORT);
   }
 
   public void setSpringContextModel(SpringContextModel springContextModel) {
