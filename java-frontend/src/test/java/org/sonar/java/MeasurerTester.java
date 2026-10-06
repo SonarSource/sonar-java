@@ -51,7 +51,7 @@ public abstract class MeasurerTester {
       .forEach(fs::add);
 
     Measurer measurer = new Measurer(context, mock(NoSonarFilter.class));
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), measurer, new NoOpTelemetry(), mock(JavaResourceLocator.class), null);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), measurer, new NoOpTelemetry(), mock(JavaResourceLocator.class), null, new SemanticReportScanner());
     List<InputFile> files = StreamSupport.stream(fs.inputFiles(fs.predicates().all()).spliterator(), false).toList();
     frontend.scan(files, Collections.emptyList(), Collections.emptyList());
   }
