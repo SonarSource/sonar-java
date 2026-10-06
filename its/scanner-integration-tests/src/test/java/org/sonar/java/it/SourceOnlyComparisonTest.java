@@ -16,7 +16,6 @@
  */
 package org.sonar.java.it;
 
-import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -98,19 +97,32 @@ class SourceOnlyComparisonTest {
   }
 
   @Test
-  void writes_a_json_diff_and_markdown_report(@TempDir Path directory) throws IOException {
-    var lost = finding("java:S1116", "src/Example.java", 3, "lost");
+  void writes_only_a_report_with_summary_before_rule_details(@TempDir Path directory) throws IOException {
+    var lost = finding("java:S1116", "src/Example.java", 3, "lost | finding\nwith detail");
     var comparison = SourceOnlyComparison.compare(run(List.of(lost)), run(List.of()), false, List.of());
     SourceOnlyComparison.write(directory, comparison);
 
-    var json = JsonParser.parseString(Files.readString(directory.resolve("diff.json"))).getAsJsonObject();
-    assertThat(json.getAsJsonArray("currentOnly")).hasSize(1);
-    assertThat(json.getAsJsonArray("candidateOnly")).isEmpty();
-    assertThat(Files.readString(directory.resolve("report.md"))).contains("java:S1116", "0.0%", "12 ms", "not accuracy");
+    try (var files = Files.list(directory)) {
+      assertThat(files.map(path -> path.getFileName().toString()).toList()).containsExactly("report.md");
+    }
+    String report = Files.readString(directory.resolve("report.md"));
+    assertThat(report).contains("| Findings | 1 | 0 |", "| Scan time (ms) | 12 | 12 |", "| Current-only findings | 1 |",
+      "java:S1116", "0.0%", "src/Example.java", "lost \\| finding with detail", "not accuracy");
+    assertThat(report.indexOf("## Summary")).isLessThan(report.indexOf("## Rules with findings"));
+  }
+
+  @Test
+  void summarizes_zero_finding_rules_and_reports_missing_telemetry_as_unavailable() {
+    var current = new SourceOnlyComparison.Run("current", true, 12, List.of("src/Example.java"), List.of(),
+      Map.of("java.analysis.main.success.type_error_count", "390"), null);
+    var comparison = SourceOnlyComparison.compare(current, run(List.of()), false, List.of("java:S1116", "java:S1206"));
+    String report = SourceOnlyComparison.markdown(comparison);
+    assertThat(report).contains("| Rules compared | 2 |", "2 rules had no findings", "| Undefined-type errors | 390 | N/A |");
+    assertThat(report).doesNotContain("| java:S1116 |", "| java:S1206 |", "diff.json", "current.log");
   }
 
   private static SourceOnlyComparison.Finding finding(String rule, String path, Integer line, String message) {
-    return new SourceOnlyComparison.Finding(rule, path, line, message, JsonParser.parseString("{}"));
+    return new SourceOnlyComparison.Finding(rule, path, line, message);
   }
 
   private static SourceOnlyComparison.Run run(List<SourceOnlyComparison.Finding> findings) {
