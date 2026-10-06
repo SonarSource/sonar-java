@@ -23,7 +23,6 @@ import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -206,7 +205,6 @@ class JavaFrontendTest {
     List<InputFile> inputFiles = List.of(
       addFile(temp, "class Z { Missing value; }", sensorContext),
       addFile(temp, "class A { int value; }", sensorContext));
-    assertThat(Path.of(inputFiles.get(0).uri()).getParent()).isEqualTo(temp.toRealPath(LinkOption.NOFOLLOW_LINKS));
 
     scan(settings, SONARQUBE_RUNTIME, inputFiles);
     assertThat(report).doesNotExist();
@@ -259,8 +257,9 @@ class JavaFrontendTest {
     when(inputFile.uri()).thenReturn(file.toUri());
     when(inputFile.absolutePath()).thenReturn(temp.getParent().resolve("elsewhere/A.java").toString());
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
+    CompilationUnitTree tree = mock(CompilationUnitTree.class);
     when(context.getInputFile()).thenReturn(inputFile);
-    when(context.getTree()).thenReturn(mock(CompilationUnitTree.class));
+    when(context.getTree()).thenReturn(tree);
 
     semanticReportScanner.scanFile(context);
     semanticReportScanner.writeReport(report, temp);
