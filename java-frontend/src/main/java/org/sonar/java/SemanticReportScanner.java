@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.TreeMap;
@@ -56,10 +57,10 @@ public class SemanticReportScanner implements JavaFileScanner {
   }
 
   public void writeReport(Path reportPath, Path projectRoot) {
-    Path normalizedProjectRoot = projectRoot.toAbsolutePath().normalize();
     int total = files.values().stream().mapToInt(counts -> counts.total).sum();
     int unknown = files.values().stream().mapToInt(counts -> counts.unknown).sum();
     try (JsonWriter writer = new JsonWriter(Files.newBufferedWriter(reportPath, StandardCharsets.UTF_8))) {
+      Path normalizedProjectRoot = projectRoot.toRealPath(LinkOption.NOFOLLOW_LINKS);
       writer.setIndent("  ");
       writer.beginObject();
       writer.name("totalNumberOfIdentifier").value(total);

@@ -23,6 +23,7 @@ import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -205,6 +206,7 @@ class JavaFrontendTest {
     List<InputFile> inputFiles = List.of(
       addFile(temp, "class Z { Missing value; }", sensorContext),
       addFile(temp, "class A { int value; }", sensorContext));
+    assertThat(Path.of(inputFiles.get(0).uri()).getParent()).isEqualTo(temp.toRealPath(LinkOption.NOFOLLOW_LINKS));
 
     scan(settings, SONARQUBE_RUNTIME, inputFiles);
     assertThat(report).doesNotExist();
