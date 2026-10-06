@@ -33,8 +33,8 @@ import org.sonar.api.scanner.ScannerSide;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 @ScannerSide
@@ -60,20 +60,14 @@ public class SemanticReportScanner implements JavaFileScanner {
 
       private static boolean isIdentifierExpectSymbol(IdentifierTree tree) {
         String name = tree.name();
-        if (name.equals("new")) {
-          return false;
-        }
-        if (name.equals("class")) {
-          return false;
-        }
-        if (tree.isUnnamedVariable()) {
-          return false;
-        }
-        return true;
+        return !"new".equals(name) && !"class".equals(name) && !tree.isUnnamedVariable();
       }
 
       @Override
-      public void visitImport(ImportTree tree) {
+      public void visitCompilationUnit(CompilationUnitTree tree) {
+        scan(tree.packageDeclaration());
+        scan(tree.types());
+        scan(tree.moduleDeclaration());
       }
     });
     files.put(normalizePath(Path.of(context.getInputFile().uri())), counts);
