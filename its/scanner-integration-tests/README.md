@@ -46,7 +46,8 @@ Results are stored beside the test in
 Each invocation creates the next numbered directory: `run-001`, `run-002`, etc.
 Previous results are preserved, including across Maven clean builds. Maven and
 IntelliJ use the same location, and the selected directory is printed when the
-class starts. Generated run directories are ignored by Git.
+class starts. Keep saved run directories in Git so results can be reviewed
+alongside the test.
 
 Each run directory contains:
 
