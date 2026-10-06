@@ -49,16 +49,17 @@ IntelliJ use the same location, and the selected directory is printed when the
 class starts. Keep saved run directories in Git so results can be reviewed
 alongside the test.
 
-Each run directory contains:
-
-- `report.md`: scan times, status, telemetry, and counts and retention per rule.
-- `diff.json`: both runs, full issue details, and current-only/candidate-only findings.
-- `current.log` and `candidate.log`: scanner properties, warnings, and failures.
+Each run directory contains only `report.md`. Its summary shows scan status,
+file and finding counts, timings, error telemetry, shared and differing findings,
+and retention. The rule table includes only rules with findings; the count of
+rules with no findings is summarized separately. Finding locations and messages
+are included below the tables. Scanner failure diagnostics appear in the report
+when needed. The smoke test does not save any artifacts.
 
 Issues match by rule, repository-relative file path, and primary line, preserving
-duplicates. File-level and project-level issues have a null line. Messages,
-ranges, and flows remain available in JSON for inspection but do not affect
-matching. A failed scan or unexpected indexed file list invalidates agreement
+duplicates. File-level and project-level issues have no line, shown as `N/A`.
+Messages are included for review but do not affect matching.
+A failed scan or unexpected indexed file list invalidates agreement
 metrics; the test writes the report before failing its assertions.
 
 Retention describes agreement with today's **source-only** findings, not

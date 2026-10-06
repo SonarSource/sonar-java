@@ -16,8 +16,6 @@
  */
 package org.sonar.java.it;
 
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -31,7 +29,7 @@ import java.util.TreeSet;
 
 final class SourceOnlyComparison {
 
-  record Finding(String rule, String path, Integer line, String message, JsonElement details) {
+  record Finding(String rule, String path, Integer line, String message) {
     Finding {
       path = path.replace('\\', '/');
     }
@@ -134,49 +132,99 @@ final class SourceOnlyComparison {
 
   static void write(Path directory, Comparison comparison) throws IOException {
     Files.createDirectories(directory);
-    Files.writeString(directory.resolve("diff.json"), new GsonBuilder().setPrettyPrinting().serializeNulls().create().toJson(comparison));
     Files.writeString(directory.resolve("report.md"), markdown(comparison));
   }
 
   static String markdown(Comparison comparison) {
     var report = new StringBuilder("# Source-only Java analysis comparison\n\n");
-    if (comparison.placeholder()) {
-      report.append("Candidate is a placeholder: it uses the same configuration as current source-only analysis.\n\n");
-    }
-    report.append("Both modes use sources and the JDK, without project bytecode or dependency JARs.\n")
-      .append("Retention measures agreement with current source-only findings, not accuracy.\n\n");
-    appendRun(report, comparison.current());
-    appendRun(report, comparison.candidate());
+    report.append("**Comparison:** ").append(comparison.valid() ? "VALID" : "INVALID")
+      .append(" · **Candidate:** ").append(comparison.placeholder() ? "placeholder (same analyzer and settings)" : "configured")
+      .append("\n\n## Summary\n\n| Metric | Current | Candidate |\n|---|---:|---:|\n");
+    Run current = comparison.current();
+    Run candidate = comparison.candidate();
+    appendMetric(report, "Scan status", current.success() ? "SUCCESS" : "FAILED", candidate.success() ? "SUCCESS" : "FAILED");
+    appendMetric(report, "Java files analyzed", current.files().size(), candidate.files().size());
+    appendMetric(report, "Findings", current.findings().size(), candidate.findings().size());
+    appendMetric(report, "Scan time (ms)", current.scanMillis(), candidate.scanMillis());
+    appendMetric(report, "Source characters analyzed", telemetry(current, "success.size_chars"), telemetry(candidate, "success.size_chars"));
+    appendMetric(report, "Undefined-type errors", telemetry(current, "success.type_error_count"), telemetry(candidate, "success.type_error_count"));
+    appendMetric(report, "Source characters with parse errors", telemetry(current, "parse_errors.size_chars"), telemetry(candidate, "parse_errors.size_chars"));
+    appendMetric(report, "Source characters with analysis exceptions", telemetry(current, "exceptions.size_chars"), telemetry(candidate, "exceptions.size_chars"));
     if (!comparison.valid()) {
-      return report.append("\nComparison unavailable: ").append(comparison.error()).append('\n').toString();
+      report.append("\nComparison unavailable: ").append(comparison.error()).append('\n');
+      appendFailure(report, current);
+      appendFailure(report, candidate);
+      return report.toString();
     }
-    if (comparison.current().findings().isEmpty() || comparison.candidate().findings().isEmpty()) {
-      report.append("\nAt least one scan reported no findings; inspect coverage and logs before interpreting agreement.\n");
+    int shared = current.findings().size() - comparison.currentOnly().size();
+    report.append("\n| Comparison metric | Value |\n|---|---:|\n")
+      .append("| Rules compared | ").append(comparison.rules().size()).append(" |\n")
+      .append("| Rules with findings | ").append(comparison.rules().stream().filter(row -> row.current() > 0 || row.candidate() > 0).count()).append(" |\n")
+      .append("| Shared findings | ").append(shared).append(" |\n")
+      .append("| Current-only findings | ").append(comparison.currentOnly().size()).append(" |\n")
+      .append("| Candidate-only findings | ").append(comparison.candidateOnly().size()).append(" |\n")
+      .append("| Retention of current findings | ").append(percentage(current.findings().isEmpty() ? null : (double) shared / current.findings().size())).append(" |\n");
+    if (current.findings().isEmpty() || candidate.findings().isEmpty()) {
+      report.append("\nAt least one scan reported no findings; agreement alone does not establish detection quality.\n");
     }
-    report.append("\n| Rule | Current | Candidate | Shared | Current only | Candidate only | Retention |\n")
+    report.append("\n## Rules with findings\n\n| Rule | Current | Candidate | Shared | Current only | Candidate only | Retention |\n")
       .append("|---|---:|---:|---:|---:|---:|---:|\n");
     for (RuleResult row : comparison.rules()) {
+      if (row.current() == 0 && row.candidate() == 0) {
+        continue;
+      }
       report.append("| ").append(row.rule()).append(" | ").append(row.current()).append(" | ").append(row.candidate())
         .append(" | ").append(row.shared()).append(" | ").append(row.currentOnly()).append(" | ").append(row.candidateOnly())
-        .append(" | ").append(row.retention() == null ? "N/A" : String.format(Locale.ROOT, "%.1f%%", row.retention() * 100))
+        .append(" | ").append(percentage(row.retention()))
         .append(" |\n");
     }
-    report.append("\nSee `diff.json` for individual differences and full issue details, and `current.log` / `candidate.log` for scanner logs.\n")
-      .append("Unresolved-type telemetry counts particular undefined-type errors; it is not resolution coverage.\n");
+    long noFindings = comparison.rules().stream().filter(row -> row.current() == 0 && row.candidate() == 0).count();
+    report.append("\n").append(noFindings).append(" rules had no findings in either run and are omitted from this table.\n");
+    appendFindings(report, "Current-only findings", comparison.currentOnly());
+    appendFindings(report, "Candidate-only findings", comparison.candidateOnly());
+    appendFindings(report, "Current findings", sorted(current.findings()));
+    report.append("\n## Reading the data\n\n")
+      .append("- Both modes use sources and the JDK, without project bytecode or dependency JARs.\n")
+      .append("- Retention measures agreement with current source-only findings, not accuracy.\n")
+      .append("- Undefined-type errors are a diagnostic count, not resolution coverage. Missing telemetry is shown as N/A.\n")
+      .append("- Configured rules may be disabled when dependencies are absent; zero findings do not prove a rule ran.\n")
+      .append("- Scan times are individual wall-time samples, including engine setup.\n");
     return report.toString();
   }
 
-  private static void appendRun(StringBuilder report, Run run) {
-    report.append("\n").append(run.label()).append(": ").append(run.success() ? "SUCCESS" : "FAILED")
-      .append(", ").append(run.files().size()).append(" files, ").append(run.findings().size()).append(" findings, ")
-      .append(run.scanMillis()).append(" ms scanner wall time.\n");
-    if (run.error() != null) {
-      report.append("\nFailure: ").append(run.error()).append('\n');
+  private static void appendMetric(StringBuilder report, String metric, Object current, Object candidate) {
+    report.append("| ").append(metric).append(" | ").append(current).append(" | ").append(candidate).append(" |\n");
+  }
+
+  private static String telemetry(Run run, String suffix) {
+    return run.telemetry().getOrDefault("java.analysis.main." + suffix, "N/A");
+  }
+
+  private static String percentage(Double value) {
+    return value == null ? "N/A" : String.format(Locale.ROOT, "%.1f%%", value * 100);
+  }
+
+  private static void appendFindings(StringBuilder report, String title, List<Finding> findings) {
+    report.append("\n## ").append(title).append("\n\n");
+    if (findings.isEmpty()) {
+      report.append("None.\n");
+      return;
     }
-    if (!run.telemetry().isEmpty()) {
-      report.append("\nTelemetry:\n\n");
-      run.telemetry().entrySet().stream().sorted(Map.Entry.comparingByKey())
-        .forEach(entry -> report.append("- `").append(entry.getKey()).append("`: ").append(entry.getValue()).append('\n'));
+    report.append("| Rule | File | Line | Message |\n|---|---|---:|---|\n");
+    for (Finding finding : findings) {
+      report.append("| ").append(finding.rule()).append(" | ").append(escape(finding.path()))
+        .append(" | ").append(finding.line() == null ? "N/A" : finding.line()).append(" | ")
+        .append(escape(finding.message())).append(" |\n");
+    }
+  }
+
+  private static String escape(String value) {
+    return value.replace("|", "\\|").replace('\n', ' ').replace('\r', ' ');
+  }
+
+  private static void appendFailure(StringBuilder report, Run run) {
+    if (run.error() != null) {
+      report.append("\n### ").append(run.label()).append(" failure\n\n```text\n").append(run.error()).append("\n```\n");
     }
   }
 }
