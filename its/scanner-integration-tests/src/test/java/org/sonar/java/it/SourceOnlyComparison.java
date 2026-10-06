@@ -19,6 +19,7 @@ package org.sonar.java.it;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -55,6 +56,24 @@ final class SourceOnlyComparison {
   }
 
   private SourceOnlyComparison() {
+  }
+
+  static Path createRunDirectory(Path resultsDirectory) throws IOException {
+    Files.createDirectories(resultsDirectory);
+    int next;
+    try (var entries = Files.list(resultsDirectory)) {
+      next = entries.map(path -> path.getFileName().toString())
+        .filter(name -> name.matches("run-\\d+"))
+        .mapToInt(name -> Integer.parseInt(name.substring(4))).max().orElse(0) + 1;
+    }
+    while (true) {
+      Path directory = resultsDirectory.resolve(String.format(Locale.ROOT, "run-%03d", next));
+      try {
+        return Files.createDirectory(directory);
+      } catch (FileAlreadyExistsException e) {
+        next++;
+      }
+    }
   }
 
   static Comparison compare(Run current, Run candidate, boolean placeholder, List<String> activeRules) {
