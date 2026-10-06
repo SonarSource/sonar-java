@@ -76,7 +76,8 @@ public class JavaFrontend {
   private final JavaAstScanner astScannerForGeneratedFiles;
 
   public JavaFrontend(JavaVersion javaVersion, SonarComponents sonarComponents, Measurer measurer, Telemetry telemetry,
-                      JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
+                      JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter,
+                      SemanticReportScanner semanticReportScanner, JavaCheck... visitors) {
     this.javaVersion = javaVersion;
     this.sonarComponents = sonarComponents;
     this.telemetry = telemetry;
@@ -91,6 +92,8 @@ public class JavaFrontend {
     codeVisitors.add(measurer);
     codeVisitors.addAll(commonVisitors);
     codeVisitors.addAll(Arrays.asList(visitors));
+    sonarComponents.getSemanticReportPath()
+      .ifPresent(path -> codeVisitors.add(semanticReportScanner));
 
     List<JavaCheck> testCodeVisitors = new ArrayList<>(commonVisitors);
     testCodeVisitors.add(measurer.new TestFileMeasurer());
