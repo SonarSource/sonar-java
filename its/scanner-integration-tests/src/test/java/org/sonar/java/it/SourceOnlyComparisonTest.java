@@ -73,13 +73,13 @@ class SourceOnlyComparisonTest {
 
   @Test
   void failed_scans_and_different_file_coverage_have_no_agreement_metrics() {
-    var failed = new SourceOnlyComparison.Run("candidate", false, 12, List.of(), List.of(), Map.of(), "Scanner exited with code 1");
+    var failed = new SourceOnlyComparison.Run("candidate", false, 12, List.of(), List.of(), Map.of(), null, "Scanner exited with code 1");
     var comparison = SourceOnlyComparison.compare(run(List.of()), failed, false, List.of());
     assertThat(comparison.valid()).isFalse();
     assertThat(comparison.rules()).isEmpty();
     assertThat(SourceOnlyComparison.markdown(comparison)).contains("FAILED", "Scanner exited with code 1", "Comparison unavailable");
 
-    var differentFiles = new SourceOnlyComparison.Run("candidate", true, 12, List.of("Other.java"), List.of(), Map.of(), null);
+    var differentFiles = new SourceOnlyComparison.Run("candidate", true, 12, List.of("Other.java"), List.of(), Map.of(), null, null);
     assertThat(SourceOnlyComparison.compare(run(List.of()), differentFiles, false, List.of()).valid()).isFalse();
   }
 
@@ -87,12 +87,12 @@ class SourceOnlyComparisonTest {
   void allocates_numbered_runs_without_overwriting_previous_results(@TempDir Path directory) throws IOException {
     Path first = SourceOnlyComparison.createRunDirectory(directory);
     Files.writeString(first.resolve("report.md"), "previous results");
-    assertThat(first.getFileName().toString()).isEqualTo("run-001");
-    assertThat(SourceOnlyComparison.createRunDirectory(directory).getFileName().toString()).isEqualTo("run-002");
+    assertThat(first.getFileName()).hasToString("run-001");
+    assertThat(SourceOnlyComparison.createRunDirectory(directory).getFileName()).hasToString("run-002");
 
     Files.createDirectory(directory.resolve("run-005"));
     Files.writeString(directory.resolve("README.md"), "unrelated file");
-    assertThat(SourceOnlyComparison.createRunDirectory(directory).getFileName().toString()).isEqualTo("run-006");
+    assertThat(SourceOnlyComparison.createRunDirectory(directory).getFileName()).hasToString("run-006");
     assertThat(Files.readString(first.resolve("report.md"))).isEqualTo("previous results");
   }
 
@@ -114,11 +114,55 @@ class SourceOnlyComparisonTest {
   @Test
   void summarizes_zero_finding_rules_and_reports_missing_telemetry_as_unavailable() {
     var current = new SourceOnlyComparison.Run("current", true, 12, List.of("src/Example.java"), List.of(),
-      Map.of("java.analysis.main.success.type_error_count", "390"), null);
+      Map.of("java.analysis.main.success.type_error_count", "390"), semantics(10, 3), null);
     var comparison = SourceOnlyComparison.compare(current, run(List.of()), false, List.of("java:S1116", "java:S1206"));
     String report = SourceOnlyComparison.markdown(comparison);
-    assertThat(report).contains("| Rules compared | 2 |", "2 rules had no findings", "| Undefined-type errors | 390 | N/A |");
-    assertThat(report).doesNotContain("| java:S1116 |", "| java:S1206 |", "diff.json", "current.log");
+    assertThat(report)
+      .contains("| Rules compared | 2 |", "2 rules had no findings", "| Undefined-type errors | 390 | N/A |")
+      .doesNotContain("| java:S1116 |", "| java:S1206 |", "diff.json", "current.log");
+  }
+
+  @Test
+  void compares_semantics_globally_and_per_file() {
+    var current = new SourceOnlyComparison.Run("current", true, 12, List.of("src/Example.java"), List.of(), Map.of(), semantics(10, 4), null);
+    var candidate = new SourceOnlyComparison.Run("candidate", true, 12, List.of("src/Example.java"), List.of(), Map.of(), semantics(10, 1), null);
+    String report = SourceOnlyComparison.markdown(SourceOnlyComparison.compare(current, candidate, false, List.of()));
+
+    assertThat(report).contains("| Identifiers (total) | 10 | 10 |", "| Known identifiers | 6 | 9 |", "| Unknown identifiers | 4 | 1 |",
+      "| Unknown identifiers (%) | 40.000% | 10.000% |", "| Change in unknown identifiers (percentage points) | -30.000 |",
+      "| src/Example.java | 10 / 10 | 6 / 9 | 4 / 1 | 40.000% / 10.000% | -30.000 |");
+    assertThat(report.indexOf("## Semantics per file")).isLessThan(report.indexOf("## Rules with findings"));
+  }
+
+  @Test
+  void missing_semantics_invalidates_comparison_and_empty_semantics_has_no_percentage() {
+    var missing = new SourceOnlyComparison.Run("candidate", true, 12, List.of("src/Example.java"), List.of(), Map.of(), null, null);
+    assertThat(SourceOnlyComparison.compare(run(List.of()), missing, false, List.of()).valid()).isFalse();
+
+    var empty = new SourceOnlyComparison.Run("scan", true, 12, List.of("src/Example.java"), List.of(), Map.of(), semantics(0, 0), null);
+    String report = SourceOnlyComparison.markdown(SourceOnlyComparison.compare(empty, empty, true, List.of()));
+    assertThat(report).contains("| Known identifiers | 0 | 0 |", "| Unknown identifiers (%) | N/A | N/A |",
+      "| Change in unknown identifiers (percentage points) | N/A |");
+  }
+
+  @Test
+  void semantic_report_paths_are_distinct_and_default_to_temporary_project(@TempDir Path directory) {
+    String key = "sonar.java.internal.semantic.report";
+    String previous = System.getProperty(key);
+    try {
+      System.setProperty(key, directory.resolve("report.json").toString());
+      assertThat(NoCompilationComparisonTest.semanticReportPath(directory, "current")).isEqualTo(directory.resolve("report-current.json"));
+      assertThat(NoCompilationComparisonTest.semanticReportPath(directory, "candidate")).isEqualTo(directory.resolve("report-candidate.json"));
+      assertThat(NoCompilationComparisonTest.semanticReportPath(directory, "smoke")).isEqualTo(directory.resolve("semantic-report.json"));
+      System.clearProperty(key);
+      assertThat(NoCompilationComparisonTest.semanticReportPath(directory, "current")).isEqualTo(directory.resolve("semantic-report.json"));
+    } finally {
+      if (previous == null) {
+        System.clearProperty(key);
+      } else {
+        System.setProperty(key, previous);
+      }
+    }
   }
 
   private static SourceOnlyComparison.Finding finding(String rule, String path, Integer line, String message) {
@@ -126,6 +170,11 @@ class SourceOnlyComparisonTest {
   }
 
   private static SourceOnlyComparison.Run run(List<SourceOnlyComparison.Finding> findings) {
-    return new SourceOnlyComparison.Run("scan", true, 12, List.of("src/Example.java"), findings, Map.of(), null);
+    return new SourceOnlyComparison.Run("scan", true, 12, List.of("src/Example.java"), findings, Map.of(), semantics(10, 3), null);
+  }
+
+  private static SemanticReport semantics(int total, int unknown) {
+    var counts = new SemanticReport.Counts(total, unknown);
+    return new SemanticReport(counts, Map.of("src/Example.java", counts));
   }
 }
