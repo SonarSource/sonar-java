@@ -41,7 +41,14 @@ Each scan uses its own temporary directory containing copies of only the
 production `.java` files. The original checkout and its build outputs are never
 used as an analysis classpath or modified.
 
-Results are written under `its/scanner-integration-tests/target/no-compilation-comparison/`:
+Results are stored beside the test in
+`its/scanner-integration-tests/src/test/java/org/sonar/java/it/results/`.
+Each invocation creates the next numbered directory: `run-001`, `run-002`, etc.
+Previous results are preserved, including across Maven clean builds. Maven and
+IntelliJ use the same location, and the selected directory is printed when the
+class starts. Generated run directories are ignored by Git.
+
+Each run directory contains:
 
 - `report.md`: scan times, status, telemetry, and counts and retention per rule.
 - `diff.json`: both runs, full issue details, and current-only/candidate-only findings.
