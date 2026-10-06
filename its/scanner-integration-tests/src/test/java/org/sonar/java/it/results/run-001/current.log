@@ -1,0 +1,80 @@
+Scanner properties: {sonar.internal.analysis.autoscan=false, sonar.internal.analysis.autoscan.filtering=false, sonar.java.jdkHome=/Users/matthew.elliott/Library/Java/JavaVirtualMachines/ms-21.0.10/Contents/Home, sonar.java.skipUnchanged=false, sonar.java.source=21, sonar.sources=sonar-xml-plugin/src/main/java}
+[INFO] Starting SonarScanner Engine...
+[INFO] Java 21.0.10 Microsoft (64-bit)
+[INFO] Load global settings
+[INFO] Load global settings (done) | time=4ms
+[INFO] Loading required plugins
+[INFO] Load plugins index
+[INFO] Load plugins index (done) | time=2ms
+[INFO] Load/download plugins
+[INFO] Load/download plugins (done) | time=0ms
+[INFO] Load project settings for component key: 'source-only-comparison'
+[INFO] Load project settings for component key: 'source-only-comparison' (done) | time=2ms
+[INFO] Process project properties
+[INFO] Process project properties (done) | time=0ms
+[INFO] Project key: source-only-comparison
+[INFO] Base dir: /var/folders/q0/kmr6_fp118n0633zlbj5ydtw0000gq/T/junit-6982734633134960012/current
+[INFO] Working dir: /var/folders/q0/kmr6_fp118n0633zlbj5ydtw0000gq/T/scanITWorkDir657846207855194753
+[INFO] Load quality profiles
+[INFO] Load quality profiles (done) | time=9ms
+[WARN] SCM provider autodetection failed. Please use "sonar.scm.provider" to define SCM of your project, or disable the SCM Sensor in the project settings.
+[INFO] Load active rules
+[INFO] Load active rules (done) | time=31ms
+[INFO] Load analysis cache
+[INFO] Load analysis cache (404) | time=4ms
+[INFO] Preprocessing files...
+[INFO] 1 language detected in 69 preprocessed files (done) | time=4975ms
+[INFO] Loading plugins for detected languages
+[INFO] Load/download plugins
+[INFO] Load/download plugins (done) | time=2ms
+[INFO] Load project repositories
+[INFO] Load project repositories (done) | time=4ms
+[INFO] Indexing files...
+[INFO] Project configuration:
+[INFO] 69 files indexed (done) | time=7ms
+[WARN] No Quality profile found for language java
+[INFO] ------------- Run sensors on module source-only-comparison
+[INFO] Load metrics repository
+[INFO] Load metrics repository (done) | time=3ms
+[INFO] Sensor JavaSensor [java]
+[INFO] Configured Java source version (sonar.java.source): 21, preview features enabled (sonar.java.enablePreview): false
+[INFO] Server-side caching is enabled. The Java analyzer will not try to leverage data from a previous analysis.
+[INFO] Using ECJ batch to parse 69 Main java source files with batch size 500 KB.
+[INFO] Starting batch processing.
+[INFO] The Java analyzer cannot skip unchanged files in this context. A full analysis is performed for all files.
+[INFO] 100% analyzed
+[INFO] Batch processing: Done.
+[INFO] Did not optimize analysis for any files, performed a full analysis for all 69 files.
+[WARN] Missing 'sonar.java.binaries' and 'sonar.java.libraries' properties. You might end up with less precise analysis results.
+[WARN] Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.
+[WARN] Use of preview features have been detected during analysis. Enable DEBUG mode to see them.
+[INFO] No "Test" source files to scan.
+[INFO] No "Generated" source files to scan.
+[INFO] Sensor JavaSensor [java] (done) | time=2057ms
+[INFO] Sensor SurefireSensor [java]
+[INFO] parsing [/var/folders/q0/kmr6_fp118n0633zlbj5ydtw0000gq/T/junit-6982734633134960012/current/target/surefire-reports]
+[INFO] Sensor SurefireSensor [java] (done) | time=0ms
+[INFO] ------------- Run sensors on project
+[INFO] Sensor Java SpringContextModelSensor [java]
+[INFO] Sensor Java SpringContextModelSensor [java] (done) | time=0ms
+[INFO] Sensor Zero Coverage Sensor
+[INFO] Sensor Zero Coverage Sensor (done) | time=23ms
+[INFO] Sensor Java CPD Block Indexer
+[INFO] Sensor Java CPD Block Indexer (done) | time=39ms
+[INFO] Sensor JavaProjectSensor [java]
+[INFO] Sensor JavaProjectSensor [java] (done) | time=1ms
+[INFO] ------------- Gather SCA dependencies on project
+[INFO] Dependency analysis skipped
+[INFO] SCM Publisher No SCM system was detected. You can use the 'sonar.scm.provider' property to explicitly specify it.
+[INFO] CPD Executor 28 files had no CPD blocks
+[INFO] CPD Executor Calculating CPD for 41 files
+[INFO] CPD Executor CPD calculation finished (done) | time=12ms
+[INFO] Analysis report generated in 45ms, dir size=350.1 kB
+[INFO] Analysis report compressed in 169ms, zip size=205.7 kB
+[INFO] Analysis report generated in /var/folders/q0/kmr6_fp118n0633zlbj5ydtw0000gq/T/scanITWorkDir657846207855194753/scanner-report
+[INFO] Analysis report uploaded in 15ms
+[INFO] ANALYSIS SUCCESSFUL, you can find the results at: http://localhost:51936/dashboard?id=source-only-comparison
+[INFO] Note that you will be able to access the updated dashboard once the server has processed the submitted analysis report
+[INFO] More about the report processing at http://localhost:51936/api/ce/task?id=
+[INFO] Analysis total time: 8.161 s
+[INFO] SonarScanner Engine completed successfully
