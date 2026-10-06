@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 @ScannerSide
@@ -48,13 +49,31 @@ public class SemanticReportScanner implements JavaFileScanner {
     context.getTree().accept(new BaseTreeVisitor() {
       @Override
       public void visitIdentifier(IdentifierTree tree) {
-        if (!tree.isUnnamedVariable()) {
+        if (isIdentifierExpectSymbol(tree)) {
           counts.total++;
           if (tree.symbol().isUnknown()) {
             counts.unknownIdentifiers.add(new UnknownIdentifier(tree.name(), tree.firstToken().range().toString(), tree.parent().kind().toString()));
           }
         }
         super.visitIdentifier(tree);
+      }
+
+      private static boolean isIdentifierExpectSymbol(IdentifierTree tree) {
+        String name = tree.name();
+        if (name.equals("new")) {
+          return false;
+        }
+        if (name.equals("class")) {
+          return false;
+        }
+        if (tree.isUnnamedVariable()) {
+          return false;
+        }
+        return true;
+      }
+
+      @Override
+      public void visitImport(ImportTree tree) {
       }
     });
     files.put(normalizePath(Path.of(context.getInputFile().uri())), counts);

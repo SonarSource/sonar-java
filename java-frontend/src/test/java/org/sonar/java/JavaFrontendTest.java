@@ -280,6 +280,27 @@ class JavaFrontendTest {
   }
 
   @Test
+  void semantic_report_excludes_identifiers_without_symbol_information() throws IOException {
+    Path report = temp.resolve("semantic-report.json");
+    MapSettings settings = new MapSettings();
+    settings.setProperty(SonarComponents.SONAR_SEMANTIC_REPORT, report.toString());
+    sensorContext = SensorContextTester.create(temp.toFile().getAbsoluteFile());
+    sensorContext.setSettings(settings);
+
+    scan(settings, SONARQUBE_RUNTIME, List.of(
+      addFile(temp, "class A { Class<?> literal = String.class; }", sensorContext),
+      addFile(temp, "class B { java.util.function.IntFunction<String[]> factory = String[]::new; }", sensorContext),
+      addFile(temp, "import java.util.List; class C {}", sensorContext)));
+    semanticReportScanner.writeReport(report, temp);
+
+    var files = JsonParser.parseString(Files.readString(report)).getAsJsonObject().getAsJsonArray("files");
+    assertThat(files.get(0).getAsJsonObject().get("numberOfIdentifier").getAsInt()).isEqualTo(4);
+    assertThat(files.get(1).getAsJsonObject().get("numberOfIdentifier").getAsInt()).isEqualTo(8);
+    assertThat(files.get(2).getAsJsonObject().get("numberOfIdentifier").getAsInt()).isEqualTo(1);
+    assertThat(files.get(2).getAsJsonObject().getAsJsonArray("unknownIdentifiers")).isEmpty();
+  }
+
+  @Test
   void semantic_report_uses_file_uri_for_project_relative_path() throws IOException {
     Path file = Files.createFile(temp.resolve("A.java"));
     Path report = temp.resolve("semantic-report.json");
