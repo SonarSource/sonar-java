@@ -53,14 +53,14 @@ public class SemanticReportScanner implements JavaFileScanner {
         super.visitIdentifier(tree);
       }
     });
-    files.put(Path.of(context.getInputFile().uri()).toAbsolutePath().normalize(), counts);
+    files.put(normalizePath(Path.of(context.getInputFile().uri())), counts);
   }
 
   public void writeReport(Path reportPath, Path projectRoot) {
+    Path normalizedProjectRoot = normalizePath(projectRoot);
     int total = files.values().stream().mapToInt(counts -> counts.total).sum();
     int unknown = files.values().stream().mapToInt(counts -> counts.unknown).sum();
     try (JsonWriter writer = new JsonWriter(Files.newBufferedWriter(reportPath, StandardCharsets.UTF_8))) {
-      Path normalizedProjectRoot = projectRoot.toRealPath(LinkOption.NOFOLLOW_LINKS);
       writer.setIndent("  ");
       writer.beginObject();
       writer.name("totalNumberOfIdentifier").value(total);
@@ -80,6 +80,14 @@ public class SemanticReportScanner implements JavaFileScanner {
       writer.endObject();
     } catch (IOException e) {
       throw new UncheckedIOException("Failed to write semantic report to " + reportPath, e);
+    }
+  }
+
+  private static Path normalizePath(Path path) {
+    try {
+      return path.toRealPath(LinkOption.NOFOLLOW_LINKS);
+    } catch (IOException e) {
+      return path.toAbsolutePath().normalize();
     }
   }
 
