@@ -140,8 +140,12 @@ class ComparisonSettingsTest {
 
   @Test
   void exact_scanner_flag_selects_parser_scenarios_without_changing_feature_modes() throws IOException {
-    Path library = Files.writeString(directory.resolve("external.jar"), "external");
-    var datasets = AnalysisDataset.sonarXml(List.of(library));
+    Path library = directory.resolve("external.jar");
+    try (var output = new java.util.jar.JarOutputStream(Files.newOutputStream(library))) {
+      output.finish();
+    }
+    var scope = new RepositoryScope("project", List.of(new RepositoryScope.Module("module", "module", List.of())));
+    var datasets = AnalysisDataset.forProject(scope, List.of(library));
     assertThat(ComparisonSettings.load(new Properties()).selectDatasets(datasets)).hasSize(4);
     for (String value : List.of("true", "false")) {
       var selected = ComparisonSettings.load(property("sonar.java.fileByFile", value)).selectDatasets(datasets);

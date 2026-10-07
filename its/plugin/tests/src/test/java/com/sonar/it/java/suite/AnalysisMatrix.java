@@ -185,6 +185,10 @@ final class AnalysisMatrix {
     appendRow(report, "Median Maven/server time (ms)", mode -> median(samples.get(mode).stream().map(run -> (double) run.scanMillis()).toList()));
     appendRow(report, "Median JavaSensor time, including compilation (ms)", mode -> telemetryMedian(samples.get(mode), "comparison.analyzer.time_ms"));
     appendRow(report, "Compilation outcome", mode -> distinct(samples.get(mode), run -> telemetry(run, "comparison.compilation.status", "UNAVAILABLE")));
+    appendRow(report, "Main compilation modules (success / failed / skipped, including empty aggregators)", mode -> mode.compilation()
+      ? List.of("success", "failed", "skipped").stream()
+        .map(outcome -> telemetry(runs.get(mode), "comparison.compilation.main." + outcome, "N/A"))
+        .collect(Collectors.joining(" / ")) : "DISABLED");
     appendRow(report, "Median internal compilation time (ms)", mode -> telemetryMedian(samples.get(mode), "comparison.compilation.time_ms"));
     appendRow(report, "Compilation source files", mode -> telemetry(runs.get(mode), "comparison.compilation.sources", "N/A"));
     appendRow(report, "Generated class files before cleanup", mode -> telemetry(runs.get(mode), "comparison.compilation.classes", "N/A"));
@@ -235,8 +239,8 @@ final class AnalysisMatrix {
 
   private static void appendPairSummary(StringBuilder report, Map<AnalysisMode, SourceOnlyComparison.Run> runs,
                                         List<String> activeRules, String stabilityError) {
-    report.append("\n### Feature comparisons\n\nChanges are the first named mode minus the second.\n\n")
-      .append("| Comparison | Status | Unknown count change | Unknown % change (pp) | Files improved / unchanged / regressed | Shared findings | Second mode only | First mode only | Retention |\n")
+    report.append("\n### Feature comparisons\n\nThe mode after 'versus' is the reference. Changes subtract its counts from the compared mode's counts.\n\n")
+      .append("| Comparison | Status | Unknown count change | Unknown % change (pp) | Files improved / unchanged / regressed | Shared findings | Reference only | Compared only | Retention |\n")
       .append("|---|---|---:|---:|---:|---:|---:|---:|---:|\n");
     for (Pair pair : PAIRS) {
       var comparison = compare(pair, runs, activeRules, stabilityError);
@@ -416,8 +420,8 @@ final class AnalysisMatrix {
       if (!comparison.valid()) {
         report.append("Comparison unavailable: ").append(escape(comparison.error())).append("\n\n");
       } else {
-        appendRankedChanges(report, comparison.current().semantics(), comparison.candidate().semantics(), true);
-        appendRankedChanges(report, comparison.current().semantics(), comparison.candidate().semantics(), false);
+        appendRankedChanges(report, comparison.current().semantics(), comparison.candidate().semantics(), pair, true);
+        appendRankedChanges(report, comparison.current().semantics(), comparison.candidate().semantics(), pair, false);
         appendUnknownDifferences(report, comparison.current().semantics(), comparison.candidate().semantics());
         if (graphStable && completeGraphModes.contains(pair.current()) && completeGraphModes.contains(pair.candidate())) {
           appendGraphDifferences(report, comparison.current().semantics(), comparison.candidate().semantics());
@@ -476,7 +480,7 @@ final class AnalysisMatrix {
     report.append('\n');
   }
 
-  private static void appendRankedChanges(StringBuilder report, SemanticReport current, SemanticReport candidate, boolean improvements) {
+  private static void appendRankedChanges(StringBuilder report, SemanticReport current, SemanticReport candidate, Pair pair, boolean improvements) {
     report.append("### Largest semantic ").append(improvements ? "improvements" : "regressions")
       .append("\n\nTop five by absolute change in unknown percentage.\n\n");
     if (!SourceOnlyComparison.fileObservationsAvailable(current, candidate)) {
@@ -493,7 +497,8 @@ final class AnalysisMatrix {
       report.append("None.\n\n");
       return;
     }
-    report.append("| File | Second mode unknown % | First mode unknown % | Change (pp) |\n|---|---:|---:|---:|\n");
+    report.append("| File | ").append(pair.current().label()).append(" unknown % | ").append(pair.candidate().label())
+      .append(" unknown % | Change (pp) |\n|---|---:|---:|---:|\n");
     for (String path : paths) {
       Double before = current.files().get(path).unknownPercentage();
       Double after = candidate.files().get(path).unknownPercentage();

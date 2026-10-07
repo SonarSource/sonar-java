@@ -16,7 +16,6 @@
  */
 package com.sonar.it.java.suite;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,15 +39,16 @@ class AnalysisDatasetTest {
 
   @Test
   void covers_batching_and_classpath_independently_with_the_same_analyzed_scope() throws IOException {
-    Path library = Files.writeString(directory.resolve("external.jar"), "external");
-    var datasets = AnalysisDataset.sonarXml(List.of(library));
+    Path library = libraryJar(directory.resolve("external.jar"), "external", "library");
+    var scope = RepositoryScope.discover(sampleRepository());
+    var datasets = AnalysisDataset.forProject(scope, List.of(library));
     assertThat(datasets).hasSize(4);
     assertThat(datasets.stream().map(AnalysisDataset::id)).doesNotHaveDuplicates();
     assertThat(datasets).allSatisfy(dataset -> {
-      assertThat(dataset.sourceRoot()).isEqualTo("sonar-xml-plugin/src/main/java");
+      assertThat(dataset.sourceRoot()).isEqualTo(String.join(",", scope.sourceRoots()));
       assertThat(dataset.sharedProperties()).containsOnlyKeys("sonar.java.fileByFile", "sonar.java.experimental.batchModeSizeInKB")
         .containsEntry("sonar.java.experimental.batchModeSizeInKB", "500");
-      if (dataset.expectCompilationSuccess()) {
+      if (dataset.id().endsWith("-dependencies")) {
         assertThat(dataset.libraries()).containsExactly(library);
       } else {
         assertThat(dataset.libraries()).isEmpty();
@@ -56,7 +56,7 @@ class AnalysisDatasetTest {
     });
     assertThat(datasets.stream().map(dataset -> dataset.sharedProperties().get("sonar.java.fileByFile")))
       .containsExactly("false", "true", "false", "true");
-    assertThatThrownBy(() -> AnalysisDataset.sonarXml(List.of())).isInstanceOf(IllegalArgumentException.class)
+    assertThatThrownBy(() -> AnalysisDataset.forProject(scope, List.of())).isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("compile-scope dependency JARs");
   }
 
@@ -75,37 +75,10 @@ class AnalysisDatasetTest {
   }
 
   @Test
-  void copies_only_poms_and_preserves_parent_layout_without_copying_project_bytecode() throws IOException {
-    Path checkout = directory.resolve("checkout");
-    Files.createDirectories(checkout.resolve("sonar-xml-plugin/target/classes"));
-    Files.writeString(checkout.resolve("pom.xml"), "parent-pom");
-    Files.writeString(checkout.resolve("sonar-xml-plugin/pom.xml"), "module-pom");
-    Files.writeString(checkout.resolve("sonar-xml-plugin/target/classes/Existing.class"), "old-bytecode");
-    Path workspace = directory.resolve("resolution");
-    Path copiedPom = AnalysisDataset.copyDependencyPoms(checkout, workspace);
-    assertThat(Files.readString(copiedPom)).isEqualTo("module-pom");
-    assertThat(Files.readString(copiedPom.getParent().getParent().resolve("pom.xml"))).isEqualTo("parent-pom");
-    assertThat(copiedPom.getParent().resolve("target")).doesNotExist();
-    assertThat(checkout.resolve("sonar-xml-plugin/target/classes/Existing.class")).isRegularFile();
-    assertThatThrownBy(() -> AnalysisDataset.copyDependencyPoms(checkout, checkout.resolve("target/resolution")))
-      .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("outside the target checkout");
-  }
-
-  @Test
-  void reads_the_resolved_classpath_without_changing_dependency_precedence() throws IOException {
-    Path first = Files.writeString(directory.resolve("first.jar"), "first");
-    Path second = Files.writeString(directory.resolve("second.jar"), "second");
-    Path output = Files.writeString(directory.resolve("classpath.txt"), second + File.pathSeparator + first + "\n");
-    assertThat(AnalysisDataset.readClasspath(output)).containsExactly(second, first);
-    Files.writeString(output, "\n");
-    assertThatThrownBy(() -> AnalysisDataset.readClasspath(output)).isInstanceOf(IOException.class).hasMessageContaining("empty classpath");
-  }
-
-  @Test
   void rejects_missing_paths_class_directories_duplicate_jars_and_the_target_artifact() throws IOException {
     Path library = Files.writeString(directory.resolve("external.jar"), "external");
     Path classDirectory = Files.createDirectory(directory.resolve("classes"));
-    Path targetArtifact = Files.writeString(directory.resolve("sonar-xml-plugin-2.20.jar"), "project-bytecode");
+    Path targetArtifact = cachedProjectArtifact();
     for (Path invalid : List.of(directory.resolve("missing.jar"), classDirectory)) {
       assertThatThrownBy(() -> AnalysisDataset.validateLibraries(List.of(invalid))).isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("existing external dependency JARs");
@@ -139,7 +112,7 @@ class AnalysisDatasetTest {
   @Test
   void rejects_target_bytecode_before_creating_a_frozen_classpath() throws IOException {
     Path external = Files.writeString(directory.resolve("external-1.0.jar"), "external");
-    Path target = Files.writeString(directory.resolve("sonar-xml-plugin-2.20.jar"), "target bytecode");
+    Path target = cachedProjectArtifact();
     Path frozen = directory.resolve("frozen");
 
     assertThatThrownBy(() -> AnalysisDataset.freezeLibraries(List.of(external, target), frozen))
@@ -174,6 +147,7 @@ class AnalysisDatasetTest {
     assertThat(copy.resolve("engine/pom.xml")).isRegularFile();
     assertThat(copy.resolve("engine/src/main/java")).doesNotExist();
     assertThat(copy.resolve("engine/target")).doesNotExist();
+    assertThat(checkout.resolve("engine/target/classes/Existing.class")).isRegularFile();
     assertThatThrownBy(() -> RepositoryScope.copyReactorPoms(checkout, checkout.resolve("target/copy")))
       .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("outside the target checkout");
   }
@@ -224,6 +198,12 @@ class AnalysisDatasetTest {
     assertThat(datasets.getLast().libraries()).containsExactly(library);
   }
 
+  private Path cachedProjectArtifact() throws IOException {
+    Path artifact = directory.resolve("org/sonarsource/java/java-frontend/8.45/java-frontend-8.45.jar");
+    Files.createDirectories(artifact.getParent());
+    return Files.writeString(artifact, "compiled-project-bytecode");
+  }
+
   private Path sampleRepository() throws IOException {
     Path checkout = directory.resolve("repository");
     Files.createDirectories(checkout);
@@ -239,6 +219,8 @@ class AnalysisDatasetTest {
     repositoryModule(checkout, "docs", "docs", "Example.java");
     repositoryModule(checkout, "its", "its", "Fixture.java");
     Files.writeString(checkout.resolve("java-checks-test-sources/pom.xml"), "<project><artifactId>java-checks-test-sources</artifactId></project>");
+    Files.createDirectories(checkout.resolve("engine/target/classes"));
+    Files.writeString(checkout.resolve("engine/target/classes/Existing.class"), "existing-bytecode");
     Files.createDirectories(checkout.resolve("engine/target/generated-sources/p"));
     Files.writeString(checkout.resolve("engine/target/generated-sources/p/Generated.java"), "class Generated {}");
     return checkout;

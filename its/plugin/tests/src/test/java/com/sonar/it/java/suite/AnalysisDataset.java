@@ -38,23 +38,16 @@ import java.util.regex.Pattern;
 record AnalysisDataset(String id, String label, String description, String sourceRoot,
                        Map<String, String> sharedProperties, List<Path> libraries, boolean expectCompilationSuccess) {
 
-  private static final String SOURCE_ROOT = "sonar-xml-plugin/src/main/java";
-  private static final String MODULE = "sonar-xml-plugin";
-
   AnalysisDataset {
     sharedProperties = Map.copyOf(sharedProperties);
     libraries = validateLibraries(libraries);
   }
 
-  static List<AnalysisDataset> sonarXml(List<Path> libraries) {
-    return datasets("sonar-xml", List.of(SOURCE_ROOT), libraries, true);
-  }
-
   static List<AnalysisDataset> forProject(RepositoryScope scope, List<Path> libraries) throws IOException {
-    return datasets(scope.name(), scope.sourceRoots(), externalLibraries(libraries, scope.projectArtifactIds()), false);
+    return datasets(scope.name(), scope.sourceRoots(), externalLibraries(libraries, scope.projectArtifactIds()));
   }
 
-  private static List<AnalysisDataset> datasets(String name, List<String> sourceRoots, List<Path> libraries, boolean compilationSuccess) {
+  private static List<AnalysisDataset> datasets(String name, List<String> sourceRoots, List<Path> libraries) {
     if (libraries.isEmpty()) {
       throw new IllegalArgumentException("The full-classpath datasets require the project's compile-scope dependency JARs");
     }
@@ -68,7 +61,7 @@ record AnalysisDataset(String id, String label, String description, String sourc
         datasets.add(new AnalysisDataset(name + "-" + batching + "-" + classpath,
           name + " / " + batching + " / " + classpath, description + "; native Maven module scope", String.join(",", sourceRoots),
           Map.of("sonar.java.fileByFile", Boolean.toString(fileByFile), "sonar.java.experimental.batchModeSizeInKB", "500"),
-          dependencies ? libraries : List.of(), dependencies && compilationSuccess));
+          dependencies ? libraries : List.of(), false));
       }
     }
     return List.copyOf(datasets);
@@ -99,7 +92,7 @@ record AnalysisDataset(String id, String label, String description, String sourc
     var excluded = new LinkedHashSet<Path>();
     for (String module : scope.modulePaths()) {
       Path output = workspace.resolve(module).resolve("compile-classpath.txt");
-      List<Path> resolved = readResolvedClasspath(output, true);
+      List<Path> resolved = readResolvedClasspath(output);
       List<Path> external = externalLibraries(resolved, scope.projectArtifactIds());
       modules.put(module, external);
       union.addAll(external);
@@ -107,17 +100,6 @@ record AnalysisDataset(String id, String label, String description, String sourc
     }
     Files.write(workspace.resolve("excluded-project-artifacts.txt"), excluded.stream().map(Path::toString).toList());
     return new LibraryResolution(modules, List.copyOf(union));
-  }
-
-  static List<Path> resolveLibraries(Path checkout, Path workspace, String mavenBinary) throws IOException {
-    Path pom = copyDependencyPoms(checkout, workspace);
-    Path output = workspace.resolve("compile-classpath.txt").toAbsolutePath();
-    Path log = workspace.resolve("dependency-resolution.log").toAbsolutePath();
-    var process = new ProcessBuilder(mavenBinary, "-B", "-ntp", "-f", pom.toString(),
-      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath", "-DincludeScope=compile", "-Dmdep.outputFile=" + output)
-      .directory(workspace.toFile()).redirectErrorStream(true).redirectOutput(log.toFile()).start();
-    waitForResolution(process, log);
-    return readClasspath(output);
   }
 
   private static void waitForResolution(Process process, Path log) throws IOException {
@@ -136,33 +118,10 @@ record AnalysisDataset(String id, String label, String description, String sourc
     }
   }
 
-  static Path copyDependencyPoms(Path checkout, Path workspace) throws IOException {
-    if (workspace.toAbsolutePath().normalize().startsWith(checkout.toAbsolutePath().normalize())) {
-      throw new IllegalArgumentException("Dependency resolution must use a copy outside the target checkout");
-    }
-    Path module = workspace.resolve(MODULE);
-    Files.createDirectories(module);
-    Files.copy(checkout.resolve("pom.xml"), workspace.resolve("pom.xml"));
-    Path pom = module.resolve("pom.xml");
-    Files.copy(checkout.resolve(MODULE).resolve("pom.xml"), pom);
-    return pom.toAbsolutePath();
-  }
-
-  static List<Path> readClasspath(Path output) throws IOException {
-    return validateLibraries(readResolvedClasspath(output));
-  }
-
   private static List<Path> readResolvedClasspath(Path output) throws IOException {
-    return readResolvedClasspath(output, false);
-  }
-
-  private static List<Path> readResolvedClasspath(Path output, boolean allowEmpty) throws IOException {
     String value = Files.readString(output, StandardCharsets.UTF_8).strip();
     if (value.isEmpty()) {
-      if (allowEmpty) {
-        return List.of();
-      }
-      throw new IOException("Compile-scope dependency resolution produced an empty classpath: " + output);
+      return List.of();
     }
     return Pattern.compile(Pattern.quote(File.pathSeparator)).splitAsStream(value).map(Path::of).map(path -> path.toAbsolutePath().normalize()).toList();
   }
@@ -179,8 +138,7 @@ record AnalysisDataset(String id, String label, String description, String sourc
   }
 
   private static boolean isProjectLibrary(Path library, Set<String> projectArtifactIds) throws IOException {
-    String path = library.toString().replace('\\', '/');
-    if (path.contains("/org/sonarsource/java/") && !path.contains("/org/sonarsource/java/jdt-package/")) {
+    if (projectRepositoryArtifact(library)) {
       return true;
     }
     String basename = library.getFileName().toString();
@@ -206,6 +164,11 @@ record AnalysisDataset(String id, String label, String description, String sourc
     return false;
   }
 
+  private static boolean projectRepositoryArtifact(Path library) {
+    String path = library.toString().replace('\\', '/');
+    return path.contains("/org/sonarsource/java/") && !path.contains("/org/sonarsource/java/jdt-package/");
+  }
+
   static List<Path> validateLibraries(List<Path> libraries) {
     var paths = new ArrayList<Path>();
     var unique = new HashSet<Path>();
@@ -214,7 +177,7 @@ record AnalysisDataset(String id, String label, String description, String sourc
       if (!Files.isRegularFile(path) || !path.getFileName().toString().endsWith(".jar")) {
         throw new IllegalArgumentException("Only existing external dependency JARs may be supplied: " + path);
       }
-      if (path.getFileName().toString().startsWith("sonar-xml-plugin-")) {
+      if (projectRepositoryArtifact(path)) {
         throw new IllegalArgumentException("The target project's compiled artifact must not be supplied: " + path);
       }
       if (!unique.add(path)) {

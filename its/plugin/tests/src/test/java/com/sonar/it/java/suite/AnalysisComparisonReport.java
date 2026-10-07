@@ -163,6 +163,7 @@ final class AnalysisComparisonReport {
     report.append("\n## Benefit and cost by configuration\n\nChanges are relative to the same dataset's baseline. Timings summarize measured scans only; the min/median/max shows observed dispersion. ")
       .append(graphObservationNote(datasets))
       .append(" Full AST identifier/per-file observation and evaluation measurement hooks are included in these timings, so they are not raw production performance.\n\n")
+      .append("Internal compilation runs and cleans up per Maven module. Its compiler does not receive other modules' source roots or temporary outputs; source-path resolution receives all configured roots. FAILED with external libraries can therefore expose cross-module dependencies or missing generated sources, while partial classes remain usable for that module's analysis.\n\n")
       .append("| Dataset | Mode | Scan | Comparison | Unknown Δ | Product findings | JavaSensor min / median / max (ms) | JavaSensor median Δ (ms) | Compilation | Compilation median (ms) | Generated classes | Cleanup |\n")
       .append("|---|---|---|---|---:|---:|---:|---:|---|---:|---:|---|\n");
     for (DatasetResult result : datasets) {
@@ -238,7 +239,7 @@ final class AnalysisComparisonReport {
 
   private static void appendGraphs(StringBuilder report, List<DatasetResult> datasets) {
     report.append("\n## Semantic graph diagnostics\n\nUnique symbol/type references reached during bounded traversal, which can expand as names resolve. Cells show the observed count or min–max range across measured repetitions. These are counts, not resolution-coverage percentages.\n\n")
-      .append("Recursive graph inspection is disabled by default for feature timing. Optional budgeted diagnostics can still be expensive. The initial unrestricted observer stalled for over seven minutes on a two-file smoke scan; that aborted scan is excluded from results. Identifier counts, per-file coverage, and product findings still cover the full analyzed AST.\n\n")
+      .append("Recursive graph inspection is disabled by default for feature timing. Optional budgeted diagnostics contribute their own overhead. An earlier reporter revision stalled on a two-file smoke scan; the target branch now fixes that recursive generic traversal, and the aborted scan is excluded. Identifier counts, per-file coverage, and product findings still cover the full analyzed AST.\n\n")
       .append("**DISABLED** means a zero expansion limit; graph counts are N/A rather than zero. **COMPLETE** means all measured traversals finished. **PARTIAL** means at least one hit the budget. **UNKNOWN** means completeness was not recorded. Location-change interpretations require complete, stable graph observations. Dataset matrices show representative graph counts.\n\n")
       .append("| Dataset | Mode | Traversal | Expansion limit / module | Expansions executed | Resolved symbols | Unknown symbols | Resolved types | Unknown types |\n")
       .append("|---|---|---|---:|---:|---:|---:|---:|---:|\n");
