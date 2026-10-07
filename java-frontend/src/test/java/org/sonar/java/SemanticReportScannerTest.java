@@ -95,6 +95,56 @@ class SemanticReportScannerTest {
     scanner.leaveModule();
   }
 
+  @Test
+  void follows_types_methods_and_annotations_referenced_by_members() throws IOException {
+    Symbol.TypeSymbol target = typeSymbol("library.Target", "library", "Target");
+    Type.ArrayType arrayType = mock(Type.ArrayType.class);
+    when(arrayType.fullyQualifiedName()).thenReturn("library.Target[]");
+    when(arrayType.isArray()).thenReturn(true);
+    when(arrayType.symbol()).thenReturn(target);
+    when(arrayType.erasure()).thenReturn(arrayType);
+    when(arrayType.typeArguments()).thenReturn(List.of(Type.UNKNOWN));
+    when(arrayType.elementType()).thenReturn(Type.UNKNOWN);
+    when(target.superClass()).thenReturn(arrayType);
+    when(target.interfaces()).thenReturn(List.of(arrayType));
+    when(target.superTypes()).thenReturn(java.util.Set.of(arrayType));
+
+    Symbol.MethodSymbol method = mock(Symbol.MethodSymbol.class);
+    SymbolMetadata metadata = mock(SymbolMetadata.class);
+    SymbolMetadata.AnnotationInstance annotation = mock(SymbolMetadata.AnnotationInstance.class);
+    when(method.name()).thenReturn("call");
+    when(method.signature()).thenReturn("call()");
+    when(method.isPublic()).thenReturn(true);
+    when(method.owner()).thenReturn(target);
+    when(method.enclosingClass()).thenReturn(target);
+    when(method.type()).thenReturn(arrayType);
+    when(method.parameterTypes()).thenReturn(List.of(arrayType));
+    Symbol parameter = member(target, "parameter", 0);
+    when(method.declarationParameters()).thenReturn(List.of(parameter));
+    when(method.returnType()).thenReturn(target);
+    when(method.thrownTypes()).thenReturn(List.of(Type.UNKNOWN));
+    when(method.overriddenSymbols()).thenReturn(List.of(Symbol.MethodSymbol.UNKNOWN_METHOD));
+    when(method.metadata()).thenReturn(metadata);
+    when(metadata.symbolAnnotations()).thenReturn(List.of(annotation));
+    when(annotation.symbol()).thenReturn(Symbol.UNKNOWN_SYMBOL);
+    when(target.memberSymbols()).thenReturn(List.of(method));
+
+    SemanticReportScanner scanner = new SemanticReportScanner();
+    scanner.enterModule(temp);
+    IdentifierTree identifier = mock(IdentifierTree.class);
+    when(identifier.name()).thenReturn("Target");
+    when(identifier.symbol()).thenReturn(target);
+    scanIdentifier(scanner, target, identifier);
+    Path report = temp.resolve("report.json");
+    scanner.writeReport(report, temp);
+    var result = JsonParser.parseString(Files.readString(report)).getAsJsonObject();
+    assertThat(result.get("resolvedSymbolCount").getAsInt()).isEqualTo(3);
+    assertThat(result.get("resolvedTypeCount").getAsInt()).isEqualTo(1);
+    assertThat(result.get("unknownSymbolCount").getAsInt()).isPositive();
+    assertThat(result.get("unknownTypeCount").getAsInt()).isPositive();
+    scanner.leaveModule();
+  }
+
   private void assertResolvedSymbols(SemanticReportScanner scanner, Symbol.TypeSymbol source, Symbol.TypeSymbol target, int expected) throws IOException {
     IdentifierTree identifier = mock(IdentifierTree.class);
     when(identifier.name()).thenReturn("Target");

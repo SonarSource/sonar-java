@@ -208,7 +208,8 @@ public class SemanticReportScanner implements JavaFileScanner {
       int access = visibility(sourceClass, typeSymbol);
       int index = 0;
       for (Symbol member : typeSymbol.memberSymbols()) {
-        int memberIndex = index++;
+        int memberIndex = index;
+        index++;
         if (isVisible(member, access)) {
           collectSymbol(member, () -> locationOf(typeName, "memberSymbols").get() + "[" + memberIndex + "]", sourceClass);
         }
