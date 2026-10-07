@@ -251,7 +251,9 @@ public class SemanticReportScanner implements JavaFileScanner {
       return PUBLIC;
     }
     Symbol.TypeSymbol sourceOutermost = sourceClass.outermostClass();
-    if (sourceOutermost != null && sourceOutermost.equals(targetClass.outermostClass())) {
+    Symbol.TypeSymbol targetOutermost = targetClass.outermostClass();
+    if (sourceOutermost != null && targetOutermost != null
+      && sourceOutermost.type().fullyQualifiedName().equals(targetOutermost.type().fullyQualifiedName())) {
       return PUBLIC | PACKAGE | PROTECTED | PRIVATE;
     }
     if (packageName(sourceClass).equals(packageName(targetClass))) {
