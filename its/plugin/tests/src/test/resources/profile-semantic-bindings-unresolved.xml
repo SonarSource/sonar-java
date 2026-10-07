@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profile>
+  <name>semantic-bindings-unresolved</name>
+  <language>java</language>
+  <rules>
+    <rule>
+      <repositoryKey>java-extension</repositoryKey>
+      <key>semanticbindings</key>
+      <priority>MAJOR</priority>
+      <parameters>
+        <parameter>
+          <key>expectProjectBindingsResolved</key>
+          <value>false</value>
+        </parameter>
+      </parameters>
+    </rule>
+  </rules>
+</profile>
