@@ -43,6 +43,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -51,6 +52,11 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 @ScannerSide
 @SonarLintSide
 public class SemanticReportScanner implements JavaFileScanner {
+
+  private static final int PUBLIC = 1;
+  private static final int PACKAGE = 2;
+  private static final int PROTECTED = 4;
+  private static final int PRIVATE = 8;
 
   private final Map<Path, ModuleReferences> moduleMap = new TreeMap<>();
   private ModuleReferences currentModuleReferences = null;
@@ -67,10 +73,23 @@ public class SemanticReportScanner implements JavaFileScanner {
     }
     String relativePath = relativePath(context.getInputFile());
     context.getTree().accept(new BaseTreeVisitor() {
+      private Symbol.TypeSymbol sourceClass;
+
+      @Override
+      public void visitClass(ClassTree tree) {
+        Symbol.TypeSymbol previousClass = sourceClass;
+        sourceClass = tree.symbol();
+        try {
+          super.visitClass(tree);
+        } finally {
+          sourceClass = previousClass;
+        }
+      }
+
       @Override
       public void visitIdentifier(IdentifierTree tree) {
         if (isIdentifierExpectSymbol(tree)) {
-          collectIdentifier(relativePath, tree);
+          collectIdentifier(relativePath, tree, sourceClass);
         }
         super.visitIdentifier(tree);
       }
@@ -100,35 +119,35 @@ public class SemanticReportScanner implements JavaFileScanner {
       .toString().replace('\\', '/');
   }
 
-  private void collectIdentifier(String path, IdentifierTree identifier) {
+  private void collectIdentifier(String path, IdentifierTree identifier, @Nullable Symbol.TypeSymbol sourceClass) {
     Symbol symbol = identifier.symbol();
     if (symbol.isUnknown()) {
       currentModuleReferences.unknownIdentifiers.add(locationOf(path, identifier));
     } else {
       currentModuleReferences.resolvedIdentifierCount++;
-      collectSymbol(symbol, () -> locationOf(path, identifier));
+      collectSymbol(symbol, () -> locationOf(path, identifier), sourceClass);
     }
   }
 
-  private void collectTypes(Collection<? extends Type> types, Supplier<String> typeLocation) {
+  private void collectTypes(Collection<? extends Type> types, Supplier<String> typeLocation, @Nullable Symbol.TypeSymbol sourceClass) {
     int i = 0;
     for (Type type : types) {
       int index = i;
-      collectType(type, () -> typeLocation.get() + "[" + index + "]");
+      collectType(type, () -> typeLocation.get() + "[" + index + "]", sourceClass);
       i++;
     }
   }
 
-  private void collectSymbols(Collection<? extends Symbol> symbols, Supplier<String> symbolLocation) {
+  private void collectSymbols(Collection<? extends Symbol> symbols, Supplier<String> symbolLocation, @Nullable Symbol.TypeSymbol sourceClass) {
     int i = 0;
     for (Symbol symbol : symbols) {
       int index = i;
-      collectSymbol(symbol, () -> symbolLocation.get() + "[" + index + "]");
+      collectSymbol(symbol, () -> symbolLocation.get() + "[" + index + "]", sourceClass);
       i++;
     }
   }
 
-  private void collectType(@Nullable Type type, Supplier<String> typeLocation) {
+  private void collectType(@Nullable Type type, Supplier<String> typeLocation, @Nullable Symbol.TypeSymbol sourceClass) {
     if (type == null) {
       return;
     }
@@ -138,24 +157,26 @@ public class SemanticReportScanner implements JavaFileScanner {
     }
     if (currentModuleReferences.allReferencedTypes.add(type)) {
       currentModuleReferences.resolvedTypeCount++;
-      currentModuleReferences.typesToResolve.push(type);
+    }
+    if (currentModuleReferences.typeSources.computeIfAbsent(type, ignored -> newIdentitySet()).add(sourceClass)) {
+      currentModuleReferences.typesToResolve.push(new TypeReference(type, sourceClass));
     }
   }
 
-  private void collectTypeChildren(Type type) {
+  private void collectTypeChildren(Type type, @Nullable Symbol.TypeSymbol sourceClass) {
     String name = type.fullyQualifiedName();
-    collectSymbol(type.symbol(), locationOf(name, "symbol"));
-    collectType(type.primitiveType(), locationOf(name, "primitiveType"));
-    collectType(type.primitiveWrapperType(), locationOf(name, "primitiveWrapperType"));
-    collectType(type.declaringType(), locationOf(name, "declaringType"));
-    collectType(type.erasure(), locationOf(name, "erasure"));
-    collectTypes(type.typeArguments(), locationOf(name, "typeArguments"));
+    collectSymbol(type.symbol(), locationOf(name, "symbol"), sourceClass);
+    collectType(type.primitiveType(), locationOf(name, "primitiveType"), sourceClass);
+    collectType(type.primitiveWrapperType(), locationOf(name, "primitiveWrapperType"), sourceClass);
+    collectType(type.declaringType(), locationOf(name, "declaringType"), sourceClass);
+    collectType(type.erasure(), locationOf(name, "erasure"), sourceClass);
+    collectTypes(type.typeArguments(), locationOf(name, "typeArguments"), sourceClass);
     if (type.isArray() && type instanceof Type.ArrayType arrayType) {
-      collectType(arrayType.elementType(), locationOf(name, "elementType"));
+      collectType(arrayType.elementType(), locationOf(name, "elementType"), sourceClass);
     }
   }
 
-  private void collectSymbol(@Nullable Symbol symbol, Supplier<String> symbolLocation) {
+  private void collectSymbol(@Nullable Symbol symbol, Supplier<String> symbolLocation, @Nullable Symbol.TypeSymbol sourceClass) {
     if (symbol == null || symbol.isPackageSymbol()) {
       return;
     }
@@ -163,54 +184,113 @@ public class SemanticReportScanner implements JavaFileScanner {
       currentModuleReferences.unknownSymbols.add(symbolLocation.get());
       return;
     }
-    if (currentModuleReferences.allReferencedSymbols.add(symbol)) {
+    Symbol.TypeSymbol targetClass = symbol instanceof Symbol.TypeSymbol typeSymbol ? typeSymbol : symbol.enclosingClass();
+    int visibility = visibility(sourceClass, targetClass);
+    Integer previousVisibility = currentModuleReferences.allReferencedSymbols.get(symbol);
+    if (previousVisibility == null) {
       currentModuleReferences.resolvedSymbolCount++;
-      currentModuleReferences.symbolsToResolve.push(symbol);
+    }
+    currentModuleReferences.allReferencedSymbols.put(symbol, visibility | (previousVisibility == null ? 0 : previousVisibility));
+    if (currentModuleReferences.symbolSources.computeIfAbsent(symbol, ignored -> newIdentitySet()).add(sourceClass)) {
+      currentModuleReferences.symbolsToResolve.push(new SymbolReference(symbol, sourceClass));
     }
   }
 
-  private void collectSymbolChildren(Symbol symbol) {
+  private void collectSymbolChildren(Symbol symbol, @Nullable Symbol.TypeSymbol sourceClass) {
     String name = symbol.name();
     if (symbol instanceof Symbol.TypeSymbol typeSymbol) {
       if (!typeSymbol.type().isUnknown()) {
         name = typeSymbol.type().fullyQualifiedName();
       }
-      collectType(typeSymbol.superClass(), locationOf(name, "superClass"));
-      collectTypes(typeSymbol.interfaces(), locationOf(name, "interfaces"));
-      if (typeSymbol.declaration() != null) {
-        collectSymbols(typeSymbol.memberSymbols(), locationOf(name, "memberSymbols"));
+      String typeName = name;
+      collectType(typeSymbol.superClass(), locationOf(name, "superClass"), sourceClass);
+      collectTypes(typeSymbol.interfaces(), locationOf(name, "interfaces"), sourceClass);
+      int access = visibility(sourceClass, typeSymbol);
+      int index = 0;
+      for (Symbol member : typeSymbol.memberSymbols()) {
+        int memberIndex = index++;
+        if (isVisible(member, access)) {
+          collectSymbol(member, () -> locationOf(typeName, "memberSymbols").get() + "[" + memberIndex + "]", sourceClass);
+        }
       }
-      collectTypes(typeSymbol.superTypes(), locationOf(name, "superTypes"));
+      collectTypes(typeSymbol.superTypes(), locationOf(name, "superTypes"), sourceClass);
     } else if (symbol instanceof Symbol.MethodSymbol methodSymbol) {
       name = methodSymbol.signature();
 
-      collectTypes(methodSymbol.parameterTypes(), locationOf(name, "parameterTypes"));
-      collectSymbols(methodSymbol.declarationParameters(), locationOf(name, "declarationParameters"));
-      collectSymbol(methodSymbol.returnType(), locationOf(name, "returnType"));
-      collectTypes(methodSymbol.thrownTypes(), locationOf(name, "thrownTypes"));
-      collectSymbols(methodSymbol.overriddenSymbols(), locationOf(name, "overriddenSymbols"));
+      collectTypes(methodSymbol.parameterTypes(), locationOf(name, "parameterTypes"), sourceClass);
+      collectSymbols(methodSymbol.declarationParameters(), locationOf(name, "declarationParameters"), sourceClass);
+      collectSymbol(methodSymbol.returnType(), locationOf(name, "returnType"), sourceClass);
+      collectTypes(methodSymbol.thrownTypes(), locationOf(name, "thrownTypes"), sourceClass);
+      collectSymbols(methodSymbol.overriddenSymbols(), locationOf(name, "overriddenSymbols"), sourceClass);
 
     }
-    collectSymbol(symbol.owner(), locationOf(name, "owner"));
-    collectType(symbol.type(), locationOf(name, "type"));
-    collectSymbol(symbol.enclosingClass(), locationOf(name, "enclosingClass"));
+    collectSymbol(symbol.owner(), locationOf(name, "owner"), sourceClass);
+    collectType(symbol.type(), locationOf(name, "type"), sourceClass);
+    collectSymbol(symbol.enclosingClass(), locationOf(name, "enclosingClass"), sourceClass);
     collectSymbols(symbol.metadata().symbolAnnotations()
       .stream()
       .map(SymbolMetadata.AnnotationInstance::symbol)
-      .toList(),locationOf(name, "annotations"));
+      .toList(), locationOf(name, "annotations"), sourceClass);
   }
 
   private void resolveSymbolsAndTypes() {
     while (!currentModuleReferences.symbolsToResolve.isEmpty() || !currentModuleReferences.typesToResolve.isEmpty()) {
       while (!currentModuleReferences.typesToResolve.isEmpty()) {
-        Type type = currentModuleReferences.typesToResolve.pop();
-        collectTypeChildren(type);
+        TypeReference reference = currentModuleReferences.typesToResolve.pop();
+        collectTypeChildren(reference.type(), reference.sourceClass());
       }
       while (!currentModuleReferences.symbolsToResolve.isEmpty()) {
-        Symbol symbol = currentModuleReferences.symbolsToResolve.pop();
-        collectSymbolChildren(symbol);
+        SymbolReference reference = currentModuleReferences.symbolsToResolve.pop();
+        collectSymbolChildren(reference.symbol(), reference.sourceClass());
       }
     }
+  }
+
+  private static int visibility(@Nullable Symbol.TypeSymbol sourceClass, @Nullable Symbol.TypeSymbol targetClass) {
+    if (sourceClass == null || targetClass == null) {
+      return PUBLIC;
+    }
+    Symbol.TypeSymbol sourceOutermost = sourceClass.outermostClass();
+    if (sourceOutermost != null && sourceOutermost.equals(targetClass.outermostClass())) {
+      return PUBLIC | PACKAGE | PROTECTED | PRIVATE;
+    }
+    if (packageName(sourceClass).equals(packageName(targetClass))) {
+      return PUBLIC | PACKAGE | PROTECTED;
+    }
+    Symbol.TypeSymbol enclosingClass = sourceClass;
+    while (enclosingClass != null) {
+      if (enclosingClass.type().isSubtypeOf(targetClass.type())) {
+        return PUBLIC | PROTECTED;
+      }
+      Symbol owner = enclosingClass.owner();
+      enclosingClass = owner instanceof Symbol.TypeSymbol typeSymbol ? typeSymbol : null;
+    }
+    return PUBLIC;
+  }
+
+  private static String packageName(Symbol.TypeSymbol typeSymbol) {
+    Symbol owner = typeSymbol.owner();
+    while (owner != null && !owner.isPackageSymbol()) {
+      owner = owner.owner();
+    }
+    return owner == null ? "" : owner.name();
+  }
+
+  private static boolean isVisible(Symbol symbol, int visibility) {
+    if (symbol.isPublic()) {
+      return (visibility & PUBLIC) != 0;
+    }
+    if (symbol.isProtected()) {
+      return (visibility & PROTECTED) != 0;
+    }
+    if (symbol.isPrivate()) {
+      return (visibility & PRIVATE) != 0;
+    }
+    return (visibility & PACKAGE) != 0;
+  }
+
+  private static <T> Set<T> newIdentitySet() {
+    return Collections.newSetFromMap(new IdentityHashMap<>());
   }
 
   public void writeReport(Path reportPath, Path projectRoot) {
@@ -299,10 +379,12 @@ public class SemanticReportScanner implements JavaFileScanner {
 
   private static class ModuleReferences {
     final Path moduleDir;
-    final Deque<Symbol> symbolsToResolve = new java.util.ArrayDeque<>();
-    final Deque<Type> typesToResolve = new java.util.ArrayDeque<>();
-    final Set<Type> allReferencedTypes = Collections.newSetFromMap(new IdentityHashMap<>());
-    final Set<Symbol> allReferencedSymbols = Collections.newSetFromMap(new IdentityHashMap<>());
+    final Deque<SymbolReference> symbolsToResolve = new java.util.ArrayDeque<>();
+    final Deque<TypeReference> typesToResolve = new java.util.ArrayDeque<>();
+    final Set<Type> allReferencedTypes = newIdentitySet();
+    final Map<Symbol, Integer> allReferencedSymbols = new IdentityHashMap<>();
+    final Map<Symbol, Set<Symbol.TypeSymbol>> symbolSources = new IdentityHashMap<>();
+    final Map<Type, Set<Symbol.TypeSymbol>> typeSources = new IdentityHashMap<>();
     final Set<String> unknownIdentifiers = new TreeSet<>();
     final Set<String> unknownSymbols = new TreeSet<>();
     final Set<String> unknownTypes = new TreeSet<>();
@@ -315,9 +397,17 @@ public class SemanticReportScanner implements JavaFileScanner {
     void clearASTElements() {
       allReferencedTypes.clear();
       allReferencedSymbols.clear();
+      symbolSources.clear();
+      typeSources.clear();
       typesToResolve.clear();
       symbolsToResolve.clear();
     }
+  }
+
+  private record SymbolReference(Symbol symbol, @Nullable Symbol.TypeSymbol sourceClass) {
+  }
+
+  private record TypeReference(Type type, @Nullable Symbol.TypeSymbol sourceClass) {
   }
 
   private static String locationOf(String sourcePath, IdentifierTree identifierTree) {
