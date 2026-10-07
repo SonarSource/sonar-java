@@ -46,6 +46,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
@@ -125,8 +126,18 @@ public class SemanticReportScanner implements JavaFileScanner {
       currentModuleReferences.unknownIdentifiers.add(locationOf(path, identifier));
     } else {
       currentModuleReferences.resolvedIdentifierCount++;
+      if (isArrayLength(identifier)) {
+        currentModuleReferences.arrayLengthSymbols.add(symbol);
+      }
       collectSymbol(symbol, () -> locationOf(path, identifier), sourceClass);
     }
+  }
+
+  private static boolean isArrayLength(IdentifierTree identifier) {
+    return "length".equals(identifier.name())
+      && identifier.parent() instanceof MemberSelectExpressionTree memberSelect
+      && memberSelect.identifier() == identifier
+      && memberSelect.expression().symbolType().isArray();
   }
 
   private void collectTypes(Collection<? extends Type> types, Supplier<String> typeLocation, @Nullable Symbol.TypeSymbol sourceClass) {
@@ -250,11 +261,16 @@ public class SemanticReportScanner implements JavaFileScanner {
       collectSymbols(methodSymbol.overriddenSymbols(), locationOf(name, "overriddenSymbols"), sourceClass);
 
     }
-    collectSymbol(symbol.owner(), locationOf(name, "owner"), sourceClass);
+    boolean isArrayLength = currentModuleReferences.arrayLengthSymbols.contains(symbol);
+    if (!isArrayLength) {
+      collectSymbol(symbol.owner(), locationOf(name, "owner"), sourceClass);
+    }
     if (!(symbol instanceof Symbol.MethodSymbol)) {
       collectType(symbol.type(), locationOf(name, "type"), sourceClass);
     }
-    collectSymbol(symbol.enclosingClass(), locationOf(name, "enclosingClass"), sourceClass);
+    if (!isArrayLength) {
+      collectSymbol(symbol.enclosingClass(), locationOf(name, "enclosingClass"), sourceClass);
+    }
     collectSymbols(symbol.metadata().symbolAnnotations()
       .stream()
       .map(SymbolMetadata.AnnotationInstance::symbol)
@@ -412,6 +428,7 @@ public class SemanticReportScanner implements JavaFileScanner {
     final Deque<SymbolReference> symbolsToResolve = new java.util.ArrayDeque<>();
     final Deque<TypeReference> typesToResolve = new java.util.ArrayDeque<>();
     final Set<Type> allReferencedTypes = newIdentitySet();
+    final Set<Symbol> arrayLengthSymbols = newIdentitySet();
     final Map<Symbol, Integer> allReferencedSymbols = new IdentityHashMap<>();
     final Map<Symbol, Set<Symbol.TypeSymbol>> symbolSources = new IdentityHashMap<>();
     final Map<Type, Set<Symbol.TypeSymbol>> typeSources = new IdentityHashMap<>();
@@ -427,6 +444,7 @@ public class SemanticReportScanner implements JavaFileScanner {
     }
     void clearASTElements() {
       allReferencedTypes.clear();
+      arrayLengthSymbols.clear();
       allReferencedSymbols.clear();
       symbolSources.clear();
       typeSources.clear();

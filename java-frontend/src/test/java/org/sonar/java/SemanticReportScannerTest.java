@@ -30,7 +30,9 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -95,6 +97,54 @@ class SemanticReportScannerTest {
     assertThat(result.getAsJsonArray("modules").get(0).getAsJsonObject().getAsJsonArray("unknownIdentifiers").get(0).getAsString())
       .endsWith(">.Missing");
     scanner.leaveModule();
+  }
+
+  @Test
+  void skips_unknown_owner_and_enclosing_class_only_for_array_length() throws IOException {
+    SemanticReportScanner scanner = new SemanticReportScanner();
+    Symbol.TypeSymbol source = typeSymbol("example.Source", "example", "Source");
+    scanner.enterModule(temp);
+
+    IdentifierTree arrayLength = lengthIdentifier(true);
+    scanIdentifier(scanner, source, arrayLength);
+    Path report = temp.resolve("report.json");
+    scanner.writeReport(report, temp);
+    var module = JsonParser.parseString(Files.readString(report)).getAsJsonObject().getAsJsonArray("modules").get(0).getAsJsonObject();
+    assertThat(module.get("unknownSymbolCount").getAsInt()).isZero();
+    assertThat(module.get("resolvedIdentifierCount").getAsInt()).isEqualTo(1);
+
+    scanIdentifier(scanner, source, lengthIdentifier(false));
+    scanner.writeReport(report, temp);
+    module = JsonParser.parseString(Files.readString(report)).getAsJsonObject().getAsJsonArray("modules").get(0).getAsJsonObject();
+    assertThat(module.get("unknownSymbolCount").getAsInt()).isEqualTo(2);
+    assertThat(module.getAsJsonArray("unknownSymbols").toString()).contains("(length).owner", "(length).enclosingClass");
+    scanner.leaveModule();
+  }
+
+  private static IdentifierTree lengthIdentifier(boolean arrayReceiver) {
+    IdentifierTree identifier = mock(IdentifierTree.class);
+    Symbol.VariableSymbol symbol = mock(Symbol.VariableSymbol.class);
+    SymbolMetadata metadata = mock(SymbolMetadata.class);
+    Type type = mock(Type.class);
+    Type receiverType = mock(Type.class);
+    ExpressionTree receiver = mock(ExpressionTree.class);
+    MemberSelectExpressionTree memberSelect = mock(MemberSelectExpressionTree.class);
+    when(identifier.name()).thenReturn("length");
+    when(identifier.symbol()).thenReturn(symbol);
+    when(identifier.parent()).thenReturn(memberSelect);
+    when(memberSelect.identifier()).thenReturn(identifier);
+    when(memberSelect.expression()).thenReturn(receiver);
+    when(receiver.symbolType()).thenReturn(receiverType);
+    when(receiverType.isArray()).thenReturn(arrayReceiver);
+    when(symbol.name()).thenReturn("length");
+    when(symbol.owner()).thenReturn(Symbol.UNKNOWN_SYMBOL);
+    when(symbol.enclosingClass()).thenReturn(Symbol.TypeSymbol.UNKNOWN_TYPE);
+    when(symbol.type()).thenReturn(type);
+    when(type.fullyQualifiedName()).thenReturn("int");
+    when(type.erasure()).thenReturn(type);
+    when(symbol.metadata()).thenReturn(metadata);
+    when(metadata.symbolAnnotations()).thenReturn(List.of());
+    return identifier;
   }
 
   @Test

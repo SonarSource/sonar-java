@@ -224,6 +224,23 @@ class JavaFrontendTest {
   }
 
   @Test
+  void semantic_report_ignores_array_length_owner() throws IOException {
+    Path report = temp.resolve("semantic-report.json");
+    MapSettings settings = new MapSettings();
+    settings.setProperty(SonarComponents.SONAR_SEMANTIC_REPORT, report.toString());
+    sensorContext = SensorContextTester.create(temp.toFile().getAbsoluteFile());
+    sensorContext.setSettings(settings);
+
+    scan(settings, SONARQUBE_RUNTIME, List.of(addFile(temp, "class Example { int size(int[] values) { return values.length; } }", sensorContext)));
+    semanticReportScanner.writeReport(report, temp);
+
+    JsonObject result = JsonParser.parseString(Files.readString(report)).getAsJsonObject();
+    assertThat(result.get("unknownIdentifierCount").getAsInt()).isZero();
+    assertThat(result.getAsJsonArray("modules").get(0).getAsJsonObject().getAsJsonArray("unknownSymbols").toString())
+      .doesNotContain("(length).owner", "(length).enclosingClass");
+  }
+
+  @Test
   void semantic_report_finishes_recursive_generic_members() throws IOException {
     Path report = temp.resolve("semantic-report.json");
     MapSettings settings = new MapSettings();
