@@ -23,6 +23,7 @@ import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.utils.Version;
+import org.sonar.java.SemanticReportScanner;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.plugins.java.api.caching.SonarLintCache;
 
@@ -40,8 +41,8 @@ class JavaPluginTest {
     Plugin.Context context = new Plugin.Context(runtime);
     javaPlugin.define(context);
     assertThat(context.getExtensions())
-      .hasSize(22)
-      .contains(SonarLintCache.class);
+      .hasSize(23)
+      .contains(SonarLintCache.class, SemanticReportScanner.class);
   }
 
 
@@ -51,7 +52,8 @@ class JavaPluginTest {
     Plugin.Context context = new Plugin.Context(sqCommunity);
     javaPlugin.define(context);
     assertThat(context.getExtensions())
-      .hasSize(39)
+      .hasSize(40)
+      .contains(SemanticReportScanner.class)
       .doesNotContain(Jasper.class);
   }
 
@@ -61,8 +63,8 @@ class JavaPluginTest {
     Plugin.Context context = new Plugin.Context(sqEnterprise);
     javaPlugin.define(context);
     assertThat(context.getExtensions())
-      .hasSize(40)
-      .contains(Jasper.class);
+      .hasSize(41)
+      .contains(Jasper.class, SemanticReportScanner.class);
   }
 
 }
