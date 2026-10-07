@@ -74,11 +74,13 @@ class SourceOnlyComparisonTest {
 
   @Test
   void failed_scans_and_different_file_coverage_have_no_agreement_metrics() {
-    var failed = new SourceOnlyComparison.Run("candidate", false, 12, List.of(), List.of(), Map.of(), null, "Scanner exited with code 1");
+    var failed = NoCompilationComparisonTest.failed("candidate", 12,
+      "Scanner exited with code 1 -Dsonar.token=temporary-token -Dsonar.password=temporary-password");
     var comparison = SourceOnlyComparison.compare(run(List.of()), failed, false, List.of());
     assertThat(comparison.valid()).isFalse();
     assertThat(comparison.rules()).isEmpty();
-    assertThat(SourceOnlyComparison.markdown(comparison)).contains("FAILED", "Scanner exited with code 1", "Comparison unavailable");
+    assertThat(SourceOnlyComparison.markdown(comparison)).contains("FAILED", "Scanner exited with code 1", "Comparison unavailable", "sonar.token=[redacted]")
+      .doesNotContain("temporary-token", "temporary-password");
 
     var differentFiles = new SourceOnlyComparison.Run("candidate", true, 12, List.of("Other.java"), List.of(), Map.of(), null, null);
     assertThat(SourceOnlyComparison.compare(run(List.of()), differentFiles, false, List.of()).valid()).isFalse();
@@ -270,8 +272,8 @@ class SourceOnlyComparisonTest {
 
   @Test
   void source_roots_are_configured_per_scenario_without_overriding_extra_flags() {
-    var dataset = NoCompilationComparisonTest.sourcePathProperties(Map.of("sonar.java.internal.example", "true"), List.of("sonar-xml-plugin/src/main/java"));
-    var fixture = NoCompilationComparisonTest.sourcePathProperties(Map.of(), List.of("consumer/src/main/java", "dependency/src/main/java"));
+    var dataset = AnalysisMode.SOURCE_PATHS.properties(List.of("sonar-xml-plugin/src/main/java"), Map.of("sonar.java.internal.example", "true"));
+    var fixture = AnalysisMode.SOURCE_PATHS.properties(List.of("consumer/src/main/java", "dependency/src/main/java"), Map.of());
     assertThat(dataset).containsEntry("sonar.java.sourcepath", "sonar-xml-plugin/src/main/java").containsEntry("sonar.java.internal.example", "true");
     assertThat(fixture).containsEntry("sonar.java.sourcepath", "consumer/src/main/java,dependency/src/main/java");
   }

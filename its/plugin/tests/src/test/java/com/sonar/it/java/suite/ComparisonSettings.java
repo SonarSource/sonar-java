@@ -33,6 +33,7 @@ record ComparisonSettings(String serverVersion, String scannerVersion, int repet
     "sonar.projectbasedir", "sonar.modules", "sonar.inclusions", "sonar.exclusions", "sonar.test.inclusions", "sonar.test.exclusions",
     "sonar.scanner.skipjreprovisioning",
     "sonar.java.sourcepath", "sonar.java.test.sourcepath",
+    "sonar.java.compiletobytecode", "sonar.java.filebyfile", "sonar.working.directory",
     "sonar.java.binaries", "sonar.java.libraries", "sonar.java.test.binaries", "sonar.java.test.libraries",
     "sonar.java.skipunchanged", "sonar.internal.analysis.autoscan", "sonar.internal.analysis.autoscan.filtering",
     "sonar.java.internal.semantic.report", "sonar.verbose", "sonar.log.level", "sonar.scm.disabled", "style.color",
