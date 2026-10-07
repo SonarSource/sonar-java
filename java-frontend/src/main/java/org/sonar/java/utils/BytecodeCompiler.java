@@ -161,6 +161,10 @@ public final class BytecodeCompiler {
     args.add("-target");
     args.add(targetVersion.effectiveJavaVersionAsString());
 
+    if (sourceVersion.arePreviewFeaturesEnabled()) {
+      args.add("--enable-preview");
+    }
+
     for (Path source : sources) {
       args.add(source.toAbsolutePath().toString());
     }

@@ -23,6 +23,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaVersion;
 
@@ -129,6 +131,28 @@ class BytecodeCompilerTest {
 
     assertThat(result).isTrue();
     assertThat(outputDir.resolve("Foo.class")).exists();
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void compile_preview_source(boolean previewEnabled) throws Exception {
+    Path sourceFile = createSourceFile("Foo.java", """
+      public class Foo {
+        boolean matches(Object value) {
+          return value instanceof int number && number > 0;
+        }
+      }
+      """);
+    Path outputDir = temporaryFolder.resolve("output");
+    JavaVersion sourceVersion = new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED, previewEnabled);
+    JavaVersion targetVersion = javaVersion(JavaVersionImpl.MAX_SUPPORTED);
+
+    assertThat(BytecodeCompiler.compile(List.of(sourceFile), outputDir, sourceVersion, targetVersion)).isEqualTo(previewEnabled);
+    if (previewEnabled) {
+      assertThat(outputDir.resolve("Foo.class")).exists();
+    } else {
+      assertThat(outputDir.resolve("Foo.class")).doesNotExist();
+    }
   }
 
   private JavaVersion javaVersion(int version) {
