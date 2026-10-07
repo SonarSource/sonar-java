@@ -322,7 +322,7 @@ public class SemanticReportScanner implements JavaFileScanner {
 
   private static String locationOf(String sourcePath, IdentifierTree identifierTree) {
     SyntaxToken firstToken = identifierTree.firstToken();
-    String position = firstToken != null ? ":" + firstToken.range() : "";
+    String position = firstToken != null ? (":" + firstToken.range()) : "";
     return "<" + sourcePath + position + ">." + identifierTree.name();
   }
 
