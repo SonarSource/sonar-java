@@ -27,6 +27,7 @@ import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -101,6 +102,46 @@ class ClasspathForMainTest {
   @Test
   void properties() {
     assertThat(ClasspathProperties.getProperties()).hasSize(5);
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {false, true})
+  void generated_binary_properties_preserve_configuration_and_refresh_cached_classpaths(boolean testClasspath, @TempDir Path temporaryDirectory) throws IOException {
+    Path configuredOutput = Files.createDirectories(temporaryDirectory.resolve("configured output"));
+    Path generatedOutput = Files.createDirectories(temporaryDirectory.resolve("generated output,classes"));
+    String property = testClasspath ? ClasspathProperties.SONAR_JAVA_TEST_BINARIES : ClasspathProperties.SONAR_JAVA_BINARIES;
+    MapSettings original = new MapSettings().setProperty(property, configuredOutput.toString()).setProperty(SonarComponents.SONAR_AUTOSCAN, true);
+    AbstractClasspath classpath = testClasspath ? new ClasspathForTest(original.asConfig(), fs) : new ClasspathForMain(original.asConfig(), fs);
+    assertThat(classpath.getBinaryDirs()).containsExactly(configuredOutput.toFile());
+
+    classpath.setGeneratedBinaryDirs(List.of(generatedOutput, generatedOutput.resolve("."), temporaryDirectory.resolve("missing")));
+
+    assertThat(classpath.settings.getStringArray(property)).containsExactly(configuredOutput.toString(), generatedOutput.toString());
+    assertThat(MultivalueProperty.parseAsCsv(property, classpath.settings.get(property).orElseThrow()))
+      .containsExactly(configuredOutput.toString(), generatedOutput.toString());
+    assertThat(classpath.settings.getBoolean(SonarComponents.SONAR_AUTOSCAN)).contains(true);
+    assertThat(classpath.getBinaryDirs()).containsExactly(configuredOutput.toFile(), generatedOutput.toFile());
+    assertThat(classpath.getElements()).containsExactly(configuredOutput.toFile(), generatedOutput.toFile());
+    assertThat(original.getStringArray(property)).containsExactly(configuredOutput.toString());
+
+    classpath.setGeneratedBinaryDirs(List.of());
+
+    assertThat(classpath.settings.getStringArray(property)).containsExactly(configuredOutput.toString());
+    assertThat(classpath.settings.get(property)).isEqualTo(original.asConfig().get(property));
+    assertThat(classpath.getBinaryDirs()).containsExactly(configuredOutput.toFile());
+    assertThat(classpath.getElements()).containsExactly(configuredOutput.toFile());
+
+    original.removeProperty(property);
+    classpath.setGeneratedBinaryDirs(List.of(generatedOutput));
+    assertThat(classpath.settings.hasKey(property)).isTrue();
+    assertThat(classpath.settings.getStringArray(property)).containsExactly(generatedOutput.toString());
+    assertThat(classpath.getBinaryDirs()).containsExactly(generatedOutput.toFile());
+
+    classpath.setGeneratedBinaryDirs(List.of());
+    assertThat(classpath.settings.hasKey(property)).isFalse();
+    assertThat(classpath.settings.get(property)).isEmpty();
+    assertThat(classpath.settings.getStringArray(property)).isEmpty();
+    assertThat(classpath.getBinaryDirs()).isEmpty();
   }
 
   @Test
