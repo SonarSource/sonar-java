@@ -37,6 +37,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.java.GeneratedCheckList;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
+import org.sonar.java.SemanticReportScanner;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
@@ -70,22 +71,24 @@ public class JavaSensor implements Sensor {
   private final Jasper jasper;
   private final PostAnalysisIssueFilter postAnalysisIssueFilter;
   private final Telemetry telemetry;
+  private final SemanticReportScanner semanticReportScanner;
 
   public JavaSensor(SonarComponents sonarComponents, JavaResourceLocator javaResourceLocator,
                     NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter,
-                    Telemetry telemetry, SpringContextModel springContextModel) {
-    this(sonarComponents, javaResourceLocator, noSonarFilter, postAnalysisIssueFilter, null, telemetry, springContextModel);
+                    Telemetry telemetry, SpringContextModel springContextModel, SemanticReportScanner semanticReportScanner) {
+    this(sonarComponents, javaResourceLocator, noSonarFilter, postAnalysisIssueFilter, null, telemetry, springContextModel, semanticReportScanner);
   }
 
   public JavaSensor(SonarComponents sonarComponents, JavaResourceLocator javaResourceLocator,
                     NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter,
-                    @Nullable Jasper jasper, Telemetry telemetry, SpringContextModel springContextModel) {
+                    @Nullable Jasper jasper, Telemetry telemetry, SpringContextModel springContextModel, SemanticReportScanner semanticReportScanner) {
     this.noSonarFilter = noSonarFilter;
     this.sonarComponents = sonarComponents;
     this.javaResourceLocator = javaResourceLocator;
     this.postAnalysisIssueFilter = postAnalysisIssueFilter;
     this.jasper = jasper;
     this.telemetry = telemetry;
+    this.semanticReportScanner = semanticReportScanner;
     this.sonarComponents.registerMainChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaChecks());
     this.sonarComponents.registerTestChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaTestChecks());
     this.sonarComponents.setSpringContextModel(springContextModel);
@@ -112,14 +115,26 @@ public class JavaSensor implements Sensor {
     telemetry.aggregateAsSortedSet(JAVA_SCANNER_APP, context.config().get("sonar.scanner.app").orElse("none"));
     telemetry.aggregateAsFlag(JAVA_IS_AUTOSCAN, sonarComponents.isAutoScan());
 
+
+    boolean semanticReportEnabled = context.config().get(SonarComponents.SONAR_SEMANTIC_REPORT).isPresent();
+    if (semanticReportEnabled) {
+      semanticReportScanner.enterModule(context.fileSystem().baseDir().toPath());
+    }
     JavaFrontend frontend = new JavaFrontend(javaVersion,
       sonarComponents,
       measurer,
       telemetry,
       javaResourceLocator,
       postAnalysisIssueFilter,
+      semanticReportScanner,
       sonarComponents.mainChecks().toArray(new JavaCheck[0]));
-    frontend.scan(getSourceFiles(context.fileSystem()), getTestFiles(context.fileSystem()), runJasper(context));
+    try {
+      frontend.scan(getSourceFiles(context.fileSystem()), getTestFiles(context.fileSystem()), runJasper(context));
+    } finally {
+      if (semanticReportEnabled) {
+        semanticReportScanner.leaveModule();
+      }
+    }
 
     sensorDuration.stop();
   }
