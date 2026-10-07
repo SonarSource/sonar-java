@@ -200,6 +200,74 @@ class SourceOnlyComparisonTest {
     }
   }
 
+  @Test
+  void rejects_different_semantic_file_sets_even_when_indexed_files_match() {
+    var current = run(List.of());
+    var candidate = new SourceOnlyComparison.Run("candidate", true, 12, current.files(), List.of(), Map.of(),
+      new SemanticReport(new SemanticReport.Counts(10, 3), Map.of("Other.java", new SemanticReport.Counts(10, 3))), null);
+    var comparison = SourceOnlyComparison.compare(current, candidate, false, List.of());
+    assertThat(comparison.valid()).isFalse();
+    assertThat(comparison.error()).contains("Semantic reports cover different files", "current-only: [src/Example.java]", "candidate-only: [Other.java]");
+    assertThat(comparison.rules()).isEmpty();
+  }
+
+  @Test
+  void rejects_different_identifier_coverage_before_calculating_improvements() {
+    var current = semanticRun(Map.of("A.java", new SemanticReport.Counts(10, 4)));
+    var candidate = semanticRun(Map.of("A.java", new SemanticReport.Counts(5, 0)));
+    var comparison = SourceOnlyComparison.compare(current, candidate, false, List.of());
+    assertThat(comparison.valid()).isFalse();
+    assertThat(comparison.error()).contains("Identifier coverage differs for A.java", "current=10, candidate=5");
+    assertThat(SourceOnlyComparison.markdown(comparison)).doesNotContain("## Largest semantic improvements", "## Semantics per file");
+  }
+
+  @Test
+  void ranks_semantic_changes_by_magnitude_with_deterministic_ties() {
+    var current = semanticRun(Map.of("A.java", new SemanticReport.Counts(10, 4), "B.java", new SemanticReport.Counts(10, 7),
+      "C.java", new SemanticReport.Counts(10, 4), "D.java", new SemanticReport.Counts(10, 0),
+      "E.java", new SemanticReport.Counts(10, 0), "F.java", new SemanticReport.Counts(0, 0)));
+    var candidate = semanticRun(Map.of("A.java", new SemanticReport.Counts(10, 2), "B.java", new SemanticReport.Counts(10, 0),
+      "C.java", new SemanticReport.Counts(10, 2), "D.java", new SemanticReport.Counts(10, 5),
+      "E.java", new SemanticReport.Counts(10, 0), "F.java", new SemanticReport.Counts(0, 0)));
+    String report = SourceOnlyComparison.markdown(SourceOnlyComparison.compare(current, candidate, false, List.of()));
+    String improvements = report.substring(report.indexOf("## Largest semantic improvements"), report.indexOf("## Largest semantic regressions"));
+    assertThat(improvements.indexOf("| B.java |")).isLessThan(improvements.indexOf("| A.java |"));
+    assertThat(improvements.indexOf("| A.java |")).isLessThan(improvements.indexOf("| C.java |"));
+    assertThat(improvements).doesNotContain("| D.java |", "| E.java |", "| F.java |");
+    String regressions = report.substring(report.indexOf("## Largest semantic regressions"), report.indexOf("## Top files contributing"));
+    assertThat(regressions).contains("| D.java | 0.000% | 50.000% | +50.000 |").doesNotContain("| E.java |", "| F.java |");
+    assertThat(report.indexOf("## Largest semantic regressions")).isLessThan(report.indexOf("## Semantics per file"));
+  }
+
+  @Test
+  void includes_escaped_metadata_and_separate_timing_medians(@TempDir Path directory) throws IOException {
+    var baseline = run(List.of());
+    var comparison = SourceOnlyComparison.compare(baseline, baseline, true, List.of());
+    var currentSamples = List.of(timedRun(20, Map.of("comparison.analyzer.time_ms", "4")),
+      timedRun(10, Map.of("comparison.analyzer.time_ms", "2")));
+    var candidateSamples = List.of(timedRun(12, Map.of("comparison.analyzer.time_ms", "3")), timedRun(18, Map.of()));
+    SourceOnlyComparison.write(directory, comparison, Map.of("Revision | branch", "abc\nmain"), currentSamples, candidateSamples);
+    String report = Files.readString(directory.resolve("report.md"));
+    assertThat(report).contains("| Revision \\| branch | abc main |", "| 1 | 20 | 12 | 4.0 | 3.0 |", "| 2 | 10 | 18 | 2.0 | N/A |",
+      "| Median | 15.0 | 15.0 | 3.0 | N/A |", "analyzer time measures JavaSensor execution");
+    assertThat(report.indexOf("## Run metadata")).isGreaterThan(report.indexOf("| Retention of current findings |"));
+    assertThat(SourceOnlyComparison.markdown(comparison)).doesNotContain("## Measured timings", "## Run metadata");
+  }
+
+  @Test
+  void handles_odd_samples_missing_pairs_and_invalid_analyzer_timings() {
+    var baseline = run(List.of());
+    var comparison = SourceOnlyComparison.compare(baseline, baseline, true, List.of());
+    String report = SourceOnlyComparison.markdown(comparison, Map.of(),
+      List.of(timedRun(20, Map.of("comparison.analyzer.time_ms", "NaN")), timedRun(10, Map.of()), timedRun(30, Map.of())),
+      List.of(timedRun(12, Map.of("comparison.analyzer.time_ms", "invalid"))));
+    assertThat(report).contains("| Median | 20.0 | 12.0 | N/A | N/A |", "| 3 | 30 | N/A | N/A | N/A |");
+  }
+
+  private static SourceOnlyComparison.Run timedRun(long millis, Map<String, String> telemetry) {
+    return new SourceOnlyComparison.Run("scan", true, millis, List.of("src/Example.java"), List.of(), telemetry, semantics(10, 3), null);
+  }
+
   private static SourceOnlyComparison.Finding finding(String rule, String path, Integer line, String message) {
     return new SourceOnlyComparison.Finding(rule, path, line, message);
   }
