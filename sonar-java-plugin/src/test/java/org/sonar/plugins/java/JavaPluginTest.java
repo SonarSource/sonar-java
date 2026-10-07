@@ -17,12 +17,16 @@
 package org.sonar.plugins.java;
 
 import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.Plugin;
+import org.sonar.api.PropertyType;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
+import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.utils.Version;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.plugins.java.api.caching.SonarLintCache;
 
@@ -40,7 +44,7 @@ class JavaPluginTest {
     Plugin.Context context = new Plugin.Context(runtime);
     javaPlugin.define(context);
     assertThat(context.getExtensions())
-      .hasSize(22)
+      .hasSize(23)
       .contains(SonarLintCache.class);
   }
 
@@ -51,7 +55,7 @@ class JavaPluginTest {
     Plugin.Context context = new Plugin.Context(sqCommunity);
     javaPlugin.define(context);
     assertThat(context.getExtensions())
-      .hasSize(39)
+      .hasSize(40)
       .doesNotContain(Jasper.class);
   }
 
@@ -61,8 +65,24 @@ class JavaPluginTest {
     Plugin.Context context = new Plugin.Context(sqEnterprise);
     javaPlugin.define(context);
     assertThat(context.getExtensions())
-      .hasSize(40)
+      .hasSize(41)
       .contains(Jasper.class);
+  }
+
+  @Test
+  void compilation_property_is_boolean_and_disabled_by_default() {
+    SonarRuntime runtime = TestSonarRuntime.forSonarQube(VERSION_9_9, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
+    Plugin.Context context = new Plugin.Context(runtime);
+    javaPlugin.define(context);
+
+    List<?> extensions = context.getExtensions();
+    PropertyDefinition property = extensions.stream()
+      .filter(PropertyDefinition.class::isInstance)
+      .map(PropertyDefinition.class::cast)
+      .filter(definition -> definition.key().equals(SonarComponents.SONAR_COMPILE_TO_BYTE_CODE))
+      .findFirst().orElseThrow();
+    assertThat(property.type()).isEqualTo(PropertyType.BOOLEAN);
+    assertThat(property.defaultValue()).isEqualTo("false");
   }
 
 }
