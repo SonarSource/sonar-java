@@ -60,6 +60,7 @@ public abstract class AbstractClasspath {
   private static final String MISSING_PROPERTY_MESSAGE_PREFIX = "Missing '";
   private static final Logger LOG = LoggerFactory.getLogger(AbstractClasspath.class);
   protected final Configuration settings;
+  private final List<Path> generatedBinaryDirectories = new ArrayList<>();
   protected final FileSystem fs;
   private final InputFile.Type fileType;
   protected final String binariesProperty;
@@ -76,7 +77,7 @@ public abstract class AbstractClasspath {
 
   protected AbstractClasspath(Configuration settings, FileSystem fs, InputFile.Type fileType, String binariesProperty, String librariesProperty,
     AnalysisWarningsWrapper analysisWarnings) {
-    this.settings = settings;
+    this.settings = new GeneratedBinaryConfiguration(settings, binariesProperty, generatedBinaryDirectories);
     this.fs = fs;
     this.fileType = fileType;
     this.binariesProperty = binariesProperty;
@@ -86,6 +87,19 @@ public abstract class AbstractClasspath {
     this.analysisWarnings = analysisWarnings;
     classpathWarnings = new LinkedHashSet<>();
     initialized = false;
+  }
+
+  public void setGeneratedBinaryDirs(List<Path> directories) {
+    List<Path> existingDirectories = directories.stream()
+      .map(path -> path.toAbsolutePath().normalize())
+      .filter(Files::isDirectory)
+      .distinct().toList();
+    generatedBinaryDirectories.clear();
+    generatedBinaryDirectories.addAll(existingDirectories);
+    initialized = false;
+    binaries.clear();
+    elements = List.of();
+    classpathWarnings.clear();
   }
 
   protected void init() {

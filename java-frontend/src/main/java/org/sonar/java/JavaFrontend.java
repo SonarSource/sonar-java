@@ -17,12 +17,18 @@
 package org.sonar.java;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -45,6 +51,7 @@ import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.model.springcontext.SpringContextModelGatherers;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.telemetry.TelemetryKey;
+import org.sonar.java.utils.BytecodeCompiler;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -59,6 +66,7 @@ public class JavaFrontend {
 
   private static final Logger LOG = LoggerFactory.getLogger(JavaFrontend.class);
   private static final String BATCH_ERROR_MESSAGE = "Batch Mode failed, analysis of Java Files stopped.";
+  private static final String GENERATED_FILES = "Generated";
 
   /** List of libraries, whose presence or absence we want to report. */
   private static final Map<TelemetryKey, String> REPORTED_DEPENDENCIES = Map.of(
@@ -70,7 +78,7 @@ public class JavaFrontend {
   private final JavaVersion javaVersion;
   private final SonarComponents sonarComponents;
   private final Telemetry telemetry;
-  private final List<File> globalClasspath;
+  private List<File> globalClasspath;
   private final JavaAstScanner astScanner;
   private final JavaAstScanner astScannerForTests;
   private final JavaAstScanner astScannerForGeneratedFiles;
@@ -107,15 +115,15 @@ public class JavaFrontend {
       codeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
       testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
     }
-    List<File> classpath = sonarComponents.getJavaClasspath();
-    List<File> testClasspath = sonarComponents.getJavaTestClasspath();
-    List<File> jspClasspath = sonarComponents.getJspClasspath();
+    List<File> classpath = new ArrayList<>(sonarComponents.getJavaClasspath());
+    List<File> testClasspath = new ArrayList<>(sonarComponents.getJavaTestClasspath());
+    List<File> jspClasspath = new ArrayList<>(sonarComponents.getJspClasspath());
     testCodeVisitors.addAll(sonarComponents.testChecks());
     List<JavaCheck> jspCodeVisitors = sonarComponents.jspChecks();
     boolean inAndroidContext = sonarComponents.inAndroidContext();
 
-    globalClasspath = Stream.of(classpath, testClasspath, jspClasspath)
-      .flatMap(Collection::stream).distinct().toList();
+    globalClasspath = new ArrayList<>(Stream.of(classpath, testClasspath, jspClasspath)
+      .flatMap(Collection::stream).distinct().toList());
 
     //AstScanner for main files
     astScanner = new JavaAstScanner(sonarComponents, telemetry, TelemetryKey.JAVA_ANALYSIS_MAIN);
@@ -130,7 +138,110 @@ public class JavaFrontend {
     astScannerForGeneratedFiles.setVisitorBridge(new VisitorsBridge(jspCodeVisitors, jspClasspath, sonarComponents, javaVersion, inAndroidContext));
   }
 
+  private void refreshClasspaths() {
+    replaceClasspath(astScanner, sonarComponents.getJavaClasspath());
+    replaceClasspath(astScannerForTests, sonarComponents.getJavaTestClasspath());
+    replaceClasspath(astScannerForGeneratedFiles, sonarComponents.getJspClasspath());
+    globalClasspath = Stream.of(astScanner.getClasspath(), astScannerForTests.getClasspath(), astScannerForGeneratedFiles.getClasspath())
+      .flatMap(Collection::stream).distinct().toList();
+  }
+
+  private static void replaceClasspath(JavaAstScanner scanner, List<File> classpath) {
+    scanner.getClasspath().clear();
+    scanner.getClasspath().addAll(classpath);
+  }
+
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
+    if (!sonarComponents.isCompileToByteCodeEnabled()) {
+      scanPreparedFiles(sourceFiles, testFiles, generatedFiles);
+      return;
+    }
+    LOG.info("sonar.java.compileToByteCode is enabled. Compiling Java sources before analysis.");
+    List<InputFile> mainInputs = StreamSupport.stream(sourceFiles.spliterator(), false).toList();
+    List<InputFile> testInputs = StreamSupport.stream(testFiles.spliterator(), false).toList();
+    List<? extends InputFile> generatedInputs = StreamSupport.stream(generatedFiles.spliterator(), false).toList();
+    if (mainInputs.isEmpty() && testInputs.isEmpty() && generatedInputs.isEmpty()) {
+      LOG.info("Skipping bytecode compilation because there are no Java source files.");
+      scanPreparedFiles(mainInputs, testInputs, generatedInputs);
+      return;
+    }
+
+    Path outputDirectory;
+    try {
+      outputDirectory = createBytecodeOutputDirectory();
+    } catch (IOException e) {
+      LOG.warn("Unable to create bytecode output directory. Continuing analysis without compiling sources.", e);
+      scanPreparedFiles(mainInputs, testInputs, generatedInputs);
+      return;
+    }
+
+    try {
+      compileFiles(mainInputs, astScanner, outputDirectory.resolve("main"), "Main");
+      sonarComponents.setGeneratedBytecodeDirectories(List.of(outputDirectory.resolve("main")), List.of());
+      refreshClasspaths();
+      compileFiles(testInputs, astScannerForTests, outputDirectory.resolve("test"), "Test");
+      sonarComponents.setGeneratedBytecodeDirectories(List.of(outputDirectory.resolve("main")), List.of(outputDirectory.resolve("test")));
+      refreshClasspaths();
+      compileFiles(generatedInputs, astScannerForGeneratedFiles, outputDirectory.resolve("generated"), GENERATED_FILES);
+      sonarComponents.setGeneratedBytecodeDirectories(List.of(outputDirectory.resolve("main"), outputDirectory.resolve("generated")), List.of(outputDirectory.resolve("test")));
+      refreshClasspaths();
+      scanPreparedFiles(mainInputs, testInputs, generatedInputs);
+    } finally {
+      removeGeneratedBytecode(outputDirectory);
+    }
+  }
+
+  private Path createBytecodeOutputDirectory() throws IOException {
+    File workingDirectory = sonarComponents.context().fileSystem().workDir();
+    if (workingDirectory == null) {
+      throw new IOException("Scanner working directory is unavailable.");
+    }
+    Path outputDirectory = workingDirectory.toPath().toAbsolutePath().normalize().resolve("java-bytecode");
+    deleteBytecodeDirectory(outputDirectory);
+    return Files.createDirectories(outputDirectory);
+  }
+
+  private void compileFiles(List<? extends InputFile> files, JavaAstScanner scanner, Path outputDirectory, String group) {
+    List<Path> sources = scanner.filterModuleInfo(files)
+      .map(InputFile::path)
+      .filter(Objects::nonNull)
+      .filter(Files::isRegularFile)
+      .toList();
+    if (sources.isEmpty()) {
+      LOG.info("Skipping {} bytecode compilation because there are no Java source files.", group);
+      return;
+    }
+    LOG.info("Compiling {} Java source files for {} to {}.", sources.size(), group, outputDirectory);
+    List<Path> classpath = scanner.getClasspath().stream().map(File::toPath).toList();
+    Charset charset = files.stream().findFirst().map(InputFile::charset).orElseGet(Charset::defaultCharset);
+    if (BytecodeCompiler.compile(sources, classpath, outputDirectory, javaVersion, javaVersion, charset)) {
+      LOG.info("{} bytecode compilation succeeded.", group);
+    } else {
+      LOG.info("{} bytecode compilation failed. Continuing analysis with any generated bytecode.", group);
+    }
+  }
+
+  private void removeGeneratedBytecode(Path outputDirectory) {
+    sonarComponents.setGeneratedBytecodeDirectories(List.of(), List.of());
+    refreshClasspaths();
+    try {
+      deleteBytecodeDirectory(outputDirectory);
+    } catch (IOException e) {
+      LOG.debug("Unable to remove generated bytecode directory: {}", outputDirectory, e);
+    }
+  }
+
+  private static void deleteBytecodeDirectory(Path outputDirectory) throws IOException {
+    if (Files.exists(outputDirectory)) {
+      try (Stream<Path> paths = Files.walk(outputDirectory)) {
+        for (Path path : paths.sorted(Comparator.reverseOrder()).toList()) {
+          Files.deleteIfExists(path);
+        }
+      }
+    }
+  }
+
+  private void scanPreparedFiles(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
     if (canOptimizeScanning()) {
       long successfullyScanned = 0L;
       long total = 0L;
@@ -163,13 +274,13 @@ public class JavaFrontend {
     if (fileByFileMode) {
       scanAndMeasureTask(sourceFiles, astScanner::scan, "Main");
       scanAndMeasureTask(testFiles, astScannerForTests::scan, "Test");
-      scanAndMeasureTask(generatedFiles, astScannerForGeneratedFiles::scan, "Generated");
+      scanAndMeasureTask(generatedFiles, astScannerForGeneratedFiles::scan, GENERATED_FILES);
     } else if (sonarComponents.isAutoScan()) {
       scanAsBatch(new AutoScanBatchContext(), sourceFiles, testFiles);
     } else {
       scanAsBatch(new DefaultBatchModeContext(astScanner, "Main"), sourceFiles);
       scanAsBatch(new DefaultBatchModeContext(astScannerForTests, "Test"), testFiles);
-      scanAsBatch(new DefaultBatchModeContext(astScannerForGeneratedFiles, "Generated"), generatedFiles);
+      scanAsBatch(new DefaultBatchModeContext(astScannerForGeneratedFiles, GENERATED_FILES), generatedFiles);
     }
 
     DependencyVersionInference dependencyService = new DependencyVersionInference();
