@@ -158,8 +158,15 @@ public class SemanticReportScanner implements JavaFileScanner {
     if (currentModuleReferences.allReferencedTypes.add(type)) {
       currentModuleReferences.resolvedTypeCount++;
     }
-    if (currentModuleReferences.typeSources.computeIfAbsent(type, ignored -> newIdentitySet()).add(sourceClass)) {
-      currentModuleReferences.typesToResolve.push(new TypeReference(type, sourceClass));
+    if (currentModuleReferences.typeArgumentSources.computeIfAbsent(type, ignored -> newIdentitySet()).add(sourceClass)) {
+      String name = type.fullyQualifiedName();
+      collectType(type.declaringType(), locationOf(name, "declaringType"), sourceClass);
+      collectTypes(type.typeArguments(), locationOf(name, "typeArguments"), sourceClass);
+    }
+    Type erasure = type.erasure();
+    Type expandedType = erasure == null || erasure.isUnknown() ? type : erasure;
+    if (currentModuleReferences.typeSources.computeIfAbsent(expandedType, ignored -> newIdentitySet()).add(sourceClass)) {
+      currentModuleReferences.typesToResolve.push(new TypeReference(expandedType, sourceClass));
     }
   }
 
@@ -168,9 +175,7 @@ public class SemanticReportScanner implements JavaFileScanner {
     collectSymbol(type.symbol(), locationOf(name, "symbol"), sourceClass);
     collectType(type.primitiveType(), locationOf(name, "primitiveType"), sourceClass);
     collectType(type.primitiveWrapperType(), locationOf(name, "primitiveWrapperType"), sourceClass);
-    collectType(type.declaringType(), locationOf(name, "declaringType"), sourceClass);
     collectType(type.erasure(), locationOf(name, "erasure"), sourceClass);
-    collectTypes(type.typeArguments(), locationOf(name, "typeArguments"), sourceClass);
     if (type.isArray() && type instanceof Type.ArrayType arrayType) {
       collectType(arrayType.elementType(), locationOf(name, "elementType"), sourceClass);
     }
@@ -184,6 +189,18 @@ public class SemanticReportScanner implements JavaFileScanner {
       currentModuleReferences.unknownSymbols.add(symbolLocation.get());
       return;
     }
+    Type referencedType = null;
+    if (symbol instanceof Symbol.TypeSymbol typeSymbol && !typeSymbol.type().isUnknown()) {
+      Type type = typeSymbol.type();
+      Type erasure = type.erasure();
+      if (erasure != null && !erasure.isUnknown()) {
+        Symbol.TypeSymbol erasedSymbol = erasure.symbol();
+        if (erasedSymbol != null && !erasedSymbol.isUnknown()) {
+          symbol = erasedSymbol;
+          referencedType = type;
+        }
+      }
+    }
     Symbol.TypeSymbol targetClass = symbol instanceof Symbol.TypeSymbol typeSymbol ? typeSymbol : symbol.enclosingClass();
     int visibility = visibility(sourceClass, targetClass);
     Integer previousVisibility = currentModuleReferences.allReferencedSymbols.get(symbol);
@@ -193,6 +210,9 @@ public class SemanticReportScanner implements JavaFileScanner {
     currentModuleReferences.allReferencedSymbols.put(symbol, visibility | (previousVisibility == null ? 0 : previousVisibility));
     if (currentModuleReferences.symbolSources.computeIfAbsent(symbol, ignored -> newIdentitySet()).add(sourceClass)) {
       currentModuleReferences.symbolsToResolve.push(new SymbolReference(symbol, sourceClass));
+    }
+    if (referencedType != null) {
+      collectType(referencedType, locationOf(symbol.name(), "type"), sourceClass);
     }
   }
 
@@ -388,6 +408,7 @@ public class SemanticReportScanner implements JavaFileScanner {
     final Map<Symbol, Integer> allReferencedSymbols = new IdentityHashMap<>();
     final Map<Symbol, Set<Symbol.TypeSymbol>> symbolSources = new IdentityHashMap<>();
     final Map<Type, Set<Symbol.TypeSymbol>> typeSources = new IdentityHashMap<>();
+    final Map<Type, Set<Symbol.TypeSymbol>> typeArgumentSources = new IdentityHashMap<>();
     final Set<String> unknownIdentifiers = new TreeSet<>();
     final Set<String> unknownSymbols = new TreeSet<>();
     final Set<String> unknownTypes = new TreeSet<>();
@@ -402,6 +423,7 @@ public class SemanticReportScanner implements JavaFileScanner {
       allReferencedSymbols.clear();
       symbolSources.clear();
       typeSources.clear();
+      typeArgumentSources.clear();
       typesToResolve.clear();
       symbolsToResolve.clear();
     }

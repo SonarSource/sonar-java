@@ -145,6 +145,45 @@ class SemanticReportScannerTest {
     scanner.leaveModule();
   }
 
+  @Test
+  void expands_erased_members_and_type_argument_dependencies() throws IOException {
+    Symbol.TypeSymbol raw = typeSymbol("library.Generic", "library", "Generic");
+    Symbol.TypeSymbol dependency = typeSymbol("library.Dependency", "library", "Dependency");
+    Type rawType = mock(Type.class);
+    Type dependencyType = mock(Type.class);
+    Type parameterizedType = mock(Type.class);
+    when(raw.type()).thenReturn(rawType);
+    when(dependency.type()).thenReturn(dependencyType);
+    when(rawType.fullyQualifiedName()).thenReturn("library.Generic");
+    when(dependencyType.fullyQualifiedName()).thenReturn("library.Dependency");
+    when(parameterizedType.fullyQualifiedName()).thenReturn("library.Generic");
+    when(rawType.erasure()).thenReturn(rawType);
+    when(dependencyType.erasure()).thenReturn(dependencyType);
+    when(parameterizedType.erasure()).thenReturn(rawType);
+    when(rawType.symbol()).thenReturn(raw);
+    when(dependencyType.symbol()).thenReturn(dependency);
+    when(parameterizedType.typeArguments()).thenReturn(List.of(dependencyType));
+    Symbol rawMember = member(raw, "rawMember", 0);
+    Symbol dependencyMember = member(dependency, "dependencyMember", 0);
+    when(raw.memberSymbols()).thenReturn(List.of(rawMember));
+    when(dependency.memberSymbols()).thenReturn(List.of(dependencyMember));
+    Symbol.TypeSymbol parameterized = mock(Symbol.TypeSymbol.class);
+    when(parameterized.type()).thenReturn(parameterizedType);
+
+    SemanticReportScanner scanner = new SemanticReportScanner();
+    scanner.enterModule(temp);
+    IdentifierTree identifier = mock(IdentifierTree.class);
+    when(identifier.name()).thenReturn("Generic");
+    when(identifier.symbol()).thenReturn(parameterized);
+    scanIdentifier(scanner, typeSymbol("consumer.Source", "consumer", "Source"), identifier);
+    Path report = temp.resolve("report.json");
+    scanner.writeReport(report, temp);
+    var result = JsonParser.parseString(Files.readString(report)).getAsJsonObject();
+    assertThat(result.get("resolvedSymbolCount").getAsInt()).isEqualTo(4);
+    assertThat(result.get("resolvedTypeCount").getAsInt()).isEqualTo(3);
+    scanner.leaveModule();
+  }
+
   private void assertResolvedSymbols(SemanticReportScanner scanner, Symbol.TypeSymbol source, Symbol.TypeSymbol target, int expected) throws IOException {
     IdentifierTree identifier = mock(IdentifierTree.class);
     when(identifier.name()).thenReturn("Target");

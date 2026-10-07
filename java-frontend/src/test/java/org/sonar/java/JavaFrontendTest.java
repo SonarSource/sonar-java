@@ -224,6 +224,20 @@ class JavaFrontendTest {
   }
 
   @Test
+  void semantic_report_finishes_recursive_generic_members() throws IOException {
+    Path report = temp.resolve("semantic-report.json");
+    MapSettings settings = new MapSettings();
+    settings.setProperty(SonarComponents.SONAR_SEMANTIC_REPORT, report.toString());
+    sensorContext = SensorContextTester.create(temp.toFile().getAbsoluteFile());
+    sensorContext.setSettings(settings);
+
+    scan(settings, SONARQUBE_RUNTIME, List.of(addFile(temp, "class Recursive<T> { Recursive<Recursive<T>> next; }", sensorContext)));
+    semanticReportScanner.writeReport(report, temp);
+
+    assertThat(JsonParser.parseString(Files.readString(report)).getAsJsonObject().get("resolvedSymbolCount").getAsInt()).isPositive();
+  }
+
+  @Test
   void semantic_report_handles_empty_project() throws IOException {
     Path report = temp.resolve("semantic-report.json");
     MapSettings settings = new MapSettings();
