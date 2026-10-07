@@ -125,6 +125,9 @@
               <include>com/sonar/it/java/suite/ComparisonSettingsTest.java</include>
               <include>com/sonar/it/java/suite/CompilationMeasurementTest.java</include>
               <include>com/sonar/it/java/suite/AnalysisMatrixTest.java</include>
+              <include>com/sonar/it/java/suite/AnalysisDatasetTest.java</include>
+              <include>com/sonar/it/java/suite/AnalysisComparisonReportTest.java</include>
+              <include>com/sonar/it/java/suite/ReactorProjectTest.java</include>
               <include>com/sonar/it/java/*Test.java</include>
             </includes>
           </configuration>

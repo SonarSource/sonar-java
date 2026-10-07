@@ -12,6 +12,10 @@
           <key>expectProjectBindingsResolved</key>
           <value>false</value>
         </parameter>
+        <parameter>
+          <key>expectMissingTypeProbe</key>
+          <value>false</value>
+        </parameter>
       </parameters>
     </rule>
   </rules>

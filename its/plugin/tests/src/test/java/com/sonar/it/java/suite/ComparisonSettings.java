@@ -20,13 +20,15 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 
-record ComparisonSettings(String serverVersion, String scannerVersion, int repetitions, Map<String, String> candidateProperties) {
+record ComparisonSettings(String serverVersion, String scannerVersion, int repetitions, Map<String, String> candidateProperties, int graphLimit,
+                          Boolean fileByFile) {
 
   private static final Set<String> PROTECTED_PROPERTIES = Set.of(
     "sonar.projectkey", "sonar.sources", "sonar.tests", "sonar.java.source", "sonar.java.jdkhome",
@@ -34,6 +36,8 @@ record ComparisonSettings(String serverVersion, String scannerVersion, int repet
     "sonar.scanner.skipjreprovisioning",
     "sonar.java.sourcepath", "sonar.java.test.sourcepath",
     "sonar.java.compiletobytecode", "sonar.java.filebyfile", "sonar.working.directory",
+    "sonar.java.experimental.batchmodesizeinkb", "sonar.sourceencoding",
+    "sonar.java.internal.semantic.report.graph.maxexpansions",
     "sonar.java.binaries", "sonar.java.libraries", "sonar.java.test.binaries", "sonar.java.test.libraries",
     "sonar.java.skipunchanged", "sonar.internal.analysis.autoscan", "sonar.internal.analysis.autoscan.filtering",
     "sonar.java.internal.semantic.report", "sonar.verbose", "sonar.log.level", "sonar.scm.disabled", "style.color",
@@ -41,6 +45,19 @@ record ComparisonSettings(String serverVersion, String scannerVersion, int repet
 
   ComparisonSettings {
     candidateProperties = Map.copyOf(candidateProperties);
+  }
+
+  ComparisonSettings(String serverVersion, String scannerVersion, int repetitions, Map<String, String> candidateProperties) {
+    this(serverVersion, scannerVersion, repetitions, candidateProperties, 0, null);
+  }
+
+  ComparisonSettings(String serverVersion, String scannerVersion, int repetitions, Map<String, String> candidateProperties, int graphLimit) {
+    this(serverVersion, scannerVersion, repetitions, candidateProperties, graphLimit, null);
+  }
+
+  List<AnalysisDataset> selectDatasets(List<AnalysisDataset> datasets) {
+    return datasets.stream().filter(dataset -> fileByFile == null
+      || dataset.sharedProperties().get("sonar.java.fileByFile").equals(fileByFile.toString())).toList();
   }
 
   static ComparisonSettings load() throws IOException {
@@ -60,7 +77,25 @@ record ComparisonSettings(String serverVersion, String scannerVersion, int repet
     if (repetitions < 1) {
       throw new IllegalArgumentException("comparison.repetitions must be a positive integer: " + repetitionsValue);
     }
-    return new ComparisonSettings(server, scanner, repetitions, readCandidateProperties(properties));
+    String graphValue = properties.getProperty("comparison.graphLimit", "0");
+    int graphLimit;
+    try {
+      graphLimit = Integer.parseInt(graphValue);
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("comparison.graphLimit must be an integer from 0 to 1000: " + graphValue, e);
+    }
+    if (graphLimit < 0 || graphLimit > 1000) {
+      throw new IllegalArgumentException("comparison.graphLimit must be an integer from 0 to 1000: " + graphValue);
+    }
+    String batching = properties.getProperty("sonar.java.fileByFile");
+    Boolean fileByFile = null;
+    if (batching != null) {
+      if (!batching.equalsIgnoreCase("true") && !batching.equalsIgnoreCase("false")) {
+        throw new IllegalArgumentException("sonar.java.fileByFile must be true or false: " + batching);
+      }
+      fileByFile = Boolean.valueOf(batching);
+    }
+    return new ComparisonSettings(server, scanner, repetitions, readCandidateProperties(properties), graphLimit, fileByFile);
   }
 
   private static String pinnedVersion(Properties properties, String key, String defaultValue) {

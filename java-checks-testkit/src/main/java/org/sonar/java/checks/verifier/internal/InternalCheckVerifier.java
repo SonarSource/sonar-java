@@ -104,7 +104,7 @@ public class InternalCheckVerifier implements CheckVerifier {
   }
 
   @Override
-  public InternalCheckVerifier withCheck(JavaFileScanner check) {
+  public InternalCheckVerifier withCheck(AutowiredOnConstructorWhenMultipleConstructorsCheck check) {
     requiresNull(checks, CHECK_OR_CHECKS);
     checks = Collections.singletonList(check);
     return this;

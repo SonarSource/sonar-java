@@ -38,6 +38,8 @@ class ComparisonSettingsTest {
     assertThat(settings.serverVersion()).isEqualTo("26.10.0.132816");
     assertThat(settings.scannerVersion()).isEqualTo("5.9.0.7291");
     assertThat(settings.repetitions()).isEqualTo(3);
+    assertThat(settings.graphLimit()).isZero();
+    assertThat(settings.fileByFile()).isNull();
     assertThat(settings.candidateProperties()).isEmpty();
   }
 
@@ -91,6 +93,9 @@ class ComparisonSettingsTest {
       "sonar.projectBaseDir", "sonar.exclusions", "sonar.scanner.skipJreProvisioning",
       "sonar.java.sourcepath", "sonar.java.test.sourcepath",
       "sonar.java.compileToByteCode", "sonar.java.fileByFile", "sonar.working.directory",
+      "sonar.java.experimental.batchModeSizeInKB",
+      "sonar.sourceEncoding",
+      "sonar.java.internal.semantic.report.graph.maxExpansions",
       "sonar.java.binaries", "sonar.java.libraries", "sonar.java.test.binaries", "sonar.java.test.libraries",
       "sonar.java.skipUnchanged", "sonar.internal.analysis.autoscan", "sonar.internal.analysis.autoscan.filtering",
       "sonar.java.internal.semantic.report", "sonar.verbose", "sonar.log.level", "org.slf4j.simpleLogger.log.org.sonarsource",
@@ -122,5 +127,30 @@ class ComparisonSettingsTest {
     Properties properties = new Properties();
     properties.setProperty(key, value);
     return properties;
+  }
+
+  @Test
+  void optional_graph_diagnostics_have_an_explicit_bounded_budget() throws IOException {
+    assertThat(ComparisonSettings.load(property("comparison.graphLimit", "1000")).graphLimit()).isEqualTo(1000);
+    for (String value : List.of("-1", "1001", "all", "", "1.5")) {
+      assertThatThrownBy(() -> ComparisonSettings.load(property("comparison.graphLimit", value)))
+        .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("comparison.graphLimit");
+    }
+  }
+
+  @Test
+  void exact_scanner_flag_selects_parser_scenarios_without_changing_feature_modes() throws IOException {
+    Path library = Files.writeString(directory.resolve("external.jar"), "external");
+    var datasets = AnalysisDataset.sonarXml(List.of(library));
+    assertThat(ComparisonSettings.load(new Properties()).selectDatasets(datasets)).hasSize(4);
+    for (String value : List.of("true", "false")) {
+      var selected = ComparisonSettings.load(property("sonar.java.fileByFile", value)).selectDatasets(datasets);
+      assertThat(selected).hasSize(2).allSatisfy(dataset -> assertThat(dataset.sharedProperties()).containsEntry("sonar.java.fileByFile", value));
+      assertThat(selected.stream().map(dataset -> dataset.libraries().size())).containsExactly(0, 1);
+    }
+    for (String value : List.of("", "yes", "1")) {
+      assertThatThrownBy(() -> ComparisonSettings.load(property("sonar.java.fileByFile", value)))
+        .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("sonar.java.fileByFile");
+    }
   }
 }

@@ -94,7 +94,19 @@ final class SourceOnlyComparison {
       return invalid(current, candidate, placeholder, "A semantic report is missing; comparison metrics are unavailable.");
     }
 
-    if (!current.semantics().files().keySet().equals(candidate.semantics().files().keySet())) {
+    if (!current.semantics().moduleIdentifierCounts().keySet().equals(candidate.semantics().moduleIdentifierCounts().keySet())) {
+      return invalid(current, candidate, placeholder, "Semantic reports cover different modules; comparison metrics are unavailable.");
+    }
+    for (String module : current.semantics().moduleIdentifierCounts().keySet()) {
+      int before = current.semantics().moduleIdentifierCounts().get(module).total();
+      int after = candidate.semantics().moduleIdentifierCounts().get(module).total();
+      if (before != after) {
+        return invalid(current, candidate, placeholder, "Identifier coverage differs for module " + module + ": current="
+          + before + ", candidate=" + after + ". Comparison metrics are unavailable.");
+      }
+    }
+    if (fileObservationsAvailable(current.semantics(), candidate.semantics())
+      && !current.semantics().files().keySet().equals(candidate.semantics().files().keySet())) {
       var currentOnlyFiles = new TreeSet<>(current.semantics().files().keySet());
       currentOnlyFiles.removeAll(candidate.semantics().files().keySet());
       var candidateOnlyFiles = new TreeSet<>(candidate.semantics().files().keySet());
@@ -102,13 +114,19 @@ final class SourceOnlyComparison {
       return invalid(current, candidate, placeholder, "Semantic reports cover different files; current-only: "
         + currentOnlyFiles + "; candidate-only: " + candidateOnlyFiles + ". Comparison metrics are unavailable.");
     }
-    for (String path : new TreeSet<>(current.semantics().files().keySet())) {
-      int before = current.semantics().files().get(path).total();
-      int after = candidate.semantics().files().get(path).total();
-      if (before != after) {
-        return invalid(current, candidate, placeholder, "Identifier coverage differs for " + path + ": current="
-          + before + ", candidate=" + after + ". Comparison metrics are unavailable.");
+    if (fileObservationsAvailable(current.semantics(), candidate.semantics())) {
+      for (String path : new TreeSet<>(current.semantics().files().keySet())) {
+        int before = current.semantics().files().get(path).total();
+        int after = candidate.semantics().files().get(path).total();
+        if (before != after) {
+          return invalid(current, candidate, placeholder, "Identifier coverage differs for " + path + ": current="
+            + before + ", candidate=" + after + ". Comparison metrics are unavailable.");
+        }
       }
+    }
+    if (current.semantics().totals().total() != candidate.semantics().totals().total()) {
+      return invalid(current, candidate, placeholder, "Global identifier coverage differs: current=" + current.semantics().totals().total()
+        + ", candidate=" + candidate.semantics().totals().total() + ". Comparison metrics are unavailable.");
     }
 
     var candidateOnly = sorted(candidate.findings());
@@ -145,6 +163,10 @@ final class SourceOnlyComparison {
 
   private static Comparison invalid(Run current, Run candidate, boolean placeholder, String error) {
     return new Comparison(false, placeholder, error, current, candidate, List.of(), List.of(), List.of());
+  }
+
+  static boolean fileObservationsAvailable(SemanticReport current, SemanticReport candidate) {
+    return current.hasFileObservations() && candidate.hasFileObservations();
   }
 
   private static ArrayList<Finding> sorted(List<Finding> findings) {
@@ -223,6 +245,7 @@ final class SourceOnlyComparison {
     appendSourcePathFixture(report, metadata);
     appendUnknownOccurrences(report, current.semantics(), candidate.semantics());
     appendRunDetails(report, metadata, currentSamples, candidateSamples);
+    appendModuleSemantics(report, current.semantics(), candidate.semantics());
     appendRankedChanges(report, current.semantics(), candidate.semantics(), true);
     appendRankedChanges(report, current.semantics(), candidate.semantics(), false);
     appendTopUnknownFiles(report, current.semantics(), candidate.semantics());
@@ -244,13 +267,13 @@ final class SourceOnlyComparison {
     appendFindings(report, "Candidate-only findings", comparison.candidateOnly());
     appendFindings(report, "Current findings", sorted(current.findings()));
     report.append("\n## Reading the data\n\n")
-      .append("- Both modes use sources and the JDK, without project bytecode or dependency JARs.\n")
+      .append("- Both modes use the same indexed sources. Supplied binary and library inputs are held fixed within a comparison.\n")
       .append("- Retention measures agreement with current source-only findings, not accuracy.\n")
       .append("- Undefined-type errors are a diagnostic count, not resolution coverage. Missing telemetry is shown as N/A.\n")
       .append("- Identifier counts come from the semantic report: known = total − unknown. They count identifier occurrences, not distinct fields or properties.\n")
       .append("- Unknown occurrences match by file, name, and token range. Removed means no longer reported unknown; correctness is checked separately. AST context is diagnostic, not a method/type/field classification.\n")
       .append("- Unknown percentage = unknown / total × 100. The project percentage uses aggregate counts, not an average of file percentages. No identifiers means N/A.\n")
-      .append("- Per-file counts are current / candidate. A negative change in unknown percentage means fewer unresolved identifiers; it does not prove semantic correctness.\n")
+      .append("- Module counts come from the canonical report. Per-file counts are current / candidate when observations are available; absent observations are UNAVAILABLE. A negative change in unknown percentage means fewer unresolved identifiers; it does not prove semantic correctness.\n")
       .append("- Files with no unknown identifiers must contain at least one identifier; their percentage uses all analyzed files. Files with zero identifiers are excluded from improved/unchanged/regressed counts.\n")
       .append("- Configured rules may be disabled when dependencies are absent; zero findings do not prove a rule ran.\n")
       .append("- Wall times include Maven startup, scanning, and server processing. Analyzer timings are reported separately when available; test-server startup is excluded. Repeated samples exclude warm-up runs.\n");
@@ -303,7 +326,7 @@ final class SourceOnlyComparison {
   private static void appendUnknownOccurrences(StringBuilder report, SemanticReport current, SemanticReport candidate) {
     report.append("\n## Unknown identifier occurrences\n\n");
     if (!current.hasUnknownDetails() || !candidate.hasUnknownDetails()) {
-      report.append("Unavailable: at least one semantic report contains counts only.\n");
+      report.append("UNAVAILABLE: unknown occurrence details are absent in at least one report.\n");
       return;
     }
     var before = unknownOccurrences(current);
@@ -379,14 +402,18 @@ final class SourceOnlyComparison {
   }
 
   private static void appendRankedChanges(StringBuilder report, SemanticReport current, SemanticReport candidate, boolean improvements) {
+    report.append("\n## Largest semantic ").append(improvements ? "improvements" : "regressions")
+      .append("\n\nTop five by absolute change in unknown percentage.\n\n");
+    if (!fileObservationsAvailable(current, candidate)) {
+      report.append("UNAVAILABLE: per-file observations are absent in at least one report.\n");
+      return;
+    }
     var paths = current.files().keySet().stream().filter(path -> {
       Double before = current.files().get(path).unknownPercentage();
       Double after = candidate.files().get(path).unknownPercentage();
       return before != null && after != null && (improvements ? after < before : after > before);
     }).sorted(Comparator.comparingDouble((String path) -> Math.abs(candidate.files().get(path).unknownPercentage()
       - current.files().get(path).unknownPercentage())).reversed().thenComparing(Comparator.naturalOrder())).limit(5).toList();
-    report.append("\n## Largest semantic ").append(improvements ? "improvements" : "regressions")
-      .append("\n\nTop five by absolute change in unknown percentage.\n\n");
     if (paths.isEmpty()) {
       report.append("None.\n");
       return;
@@ -426,6 +453,8 @@ final class SourceOnlyComparison {
     appendMetric(report, "Unknown identifiers", current == null ? "N/A" : current.totals().unknown(), candidate == null ? "N/A" : candidate.totals().unknown());
     appendMetric(report, "Unknown identifiers (%)", identifierPercentage(current == null ? null : current.totals().unknownPercentage()),
       identifierPercentage(candidate == null ? null : candidate.totals().unknownPercentage()));
+    appendMetric(report, "Per-file semantic observations", current == null ? "N/A" : current.hasFileObservations() ? "AVAILABLE" : "UNAVAILABLE",
+      candidate == null ? "N/A" : candidate.hasFileObservations() ? "AVAILABLE" : "UNAVAILABLE");
     appendMetric(report, "Files with no unknown identifiers", filesWithNoUnknowns(current), filesWithNoUnknowns(candidate));
   }
 
@@ -433,12 +462,22 @@ final class SourceOnlyComparison {
     if (semantics == null) {
       return "N/A";
     }
+    if (!semantics.hasFileObservations()) {
+      return "UNAVAILABLE";
+    }
     long count = semantics.files().values().stream().filter(counts -> counts.total() > 0 && counts.unknown() == 0).count();
     int files = semantics.files().size();
     return count + " / " + files + " (" + identifierPercentage(files == 0 ? null : 100.0 * count / files) + ")";
   }
 
   private static void appendFileChanges(StringBuilder report, SemanticReport current, SemanticReport candidate) {
+    if (!fileObservationsAvailable(current, candidate)) {
+      for (String metric : List.of("Files improved (unknown %)", "Files unchanged (unknown %)", "Files regressed (unknown %)",
+        "Files without comparable identifier percentages")) {
+        report.append("| ").append(metric).append(" | UNAVAILABLE |\n");
+      }
+      return;
+    }
     int improved = 0;
     int unchanged = 0;
     int regressed = 0;
@@ -463,13 +502,17 @@ final class SourceOnlyComparison {
   }
 
   private static void appendTopUnknownFiles(StringBuilder report, SemanticReport current, SemanticReport candidate) {
+    report.append("\n## Top files contributing unknown identifiers\n\n")
+      .append("Top five by the largest unknown count in either run. Values are **current / candidate**.\n\n");
+    if (!fileObservationsAvailable(current, candidate)) {
+      report.append("UNAVAILABLE: per-file observations are absent in at least one report.\n");
+      return;
+    }
     var paths = current.files().keySet().stream()
       .filter(path -> current.files().get(path).unknown() > 0 || candidate.files().get(path).unknown() > 0)
       .sorted(Comparator.comparingInt((String path) -> Math.max(current.files().get(path).unknown(), candidate.files().get(path).unknown()))
         .reversed().thenComparing(Comparator.naturalOrder()))
       .limit(5).toList();
-    report.append("\n## Top files contributing unknown identifiers\n\n")
-      .append("Top five by the largest unknown count in either run. Values are **current / candidate**.\n\n");
     if (paths.isEmpty()) {
       report.append("None.\n");
       return;
@@ -486,8 +529,12 @@ final class SourceOnlyComparison {
   }
 
   private static void appendFileSemantics(StringBuilder report, SemanticReport current, SemanticReport candidate) {
-    report.append("\n## Semantics per file\n\nCounts and percentages are **current / candidate**. Change is candidate minus current.\n\n")
-      .append("| File | Total identifiers | Known identifiers | Unknown identifiers | Unknown % | Change (pp) |\n")
+    report.append("\n## Semantics per file\n\nCounts and percentages are **current / candidate**. Change is candidate minus current.\n\n");
+    if (!fileObservationsAvailable(current, candidate)) {
+      report.append("UNAVAILABLE: per-file observations are absent in at least one report.\n");
+      return;
+    }
+    report.append("| File | Total identifiers | Known identifiers | Unknown identifiers | Unknown % | Change (pp) |\n")
       .append("|---|---:|---:|---:|---:|---:|\n");
     for (String path : new TreeSet<>(current.files().keySet())) {
       SemanticReport.Counts before = current.files().get(path);
@@ -497,6 +544,22 @@ final class SourceOnlyComparison {
         .append(" | ").append(before.unknown()).append(" / ").append(after.unknown())
         .append(" | ").append(identifierPercentage(before.unknownPercentage())).append(" / ").append(identifierPercentage(after.unknownPercentage()))
         .append(" | ").append(change(before.unknownPercentage(), after.unknownPercentage())).append(" |\n");
+    }
+  }
+
+  private static void appendModuleSemantics(StringBuilder report, SemanticReport current, SemanticReport candidate) {
+    if (current.moduleIdentifierCounts().isEmpty() && candidate.moduleIdentifierCounts().isEmpty()) {
+      return;
+    }
+    report.append("\n## Semantics per module\n\nCounts and percentages are **current / candidate**. Empty aggregator modules retain their actual zero counts.\n\n")
+      .append("| Module | Total identifiers | Known identifiers | Unknown identifiers | Unknown % |\n|---|---:|---:|---:|---:|\n");
+    for (String module : current.moduleIdentifierCounts().keySet()) {
+      var before = current.moduleIdentifierCounts().get(module);
+      var after = candidate.moduleIdentifierCounts().get(module);
+      report.append("| ").append(escape(module)).append(" | ").append(before.total()).append(" / ").append(after.total())
+        .append(" | ").append(before.known()).append(" / ").append(after.known())
+        .append(" | ").append(before.unknown()).append(" / ").append(after.unknown())
+        .append(" | ").append(identifierPercentage(before.unknownPercentage())).append(" / ").append(identifierPercentage(after.unknownPercentage())).append(" |\n");
     }
   }
 

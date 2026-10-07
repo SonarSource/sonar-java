@@ -77,4 +77,18 @@ class CompilationMeasurementTest {
       assertThat(NoCompilationComparisonTest.measuredOrder(repetition)).containsExactlyInAnyOrder(AnalysisMode.values());
     }
   }
+
+  @Test
+  void aggregates_native_module_compilation_without_confusing_failure_and_success() {
+    String logs = """
+      Java bytecode compilation: scope=main status=SUCCESS sources=2 classes=3 time_ms=10
+      Java bytecode compilation: scope=test status=SKIPPED sources=0 classes=0 time_ms=0
+      Java bytecode compilation: scope=main status=FAILED sources=4 classes=1 time_ms=20
+      Java bytecode compilation: scope=test status=SKIPPED sources=0 classes=0 time_ms=0
+      """;
+    assertThat(CompilationMeasurement.read(logs, true, 2)).containsEntry("comparison.compilation.status", "FAILED")
+      .containsEntry("comparison.compilation.classes", "4").containsEntry("comparison.compilation.sources", "6")
+      .containsEntry("comparison.compilation.time_ms", "30").containsEntry("comparison.compilation.main.success", "1")
+      .containsEntry("comparison.compilation.main.failed", "1").containsEntry("comparison.compilation.main.modules", "2");
+  }
 }

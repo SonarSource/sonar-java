@@ -139,6 +139,344 @@ class SemanticReportTest {
     assertInvalid(report(1, 0, file("A.java", 1, 0)), List.of(), "extra=[A.java]");
   }
 
+  @Test
+  void reads_module_identifiers_and_semantic_graph_counts_without_treating_unknown_graph_locations_as_coverage() throws IOException {
+    var firstGraph = new SemanticReport.GraphCounts(1, 3, 2, 4);
+    var secondGraph = new SemanticReport.GraphCounts(2, 0, 6, 0);
+    var totalGraph = new SemanticReport.GraphCounts(3, 3, 8, 4);
+    String first = module("z", 2, 1, firstGraph, fileWithDetails("src/A.java", 3, 1,
+      unknownIdentifier("Missing", "1:0-1:7", "VARIABLE")));
+    String second = module("a", 3, 0, secondGraph, fileWithDetails("src/B.java", 3, 0));
+    var report = SemanticReport.read(write(canonicalReport(5, 1, totalGraph, first, second)), List.of("z/src/A.java", "a/src/B.java"));
+
+    assertThat(report.totals()).isEqualTo(new SemanticReport.Counts(6, 1));
+    assertThat(report.graphTotals()).isEqualTo(totalGraph);
+    assertThat(report.moduleGraphCounts()).containsEntry("a", secondGraph).containsEntry("z", firstGraph);
+    assertThat(report.unknownSymbols()).containsExactly("z:(Owner).symbols[0]", "z:(Owner).symbols[1]", "z:(Owner).symbols[2]");
+    assertThat(report.unknownTypes()).hasSize(4).startsWith("z:(Owner).types[0]");
+    assertThat(report.unknownIdentifiers()).containsOnlyKeys("a/src/B.java", "z/src/A.java");
+    assertThat(report.hasUnknownDetails()).isTrue();
+    assertThatThrownBy(() -> report.moduleGraphCounts().clear()).isInstanceOf(UnsupportedOperationException.class);
+    assertThatThrownBy(() -> report.unknownSymbols().clear()).isInstanceOf(UnsupportedOperationException.class);
+    assertThatThrownBy(() -> report.unknownTypes().clear()).isInstanceOf(UnsupportedOperationException.class);
+  }
+
+  @Test
+  void normalizes_module_paths_and_qualifies_identical_graph_locations_from_different_modules() throws IOException {
+    var graph = new SemanticReport.GraphCounts(1, 1, 1, 1);
+    var totals = new SemanticReport.GraphCounts(2, 2, 2, 2);
+    String first = module("./one/", 1, 0, graph, file("src/../src/A.java", 1, 0));
+    String second = module("two", 1, 0, graph, file("src/B.java", 1, 0));
+    var report = SemanticReport.read(write(canonicalReport(2, 0, totals, first, second)), List.of("one/src/A.java", "two/src/B.java"));
+
+    assertThat(report.files()).containsOnlyKeys("one/src/A.java", "two/src/B.java");
+    assertThat(report.unknownSymbols()).containsExactly("one:(Owner).symbols[0]", "two:(Owner).symbols[0]");
+    assertThat(report.moduleGraphCounts()).containsOnlyKeys("one", "two");
+    assertThat(report.hasUnknownDetails()).isFalse();
+  }
+
+  @Test
+  void rejects_duplicate_normalized_module_and_file_paths() throws IOException {
+    var graph = new SemanticReport.GraphCounts(0, 0, 0, 0);
+    assertInvalid(canonicalReport(0, 0, graph, module(".", 0, 0, graph), module("./", 0, 0, graph)), List.of(), "Duplicate module: .");
+    assertInvalid(canonicalReport(2, 0, graph, module(".", 2, 0, graph, file("src/A.java", 1, 0), file("src/../src/A.java", 1, 0))),
+      List.of("src/A.java"), "Duplicate file: src/A.java");
+    assertInvalid(canonicalReport(2, 0, graph, module(".", 1, 0, graph, file("a/src/A.java", 1, 0)),
+      module("a", 1, 0, graph, file("src/A.java", 1, 0))), List.of("a/src/A.java"), "Duplicate file: a/src/A.java");
+  }
+
+  @Test
+  void rejects_canonical_identifier_counts_inconsistent_with_modules_or_per_file_observations() throws IOException {
+    var graph = new SemanticReport.GraphCounts(0, 0, 0, 0);
+    assertInvalid(canonicalReport(2, 0, graph, module(".", 1, 0, graph, file("A.java", 1, 0))), List.of("A.java"), "Aggregate module identifier counts");
+    assertInvalid(canonicalReport(2, 0, graph, module(".", 2, 0, graph, file("A.java", 1, 0))), List.of("A.java"), "Module . identifier counts");
+    assertInvalid(canonicalReport(-1, 0, graph), List.of(), "Invalid identifier counts");
+    assertInvalid(canonicalReport(1, -1, graph), List.of(), "Invalid identifier counts");
+    assertInvalid(canonicalReport(Integer.MAX_VALUE, 1, graph), List.of(), "integer overflow");
+    assertInvalid(canonicalReport(1, 0, graph, module(".", 1, 0, graph, file("A.java", 1, 0)))
+      .replaceFirst("\"resolvedIdentifierCount\":1", "\"resolvedIdentifierCount\":1.5"), List.of("A.java"), "Failed to read semantic report");
+  }
+
+  @Test
+  void rejects_graph_totals_inconsistent_with_module_sums_and_arrays() throws IOException {
+    var graph = new SemanticReport.GraphCounts(1, 1, 1, 1);
+    var different = new SemanticReport.GraphCounts(2, 1, 1, 1);
+    String module = module(".", 1, 0, graph, file("A.java", 1, 0));
+    assertInvalid(canonicalReport(1, 0, different, module), List.of("A.java"), "Aggregate semantic graph counts");
+    assertInvalid(canonicalReport(1, 0, graph, module.replace("\"unknownSymbols\":[\"(Owner).symbols[0]\"]", "\"unknownSymbols\":[]")),
+      List.of("A.java"), "unknownSymbols detail count");
+    assertInvalid(canonicalReport(1, 0, graph, module.replace("\"unknownTypes\":[\"(Owner).types[0]\"]", "\"unknownTypes\":[]")),
+      List.of("A.java"), "unknownTypes detail count");
+    assertInvalid(canonicalReport(1, 0, graph, module.replace("\"(Owner).symbols[0]\"", "null")), List.of("A.java"), "invalid semantic graph location");
+    assertInvalid(canonicalReport(1, 0, graph, module.replace("\"unknownSymbols\":[", "\"unknownSymbols\":[\"(Owner).symbols[0]\",")),
+      List.of("A.java"), "Duplicate semantic graph location");
+    assertInvalid(canonicalReport(1, 0, graph, module).replaceFirst("\"resolvedSymbolCount\":1", "\"resolvedSymbolCount\":-1"),
+      List.of("A.java"), "Invalid semantic graph counts");
+  }
+
+  @Test
+  void accepts_canonical_modules_without_optional_per_file_observations() throws IOException {
+    var graph = new SemanticReport.GraphCounts(0, 0, 0, 0);
+    String populated = withoutFiles(module(".", 1, 0, graph, file("A.java", 1, 0)));
+    var report = SemanticReport.read(write(canonicalReport(1, 0, graph, populated)), List.of("A.java"));
+    assertThat(report.totals()).isEqualTo(new SemanticReport.Counts(1, 0));
+    assertThat(report.moduleIdentifierCounts()).containsEntry(".", new SemanticReport.Counts(1, 0));
+    assertThat(report.files()).isEmpty();
+    assertThat(report.hasFileObservations()).isFalse();
+    assertThat(report.hasUnknownDetails()).isFalse();
+    var empty = SemanticReport.read(write(canonicalReport(0, 0, graph, withoutFiles(module(".", 0, 0, graph)))), List.of());
+    assertThat(empty.files()).isEmpty();
+    assertThat(empty.graphTotals()).isEqualTo(graph);
+    assertThat(empty.hasFileObservations()).isFalse();
+    assertThat(empty.hasUnknownDetails()).isFalse();
+  }
+
+  @Test
+  void canonical_unknown_identifier_list_must_match_module_count_and_observed_file_coverage() throws IOException {
+    var graph = new SemanticReport.GraphCounts(0, 0, 0, 0);
+    String module = module(".", 0, 1, graph, fileWithDetails("A.java", 1, 1, unknownIdentifier("Missing", "1:0-1:7", "VARIABLE")));
+    assertInvalid(canonicalReport(0, 1, graph, module.replace("\"unknownIdentifiers\":[\"(Owner).identifiers[0]\"]", "\"unknownIdentifiers\":[]")),
+      List.of("A.java"), "unknownIdentifiers detail count");
+    assertInvalid(canonicalReport(0, 1, graph, module), List.of("A.java", "B.java"), "missing=[B.java]");
+    assertInvalid(canonicalReport(0, 1, graph, module), List.of(), "extra=[A.java]");
+  }
+
+  @Test
+  void legacy_constructors_expose_absent_graph_metrics_without_inventing_zero_counts() throws IOException {
+    var legacy = SemanticReport.read(write(report(1, 0, file("A.java", 1, 0))), List.of("A.java"));
+    assertThat(legacy.graphTotals()).isNull();
+    assertThat(legacy.moduleGraphCounts()).isEmpty();
+    assertThat(legacy.unknownSymbols()).isEmpty();
+    assertThat(legacy.unknownTypes()).isEmpty();
+    assertThat(new SemanticReport(new SemanticReport.Counts(1, 0), Map.of("A.java", new SemanticReport.Counts(1, 0)), Map.of()).graphTotals()).isNull();
+  }
+
+  @Test
+  void preserves_complete_primary_identifier_counts_when_recursive_graph_traversal_is_partial() throws IOException {
+    var graph = new SemanticReport.GraphCounts(20, 3, 10, 4);
+    String module = withTraversal(module(".", 8, 2, graph, fileWithDetails("A.java", 10, 2,
+      unknownIdentifier("First", "1:0-1:5", "VARIABLE"), unknownIdentifier("Second", "2:0-2:6", "VARIABLE"))), false, 1000, 1000);
+    var report = SemanticReport.read(write(withTraversal(canonicalReport(8, 2, graph, module), false, 1000, 1000)), List.of("A.java"));
+
+    assertThat(report.totals()).isEqualTo(new SemanticReport.Counts(10, 2));
+    assertThat(report.files()).containsEntry("A.java", new SemanticReport.Counts(10, 2));
+    assertThat(report.unknownIdentifiers().get("A.java")).hasSize(2);
+    assertThat(report.hasUnknownDetails()).isTrue();
+    assertThat(report.graphTotals()).isEqualTo(graph);
+    assertThat(report.graphTraversal()).isEqualTo(new SemanticReport.GraphTraversal(false, 1000, 1000));
+  }
+
+  @Test
+  void validates_per_module_caps_while_global_expansions_can_exceed_a_single_module_cap() throws IOException {
+    var graph = new SemanticReport.GraphCounts(0, 0, 0, 0);
+    String first = withTraversal(module("one", 1, 0, graph, file("A.java", 1, 0)), true, 10, 8);
+    String second = withTraversal(module("two", 1, 0, graph, file("A.java", 1, 0)), true, 10, 9);
+    var report = SemanticReport.read(write(withTraversal(canonicalReport(2, 0, graph, first, second), true, 10, 17)),
+      List.of("one/A.java", "two/A.java"));
+
+    assertThat(report.graphTraversal()).isEqualTo(new SemanticReport.GraphTraversal(true, 10, 17));
+    assertThat(report.files()).hasSize(2);
+  }
+
+  @Test
+  void rejects_inconsistent_graph_traversal_completeness_expansion_sums_and_module_caps() throws IOException {
+    var graph = new SemanticReport.GraphCounts(0, 0, 0, 0);
+    String complete = withTraversal(module(".", 1, 0, graph, file("A.java", 1, 0)), true, 10, 8);
+    String partial = withTraversal(module(".", 1, 0, graph, file("A.java", 1, 0)), false, 10, 10);
+    assertInvalid(withTraversal(canonicalReport(1, 0, graph, complete), false, 10, 8), List.of("A.java"), "does not match module observations");
+    assertInvalid(withTraversal(canonicalReport(1, 0, graph, partial), true, 10, 10), List.of("A.java"), "does not match module observations");
+    assertInvalid(withTraversal(canonicalReport(1, 0, graph, complete), true, 10, 7), List.of("A.java"), "does not match module observations");
+    assertInvalid(withTraversal(canonicalReport(1, 0, graph, complete), true, 9, 8), List.of("A.java"), "module graph expansion budget");
+    String overBudget = withTraversal(module(".", 1, 0, graph, file("A.java", 1, 0)), false, 10, 11);
+    assertInvalid(withTraversal(canonicalReport(1, 0, graph, overBudget), false, 10, 11), List.of("A.java"), "module graph expansion budget");
+  }
+
+  @Test
+  void rejects_partial_or_malformed_graph_traversal_metadata() throws IOException {
+    var graph = new SemanticReport.GraphCounts(0, 0, 0, 0);
+    String module = withTraversal(module(".", 1, 0, graph, file("A.java", 1, 0)), true, 10, 8);
+    String json = withTraversal(canonicalReport(1, 0, graph, module), true, 10, 8);
+    assertInvalid(json.replaceFirst("\"graphTraversalComplete\":true", "\"graphTraversalComplete\":\"true\""), List.of("A.java"), "invalid graphTraversalComplete boolean");
+    assertInvalid(json.replaceFirst("\"graphTraversalComplete\":true,", ""), List.of("A.java"), "invalid graphTraversalComplete boolean");
+    assertInvalid(json.replaceFirst("\"graphExpansionLimit\":10,", ""), List.of("A.java"), "graphExpansionLimit");
+    assertInvalid(json.replaceFirst("\"graphExpansions\":8,", ""), List.of("A.java"), "graphExpansions");
+    assertInvalid(json.replaceFirst("\"graphExpansionLimit\":10", "\"graphExpansionLimit\":-1"), List.of("A.java"), "Invalid graph traversal counts");
+    assertInvalid(json.replaceFirst("\"graphExpansions\":8", "\"graphExpansions\":-1"), List.of("A.java"), "Invalid graph traversal counts");
+  }
+
+  @Test
+  void graph_traversal_metadata_must_cover_both_the_report_and_every_module() throws IOException {
+    var graph = new SemanticReport.GraphCounts(0, 0, 0, 0);
+    String module = module(".", 1, 0, graph, file("A.java", 1, 0));
+    assertInvalid(withTraversal(canonicalReport(1, 0, graph, module), true, 10, 8), List.of("A.java"), "every module or none");
+    assertInvalid(canonicalReport(1, 0, graph, withTraversal(module, true, 10, 8)), List.of("A.java"), "every module or none");
+    var unbounded = SemanticReport.read(write(canonicalReport(1, 0, graph, module)), List.of("A.java"));
+    assertThat(unbounded.graphTraversal()).isNull();
+    assertThat(SemanticReport.read(write(report(1, 0, file("A.java", 1, 0))), List.of("A.java")).graphTraversal()).isNull();
+    assertThat(new SemanticReport(new SemanticReport.Counts(1, 0), Map.of("A.java", new SemanticReport.Counts(1, 0)), Map.of(),
+      graph, Map.of(".", graph), List.of(), List.of()).graphTraversal()).isNull();
+  }
+
+  @Test
+  void reads_latest_canonical_format_with_empty_aggregators_and_large_real_graph_counts() throws IOException {
+    String json = """
+      {
+        "resolvedIdentifierCount": 14,
+        "unknownIdentifierCount": 0,
+        "percentageOfUnknownIdentifier": 0.000,
+        "resolvedSymbolCount": 949094,
+        "unknownSymbolCount": 2,
+        "resolvedTypeCount": 163000,
+        "unknownTypeCount": 0,
+        "modules": [
+          {
+            "path": ".",
+            "resolvedIdentifierCount": 0,
+            "unknownIdentifierCount": 0,
+            "resolvedSymbolCount": 0,
+            "unknownSymbolCount": 0,
+            "resolvedTypeCount": 0,
+            "unknownTypeCount": 0,
+            "unknownIdentifiers": [],
+            "unknownSymbols": [],
+            "unknownTypes": []
+          },
+          {
+            "path": "its",
+            "resolvedIdentifierCount": 0,
+            "unknownIdentifierCount": 0,
+            "resolvedSymbolCount": 0,
+            "unknownSymbolCount": 0,
+            "resolvedTypeCount": 0,
+            "unknownTypeCount": 0,
+            "unknownIdentifiers": [],
+            "unknownSymbols": [],
+            "unknownTypes": []
+          },
+          {
+            "path": "java-frontend",
+            "resolvedIdentifierCount": 14,
+            "unknownIdentifierCount": 0,
+            "percentageOfUnknownIdentifier": 0.000,
+            "resolvedSymbolCount": 949094,
+            "unknownSymbolCount": 2,
+            "resolvedTypeCount": 163000,
+            "unknownTypeCount": 0,
+            "unknownIdentifiers": [],
+            "unknownSymbols": ["(Owner).first", "(Owner).second"],
+            "unknownTypes": []
+          }
+        ]
+      }
+      """;
+    var report = SemanticReport.read(write(json), List.of("java-frontend/src/main/java/Example.java"));
+
+    assertThat(report.totals()).isEqualTo(new SemanticReport.Counts(14, 0));
+    assertThat(report.moduleIdentifierCounts()).containsEntry(".", new SemanticReport.Counts(0, 0))
+      .containsEntry("its", new SemanticReport.Counts(0, 0)).containsEntry("java-frontend", new SemanticReport.Counts(14, 0));
+    assertThat(report.graphTotals()).isEqualTo(new SemanticReport.GraphCounts(949094, 2, 163000, 0));
+    assertThat(report.graphTraversal()).isNull();
+    assertThat(report.files()).isEmpty();
+    assertThat(report.hasFileObservations()).isFalse();
+    assertThat(report.hasUnknownDetails()).isFalse();
+    assertThat(report.unknownSymbols()).containsExactly("java-frontend:(Owner).first", "java-frontend:(Owner).second");
+    assertThatThrownBy(() -> report.moduleIdentifierCounts().clear()).isInstanceOf(UnsupportedOperationException.class);
+  }
+
+  @Test
+  void preserves_unknown_identifier_totals_without_fabricating_per_file_counts() throws IOException {
+    var graph = new SemanticReport.GraphCounts(0, 0, 0, 0);
+    String module = withoutFiles(module("main", 3, 2, graph));
+    var report = SemanticReport.read(write(canonicalReport(3, 2, graph, module)), List.of("main/A.java", "main/B.java"));
+
+    assertThat(report.totals()).isEqualTo(new SemanticReport.Counts(5, 2));
+    assertThat(report.totals().unknownPercentage()).isEqualTo(40.0);
+    assertThat(report.moduleIdentifierCounts()).containsOnlyKeys("main").containsEntry("main", new SemanticReport.Counts(5, 2));
+    assertThat(report.files()).isEmpty();
+    assertThat(report.unknownIdentifiers()).isEmpty();
+    assertThat(report.hasFileObservations()).isFalse();
+  }
+
+  @Test
+  void observations_cover_every_populated_module_while_empty_aggregators_can_omit_them() throws IOException {
+    var graph = new SemanticReport.GraphCounts(0, 0, 0, 0);
+    String populated = module("main", 1, 0, graph, fileWithDetails("src/A.java", 1, 0));
+    String empty = withoutFiles(module(".", 0, 0, graph));
+    var report = SemanticReport.read(write(canonicalReport(1, 0, graph, empty, populated)), List.of("main/src/A.java"));
+    assertThat(report.hasFileObservations()).isTrue();
+    assertThat(report.hasUnknownDetails()).isTrue();
+    assertThat(report.moduleIdentifierCounts()).containsOnlyKeys(".", "main");
+    assertThat(report.files()).containsOnlyKeys("main/src/A.java");
+    String unobserved = withoutFiles(module("other", 1, 0, graph));
+    assertInvalid(canonicalReport(2, 0, graph, populated, unobserved), List.of("main/src/A.java", "other/src/B.java"), "every populated module or none");
+  }
+
+  @Test
+  void canonical_module_totals_remain_strict_without_file_observations() throws IOException {
+    var graph = new SemanticReport.GraphCounts(0, 0, 0, 0);
+    String module = withoutFiles(module("main", 1, 0, graph));
+    assertInvalid(canonicalReport(2, 0, graph, module), List.of("main/A.java"), "Aggregate module identifier counts");
+    assertInvalid(canonicalReport(2, 0, graph, module, module), List.of("main/A.java"), "Duplicate module");
+    assertInvalid(canonicalReport(1, 0, new SemanticReport.GraphCounts(1, 0, 0, 0), module), List.of("main/A.java"), "Aggregate semantic graph counts");
+  }
+
+  @Test
+  void missing_zero_count_graph_arrays_are_optional_but_nonzero_details_are_required() throws IOException {
+    var graph = new SemanticReport.GraphCounts(0, 0, 0, 0);
+    String module = withoutFiles(module("main", 1, 0, graph)).replace(",\"unknownIdentifiers\":[]", "")
+      .replace(",\"unknownSymbols\":[]", "").replace(",\"unknownTypes\":[]", "");
+    var report = SemanticReport.read(write(canonicalReport(1, 0, graph, module)), List.of("main/A.java"));
+    assertThat(report.moduleIdentifierCounts()).containsEntry("main", new SemanticReport.Counts(1, 0));
+    assertThat(report.unknownSymbols()).isEmpty();
+    assertThat(report.unknownTypes()).isEmpty();
+    var unknownGraph = new SemanticReport.GraphCounts(0, 1, 0, 0);
+    String missing = withoutFiles(module("main", 1, 0, unknownGraph)).replace(",\"unknownSymbols\":[\"(Owner).symbols[0]\"]", "");
+    assertInvalid(canonicalReport(1, 0, unknownGraph, missing), List.of("main/A.java"), "invalid semantic graph array: unknownSymbols");
+  }
+
+  @Test
+  void existing_constructors_preserve_observation_availability_and_module_maps_are_defensively_copied() {
+    var counts = new SemanticReport.Counts(1, 0);
+    var legacy = new SemanticReport(counts, Map.of("A.java", counts));
+    assertThat(legacy.hasFileObservations()).isTrue();
+    assertThat(legacy.moduleIdentifierCounts()).isEmpty();
+    var moduleCounts = new java.util.HashMap<String, SemanticReport.Counts>();
+    moduleCounts.put("main", counts);
+    var canonical = new SemanticReport(counts, Map.of(), Map.of(), null, Map.of(), List.of(), List.of(), null, moduleCounts);
+    moduleCounts.clear();
+    assertThat(canonical.moduleIdentifierCounts()).containsEntry("main", counts);
+    assertThat(canonical.hasFileObservations()).isFalse();
+    assertThat(canonical.hasUnknownDetails()).isFalse();
+  }
+
+  private static String withoutFiles(String module) {
+    return module.substring(0, module.indexOf(",\"files\":")) + "}";
+  }
+
+  private static String withTraversal(String json, boolean complete, int limit, int expansions) {
+    return "{\"graphTraversalComplete\":" + complete + ",\"graphExpansionLimit\":" + limit + ",\"graphExpansions\":" + expansions + "," + json.substring(1);
+  }
+
+  private static String canonicalReport(int resolved, int unknown, SemanticReport.GraphCounts graph, String... modules) {
+    return "{\"resolvedIdentifierCount\":" + resolved + ",\"unknownIdentifierCount\":" + unknown + "," + graphFields(graph)
+      + ",\"modules\":[" + String.join(",", modules) + "]}";
+  }
+
+  private static String module(String path, int resolved, int unknown, SemanticReport.GraphCounts graph, String... files) {
+    return "{\"path\":\"" + path + "\",\"resolvedIdentifierCount\":" + resolved + ",\"unknownIdentifierCount\":" + unknown + "," + graphFields(graph)
+      + ",\"unknownIdentifiers\":[" + locations("identifiers", unknown) + "],\"unknownSymbols\":[" + locations("symbols", graph.unknownSymbols())
+      + "],\"unknownTypes\":[" + locations("types", graph.unknownTypes()) + "],\"files\":[" + String.join(",", files) + "]}";
+  }
+
+  private static String graphFields(SemanticReport.GraphCounts graph) {
+    return "\"resolvedSymbolCount\":" + graph.resolvedSymbols() + ",\"unknownSymbolCount\":" + graph.unknownSymbols()
+      + ",\"resolvedTypeCount\":" + graph.resolvedTypes() + ",\"unknownTypeCount\":" + graph.unknownTypes();
+  }
+
+  private static String locations(String kind, int count) {
+    return String.join(",", java.util.stream.IntStream.range(0, count).mapToObj(index -> "\"(Owner)." + kind + "[" + index + "]\"").toList());
+  }
+
   private void assertInvalid(String json, List<String> files, String message) throws IOException {
     Path path = write(json);
     assertThatThrownBy(() -> SemanticReport.read(path, files)).isInstanceOf(IOException.class).hasMessageContaining(message);

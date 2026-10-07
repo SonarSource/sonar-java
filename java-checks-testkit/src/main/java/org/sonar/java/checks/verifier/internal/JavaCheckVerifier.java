@@ -229,7 +229,7 @@ public class JavaCheckVerifier implements CheckVerifier {
   }
 
   @Override
-  public CheckVerifier withCheck(JavaFileScanner check) {
+  public CheckVerifier withCheck(AutowiredOnConstructorWhenMultipleConstructorsCheck check) {
     requiresNull(checks, CHECK_OR_CHECKS);
     this.checks = Collections.singletonList(check);
     return this;

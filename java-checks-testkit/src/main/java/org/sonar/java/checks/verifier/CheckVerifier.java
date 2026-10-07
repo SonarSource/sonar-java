@@ -36,7 +36,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
  * <p>
  * It is required to provide to the verifier at least the following:
  * <ul>
- *   <li>A rule, by calling {@link #withCheck(JavaFileScanner)}, or {@link #withChecks(JavaFileScanner...)}</li>
+ *   <li>A rule, by calling {@link #withCheck(AutowiredOnConstructorWhenMultipleConstructorsCheck)}, or {@link #withChecks(JavaFileScanner...)}</li>
  *   <li>A test file, by calling {@link #onFile(String)}, {@link #onFiles(String...)}, or {@link #onFiles(Collection)}</li>
  * </ul>
  * Methods starting with "verify..." (e.g {@link #verifyIssues()} ) are the methods which effectively validate the rule.
@@ -107,7 +107,7 @@ public interface CheckVerifier {
    *
    * @return the verifier configured to use the check provided as an argument
    */
-  CheckVerifier withCheck(JavaFileScanner check);
+  CheckVerifier withCheck(AutowiredOnConstructorWhenMultipleConstructorsCheck check);
 
   /**
    * Defines the check(s) to be verified against at least one test file.

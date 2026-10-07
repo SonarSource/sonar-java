@@ -1,7 +1,7 @@
-# Java analysis without a project build
+# Java analysis configuration comparison
 
-Compare source-path resolution (PR #6308) and analyzer-managed compilation
-(PR #6309), using the semantic reporter from `alban/SemanticReport`.
+Evaluate real source-path resolution (#6308) and analyzer-managed compilation
+(#6309) with four independent configurations:
 
 | Mode | Source paths | Internal compilation |
 |---|---|---|
@@ -10,172 +10,227 @@ Compare source-path resolution (PR #6308) and analyzer-managed compilation
 | Bytecode | Disabled | Enabled |
 | Combined | Enabled | Enabled |
 
-Every mode uses the same analyzer artifact, source contents, JDK, Java 21
-language level, and Sonar way profile. No existing project bytecode or dependency
-JARs are supplied. The Bytecode and Combined modes generate temporary bytecode
-inside SonarJava; the target project has no Maven compilation step.
+All modes invoke only `sonar:sonar` through `TestUtils.createMavenBuild()` and
+`orchestrator.executeBuild(build)`. No prebuilt target classes are supplied.
+Bytecode modes compile temporary classes inside the analyzer and remove them
+once analysis finishes. There is no Maven compilation of the target project.
 
-## Setup and run
+## What the comparison measures
 
-Build an evaluation plugin containing `alban/SemanticReport`, `ac/hackathon`
-(PR #6308), and `db/hackathon/optional-compilation` (PR #6309). Preserve semantic
-reporting and source-path configuration when resolving their frontend changes.
-Apply the measurement patch from this test checkout in the evaluation checkout:
+The same 69 sonar-xml production files are copied for every run. Four datasets
+separate parser batching from availability of external dependencies:
+
+| Dataset | Parser configuration | External compile dependencies |
+|---|---|---|
+| Normal / no libraries | 500 KB batches | Absent |
+| File by file / no libraries | One file per parser invocation | Absent |
+| Normal / dependencies | 500 KB batches | Supplied equally to all modes |
+| File by file / dependencies | One file per parser invocation | Supplied equally to all modes |
+
+The normal batching cases retain the ordinary-analysis control. File-by-file
+cases deliberately expose resolution across parser boundaries. Feature effects
+are comparisons within each dataset; adding dependencies is a separate factor.
+All four modes in a dataset share sources, library order/content, JDK, Java 21
+language level, Sonar way profile, encoding, and parser settings.
+
+`AnalysisDataset` resolves compile-scope JARs with pinned Maven dependency plugin
+`3.8.1:build-classpath` on temporary copies of the parent and module POMs. It
+never invokes a compilation lifecycle or modifies sonar-xml. Only external JARs
+are accepted; class directories and sonar-xml's own compiled artifact are
+rejected. Resolved libraries are copied once and their ordered SHA-256 identity
+is recorded. Setup time is recorded separately from scan timings. Normal Maven
+repository access is required; cached artifacts can make this setup inexpensive.
+
+## Build the evaluation analyzer
+
+Fresh-fetch both feature branches and the semantic-report target:
+
+```sh
+git fetch origin ac/hackathon db/hackathon/optional-compilation alban/SemanticReport
+```
+
+Create an isolated evaluation checkout containing those branches. Preserve
+source-path configuration, mutable generated-bytecode classpaths, and semantic
+reporter module entry/exit/export when resolving their frontend changes. Keep
+the production feature implementation outside the test PR.
+
+Apply these reproducible observation patches in order in that checkout:
 
 ```sh
 git apply /absolute/path/test-checkout/its/plugin/tests/src/test/resources/compilation-measurements.patch
+git apply /absolute/path/test-checkout/its/plugin/tests/src/test/resources/semantic-file-measurements.patch
+git apply /absolute/path/test-checkout/its/plugin/tests/src/test/resources/semantic-graph-bounds.patch
 mvn -pl sonar-java-plugin -am install -Dmaven.test.skip=true
 ```
 
-The patch adds structured compilation measurements without changing compiler
-arguments, analysis scopes, or cleanup. Commit the evaluation merge and patch
-if you want a clean, identifiable analyzer checkout. The evaluation feature
-implementation remains separate from this test PR.
+- Compilation observations record outcome, duration, source count, and generated
+  class count before cleanup without changing compiler arguments.
+- Per-file observations add `modules[].files[]` to the latest canonical module
+  format, preserving identifier totals and symbol/type metrics.
+- The graph guard adds an explicit diagnostic budget. Timed comparisons set
+  the budget to **zero**, disabling recursive graph exploration while every
+  source identifier is counted and all configured rules and binding probes run.
+  Optional `-Dcomparison.graphLimit=1000` enables bounded diagnostic exploration
+  in a separate run. JSON records completeness, budget, and expansion count.
+  An unrestricted smoke traversal took over seven minutes and was stopped;
+  that aborted run is excluded. The retained diagnostic run also contains a
+  large timing outlier whose cause was not established, so it is not used to
+  rank feature costs.
 
-Build the custom-rule artifacts from the test checkout:
+Commit the evaluation merge and observations for identifiable provenance.
+Default JavaSensor timings include direct identifier/per-file observations
+but no recursive graph exploration. They are instrumented timings rather than
+raw production performance. Diagnostic runs with a positive graph budget must
+be interpreted separately. Disabled graph counts are N/A; partial graph counts
+are never presented as complete resolution coverage.
+
+Build/install the custom-rule prerequisites from a clean checkout once:
 
 ```sh
 mvn -pl docs/java-custom-rules-example,its/plugin/plugins/java-extension-plugin -am install -DskipTests
 ```
 
-Then run:
+After changing the fixture probe, rebuilding its local artifact is sufficient:
+
+```sh
+mvn -f its/plugin/plugins/java-extension-plugin/pom.xml package -DskipTests
+```
+
+## Run the comparison
 
 ```sh
 mvn -f its/plugin/tests/pom.xml -Pit-plugin test \
-  -Dtest=NoCompilationComparisonTest,AnalysisMatrixTest,CompilationMeasurementTest,SourceOnlyComparisonTest,SemanticReportTest,ComparisonSettingsTest \
+  -Dtest=NoCompilationComparisonTest,AnalysisDatasetTest,AnalysisComparisonReportTest,AnalysisMatrixTest,CompilationMeasurementTest,SourceOnlyComparisonTest,SemanticReportTest,ComparisonSettingsTest \
   -Dcomparison.project="$HOME/Work/Code/sonar-xml" \
   -Dcomparison.pluginJar=/absolute/path/evaluation/sonar-java-plugin/target/sonar-java-plugin-8.45.0-SNAPSHOT.jar \
   -Dcomparison.analyzerCheckout=/absolute/path/evaluation \
   -Dsonar.java.internal.semantic.report=/tmp/report.json
 ```
 
-Maven must be on PATH, or supply `-Dmaven.binary=/absolute/path/to/mvn` for
-Orchestrator. Use normal authenticated Maven settings for repository access.
-The analyzer artifact can be omitted only when the local plugin contains both
-features, semantic reporting, and the measurement hook.
+The exact scanner flag is also supported on the test command:
+`-Dsonar.java.fileByFile=true` selects the two file-by-file datasets, while
+`false` selects the two normal-batch datasets. Omitting the flag runs all four.
+Within each selected dataset the value is passed identically to Baseline,
+Source paths, Bytecode, and Combined; feature modes remain independent.
 
-The entire scanner test class is opt-in via `comparison.project`. Normal pipeline
-and IT runs skip it; the lightweight comparison and reader tests remain enabled.
-Each invocation gets an isolated Community SonarQube server workspace under
-`target/comparison-orchestrator-*`. Orchestrator stops the server afterward;
-artifact downloads are shared and cached.
+Maven must be on PATH, or set `-Dmaven.binary=/absolute/path/to/mvn` for both
+Orchestrator and dependency resolution. Use your authenticated Maven settings
+for repository access. `comparison.pluginJar` can be omitted only when the
+local plugin has all features and observations.
 
-## How analysis runs
+The scanner class remains opt-in via `comparison.project`; normal pipeline and
+IT runs skip it. Lightweight helper and report tests remain enabled. Each test
+invocation starts an isolated Community SonarQube server under
+`target/comparison-orchestrator-*` and stops it afterward. Downloads remain
+shared and cached. Autoscan, unchanged-file skipping, and test source paths are
+disabled. The original checkout and its build outputs are untouched.
 
-`NoCompilationComparisonTest` copies sonar-xml's production Java files into four
-separate temporary projects. Each receives a minimal POM without dependencies.
-It uses the same `TestUtils.createMavenBuild()` and
-`orchestrator.executeBuild(build)` runner as `UnitTestsTest`, invoking only
-`sonar:sonar`. Empty production/test binaries and libraries override scanner
-classpath defaults. The original checkout and its build outputs are untouched.
+Each dataset gets an excluded warm-up per mode and three measured repetitions.
+Mode order reverses and rotates between repetitions. Primary identifier counts,
+unknown occurrences, findings, compiler outcomes, and class counts must be
+stable. `comparison.graphLimit` defaults to 0; budgets from 0 to 1000 are
+accepted, and the same budget is applied to every mode. Secondary graph variation
+is reported independently when enabled. Add `-Dcomparison.repetitions=1` for one
+scan per mode without warm-ups.
 
-`AnalysisMode` configures `sonar.java.sourcepath` and
-`sonar.java.compileToByteCode` independently. The sonar-xml source root is
-`sonar-xml-plugin/src/main/java`; fixture roots are selected per scenario.
-Test source paths, autoscan, and unchanged-file skipping are disabled in all modes.
-An optional UTF-8 properties file selected by `comparison.candidateProperties`
-now supplies extra settings shared by all four modes. It cannot override modes,
-source scopes, JDK, classpaths, output paths, logging, or credentials.
+An optional UTF-8 file selected by `comparison.candidateProperties` supplies
+extra settings shared by every mode. Managed feature flags, input/classpath,
+batching, encoding, JDK, output, logging, and credential settings are protected.
 
-The default protocol excludes one warm-up per mode and records three measured
-repetitions. Mode order reverses and rotates between repetitions. Findings,
-semantic results, compiler outcomes, and generated-class counts must remain
-stable. `-Dcomparison.repetitions=1` runs one scan per mode without warm-ups.
-No CI timing threshold is imposed.
+## Reviewed correctness checks
 
-## Correctness scenarios
+Every mode also scans four focused fixtures:
 
-Before the repository scans, all four modes analyze three fixtures:
+- **Clean compilation:** three JDK-only files analyzed separately. Exact type,
+  overload, return-type, and inherited-field probes must match their expected
+  bindings. The deprecated `legacy(String)` call at line 8 is a reviewed S1874
+  finding; the nondeprecated overload and ordinary call at lines 9–10 must stay
+  clean. S1116 reports the empty statement at line 11 in every mode. A missed
+  deprecated call is a false negative in this fixture, not a correct zero.
+- **Encoding compatibility:** Latin-1 sources contain a non-ASCII method
+  identifier. Every mode uses ISO-8859-1; compilation modes must compile the
+  sources successfully, exercising #6309's refreshed encoding support.
+- **Dependency outside analysis:** valid dependency sources sit outside the
+  indexed consumer directory. Source paths must resolve project bindings while
+  dependency files remain absent from indexed files and semantic reporting.
+  The current compiler receives indexed inputs/classpaths rather than those
+  source roots, so internal compilation alone cannot compile the consumer.
+- **Compilation failure recovery:** an intentionally missing type causes compiler
+  failure. Both files must still be analyzed, expected project bindings remain
+  correct, and S1116 still reports. Partial generated bytecode is measured.
 
-- **Clean compilation:** three JDK-only files, analyzed file by file. Exact
-  type, overload, return-type, and inherited-field probes expect unresolved
-  project references in the baseline and resolved references with either
-  feature. Bytecode modes must compile successfully and produce the expected
-  classes. A custom-rule probe observes generated bytecode during analysis.
-- **Dependency outside analysis:** only the consumer is indexed. Dependency
-  sources can be resolved through source paths, but are excluded from indexed
-  files and the semantic report. An intentionally missing type remains unknown.
-  The current internal compiler does not receive source roots, so enabling
-  compilation does not make those unindexed dependency files compilable.
-- **Compilation failure recovery:** a missing type makes compilation fail.
-  Both files must still be analyzed, exact project bindings must remain correct,
-  and S1116 must still report an empty statement. Partial bytecode output is
-  measured rather than assumed absent.
+Completion markers prevent skipped probes from appearing successful. Bytecode
+is checked while analysis runs and must be absent afterward. These profiles are
+not active for real-project scans or existing fixtures. Production-source
+comparison is implemented here; the feature PRs cover test sources, preview
+configuration, and other frontend cases in their own tests.
 
-Probe completion markers prevent skipped checks from appearing successful.
-All scans require the intended indexed and semantic file lists. Generated
-bytecode must be removed from `scanner-work/java-bytecode` after analysis.
-These profiles are not active for real-project scans or existing IT fixtures.
-Main-source comparison is implemented here; PRs #6308/#6309 have their own
-frontend tests for test-source behavior and other scanning modes.
+## Read the report
 
-## Results and metrics
+Each invocation saves only `report.md` beside the test, under the next numbered
+`results/run-NNN/` directory. Previous reports survive Maven clean and remain
+versioned in Git. The smoke test saves no report or logs.
 
-Each invocation saves only `report.md` under the next directory beside the test:
+`AnalysisComparisonReport` puts differences and reviewed findings first, then:
 
-```text
-its/plugin/tests/src/test/java/com/sonar/it/java/suite/results/run-001/
-```
+- Identifier totals/known/unknown counts and within-dataset changes for every mode.
+- Reviewed TP/FP/FN evidence for S1874 and S1116, separately from addon probes.
+- Scan status versus compilation outcome, class output and cleanup.
+- JavaSensor min/median/max, change from baseline, compilation time, and remaining
+  analysis time derived per sample. Remaining analysis includes parsing,
+  checks, direct observations, and any explicitly enabled diagnostic traversal.
+  Phase medians need not sum to total medians.
+- Observed benefits/costs without claiming a universal winner or statistical
+  significance from a few samples.
+- Clearly disabled/complete/partial/unknown graph diagnostics and budgets.
+- Collapsible fixture and dataset details: per-file semantics, rule counts,
+  largest unknown contributors, AST contexts, five feature comparisons, ranked
+  changes, and individual identifier/finding differences.
+- Source/artifact/classpath hashes, actual feature/reporter revisions, checkout
+  provenance, patch identities, versions, JDK, UTC time, and setup cost.
 
-Directories increment automatically and previous reports survive Maven clean.
-Keep them in Git. The smoke test saves no logs or reports.
+Comparisons require successful scans, identical indexed and semantic file lists,
+and identical per-file identifier totals. Invalid or unstable primary results
+have no agreement/change metrics. Unknown identifiers match by relative path,
+name, and token range. Findings match by rule/path/line while preserving
+multiplicity; messages remain available for review. Probe issues are excluded
+from product finding counts and agreement metrics. The report is written before
+final assertions fail.
 
-`AnalysisMatrix` puts the four-mode summary and correctness scenarios first.
-It compares every feature mode with the baseline and Combined with each
-individual feature. The report includes:
+Known equals total minus unknown; percentages use aggregate occurrence counts,
+not averaged file percentages. Imports, unnamed variables, and pseudo-identifiers
+`new` and `class` are excluded. Known symbols alone do not prove correct bindings.
+Undefined-type telemetry counts errors rather than coverage. Real-project issue
+agreement is not accuracy; only reviewed fixture locations support TP/FP/FN.
 
-- Total, known, and unknown identifier occurrences globally and per file;
-  aggregate unknown percentages, file progress, and largest unknown contributors.
-- Exact fixture binding results, observed generated bytecode, compilation
-  outcomes, generated classes, and cleanup. Scan success and compiler success
-  are separate: compiler failure does not automatically invalidate analysis.
-- Unknown occurrences matched by file, name, and token range, including changes
-  hidden by equal totals; AST context is diagnostic rather than a semantic role.
-- Findings matched by rule, relative path, and primary line, preserving duplicates.
-  Retention measures agreement, not accuracy; messages are included for review.
-- Individual samples and median Maven/server, JavaSensor, and compilation times.
-  JavaSensor time includes compilation; server startup and warm-ups are excluded.
-- UTC time, actual/harness/target checkout revisions and dirty state, source and
-  artifact hashes, versions, mode properties, and the timing protocol.
+Symbol/type counts are N/A when recursive diagnostics are disabled. When
+enabled they come from diagnostic graph traversal, not AST occurrences.
+Identity-based references can be duplicated when declarations are reparsed, and
+more known names can expose additional unknown references. Truncated, variable,
+or missing-completeness graph observations suppress location-change
+interpretations. None of these graph counts is a correctness percentage.
 
-A failed scan, unstable repetitions, differing file coverage, or differing
-per-file identifier totals prevents valid change and agreement metrics.
-Missing measurements appear as UNAVAILABLE or N/A. The report is written before
-final assertions fail so diagnostics can be reviewed.
+Server `26.10.0.132816` and Maven scanner `5.9.0.7291` are pinned. Explicit release
+versions can override them via `sonar.runtimeVersion` and
+`comparison.scannerVersion`; dynamic versions are rejected.
 
-Eligible identifiers follow the target reporter: imports, unnamed variables,
-and pseudo-identifiers `new` and `class` are excluded. Known equals total minus
-unknown; the project percentage uses aggregate counts, not an average of file
-percentages. Zero identifiers means N/A. Known symbols alone do not prove exact
-semantic correctness. Undefined-type telemetry counts errors rather than
-resolution coverage, and zero findings do not prove a rule was active.
+## Raw JSON and original Maven example
 
-Community server `26.10.0.132816` and Maven scanner `5.9.0.7291` are pinned.
-Explicit releases can override them through `sonar.runtimeVersion` and
-`comparison.scannerVersion`; dynamic versions are rejected. External libraries
-remain absent, so sonar-xml compilation can fail while analysis succeeds.
-
-## Raw semantic reports
-
-Every scan passes its JSON output path using:
+Every scan passes its output path with:
 
 ```java
 .setProperty("sonar.java.internal.semantic.report", semanticReportPath.toString())
 ```
 
-This property records identifier measurements; it does not enable either feature.
-By default JSON stays temporary. With
-`-Dsonar.java.internal.semantic.report=/tmp/report.json`, the measured modes
-write `/tmp/report-baseline.json`, `/tmp/report-sourcepaths.json`,
-`/tmp/report-bytecode.json`, and `/tmp/report-combined.json`. Fixtures and warm-ups
-use their own suffixes. These files are overwritten on the next invocation.
-IntelliJ can supply the same property through test VM options.
+That property records measurements rather than enabling a feature. By default
+JSON stays temporary. The supplied `/tmp/report.json` base writes distinct
+`report-<dataset>-<mode>.json` files, plus fixture/warm-up suffixes; repeated
+samples overwrite their mode's JSON. IntelliJ can use the same VM property.
 
-## Small test beside the original Maven example
-
-`UnitTestsTest.semantic_report_without_compilation` uses its existing
-`JavaTestSuite.ORCHESTRATOR` to scan the `measures-on-directory` fixture and verify
-JSON coverage for all three production files:
+`UnitTestsTest.semantic_report_without_compilation` remains beside the original
+Maven example. It uses the existing Enterprise lightweight Orchestrator and its
+local analyzer artifact, scans three production files, and validates indexed
+coverage plus either canonical module JSON or legacy file JSON:
 
 ```sh
 mvn -f its/plugin/tests/pom.xml -Pit-plugin test \
@@ -183,8 +238,9 @@ mvn -f its/plugin/tests/pom.xml -Pit-plugin test \
   -Dsonar.java.internal.semantic.report=/tmp/report.json
 ```
 
-That existing suite uses Enterprise lightweight SonarQube and needs valid test
-license access through `github.token` or `GITHUB_TOKEN`. Its fully qualified
-Sonar Maven goal avoids plugin-prefix resolution dependencies. The original
-`tests-surefire-suffix` example has only test sources; the semantic reporter
-currently measures production files, so that example's semantic output can be empty.
+That suite needs valid test-license access through `github.token` or
+`GITHUB_TOKEN`. The scan-only goal is fully qualified to avoid prefix resolution
+issues. Its canonical JSON checks do not require additive per-file observations;
+when using the latest reporter, use the bounded evaluation artifact to avoid
+its unrestricted diagnostic traversal. The original surefire-only fixture has
+no production sources, so its semantic report can be empty.

@@ -56,7 +56,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @EnabledIfSystemProperty(named = "comparison.project", matches = ".+")
 class NoCompilationComparisonTest {
 
-  private static final String SOURCE_ROOT = "sonar-xml-plugin/src/main/java";
   private static final String SEMANTIC_REPORT_PROPERTY = "sonar.java.internal.semantic.report";
   private static final Pattern TELEMETRY = Pattern.compile("Telemetry (java\\.analysis\\.main\\.[\\w.]+): (\\S+)");
   private static final Pattern ANALYZER_TIME = Pattern.compile("Sensor JavaSensor \\[java\\] \\(done\\) \\| time=(\\d+)ms");
@@ -118,29 +117,17 @@ class NoCompilationComparisonTest {
   @Test
   void compare_analysis_modes_without_project_build() throws IOException {
     Path checkout = Path.of(System.getProperty("comparison.project")).toAbsolutePath();
-    Path sources = checkout.resolve(SOURCE_ROOT);
-    assertThat(sources).as("sonar-xml production source directory").isDirectory();
-    List<Path> javaFiles;
-    try (var files = Files.walk(sources)) {
-      javaFiles = files.filter(Files::isRegularFile).filter(path -> path.toString().endsWith(".java")).sorted().toList();
-    }
-    assertThat(javaFiles).as("production Java files").isNotEmpty();
-    var expectedFiles = javaFiles.stream().map(checkout::relativize).map(Path::toString).map(NoCompilationComparisonTest::normalize).sorted().toList();
-    var projects = new EnumMap<AnalysisMode, Path>(AnalysisMode.class);
-    for (AnalysisMode mode : AnalysisMode.values()) {
-      projects.put(mode, workspace.resolve(mode.id()));
-    }
+    var scope = RepositoryScope.discover(checkout);
+    var expectedFiles = scope.expectedFiles();
+    assertThat(expectedFiles).as("production Java files").isNotEmpty();
+    var sourceContents = new LinkedHashMap<String, byte[]>();
     MessageDigest snapshot = sha256();
-    for (Path source : javaFiles) {
-      byte[] content = Files.readAllBytes(source);
-      snapshot.update(normalize(checkout.relativize(source).toString()).getBytes(StandardCharsets.UTF_8));
+    for (String path : expectedFiles) {
+      byte[] content = Files.readAllBytes(checkout.resolve(path));
+      sourceContents.put(path, content);
+      snapshot.update(path.getBytes(StandardCharsets.UTF_8));
       snapshot.update((byte) 0);
       snapshot.update(content);
-      for (Path project : projects.values()) {
-        Path target = project.resolve(checkout.relativize(source));
-        Files.createDirectories(target.getParent());
-        Files.write(target, content);
-      }
     }
     Path root = repositoryRoot();
     List<String> rules;
@@ -152,43 +139,106 @@ class NoCompilationComparisonTest {
       .resolve("its/plugin/tests/src/test/java/com/sonar/it/java/suite/results"));
     System.out.println("Source-only analysis results: " + reportDirectory);
     var metadata = runMetadata(checkout, HexFormat.of().formatHex(snapshot.digest()));
+    long resolutionStarted = System.nanoTime();
+    var libraries = AnalysisDataset.freezeLibraries(AnalysisDataset.resolveProjectLibraries(checkout, workspace.resolve("dependency-resolution"),
+      System.getProperty("maven.binary", "mvn"), scope), workspace.resolve("libraries"));
+    metadata.put("Dependency resolution time (ms), excluded from scans", Long.toString(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - resolutionStarted)));
+    metadata.put("Dependency resolution", "Pinned dependency:build-classpath on copied POMs; compile scope only; no Maven compilation");
+    metadata.put("Analyzed project", scope.name());
+    metadata.put("Module scope", scope.modulePaths().toString());
+    metadata.put("Analyzed Java files", Integer.toString(expectedFiles.size()));
+    metadata.put("Scan topology", "Native synthetic Maven reactor; real production module boundaries; no project dependencies or supplied project bytecode");
+    metadata.put("Classpath policy", "External compile-scope JARs only, preserving each module's versions and order; cached project module artifacts excluded");
+    recordClasspath(metadata, libraries.union());
     var fixtures = scanFixtures();
     for (FixtureScan fixture : fixtures) {
       metadata.put(fixture.fixture().name() + "/" + fixture.mode().label() + " bindings", bindingSummary(fixture.run()));
     }
+    var datasets = new ArrayList<AnalysisComparisonReport.DatasetResult>();
+    for (AnalysisDataset dataset : settings.selectDatasets(AnalysisDataset.forProject(scope, libraries.union()))) {
+      datasets.add(measureDataset(dataset, sourceContents, expectedFiles, rules, scope, libraries.byModule()));
+    }
+    var scenarios = fixtureScenarios(fixtures);
+    AnalysisComparisonReport.write(reportDirectory, datasets, rules, metadata, scenarios);
+    System.out.println("Analysis comparison report: " + reportDirectory.resolve("report.md"));
+    for (var dataset : datasets) {
+      assertThat(dataset.metadata()).as("%s repetitions", dataset.dataset().label()).containsEntry("Repeated result stability", "stable");
+      var baseline = representative(dataset.samples().get(AnalysisMode.BASELINE));
+      for (AnalysisMode mode : AnalysisMode.values()) {
+        var result = representative(dataset.samples().get(mode));
+        assertThat(result.success()).as("%s/%s scan: %s", dataset.dataset().label(), mode.label(), result.error()).isTrue();
+        var comparison = SourceOnlyComparison.compare(baseline, result, false, rules);
+        assertThat(comparison.valid()).as("%s/%s comparison: %s", dataset.dataset().label(), mode.label(), comparison.error()).isTrue();
+        assertCompilationMeasurement(result, mode);
+        if (mode.compilation() && dataset.dataset().expectCompilationSuccess()) {
+          assertThat(result.telemetry()).as("Compilation must match the dataset's expected behavior")
+            .containsEntry("comparison.compilation.status", "SUCCESS");
+        }
+      }
+    }
+    fixtures.forEach(NoCompilationComparisonTest::assertFixture);
+  }
+
+  private AnalysisComparisonReport.DatasetResult measureDataset(AnalysisDataset dataset, Map<String, byte[]> sources,
+                                                                 List<String> expectedFiles, List<String> rules, RepositoryScope scope,
+                                                                 Map<String, List<Path>> librariesByModule) throws IOException {
+    var projects = new EnumMap<AnalysisMode, Path>(AnalysisMode.class);
     var samples = new EnumMap<AnalysisMode, List<SourceOnlyComparison.Run>>(AnalysisMode.class);
+    var metadata = new TreeMap<String, String>();
+    metadata.put("Scenario", dataset.description());
+    metadata.put("External library count", Integer.toString(dataset.libraries().size()));
+    metadata.put("Shared scenario properties", new TreeMap<>(dataset.sharedProperties()).toString());
+    var moduleLibraries = dataset.libraries().isEmpty() ? Map.<String, List<Path>>of() : librariesByModule;
+    for (var module : scope.modules()) {
+      metadata.put("Module " + module.path() + " external classpath", moduleLibraries.getOrDefault(module.path(), List.of()).toString());
+    }
     for (AnalysisMode mode : AnalysisMode.values()) {
+      Path project = workspace.resolve(dataset.id()).resolve(mode.id());
+      projects.put(mode, project);
       samples.put(mode, new ArrayList<>());
-      metadata.put(mode.label() + " properties", new TreeMap<>(mode.properties(List.of(SOURCE_ROOT), settings.candidateProperties())).toString());
+      for (var source : sources.entrySet()) {
+        Path path = project.resolve(source.getKey());
+        Files.createDirectories(path.getParent());
+        Files.write(path, source.getValue());
+      }
+      metadata.put(mode.label() + " properties", new TreeMap<>(datasetProperties(dataset, mode, project, scope)).toString());
     }
     if (settings.repetitions() > 1) {
       for (AnalysisMode mode : AnalysisMode.values()) {
-        var warmup = scan(projects.get(mode), SOURCE_ROOT, "warmup-" + mode.id(),
-          mode.properties(List.of(SOURCE_ROOT), settings.candidateProperties()), expectedFiles);
-        assertThat(warmup.success()).as("%s warm-up: %s", mode.label(), warmup.error()).isTrue();
+        var warmup = scan(projects.get(mode), "", "warmup-" + dataset.id() + "-" + mode.id(),
+          datasetProperties(dataset, mode, projects.get(mode), scope), expectedFiles, "Sonar way", List.of(), scope, moduleLibraries);
+        metadata.put(mode.label() + " warm-up status", warmup.success() ? "SUCCESS" : "FAILED: " + warmup.error());
       }
     }
     for (int i = 0; i < settings.repetitions(); i++) {
       for (AnalysisMode mode : measuredOrder(i)) {
-        samples.get(mode).add(scan(projects.get(mode), SOURCE_ROOT, mode.id(),
-          mode.properties(List.of(SOURCE_ROOT), settings.candidateProperties()), expectedFiles));
+        samples.get(mode).add(scan(projects.get(mode), "", dataset.id() + "-" + mode.id(),
+          datasetProperties(dataset, mode, projects.get(mode), scope), expectedFiles, "Sonar way", List.of(), scope, moduleLibraries));
       }
     }
-    boolean stable = samples.values().stream().allMatch(runs -> stable(runs, rules));
-    metadata.put("Repeated result stability", stable ? "stable" : "unstable");
-    var scenarios = fixtureScenarios(fixtures);
-    AnalysisMatrix.write(reportDirectory, samples, rules, metadata, scenarios);
-    System.out.println("Analysis comparison report: " + reportDirectory.resolve("report.md"));
-    assertThat(stable).as("Measured repetitions must have stable findings, semantics, and compilation outcomes").isTrue();
-    var baseline = representative(samples.get(AnalysisMode.BASELINE));
-    for (AnalysisMode mode : AnalysisMode.values()) {
-      var result = representative(samples.get(mode));
-      assertThat(result.success()).as("%s scan: %s", mode.label(), result.error()).isTrue();
-      var comparison = SourceOnlyComparison.compare(baseline, result, false, rules);
-      assertThat(comparison.valid()).as("%s comparison: %s", mode.label(), comparison.error()).isTrue();
-      assertCompilationMeasurement(result, mode);
+    metadata.put("Repeated result stability", samples.values().stream().allMatch(runs -> stable(runs, rules)) ? "stable" : "unstable");
+    metadata.put("Graph diagnostic stability", samples.values().stream().allMatch(NoCompilationComparisonTest::stableGraph) ? "stable" : "variable");
+    return new AnalysisComparisonReport.DatasetResult(dataset, samples, metadata);
+  }
+
+  private static Map<String, String> datasetProperties(AnalysisDataset dataset, AnalysisMode mode, Path project, RepositoryScope scope) {
+    var roots = scope.sourceRoots().stream().map(root -> project.resolve(root).toAbsolutePath().toString()).toList();
+    var properties = new TreeMap<>(mode.properties(roots, settings.candidateProperties()));
+    properties.putAll(dataset.sharedProperties());
+    return Map.copyOf(properties);
+  }
+
+  private static void recordClasspath(Map<String, String> metadata, List<Path> libraries) throws IOException {
+    var digest = sha256();
+    for (int i = 0; i < libraries.size(); i++) {
+      Path library = libraries.get(i);
+      byte[] content = Files.readAllBytes(library);
+      digest.update(library.getFileName().toString().getBytes(StandardCharsets.UTF_8));
+      digest.update((byte) 0);
+      digest.update(content);
+      metadata.put("Compile dependency " + i, library.getFileName() + " / SHA-256 " + HexFormat.of().formatHex(sha256().digest(content)));
     }
-    fixtures.forEach(NoCompilationComparisonTest::assertFixture);
+    metadata.put("Compile classpath SHA-256 (ordered)", HexFormat.of().formatHex(digest.digest()));
   }
 
   static List<AnalysisMode> measuredOrder(int repetition) {
@@ -207,6 +257,17 @@ class NoCompilationComparisonTest {
 
   private static SourceOnlyComparison.Run scan(Path project, String sourceRoot, String label,
                                                Map<String, String> candidateProperties, List<String> expectedFiles, String profile) {
+    return scan(project, sourceRoot, label, candidateProperties, expectedFiles, profile, List.of());
+  }
+
+  private static SourceOnlyComparison.Run scan(Path project, String sourceRoot, String label,
+                                               Map<String, String> candidateProperties, List<String> expectedFiles, String profile, List<Path> libraries) {
+    return scan(project, sourceRoot, label, candidateProperties, expectedFiles, profile, libraries, null, Map.of());
+  }
+
+  private static SourceOnlyComparison.Run scan(Path project, String sourceRoot, String label,
+                                               Map<String, String> candidateProperties, List<String> expectedFiles, String profile, List<Path> libraries,
+                                               RepositoryScope scope, Map<String, List<Path>> moduleLibraries) {
     Path semanticReportPath = semanticReportPath(project, label);
     String projectKey = "source-only-" + label + "-" + UUID.randomUUID();
     var properties = new TreeMap<>(Map.of(
@@ -222,7 +283,13 @@ class NoCompilationComparisonTest {
       "sonar.internal.analysis.autoscan.filtering", "false"));
     properties.put("sonar.java.test.binaries", "");
     properties.put("sonar.java.test.libraries", "");
+    properties.put("sonar.java.libraries", libraries.stream().map(Path::toString).collect(java.util.stream.Collectors.joining(",")));
     properties.put("sonar.working.directory", project.resolve("scanner-work").toAbsolutePath().toString());
+    properties.put("sonar.java.internal.semantic.report.graph.maxExpansions", Integer.toString(settings.graphLimit()));
+    if (scope != null) {
+      properties.remove("sonar.sources");
+      properties.remove("sonar.java.libraries");
+    }
     candidateProperties.forEach((key, value) -> {
       if (properties.containsKey(key) || key.endsWith("binaries") || key.endsWith("libraries") || key.equals(SEMANTIC_REPORT_PROPERTY)) {
         throw new IllegalArgumentException("Candidate properties must preserve source-only comparison settings: " + key);
@@ -233,7 +300,11 @@ class NoCompilationComparisonTest {
     try {
       Files.createDirectories(semanticReportPath.getParent());
       Files.deleteIfExists(semanticReportPath);
-      writePom(project, sourceRoot);
+      if (scope == null) {
+        writePom(project, sourceRoot);
+      } else {
+        ReactorProject.write(project, scope, moduleLibraries, settings.scannerVersion());
+      }
       TestUtils.provisionProject(orchestrator, projectKey, projectKey, "java", profile);
       MavenBuild build = TestUtils.createMavenBuild()
         .setPom(project.resolve("pom.xml").toFile())
@@ -290,8 +361,13 @@ class NoCompilationComparisonTest {
         total = response.getPaging().getTotal();
       } while (issues < total);
       var telemetry = new TreeMap<String, String>();
-      telemetry.putAll(CompilationMeasurement.read(result.getLogs(), Boolean.parseBoolean(properties.get("sonar.java.compileToByteCode"))));
-      telemetry.put("comparison.bytecode.cleaned", Boolean.toString(!Files.exists(project.resolve("scanner-work/java-bytecode"))));
+      telemetry.putAll(CompilationMeasurement.read(result.getLogs(), Boolean.parseBoolean(properties.get("sonar.java.compileToByteCode")),
+        scope == null ? 1 : scope.modules().size() + 1));
+      boolean cleaned;
+      try (var paths = Files.walk(project)) {
+        cleaned = paths.noneMatch(path -> Files.isDirectory(path) && path.getFileName().toString().equals("java-bytecode"));
+      }
+      telemetry.put("comparison.bytecode.cleaned", Boolean.toString(cleaned));
       var matcher = TELEMETRY.matcher(result.getLogs());
       while (matcher.find()) {
         telemetry.put(matcher.group(1), matcher.group(2));
@@ -351,10 +427,22 @@ class NoCompilationComparisonTest {
     return samples.stream().allMatch(run -> {
       var comparison = SourceOnlyComparison.compare(reference, run, true, rules);
       return comparison.valid() && comparison.currentOnly().isEmpty() && comparison.candidateOnly().isEmpty()
-        && reference.semantics().equals(run.semantics())
+        && reference.semantics().totals().equals(run.semantics().totals())
+        && reference.semantics().moduleIdentifierCounts().equals(run.semantics().moduleIdentifierCounts())
+        && reference.semantics().hasFileObservations() == run.semantics().hasFileObservations()
+        && reference.semantics().files().equals(run.semantics().files())
+        && reference.semantics().unknownIdentifiers().equals(run.semantics().unknownIdentifiers())
         && List.of("comparison.compilation.status", "comparison.compilation.classes", "comparison.compilation.sources", "comparison.bytecode.cleaned")
           .stream().allMatch(key -> java.util.Objects.equals(reference.telemetry().get(key), run.telemetry().get(key)));
     });
+  }
+
+  private static boolean stableGraph(List<SourceOnlyComparison.Run> samples) {
+    var reference = samples.getFirst().semantics();
+    return reference != null && samples.stream().allMatch(run -> run.semantics() != null
+      && java.util.Objects.equals(reference.graphTotals(), run.semantics().graphTotals())
+      && java.util.Objects.equals(reference.graphTraversal(), run.semantics().graphTraversal())
+      && reference.unknownSymbols().equals(run.semantics().unknownSymbols()) && reference.unknownTypes().equals(run.semantics().unknownTypes()));
   }
 
   private record FixtureScan(AnalysisMode mode, AnalysisFixtures.Fixture fixture, SourceOnlyComparison.Run run) {
@@ -365,6 +453,7 @@ class NoCompilationComparisonTest {
     for (AnalysisMode mode : AnalysisMode.values()) {
       var fixtures = List.of(
         AnalysisFixtures.clean(workspace.resolve("clean-" + mode.id()), mode != AnalysisMode.BASELINE, mode.compilation()),
+        AnalysisFixtures.encoding(workspace.resolve("encoding-" + mode.id()), mode != AnalysisMode.BASELINE, mode.compilation()),
         AnalysisFixtures.dependency(workspace.resolve("dependency-" + mode.id()), mode.sourcePaths()),
         AnalysisFixtures.fallback(workspace.resolve("fallback-" + mode.id())));
       for (AnalysisFixtures.Fixture fixture : fixtures) {
@@ -403,6 +492,21 @@ class NoCompilationComparisonTest {
     if (fixture.profile().equals("semantic-bindings-fallback")) {
       assertThat(run.findings()).as("Syntax checks must still execute after compiler errors").anyMatch(finding -> finding.rule().equals("java:S1116"));
     }
+    if (fixture.name().equals("Clean compilation") || fixture.name().equals("Encoding compatibility")) {
+      var deprecated = run.findings().stream().filter(finding -> finding.rule().equals("java:S1874")).toList();
+      if (scan.mode() == AnalysisMode.BASELINE) {
+        assertThat(deprecated).as("The baseline cannot identify the cross-file deprecated method").isEmpty();
+      } else {
+        assertThat(deprecated).as("Only the deprecated String overload should report, not the int overload or ordinary method")
+          .singleElement().satisfies(finding -> assertThat(finding.path()).isEqualTo("src/main/java/bindings/BindingFixture.java"));
+        assertThat(deprecated.getFirst().line()).isEqualTo(8);
+      }
+      var syntax = run.findings().stream().filter(finding -> finding.rule().equals("java:S1116")).toList();
+      assertThat(syntax).as("Syntax control must report identically in every mode").singleElement().satisfies(finding -> {
+        assertThat(finding.path()).isEqualTo("src/main/java/bindings/BindingFixture.java");
+        assertThat(finding.line()).isEqualTo(11);
+      });
+    }
   }
 
   private static void assertCompilationMeasurement(SourceOnlyComparison.Run run, AnalysisMode mode) {
@@ -440,6 +544,10 @@ class NoCompilationComparisonTest {
     metadata.put("Test harness revision", git(repositoryRoot(), "rev-parse", "HEAD"));
     metadata.put("Test harness dirty", Boolean.toString(!git(repositoryRoot(), "status", "--porcelain").isBlank()));
     String analyzerCheckout = System.getProperty("comparison.analyzerCheckout");
+    Path provenance = pluginJar.getParent().resolve("comparison-analyzer-checkout.txt");
+    if (analyzerCheckout == null && Files.isRegularFile(provenance)) {
+      analyzerCheckout = Files.readString(provenance).strip();
+    }
     metadata.put("Analyzer checkout revision", analyzerCheckout == null ? "not supplied; identify artifact by SHA-256"
       : git(Path.of(analyzerCheckout), "rev-parse", "HEAD"));
     metadata.put("Analyzer checkout dirty", analyzerCheckout == null ? "not supplied"
@@ -459,9 +567,21 @@ class NoCompilationComparisonTest {
     metadata.put("JDK", System.getProperty("java.version") + " / " + System.getProperty("java.vendor"));
     metadata.put("Java language level", "21");
     metadata.put("Profile", "Sonar way");
+    metadata.put("Parser scenario selection", settings.fileByFile() == null ? "Normal batches and file-by-file" : "sonar.java.fileByFile=" + settings.fileByFile());
     metadata.put("Extra properties shared by all modes", new TreeMap<>(settings.candidateProperties()).toString());
     metadata.put("Features", "PR #6308 source paths and PR #6309 internal compilation; same plugin used for all four modes");
+    metadata.put("PR #6308 revision", git(repositoryRoot(), "rev-parse", "origin/ac/hackathon"));
+    metadata.put("PR #6309 revision", git(repositoryRoot(), "rev-parse", "origin/db/hackathon/optional-compilation"));
+    metadata.put("Semantic reporter revision", git(repositoryRoot(), "rev-parse", "origin/alban/SemanticReport"));
     metadata.put("Compilation measurements", "Evaluation-only structured log hook records outcome, source/class counts, and elapsed time before cleanup");
+    metadata.put("Per-file measurements", "Additive module.files observations preserve latest canonical identifier and graph fields");
+    metadata.put("Graph observation budget", Integer.toString(settings.graphLimit()));
+    metadata.put("Graph timing mode", settings.graphLimit() == 0 ? "Recursive diagnostics disabled; full AST identifiers, findings, and per-file observations remain enabled"
+      : "Optional bounded diagnostic traversal enabled; partial results labelled and included in instrumented timings");
+    metadata.put("Excluded observer run", "Unbounded refreshed graph traversal stalled on the two-file smoke scan and was stopped; excluded from all recorded comparison timings");
+    for (String patch : List.of("compilation-measurements.patch", "semantic-file-measurements.patch", "semantic-graph-bounds.patch")) {
+      metadata.put(patch + " SHA-256", HexFormat.of().formatHex(sha256().digest(Files.readAllBytes(repositoryRoot().resolve("its/plugin/tests/src/test/resources").resolve(patch)))));
+    }
     metadata.put("Measured repetitions per mode", Integer.toString(settings.repetitions()));
     metadata.put("Timing protocol", settings.repetitions() > 1 ? "one warm-up per mode excluded; measured order rotates and reverses across repetitions" : "one measured scan per mode; no warm-up");
     metadata.put("Server workspace", serverWorkspace.toString());

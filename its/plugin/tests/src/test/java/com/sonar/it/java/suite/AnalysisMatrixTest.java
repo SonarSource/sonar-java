@@ -250,6 +250,96 @@ class AnalysisMatrixTest {
     assertThat(scenarioSection).doesNotContain("Shared findings", "Retention");
   }
 
+  @Test
+  void excludes_instrumentation_from_product_finding_counts_and_retention() {
+    var runs = runs();
+    var syntax = new SourceOnlyComparison.Finding("java:S1116", "Example.java", 3, "syntax finding");
+    var probe = new SourceOnlyComparison.Finding("java-extension:semanticbindings", "Example.java", 1, "Semantic binding probes: 4 checked, 0 failed.");
+    runs.put(AnalysisMode.BASELINE, run(Map.of("Example.java", new SemanticReport.Counts(10, 2)), Map.of(), List.of(syntax, probe)));
+    runs.put(AnalysisMode.SOURCE_PATHS, run(Map.of("Example.java", new SemanticReport.Counts(10, 2)), Map.of(), List.of(syntax)));
+
+    assertThat(report(runs)).contains("| Findings | 1 | 1 | 0 | 0 |",
+      "| Source paths versus Baseline | VALID | +0 | +0.000 | 0 / 1 / 0 | 1 | 0 | 0 | 100.000% |")
+      .doesNotContain("| java-extension:semanticbindings |", "Semantic binding probes: 4 checked, 0 failed.");
+  }
+
+  @Test
+  void reports_semantic_graph_counts_and_location_changes_without_coverage_claims() {
+    var runs = runs();
+    var before = graphRun(new SemanticReport.GraphCounts(8, 1, 5, 1), List.of("module:OldSymbol@2:0"), List.of("module:OldType@3:0"));
+    var after = graphRun(new SemanticReport.GraphCounts(12, 1, 7, 1), List.of("module:NewSymbol@4:0"), List.of("module:NewType@5:0"));
+    runs.replaceAll((mode, ignored) -> before);
+    runs.put(AnalysisMode.SOURCE_PATHS, after);
+
+    assertThat(report(runs)).contains("| Semantic graph resolved symbols | 8 | 12 | 8 | 8 |",
+      "| Semantic graph unknown symbols | 1 | 1 | 1 | 1 |", "| Semantic graph resolved types | 5 | 7 | 5 | 5 |",
+      "| Semantic graph unknown types | 1 | 1 | 1 | 1 |", "| Unknown locations absent from candidate observation | 1 |",
+      "| Unknown locations absent from baseline observation | 1 |", "| module:OldSymbol@2:0 |", "| module:NewType@5:0 |",
+      "Expanded traversal can add locations", "graph counts are diagnostics, not coverage percentages or correctness scores")
+      .doesNotContain("Resolved symbols (%)", "Resolved types (%)");
+  }
+
+  @Test
+  void renders_canonical_module_only_comparisons_with_real_module_counts_and_unavailable_file_metrics() {
+    var runs = runs();
+    runs.put(AnalysisMode.BASELINE, canonicalRun(100, false));
+    runs.put(AnalysisMode.SOURCE_PATHS, canonicalRun(20, false));
+    runs.put(AnalysisMode.BYTECODE, canonicalRun(5, false));
+    runs.put(AnalysisMode.COMBINED, canonicalRun(2, false));
+    String report = report(runs);
+
+    assertThat(report).contains("| Identifiers (total) | 1000 | 1000 | 1000 | 1000 |",
+      "| Per-file semantic observations | UNAVAILABLE | UNAVAILABLE | UNAVAILABLE | UNAVAILABLE |",
+      "| Files with no unknown identifiers | UNAVAILABLE | UNAVAILABLE | UNAVAILABLE | UNAVAILABLE |",
+      "## Semantics per module", "| . | 0 / 0 / 0 (N/A) | 0 / 0 / 0 (N/A) | 0 / 0 / 0 (N/A) | 0 / 0 / 0 (N/A) |",
+      "| main | 1000 / 900 / 100 (10.000%) | 1000 / 980 / 20 (2.000%) | 1000 / 995 / 5 (0.500%) | 1000 / 998 / 2 (0.200%) |",
+      "| Source paths versus Baseline | VALID | -80 | -8.000 | UNAVAILABLE |",
+      "UNAVAILABLE: per-file observations are absent in all modes", "UNAVAILABLE: unknown occurrence details are absent in all modes")
+      .doesNotContain("| Files with no unknown identifiers | 0 / 0", "| main/A.java | 1000", "| No longer reported unknown | 0 |");
+    assertThat(report.indexOf("## Semantics per module")).isLessThan(report.indexOf("## Semantics per file"));
+  }
+
+  @Test
+  void module_only_mode_changes_remain_invalid_when_module_coverage_differs() {
+    var runs = runs();
+    runs.replaceAll((mode, ignored) -> canonicalRun(10, false));
+    var base = runs.get(AnalysisMode.SOURCE_PATHS);
+    var counts = new SemanticReport.Counts(1000, 1);
+    runs.put(AnalysisMode.SOURCE_PATHS, new SourceOnlyComparison.Run(base.label(), true, 12, base.files(), List.of(), Map.of(),
+      new SemanticReport(counts, Map.of(), Map.of(), null, Map.of(), List.of(), List.of(), null,
+        Map.of("other", counts), false), null));
+
+    assertThat(report(runs)).contains("| Source paths versus Baseline | INVALID | N/A | N/A | N/A | N/A | N/A | N/A | N/A |",
+      "Comparison unavailable: Semantic reports cover different modules");
+  }
+
+  @Test
+  void optional_file_observations_can_be_missing_in_some_modes_without_invalidating_module_comparisons() {
+    var runs = runs();
+    runs.replaceAll((mode, ignored) -> canonicalRun(10, false));
+    runs.put(AnalysisMode.BASELINE, canonicalRun(10, true));
+
+    assertThat(report(runs)).contains("| Per-file semantic observations | AVAILABLE | UNAVAILABLE | UNAVAILABLE | UNAVAILABLE |",
+      "| Source paths versus Baseline | VALID | +0 | +0.000 | UNAVAILABLE |",
+      "| main/A.java | 1000 / 990 / 10 (1.000%) | UNAVAILABLE | UNAVAILABLE | UNAVAILABLE |",
+      "| main/A.java | 10 (100.000%) | UNAVAILABLE | UNAVAILABLE | UNAVAILABLE |");
+  }
+
+  private static SourceOnlyComparison.Run canonicalRun(int unknown, boolean observations) {
+    var counts = new SemanticReport.Counts(1000, unknown);
+    var files = observations ? Map.of("main/A.java", counts) : Map.<String, SemanticReport.Counts>of();
+    return new SourceOnlyComparison.Run("canonical", true, 12, List.of("main/A.java"), List.of(), Map.of(),
+      new SemanticReport(counts, files, Map.of(), null, Map.of(), List.of(), List.of(), null,
+        Map.of(".", new SemanticReport.Counts(0, 0), "main", counts), observations), null);
+  }
+
+  private static SourceOnlyComparison.Run graphRun(SemanticReport.GraphCounts graph, List<String> symbols, List<String> types) {
+    var base = run(Map.of("Example.java", new SemanticReport.Counts(10, 2)), Map.of(), List.of());
+    return new SourceOnlyComparison.Run(base.label(), true, base.scanMillis(), base.files(), base.findings(), base.telemetry(),
+      new SemanticReport(base.semantics().totals(), base.semantics().files(), Map.of(), graph, Map.of("module", graph), symbols, types,
+        new SemanticReport.GraphTraversal(true, 1000, 20)), null);
+  }
+
   private static Map<String, SemanticReport.Counts> files(int firstUnknown, int secondUnknown) {
     return Map.of("A.java", new SemanticReport.Counts(1000, firstUnknown), "B.java", new SemanticReport.Counts(1, secondUnknown));
   }

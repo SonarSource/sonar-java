@@ -73,22 +73,36 @@ final class AnalysisMatrix {
 
   static String markdown(Map<AnalysisMode, List<SourceOnlyComparison.Run>> samples,
                          List<String> activeRules, Map<String, String> metadata, List<Scenario> scenarios) {
-    requireModes(samples);
-    samples.forEach((mode, runs) -> {
-      if (runs.isEmpty() || runs.stream().anyMatch(run -> run == null)) {
-        throw new IllegalArgumentException("Measured samples are required for " + mode.label());
-      }
-    });
-    Map<AnalysisMode, SourceOnlyComparison.Run> runs = samples.entrySet().stream()
-      .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().stream().filter(run -> !run.success()).findFirst().orElse(entry.getValue().getFirst())));
+    return markdown(samples, activeRules, metadata, scenarios, true);
+  }
+
+  static String detailsMarkdown(Map<AnalysisMode, List<SourceOnlyComparison.Run>> samples,
+                                List<String> activeRules, Map<String, String> metadata) {
+    return markdown(samples, activeRules, metadata, List.of(), false);
+  }
+
+  private static String markdown(Map<AnalysisMode, List<SourceOnlyComparison.Run>> measured,
+                                 List<String> activeRules, Map<String, String> metadata, List<Scenario> scenarios, boolean standalone) {
+    requireSamples(measured);
+    var samples = measured.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
+      entry -> entry.getValue().stream().map(AnalysisMatrix::productRun).toList()));
+    Map<AnalysisMode, SourceOnlyComparison.Run> runs = representatives(samples);
     String stabilityError = "unstable".equalsIgnoreCase(metadata.get("Repeated result stability"))
       ? "Measured repetitions are unstable; comparison and agreement metrics are unavailable." : null;
-    var report = new StringBuilder("# Java source-path and internal-compilation comparison\n\n")
-      .append("**Runner:** Orchestrator MavenBuild (`sonar:sonar`). Every mode uses the same analyzer artifact and source copies, without supplied project bytecode or dependency JARs.\n\n")
-      .append("Source paths resolve project declarations from source (#6308); internal compilation creates temporary project bytecode before analysis (#6309).\n\n");
+    var report = new StringBuilder();
+    if (standalone) {
+      report.append("# Java source-path and internal-compilation comparison\n\n")
+        .append("**Runner:** Orchestrator MavenBuild (`sonar:sonar`). Every mode uses the same analyzer artifact and source copies, without supplied project bytecode. External dependency JARs, when supplied, are identical across all modes within a dataset.\n\n")
+        .append("Source paths resolve project declarations from source (#6308); internal compilation creates temporary project bytecode before analysis (#6309).\n\n");
+    }
     appendSummary(report, samples, runs);
+    appendModuleMatrix(report, runs);
     if (stabilityError != null) {
       report.append("\n**Comparison unavailable:** ").append(stabilityError).append("\n");
+    }
+    boolean graphStable = !"variable".equalsIgnoreCase(metadata.get("Graph diagnostic stability"));
+    if (!graphStable) {
+      report.append("\n**Graph diagnostics vary between measured repetitions.** Graph counts above use the first representative sample; primary identifier/finding comparisons remain independent. Graph-location change interpretations are unavailable.\n");
     }
     appendScenarios(report, scenarios);
     appendPairSummary(report, runs, activeRules, stabilityError);
@@ -96,24 +110,51 @@ final class AnalysisMatrix {
     appendTopUnknownFiles(report, runs);
     appendFileMatrix(report, runs);
     appendRuleMatrix(report, runs, activeRules);
-    appendPairDetails(report, runs, activeRules, stabilityError);
+    var completeGraphModes = samples.entrySet().stream().filter(entry -> graphTraversalStatus(entry.getValue()).equals("COMPLETE"))
+      .map(Map.Entry::getKey).collect(Collectors.toSet());
+    appendPairDetails(report, runs, activeRules, stabilityError, graphStable, completeGraphModes);
     appendTimings(report, samples);
     appendMetadata(report, metadata);
-    report.append("\n## Reading the data\n\n")
+    if (standalone) {
+      report.append("\n## Reading the data\n\n")
       .append("- Scan success and compilation success are separate outcomes. A failed compilation can still produce a successful analysis. Missing compiler measurements are UNAVAILABLE or N/A, never assumed successful.\n")
       .append("- Identifier counts come from the semantic report: known = total − unknown. Project unknown percentage uses aggregate counts, not an average of file percentages. Zero identifiers means N/A.\n")
-      .append("- Comparisons require successful scans, identical indexed files, identical semantic file coverage, and identical per-file identifier totals. Invalid pairs have no change or agreement metrics.\n")
+      .append("- Comparisons require successful scans, identical indexed files, identical module coverage and module identifier totals, and identical global identifier totals. When both reports have per-file observations, file coverage and identifier totals must also match. Invalid pairs have no change or agreement metrics.\n")
+      .append("- Canonical module counts remain available without optional per-file observations. Missing per-file counts, rankings, and occurrence details are UNAVAILABLE rather than zero.\n")
       .append("- Unknown occurrences match by file, name, and token range. No longer reported unknown does not prove correct resolution; the focused fixtures check exact bindings separately. AST context is diagnostic, not a semantic classification.\n")
       .append("- Findings match by rule, path, and line, preserving duplicates. Retention measures agreement rather than accuracy; zero findings do not prove a configured rule ran.\n")
       .append("- JavaSensor time includes internal compilation. Maven/server wall time also includes startup and server processing. Medians exclude warm-ups; missing measurements are N/A.\n")
-      .append("- Source paths do not expand analysis scope. External dependency JARs remain absent and annotation processing is disabled during internal compilation.\n");
+        .append("- Semantic graph counts describe unique references reached during bounded traversal. A newly resolved identifier can expose more graph nodes; graph counts are diagnostics, not coverage percentages or correctness scores.\n")
+        .append("- Recursive graph diagnostics are DISABLED when the recorded expansion limit is zero; graph counts then show N/A. Otherwise traversal is COMPLETE only when every measured observation confirms completion, PARTIAL when the budget is reached, and UNKNOWN when completeness metadata is missing. These graph states do not truncate AST identifier or product-finding measurements. Graph-location change interpretations require complete, stable observations.\n")
+        .append("- Source paths do not expand analysis scope. Annotation processing is disabled during internal compilation. Probe findings are instrumentation and are excluded from product finding counts and agreement.\n");
+    }
     return report.toString();
   }
 
-  private static void requireModes(Map<AnalysisMode, ?> values) {
+  static void requireModes(Map<AnalysisMode, ?> values) {
     if (!values.keySet().equals(Set.of(AnalysisMode.values())) || values.values().stream().anyMatch(value -> value == null)) {
       throw new IllegalArgumentException("All four analysis modes are required");
     }
+  }
+
+  static void requireSamples(Map<AnalysisMode, List<SourceOnlyComparison.Run>> samples) {
+    requireModes(samples);
+    samples.forEach((mode, runs) -> {
+      if (runs.isEmpty() || runs.stream().anyMatch(run -> run == null)) {
+        throw new IllegalArgumentException("Measured samples are required for " + mode.label());
+      }
+    });
+  }
+
+  static Map<AnalysisMode, SourceOnlyComparison.Run> representatives(Map<AnalysisMode, List<SourceOnlyComparison.Run>> samples) {
+    requireSamples(samples);
+    return samples.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
+      entry -> entry.getValue().stream().filter(run -> !run.success()).findFirst().orElse(entry.getValue().getFirst())));
+  }
+
+  static SourceOnlyComparison.Run productRun(SourceOnlyComparison.Run run) {
+    return new SourceOnlyComparison.Run(run.label(), run.success(), run.scanMillis(), run.files(),
+      run.findings().stream().filter(finding -> finding.rule().startsWith("java:")).toList(), run.telemetry(), run.semantics(), run.error());
   }
 
   private static void appendSummary(StringBuilder report, Map<AnalysisMode, List<SourceOnlyComparison.Run>> samples,
@@ -128,6 +169,17 @@ final class AnalysisMatrix {
     appendRow(report, "Known identifiers", mode -> counts(runs.get(mode), SemanticReport.Counts::known));
     appendRow(report, "Unknown identifiers", mode -> counts(runs.get(mode), SemanticReport.Counts::unknown));
     appendRow(report, "Unknown identifiers (%)", mode -> percentage(runs.get(mode).semantics() == null ? null : runs.get(mode).semantics().totals().unknownPercentage()));
+    appendRow(report, "Semantic graph resolved symbols", mode -> graphCounts(runs.get(mode), SemanticReport.GraphCounts::resolvedSymbols));
+    appendRow(report, "Semantic graph unknown symbols", mode -> graphCounts(runs.get(mode), SemanticReport.GraphCounts::unknownSymbols));
+    appendRow(report, "Semantic graph resolved types", mode -> graphCounts(runs.get(mode), SemanticReport.GraphCounts::resolvedTypes));
+    appendRow(report, "Semantic graph unknown types", mode -> graphCounts(runs.get(mode), SemanticReport.GraphCounts::unknownTypes));
+    appendRow(report, "Semantic graph traversal", mode -> graphTraversalStatus(samples.get(mode)));
+    appendRow(report, "Graph expansion limit per module", mode -> graphTraversalCounts(runs.get(mode), SemanticReport.GraphTraversal::limit));
+    appendRow(report, "Graph expansions executed (representative sample)", mode -> graphTraversalCounts(runs.get(mode), SemanticReport.GraphTraversal::expansions));
+    appendRow(report, "Per-file semantic observations", mode -> {
+      var semantics = runs.get(mode).semantics();
+      return semantics == null ? "N/A" : semantics.hasFileObservations() ? "AVAILABLE" : "UNAVAILABLE";
+    });
     appendRow(report, "Files with no unknown identifiers", mode -> filesWithNoUnknowns(runs.get(mode).semantics()));
     appendRow(report, "Findings", mode -> runs.get(mode).findings().size());
     appendRow(report, "Median Maven/server time (ms)", mode -> median(samples.get(mode).stream().map(run -> (double) run.scanMillis()).toList()));
@@ -143,7 +195,7 @@ final class AnalysisMatrix {
     appendRow(report, "Source characters with analysis exceptions", mode -> telemetry(runs.get(mode), "java.analysis.main.exceptions.size_chars", "N/A"));
   }
 
-  private static void appendScenarios(StringBuilder report, List<Scenario> scenarios) {
+  static void appendScenarios(StringBuilder report, List<Scenario> scenarios) {
     if (scenarios.isEmpty()) {
       return;
     }
@@ -206,6 +258,9 @@ final class AnalysisMatrix {
   }
 
   private static String fileChanges(SemanticReport current, SemanticReport candidate) {
+    if (!SourceOnlyComparison.fileObservationsAvailable(current, candidate)) {
+      return "UNAVAILABLE";
+    }
     int improved = 0;
     int unchanged = 0;
     int regressed = 0;
@@ -236,7 +291,11 @@ final class AnalysisMatrix {
   }
 
   private static void appendAstContexts(StringBuilder report, Map<AnalysisMode, SourceOnlyComparison.Run> runs) {
-    report.append("\n## Unknown occurrences by AST context\n\nContext is the identifier's AST parent kind. Modes without occurrence details are N/A.\n\n");
+    report.append("\n## Unknown occurrences by AST context\n\nContext is the identifier's AST parent kind. Modes without occurrence details are UNAVAILABLE.\n\n");
+    if (runs.values().stream().noneMatch(run -> run.semantics() != null && run.semantics().hasUnknownDetails())) {
+      report.append("UNAVAILABLE: unknown occurrence details are absent in all modes.\n");
+      return;
+    }
     var contexts = new TreeSet<String>();
     runs.values().stream().filter(run -> run.semantics() != null && run.semantics().hasUnknownDetails())
       .forEach(run -> unknownOccurrences(run.semantics()).forEach(value -> contexts.add(value.identifier().parentKind())));
@@ -248,7 +307,7 @@ final class AnalysisMatrix {
     for (String context : contexts) {
       appendRow(report, context, mode -> {
         var semantics = runs.get(mode).semantics();
-        return semantics == null || !semantics.hasUnknownDetails() ? "N/A"
+        return semantics == null ? "N/A" : !semantics.hasUnknownDetails() ? "UNAVAILABLE"
           : unknownOccurrences(semantics).stream().filter(value -> value.identifier().parentKind().equals(context)).count();
       });
     }
@@ -256,8 +315,13 @@ final class AnalysisMatrix {
 
   private static void appendTopUnknownFiles(StringBuilder report, Map<AnalysisMode, SourceOnlyComparison.Run> runs) {
     report.append("\n## Top files contributing unknown identifiers\n\nTop five by the largest unknown count in any mode. Cells show **unknown count (share of project unknowns)**.\n\n");
+    if (runs.values().stream().noneMatch(run -> run.semantics() != null && run.semantics().hasFileObservations())) {
+      report.append("UNAVAILABLE: per-file observations are absent in all modes.\n");
+      return;
+    }
     var paths = new TreeSet<String>();
-    runs.values().stream().filter(run -> run.semantics() != null).forEach(run -> paths.addAll(run.semantics().files().keySet()));
+    runs.values().stream().filter(run -> run.semantics() != null && run.semantics().hasFileObservations())
+      .forEach(run -> paths.addAll(run.semantics().files().keySet()));
     var contributors = paths.stream().filter(path -> maximumUnknown(runs, path) > 0)
       .sorted(Comparator.comparingInt((String path) -> maximumUnknown(runs, path)).reversed().thenComparing(Comparator.naturalOrder())).limit(5).toList();
     if (contributors.isEmpty()) {
@@ -268,6 +332,9 @@ final class AnalysisMatrix {
     for (String path : contributors) {
       appendRow(report, path, mode -> {
         var semantics = runs.get(mode).semantics();
+        if (semantics != null && !semantics.hasFileObservations()) {
+          return "UNAVAILABLE";
+        }
         var counts = semantics == null ? null : semantics.files().get(path);
         return counts == null ? "N/A" : counts.unknown() + " (" + percentage(semantics.totals().unknown() == 0 ? null
           : 100.0 * counts.unknown() / semantics.totals().unknown()) + ")";
@@ -276,19 +343,45 @@ final class AnalysisMatrix {
   }
 
   private static int maximumUnknown(Map<AnalysisMode, SourceOnlyComparison.Run> runs, String path) {
-    return runs.values().stream().filter(run -> run.semantics() != null && run.semantics().files().containsKey(path))
+    return runs.values().stream().filter(run -> run.semantics() != null && run.semantics().hasFileObservations() && run.semantics().files().containsKey(path))
       .mapToInt(run -> run.semantics().files().get(path).unknown()).max().orElse(0);
   }
 
   private static void appendFileMatrix(StringBuilder report, Map<AnalysisMode, SourceOnlyComparison.Run> runs) {
-    report.append("\n## Semantics per file\n\nEach cell shows **total / known / unknown (unknown %)**. Missing semantic coverage is N/A.\n\n");
+    report.append("\n## Semantics per file\n\nEach cell shows **total / known / unknown (unknown %)**. Absent observations are UNAVAILABLE; missing coverage in an observed mode is N/A.\n\n");
+    if (runs.values().stream().noneMatch(run -> run.semantics() != null && run.semantics().hasFileObservations())) {
+      report.append("UNAVAILABLE: per-file observations are absent in all modes.\n");
+      return;
+    }
     appendHeader(report, "File");
     var paths = new TreeSet<String>();
-    runs.values().stream().filter(run -> run.semantics() != null).forEach(run -> paths.addAll(run.semantics().files().keySet()));
+    runs.values().stream().filter(run -> run.semantics() != null && run.semantics().hasFileObservations())
+      .forEach(run -> paths.addAll(run.semantics().files().keySet()));
     for (String path : paths) {
       appendRow(report, path, mode -> {
         var semantics = runs.get(mode).semantics();
+        if (semantics != null && !semantics.hasFileObservations()) {
+          return "UNAVAILABLE";
+        }
         var counts = semantics == null ? null : semantics.files().get(path);
+        return counts == null ? "N/A" : counts.total() + " / " + counts.known() + " / " + counts.unknown() + " (" + percentage(counts.unknownPercentage()) + ")";
+      });
+    }
+  }
+
+  private static void appendModuleMatrix(StringBuilder report, Map<AnalysisMode, SourceOnlyComparison.Run> runs) {
+    var modules = new TreeSet<String>();
+    runs.values().stream().filter(run -> run.semantics() != null)
+      .forEach(run -> modules.addAll(run.semantics().moduleIdentifierCounts().keySet()));
+    if (modules.isEmpty()) {
+      return;
+    }
+    report.append("\n## Semantics per module\n\nEach cell shows **total / known / unknown (unknown %)** from canonical module counts. Empty aggregator modules retain their actual zero counts.\n\n");
+    appendHeader(report, "Module");
+    for (String module : modules) {
+      appendRow(report, module, mode -> {
+        var semantics = runs.get(mode).semantics();
+        var counts = semantics == null ? null : semantics.moduleIdentifierCounts().get(module);
         return counts == null ? "N/A" : counts.total() + " / " + counts.known() + " / " + counts.unknown() + " (" + percentage(counts.unknownPercentage()) + ")";
       });
     }
@@ -315,7 +408,7 @@ final class AnalysisMatrix {
   }
 
   private static void appendPairDetails(StringBuilder report, Map<AnalysisMode, SourceOnlyComparison.Run> runs,
-                                        List<String> activeRules, String stabilityError) {
+                                        List<String> activeRules, String stabilityError, boolean graphStable, Set<AnalysisMode> completeGraphModes) {
     report.append("\n## Detailed differences\n\n");
     for (Pair pair : PAIRS) {
       var comparison = compare(pair, runs, activeRules, stabilityError);
@@ -326,6 +419,13 @@ final class AnalysisMatrix {
         appendRankedChanges(report, comparison.current().semantics(), comparison.candidate().semantics(), true);
         appendRankedChanges(report, comparison.current().semantics(), comparison.candidate().semantics(), false);
         appendUnknownDifferences(report, comparison.current().semantics(), comparison.candidate().semantics());
+        if (graphStable && completeGraphModes.contains(pair.current()) && completeGraphModes.contains(pair.candidate())) {
+          appendGraphDifferences(report, comparison.current().semantics(), comparison.candidate().semantics());
+        } else if (!graphStable) {
+          report.append("\nSemantic graph location differences unavailable: graph diagnostics vary between measured repetitions.\n\n");
+        } else {
+          report.append("\nSemantic graph location differences unavailable: traversal is DISABLED, PARTIAL, or UNKNOWN in at least one compared mode. Primary identifier and finding comparisons remain valid.\n\n");
+        }
         appendFindings(report, "Findings only in " + pair.current().label(), comparison.currentOnly());
         appendFindings(report, "Findings only in " + pair.candidate().label(), comparison.candidateOnly());
       }
@@ -338,9 +438,51 @@ final class AnalysisMatrix {
     });
   }
 
+  private static void appendGraphDifferences(StringBuilder report, SemanticReport current, SemanticReport candidate) {
+    report.append("\n### Semantic graph location differences\n\n")
+      .append("Locations identify unknown graph references reached during traversal. Expanded traversal can add locations; removals are not proof of correct bindings.\n\n");
+    if (current.graphTotals() == null || candidate.graphTotals() == null) {
+      report.append("Unavailable: at least one report does not contain semantic graph measurements.\n\n");
+      return;
+    }
+    appendGraphLocations(report, "Unknown symbol", current.unknownSymbols(), candidate.unknownSymbols());
+    appendGraphLocations(report, "Unknown type", current.unknownTypes(), candidate.unknownTypes());
+  }
+
+  private static void appendGraphLocations(StringBuilder report, String name, List<String> current, List<String> candidate) {
+    var before = Set.copyOf(current);
+    var after = Set.copyOf(candidate);
+    var removed = before.stream().filter(location -> !after.contains(location)).sorted().toList();
+    var added = after.stream().filter(location -> !before.contains(location)).sorted().toList();
+    report.append("| ").append(name).append(" graph locations | Count |\n|---|---:|\n")
+      .append("| Unknown locations present in both observations | ").append(before.size() - removed.size()).append(" |\n")
+      .append("| Unknown locations absent from candidate observation | ").append(removed.size()).append(" |\n")
+      .append("| Unknown locations absent from baseline observation | ").append(added.size()).append(" |\n\n");
+    appendGraphLocationList(report, name + " locations absent from candidate observation", removed);
+    appendGraphLocationList(report, name + " locations absent from baseline observation", added);
+  }
+
+  private static void appendGraphLocationList(StringBuilder report, String title, List<String> locations) {
+    report.append("#### ").append(title).append("\n\n");
+    if (locations.isEmpty()) {
+      report.append("None.\n\n");
+      return;
+    }
+    report.append("| Location |\n|---|\n");
+    locations.stream().limit(20).forEach(location -> report.append("| ").append(escape(location)).append(" |\n"));
+    if (locations.size() > 20) {
+      report.append("\n").append(locations.size() - 20).append(" additional graph locations omitted.\n");
+    }
+    report.append('\n');
+  }
+
   private static void appendRankedChanges(StringBuilder report, SemanticReport current, SemanticReport candidate, boolean improvements) {
     report.append("### Largest semantic ").append(improvements ? "improvements" : "regressions")
       .append("\n\nTop five by absolute change in unknown percentage.\n\n");
+    if (!SourceOnlyComparison.fileObservationsAvailable(current, candidate)) {
+      report.append("UNAVAILABLE: per-file observations are absent in at least one compared mode.\n\n");
+      return;
+    }
     var paths = current.files().keySet().stream().filter(path -> {
       Double before = current.files().get(path).unknownPercentage();
       Double after = candidate.files().get(path).unknownPercentage();
@@ -363,7 +505,7 @@ final class AnalysisMatrix {
 
   private static void appendUnknownDifferences(StringBuilder report, SemanticReport current, SemanticReport candidate) {
     if (!current.hasUnknownDetails() || !candidate.hasUnknownDetails()) {
-      report.append("Unknown occurrence differences unavailable: at least one semantic report contains counts only.\n\n");
+      report.append("Unknown occurrence differences UNAVAILABLE: details are absent in at least one compared mode.\n\n");
       return;
     }
     var before = unknownOccurrences(current);
@@ -459,9 +601,35 @@ final class AnalysisMatrix {
     return run.semantics() == null ? "N/A" : value.apply(run.semantics().totals());
   }
 
+  private static Object graphCounts(SourceOnlyComparison.Run run, Function<SemanticReport.GraphCounts, Integer> value) {
+    return run.semantics() == null || run.semantics().graphTotals() == null
+      || run.semantics().graphTraversal() != null && run.semantics().graphTraversal().limit() == 0 ? "N/A" : value.apply(run.semantics().graphTotals());
+  }
+
+  private static Object graphTraversalCounts(SourceOnlyComparison.Run run, Function<SemanticReport.GraphTraversal, Integer> value) {
+    return run.semantics() == null || run.semantics().graphTraversal() == null ? "N/A" : value.apply(run.semantics().graphTraversal());
+  }
+
+  static String graphTraversalStatus(List<SourceOnlyComparison.Run> samples) {
+    if (samples.stream().allMatch(run -> run.success() && run.semantics() != null && run.semantics().graphTraversal() != null
+      && run.semantics().graphTraversal().limit() == 0)) {
+      return "DISABLED";
+    }
+    if (samples.stream().anyMatch(run -> run.semantics() != null && run.semantics().graphTraversal() != null
+      && run.semantics().graphTraversal().limit() > 0 && !run.semantics().graphTraversal().complete())) {
+      return "PARTIAL";
+    }
+    return samples.stream().allMatch(run -> run.success() && run.semantics() != null && run.semantics().graphTraversal() != null
+      && run.semantics().graphTraversal().limit() > 0 && run.semantics().graphTraversal().complete())
+      ? "COMPLETE" : "UNKNOWN";
+  }
+
   private static String filesWithNoUnknowns(SemanticReport semantics) {
     if (semantics == null) {
       return "N/A";
+    }
+    if (!semantics.hasFileObservations()) {
+      return "UNAVAILABLE";
     }
     long count = semantics.files().values().stream().filter(value -> value.total() > 0 && value.unknown() == 0).count();
     return count + " / " + semantics.files().size();

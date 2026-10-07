@@ -7,6 +7,12 @@
       <repositoryKey>java-extension</repositoryKey>
       <key>semanticbindings</key>
       <priority>MAJOR</priority>
+      <parameters>
+        <parameter>
+          <key>expectMissingTypeProbe</key>
+          <value>false</value>
+        </parameter>
+      </parameters>
     </rule>
   </rules>
 </profile>

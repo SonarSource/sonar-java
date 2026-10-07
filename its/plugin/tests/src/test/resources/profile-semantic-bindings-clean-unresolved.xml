@@ -22,5 +22,15 @@
         </parameter>
       </parameters>
     </rule>
+    <rule>
+      <repositoryKey>java</repositoryKey>
+      <key>S1874</key>
+      <priority>MAJOR</priority>
+    </rule>
+    <rule>
+      <repositoryKey>java</repositoryKey>
+      <key>S1116</key>
+      <priority>MINOR</priority>
+    </rule>
   </rules>
 </profile>

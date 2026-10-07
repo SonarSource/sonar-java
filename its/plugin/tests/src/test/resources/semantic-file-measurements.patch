@@ -1,0 +1,79 @@
+diff --git a/java-frontend/src/main/java/org/sonar/java/SemanticReportScanner.java b/java-frontend/src/main/java/org/sonar/java/SemanticReportScanner.java
+--- a/java-frontend/src/main/java/org/sonar/java/SemanticReportScanner.java
++++ b/java-frontend/src/main/java/org/sonar/java/SemanticReportScanner.java
+@@ -73,6 +73,7 @@
+       throw new IllegalStateException("Module context is not set. Please call enterModule() before scanning files.");
+     }
+     String relativePath = relativePath(context.getInputFile());
++    currentModuleReferences.files.computeIfAbsent(relativePath, ignored -> new FileReferences());
+     context.getTree().accept(new BaseTreeVisitor() {
+       private Symbol.TypeSymbol sourceClass;
+
+@@ -121,9 +122,15 @@
+   }
+
+   private void collectIdentifier(String path, IdentifierTree identifier, @Nullable Symbol.TypeSymbol sourceClass) {
++    FileReferences file = currentModuleReferences.files.get(path);
++    file.totalIdentifierCount++;
+     Symbol symbol = identifier.symbol();
+     if (symbol.isUnknown()) {
+-      currentModuleReferences.unknownIdentifiers.add(locationOf(path, identifier));
++      String location = locationOf(path, identifier);
++      currentModuleReferences.unknownIdentifiers.add(location);
++      SyntaxToken token = identifier.firstToken();
++      file.unknownIdentifiers.put(location, new UnknownIdentifier(identifier.name(), token == null ? "UNKNOWN" : token.range().toString(),
++        identifier.parent() == null ? "UNKNOWN" : identifier.parent().kind().toString()));
+     } else {
+       currentModuleReferences.resolvedIdentifierCount++;
+       if (isArrayLength(identifier)) {
+@@ -386,6 +393,27 @@
+         }
+         writer.endArray();
+
++        writer.name("files").beginArray();
++        for (Map.Entry<String, FileReferences> fileEntry : module.files.entrySet()) {
++          FileReferences file = fileEntry.getValue();
++          writer.beginObject();
++          writer.name("path").value(fileEntry.getKey());
++          writer.name("numberOfIdentifier").value(file.totalIdentifierCount);
++          writer.name("numberOfUnknownIdentifier").value(file.unknownIdentifiers.size());
++          writer.name("percentageOfUnknownIdentifier").value(percentage(file.unknownIdentifiers.size(), file.totalIdentifierCount));
++          writer.name("unknownIdentifiers").beginArray();
++          for (UnknownIdentifier identifier : file.unknownIdentifiers.values()) {
++            writer.beginObject();
++            writer.name("name").value(identifier.name());
++            writer.name("range").value(identifier.range());
++            writer.name("parentKind").value(identifier.parentKind());
++            writer.endObject();
++          }
++          writer.endArray();
++          writer.endObject();
++        }
++        writer.endArray();
++
+         writer.name("unknownSymbols").beginArray();
+         for (String symbol : module.unknownSymbols) {
+           writer.value(symbol);
+@@ -425,6 +453,7 @@
+
+   private static class ModuleReferences {
+     final Path moduleDir;
++    final Map<String, FileReferences> files = new TreeMap<>();
+     final Deque<SymbolReference> symbolsToResolve = new java.util.ArrayDeque<>();
+     final Deque<TypeReference> typesToResolve = new java.util.ArrayDeque<>();
+     final Set<Type> allReferencedTypes = newIdentitySet();
+@@ -454,6 +483,14 @@
+     }
+   }
+
++  private static class FileReferences {
++    int totalIdentifierCount;
++    final Map<String, UnknownIdentifier> unknownIdentifiers = new TreeMap<>();
++  }
++
++  private record UnknownIdentifier(String name, String range, String parentKind) {
++  }
++
+   private record SymbolReference(Symbol symbol, @Nullable Symbol.TypeSymbol sourceClass) {
+   }
+

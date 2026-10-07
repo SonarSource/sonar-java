@@ -1,0 +1,222 @@
+diff --git a/java-frontend/src/main/java/org/sonar/java/SemanticReportScanner.java b/java-frontend/src/main/java/org/sonar/java/SemanticReportScanner.java
+--- a/java-frontend/src/main/java/org/sonar/java/SemanticReportScanner.java
++++ b/java-frontend/src/main/java/org/sonar/java/SemanticReportScanner.java
+@@ -58,13 +58,33 @@
+   private static final int PACKAGE = 2;
+   private static final int PROTECTED = 4;
+   private static final int PRIVATE = 8;
++  public static final String GRAPH_EXPANSION_LIMIT_PROPERTY = "sonar.java.internal.semantic.report.graph.maxExpansions";
++  public static final int DEFAULT_GRAPH_EXPANSION_LIMIT = 1000;
++
++  private int graphExpansionLimit;
+
+   private final Map<Path, ModuleReferences> moduleMap = new TreeMap<>();
+   private ModuleReferences currentModuleReferences = null;
++
++  public SemanticReportScanner() {
++    this(DEFAULT_GRAPH_EXPANSION_LIMIT);
++  }
++
++  SemanticReportScanner(int graphExpansionLimit) {
++    setGraphExpansionLimit(graphExpansionLimit);
++  }
++
++  public void setGraphExpansionLimit(int graphExpansionLimit) {
++    if (graphExpansionLimit < 0) {
++      throw new IllegalArgumentException("Graph expansion limit must be nonnegative");
++    }
++    this.graphExpansionLimit = graphExpansionLimit;
++  }
+
+   public void enterModule(Path moduleDir) {
+     Path normalizedPath = normalizePath(moduleDir);
+     this.currentModuleReferences = moduleMap.computeIfAbsent(normalizedPath, k -> new ModuleReferences(normalizedPath));
++    this.currentModuleReferences.graphTraversalComplete &= graphExpansionLimit > 0;
+   }
+
+   @Override
+@@ -133,10 +153,12 @@
+         identifier.parent() == null ? "UNKNOWN" : identifier.parent().kind().toString()));
+     } else {
+       currentModuleReferences.resolvedIdentifierCount++;
+-      if (isArrayLength(identifier)) {
+-        currentModuleReferences.arrayLengthSymbols.add(symbol);
+-      }
+-      collectSymbol(symbol, () -> locationOf(path, identifier), sourceClass);
++      if (currentModuleReferences.graphTraversalComplete) {
++        if (isArrayLength(identifier)) {
++          currentModuleReferences.arrayLengthSymbols.add(symbol);
++        }
++        collectSymbol(symbol, () -> locationOf(path, identifier), sourceClass);
++      }
+     }
+   }
+
+@@ -287,14 +309,34 @@
+   private void resolveSymbolsAndTypes() {
+     while (!currentModuleReferences.symbolsToResolve.isEmpty() || !currentModuleReferences.typesToResolve.isEmpty()) {
+       while (!currentModuleReferences.typesToResolve.isEmpty()) {
++        if (!beginGraphExpansion()) {
++          return;
++        }
+         TypeReference reference = currentModuleReferences.typesToResolve.pop();
+         collectTypeChildren(reference.type(), reference.sourceClass());
+       }
+       while (!currentModuleReferences.symbolsToResolve.isEmpty()) {
++        if (!beginGraphExpansion()) {
++          return;
++        }
+         SymbolReference reference = currentModuleReferences.symbolsToResolve.pop();
+         collectSymbolChildren(reference.symbol(), reference.sourceClass());
+       }
+     }
++  }
++
++  private boolean beginGraphExpansion() {
++    if (currentModuleReferences.graphExpansions >= graphExpansionLimit) {
++      currentModuleReferences.graphTraversalComplete = false;
++      currentModuleReferences.typesToResolve.clear();
++      currentModuleReferences.symbolsToResolve.clear();
++      currentModuleReferences.symbolSources.clear();
++      currentModuleReferences.typeSources.clear();
++      currentModuleReferences.typeArgumentSources.clear();
++      return false;
++    }
++    currentModuleReferences.graphExpansions++;
++    return true;
+   }
+
+   private static int visibility(@Nullable Symbol.TypeSymbol sourceClass, @Nullable Symbol.TypeSymbol targetClass) {
+@@ -365,6 +407,9 @@
+     try (JsonWriter writer = new JsonWriter(Files.newBufferedWriter(reportPath, StandardCharsets.UTF_8))) {
+       writer.setIndent("  ");
+       writer.beginObject();
++      writer.name("graphTraversalComplete").value(moduleMap.values().stream().allMatch(module -> module.graphTraversalComplete));
++      writer.name("graphExpansionLimit").value(graphExpansionLimit);
++      writer.name("graphExpansions").value(moduleMap.values().stream().mapToLong(module -> module.graphExpansions).sum());
+       writer.name("resolvedIdentifierCount").value(resolvedIdentifierCount);
+       writer.name("unknownIdentifierCount").value(unknownIdentifierCount);
+       writer.name("percentageOfUnknownIdentifier").value(percentage(unknownIdentifierCount, resolvedIdentifierCount + unknownIdentifierCount));
+@@ -379,6 +424,9 @@
+         writer.beginObject();
+
+         writer.name("path").value(path.replace('\\', '/'));
++        writer.name("graphTraversalComplete").value(module.graphTraversalComplete);
++        writer.name("graphExpansionLimit").value(graphExpansionLimit);
++        writer.name("graphExpansions").value(module.graphExpansions);
+         writer.name("resolvedIdentifierCount").value(module.resolvedIdentifierCount);
+         writer.name("unknownIdentifierCount").value(module.unknownIdentifiers.size());
+         writer.name("percentageOfUnknownIdentifier").value(percentage(module.unknownIdentifiers.size(), module.resolvedIdentifierCount + module.unknownIdentifiers.size()));
+@@ -465,6 +513,8 @@
+     final Set<String> unknownIdentifiers = new TreeSet<>();
+     final Set<String> unknownSymbols = new TreeSet<>();
+     final Set<String> unknownTypes = new TreeSet<>();
++    boolean graphTraversalComplete = true;
++    int graphExpansions;
+     int resolvedIdentifierCount = 0;
+     int resolvedSymbolCount = 0;
+     int resolvedTypeCount = 0;
+diff --git a/java-frontend/src/test/java/org/sonar/java/SemanticReportScannerTest.java b/java-frontend/src/test/java/org/sonar/java/SemanticReportScannerTest.java
+--- a/java-frontend/src/test/java/org/sonar/java/SemanticReportScannerTest.java
++++ b/java-frontend/src/test/java/org/sonar/java/SemanticReportScannerTest.java
+@@ -239,6 +239,88 @@
+     scanner.leaveModule();
+   }
+
++  @Test
++  void bounds_graph_expansion_without_truncating_identifier_measurements() throws IOException {
++    SemanticReportScanner scanner = new SemanticReportScanner(3);
++    Symbol.TypeSymbol source = typeSymbol("example.Source", "example", "Source");
++    List<Symbol.TypeSymbol> nodes = java.util.stream.IntStream.range(0, 6)
++      .mapToObj(i -> typeSymbol("library.Node" + i, "library", "Node" + i)).toList();
++    for (int i = 0; i < nodes.size(); i++) {
++      when(nodes.get(i).isPublic()).thenReturn(true);
++      when(nodes.get(i).memberSymbols()).thenReturn(i + 1 < nodes.size() ? List.of(nodes.get(i + 1)) : List.of());
++    }
++    scanner.enterModule(temp);
++    IdentifierTree first = mock(IdentifierTree.class);
++    when(first.name()).thenReturn("Node0");
++    when(first.symbol()).thenReturn(nodes.getFirst());
++    scanIdentifier(scanner, source, first);
++
++    Symbol.TypeSymbol later = typeSymbol("library.Later", "library", "Later");
++    IdentifierTree second = mock(IdentifierTree.class);
++    when(second.name()).thenReturn("Later");
++    when(second.symbol()).thenReturn(later);
++    scanIdentifier(scanner, source, second);
++    IdentifierTree missing = mock(IdentifierTree.class);
++    when(missing.name()).thenReturn("Missing");
++    when(missing.symbol()).thenReturn(Symbol.UNKNOWN_SYMBOL);
++    scanIdentifier(scanner, source, missing);
++    scanner.leaveModule();
++
++    Path report = temp.resolve("bounded-report.json");
++    scanner.writeReport(report, temp);
++    var result = JsonParser.parseString(Files.readString(report)).getAsJsonObject();
++    var module = result.getAsJsonArray("modules").get(0).getAsJsonObject();
++    assertThat(result.get("resolvedIdentifierCount").getAsInt()).isEqualTo(2);
++    assertThat(result.get("unknownIdentifierCount").getAsInt()).isEqualTo(1);
++    assertThat(result.get("graphTraversalComplete").getAsBoolean()).isFalse();
++    assertThat(result.get("graphExpansionLimit").getAsInt()).isEqualTo(3);
++    assertThat(result.get("graphExpansions").getAsInt()).isEqualTo(3);
++    assertThat(module.get("graphTraversalComplete").getAsBoolean()).isFalse();
++    assertThat(module.get("graphExpansions").getAsInt()).isEqualTo(3);
++    assertThat(module.getAsJsonArray("files")).hasSize(3);
++    assertThat(java.util.stream.StreamSupport.stream(module.getAsJsonArray("files").spliterator(), false)
++      .mapToInt(file -> file.getAsJsonObject().get("numberOfIdentifier").getAsInt()).sum()).isEqualTo(3);
++    verify(nodes.get(3), never()).memberSymbols();
++    verify(later, never()).memberSymbols();
++    verify(later, never()).type();
++  }
++
++  @Test
++  void disables_graph_queries_while_preserving_all_identifiers() throws IOException {
++    SemanticReportScanner scanner = new SemanticReportScanner(0);
++    Symbol.TypeSymbol source = typeSymbol("example.Source", "example", "Source");
++    Symbol known = mock(Symbol.class);
++    IdentifierTree identifier = mock(IdentifierTree.class);
++    when(identifier.name()).thenReturn("Known");
++    when(identifier.symbol()).thenReturn(known);
++    IdentifierTree missing = mock(IdentifierTree.class);
++    when(missing.name()).thenReturn("Missing");
++    when(missing.symbol()).thenReturn(Symbol.UNKNOWN_SYMBOL);
++    scanner.enterModule(temp);
++    scanIdentifier(scanner, source, identifier);
++    scanIdentifier(scanner, source, missing);
++    scanner.leaveModule();
++
++    Path report = temp.resolve("identifiers-only-report.json");
++    scanner.writeReport(report, temp);
++    var result = JsonParser.parseString(Files.readString(report)).getAsJsonObject();
++    var module = result.getAsJsonArray("modules").get(0).getAsJsonObject();
++    assertThat(result.get("resolvedIdentifierCount").getAsInt()).isEqualTo(1);
++    assertThat(result.get("unknownIdentifierCount").getAsInt()).isEqualTo(1);
++    assertThat(result.get("graphTraversalComplete").getAsBoolean()).isFalse();
++    assertThat(result.get("graphExpansionLimit").getAsInt()).isZero();
++    assertThat(result.get("graphExpansions").getAsInt()).isZero();
++    for (String field : List.of("resolvedSymbolCount", "unknownSymbolCount", "resolvedTypeCount", "unknownTypeCount")) {
++      assertThat(result.get(field).getAsInt()).isZero();
++    }
++    assertThat(module.getAsJsonArray("files")).hasSize(2);
++    assertThat(module.getAsJsonArray("unknownSymbols")).isEmpty();
++    assertThat(module.getAsJsonArray("unknownTypes")).isEmpty();
++    verify(known, never()).type();
++    verify(known, never()).owner();
++    verify(known, never()).enclosingClass();
++  }
++
+   private void assertResolvedSymbols(SemanticReportScanner scanner, Symbol.TypeSymbol source, Symbol.TypeSymbol target, int expected) throws IOException {
+     IdentifierTree identifier = mock(IdentifierTree.class);
+     when(identifier.name()).thenReturn("Target");
+diff --git a/sonar-java-plugin/src/main/java/org/sonar/plugins/java/JavaSensor.java b/sonar-java-plugin/src/main/java/org/sonar/plugins/java/JavaSensor.java
+--- a/sonar-java-plugin/src/main/java/org/sonar/plugins/java/JavaSensor.java
++++ b/sonar-java-plugin/src/main/java/org/sonar/plugins/java/JavaSensor.java
+@@ -118,6 +118,8 @@
+
+     boolean semanticReportEnabled = context.config().get(SonarComponents.SONAR_SEMANTIC_REPORT).isPresent();
+     if (semanticReportEnabled) {
++      semanticReportScanner.setGraphExpansionLimit(context.config().getInt(SemanticReportScanner.GRAPH_EXPANSION_LIMIT_PROPERTY)
++        .orElse(SemanticReportScanner.DEFAULT_GRAPH_EXPANSION_LIMIT));
+       semanticReportScanner.enterModule(context.fileSystem().baseDir().toPath());
+     }
+     JavaFrontend frontend = new JavaFrontend(javaVersion,

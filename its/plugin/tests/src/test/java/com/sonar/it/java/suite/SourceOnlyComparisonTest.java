@@ -293,6 +293,78 @@ class SourceOnlyComparisonTest {
       "| A.java | 3:1-3:4 | old | MEMBER_SELECT |", "| A.java | 4:1-4:8 | newName | METHOD_INVOCATION |");
   }
 
+  @Test
+  void compares_canonical_module_only_counts_without_fabricating_per_file_improvements() {
+    var current = canonicalRun(new SemanticReport.Counts(10, 3), Map.of(".", new SemanticReport.Counts(0, 0),
+      "main", new SemanticReport.Counts(10, 3)), Map.of(), false);
+    var candidate = canonicalRun(new SemanticReport.Counts(10, 1), Map.of(".", new SemanticReport.Counts(0, 0),
+      "main", new SemanticReport.Counts(10, 1)), Map.of(), false);
+    var comparison = SourceOnlyComparison.compare(current, candidate, false, List.of());
+    assertThat(comparison.valid()).isTrue();
+    String report = SourceOnlyComparison.markdown(comparison);
+    assertThat(report).contains("| Identifiers (total) | 10 | 10 |", "| Known identifiers | 7 | 9 |",
+      "| Per-file semantic observations | UNAVAILABLE | UNAVAILABLE |", "| Files with no unknown identifiers | UNAVAILABLE | UNAVAILABLE |",
+      "| Net change in unknown identifier count | -2 |", "| Files improved (unknown %) | UNAVAILABLE |",
+      "## Semantics per module", "| . | 0 / 0 | 0 / 0 | 0 / 0 | N/A / N/A |",
+      "| main | 10 / 10 | 7 / 9 | 3 / 1 | 30.000% / 10.000% |",
+      "UNAVAILABLE: per-file observations are absent", "UNAVAILABLE: unknown occurrence details are absent")
+      .doesNotContain("| Files improved (unknown %) | 0 |", "| Files with no unknown identifiers | 0 / 0", "| File | Total identifiers |");
+  }
+
+  @Test
+  void rejects_module_scope_and_module_identifier_total_changes_even_with_equal_global_totals() {
+    var current = canonicalRun(new SemanticReport.Counts(20, 3), Map.of("first", new SemanticReport.Counts(10, 3),
+      "second", new SemanticReport.Counts(10, 0)), Map.of(), false);
+    var changedScope = canonicalRun(new SemanticReport.Counts(20, 1), Map.of("other", new SemanticReport.Counts(20, 1)), Map.of(), false);
+    assertThat(SourceOnlyComparison.compare(current, changedScope, false, List.of()).error()).contains("different modules");
+    var changedTotals = canonicalRun(new SemanticReport.Counts(20, 1), Map.of("first", new SemanticReport.Counts(11, 1),
+      "second", new SemanticReport.Counts(9, 0)), Map.of(), false);
+    var comparison = SourceOnlyComparison.compare(current, changedTotals, false, List.of());
+    assertThat(comparison.valid()).isFalse();
+    assertThat(comparison.error()).contains("Identifier coverage differs for module first", "current=10, candidate=11");
+  }
+
+  @Test
+  void rejects_changed_global_identifier_total_when_no_per_file_data_is_available() {
+    var modules = Map.of("main", new SemanticReport.Counts(10, 1));
+    var current = canonicalRun(new SemanticReport.Counts(10, 1), modules, Map.of(), false);
+    var candidate = canonicalRun(new SemanticReport.Counts(11, 1), modules, Map.of(), false);
+    var comparison = SourceOnlyComparison.compare(current, candidate, false, List.of());
+    assertThat(comparison.valid()).isFalse();
+    assertThat(comparison.error()).contains("Global identifier coverage differs", "current=10, candidate=11");
+    assertThat(SourceOnlyComparison.markdown(comparison)).doesNotContain("| Retention of current findings |", "| Net change in unknown identifier count |");
+  }
+
+  @Test
+  void compares_module_totals_when_only_one_mode_has_optional_file_observations() {
+    var currentCounts = new SemanticReport.Counts(10, 3);
+    var candidateCounts = new SemanticReport.Counts(10, 1);
+    var current = canonicalRun(currentCounts, Map.of("main", currentCounts), Map.of("main/src/Example.java", currentCounts), true);
+    var candidate = canonicalRun(candidateCounts, Map.of("main", candidateCounts), Map.of(), false);
+    var comparison = SourceOnlyComparison.compare(current, candidate, false, List.of());
+    assertThat(comparison.valid()).isTrue();
+    assertThat(SourceOnlyComparison.markdown(comparison)).contains("| Per-file semantic observations | AVAILABLE | UNAVAILABLE |",
+      "| Net change in unknown identifier count | -2 |", "| Files improved (unknown %) | UNAVAILABLE |")
+      .doesNotContain("| File | Total identifiers |");
+  }
+
+  @Test
+  void canonical_and_legacy_module_coverage_cannot_be_silently_mixed() {
+    var counts = new SemanticReport.Counts(10, 1);
+    var current = canonicalRun(counts, Map.of("main", counts), Map.of("main/src/Example.java", counts), true);
+    var legacy = new SourceOnlyComparison.Run("legacy", true, 12, current.files(), List.of(), Map.of(),
+      new SemanticReport(counts, Map.of("main/src/Example.java", counts)), null);
+    var comparison = SourceOnlyComparison.compare(current, legacy, false, List.of());
+    assertThat(comparison.valid()).isFalse();
+    assertThat(comparison.error()).contains("different modules");
+  }
+
+  private static SourceOnlyComparison.Run canonicalRun(SemanticReport.Counts totals, Map<String, SemanticReport.Counts> modules,
+                                                        Map<String, SemanticReport.Counts> files, boolean observations) {
+    return new SourceOnlyComparison.Run("canonical", true, 12, List.of("main/src/Example.java"), List.of(), Map.of(),
+      new SemanticReport(totals, files, Map.of(), null, Map.of(), List.of(), List.of(), null, modules, observations), null);
+  }
+
   private static SourceOnlyComparison.Finding finding(String rule, String path, Integer line, String message) {
     return new SourceOnlyComparison.Finding(rule, path, line, message);
   }
