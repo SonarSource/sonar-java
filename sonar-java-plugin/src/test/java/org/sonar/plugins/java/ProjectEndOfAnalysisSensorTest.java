@@ -17,12 +17,16 @@
 package org.sonar.plugins.java;
 
 import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.event.Level;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
+import org.sonar.java.SemanticReportScanner;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.ProfileExpression;
@@ -31,6 +35,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.telemetry.DefaultTelemetry;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.telemetry.TelemetryKey;
+import org.sonar.scanner.plugin.api.impl.config.MapSettings;
 import org.sonar.scanner.plugin.api.impl.sensor.DefaultSensorDescriptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +47,7 @@ class ProjectEndOfAnalysisSensorTest {
 
   @Test
   void test_describe() {
-    var sensor = new ProjectEndOfAnalysisSensor(new NoOpTelemetry(), new SpringContextModel());
+    var sensor = new ProjectEndOfAnalysisSensor(new NoOpTelemetry(), new SpringContextModel(), new SemanticReportScanner());
     DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
     sensor.describe(descriptor);
     assertThat(descriptor.name()).isEqualTo("JavaProjectSensor");
@@ -58,7 +63,7 @@ class ProjectEndOfAnalysisSensorTest {
     telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_CONTEXT_MODEL_GATHERING_TIME_MS, 12L);
     telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_CONTEXT_CHECKS_TIME_MS, 34L);
     var springContextModel = new SpringContextModel();
-    var sensor = new ProjectEndOfAnalysisSensor(telemetry, springContextModel);
+    var sensor = new ProjectEndOfAnalysisSensor(telemetry, springContextModel, new SemanticReportScanner());
     SensorContextTester context = SensorContextTester.create(tempDir);
     sensor.execute(context);
     String contextModelSize = context.getTelemetryProperties().get("java.spring.context_model_size_bytes");
@@ -83,7 +88,7 @@ class ProjectEndOfAnalysisSensorTest {
     springContextModel.getTypeToDependenciesIndex().addDependencyForType("com.acme.MyBean", "myBean", "module-a", ProfileExpression.UNCONDITIONAL, newLocation(), false);
     springContextModel.getProjectPackageScan().addPackage("module-a", "com.acme");
 
-    var sensor = new ProjectEndOfAnalysisSensor(new DefaultTelemetry(), springContextModel);
+    var sensor = new ProjectEndOfAnalysisSensor(new DefaultTelemetry(), springContextModel, new SemanticReportScanner());
     SensorContextTester context = SensorContextTester.create(tempDir);
     sensor.execute(context);
 
@@ -95,6 +100,21 @@ class ProjectEndOfAnalysisSensorTest {
       .containsEntry("java.spring.context_model_gathering_time_ms", "0")
       .containsEntry("java.spring.context_checks_time_ms", "0");
     assertThat(Long.parseLong(context.getTelemetryProperties().get("java.spring.context_model_size_bytes"))).isPositive();
+  }
+
+  @Test
+  void writes_semantic_report_at_project_end(@TempDir Path tempDir) throws IOException {
+    Path report = tempDir.resolve("semantic-report.json");
+    MapSettings settings = new MapSettings();
+    settings.setProperty(SonarComponents.SONAR_SEMANTIC_REPORT, report.toString());
+    SensorContextTester context = SensorContextTester.create(tempDir);
+    context.setSettings(settings);
+    var sensor = new ProjectEndOfAnalysisSensor(new NoOpTelemetry(), new SpringContextModel(), new SemanticReportScanner());
+
+    assertThat(report).doesNotExist();
+    sensor.execute(context);
+
+    assertThat(Files.readString(report)).contains("\"resolvedIdentifierCount\": 0", "\"unknownIdentifierCount\": 0", "\"modules\": []");
   }
 
   private static BeanDefinitionHolder newHolder(String type) {
