@@ -20,6 +20,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -48,6 +49,8 @@ public class PrivateReadResolveCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isOwnedBySerializableExtensibleClass(MethodTree method) {
     Symbol owner = method.symbol().owner();
-    return !owner.isPrivate() && !owner.isFinal() && owner.type().isSubtypeOf("java.io.Serializable");
+    boolean privateDeclaration = method.parent() instanceof ClassTree classTree
+      && ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.PRIVATE);
+    return !privateDeclaration && !owner.isPrivate() && !owner.isFinal() && owner.type().isSubtypeOf("java.io.Serializable");
   }
 }

@@ -108,7 +108,7 @@ public class AnnotationFieldReferenceFinder extends BaseTreeVisitor {
       return;
     }
 
-    var annotationName = annotationTree.annotationType().symbolType().name();
+    var annotationName = annotationTree.annotationType().lastToken().text();
     var isFieldSourceAnnotation = FIELD_SOURCE_METHOD_ANNOTATION.equals(annotationName);
     var isFieldSourcesAnnotation = FIELD_SOURCES_METHOD_ANNOTATION.equals(annotationName);
     if (!isFieldSourceAnnotation && !isFieldSourcesAnnotation) {

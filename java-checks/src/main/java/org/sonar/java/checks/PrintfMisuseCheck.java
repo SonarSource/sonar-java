@@ -18,7 +18,6 @@ package org.sonar.java.checks;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -328,18 +327,13 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
   }
 
   private static boolean isInStringArrayInitializer(ExpressionTree arg) {
-    return Optional.of(arg)
-      .map(Tree::parent)
-      .filter(tree -> tree.is(Tree.Kind.LIST))
-      .map(Tree::parent)
-      .filter(tree -> tree.is(Tree.Kind.NEW_ARRAY))
-      .map(NewArrayTree.class::cast)
-      .map(ExpressionTree::symbolType)
-      .filter(Type::isArray)
-      .map(Type.ArrayType.class::cast)
-      .map(Type.ArrayType::elementType)
-      .filter(type -> type.is(JAVA_LANG_STRING))
-      .isPresent();
+    Tree parent = arg.parent();
+    while (parent != null && parent.is(Tree.Kind.LIST, Tree.Kind.ARGUMENTS)) {
+      parent = parent.parent();
+    }
+    return parent instanceof NewArrayTree array
+      && array.type() != null
+      && (array.type().symbolType().is(JAVA_LANG_STRING) || "String".equals(array.type().lastToken().text()));
   }
 
   private void verifyParameters(MethodInvocationTree mit, List<ExpressionTree> args, Set<Integer> indexes) {

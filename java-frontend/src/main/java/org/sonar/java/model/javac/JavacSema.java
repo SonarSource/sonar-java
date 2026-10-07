@@ -28,11 +28,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
@@ -100,7 +103,15 @@ public final class JavacSema implements Sema {
 
   public Type typeFor(Tree tree) {
     TreePath path = paths.get(tree);
-    return path == null ? Type.UNKNOWN : type(path);
+    if (path == null) {
+      return Type.UNKNOWN;
+    }
+    Type resolved = type(path);
+    if (resolved.isUnknown() && tree instanceof org.sonar.plugins.java.api.tree.AnnotationTree
+      && path.getLeaf() instanceof com.sun.source.tree.AnnotationTree annotation) {
+      return type(new TreePath(path, annotation.getAnnotationType()));
+    }
+    return resolved;
   }
 
   public Symbol symbolFor(Tree tree) {
@@ -112,7 +123,52 @@ public final class JavacSema implements Sema {
       && path.getLeaf() instanceof com.sun.source.tree.ImportTree importTree) {
       return symbol(new TreePath(path, importTree.getQualifiedIdentifier()));
     }
-    return symbol(path);
+    if (tree instanceof IdentifierTree
+      && tree.parent() instanceof org.sonar.plugins.java.api.tree.MemberSelectExpressionTree memberSelect
+      && memberSelect.identifier() == tree
+      && memberSelect.parent() instanceof org.sonar.plugins.java.api.tree.MethodInvocationTree invocation
+      && invocation.methodSelect() == memberSelect) {
+      Symbol invoked = symbolFor(invocation);
+      if (!invoked.isUnknown()) {
+        return invoked;
+      }
+    }
+    if (tree instanceof org.sonar.plugins.java.api.tree.MethodInvocationTree
+      && path.getLeaf() instanceof com.sun.source.tree.MethodInvocationTree invocation
+      && invocation.getMethodSelect() instanceof com.sun.source.tree.MemberSelectTree select
+      && trees.getElement(path) instanceof ExecutableElement method) {
+      TreePath selection = new TreePath(path, invocation.getMethodSelect());
+      TypeMirror receiver = trees.getTypeMirror(new TreePath(selection, select.getExpression()));
+      if (receiver instanceof DeclaredType declared) {
+        TypeMirror selectedType = trees.getTypeMirror(selection);
+        return symbols.methodAt(method, declared,
+          selectedType instanceof ExecutableType executable ? executable : null);
+      }
+    }
+    if (tree instanceof org.sonar.plugins.java.api.tree.NewClassTree
+      && path.getLeaf() instanceof com.sun.source.tree.NewClassTree
+      && trees.getElement(path) instanceof ExecutableElement constructor
+      && trees.getTypeMirror(path) instanceof DeclaredType declared) {
+      return symbols.methodAt(constructor, declared, null);
+    }
+    Symbol resolved = symbol(path);
+    if (resolved.isUnknown() && path.getLeaf() instanceof com.sun.source.tree.MethodInvocationTree invocation) {
+      resolved = symbol(new TreePath(path, invocation.getMethodSelect()));
+      if (resolved.isUnknown() && invocation.getMethodSelect() instanceof com.sun.source.tree.MemberSelectTree select) {
+        TypeMirror receiver = trees.getTypeMirror(new TreePath(new TreePath(path, invocation.getMethodSelect()), select.getExpression()));
+        Element owner = receiver == null ? null : types.asElement(receiver);
+        if (owner instanceof TypeElement type) {
+          return elements.getAllMembers(type).stream()
+            .filter(member -> member.getKind() == ElementKind.METHOD)
+            .map(ExecutableElement.class::cast)
+            .filter(method -> method.getSimpleName().contentEquals(select.getIdentifier()))
+            .filter(method -> method.getParameters().size() == invocation.getArguments().size())
+            .map(symbols::symbol)
+            .findFirst().orElse(Symbol.UNKNOWN_SYMBOL);
+        }
+      }
+    }
+    return resolved;
   }
 
   public Symbol keywordSymbolFor(Tree tree, String name) {
@@ -143,7 +199,8 @@ public final class JavacSema implements Sema {
       .filter(member -> member.getKind() == ElementKind.METHOD)
       .map(ExecutableElement.class::cast)
       .filter(method -> method.getModifiers().contains(Modifier.ABSTRACT))
-      .map(symbols::symbol)
+      .map(method -> target instanceof DeclaredType declared
+        ? symbols.methodAt(method, declared, null) : symbols.symbol(method))
       .filter(Symbol.MethodSymbol.class::isInstance)
       .map(Symbol.MethodSymbol.class::cast)
       .findFirst()
@@ -202,6 +259,10 @@ public final class JavacSema implements Sema {
       IdentifierTree name = JavacSymbols.declarationName(declaration);
       if (name != null) {
         paths.put(name, path);
+      }
+      if (declaration instanceof org.sonar.plugins.java.api.tree.VariableTree variable
+        && variable.type() instanceof org.sonar.plugins.java.api.tree.InferedTypeTree) {
+        paths.put(variable.type(), path);
       }
     }
   }

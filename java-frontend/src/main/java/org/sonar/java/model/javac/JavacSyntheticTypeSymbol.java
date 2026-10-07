@@ -29,14 +29,20 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 final class JavacSyntheticTypeSymbol implements Symbol.TypeSymbol {
 
   private final Type type;
+  private final String name;
 
   JavacSyntheticTypeSymbol(Type type) {
+    this(type, type.name());
+  }
+
+  JavacSyntheticTypeSymbol(Type type, String name) {
     this.type = type;
+    this.name = name;
   }
 
   @Override
   public String name() {
-    return type.name();
+    return name;
   }
 
   @Override

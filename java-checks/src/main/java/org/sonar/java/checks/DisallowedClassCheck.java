@@ -70,7 +70,6 @@ public class DisallowedClassCheck extends BaseTreeVisitor implements JavaFileSca
         checkIfDisallowed(importName.substring(0, separator), tree.qualifiedIdentifier());
       }
     }
-    super.visitImport(tree);
   }
 
   @Override

@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -260,7 +261,9 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
 
     @Override
     public void visitNewClass(NewClassTree tree) {
-      if (tree.symbolType().is(JAVA6_ABSTRACT_SOFT_ASSERT)) {
+      if (tree.symbolType().is(JAVA6_ABSTRACT_SOFT_ASSERT)
+        || (tree.identifier() instanceof ExpressionTree identifier
+          && JAVA6_ABSTRACT_SOFT_ASSERT.equals(ExpressionsHelper.concatenate(identifier)))) {
         context.reportIssue(AssertionsCompletenessCheck.this, tree, "Use 'Java6SoftAssertions' instead of 'Java6AbstractStandardSoftAssertions'.");
         return;
       }

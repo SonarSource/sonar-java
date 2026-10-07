@@ -68,10 +68,19 @@ public class SimpleClassNameCheck extends IssuableSubscriptionVisitor {
     for (IdentifierTree usageIdentifier : symbol.usages()) {
       Tree parent = usageIdentifier.parent();
 
-      if (parent.is(Kind.MEMBER_SELECT) && ((MemberSelectExpressionTree) parent).expression().is(Kind.MEMBER_SELECT)) {
+      if (!isInImport(usageIdentifier) && parent.is(Kind.MEMBER_SELECT) && ((MemberSelectExpressionTree) parent).expression().is(Kind.MEMBER_SELECT)) {
         reportIssue(parent, String.format(MESSAGE, symbol.name()));
       }
     }
+  }
+
+  private static boolean isInImport(Tree tree) {
+    for (Tree current = tree.parent(); current != null && !current.is(Kind.COMPILATION_UNIT); current = current.parent()) {
+      if (current.is(Kind.IMPORT)) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }

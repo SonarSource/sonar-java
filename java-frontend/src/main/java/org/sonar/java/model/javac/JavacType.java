@@ -92,7 +92,7 @@ public final class JavacType implements Type.ArrayType {
     if (is(fullyQualifiedName)) {
       return true;
     }
-    TypeElement superElement = elements.getTypeElement(fullyQualifiedName);
+    TypeElement superElement = elements.getTypeElement(fullyQualifiedName.replace('$', '.'));
     if (superElement != null) {
       return isSubtype(mirror, superElement.asType());
     }
@@ -255,7 +255,7 @@ public final class JavacType implements Type.ArrayType {
       return Symbol.TypeSymbol.UNKNOWN_TYPE;
     }
     if (symbols != null && mirror instanceof DeclaredType declared && declared.asElement() instanceof TypeElement typeElement) {
-      if (!declared.getTypeArguments().isEmpty()) {
+      if (!declared.getTypeArguments().isEmpty() || !typeElement.getTypeParameters().isEmpty()) {
         return symbols.instantiatedType(declared);
       }
       return (Symbol.TypeSymbol) symbols.symbol(typeElement);

@@ -69,7 +69,7 @@ public final class UnitTestUtils {
     // fest 1.x / 2.X
     MethodMatchers.create().ofSubTypes("org.fest.assertions.GenericAssert", "org.fest.assertions.api.AbstractAssert").anyName().withAnyParameters().build(),
     // rest assured 2.x, 3.x, 4.x
-    MethodMatchers.create().ofTypes(
+    MethodMatchers.create().ofSubTypes(
         "com.jayway.restassured.response.ValidatableResponseOptions", // restassured 2.x
         "io.restassured.response.ValidatableResponseOptions", // restassured 3.x and 4.x
         "io.restassured.module.mockmvc.response.ValidatableMockMvcResponse" // spring mock mvc extending the io.restassured library
@@ -91,7 +91,7 @@ public final class UnitTestUtils {
     MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActions").names("andExpect", "andExpectAll").withAnyParameters().build(),
     MethodMatchers.create().ofTypes("org.springframework.util.Assert").anyName().withAnyParameters().build(),
     // JMockit
-    MethodMatchers.create().ofTypes("mockit.Verifications").constructor().withAnyParameters().build(),
+    MethodMatchers.create().ofSubTypes("mockit.Verifications").constructor().withAnyParameters().build(),
     // Eclipse Vert.x with JUnit 4
     MethodMatchers.create().ofTypes("io.vertx.ext.unit.TestContext").name(name -> name.startsWith("asyncAssert")).addWithoutParametersMatcher().build(),
     // Awaitility

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -97,6 +98,28 @@ class JavacTreeConverterTest {
       assertThat(type.typeParameters()).hasSize(1);
       assertThat(((VariableTree) type.members().get(0)).type().kind()).isEqualTo(Tree.Kind.PARAMETERIZED_TYPE);
       assertThat(((MethodTree) type.members().get(1)).typeParameters()).hasSize(1);
+    }
+  }
+
+  @Test
+  void locates_declaration_tokens_after_annotations() throws IOException {
+    String source = """
+      @interface Tag { Class<?> value(); }
+      class Outer {
+        @Tag(Outer.class) // class marker
+        class Nested {}
+        @Deprecated // interface marker
+        @interface NestedAnnotation {}
+      }
+      """;
+    try (JavacParser.Result parsed = JavacParser.parse("Outer.java", source)) {
+      JavaTree.CompilationUnitTreeImpl unit = JavacTreeConverter.convert(parsed.unit(), parsed.trees(), source);
+      ClassTree outer = (ClassTree) unit.types().get(1);
+      ClassTree nested = (ClassTree) outer.members().get(0);
+      ClassTreeImpl annotation = (ClassTreeImpl) outer.members().get(1);
+
+      assertThat(nested.declarationKeyword().trivias()).extracting(trivia -> trivia.comment()).containsExactly("// class marker");
+      assertThat(annotation.atToken().trivias()).extracting(trivia -> trivia.comment()).containsExactly("// interface marker");
     }
   }
 

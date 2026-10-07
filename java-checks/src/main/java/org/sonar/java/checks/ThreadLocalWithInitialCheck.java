@@ -16,33 +16,31 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4065")
-public class ThreadLocalWithInitialCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
-
-  private static final MethodMatchers THREADLOCAL_CONSTRUCTOR = MethodMatchers.create()
-    .ofTypes("java.lang.ThreadLocal")
-    .constructor()
-    .addWithoutParametersMatcher()
-    .build();
+public class ThreadLocalWithInitialCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   @Override
-  protected MethodMatchers getMethodInvocationMatchers() {
-    return THREADLOCAL_CONSTRUCTOR;
+  public List<Tree.Kind> nodesToVisit() {
+    return Collections.singletonList(Tree.Kind.NEW_CLASS);
   }
 
   @Override
-  protected void onConstructorFound(NewClassTree newClassTree) {
+  public void visitNode(Tree tree) {
+    NewClassTree newClassTree = (NewClassTree) tree;
+    if (!newClassTree.arguments().isEmpty() || !newClassTree.identifier().symbolType().is("java.lang.ThreadLocal")) {
+      return;
+    }
     ClassTree classTree = newClassTree.classBody();
     if (classTree == null) {
       return;
@@ -52,7 +50,7 @@ public class ThreadLocalWithInitialCheck extends AbstractMethodDetection impleme
       return;
     }
     members.stream()
-      .filter(tree -> tree.is(Tree.Kind.METHOD))
+      .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
       .filter(t -> "initialValue".equals(t.simpleName().name()))
       .filter(t -> t.parameters().isEmpty())

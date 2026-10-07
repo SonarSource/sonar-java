@@ -47,7 +47,7 @@ public class AssertionTypesCheck_JUnit4 {
     assertNotEquals(b, new B() {});
     assertNotEquals(b, i1);
     assertNotEquals(i1, b);
-    assertNotEquals(b, new I1() {}); // Noncompliant
+    assertNotEquals(b, new I1() {});
     assertNotEquals(b, i2);
     assertNotEquals(a, b);
     assertNotEquals(b, a);

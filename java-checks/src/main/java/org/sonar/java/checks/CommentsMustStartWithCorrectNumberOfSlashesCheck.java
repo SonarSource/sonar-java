@@ -65,21 +65,26 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSu
     if (isHeader(syntaxTrivia)) {
       return;
     }
-    if (syntaxTrivia.isComment(SyntaxTrivia.CommentKind.LINE) && syntaxTrivia.comment().startsWith(INCORRECT_SLASHES_BEFORE_JAVA_23)) {
-      var span = LineSpan.fromComment(syntaxTrivia, 0, 0, INCORRECT_SLASHES_BEFORE_JAVA_23.length());
-      reportIssue(span, BEFORE_JAVA_23);
+    if (syntaxTrivia.isComment(SyntaxTrivia.CommentKind.LINE)) {
+      reportIncorrectSlashes(syntaxTrivia, INCORRECT_SLASHES_BEFORE_JAVA_23, BEFORE_JAVA_23);
     }
 
     if (syntaxTrivia.isComment(SyntaxTrivia.CommentKind.MARKDOWN)) {
-      String[] lines = syntaxTrivia.comment().split("\\R");
-      for (int idx = 0; idx < lines.length; idx++) {
-        String line = lines[idx];
+      String incorrectSlashes = context.getJavaVersion().isJava23Compatible()
+        ? INCORRECT_SLASHES_JAVA_23
+        : INCORRECT_SLASHES_BEFORE_JAVA_23;
+      String message = context.getJavaVersion().isJava23Compatible() ? JAVA_23 : BEFORE_JAVA_23;
+      reportIncorrectSlashes(syntaxTrivia, incorrectSlashes, message);
+    }
+  }
 
-        if (line.trim().startsWith(INCORRECT_SLASHES_JAVA_23)) {
-          int startPos = line.indexOf(INCORRECT_SLASHES_JAVA_23);
-          var span = LineSpan.fromComment(syntaxTrivia, idx, startPos, startPos + INCORRECT_SLASHES_JAVA_23.length());
-          reportIssue(span, JAVA_23);
-        }
+  private void reportIncorrectSlashes(SyntaxTrivia syntaxTrivia, String prefix, String message) {
+    String[] lines = syntaxTrivia.comment().split("\\R");
+    for (int idx = 0; idx < lines.length; idx++) {
+      String line = lines[idx];
+      if (line.trim().startsWith(prefix)) {
+        int startPos = line.indexOf(prefix);
+        reportIssue(LineSpan.fromComment(syntaxTrivia, idx, startPos, startPos + prefix.length()), message);
       }
     }
   }

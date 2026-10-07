@@ -32,7 +32,12 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.Nullability;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -210,9 +215,50 @@ final class JavacSymbolMetadata implements SymbolMetadata {
   private AnnotationInstance adapt(AnnotationMirror mirror) {
     Symbol annotationSymbol = symbols.symbol(mirror.getAnnotationType().asElement());
     List<AnnotationValue> values = mirror.getElementValues().entrySet().stream()
-      .map(entry -> (AnnotationValue) new Value(entry.getKey().getSimpleName().toString(), convertAnnotationValue(entry.getValue())))
+      .map(entry -> {
+        String name = entry.getKey().getSimpleName().toString();
+        Object value = convertAnnotationValue(entry.getValue());
+        return (AnnotationValue) new Value(name, value == null ? unresolvedClassLiteral(mirror, name) : value);
+      })
       .toList();
     return new Instance(annotationSymbol, values);
+  }
+
+  @Nullable
+  private Symbol.TypeSymbol unresolvedClassLiteral(AnnotationMirror mirror, String valueName) {
+    Tree declaration = symbol.declaration();
+    if (declaration == null) {
+      return null;
+    }
+    String annotationName = symbols.type(mirror.getAnnotationType()).fullyQualifiedName();
+    for (AnnotationTree annotation : ModifiersUtils.getAnnotations(declaration)) {
+      if (!annotation.symbolType().is(annotationName)) {
+        continue;
+      }
+      for (ExpressionTree argument : annotation.arguments()) {
+        String name = "value";
+        ExpressionTree expression = argument;
+        if (argument instanceof AssignmentExpressionTree assignment) {
+          if (!(assignment.variable() instanceof IdentifierTree identifier)) {
+            continue;
+          }
+          name = identifier.name();
+          expression = assignment.expression();
+        }
+        if (!valueName.equals(name) || !(expression instanceof MemberSelectExpressionTree classLiteral)
+          || !"class".equals(classLiteral.identifier().name())) {
+          continue;
+        }
+        ExpressionTree selected = classLiteral.expression();
+        if (selected instanceof IdentifierTree identifier) {
+          return new JavacSyntheticTypeSymbol(Type.UNKNOWN, identifier.name());
+        }
+        if (selected instanceof MemberSelectExpressionTree memberSelect) {
+          return new JavacSyntheticTypeSymbol(Type.UNKNOWN, memberSelect.identifier().name());
+        }
+      }
+    }
+    return null;
   }
 
   private Object convertAnnotationValue(javax.lang.model.element.AnnotationValue value) {

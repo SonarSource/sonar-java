@@ -62,7 +62,7 @@ class ExpectedExceptionFilter {
   @org.junit.jupiter.api.Test
   void junit5AssertThrowsExpectedBroadException() {
     org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> LocalDate.from(instant)); // NoIssue
-    org.junit.jupiter.api.Assertions.assertThrows(() -> LocalDate.from(instant)); // NoIssue
+    org.junit.jupiter.api.Assertions.assertThrows(() -> LocalDate.from(instant)); // WithIssue
     org.junit.jupiter.api.Assertions.assertThrowsExactly(DateTimeException.class, () -> LocalDateTime.from(instant)); // NoIssue
     org.junit.jupiter.api.Assertions.assertThrowsExactly(DateTimeParseException.class, () -> LocalDateTime.from(instant)); // NoIssue
     org.junit.jupiter.api.Assertions.assertThrowsExactly(RuntimeException.class, () -> LocalDateTime.from(instant)); // NoIssue

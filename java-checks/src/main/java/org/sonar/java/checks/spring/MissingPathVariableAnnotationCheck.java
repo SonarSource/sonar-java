@@ -365,6 +365,15 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
   @VisibleForTesting
   static Set<String> extractRecordProperties(Type type) {
     Set<String> properties = new HashSet<>();
+    ClassTree declaration = type.symbol().declaration();
+    if (declaration != null && declaration.is(Tree.Kind.RECORD)) {
+      declaration.recordComponents().stream()
+        .map(VariableTree::symbol)
+        .filter(Symbol::isVariableSymbol)
+        .map(Symbol.VariableSymbol.class::cast)
+        .forEach(component -> properties.add(getComponentName(component)));
+      return properties;
+    }
     // For records, extract component names from the record components
     // Records automatically generate accessor methods for their components
     type.symbol().memberSymbols().stream()

@@ -66,7 +66,7 @@ public class UselessExtendsCheck extends IssuableSubscriptionVisitor {
         reportIssue(superInterface, "\"" + superInterfaceName + "\" is listed multiple times.");
       }
       if (!superInterface.symbolType().isUnknown()) {
-        checkRedundancy(superInterface, superInterfacesTypes, superTypes);
+        checkRedundancy(superInterface, classTree.symbol().superClass(), superInterfacesTypes, superTypes);
       }
     }
   }
@@ -90,9 +90,16 @@ public class UselessExtendsCheck extends IssuableSubscriptionVisitor {
       .toList();
   }
 
-  private void checkRedundancy(TypeTree currentInterface, List<Type> superInterfacesTypes, List<Type> superTypes) {
+  private void checkRedundancy(TypeTree currentInterface, Type superClass, List<Type> superInterfacesTypes, List<Type> superTypes) {
     Type interfaceType = currentInterface.symbolType();
+    if (superClass != null && superClass.isSubtypeOf(interfaceType.fullyQualifiedName())) {
+      reportIssue(currentInterface, "\"" + interfaceType.name() + "\" is implemented by a super class; there is no need to implement it here.");
+      return;
+    }
     for (Type superType : superTypes) {
+      if (superType.equals(interfaceType)) {
+        continue;
+      }
       TypeSymbol superTypeSymbol = superType.symbol();
       if (superTypeSymbol.interfaces().contains(interfaceType)) {
         String typeOfParentMsg = "implemented by a super class";

@@ -87,7 +87,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
    */
   private static boolean isExceptedAnnotation(AnnotationTree annotationTree) {
     return annotationTree.symbolType().is(IGNORED_METHODS_ANNOTATION) ||
-      (annotationTree.symbolType().isUnknown() && annotationTree.symbolType().name().equals(IGNORED_METHODS_ANNOTATION_UNQUALIFIED));
+      (annotationTree.symbolType().isUnknown() && annotationTree.annotationType().lastToken().text().equals(IGNORED_METHODS_ANNOTATION_UNQUALIFIED));
   }
 
   private void checkConstructors(List<Tree> members) {

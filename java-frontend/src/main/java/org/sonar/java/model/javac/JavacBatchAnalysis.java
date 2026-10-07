@@ -63,7 +63,7 @@ public final class JavacBatchAnalysis implements AutoCloseable {
         }
         String source = sources.get(Path.of(uri).toString());
         try {
-          JavaTree.CompilationUnitTreeImpl tree = JavacTreeConverter.convert(unit, parsed.trees(), source,
+          JavaTree.CompilationUnitTreeImpl tree = JavacTreeConverter.convert(unit, parsed.trees(), source, options.sourceVersion(),
             (javacTree, sonarTree) -> mappings.add(new Mapping(unit, javacTree, sonarTree)));
           trees.put(uri, tree);
         } catch (RuntimeException e) {
@@ -88,6 +88,7 @@ public final class JavacBatchAnalysis implements AutoCloseable {
           .toList();
         JWarning.Mapper.warningsFor(diagnostics, new LineColumnConverter(source))
           .withWarnings(JavacWarnings.unusedImports(unit, parsed.sourcePositions(), source, parsed.task().getElements()))
+          .withWarnings(JavacWarnings.unreachableCatches(unit, parsed.sourcePositions(), source, diagnostics))
           .mappedInto(tree);
       }
       return new JavacBatchAnalysis(parsed, trees, errors);

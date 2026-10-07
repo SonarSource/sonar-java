@@ -115,7 +115,7 @@ class UndocumentedApiCheckTest {
   }
 
   @Test
-  void testInvalidDeclaredException() {
+  void testUnresolvedDeclaredException() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "";
     CheckVerifier.newVerifier()

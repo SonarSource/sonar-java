@@ -116,7 +116,7 @@ public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
    * Filter a given rule for parts of a method invocation expression when it expects a given set of exception types.
    */
   private void excludeExpectedExceptions(MethodInvocationTree tree, Set<String> expectedExceptions, Class<? extends JavaCheck> filteredRule) {
-    String methodName = tree.methodSymbol().name();
+    String methodName = ExpressionUtils.methodName(tree).name();
     Arguments arguments = tree.arguments();
     if (ASSERT_THROWS_METHODS.contains(methodName) && arguments.size() >= 2) {
       excludeFromAssertThrows(arguments, expectedExceptions, filteredRule);
@@ -161,7 +161,7 @@ public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
   private static boolean containsExpectedExceptions(List<AnnotationTree> annotations, Set<String> expectedExceptions) {
     return annotations.stream()
       .anyMatch(annotation ->
-        "Test".equals(annotation.symbolType().name()) && containsExpectedExceptions(annotation.arguments(), expectedExceptions)
+        "Test".equals(annotation.annotationType().lastToken().text()) && containsExpectedExceptions(annotation.arguments(), expectedExceptions)
       );
   }
 
@@ -240,7 +240,7 @@ public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
   private static Optional<MethodInvocationTree> subsequentMethodInvocation(MethodInvocationTree tree, Set<String> expectedMethodNames) {
     return consecutiveMethodInvocation(tree)
       .map(consecutiveMethod ->
-        expectedMethodNames.contains(consecutiveMethod.methodSymbol().name()) ?
+        expectedMethodNames.contains(ExpressionUtils.methodName(consecutiveMethod).name()) ?
           consecutiveMethod : subsequentMethodInvocation(consecutiveMethod, expectedMethodNames).orElse(null));
   }
 

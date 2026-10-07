@@ -46,7 +46,7 @@ abstract class DisallowedThreadGroupCheck
 
 class DisallowedThreadGroupCheckB extends DisallowedThreadGroupCheck { // Compliant
 
-  DisallowedThreadGroupCheckB(ThreadGroup tg) {
+  DisallowedThreadGroupCheckB(ThreadGroup tg) { // Noncompliant
     super(tg);
   }
 

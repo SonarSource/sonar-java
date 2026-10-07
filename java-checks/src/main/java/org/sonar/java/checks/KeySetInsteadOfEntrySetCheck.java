@@ -75,6 +75,10 @@ public class KeySetInsteadOfEntrySetCheck extends IssuableSubscriptionVisitor {
     }
     expressionTree = ((MemberSelectExpressionTree) expressionTree).expression();
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
+      String name = ((IdentifierTree) expressionTree).identifierToken().text();
+      if ("this".equals(name) || "super".equals(name)) {
+        return expressionTree.symbolType().symbol();
+      }
       return ((IdentifierTree) expressionTree).symbol();
     } else {
       return getFieldAccessedUsingSuperOrThis(expressionTree);

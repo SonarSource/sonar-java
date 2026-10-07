@@ -34,7 +34,14 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,6 +60,7 @@ class JavacSemanticRegressionTest {
       JavacSymbols symbols = symbols(parsed);
       Symbol.TypeSymbol child = (Symbol.TypeSymbol) symbols.symbol(parsed.task().getElements().getTypeElement("Outer.Child"));
       assertThat(child.owner().name()).isEqualTo("Outer");
+      assertThat(child.enclosingClass().name()).isEqualTo("Outer");
       assertThat(child.outermostClass().name()).isEqualTo("Outer");
       assertThat(child.superClass().fullyQualifiedName()).isEqualTo("java.util.ArrayList");
       assertThat(child.interfaces()).extracting(Type::fullyQualifiedName).containsExactly("Parent", "Other");
@@ -62,6 +70,17 @@ class JavacSemanticRegressionTest {
       assertThat(child.lookupSymbols("size")).isEmpty();
       assertThat(JUtils.directSuperTypes(child.type())).extracting(Type::fullyQualifiedName)
         .containsExactlyInAnyOrder("java.util.ArrayList", "Parent", "Other");
+    }
+  }
+
+  @Test
+  void resolves_binary_names_of_nested_supertypes() throws IOException {
+    try (JavacParser.Result parsed = JavacParser.parse("Sample.java", "class Sample {}",
+      JavacParser.Options.defaults().withAnalysis(true))) {
+      TypeElement virtual = parsed.task().getElements().getTypeElement("java.lang.Thread.Builder.OfVirtual");
+      Type type = symbols(parsed).type(virtual.asType());
+      assertThat(type.is("java.lang.Thread$Builder$OfVirtual")).isTrue();
+      assertThat(type.isSubtypeOf("java.lang.Thread$Builder")).isTrue();
     }
   }
 
@@ -91,6 +110,206 @@ class JavacSemanticRegressionTest {
       assertThat(creation.methodSymbol().isDeprecated()).isTrue();
       assertThat(creation.arguments().get(0).symbolType().is("byte[]")).isTrue();
       assertThat(creation.arguments().get(1).symbolType().is("int")).isTrue();
+    }
+  }
+
+  @Test
+  void exposes_record_component_once_among_members() throws IOException {
+    try (JavacParser.Result parsed = JavacParser.parse("Sample.java", "record Sample(int value) {}",
+      JavacParser.Options.defaults().withAnalysis(true))) {
+      Symbol.TypeSymbol sample = (Symbol.TypeSymbol) symbols(parsed).symbol(parsed.task().getElements().getTypeElement("Sample"));
+      assertThat(sample.memberSymbols().stream()
+        .filter(member -> member.isVariableSymbol() && member.name().equals("value"))).hasSize(1);
+      assertThat(sample.memberSymbols().stream()
+        .filter(member -> member.isMethodSymbol() && member.name().equals("value"))).hasSize(1);
+    }
+  }
+
+  @Test
+  void preserves_method_return_type_arguments() throws IOException {
+    String source = "class Sample { java.util.List<String> values() { return null; } java.util.List raw() { return null; } }";
+    try (JavacParser.Result parsed = JavacParser.parse("Sample.java", source,
+      JavacParser.Options.defaults().withAnalysis(true))) {
+      JavacSymbols symbols = symbols(parsed);
+      TypeElement sample = parsed.task().getElements().getTypeElement("Sample");
+      assertThat(method(symbols, sample, "values").returnType().type().typeArguments())
+        .extracting(Type::fullyQualifiedName).containsExactly("java.lang.String");
+      assertThat(method(symbols, sample, "raw").returnType().type().isParameterized()).isFalse();
+    }
+  }
+
+  @Test
+  void retains_annotation_metadata_when_repeatable_value_is_missing() throws IOException {
+    String source = "class Sample { @java.lang.annotation.Repeatable @interface Item {} }";
+    try (JavacParser.Result parsed = JavacParser.parse("Sample.java", source,
+      JavacParser.Options.defaults().withAnalysis(true))) {
+      Symbol.TypeSymbol item = (Symbol.TypeSymbol) symbols(parsed).symbol(
+        parsed.task().getElements().getTypeElement("Sample.Item"));
+      assertThat(item.metadata().isAnnotatedWith("java.lang.annotation.Repeatable")).isTrue();
+    }
+  }
+
+  @Test
+  void resolves_repeatable_annotation_inside_unresolved_container() throws IOException {
+    String source = "class Sample { @Items({@Item(\"a\")}) void run() {} "
+      + "@java.lang.annotation.Repeatable @interface Item { String value(); } }";
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("Sample.java", source, JavacParser.Options.defaults())) {
+      ClassTree sample = (ClassTree) analysis.tree().types().get(0);
+      MethodTree method = (MethodTree) sample.members().get(0);
+      AnnotationTree container = method.modifiers().annotations().get(0);
+      NewArrayTree group = (NewArrayTree) container.arguments().get(0);
+      AnnotationTree item = (AnnotationTree) group.initializers().get(0);
+      assertThat(item.symbolType().symbol().metadata().isAnnotatedWith("java.lang.annotation.Repeatable")).isTrue();
+    }
+  }
+
+  @Test
+  void resolves_inferred_lambda_parameter_type() throws IOException {
+    String source = "class Sample { java.util.function.Consumer<java.util.List<String>> consumer = items -> {}; }";
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("Sample.java", source, JavacParser.Options.defaults())) {
+      ClassTree sample = (ClassTree) analysis.tree().types().get(0);
+      LambdaExpressionTree lambda = (LambdaExpressionTree) ((VariableTree) sample.members().get(0)).initializer();
+      Type inferred = lambda.parameters().get(0).type().symbolType();
+      assertThat(inferred.is("java.util.List")).isTrue();
+      assertThat(inferred.typeArguments()).extracting(Type::fullyQualifiedName).containsExactly("java.lang.String");
+    }
+  }
+
+  @Test
+  void resolves_lambda_descriptor_return_type_in_context() throws IOException {
+    String source = "class Sample { java.util.function.Supplier<Runnable> supplier = () -> new Thread(); }";
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("Sample.java", source, JavacParser.Options.defaults())) {
+      ClassTree sample = (ClassTree) analysis.tree().types().get(0);
+      LambdaExpressionTree lambda = (LambdaExpressionTree) ((VariableTree) sample.members().get(0)).initializer();
+      assertThat(lambda.symbol().returnType().type().is("java.lang.Runnable")).isTrue();
+    }
+  }
+
+  @Test
+  void distinguishes_known_overload_from_dropped_unknown_declaration() throws IOException {
+    String source = "abstract class Parent { abstract void run(Unknown value, int count); } "
+      + "class Child extends Parent { void run(Unknown value, int count) {} void run(Exception value, int count) {} }";
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("Child.java", source, JavacParser.Options.defaults())) {
+      ClassTree child = (ClassTree) analysis.tree().types().get(1);
+      MethodTree known = (MethodTree) child.members().get(1);
+      assertThat(known.isOverriding()).isFalse();
+    }
+  }
+
+  @Test
+  void finds_outermost_class_for_local_type() throws IOException {
+    String source = "class Sample { void run() { class Local implements java.io.Serializable {} } }";
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("Sample.java", source, JavacParser.Options.defaults())) {
+      ClassTree sample = (ClassTree) analysis.tree().types().get(0);
+      MethodTree method = (MethodTree) sample.members().get(0);
+      ClassTree local = (ClassTree) method.block().body().get(0);
+      assertThat(local.symbol().outermostClass()).isEqualTo(sample.symbol());
+      assertThat(local.symbol().owner()).isEqualTo(method.symbol());
+    }
+  }
+
+  @Test
+  void resolves_anonymous_class_symbol_and_interface() throws IOException {
+    String source = "class Sample { java.io.Serializable value = new java.io.Serializable() {}; }";
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("Sample.java", source, JavacParser.Options.defaults())) {
+      ClassTree sample = (ClassTree) analysis.tree().types().get(0);
+      NewClassTree creation = (NewClassTree) ((VariableTree) sample.members().get(0)).initializer();
+      Symbol.TypeSymbol anonymous = creation.classBody().symbol();
+      assertThat(anonymous.isUnknown()).isFalse();
+      assertThat(anonymous.interfaces()).anySatisfy(type -> assertThat(type.is("java.io.Serializable")).isTrue());
+      assertThat(anonymous.outermostClass()).isEqualTo(sample.symbol());
+      assertThat(anonymous.owner()).isEqualTo(sample.symbol());
+    }
+  }
+
+  @Test
+  void resolves_method_symbol_on_non_compiling_wildcard_map_call() throws IOException {
+    String source = "class Sample { void run(java.util.Map<?, ?> map) { map.put(\"a\", 1); } }";
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("Sample.java", source, JavacParser.Options.defaults())) {
+      ClassTree sample = (ClassTree) analysis.tree().types().get(0);
+      MethodTree method = (MethodTree) sample.members().get(0);
+      MethodInvocationTree invocation = (MethodInvocationTree) ((ExpressionStatementTree) method.block().body().get(0)).expression();
+      assertThat(invocation.methodSymbol().name()).isEqualTo("put");
+      assertThat(invocation.methodSymbol().owner().type().is("java.util.Map")).isTrue();
+      MemberSelectExpressionTree select = (MemberSelectExpressionTree) invocation.methodSelect();
+      assertThat(select.identifier().symbol()).isEqualTo(invocation.methodSymbol());
+    }
+  }
+
+  @Test
+  void resolves_method_owner_at_parameterized_call_site() throws IOException {
+    String source = "class Sample { void run() { java.util.stream.Stream.of(\"A\").collect(java.util.stream.Collectors.toList()); } }";
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("Sample.java", source, JavacParser.Options.defaults())) {
+      ClassTree sample = (ClassTree) analysis.tree().types().get(0);
+      MethodTree method = (MethodTree) sample.members().get(0);
+      MethodInvocationTree collect = (MethodInvocationTree) ((ExpressionStatementTree) method.block().body().get(0)).expression();
+      Symbol.MethodSymbol symbol = collect.methodSymbol();
+      assertThat(symbol.owner().type().is("java.util.stream.Stream")).isTrue();
+      assertThat(symbol.owner().type().typeArguments()).singleElement().satisfies(type -> assertThat(type.is("java.lang.String")).isTrue());
+      assertThat(symbol.parameterTypes()).singleElement().satisfies(type -> assertThat(type.is("java.util.stream.Collector")).isTrue());
+      MemberSelectExpressionTree select = (MemberSelectExpressionTree) collect.methodSelect();
+      assertThat(select.identifier().symbol()).isEqualTo(symbol);
+    }
+  }
+
+  @Test
+  void resolves_inferred_generic_varargs_parameter_at_call_site() throws IOException {
+    String source = "class Sample { void run() { java.util.Arrays.asList(new byte[0]); } }";
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("Sample.java", source, JavacParser.Options.defaults())) {
+      ClassTree sample = (ClassTree) analysis.tree().types().get(0);
+      MethodTree method = (MethodTree) sample.members().get(0);
+      MethodInvocationTree invocation = (MethodInvocationTree) ((ExpressionStatementTree) method.block().body().get(0)).expression();
+      assertThat(invocation.methodSymbol().parameterTypes()).singleElement()
+        .satisfies(type -> assertThat(type.is("byte[][]")).isTrue());
+    }
+  }
+
+  @Test
+  void resolves_constructor_parameter_at_parameterized_call_site() throws IOException {
+    String source = "class Sample<T> { Sample(T value) {} void run() { new Sample<java.util.List<String>>(new java.util.ArrayList<String>()); } }";
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("Sample.java", source, JavacParser.Options.defaults())) {
+      ClassTree sample = (ClassTree) analysis.tree().types().get(0);
+      MethodTree method = (MethodTree) sample.members().get(1);
+      NewClassTree creation = (NewClassTree) ((ExpressionStatementTree) method.block().body().get(0)).expression();
+      assertThat(creation.methodSymbol().parameterTypes()).singleElement()
+        .satisfies(type -> assertThat(type.isParameterized()).isTrue());
+      assertThat(creation.methodSymbol().parameterTypes().get(0).typeArguments()).singleElement()
+        .satisfies(type -> assertThat(type.is("java.lang.String")).isTrue());
+    }
+  }
+
+  @Test
+  void keeps_inherited_method_declaring_owner() throws IOException {
+    String source = "class Sample extends java.math.BigDecimal { Sample() { super(1); } void run() { setScale(2); } }";
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("Sample.java", source, JavacParser.Options.defaults())) {
+      ClassTree sample = (ClassTree) analysis.tree().types().get(0);
+      MethodTree run = (MethodTree) sample.members().get(1);
+      MethodInvocationTree invocation = (MethodInvocationTree) ((ExpressionStatementTree) run.block().body().get(0)).expression();
+      assertThat(invocation.methodSymbol().owner().type().is("java.math.BigDecimal")).isTrue();
+    }
+  }
+
+  @Test
+  void marks_method_with_unresolved_contextual_return_type_unknown() throws IOException {
+    String source = "class Sample { void run(java.util.Iterator<Unknown> delegate) { delegate.next(); } }";
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("Sample.java", source, JavacParser.Options.defaults())) {
+      ClassTree sample = (ClassTree) analysis.tree().types().get(0);
+      MethodTree run = (MethodTree) sample.members().get(0);
+      MethodInvocationTree invocation = (MethodInvocationTree) ((ExpressionStatementTree) run.block().body().get(0)).expression();
+      assertThat(invocation.methodSymbol().isUnknown()).isTrue();
+    }
+  }
+
+  @Test
+  void preserves_unresolved_class_literal_annotation_value_name() throws IOException {
+    String source = "@interface RunWith { Class<?> value(); } @RunWith(Cucumber.class) class Sample {}";
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("Sample.java", source, JavacParser.Options.defaults())) {
+      ClassTree sample = (ClassTree) analysis.tree().types().get(1);
+      List<SymbolMetadata.AnnotationValue> values = sample.symbol().metadata().valuesForAnnotation("RunWith");
+      assertThat(values).singleElement().satisfies(value -> {
+        assertThat(value.value()).isInstanceOf(Symbol.TypeSymbol.class);
+        assertThat(((Symbol.TypeSymbol) value.value()).name()).isEqualTo("Cucumber");
+      });
     }
   }
 

@@ -61,7 +61,7 @@ public class SelfAssignmentCheck extends IssuableSubscriptionVisitor {
       return;
     }
     AssignmentExpressionTree node = (AssignmentExpressionTree) tree;
-    if (SyntacticEquivalence.areEquivalent(node.expression(), node.variable())) {
+    if (SyntacticEquivalence.areEquivalent(node.expression(), node.variable()) || refersToSameSymbol(node)) {
       var issueBuilder = QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(reportTree(node))
@@ -72,6 +72,14 @@ public class SelfAssignmentCheck extends IssuableSubscriptionVisitor {
       issueBuilder.report();
       updateWarnings(node);
     }
+  }
+
+  private static boolean refersToSameSymbol(AssignmentExpressionTree node) {
+    if (node.variable() instanceof MemberSelectExpressionTree memberSelect && node.expression() instanceof IdentifierTree identifier) {
+      var selectedSymbol = memberSelect.identifier().symbol();
+      return !selectedSymbol.isUnknown() && selectedSymbol.equals(identifier.symbol());
+    }
+    return false;
   }
 
   private static JavaQuickFix getQuickFix(AssignmentExpressionTree tree) {

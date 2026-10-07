@@ -41,12 +41,18 @@ public final class SourceTokens {
     "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<", ">>>", ">>");
 
   private final String source;
+  private final int sourceVersion;
   private final List<Token> tokens;
   private final Map<Token, InternalSyntaxToken> syntaxTokens = new IdentityHashMap<>();
   private final List<Integer> lineStarts = new ArrayList<>();
 
   public SourceTokens(String source) {
+    this(source, Runtime.version().feature());
+  }
+
+  public SourceTokens(String source, int sourceVersion) {
     this.source = Objects.requireNonNull(source);
+    this.sourceVersion = sourceVersion;
     lineStarts.add(0);
     for (int i = 0; i < source.length(); i++) {
       char c = source.charAt(i);
@@ -163,11 +169,16 @@ public final class SourceTokens {
         continue;
       }
       if (c == '/' && offset + 1 < source.length() && source.charAt(offset + 1) == '/') {
-        int end = offset + 2;
-        while (end < source.length() && source.charAt(end) != '\r' && source.charAt(end) != '\n') {
-          end++;
+        SyntaxTrivia.CommentKind kind = sourceVersion >= 23 && source.startsWith("///", offset)
+          ? SyntaxTrivia.CommentKind.MARKDOWN : SyntaxTrivia.CommentKind.LINE;
+        int end = lineCommentEnd(offset);
+        if (kind == SyntaxTrivia.CommentKind.MARKDOWN) {
+          int next = nextMarkdownLine(end);
+          while (next >= 0) {
+            end = lineCommentEnd(next);
+            next = nextMarkdownLine(end);
+          }
         }
-        SyntaxTrivia.CommentKind kind = source.startsWith("///", offset) ? SyntaxTrivia.CommentKind.MARKDOWN : SyntaxTrivia.CommentKind.LINE;
         comments.add(new Comment(kind, source.substring(offset, end), offset, end));
         offset = end;
         continue;
@@ -206,6 +217,28 @@ public final class SourceTokens {
     }
     result.add(new Token("", source.length(), source.length(), List.copyOf(comments)));
     return List.copyOf(result);
+  }
+
+  private int lineCommentEnd(int start) {
+    int end = start + 2;
+    while (end < source.length() && source.charAt(end) != '\r' && source.charAt(end) != '\n') {
+      end++;
+    }
+    return end;
+  }
+
+  private int nextMarkdownLine(int end) {
+    int offset = end;
+    if (offset >= source.length()) {
+      return -1;
+    }
+    if (source.charAt(offset++) == '\r' && offset < source.length() && source.charAt(offset) == '\n') {
+      offset++;
+    }
+    while (offset < source.length() && (source.charAt(offset) == ' ' || source.charAt(offset) == '\t')) {
+      offset++;
+    }
+    return source.startsWith("///", offset) ? offset : -1;
   }
 
   private int scanQuoted(int start, char delimiter) {

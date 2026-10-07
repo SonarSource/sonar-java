@@ -151,11 +151,9 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
       return true;
     }
     List<Type> interfaces = ((Symbol.TypeSymbol) owner).interfaces();
-    return isOverriding(methodTree) && interfaces.stream().anyMatch(Type::isUnknown);
-  }
-
-  private static boolean isOverriding(MethodTree tree) {
-    return Boolean.TRUE.equals(tree.isOverriding());
+    return interfaces.stream().anyMatch(Type::isUnknown)
+      && (Boolean.TRUE.equals(methodTree.isOverriding()) || methodTree.modifiers().annotations().stream()
+        .anyMatch(annotation -> "Override".equals(annotation.annotationType().lastToken().text())));
   }
 
   private List<JavaQuickFix> quickFix(ReturnStatementTree returnStatement) {

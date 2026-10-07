@@ -90,7 +90,18 @@ public final class IntegerOverflowRange {
       return mathematical.runtimeRange(tree.symbolType());
     }
     if (tree.is(Tree.Kind.UNARY_MINUS)) {
-      Range operand = rangeOf(((UnaryExpressionTree) tree).expression(), depth + 1);
+      ExpressionTree negated = ((UnaryExpressionTree) tree).expression();
+      if (negated.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL)) {
+        Integer intValue = tree.asConstant(Integer.class).orElse(null);
+        if (intValue != null) {
+          return Range.exact(BigInteger.valueOf(intValue));
+        }
+        Long longValue = tree.asConstant(Long.class).orElse(null);
+        if (longValue != null) {
+          return Range.exact(BigInteger.valueOf(longValue));
+        }
+      }
+      Range operand = rangeOf(negated, depth + 1);
       return operand == null ? null : operand.negate().runtimeRange(tree.symbolType());
     }
     return null;

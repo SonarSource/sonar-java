@@ -112,7 +112,7 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
   }
 
   private static boolean isInstanceIdentifier(Tree expression) {
-    return expression.is(Tree.Kind.IDENTIFIER) && !((IdentifierTree) expression).symbol().isStatic();
+    return expression.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expression).symbol().isVariableSymbol() && !((IdentifierTree) expression).symbol().isStatic();
   }
 
   private static boolean containsChildMatchingPredicate(JavaTree tree, Predicate<Tree> predicate) {

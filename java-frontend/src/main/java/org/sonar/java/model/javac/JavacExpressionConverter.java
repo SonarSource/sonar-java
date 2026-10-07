@@ -324,6 +324,22 @@ public final class JavacExpressionConverter {
     }
     if (expression instanceof BinaryTree binary) {
       Operator operator = operator(expression.getKind());
+      if (operator.kind() == Tree.Kind.PLUS
+        && binary.getRightOperand().getKind() == com.sun.source.tree.Tree.Kind.STRING_LITERAL) {
+        List<SourceTokens.Token> quoted = tokens.tokensBetween(start(binary.getRightOperand()), end(binary.getRightOperand())).stream()
+          .filter(part -> part.text().startsWith("\"")).toList();
+        if (quoted.size() > 1) {
+          ExpressionTree result = convert(binary.getLeftOperand());
+          int cursor = end(binary.getLeftOperand());
+          for (SourceTokens.Token part : quoted) {
+            SourceTokens.Token plus = tokens.firstToken(cursor, part.start(), "+");
+            result = new BinaryExpressionTreeImpl(Tree.Kind.PLUS, result, tokens.syntaxToken(plus), stringLiteral(part));
+            cursor = part.end();
+          }
+          registration.accept(binary.getRightOperand(), result);
+          return result;
+        }
+      }
       return new BinaryExpressionTreeImpl(operator.kind(), convert(binary.getLeftOperand()),
         tokens.syntaxToken(tokens.firstToken(end(binary.getLeftOperand()), start(binary.getRightOperand()), operator.token())),
         convert(binary.getRightOperand()));

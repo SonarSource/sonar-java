@@ -46,7 +46,9 @@ public class ObjectFinalizeOverriddenCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (FINALIZE_MATCHER.matches(methodTree) && isNotFinalOrHasNonEmptyBody(methodTree)) {
+    if (FINALIZE_MATCHER.matches(methodTree)
+      && methodTree.returnType().symbolType().is("void")
+      && isNotFinalOrHasNonEmptyBody(methodTree)) {
       reportIssue(methodTree.simpleName(), "Do not override the Object.finalize() method.");
     }
   }

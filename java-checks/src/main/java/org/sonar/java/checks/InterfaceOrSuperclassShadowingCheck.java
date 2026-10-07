@@ -42,6 +42,9 @@ public class InterfaceOrSuperclassShadowingCheck extends IssuableSubscriptionVis
     for (Type interfaceType : classSymbol.interfaces()) {
       checkSuperType(classTree, interfaceType);
     }
+    if (classTree.is(Tree.Kind.INTERFACE) && "Object".equals(classTree.simpleName().name()) && !isInnerClass(classTree)) {
+      reportIssue(classTree.simpleName(), "Rename this interface.");
+    }
   }
 
   private void checkSuperType(ClassTree tree, @Nullable Type superType) {

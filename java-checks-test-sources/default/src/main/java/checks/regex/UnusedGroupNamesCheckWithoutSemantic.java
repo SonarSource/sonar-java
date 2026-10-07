@@ -145,13 +145,13 @@ abstract class UnusedGroupNamesCheckWithoutSemantic {
       m9.group(0);
     }
 
-    Pattern p10 = Pattern.compile("(?<g1>[0-9]{2})"); // Noncompliant
+    Pattern p10 = Pattern.compile("(?<g1>[0-9]{2})"); // Compliant
     if (Math.random() > 0.5) {
       p10 = Pattern.compile("(?<g2>[0-9]{2})");
     }
     Matcher m10 = p10.matcher(input);
     if (m10.matches()) {
-      m10.group(1); // Noncompliant
+      m10.group(1); // Compliant
     }
 
     if (Math.random() > 0.5) {

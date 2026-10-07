@@ -49,7 +49,7 @@ public final class JavacSourceAnalysis implements AutoCloseable {
         }
       }
       List<Map.Entry<com.sun.source.tree.Tree, org.sonar.plugins.java.api.tree.Tree>> mappings = new ArrayList<>();
-      JavaTree.CompilationUnitTreeImpl tree = JavacTreeConverter.convert(parsed.unit(), parsed.trees(), source,
+      JavaTree.CompilationUnitTreeImpl tree = JavacTreeConverter.convert(parsed.unit(), parsed.trees(), source, options.sourceVersion(),
         (javacTree, sonarTree) -> mappings.add(Map.entry(javacTree, sonarTree)));
       parsed.task().analyze();
       JavacSema sema = new JavacSema(parsed);
@@ -57,6 +57,7 @@ public final class JavacSourceAnalysis implements AutoCloseable {
       tree.javacSema = sema;
       JWarning.Mapper.warningsFor(parsed.diagnostics(), new LineColumnConverter(source))
         .withWarnings(JavacWarnings.unusedImports(parsed.unit(), parsed.sourcePositions(), source, parsed.task().getElements()))
+        .withWarnings(JavacWarnings.unreachableCatches(parsed.unit(), parsed.sourcePositions(), source, parsed.diagnostics()))
         .mappedInto(tree);
       return new JavacSourceAnalysis(parsed, tree, sema);
     } catch (IOException | RuntimeException e) {

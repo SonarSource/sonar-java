@@ -45,4 +45,28 @@ class SourceTokensTest {
     assertThat(tokens.lastToken(0, source.length(), "}").end()).isEqualTo(source.length());
     assertThat(tokens.tokens().get(tokens.tokens().size() - 1).isEof()).isTrue();
   }
+
+  @Test
+  void classifies_triple_slash_comments_by_source_version() {
+    String source = "/// documentation\nclass A {}";
+    SourceTokens older = new SourceTokens(source, 22);
+    SourceTokens current = new SourceTokens(source, 23);
+
+    assertThat(older.syntaxToken(older.firstToken(0, source.length(), "class")).trivias())
+      .extracting(SyntaxTrivia::commentKind)
+      .containsExactly(SyntaxTrivia.CommentKind.LINE);
+    assertThat(current.syntaxToken(current.firstToken(0, source.length(), "class")).trivias())
+      .extracting(SyntaxTrivia::commentKind)
+      .containsExactly(SyntaxTrivia.CommentKind.MARKDOWN);
+  }
+
+  @Test
+  void combines_adjacent_markdown_lines_into_one_trivia() {
+    String source = "/// Description.\n  /// @param value documented\nvoid method(int value) {}";
+    SourceTokens tokens = new SourceTokens(source, 23);
+
+    assertThat(tokens.syntaxToken(tokens.firstToken(0, source.length(), "void")).trivias())
+      .extracting(SyntaxTrivia::comment)
+      .containsExactly("/// Description.\n  /// @param value documented");
+  }
 }

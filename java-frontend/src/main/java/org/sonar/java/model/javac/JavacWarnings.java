@@ -19,6 +19,9 @@ package org.sonar.java.model.javac;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ImportTree;
 import com.sun.source.tree.ClassTree;
+import com.sun.source.tree.CatchTree;
+import com.sun.source.tree.Tree;
+import com.sun.source.tree.UnionTypeTree;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreeScanner;
 import java.util.ArrayList;
@@ -27,12 +30,50 @@ import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.util.Elements;
+import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
 import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JWarning;
 
 public final class JavacWarnings {
 
   private JavacWarnings() {
+  }
+
+  public static List<JWarning> unreachableCatches(CompilationUnitTree unit, SourcePositions positions, String source,
+    List<Diagnostic<? extends JavaFileObject>> diagnostics) {
+    SourceTokens tokens = new SourceTokens(source);
+    List<JWarning> warnings = new ArrayList<>();
+    new TreeScanner<Void, Void>() {
+      @Override
+      public Void visitCatch(CatchTree catchTree, Void unused) {
+        Tree type = catchTree.getParameter().getType();
+        List<Tree> alternatives = type instanceof UnionTypeTree union
+          ? union.getTypeAlternatives().stream().map(Tree.class::cast).toList()
+          : List.of(type);
+        int catchStart = (int) positions.getStartPosition(unit, catchTree);
+        int catchEnd = (int) positions.getEndPosition(unit, catchTree);
+        for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics) {
+          if (!"compiler.warn.unreachable.catch".equals(diagnostic.getCode())
+            || diagnostic.getStartPosition() < catchStart || diagnostic.getStartPosition() >= catchEnd) {
+            continue;
+          }
+          Tree warnedType = alternatives.stream()
+            .filter(alternative -> positions.getStartPosition(unit, alternative) <= diagnostic.getStartPosition()
+              && diagnostic.getStartPosition() < positions.getEndPosition(unit, alternative))
+            .findFirst()
+            .orElse(alternatives.size() == 1 ? alternatives.get(0) : null);
+          if (warnedType != null) {
+            int start = (int) positions.getStartPosition(unit, warnedType);
+            int end = (int) positions.getEndPosition(unit, warnedType);
+            warnings.add(new JWarning(diagnostic.getMessage(null), JProblem.Type.MASKED_CATCH,
+              tokens.line(start), tokens.column(start), tokens.line(end), tokens.column(end)));
+          }
+        }
+        return super.visitCatch(catchTree, unused);
+      }
+    }.scan(unit, null);
+    return warnings;
   }
 
   public static List<JWarning> unusedImports(CompilationUnitTree unit, SourcePositions positions, String source, Elements elements) {

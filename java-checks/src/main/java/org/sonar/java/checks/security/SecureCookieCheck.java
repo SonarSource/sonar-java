@@ -36,8 +36,10 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -241,9 +243,38 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkConstructor(NewClassTree tree) {
-    if (isCookieClass(tree.symbolType()) && isSecureParamFalse(tree) && !isSelfInstantiation(tree)) {
-      cookieConstructors.add(tree);
+    if ((isCookieClass(tree.symbolType()) || isCookieClass(tree.identifier().symbolType()))
+      || context.getSemanticModel() != null && isImportedCookie(tree)) {
+      if (isSecureParamFalse(tree) && !isSelfInstantiation(tree)) {
+        cookieConstructors.add(tree);
+      }
     }
+  }
+
+  private static boolean isImportedCookie(NewClassTree tree) {
+    if (!(tree.identifier() instanceof ExpressionTree identifier)) {
+      return false;
+    }
+    String name = ExpressionsHelper.concatenate(identifier);
+    if (COOKIES.stream().anyMatch(cookie -> cookie.replace('$', '.').equals(name))) {
+      return true;
+    }
+    Tree root = tree;
+    while (root.parent() != null) {
+      root = root.parent();
+    }
+    if (!(root instanceof CompilationUnitTree unit)) {
+      return false;
+    }
+    return unit.imports().stream()
+      .filter(ImportTree.class::isInstance)
+      .map(ImportTree.class::cast)
+      .map(ImportTree::qualifiedIdentifier)
+      .filter(ExpressionTree.class::isInstance)
+      .map(ExpressionTree.class::cast)
+      .map(ExpressionsHelper::concatenate)
+      .anyMatch(importName -> COOKIES.stream().anyMatch(cookie -> cookie.replace('$', '.').equals(importName)
+        && importName.endsWith("." + name)));
   }
 
   /**

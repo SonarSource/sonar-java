@@ -93,7 +93,7 @@ class JavaCheckVerifierTest {
 
     assertThat(e)
       .isInstanceOf(AssertionError.class)
-      .hasMessage("Should not fail analysis (Parse error at line 1 column 9: Syntax error, insert \"}\" to complete ClassBody)");
+      .hasMessage("Should not fail analysis (Parse error at line 1 column 10: reached end of file while parsing)");
   }
 
   @Test

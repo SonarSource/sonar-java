@@ -119,7 +119,10 @@ public class JavaCheckVerifier implements CheckVerifier {
       visitorsBridge.setCacheContext(cacheContext);
       filesToParse = astScanner.scanWithoutParsing(files).get(false);
     }
-    astScanner.scanForTesting(filesToParse, compilationUnitModifier, JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION);
+    JavaVersion parserVersion = actualVersion.asInt() > 0 && actualVersion.asInt() <= 8
+      ? actualVersion
+      : JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    astScanner.scanForTesting(filesToParse, compilationUnitModifier, parserVersion);
 
     return visitorsBridge;
   }

@@ -22,11 +22,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.Version;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -65,9 +67,11 @@ public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisi
     return isSpring6OrLater ? "non-\"private\"" : "\"public\"";
   }
 
-  private static boolean hasAnnotation(MethodTree method, String annotationSymbol) {
+  private boolean hasAnnotation(MethodTree method, String annotationSymbol) {
     for (AnnotationTree annotation : method.modifiers().annotations()) {
-      if (annotation.symbolType().is(annotationSymbol)) {
+      if (annotation.symbolType().is(annotationSymbol)
+        || context.getSemanticModel() != null && annotation.annotationType() instanceof ExpressionTree expression
+          && annotationSymbol.equals(ExpressionsHelper.concatenate(expression))) {
         return true;
       }
     }

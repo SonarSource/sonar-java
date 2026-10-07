@@ -154,22 +154,27 @@ public final class JavacTreeConverter {
     }
   }
 
-  private JavacTreeConverter(CompilationUnitTree unit, Trees trees, String source,
+  private JavacTreeConverter(CompilationUnitTree unit, Trees trees, String source, int sourceVersion,
     BiConsumer<com.sun.source.tree.Tree, Tree> registration) {
     this.unit = unit;
     this.positions = trees.getSourcePositions();
     this.source = source;
-    this.tokens = new SourceTokens(source);
+    this.tokens = new SourceTokens(source, sourceVersion);
     this.registration = registration;
   }
 
   public static JavaTree.CompilationUnitTreeImpl convert(CompilationUnitTree unit, Trees trees, String source) {
-    return convert(unit, trees, source, (javacTree, sonarTree) -> { });
+    return convert(unit, trees, source, Runtime.version().feature(), (javacTree, sonarTree) -> { });
   }
 
   public static JavaTree.CompilationUnitTreeImpl convert(CompilationUnitTree unit, Trees trees, String source,
     BiConsumer<com.sun.source.tree.Tree, Tree> registration) {
-    return new JavacTreeConverter(unit, trees, source, registration).convert();
+    return convert(unit, trees, source, Runtime.version().feature(), registration);
+  }
+
+  public static JavaTree.CompilationUnitTreeImpl convert(CompilationUnitTree unit, Trees trees, String source, int sourceVersion,
+    BiConsumer<com.sun.source.tree.Tree, Tree> registration) {
+    return new JavacTreeConverter(unit, trees, source, sourceVersion, registration).convert();
   }
 
   private JavaTree.CompilationUnitTreeImpl convert() {
@@ -366,8 +371,8 @@ public final class JavacTreeConverter {
       case RECORD -> "record";
       default -> throw unsupported(tree);
     };
-    int keywordPos = find(start, end, keyword);
-    int namePos = find(keywordPos + keyword.length(), end, tree.getSimpleName().toString());
+    int keywordPos = findLast(start, headEnd, keyword);
+    int namePos = find(keywordPos + keyword.length(), headEnd, tree.getSimpleName().toString());
     int openBrace = find(namePos, end, "{");
     int closeBrace = findLast(openBrace, end, "}");
     List<Tree> members = new ArrayList<>();
@@ -379,6 +384,10 @@ public final class JavacTreeConverter {
         String componentName = component.getName().toString();
         VariableTreeImpl converted = new VariableTreeImpl(ModifiersTreeImpl.emptyModifiers(), type(component.getType()),
           identifier(find(end(component.getType()), end(component), componentName), componentName));
+        SourceTokens.Token following = tokens.tokenAtOrAfter(end(component));
+        if (following.text().equals(",")) {
+          converted.setEndToken(tokens.syntaxToken(following));
+        }
         recordComponents.add(converted);
         registration.accept(component, converted);
         continue;
@@ -415,7 +424,7 @@ public final class JavacTreeConverter {
       result.completeRecordComponents(token(openParen, "("), recordComponents, token(closeParen, ")"));
     }
     if (kind == Tree.Kind.ANNOTATION_TYPE) {
-      result.completeAtToken(token(find(start, keywordPos, "@"), "@"));
+      result.completeAtToken(token(findLast(start, keywordPos, "@"), "@"));
     }
     result.completeTypeParameters(typeParameters(tree.getTypeParameters(), namePos + tree.getSimpleName().length()));
     if (tree.getExtendsClause() != null) {

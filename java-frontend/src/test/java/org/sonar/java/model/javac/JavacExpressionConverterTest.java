@@ -25,6 +25,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -89,6 +90,15 @@ class JavacExpressionConverterTest {
   @Test
   void preserves_literal_concatenation_folded_by_javac() throws IOException {
     assertThat(convert("\"A\" + \"B\"").kind()).isEqualTo(Tree.Kind.PLUS);
+  }
+
+  @Test
+  void preserves_left_associativity_when_javac_folds_string_suffix() throws IOException {
+    BinaryExpressionTree outer = (BinaryExpressionTree) convert("\"head\" + variable + \"one\" + \"two\"");
+    assertThat(outer.rightOperand().firstToken().text()).isEqualTo("\"two\"");
+    BinaryExpressionTree preceding = (BinaryExpressionTree) outer.leftOperand();
+    assertThat(preceding.rightOperand().firstToken().text()).isEqualTo("\"one\"");
+    assertThat(preceding.leftOperand().kind()).isEqualTo(Tree.Kind.PLUS);
   }
 
   @Test

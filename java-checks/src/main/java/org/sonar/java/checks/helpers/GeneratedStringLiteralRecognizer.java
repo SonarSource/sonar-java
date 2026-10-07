@@ -56,27 +56,28 @@ public final class GeneratedStringLiteralRecognizer {
     }
 
     Tree annotationArgument = literal;
-    while (annotationArgument.parent() != null && !annotationArgument.parent().is(Tree.Kind.ARGUMENTS)) {
+    while (annotationArgument.parent() != null) {
+      if (annotationArgument.parent().is(Tree.Kind.ARGUMENTS)
+        && annotationArgument.parent().parent() instanceof AnnotationTree annotation) {
+        return isAnnotationType(annotation, KOTLIN_SOURCE_DEBUG_EXTENSION)
+          || isAnnotationType(annotation, KOTLIN_DEBUG_METADATA)
+          || (annotationArgument instanceof ExpressionTree argument
+            && "d1".equals(ExpressionUtils.annotationAttributeName(argument))
+            && isAnnotationType(annotation, KOTLIN_METADATA));
+      }
       annotationArgument = annotationArgument.parent();
     }
-
-    Tree arguments = annotationArgument.parent();
-    if (arguments == null || !(arguments.parent() instanceof AnnotationTree annotation)) {
-      return false;
-    }
-
-    return isAnnotationType(annotation, KOTLIN_SOURCE_DEBUG_EXTENSION)
-      || isAnnotationType(annotation, KOTLIN_DEBUG_METADATA)
-      || (annotationArgument instanceof ExpressionTree argument
-        && "d1".equals(ExpressionUtils.annotationAttributeName(argument))
-        && isAnnotationType(annotation, KOTLIN_METADATA));
+    return false;
   }
 
   private static boolean isAnnotationType(AnnotationTree annotation, String fullyQualifiedName) {
     Type annotationType = annotation.symbolType();
     String unqualifiedName = fullyQualifiedName.substring(fullyQualifiedName.lastIndexOf('.') + 1);
     return annotationType.is(fullyQualifiedName)
-      || (annotationType.isUnknown() && annotationType.name().equals(unqualifiedName));
+      || (annotationType.isUnknown() && annotation.annotationType() instanceof ExpressionTree expression
+        && (annotationType.name().equals(unqualifiedName)
+          || fullyQualifiedName.equals(ExpressionsHelper.concatenate(expression))
+          || expression.is(Tree.Kind.IDENTIFIER) && expression.lastToken().text().equals(unqualifiedName)));
   }
 
 }

@@ -6,10 +6,8 @@ package org.foo;
 class A {
   /**
    * This is documented
-   * @throws MyException
+   * @throws MissingException when the operation fails
    */
-  public void foo() throws MyException<Object> {} // Does not compile - trigger exception
+  public void foo() throws MissingException {}
 
 }
-
-class MyException<T> extends Exception { }

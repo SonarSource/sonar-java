@@ -23,7 +23,10 @@ import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
@@ -82,7 +85,7 @@ public class TooManyMethodsCheck extends IssuableSubscriptionVisitor {
     reportIssue(
       reportTree,
       String.format("%s \"%s\" has %d%s methods, which is greater than the %d authorized. Split it into smaller %s.",
-        classType, reportTree.symbolType().name(), methods.size(), countNonPublic ? "" : " public", maximumMethodThreshold, newTypes),
+        classType, className(reportTree), methods.size(), countNonPublic ? "" : " public", maximumMethodThreshold, newTypes),
       secondary,
       null);
   }
@@ -94,6 +97,23 @@ public class TooManyMethodsCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isAnonnymousClass(ClassTree classTree) {
     return classTree.simpleName() == null;
+  }
+
+  private static String className(TypeTree tree) {
+    String name = tree.symbolType().name();
+    if (!name.isEmpty()) {
+      return name;
+    }
+    if (tree instanceof ParameterizedTypeTree parameterized) {
+      return className(parameterized.type());
+    }
+    if (tree instanceof MemberSelectExpressionTree memberSelect) {
+      return memberSelect.identifier().name();
+    }
+    if (tree instanceof IdentifierTree identifier) {
+      return identifier.name();
+    }
+    return name;
   }
 
   private static boolean isOverriding(MethodTree methodTree) {

@@ -48,6 +48,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -141,6 +142,10 @@ public final class JavacSymbols {
 
   Symbol.TypeSymbol instantiatedType(DeclaredType mirror) {
     return new TypeView((TypeElement) mirror.asElement(), mirror);
+  }
+
+  Symbol.MethodSymbol methodAt(ExecutableElement method, DeclaredType receiver, @Nullable ExecutableType invocationType) {
+    return new MethodView(method, receiver, invocationType);
   }
 
   public void registerDeclaration(Element element, Tree declaration) {
@@ -341,7 +346,13 @@ public final class JavacSymbols {
     @Override
     public TypeSymbol enclosingClass() {
       if (this instanceof TypeView typeView) {
-        return typeView;
+        Element owner = element.getEnclosingElement();
+        if (owner instanceof TypeElement type) {
+          return (TypeSymbol) symbol(type);
+        }
+        if (owner == null || owner instanceof PackageElement) {
+          return typeView;
+        }
       }
       for (Element current = element.getEnclosingElement(); current != null; current = current.getEnclosingElement()) {
         if (current instanceof TypeElement) {
@@ -353,7 +364,10 @@ public final class JavacSymbols {
 
     @Override
     public List<IdentifierTree> usages() {
-      return List.copyOf(usages.getOrDefault(element, List.of()));
+      return usages.getOrDefault(element, List.of()).stream()
+        .sorted(Comparator.comparingInt((IdentifierTree usage) -> usage.firstToken().range().start().line())
+          .thenComparingInt(usage -> usage.firstToken().range().start().column()))
+        .toList();
     }
 
     @Nullable
@@ -447,6 +461,17 @@ public final class JavacSymbols {
       this.mirror = mirror;
     }
 
+    @Nullable
+    @Override
+    public Symbol owner() {
+      Symbol owner = super.owner();
+      if (typeElement.getNestingKind() == javax.lang.model.element.NestingKind.ANONYMOUS
+        && owner instanceof Symbol.VariableSymbol) {
+        return owner.enclosingClass();
+      }
+      return owner;
+    }
+
     @Override
     public Type type() {
       return JavacSymbols.this.type(mirror);
@@ -466,7 +491,8 @@ public final class JavacSymbols {
 
     @Override
     public Collection<Symbol> memberSymbols() {
-      var members = typeElement.getEnclosedElements().stream();
+      var members = typeElement.getEnclosedElements().stream()
+        .filter(member -> member.getKind() != ElementKind.RECORD_COMPONENT);
       if (typeElement.getKind() == ElementKind.RECORD) {
         members = members.sorted(Comparator.comparingInt(member -> {
           if (member.getKind() == ElementKind.METHOD && !declarations.containsKey(member)) {
@@ -482,6 +508,7 @@ public final class JavacSymbols {
     public Collection<Symbol> lookupSymbols(String name) {
       return typeElement.getEnclosedElements().stream()
         .filter(member -> member.getSimpleName().contentEquals(name))
+        .filter(member -> member.getKind() != ElementKind.RECORD_COMPONENT)
         .map(JavacSymbols.this::symbol)
         .toList();
     }
@@ -511,11 +538,8 @@ public final class JavacSymbols {
 
     @Override
     public Symbol.TypeSymbol outermostClass() {
-      TypeView current = this;
-      while (current.owner() instanceof TypeView parent) {
-        current = parent;
-      }
-      return current;
+      Symbol.TypeSymbol enclosing = enclosingClass();
+      return enclosing == null || enclosing.equals(this) ? this : enclosing.outermostClass();
     }
 
     @Override
@@ -583,10 +607,65 @@ public final class JavacSymbols {
 
   private final class MethodView extends BaseView implements Symbol.MethodSymbol {
     private final ExecutableElement method;
+    @Nullable
+    private final DeclaredType receiver;
+    @Nullable
+    private final ExecutableType invocationType;
 
     MethodView(ExecutableElement element) {
+      this(element, null, null);
+    }
+
+    MethodView(ExecutableElement element, @Nullable DeclaredType receiver, @Nullable ExecutableType invocationType) {
       super(element);
       method = element;
+      this.receiver = receiver;
+      this.invocationType = invocationType;
+    }
+
+    @Override
+    public Symbol owner() {
+      if (receiver == null) {
+        return super.owner();
+      }
+      List<DeclaredType> pending = new ArrayList<>();
+      Set<DeclaredType> visited = new LinkedHashSet<>();
+      pending.add(receiver);
+      while (!pending.isEmpty()) {
+        DeclaredType current = pending.remove(0);
+        if (!visited.add(current)) {
+          continue;
+        }
+        if (current.asElement().equals(method.getEnclosingElement())) {
+          return JavacSymbols.this.type(current).symbol();
+        }
+        try {
+          types.directSupertypes(current).stream()
+            .filter(DeclaredType.class::isInstance)
+            .map(DeclaredType.class::cast)
+            .forEach(pending::add);
+        } catch (IllegalArgumentException ignored) {
+          return super.owner();
+        }
+      }
+      return super.owner();
+    }
+
+    @Nullable
+    private ExecutableType resolvedType() {
+      if (invocationType != null) {
+        return invocationType;
+      }
+      if (receiver != null) {
+        try {
+          if (types.asMemberOf(receiver, method) instanceof ExecutableType executable) {
+            return executable;
+          }
+        } catch (IllegalArgumentException ignored) {
+          return method.asType() instanceof ExecutableType executable ? executable : null;
+        }
+      }
+      return method.asType() instanceof ExecutableType executable ? executable : null;
     }
 
     @Override
@@ -595,8 +674,17 @@ public final class JavacSymbols {
     }
 
     @Override
+    public boolean isUnknown() {
+      ExecutableType resolved = resolvedType();
+      return super.isUnknown() || resolved == null
+        || declaration() == null && resolved.getReturnType().getKind() == TypeKind.ERROR;
+    }
+
+    @Override
     public List<Type> parameterTypes() {
-      return method.getParameters().stream().map(Element::asType).map(JavacSymbols.this::type).toList();
+      ExecutableType resolved = resolvedType();
+      return (resolved == null ? method.getParameters().stream().map(Element::asType).toList() : resolved.getParameterTypes())
+        .stream().map(JavacSymbols.this::type).toList();
     }
 
     @Override
@@ -606,18 +694,19 @@ public final class JavacSymbols {
 
     @Override
     public TypeSymbol returnType() {
-      if (method.getReturnType().getKind() == TypeKind.DECLARED) {
-        Element returnElement = types.asElement(method.getReturnType());
-        if (returnElement instanceof TypeElement) {
-          return (TypeSymbol) symbol(returnElement);
-        }
+      ExecutableType resolved = resolvedType();
+      TypeMirror result = resolved == null ? method.getReturnType() : resolved.getReturnType();
+      if (result.getKind() == TypeKind.DECLARED) {
+        return JavacSymbols.this.type(result).symbol();
       }
-      return syntheticType(method.getReturnType());
+      return syntheticType(result);
     }
 
     @Override
     public List<Type> thrownTypes() {
-      return method.getThrownTypes().stream().map(JavacSymbols.this::type).toList();
+      ExecutableType resolved = resolvedType();
+      return (resolved == null ? method.getThrownTypes() : resolved.getThrownTypes())
+        .stream().map(JavacSymbols.this::type).toList();
     }
 
     @Override
@@ -639,13 +728,29 @@ public final class JavacSymbols {
         Element parent = types.asElement(supertype);
         if (parent instanceof TypeElement parentType) {
           for (Element candidate : parentType.getEnclosedElements()) {
-            if (candidate instanceof ExecutableElement executable && elements.overrides(method, executable, ownerType)) {
+            if (candidate instanceof ExecutableElement executable && hasCompatibleParameterTypes(executable)
+              && elements.overrides(method, executable, ownerType)) {
               result.add((Symbol.MethodSymbol) symbol(executable));
             }
           }
           collectOverridden(supertype, ownerType, result, visited);
         }
       }
+    }
+
+    private boolean hasCompatibleParameterTypes(ExecutableElement candidate) {
+      List<? extends VariableElement> currentParameters = method.getParameters();
+      List<? extends VariableElement> candidateParameters = candidate.getParameters();
+      if (currentParameters.size() != candidateParameters.size()) {
+        return false;
+      }
+      for (int index = 0; index < currentParameters.size(); index++) {
+        if (currentParameters.get(index).asType().getKind() != TypeKind.ERROR
+          && candidateParameters.get(index).asType().getKind() == TypeKind.ERROR) {
+          return false;
+        }
+      }
+      return true;
     }
 
     @Nullable

@@ -109,13 +109,13 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
 
   private static boolean hasCompliantGeneratedConstructors(ClassTree classTree) {
     return classTree.modifiers().annotations().stream()
-      .anyMatch(it -> isLombokConstructorGenerator(it.symbolType()) && !hasPublicAccess(it));
+      .anyMatch(it -> isLombokConstructorGenerator(it) && !hasPublicAccess(it));
   }
 
-  private static boolean isLombokConstructorGenerator(Type symbolType) {
-    // This happens in automatic analysis. We match only the last part of the name.
+  private static boolean isLombokConstructorGenerator(AnnotationTree annotation) {
+    Type symbolType = annotation.symbolType();
     if (symbolType.isUnknown()) {
-      return LOMBOK_CONSTRUCTOR_GENERATOR_NAMES.contains(symbolType.name());
+      return LOMBOK_CONSTRUCTOR_GENERATOR_NAMES.contains(annotation.annotationType().lastToken().text());
     }
 
     return LOMBOK_CONSTRUCTOR_GENERATORS.contains(symbolType.fullyQualifiedName());

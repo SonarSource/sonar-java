@@ -116,7 +116,7 @@ class A {
     try {
       return null;
     } catch (Exception e) {
-      e = new Exception(); // false negative, not defined within a method
+      e = new Exception(); // Noncompliant
       throw e;
     }
   };

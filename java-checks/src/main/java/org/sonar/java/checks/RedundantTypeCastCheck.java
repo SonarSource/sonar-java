@@ -32,8 +32,10 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.sonar.java.model.ExpressionUtils.skipParenthesesUpwards;
 
@@ -90,7 +92,59 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       // returns Class<? extends (receiver type)> at compile time. To prevent false-positives, we ignore this case.
       return false;
     }
-    return warnings.stream().anyMatch(warning -> matchesWarning(warning, typeCastTree));
+    if (typeCastTree.expression().symbolType().isUnknown()
+      || typeCastTree.expression().is(Tree.Kind.METHOD_REFERENCE)
+      || isGenericInvocationRequiringCast(typeCastTree)) {
+      return false;
+    }
+    return warnings.stream().anyMatch(warning -> matchesWarning(warning, typeCastTree))
+      || isClearlyRedundantVariableCast(typeCastTree)
+      || isClearlyRedundantContextualCast(typeCastTree);
+  }
+
+  private static boolean isGenericInvocationRequiringCast(TypeCastTree cast) {
+    if (!(cast.expression() instanceof MethodInvocationTree invocation) || !invocation.methodSymbol().isParametrizedMethod()) {
+      return false;
+    }
+    if (!skipParenthesesUpwards(cast.parent()).is(Tree.Kind.RETURN_STATEMENT)) {
+      return true;
+    }
+    MethodTree method = (MethodTree) ExpressionUtils.getParentOfType(cast, Tree.Kind.METHOD);
+    return method == null || method.returnType().symbolType().equals(cast.type().symbolType());
+  }
+
+  private static boolean isClearlyRedundantContextualCast(TypeCastTree cast) {
+    Type operandType = cast.expression().symbolType();
+    Type castType = cast.type().symbolType();
+    if (operandType.isUnknown() || castType.isUnknown()) {
+      return false;
+    }
+    Tree parent = skipParenthesesUpwards(cast.parent());
+    if (parent.is(Tree.Kind.RETURN_STATEMENT)) {
+      if (operandType.equals(castType)) {
+        return true;
+      }
+      MethodTree method = (MethodTree) ExpressionUtils.getParentOfType(cast, Tree.Kind.METHOD);
+      return method != null && cast.expression() instanceof MethodInvocationTree invocation
+        && invocation.methodSymbol().isParametrizedMethod()
+        && castType.isSubtypeOf(method.returnType().symbolType());
+    }
+    return parent.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)
+      && operandType.isArray() && castType instanceof Type.ArrayType arrayType
+      && arrayType.elementType().is("java.lang.Object")
+      && operandType.isSubtypeOf(castType);
+  }
+
+  private static boolean isClearlyRedundantVariableCast(TypeCastTree cast) {
+    if (!(cast.parent() instanceof VariableTree variable) || cast.expression().is(Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.METHOD_REFERENCE)) {
+      return false;
+    }
+    Type operandType = cast.expression().symbolType();
+    Type castType = cast.type().symbolType();
+    Type variableType = variable.type().symbolType();
+    return !operandType.isUnknown() && !castType.isUnknown() && !variableType.isUnknown()
+      && operandType.isSubtypeOf(castType)
+      && (variableType.is("java.lang.Object") || !castType.isParameterized() && variableType.equals(castType));
   }
 
   private static boolean isMethodInvocationReceiverOfGetClass(TypeCastTree typeCastTree) {

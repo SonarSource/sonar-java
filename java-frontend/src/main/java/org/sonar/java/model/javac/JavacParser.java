@@ -131,7 +131,7 @@ public final class JavacParser {
   private static Result parseFiles(JavaCompiler compiler, DiagnosticCollector<JavaFileObject> diagnostics,
     StandardJavaFileManager fileManager, Iterable<? extends JavaFileObject> sourceFiles, Options options) throws IOException {
     fileManager.setLocationFromPaths(StandardLocation.CLASS_PATH, options.classpath);
-    List<String> compilerOptions = new ArrayList<>(List.of("-proc:none", "-Xlint:cast"));
+    List<String> compilerOptions = new ArrayList<>(List.of("-proc:none", "-Xlint:cast,try"));
     if (options.sourceVersion != null) {
       compilerOptions.add("-source");
       compilerOptions.add(Integer.toString(options.sourceVersion));
@@ -164,6 +164,10 @@ public final class JavacParser {
 
     public static Options defaults() {
       return new Options(List.of(), null, false, false);
+    }
+
+    public int sourceVersion() {
+      return sourceVersion == null ? Runtime.version().feature() : sourceVersion;
     }
 
     public Options withClasspath(List<Path> classpath) {

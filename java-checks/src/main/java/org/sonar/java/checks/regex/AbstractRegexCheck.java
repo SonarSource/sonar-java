@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.regex.RegexCheck;
 import org.sonar.java.regex.RegexScannerContext;
@@ -135,7 +136,12 @@ public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor imp
 
   protected boolean filterAnnotation(AnnotationTree annotation) {
     Type type = annotation.symbolType();
-    return ANNOTATIONS_TO_FILTER.stream().anyMatch(type::is);
+    if (ANNOTATIONS_TO_FILTER.stream().anyMatch(type::is)) {
+      return true;
+    }
+    return type.isUnknown()
+      && annotation.annotationType() instanceof ExpressionTree expression
+      && ANNOTATIONS_TO_FILTER.contains(ExpressionsHelper.concatenate(expression));
   }
 
   @Override

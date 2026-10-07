@@ -102,10 +102,15 @@ public class LoggerClassCheck extends IssuableSubscriptionVisitor {
         return mset.expression().symbolType().symbol();
       }
     }
-    if (expression.is(Tree.Kind.METHOD_INVOCATION) && CLAZZ_GETNAME.matches(((MethodInvocationTree) expression))) {
+    if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) expression;
       if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-        return classLiteral(((MemberSelectExpressionTree) mit.methodSelect()).expression());
+        MemberSelectExpressionTree methodSelect = (MemberSelectExpressionTree) mit.methodSelect();
+        if (CLAZZ_GETNAME.matches(mit)
+          || ("getName".equals(methodSelect.identifier().name()) && mit.arguments().isEmpty()
+            && methodSelect.expression().is(Tree.Kind.MEMBER_SELECT))) {
+          return classLiteral(methodSelect.expression());
+        }
       }
     }
     return null;
