@@ -24,6 +24,9 @@ import java.util.List;
 
 public class ClasspathProperties {
 
+  public static final String SONAR_JAVA_SOURCEPATH = "sonar.java.sourcepath";
+  public static final String SONAR_JAVA_TEST_SOURCEPATH = "sonar.java.test.sourcepath";
+
   public static final String SONAR_JAVA_JDK_HOME = "sonar.java.jdkHome";
 
   public static final String SONAR_JAVA_BINARIES = "sonar.java.binaries";
@@ -66,6 +69,14 @@ public class ClasspathProperties {
       .hidden()
       .build()
     );
+    for (String property : List.of(SONAR_JAVA_SOURCEPATH, SONAR_JAVA_TEST_SOURCEPATH)) {
+      extensions.add(PropertyDefinition.builder(property)
+        .description("Comma-separated source roots used to resolve Java types, relative to the module base directory or absolute. " +
+          "Include the module and its visible dependencies.")
+        .multiValues(true)
+        .hidden()
+        .build());
+    }
     return Collections.unmodifiableList(extensions);
   }
 }

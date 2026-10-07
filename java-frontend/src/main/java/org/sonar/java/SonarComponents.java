@@ -62,6 +62,7 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.caching.ContentHashCache;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
+import org.sonar.java.classpath.SourcePath;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JProblem;
@@ -259,6 +260,14 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
       return new ArrayList<>();
     }
     return javaClasspath.getElements();
+  }
+
+  public SourcePath getJavaSourcePath() {
+    return javaClasspath == null ? SourcePath.EMPTY : Objects.requireNonNullElse(javaClasspath.getSourcePath(), SourcePath.EMPTY);
+  }
+
+  public SourcePath getJavaTestSourcePath() {
+    return javaTestClasspath == null ? SourcePath.EMPTY : Objects.requireNonNullElse(javaTestClasspath.getSourcePath(), SourcePath.EMPTY);
   }
 
   public boolean inAndroidContext() {
@@ -543,7 +552,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   }
 
   public boolean canSkipUnchangedFiles() throws ApiMismatchException {
-    if (context == null) {
+    if (context == null || !getJavaSourcePath().roots().isEmpty() || !getJavaTestSourcePath().roots().isEmpty()) {
       return false;
     } else {
       var overrideSkipFlag = context.config() == null ? null : context.config().getBoolean(SONAR_CAN_SKIP_UNCHANGED_FILES_KEY).orElse(null);

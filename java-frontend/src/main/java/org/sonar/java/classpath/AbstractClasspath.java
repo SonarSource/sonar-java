@@ -70,6 +70,7 @@ public abstract class AbstractClasspath {
   protected List<File> elements;
   protected boolean validateLibraries;
   protected boolean initialized;
+  private SourcePath sourcePath;
   private boolean inAndroidContext = false;
   private final Set<String> classpathWarnings;
   protected final AnalysisWarningsWrapper analysisWarnings;
@@ -86,6 +87,14 @@ public abstract class AbstractClasspath {
     this.analysisWarnings = analysisWarnings;
     classpathWarnings = new LinkedHashSet<>();
     initialized = false;
+  }
+
+  public SourcePath getSourcePath() {
+    if (sourcePath == null) {
+      String property = fileType == InputFile.Type.MAIN ? ClasspathProperties.SONAR_JAVA_SOURCEPATH : ClasspathProperties.SONAR_JAVA_TEST_SOURCEPATH;
+      sourcePath = SourcePath.resolve(settings, fs, property);
+    }
+    return sourcePath;
   }
 
   protected void init() {
@@ -109,7 +118,7 @@ public abstract class AbstractClasspath {
     if (settings.getBoolean(SonarComponents.SONAR_AUTOSCAN).orElse(false)) {
       return;
     }
-    boolean missingBinary = !settings.hasKey(binariesProperty) && hasMoreThanOneJavaFile();
+    boolean missingBinary = !settings.hasKey(binariesProperty) && getSourcePath().roots().isEmpty() && hasMoreThanOneJavaFile();
     boolean missingLibraries = !settings.hasKey(librariesProperty) && hasJavaFiles();
     if (missingBinary && missingLibraries) {
       classpathWarnings.add(MISSING_PROPERTY_MESSAGE_PREFIX + binariesProperty + "' and '" + librariesProperty + "' properties. You might end up with less precise analysis " +

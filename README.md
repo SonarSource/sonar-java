@@ -39,6 +39,25 @@ Use SonarJava
 
 SonarJava runs through [SonarQube Server](https://www.sonarsource.com/products/sonarqube/server/), [SonarQube Cloud](https://www.sonarsource.com/products/sonarqube/cloud/), and [SonarQube for IDE](https://www.sonarsource.com/products/sonarqube/ide/). Read the [Java analysis documentation](https://docs.sonarsource.com/sonarqube-server/analyzing-source-code/languages/java) for setup and coverage guidance.
 
+### Resolve project types from source
+
+The opt-in `sonar.java.sourcepath` and `sonar.java.test.sourcepath` properties provide source roots for semantic resolution when project class files are unavailable. Each property is a complete, ordered list of package roots for its analysis scope, including the current module and its visible dependencies. Paths may be absolute or relative to the module base directory. Missing directories fail configuration validation.
+
+For module B depending on module A, configure B with:
+
+```properties
+sonar.java.sourcepath=src/main/java,../A/src/main/java
+sonar.java.test.sourcepath=src/test/java,src/main/java,../A/src/main/java
+```
+
+Include visible transitive dependencies and generated source roots as needed. Keep test-only dependency roots in the test source path. These roots provide types for resolution; they do not add files to the analysis scope or generate issues for dependency files. Module analysis order does not matter.
+
+External libraries and the JDK must still be available through the existing classpath configuration. ECJ searches source roots ahead of the supplied binary classpath, so source definitions take precedence when both are available. All source roots use the current module's analysis encoding and compiler options. Projects whose dependency sources require different encodings or Java language levels need additional configuration support. Generated sources must exist before analysis; this mode does not run annotation processors or generate Lombok members.
+
+Dependency sources may be parsed again in each consumer module or batch. Unchanged-file skipping is disabled when either source-path property supplies roots, including when `sonar.java.skipUnchanged=true`, so changes to dependency declarations are reflected in consumers. 
+
+Maven and Gradle scanners do not populate these properties automatically.
+
 Useful links
 ------------
 

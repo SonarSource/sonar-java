@@ -44,6 +44,7 @@ import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.classpath.DependencyVersionInference;
+import org.sonar.java.classpath.SourcePath;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.exceptions.ThrowableUtils;
 import org.sonar.plugins.java.api.DependencyVersionAware;
@@ -75,6 +76,7 @@ public class VisitorsBridge {
   protected InputFile currentFile;
   protected final JavaVersion javaVersion;
   private final List<File> classpath;
+  private final SourcePath sourcePath;
   protected final boolean inAndroidContext;
   private int fullyScannedFileCount = 0;
   private int skippedFileCount = 0;
@@ -98,6 +100,12 @@ public class VisitorsBridge {
 
   public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
     boolean inAndroidContext) {
+    this(visitors, projectClasspath, SourcePath.EMPTY, sonarComponents, javaVersion, inAndroidContext);
+  }
+
+  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, SourcePath sourcePath, @Nullable SonarComponents sonarComponents,
+    JavaVersion javaVersion, boolean inAndroidContext) {
+    this.sourcePath = sourcePath;
     this.visitors = visitors;
     this.allScanners = new ArrayList<>();
     this.scannersThatCannotBeSkipped = new ArrayList<>();
@@ -172,6 +180,10 @@ public class VisitorsBridge {
 
   public JavaVersion getJavaVersion() {
     return javaVersion;
+  }
+
+  public SourcePath getSourcePath() {
+    return sourcePath;
   }
 
   public List<File> getClasspath() {
