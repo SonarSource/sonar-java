@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -255,7 +257,7 @@ public class VisitorsBridge {
     }
     symbolTableDuration.stop();
 
-    JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, tree.sema, sonarComponents, fileParsed);
+    JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, tree.semanticModel(), sonarComponents, fileParsed);
     var scanners = getScanners(fileCanBeSkipped);
 
     PerformanceMeasure.Duration scannersDuration = PerformanceMeasure.start("Scanners");
@@ -394,6 +396,7 @@ public class VisitorsBridge {
   private class IssuableSubscriptionVisitorsRunner implements JavaFileScanner, EndOfAnalysis {
     private EnumMap<Tree.Kind, List<SubscriptionVisitor>> checks;
     private List<SubscriptionVisitor> subscriptionVisitors;
+    private Set<SyntaxToken> visitedTokens;
 
     IssuableSubscriptionVisitorsRunner() {
       checks = new EnumMap<>(Tree.Kind.class);
@@ -429,6 +432,7 @@ public class VisitorsBridge {
     public void scanFile(JavaFileScannerContext javaFileScannerContext) {
       PerformanceMeasure.Duration issuableSubscriptionVisitorsDuration = PerformanceMeasure.start("IssuableSubscriptionVisitors");
       try {
+        visitedTokens = Collections.newSetFromMap(new IdentityHashMap<>());
         forEach(subscriptionVisitors, s -> s.setContext(javaFileScannerContext));
         visit(javaFileScannerContext.getTree());
         forEach(subscriptionVisitors, s -> s.leaveFile(javaFileScannerContext));
@@ -463,6 +467,9 @@ public class VisitorsBridge {
       List<SubscriptionVisitor> subscribed = checks.getOrDefault(kind, Collections.emptyList());
       Consumer<SubscriptionVisitor> callback;
       boolean isToken = (kind == Tree.Kind.TOKEN);
+      if (isToken && !visitedTokens.add((SyntaxToken) tree)) {
+        return;
+      }
       if (isToken) {
         callback = s -> s.visitToken((SyntaxToken) tree);
       } else {

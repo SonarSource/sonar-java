@@ -71,18 +71,13 @@ class UnusedLocalVariableCheckTest {
       .verifyIssues();
   }
 
-  /**
-   * Test for false negative when a name is used in a lambda expression.
-   * See SONARJAVA-5504 for details.
-   */
   @Test
-  void test_with_lambda_without_semantics() {
+  void test_with_lambda_without_project_classpath() {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/unused/UnusedLocalVariableCheck_withLambda.java"))
       .withCheck(new UnusedLocalVariableCheck())
       .withJavaVersion(22)
       .withoutSemantic()
-      // False negatives.
-      .verifyNoIssues();
+      .verifyIssues();
   }
 }

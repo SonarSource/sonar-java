@@ -20,8 +20,8 @@ public class NullabilityOfParametrizedTypes {
   public Map<Object, @NonNull Object> id1004_type_NO_ANNOTATION_level_PACKAGE;
   public List<@NonNull Object> id1005_type_NO_ANNOTATION_level_PACKAGE;
 
-  public Map<Object, @org.eclipse.jdt.annotation.Nullable Object> id1006_type_NO_ANNOTATION_level_PACKAGE;
-  public List<@org.eclipse.jdt.annotation.Nullable Object> id1007_type_NO_ANNOTATION_level_PACKAGE;
+  public Map<Object, @org.jspecify.annotations.Nullable Object> id1006_type_NO_ANNOTATION_level_PACKAGE;
+  public List<@org.jspecify.annotations.Nullable Object> id1007_type_NO_ANNOTATION_level_PACKAGE;
 
   public Map.@Nullable Entry<@NonNull Object, @NonNull Object> id1008_type_STRONG_NULLABLE_level_VARIABLE;
 

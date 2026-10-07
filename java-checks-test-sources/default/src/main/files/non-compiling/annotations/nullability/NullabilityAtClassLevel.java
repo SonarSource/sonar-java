@@ -2,7 +2,6 @@ package annotations.nullability.no_default;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.annotation.DefaultLocation;
 
 public class NullabilityAtClassLevel {
 

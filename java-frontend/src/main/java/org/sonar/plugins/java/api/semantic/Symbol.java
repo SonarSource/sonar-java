@@ -241,7 +241,7 @@ public interface Symbol {
      * Use to access parameter annotations. Note:
      * 1) in case of generic types of method invocations, this list of types is less specialized than {@link #parameterTypes()}.
      * For example it could be T instead of String.
-     * 2) when the declaration comes from binaries, the name of the symbol will be generated (@see JVariableSymbol.ParameterPlaceholderSymbol).
+     * 2) when the declaration comes from binaries, the parameter name may be generated.
      *
      * @return empty list if methods has not parameters
      */

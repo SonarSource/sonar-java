@@ -18,8 +18,6 @@ package org.sonar.java.model.pattern;
 
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.GuardedPatternTree;
 import org.sonar.plugins.java.api.tree.PatternTree;
@@ -36,8 +34,8 @@ public class GuardedPatternTreeImpl extends AbstractPatternTree implements Guard
   private final SyntaxToken whenOperator;
   private final ExpressionTree expression;
 
-  public GuardedPatternTreeImpl(PatternTree pattern, SyntaxToken whenOperator, ExpressionTree expression, @Nullable ITypeBinding typeBinding) {
-    super(Tree.Kind.GUARDED_PATTERN, typeBinding);
+  public GuardedPatternTreeImpl(PatternTree pattern, SyntaxToken whenOperator, ExpressionTree expression) {
+    super(Tree.Kind.GUARDED_PATTERN);
     this.pattern = pattern;
     this.whenOperator = whenOperator;
     this.expression = expression;

@@ -43,8 +43,7 @@ class KeywordSuperTest {
     assertThat(keywordSuper.symbolType().name()).isEqualTo("Object");
 
     // simulate a binding problem
-    keywordSuper.binding = null;
-    keywordSuper.typeBinding = null;
+    ((JavaTree.CompilationUnitTreeImpl) ast).javacSema = null;
 
     assertThat(keywordSuper.symbol().isUnknown()).isTrue();
     assertThat(keywordSuper.symbolType().isUnknown()).isTrue();

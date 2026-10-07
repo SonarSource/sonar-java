@@ -13,9 +13,6 @@ public class UnusedLocalVariableCheck_withLambda {
     }
   }
 
-  // Commenting out decoy methods (or renaming the arguments in lambdas)
-  // changes the outcome of the tests without semantics.
-
   public void decoyTryWithResources() {
     org.assertj.core.api.SoftAssertions.assertSoftly(softlyTry -> {
       softlyTry.assertThat(5).isLessThan(3);

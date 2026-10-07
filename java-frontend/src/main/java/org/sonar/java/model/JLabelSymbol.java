@@ -32,8 +32,16 @@ public class JLabelSymbol extends Symbols.DefaultSymbol implements Symbol.LabelS
   LabeledStatementTree declaration;
   final List<IdentifierTree> usages = new ArrayList<>();
 
-  JLabelSymbol(String name) {
+  public JLabelSymbol(String name) {
     this.name = name;
+  }
+
+  public void setDeclaration(LabeledStatementTree declaration) {
+    this.declaration = declaration;
+  }
+
+  public void addUsage(IdentifierTree usage) {
+    usages.add(usage);
   }
 
   @Override

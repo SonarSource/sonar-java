@@ -38,8 +38,8 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 
-import static org.sonar.java.model.JSymbolMetadata.noNullabilityAnnotationAt;
-import static org.sonar.java.model.JSymbolMetadata.unknownNullabilityAt;
+import static org.sonar.java.model.Nullability.noAnnotationAt;
+import static org.sonar.java.model.Nullability.unknownAt;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.CLASS;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.VARIABLE;
@@ -71,9 +71,6 @@ public class JSymbolMetadataNullabilityHelper {
     // as they are using meta-annotation from javax: @Nonnull(When.MAYBE), same as javax @CheckForNull.
     "org.springframework.lang.Nullable",
     "reactor.util.annotation.Nullable",
-    // From the documentation (https://wiki.eclipse.org/JDT_Core/Null_Analysis):
-    // For any variable whose type is annotated with @Nullable [...] It is illegal to dereference such a variable for either field or method access.
-    "org.eclipse.jdt.annotation.Nullable",
     "org.eclipse.jgit.annotations.Nullable",
     "org.jspecify.annotations.Nullable");
 
@@ -123,7 +120,6 @@ public class JSymbolMetadataNullabilityHelper {
     "org.checkerframework.checker.nullness.compatqual.NonNullDecl",
     "org.checkerframework.checker.nullness.compatqual.NonNullType",
     "org.checkerframework.checker.nullness.qual.NonNull",
-    "org.eclipse.jdt.annotation.NonNull",
     "org.eclipse.jgit.annotations.NonNull",
     "org.jetbrains.annotations.NotNull",
     "org.jmlspecs.annotation.NonNull",
@@ -182,8 +178,6 @@ public class JSymbolMetadataNullabilityHelper {
    * Can have parameters, setting what should be considered as NonNull.
    * PARAMETER, RETURN_TYPE, FIELD
    */
-  private static final String ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT = "org.eclipse.jdt.annotation.NonNullByDefault";
-
   private static final Set<String> KNOWN_ANNOTATIONS = Stream.of(NULLABLE_ANNOTATIONS, NONNULL_ANNOTATIONS)
       .flatMap(Set::stream)
       .collect(Collectors.toSet());
@@ -239,14 +233,6 @@ public class JSymbolMetadataNullabilityHelper {
     configureAnnotation(ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS, NON_NULL,
       Collections.singletonList(FIELD), Collections.singletonList(PACKAGE));
 
-    // ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT specific case (targeting both high and low level)
-    configureAnnotation(annotationInstance -> getIfEclipseNonNullByDefault(annotationInstance, "PARAMETER"),
-      Collections.singletonList(PARAMETER), Arrays.asList(VARIABLE, NullabilityLevel.METHOD, CLASS, PACKAGE));
-    configureAnnotation(annotationInstance -> getIfEclipseNonNullByDefault(annotationInstance, "FIELD"),
-      Collections.singletonList(FIELD), Arrays.asList(VARIABLE, NullabilityLevel.METHOD, CLASS, PACKAGE));
-    configureAnnotation(annotationInstance -> getIfEclipseNonNullByDefault(annotationInstance, "RETURN_TYPE"),
-      Collections.singletonList(METHOD), Arrays.asList(NullabilityLevel.METHOD, CLASS, PACKAGE));
-
     // Add all annotations to the set of known annotations
     KNOWN_ANNOTATIONS.add(JAVAX_ANNOTATION_NONNULL);
     KNOWN_ANNOTATIONS.add(JAKARTA_ANNOTATION_NONNULL);
@@ -257,7 +243,6 @@ public class JSymbolMetadataNullabilityHelper {
     KNOWN_ANNOTATIONS.add(JAVAX_ANNOTATION_PARAMETERS_ARE_NULLABLE_BY_DEFAULT);
     KNOWN_ANNOTATIONS.add(JAKARTA_ANNOTATION_PARAMETERS_ARE_NULLABLE_BY_DEFAULT);
     KNOWN_ANNOTATIONS.add(ORG_SPRINGFRAMEWORK_LANG_NON_NULL_FIELDS);
-    KNOWN_ANNOTATIONS.add(ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT);
     KNOWN_ANNOTATIONS.add(ORG_JSPECIFY_ANNOTATIONS_NULL_MARKED);
     KNOWN_ANNOTATIONS.add(ORG_JSPECIFY_ANNOTATIONS_NULL_UNMARKED);
   }
@@ -283,7 +268,7 @@ public class JSymbolMetadataNullabilityHelper {
     if (typeForAnnotations != null) {
       return getNullabilityDataAtLevel(new HashSet<>(), metadata, level, false, typeForAnnotations);
     }
-    return noNullabilityAnnotationAt(level);
+    return noAnnotationAt(level);
   }
 
   private static NullabilityData getNullabilityDataAtLevel(Set<Type> knownTypes, SymbolMetadata metadata,
@@ -305,7 +290,7 @@ public class JSymbolMetadataNullabilityHelper {
         }
       }
     }
-    return noNullabilityAnnotationAt(level);
+    return noAnnotationAt(level);
   }
 
   private static NullabilityData getNullabilityData(SymbolMetadata metadata,
@@ -323,11 +308,11 @@ public class JSymbolMetadataNullabilityHelper {
       }
     }
     if (nullabilityType == UNKNOWN) {
-      return unknownNullabilityAt(level);
+      return unknownAt(level);
     } else if (annotationInstance == null) {
-      return noNullabilityAnnotationAt(level);
+      return noAnnotationAt(level);
     }
-    return new JSymbolMetadata.JNullabilityData(nullabilityType, level,
+    return new Nullability.Data(nullabilityType, level,
       annotationInstance, metadata.findAnnotationTree(annotationInstance), isMetaAnnotated);
   }
 
@@ -376,13 +361,6 @@ public class JSymbolMetadataNullabilityHelper {
         // when=NEVER or when=MAYBE
         return STRONG_NULLABLE;
       }
-    }
-    return NO_ANNOTATION;
-  }
-
-  private static NullabilityType getIfEclipseNonNullByDefault(AnnotationInstance annotation, String expectedValue) {
-    if (ORG_ECLIPSE_JDT_ANNOTATION_NON_NULL_BY_DEFAULT.equals(annotationType(annotation).fullyQualifiedName())) {
-      return (annotation.values().isEmpty() || checkAnnotationParameter(annotation.values(), "value", expectedValue)) ? NON_NULL : NO_ANNOTATION;
     }
     return NO_ANNOTATION;
   }

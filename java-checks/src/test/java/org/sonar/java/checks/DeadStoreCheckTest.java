@@ -19,9 +19,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
-import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.java.model.JavaTree;
 
 class DeadStoreCheckTest {
 
@@ -35,11 +33,10 @@ class DeadStoreCheckTest {
 
   @Test
   void test_variable_identifier_with_unknown_symbol() {
-    EraseSymbols eraser = new EraseSymbols();
     CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/DeadStoreCheckBrokenSemantic.java"))
       .withCheck(new DeadStoreCheck())
-      .withCompilationUnitModifier(eraser::visitCompilationUnit)
+      .withCompilationUnitModifier(tree -> ((JavaTree.CompilationUnitTreeImpl) tree).javacSema = null)
       .verifyNoIssues();
   }
 
@@ -57,17 +54,6 @@ class DeadStoreCheckTest {
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/UnusedVariablesFPCheck.java"))
       .withCheck(new DeadStoreCheck())
       .verifyNoIssues();
-  }
-
-  private static class EraseSymbols extends BaseTreeVisitor {
-
-    @Override
-    public void visitVariable(VariableTree tree) {
-      if (tree instanceof VariableTreeImpl varImpl) {
-        varImpl.variableBinding = null;
-      }
-      super.visitVariable(tree);
-    }
   }
 
   @Test

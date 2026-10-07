@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -35,10 +36,10 @@ class JVariableSymbolTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl method = (MethodTreeImpl) c.members().get(0);
     VariableTreeImpl localVariable = (VariableTreeImpl) method.block().body().get(0);
-    JVariableSymbol variableSymbol = cu.sema.variableSymbol(localVariable.variableBinding);
+    Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) localVariable.symbol();
     assertThat(variableSymbol.isLocalVariable()).isTrue();
     VariableTreeImpl classVariable = (VariableTreeImpl) c.members().get(1);
-    variableSymbol = cu.sema.variableSymbol(classVariable.variableBinding);
+    variableSymbol = (Symbol.VariableSymbol) classVariable.symbol();
     assertThat(variableSymbol.isLocalVariable()).isFalse();
   }
 
@@ -61,11 +62,11 @@ class JVariableSymbolTest {
     MethodTreeImpl method = (MethodTreeImpl) c.members().get(0);
     VariableTreeImpl localVariable = (VariableTreeImpl) method.block().body().get(0);
 
-    JVariableSymbol variableSymbol = cu.sema.variableSymbol(localVariable.variableBinding);
+    Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) localVariable.symbol();
     assertThat(variableSymbol.isParameter()).isFalse();
 
     VariableTreeImpl parameter = (VariableTreeImpl) method.parameters().get(0);
-    variableSymbol = cu.sema.variableSymbol(parameter.variableBinding);
+    variableSymbol = (Symbol.VariableSymbol) parameter.symbol();
     assertThat(variableSymbol.isParameter()).isTrue();
   }
 

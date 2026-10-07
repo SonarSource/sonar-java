@@ -16,19 +16,12 @@
  */
 package org.sonar.java.model;
 
-import java.util.Collections;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.slf4j.event.Level;
-import org.sonar.java.testing.ThreadLocalLogTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.model.JParserConfig.shouldEnablePreviewFlag;
 
 class JParserConfigTest {
-  @RegisterExtension
-  public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.INFO);
-
   @Test
   void should_enable_preview() {
     assertThat(shouldEnablePreviewFlag(new JavaVersionImpl())).isFalse();
@@ -46,13 +39,4 @@ class JParserConfigTest {
     assertThat(shouldEnablePreviewFlag(JavaVersionImpl.fromString("1.8", "True"))).isTrue();
   }
 
-  @Test
-  void a_debug_message_is_logged_when_shouldIgnoreUnnamedModuleForSplitPackage_is_set() {
-    JParserConfig.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList());
-    assertThat(logTester.logs()).isEmpty();
-    JParserConfig.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), false);
-    assertThat(logTester.logs()).isEmpty();
-    JParserConfig.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), true);
-    assertThat(logTester.logs()).containsExactly("The Java analyzer will ignore the unnamed module for split packages.");
-  }
 }

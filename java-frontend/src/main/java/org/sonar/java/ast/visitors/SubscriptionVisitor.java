@@ -24,7 +24,10 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.EnumSet;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 
 public abstract class SubscriptionVisitor implements JavaFileScanner {
 
@@ -33,6 +36,7 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
   private EnumSet<Tree.Kind> nodesToVisit;
   private boolean visitToken;
   private boolean visitTrivia;
+  private Set<SyntaxToken> visitedTokens;
 
   public abstract List<Tree.Kind> nodesToVisit();
 
@@ -77,6 +81,7 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
     }
     visitToken = isVisitingTokens();
     visitTrivia = isVisitingTrivia();
+    visitedTokens = Collections.newSetFromMap(new IdentityHashMap<>());
     visit(tree);
   }
 
@@ -85,6 +90,9 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
     boolean shouldVisitSyntaxToken = (visitToken || visitTrivia) && tree.is(Tree.Kind.TOKEN);
     if (shouldVisitSyntaxToken) {
       SyntaxToken syntaxToken = (SyntaxToken) tree;
+      if (!visitedTokens.add(syntaxToken)) {
+        return;
+      }
       if (visitToken) {
         visitToken(syntaxToken);
       }

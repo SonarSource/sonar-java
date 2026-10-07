@@ -81,7 +81,7 @@ public class JParserTestUtils {
   }
 
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath, JavaVersion version) {
-    return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version.toString(), unitName, source);
+    return JParser.parse(version, unitName, source, classpath);
   }
 
   public static List<File> checksTestClassPath() throws IOException {

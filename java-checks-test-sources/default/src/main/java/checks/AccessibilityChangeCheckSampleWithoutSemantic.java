@@ -21,23 +21,23 @@ class AccessibilityChangeCheckSampleWithoutSemantic {
     Person person = new Person("A", 26);
 
     Field field = Person.class.getDeclaredField("name");
-    field.setAccessible(true); // Noncompliant
-    field.set(person, "B"); // Noncompliant
+    field.setAccessible(true);
+    field.set(person, "B");
 
-    Person.class.getField("name").setAccessible(true); // Noncompliant
-    Person.class.getField("name").set(person, "B"); // Noncompliant
+    Person.class.getField("name").setAccessible(true);
+    Person.class.getField("name").set(person, "B");
 
 
     Field[] fields = Person.class.getDeclaredFields();
-    fields[0].setAccessible(true); // Noncompliant
-    fields[0].set(person, "B"); // Noncompliant
-    fields[0].setAccessible(true); // Noncompliant
-    fields[0].set(person, "B"); // Noncompliant
+    fields[0].setAccessible(true);
+    fields[0].set(person, "B");
+    fields[0].setAccessible(true);
+    fields[0].set(person, "B");
 
-    Person.class.getFields()[0].setAccessible(true); // Noncompliant
-    Person.class.getFields()[0].set(person, "B"); // Noncompliant
-    Person.class.getDeclaredFields()[0].setAccessible(true); // Noncompliant
-    Person.class.getDeclaredFields()[0].set(person, "B"); // Noncompliant
+    Person.class.getFields()[0].setAccessible(true);
+    Person.class.getFields()[0].set(person, "B");
+    Person.class.getDeclaredFields()[0].setAccessible(true);
+    Person.class.getDeclaredFields()[0].set(person, "B");
 
     Field someMagicField = getAField();
     someMagicField.setAccessible(true); // Noncompliant

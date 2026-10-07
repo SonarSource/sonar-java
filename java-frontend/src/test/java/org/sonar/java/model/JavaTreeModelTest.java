@@ -247,7 +247,6 @@ class JavaTreeModelTest {
    * (Second Preview in Java 14) https://openjdk.java.net/jeps/368
    * https://openjdk.java.net/jeps/378
    *
-   * @see org.eclipse.jdt.core.dom.TextBlock
    */
   @Test
   void expression_text_block() {
@@ -263,8 +262,6 @@ class JavaTreeModelTest {
   /**
    * Switch Expressions http://openjdk.java.net/jeps/361
    *
-   * @see org.eclipse.jdt.core.dom.SwitchExpression
-   * @see org.eclipse.jdt.core.dom.YieldStatement
    */
   @Test
   void expression_switch() {
@@ -292,7 +289,7 @@ class JavaTreeModelTest {
 
   @Test
   void compilation_unit_in_default_package() {
-    CompilationUnitTree tree = compilationUnit("import foo; import bar; class Foo {} class Bar {}");
+    CompilationUnitTree tree = compilationUnit("import foo.Foo; import bar.Bar; class Foo {} class Bar {}");
     assertThat(tree)
       .is(Tree.Kind.COMPILATION_UNIT)
       .hasChildrenSize(5);
@@ -303,7 +300,7 @@ class JavaTreeModelTest {
 
   @Test
   void compilation_unit_in_named_package() {
-    CompilationUnitTree tree = compilationUnit("package pkg; import foo; import bar; class Foo {} class Bar {}");
+    CompilationUnitTree tree = compilationUnit("package pkg; import foo.Foo; import bar.Bar; class Foo {} class Bar {}");
     assertThat(tree)
       .is(Tree.Kind.COMPILATION_UNIT)
       .hasChildrenSize(6);
@@ -314,7 +311,7 @@ class JavaTreeModelTest {
 
   @Test
   void empty_statement_after_imports() {
-    CompilationUnitTree tree = compilationUnit("import foo; import bar; ; class Foo {} class Bar {}");
+    CompilationUnitTree tree = compilationUnit("import foo.Foo; import bar.Bar; ; class Foo {} class Bar {}");
     assertThat(tree)
       .is(Tree.Kind.COMPILATION_UNIT)
       .hasChildrenSize(6);
@@ -1642,7 +1639,7 @@ class JavaTreeModelTest {
       SwitchExpressionTree switchExpression = (SwitchExpressionTree) rst.expression();
       assertThat(switchExpression.cases()).hasSize(3);
       CaseGroupTree c = switchExpression.cases().get(1);
-      assertThat(c.labels()).hasSize(1); // "case 2, 3" should have labels size == 2, ECJ does not count number of labels correctly
+      assertThat(c.labels()).hasSize(1);
       CaseLabelTree caseLabelTree = c.labels().get(0);
       assertThat(caseLabelTree.isFallThrough()).isFalse();
       assertThat(caseLabelTree.caseOrDefaultKeyword()).is("case");
@@ -2104,7 +2101,7 @@ class JavaTreeModelTest {
   class ClassLiterals {
     @Test
     void void_class() {
-      MemberSelectExpressionTree tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { m() { return void.class; } }");
+      MemberSelectExpressionTree tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { Class<?> m() { return void.class; } }");
       assertThat(tree)
         .is(Tree.Kind.MEMBER_SELECT)
         .hasChildrenSize(3);
@@ -2115,7 +2112,7 @@ class JavaTreeModelTest {
 
     @Test
     void int_class() {
-      MemberSelectExpressionTree tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { m() { return int.class; } }");
+      MemberSelectExpressionTree tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { Class<?> m() { return int.class; } }");
       assertThat(tree)
         .is(Tree.Kind.MEMBER_SELECT)
         .hasChildrenSize(3);
@@ -2126,7 +2123,7 @@ class JavaTreeModelTest {
 
     @Test
     void array_class() {
-      MemberSelectExpressionTree tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { m() { return int[].class; } }");
+      MemberSelectExpressionTree tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { Class<?> m() { return int[].class; } }");
       assertThat(tree)
         .is(Tree.Kind.MEMBER_SELECT)
         .hasChildrenSize(3);
@@ -2138,7 +2135,7 @@ class JavaTreeModelTest {
 
     @Test
     void type_class() {
-      MemberSelectExpressionTree tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { m() { return T.class; } }");
+      MemberSelectExpressionTree tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { Class<?> m() { return T.class; } }");
       assertThat(tree)
         .is(Tree.Kind.MEMBER_SELECT)
         .hasChildrenSize(3);
@@ -2149,7 +2146,7 @@ class JavaTreeModelTest {
 
     @Test
     void type_array_class() {
-      MemberSelectExpressionTree tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { m() { return T[].class; } }");
+      MemberSelectExpressionTree tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { Class<?> m() { return T[].class; } }");
       assertThat(tree)
         .is(Tree.Kind.MEMBER_SELECT)
         .hasChildrenSize(3);

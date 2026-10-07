@@ -195,7 +195,7 @@ Note that if the overrides were used as an attempt to clean rule state, it was n
 
 #### **7.29**
 
-All the API changes are related to ECJ utility methods that were commonly used in the analyzer and could benefit the implementation of 
+All the API changes are related to compiler utility methods that were commonly used in the analyzer and could benefit the implementation of
 custom rules.
 
 * New method: `Symbol.TypeSymbol.superTypes()`. Returns the list of super types of this type.
@@ -461,14 +461,14 @@ class A {
         ```
     * According to Java Language Specification every array type implements the interface `java.io.Serializable`, calling `isSubtypeOf("java.io.Serializable")` on an array type now consistently returns `true`.
     * Symbol corresponding to generic method invocations are now correctly parameterized.
-    * In some special cases (mostly missing bytecode dependencies, misconfigured projects), and due to ECJ recovery system, unknown/recovered types can now lead to unknown symbols, even on `ClassTree`/`MethodTree`/`VariableTree`. To illustrate this, the following example now associate the method to an unknown symbol, while previous semantic engine from version 5.X series was creating a `Symbol.MethodSymbol` with an unknown return type.
+    * In some special cases (mostly missing bytecode dependencies, misconfigured projects), compiler recovery can lead unknown/recovered types to unknown symbols, even on `ClassTree`/`MethodTree`/`VariableTree`. To illustrate this, the following example now associates the method to an unknown symbol, while the previous semantic engine from version 5.X series was creating a `Symbol.MethodSymbol` with an unknown return type.
         ```
         Class A {
           UnknownType<String> myMethod() { /* ... */ }
                           //  ^^^^^^^^  symbol corresponding to the MethodTree will be unknown,
         }
         ```
-    * Thanks to improved semantic provided by ECJ engine, new semantic is now able to say that an *unknown* symbol is supposed to be type/variable/method (`isTypeSymbol()`, `isVariableSymbol()`, ...). Old semantic was answering `false` for all of them. Consequently, be sure to always use `isUnknown()` to validate symbol resolution. Other `is...Symbol()` methods are only designed to know how to cast the symbols (e.g from `Symbol` to `Symbol.MethodSymbol`).
+    * With the improved semantic engine, an *unknown* symbol can still be identified as a type, variable, or method (`isTypeSymbol()`, `isVariableSymbol()`, ...). The old semantic engine returned `false` for all of them. Consequently, use `isUnknown()` to validate symbol resolution. Other `is...Symbol()` methods only determine how to cast symbols (for example, from `Symbol` to `Symbol.MethodSymbol`).
 
 #### **5.12**
 * **Dropped**

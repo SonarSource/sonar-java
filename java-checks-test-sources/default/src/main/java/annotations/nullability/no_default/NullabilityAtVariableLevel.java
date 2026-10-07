@@ -8,7 +8,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.meta.When;
-import org.eclipse.jdt.annotation.DefaultLocation;
 
 /**
  * Test Nullability annotation when the element is directly annotated
@@ -46,7 +45,7 @@ public class NullabilityAtVariableLevel {
   Object id1003_type_STRONG_NULLABLE_level_VARIABLE;
   @reactor.util.annotation.Nullable
   Object id1005_type_STRONG_NULLABLE_level_VARIABLE;
-  @org.eclipse.jdt.annotation.Nullable
+  @org.springframework.lang.Nullable
   Object id1006_type_STRONG_NULLABLE_level_VARIABLE;
   @org.eclipse.jgit.annotations.Nullable
   Object id1007_type_STRONG_NULLABLE_level_VARIABLE;
@@ -112,7 +111,7 @@ public class NullabilityAtVariableLevel {
   Object id1036_type_NON_NULL_level_VARIABLE;
   @org.checkerframework.checker.nullness.qual.NonNull
   Object id1037_type_NON_NULL_level_VARIABLE;
-  @org.eclipse.jdt.annotation.NonNull
+  @javax.annotation.Nonnull
   Object id1038_type_NON_NULL_level_VARIABLE;
   @org.eclipse.jgit.annotations.NonNull
   Object id1039_type_NON_NULL_level_VARIABLE;
@@ -180,12 +179,10 @@ public class NullabilityAtVariableLevel {
   @javax.annotation.Nonnull
   Object id1058_type_WEAK_NULLABLE_level_VARIABLE;
 
-  // ============== "NonNullByDefault" by eclipse can also apply to fields ==============
-  @org.eclipse.jdt.annotation.NonNullByDefault
+  @javax.annotation.Nonnull
   Object id1059_type_NON_NULL_level_VARIABLE;
-  @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.FIELD)
+  @javax.annotation.Nonnull
   Object id1060_type_NON_NULL_level_VARIABLE;
-  @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.RETURN_TYPE)
   Object id1061_type_NO_ANNOTATION_level_PACKAGE;
 
   // ============== Should work without fully qualified name ==============
@@ -224,19 +221,18 @@ public class NullabilityAtVariableLevel {
     return new Object();
   }
 
-  // ============== "NonNullByDefault" by eclipse can also apply to methods or arguments ==============
-  @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.RETURN_TYPE)
+  @javax.annotation.Nonnull
   public Object id1074_type_NON_NULL_level_METHOD(
     // Annotations on method does not impact arguments
     Object id1075_type_NO_ANNOTATION_level_PACKAGE,
-    @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.PARAMETER) Object id1076_type_NON_NULL_level_VARIABLE
+    @javax.annotation.Nonnull Object id1076_type_NON_NULL_level_VARIABLE
   ) {
     return new Object();
   }
 
   public Object id1077_type_NO_ANNOTATION_level_PACKAGE(
     Object id1078_type_NO_ANNOTATION_level_PACKAGE,
-    @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.PARAMETER) Object id1079_type_NON_NULL_level_VARIABLE
+    @javax.annotation.Nonnull Object id1079_type_NON_NULL_level_VARIABLE
   ) {
     return new Object();
   }

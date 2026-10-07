@@ -208,8 +208,6 @@ class AbstractPatternTreeTest {
 
   static Stream<Arguments> parsing_when_token_as_identifier_or_guarded_pattern_arguments() {
     return Stream.of(
-      // JDT core 3.33.0 raises RecognitionException:
-      // Parse error at line 3 column 4: Syntax error on token "RestrictedIdentifierWhen", while expected
       Arguments.of("""
         public class X {
           public static void main(String argv[]) {
@@ -221,8 +219,6 @@ class AbstractPatternTreeTest {
         }
         """,
         "IDENTIFIER,IDENTIFIER"),
-      // JDT core 3.33.0 raises RecognitionException:
-      // Parse error at line 3 column 4: Syntax error on token "RestrictedIdentifierWhen", delete this token
       Arguments.of("""
         public class when {
           public static void main(String argv[]) {
@@ -235,8 +231,6 @@ class AbstractPatternTreeTest {
         }
         """,
         "IDENTIFIER,IDENTIFIER,IDENTIFIER"),
-      // JDT core 3.33.0 raises RecognitionException:
-      // Parse error at line 4 column 16: Syntax error on token "x", delete this token
       Arguments.of("""
         public class when {
           public String toString() {
@@ -251,8 +245,6 @@ class AbstractPatternTreeTest {
         }
         """,
         "IDENTIFIER,IDENTIFIER,IDENTIFIER"),
-      // JDT core 3.33.0 raises RecognitionException:
-      // Parse error at line 3 column 34: Syntax error on token "RestrictedIdentifierWhen", delete this token
       Arguments.of("""
         public class X {
           public static void main(String argv[]) {
@@ -264,8 +256,6 @@ class AbstractPatternTreeTest {
         }
         """,
         "IDENTIFIER,IDENTIFIER"),
-      // JDT core 3.33.0 raises RecognitionException:
-      // Parse error at line 5 column 6: Syntax error on token "case", BeginCaseElement expected after this token
       Arguments.of("""
         class when {
           boolean when = true;
@@ -288,9 +278,6 @@ class AbstractPatternTreeTest {
   @ParameterizedTest
   @MethodSource("parsing_when_token_as_identifier_or_guarded_pattern_arguments")
   void parsing_when_token_as_identifier_or_guarded_pattern(String code, String expectedWhenTokenParentKinds) {
-    // JDT core 3.33.0 had a bug that prevented to parse java code when the "when" token was used as an identifier
-    // starting a method body. See: https://github.com/eclipse-jdt/eclipse.jdt.core/issues/456#issuecomment-1520710765
-    // this test ensure this bug has been fixed by JDT core 3.36.0 and does not reappear later.
     Tree tree = JParserTestUtils.parse(code);
     String actual = recursivelyExtractWhenTokenParentKinds(tree).stream()
         .map(Enum::name)
@@ -329,7 +316,6 @@ class AbstractPatternTreeTest {
     assertThat(expression).is(Tree.Kind.GUARDED_PATTERN);
     GuardedPatternTree guardedPattern = (GuardedPatternTree) expression;
     assertThat(guardedPattern.pattern()).is(Tree.Kind.TYPE_PATTERN);
-    // ECJ transform the guarded pattern in and drop the parenthesis
     assertThat(guardedPattern.expression()).is(Tree.Kind.CONDITIONAL_AND);
     BinaryExpressionTree and = (BinaryExpressionTree) guardedPattern.expression();
     assertThat(and.leftOperand()).is(Tree.Kind.GREATER_THAN);

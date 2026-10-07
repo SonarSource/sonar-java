@@ -17,12 +17,8 @@
 package org.sonar.java.model;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Stream;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.compiler.IProblem;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 
@@ -33,7 +29,7 @@ public class JProblem {
   private final String message;
   private final Type type;
 
-  JProblem(String message, Type type) {
+  public JProblem(String message, Type type) {
     this.message = message;
     this.type = type;
   }
@@ -80,42 +76,21 @@ public class JProblem {
   }
 
   public enum Type {
-    UNDEFINED_TYPE(IProblem.UndefinedType),
-    PREVIEW_FEATURE_USED(IProblem.PreviewFeatureUsed),
-    UNUSED_IMPORT(IProblem.UnusedImport, JavaCore.COMPILER_PB_UNUSED_IMPORT, Tree.Kind.IMPORT),
-    REDUNDANT_CAST(IProblem.UnnecessaryCast, JavaCore.COMPILER_PB_UNNECESSARY_TYPE_CHECK, Tree.Kind.TYPE_CAST, Tree.Kind.PARENTHESIZED_EXPRESSION),
-    ASSIGNMENT_HAS_NO_EFFECT(IProblem.AssignmentHasNoEffect, JavaCore.COMPILER_PB_NO_EFFECT_ASSIGNMENT, Tree.Kind.ASSIGNMENT),
-    MASKED_CATCH(IProblem.MaskedCatch, JavaCore.COMPILER_PB_HIDDEN_CATCH_BLOCK, Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT);
+    UNDEFINED_TYPE,
+    PREVIEW_FEATURE_USED,
+    UNUSED_IMPORT(Tree.Kind.IMPORT),
+    REDUNDANT_CAST(Tree.Kind.TYPE_CAST, Tree.Kind.PARENTHESIZED_EXPRESSION),
+    ASSIGNMENT_HAS_NO_EFFECT(Tree.Kind.ASSIGNMENT),
+    MASKED_CATCH(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT);
 
-    private final int warningID;
-    private final String compilerOptionKey;
     private final Set<Tree.Kind> kinds;
 
-    private static final Set<String> COMPILER_OPTIONS = new HashSet<>();
-
-    Type(int warningID) {
-      this.warningID = warningID;
-      this.compilerOptionKey = null;
+    Type() {
       this.kinds = Collections.emptySet();
     }
 
-    Type(int warningID, String compilerOptionKey, Tree.Kind... kinds) {
-      this.warningID = warningID;
-      this.compilerOptionKey = compilerOptionKey;
+    Type(Tree.Kind... kinds) {
       this.kinds = SetUtils.immutableSetOf(kinds);
-    }
-
-    boolean matches(IProblem warning) {
-      return warning.getID() == warningID;
-    }
-
-    public static Set<String> compilerOptions() {
-      if (COMPILER_OPTIONS.isEmpty()) {
-        Stream.of(Type.values())
-          .map(t -> t.compilerOptionKey)
-          .forEach(COMPILER_OPTIONS::add);
-      }
-      return Collections.unmodifiableSet(COMPILER_OPTIONS);
     }
 
     public Set<Tree.Kind> getKinds() {

@@ -45,7 +45,6 @@ class RequiresDirectiveTreeImplTest {
 
     assertThat(requires.kind()).isEqualTo(Tree.Kind.REQUIRES_DIRECTIVE);
     assertThat(requires.directiveKeyword().text()).isEqualTo("requires");
-    // FIXME ECJ bug - transitive also counted as modifier
     assertThat(requires.modifiers()).hasSize(1);
     assertThat(ModifiersUtils.hasModifier(requires.modifiers(), Modifier.TRANSITIVE)).isTrue();
     assertThat(requires.moduleName().stream().map(IdentifierTree::name)).containsExactly("transitive");
@@ -58,7 +57,6 @@ class RequiresDirectiveTreeImplTest {
 
     assertThat(requires.kind()).isEqualTo(Tree.Kind.REQUIRES_DIRECTIVE);
     assertThat(requires.directiveKeyword().text()).isEqualTo("requires");
-    // FIXME ECJ bug
     assertThat(requires.modifiers()).hasSize(2);
     assertThat(ModifiersUtils.hasModifier(requires.modifiers(), Modifier.STATIC)).isTrue();
     assertThat(ModifiersUtils.hasModifier(requires.modifiers(), Modifier.TRANSITIVE)).isTrue();

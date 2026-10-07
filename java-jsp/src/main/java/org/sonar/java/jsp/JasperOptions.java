@@ -18,10 +18,14 @@ package org.sonar.java.jsp;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
+import java.util.StringJoiner;
 import javax.servlet.jsp.tagext.TagLibraryInfo;
 import org.apache.jasper.Options;
 import org.apache.jasper.TrimSpacesOption;
@@ -135,7 +139,22 @@ class JasperOptions implements Options {
 
   @Override
   public String getClassPath() {
-    return null;
+    StringJoiner classPath = new StringJoiner(File.pathSeparator);
+    classPath.add(System.getProperty("java.class.path", ""));
+    for (ClassLoader loader = Thread.currentThread().getContextClassLoader(); loader != null; loader = loader.getParent()) {
+      if (loader instanceof URLClassLoader urlLoader) {
+        for (URL url : urlLoader.getURLs()) {
+          if ("file".equals(url.getProtocol())) {
+            try {
+              classPath.add(Path.of(url.toURI()).toString());
+            } catch (URISyntaxException e) {
+              throw new IllegalArgumentException("Invalid classpath URL: " + url, e);
+            }
+          }
+        }
+      }
+    }
+    return classPath.toString();
   }
 
   @Override
@@ -145,17 +164,17 @@ class JasperOptions implements Options {
 
   @Override
   public String getCompilerTargetVM() {
-    return null;
+    return Integer.toString(Runtime.version().feature());
   }
 
   @Override
   public String getCompilerSourceVM() {
-    return null;
+    return Integer.toString(Runtime.version().feature());
   }
 
   @Override
   public String getCompilerClassName() {
-    return null;
+    return "org.apache.jasper.compiler.JavaCompiler";
   }
 
   @Override

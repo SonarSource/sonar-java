@@ -27,16 +27,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.IBinding;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.Beta;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.expression.AssessableExpressionTree;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
+import org.sonar.java.model.javac.JavacSema;
+import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -164,7 +162,12 @@ public abstract class JavaTree implements Tree {
     @Nullable
     private final ModuleDeclarationTree moduleDeclaration;
     private final SyntaxToken eofToken;
-    public JSema sema;
+    @Nullable
+    public JavacSema javacSema;
+
+    public Sema semanticModel() {
+      return javacSema;
+    }
 
     private final Map<JProblem.Type, Set<JWarning>> warnings = new EnumMap<>(JProblem.Type.class);
 
@@ -326,7 +329,6 @@ public abstract class JavaTree implements Tree {
     @Nullable
     private final SyntaxToken moduleToken;
 
-    public IBinding binding;
 
     public ImportTreeImpl(InternalSyntaxToken importToken, @Nullable InternalSyntaxToken staticToken,
                           @Nullable InternalSyntaxToken moduleToken,
@@ -342,17 +344,7 @@ public abstract class JavaTree implements Tree {
 
     @Nullable
     public Symbol symbol() {
-      if (binding != null) {
-        switch (binding.getKind()) {
-          case IBinding.TYPE:
-            return root.sema.typeSymbol((ITypeBinding) binding);
-          case IBinding.METHOD:
-            return root.sema.methodSymbol((IMethodBinding) binding);
-          case IBinding.VARIABLE:
-            return root.sema.variableSymbol((IVariableBinding) binding);
-        }
-      }
-      return null;
+      return root.javacSema != null ? root.javacSema.symbolFor(this) : null;
     }
 
     @Override

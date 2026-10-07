@@ -102,21 +102,28 @@ public class JavaAstScanner {
     scan(inputFiles, modifyCompilationUnit);
   }
 
+  @VisibleForTesting
+  public void scanForTesting(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit, JavaVersion parserVersion) {
+    scan(inputFiles, modifyCompilationUnit, parserVersion);
+  }
 
   private void scan(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit) {
+    scan(inputFiles, modifyCompilationUnit, visitor.getJavaVersion());
+  }
+
+  private void scan(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit, JavaVersion parserVersion) {
     List<? extends InputFile> filesNames = filterModuleInfo(inputFiles).toList();
     AnalysisProgress analysisProgress = new AnalysisProgress(filesNames.size());
     try {
       boolean shouldIgnoreUnnamedModuleForSplitPacakge = sonarComponents != null &&
         sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage();
       JParserConfig.Mode.FILE_BY_FILE
-        .create(visitor.getJavaVersion(), visitor.getClasspath(), shouldIgnoreUnnamedModuleForSplitPacakge)
+        .create(parserVersion, visitor.getClasspath(), shouldIgnoreUnnamedModuleForSplitPacakge)
         .parse(filesNames,
           this::analysisCancelled,
           analysisProgress,
           (i, r) -> simpleScan(i, r,
-            // Due to a bug in ECJ, JAR files remain locked after the analysis on Windows, we unlock them manually. See SONARJAVA-3609.
-            JavaAstScanner::cleanUpAst,
+            ignored -> {},
             modifyCompilationUnit));
     } finally {
       endOfAnalysis();
@@ -166,7 +173,7 @@ public class JavaAstScanner {
       modifyCompilationUnit.accept(ast);
       visitor.visitFile(ast, sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile));
       String path = inputFile.toString();
-      Set<JProblem> undefinedTypes = ast.sema.undefinedTypes();
+      Set<JProblem> undefinedTypes = ast.javacSema == null ? Set.of() : ast.javacSema.undefinedTypes();
       collectUndefinedTypes(path, undefinedTypes);
       cleanUp.accept(ast);
       telemetryAnalysisKeys = javaAnalysisKeys.success();
@@ -192,11 +199,6 @@ public class JavaAstScanner {
       telemetry.aggregateAsCounter(telemetryAnalysisKeys.sizeCharsKey(), InputFileUtils.charCount(inputFile, 0));
       telemetry.aggregateAsCounter(telemetryAnalysisKeys.timeMsKey(), currentTimeMillis() - startTime);
     }
-  }
-
-  private static void cleanUpAst(JavaTree.CompilationUnitTreeImpl ast) {
-    // release environment used for semantic resolution
-    ast.sema.getEnvironmentCleaner().run();
   }
 
   private void collectUndefinedTypes(String path, Set<JProblem> undefinedTypes) {

@@ -89,7 +89,9 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   @Override
   public void leaveNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      handleWarnings(((CompilationUnitTreeImpl) tree).warnings(JProblem.Type.UNUSED_IMPORT));
+      if (context.getSemanticModel() != null) {
+        handleWarnings(((CompilationUnitTreeImpl) tree).warnings(JProblem.Type.UNUSED_IMPORT));
+      }
       imports.clear();
     }
   }
@@ -121,7 +123,6 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean isImportFromSamePackage(String importName, Tree tree) {
-    // ECJ warning message does not contain the ".*" in case of star import, we have to find out if we are in this case.
     // Defensive programming, the syntax tree of the warning should always be an ImportTree.
     if (tree.is(Tree.Kind.IMPORT)) {
       Tree qualifiedIdentifier = ((ImportTree) tree).qualifiedIdentifier();

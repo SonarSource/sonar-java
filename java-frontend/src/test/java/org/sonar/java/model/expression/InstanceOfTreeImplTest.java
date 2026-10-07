@@ -88,7 +88,6 @@ class InstanceOfTreeImplTest {
   @Test
   void test_GuardedPatternInstanceOfTree() {
     ExpressionTree condition = ifCondition("o instanceof String s && s.length() > 10", "s");
-    // ECJ drop the parenthesis and consider it as the two operands of a &&, while this compiles
     assertThat(condition).is(Tree.Kind.CONDITIONAL_AND);
     BinaryExpressionTree binaryExpression = (BinaryExpressionTree) condition;
     assertThat(binaryExpression.rightOperand()).is(Tree.Kind.GREATER_THAN);

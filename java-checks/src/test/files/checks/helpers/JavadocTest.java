@@ -112,9 +112,6 @@ class A<B, C, E> {
     return 0;
   }
 
-  private int invalidThrownExceptionUndocumented() throws Exception<String> {
-    return 0;
-  }
 }
 
 /**

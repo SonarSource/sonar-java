@@ -215,7 +215,6 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
     }
 
     private void addIfUnknownOrAmbiguous(Symbol symbol, String name) {
-      // In case of broken semantic (overload with unknown args), ECJ wrongly link the symbol to the good overload.
       if (symbol.isUnknown() || (symbol.isMethodSymbol() && ((Symbol.MethodSymbol) symbol).parameterTypes().stream().anyMatch(Type::isUnknown))) {
         allUnresolvedMethodNames.add(name);
       }

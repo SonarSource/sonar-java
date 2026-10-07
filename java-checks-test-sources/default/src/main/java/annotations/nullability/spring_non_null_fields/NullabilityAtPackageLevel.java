@@ -2,7 +2,6 @@ package annotations.nullability.spring_non_null_fields;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.annotation.DefaultLocation;
 
 /**
  * Package is annotated with "org.springframework.lang.NonNullFields" targeting fields only
@@ -17,9 +16,4 @@ public class NullabilityAtPackageLevel {
     Object id4005_type_NO_ANNOTATION_level_PACKAGE) {
     return new Object();
   }
-}
-
-@org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.FIELD)
-class NullabilityAtPackageLevel2 {
-  Object id4006_type_NON_NULL_level_CLASS;
 }

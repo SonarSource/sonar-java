@@ -41,7 +41,7 @@ public class EqualsParametersMarkedNonNullCheckSample {
     }
   }
 
-  @org.eclipse.jdt.annotation.NonNullByDefault
+  @javax.annotation.ParametersAreNonnullByDefault
   static class G {
     public boolean equals(Object object) { // Compliant
       return false;

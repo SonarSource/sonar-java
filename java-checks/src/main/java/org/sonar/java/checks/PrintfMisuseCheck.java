@@ -288,14 +288,6 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     return hasUnknownExceptionInUnionType(ExpressionUtils.skipParentheses(lastArgument));
   }
 
-  /**
-   * Limitation of ECJ, which will approximate type of a variable to 'Object' if some types
-   * are unknown in its defining union type, for instance: in the following catch tree:
-   *
-   * catch (UnknownException | IllegalArgumentException e) { ... }
-   *
-   * leads to have 'e' being of type 'Object'
-   */
   private static boolean hasUnknownExceptionInUnionType(ExpressionTree lastArgument) {
     if (!lastArgument.is(Tree.Kind.IDENTIFIER)) {
       return false;

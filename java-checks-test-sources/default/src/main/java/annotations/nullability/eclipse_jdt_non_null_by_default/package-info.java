@@ -1,2 +1,0 @@
-@org.eclipse.jdt.annotation.NonNullByDefault
-package annotations.nullability.eclipse_jdt_non_null_by_default;

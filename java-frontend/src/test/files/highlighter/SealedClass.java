@@ -3,7 +3,7 @@ package org.foo;
 public class A {
   public sealed interface Shape permits Circle, Rectangle, Square, Diamond {
     default void foo(int non, int sealed) {
-      // bugs in ECJ - should compile without spaces
+
       int permits = non - sealed;
     }
 

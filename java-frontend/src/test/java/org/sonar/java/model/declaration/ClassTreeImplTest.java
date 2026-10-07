@@ -35,9 +35,10 @@ class ClassTreeImplTest {
 
   @Test
   void get_symbol_return_unknown_when_type_binding_is_null() {
-    var classTree = (ClassTreeImpl) JParserTestUtils.parse("class A {}").types().get(0);
+    var compilationUnit = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("class A {}");
+    var classTree = (ClassTreeImpl) compilationUnit.types().get(0);
     // simulate source code with type binding problems
-    classTree.typeBinding = null;
+    compilationUnit.javacSema = null;
     assertThat(classTree.symbol().isUnknown()).isTrue();
   }
 

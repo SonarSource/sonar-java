@@ -39,6 +39,7 @@ import org.sonar.java.caching.DummyCache;
 import org.sonar.java.caching.JavaReadCacheImpl;
 import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -118,7 +119,7 @@ public class JavaCheckVerifier implements CheckVerifier {
       visitorsBridge.setCacheContext(cacheContext);
       filesToParse = astScanner.scanWithoutParsing(files).get(false);
     }
-    astScanner.scanForTesting(filesToParse, compilationUnitModifier);
+    astScanner.scanForTesting(filesToParse, compilationUnitModifier, JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION);
 
     return visitorsBridge;
   }

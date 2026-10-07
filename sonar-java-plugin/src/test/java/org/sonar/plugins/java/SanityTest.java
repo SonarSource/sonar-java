@@ -135,7 +135,6 @@ class SanityTest {
       .allMatch(SanityTest::isParseError)
       .map(LogAndArguments::getFormattedMsg)
       .allMatch(log ->
-        // ECJ error message
         log.startsWith("Parse error at line ")
           // analyzer error message mentioning the file
           || log.contains("RestrictedIdentifiersUsageCheckSample")

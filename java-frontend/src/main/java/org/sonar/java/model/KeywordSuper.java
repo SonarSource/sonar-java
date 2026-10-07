@@ -16,18 +16,15 @@
  */
 package org.sonar.java.model;
 
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
-import javax.annotation.Nullable;
 
-final class KeywordSuper extends IdentifierTreeImpl {
+public final class KeywordSuper extends IdentifierTreeImpl {
 
-  KeywordSuper(InternalSyntaxToken token, @Nullable ITypeBinding typeBinding) {
+  public KeywordSuper(InternalSyntaxToken token) {
     super(token);
-    this.typeBinding = typeBinding;
   }
 
   @Override
@@ -37,10 +34,7 @@ final class KeywordSuper extends IdentifierTreeImpl {
 
   @Override
   public Symbol symbol() {
-    if (typeBinding == null) {
-      return Symbol.UNKNOWN_SYMBOL;
-    }
-    return root.sema.typeSymbol(typeBinding).superSymbol;
+    return root.javacSema != null ? root.javacSema.keywordSymbolFor(this, "super") : Symbol.UNKNOWN_SYMBOL;
   }
 
 }

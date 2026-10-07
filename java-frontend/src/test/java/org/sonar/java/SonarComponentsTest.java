@@ -33,8 +33,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.LongSupplier;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
@@ -80,8 +82,7 @@ import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.model.GeneratedFile;
-import org.sonar.java.model.JParserTestUtils;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.JProblem;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.CheckRegistrar;
@@ -1180,11 +1181,11 @@ class SonarComponentsTest {
     @Test
     void log_only_50_undefined_types() {
       loggingLogTester.setLevel(Level.DEBUG);
-      String source = generateSource(26);
+
 
       // artificially populated the semantic errors with 26 unknown types and 52 errors
       sonarComponents.collectUndefinedTypes(DEFAULT_PATH,
-        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+        unknownTypes(26));
 
       // triggers log
       sonarComponents.logUndefinedTypes();
@@ -1213,9 +1214,9 @@ class SonarComponentsTest {
     @Test
     void remove_info_and_warning_from_log_related_to_undefined_types() {
       loggingLogTester.setLevel(Level.ERROR);
-      String source = generateSource(26);
+
       sonarComponents.collectUndefinedTypes(DEFAULT_PATH,
-        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+        unknownTypes(26));
       sonarComponents.logUndefinedTypes();
 
       assertThat(loggingLogTester.logs(Level.WARN)).isEmpty();
@@ -1225,11 +1226,11 @@ class SonarComponentsTest {
     @Test
     void log_all_undefined_types_if_less_than_threshold() {
       loggingLogTester.setLevel(Level.DEBUG);
-      String source = generateSource(1);
+
 
       // artificially populated the semantic errors with 1 unknown types and 2 errors
       sonarComponents.collectUndefinedTypes(DEFAULT_PATH,
-        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+        unknownTypes(1));
 
       // triggers log
       sonarComponents.logUndefinedTypes();
@@ -1275,7 +1276,7 @@ class SonarComponentsTest {
     @Test
     void log_problems_with_list_of_paths_of_files_affected() {
       loggingLogTester.setLevel(Level.DEBUG);
-      String source = generateSource(1);
+
 
       // Add one test and one main file
       InputFile mainFile = TestUtils.emptyInputFile("fooMain.java", InputFile.Type.MAIN);
@@ -1285,9 +1286,9 @@ class SonarComponentsTest {
 
       // artificially populated the semantic errors with 1 unknown types and 2 errors
       sonarComponents.collectUndefinedTypes(mainFile.toString(),
-        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+        unknownTypes(1));
       sonarComponents.collectUndefinedTypes(testFile.toString(),
-        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+        unknownTypes(1));
       sonarComponents.logUndefinedTypes();
 
       List<String> debugMessage = loggingLogTester.logs(Level.DEBUG);
@@ -1312,7 +1313,7 @@ class SonarComponentsTest {
     }
 
     private void logUndefinedTypesWithOneMainAndOneTest() {
-      String source = generateSource(1);
+
 
       // Add one test and one main file
       fs.add(TestUtils.emptyInputFile("fooMain.java", InputFile.Type.MAIN));
@@ -1320,7 +1321,7 @@ class SonarComponentsTest {
 
       // artificially populated the semantic errors with 1 unknown types and 2 errors
       sonarComponents.collectUndefinedTypes(DEFAULT_PATH,
-        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+        unknownTypes(1));
 
       // Call these methods to initiate Main and Test ClassPath
       sonarComponents.getJavaClasspath();
@@ -1329,19 +1330,14 @@ class SonarComponentsTest {
       sonarComponents.logUndefinedTypes();
     }
 
-    private String generateSource(int numberUnknownTypes) {
-      StringBuilder sourceBuilder = new StringBuilder("package org.foo;\n");
-      for (int i = 0; i < numberUnknownTypes; i++) {
+    private Set<JProblem> unknownTypes(int count) {
+      Set<JProblem> problems = new HashSet<>();
+      for (int i = 0; i < count; i++) {
         char typeName = (char) ('A' + i);
-        sourceBuilder.append(String.format("import org.package%s.%c;\n", formatter.format(i + 1), typeName));
+        problems.add(new JProblem(typeName + " cannot be resolved to a type", JProblem.Type.UNDEFINED_TYPE));
+        problems.add(new JProblem("The import org.package" + formatter.format(i + 1) + " cannot be resolved", JProblem.Type.UNDEFINED_TYPE));
       }
-      sourceBuilder.append("class Test {\n");
-      for (int i = 0; i < numberUnknownTypes; i++) {
-        char typeName = (char) ('A' + i);
-        sourceBuilder.append(String.format("  %c variable%d;\n", typeName, i + 1));
-      }
-      sourceBuilder.append("}");
-      return sourceBuilder.toString();
+      return problems;
     }
   }
 

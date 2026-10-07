@@ -19,12 +19,3 @@ public class NullabilityAtPackageLevel {
     return new Object();
   }
 }
-
-@org.eclipse.jdt.annotation.NonNullByDefault
-class NullabilityAtPackageLevel2 {
-  public Object id5007_type_NON_NULL_level_CLASS(
-    Object id5008_type_NON_NULL_level_CLASS) {
-    return new Object();
-  }
-
-}

@@ -58,7 +58,6 @@ class AnnotationFieldReferenceFinderTest {
       """;
 
     // The goal here is to confront AnnotationFieldReferencesFinder with two fields on the same class that have the same name.
-    // ECJ will actually not produce such an AST, even if two fields with the same name appear in the code.
     // Still, in case this does happen at some point, we want this test to confirm that we still behave in a safe way.
     //
     // Hence, we will do a hack here by parsing the same source twice, collecting the fields from it, and manually construct a list of

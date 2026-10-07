@@ -47,6 +47,9 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (context.getSemanticModel() == null) {
+      return;
+    }
     MethodTree methodTree = (MethodTree) tree;
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     List<Symbol.MethodSymbol> overriddenSymbols = methodSymbol.overriddenSymbols();

@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.sonar.java.Preconditions;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
@@ -34,6 +33,7 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ListTree;
@@ -73,8 +73,6 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   @Nullable
   private CFG cfg;
 
-  @Nullable
-  public IMethodBinding methodBinding;
 
   /**
    * Cache for {@link #isOverriding()}.
@@ -218,9 +216,10 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   @Override
   public Symbol.MethodSymbol symbol() {
-    return methodBinding != null
-      ? root.sema.methodSymbol(methodBinding)
-      : Symbol.MethodSymbol.UNKNOWN_METHOD;
+    if (root.javacSema != null && root.javacSema.symbolFor(this) instanceof Symbol.MethodSymbol symbol) {
+      return symbol;
+    }
+    return Symbol.MethodSymbol.UNKNOWN_METHOD;
   }
 
   @Override
@@ -292,15 +291,23 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     }
     isOverridingCached = true;
 
-    if (isStatic() || isPrivate()) {
+    if (root.javacSema != null && root.javacSema.hasDuplicateDeclarationError(this)) {
+      isOverriding = null;
+    } else if (isStatic() || isPrivate()) {
       isOverriding = false;
     } else if (isAnnotatedOverride()) {
       isOverriding = true;
+    } else if (root.javacSema == null) {
+      isOverriding = parent() instanceof ClassTree owner && (owner.superClass() != null || !owner.superInterfaces().isEmpty()) ? null : false;
     } else {
       Symbol.MethodSymbol symbol = symbol();
-      List<Symbol.MethodSymbol> overriddenSymbols = symbol.overriddenSymbols();
-      if (overriddenSymbols.isEmpty()) {
-        isOverriding = JUtils.hasUnknownTypePreventingOverrideResolution(symbol) ? null : false;
+      List<Symbol.MethodSymbol> overriddenSymbols = symbol.overriddenSymbols().stream()
+        .filter(overridden -> !overridden.isStatic())
+        .toList();
+      if (JUtils.hasUnknownTypePreventingOverrideResolution(symbol)) {
+        isOverriding = null;
+      } else if (overriddenSymbols.isEmpty()) {
+        isOverriding = false;
       } else {
         isOverriding = overriddenSymbols.stream().allMatch(Symbol::isUnknown) ? null : true;
       }

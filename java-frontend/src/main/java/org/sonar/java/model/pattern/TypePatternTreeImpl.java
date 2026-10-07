@@ -18,8 +18,6 @@ package org.sonar.java.model.pattern;
 
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypePatternTree;
@@ -32,8 +30,8 @@ public class TypePatternTreeImpl extends AbstractPatternTree implements TypePatt
 
   private final VariableTree patternVariable;
 
-  public TypePatternTreeImpl(VariableTree patternVariable, @Nullable ITypeBinding typeBinding) {
-    super(Tree.Kind.TYPE_PATTERN, typeBinding);
+  public TypePatternTreeImpl(VariableTree patternVariable) {
+    super(Tree.Kind.TYPE_PATTERN);
     this.patternVariable = patternVariable;
   }
 

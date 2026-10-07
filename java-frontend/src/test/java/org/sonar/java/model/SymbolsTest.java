@@ -17,7 +17,6 @@
 package org.sonar.java.model;
 
 import java.io.File;
-import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -30,12 +29,9 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.semantic.Type.Primitives;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 class SymbolsTest {
 
@@ -101,10 +97,7 @@ class SymbolsTest {
 
   @Test
   void metadata_with_unknown_symbol_and_unsupported_declaration() {
-    Tree unsupportedDeclaration = mock(Tree.class);
-    Symbol symbol = spy(Symbol.UNKNOWN_SYMBOL);
-    when(symbol.declaration()).thenReturn(unsupportedDeclaration);
-    SymbolMetadata metadata = new JSymbolMetadata(JUtilsTest.SEMA, symbol, new IAnnotationBinding[0]);
+    SymbolMetadata metadata = Symbols.EMPTY_METADATA;
     assertThat(metadata.findAnnotationTree(mock(AnnotationInstance.class))).isNull();
     assertThat(metadata.nullabilityData().type()).isEqualTo(NullabilityType.UNKNOWN);
     assertThat(metadata.nullabilityData(NullabilityTarget.METHOD).type()).isEqualTo(NullabilityType.UNKNOWN);
@@ -203,8 +196,7 @@ class SymbolsTest {
 
   @Test
   void testIsAnnotation() {
-    JSema sema = ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("")).sema;
-    Type objectType = sema.type(sema.resolveType("java.lang.Object"));
+    Type objectType = ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("")).javacSema.getClassType("java.lang.Object");
     JavaTree.CompilationUnitTreeImpl cu = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("@interface Anno { Unknown u; }");
     ClassTreeImpl anno = (ClassTreeImpl) cu.types().get(0);
 

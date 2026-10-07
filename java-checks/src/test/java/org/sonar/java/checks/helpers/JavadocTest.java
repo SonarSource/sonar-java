@@ -24,12 +24,18 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 class JavadocTest {
   private static CompilationUnitTree tree;
@@ -40,7 +46,7 @@ class JavadocTest {
   private static Javadoc fullParamsDescriptionJavadoc;
   private static Javadoc genericExceptionThrownJavadoc;
   private static Javadoc genericExceptionThrownUndocumented;
-  private static Javadoc invalidThrownExceptionUndocumented;
+  private static MethodTree genericExceptionThrownUndocumentedMethod;
 
   @BeforeAll
   static void setup() {
@@ -57,8 +63,8 @@ class JavadocTest {
     emptyDescriptionJavadoc = new Javadoc(methods.get("emptyDescription"));
     fullParamsDescriptionJavadoc = new Javadoc(methods.get("fullParamsDescription"));
     genericExceptionThrownJavadoc = new Javadoc(methods.get("genericExceptionThrown"));
-    genericExceptionThrownUndocumented = new Javadoc(methods.get("genericExceptionThrownUndocumented"));
-    invalidThrownExceptionUndocumented = new Javadoc(methods.get("invalidThrownExceptionUndocumented"));
+    genericExceptionThrownUndocumentedMethod = methods.get("genericExceptionThrownUndocumented");
+    genericExceptionThrownUndocumented = new Javadoc(genericExceptionThrownUndocumentedMethod);
 
     emptyJavadocs = methods.keySet().stream()
       .filter(name -> name.startsWith("emptyJavadoc"))
@@ -108,7 +114,6 @@ class JavadocTest {
     assertThat(fullParamsDescriptionJavadoc.undocumentedThrownExceptions()).isEmpty();
     assertThat(genericExceptionThrownJavadoc.undocumentedThrownExceptions()).containsExactlyInAnyOrder("ObjectStreamException", "InvalidObjectException");
     assertThat(genericExceptionThrownUndocumented.undocumentedThrownExceptions()).containsExactlyInAnyOrder("Exception");
-    assertThat(invalidThrownExceptionUndocumented.undocumentedThrownExceptions()).isEmpty();
     assertThat(emptyJavadocs.stream().map(Javadoc::undocumentedThrownExceptions)).hasSize(6).allMatch(Collection::isEmpty);
   }
 
@@ -119,6 +124,18 @@ class JavadocTest {
     assertThat(invalidJavadoc.undocumentedThrownExceptions()).isEmpty();
     assertThat(invalidJavadoc.getBlockTagDescriptions()).isEmpty();
     assertThat(invalidJavadoc.getMainDescription()).isEmpty();
+  }
+
+  @Test
+  void invalid_thrown_type_is_ignored() {
+    MethodTree method = spy(genericExceptionThrownUndocumentedMethod);
+    TypeTree invalidType = mock(TypeTree.class);
+    when(invalidType.kind()).thenReturn(Tree.Kind.PARAMETERIZED_TYPE);
+    QualifiedIdentifierListTreeImpl thrownTypes = QualifiedIdentifierListTreeImpl.emptyList();
+    thrownTypes.add(invalidType);
+    doReturn(thrownTypes).when(method).throwsClauses();
+
+    assertThat(new Javadoc(method).undocumentedThrownExceptions()).isEmpty();
   }
 
   @Test

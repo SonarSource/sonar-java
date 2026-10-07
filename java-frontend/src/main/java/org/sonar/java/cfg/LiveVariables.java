@@ -198,6 +198,9 @@ public class LiveVariables {
   @CheckForNull
   private static Symbol getField(MemberSelectExpressionTree memberSelect) {
     Symbol symbol = memberSelect.identifier().symbol();
+    if (!symbol.isVariableSymbol()) {
+      return null;
+    }
 
     if (memberSelect.expression().is(Kind.IDENTIFIER)) {
       String objectName = ((IdentifierTree) memberSelect.expression()).name();

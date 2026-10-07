@@ -29,7 +29,7 @@ class AccessibilityChangeCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/AccessibilityChangeCheckSample.java"))
       .withCheck(new AccessibilityChangeCheck())
-      .withJavaVersion(15)
+      .withJavaVersion(16)
       .verifyIssues();
   }
 
@@ -56,7 +56,7 @@ class AccessibilityChangeCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/AccessibilityChangeCheckSampleWithoutSemantic.java"))
       .withCheck(new AccessibilityChangeCheck())
-      .withJavaVersion(15)
+      .withJavaVersion(16)
       .withoutSemantic()
       .verifyIssues();
   }

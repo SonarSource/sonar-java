@@ -164,10 +164,8 @@ public class NewClassTreeImpl extends AssessableExpressionTree implements NewCla
 
   @Override
   public Symbol.MethodSymbol methodSymbol() {
-    Symbol constructorSymbol = this.getConstructorIdentifier().symbol();
-    return constructorSymbol.isUnknown() ?
-      Symbol.MethodSymbol.UNKNOWN_METHOD :
-      (Symbol.MethodSymbol) constructorSymbol;
+    Symbol constructorSymbol = root.javacSema != null ? root.javacSema.symbolFor(this) : Symbol.UNKNOWN_SYMBOL;
+    return constructorSymbol instanceof Symbol.MethodSymbol methodSymbol ? methodSymbol : Symbol.MethodSymbol.UNKNOWN_METHOD;
   }
 
   private static void addIfNotNull(List<Tree> list, Tree... trees) {

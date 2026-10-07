@@ -2,7 +2,6 @@ package annotations.nullability.no_default;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.annotation.DefaultLocation;
 
 /**
  * Test Nullability annotation when the element is indirectly annotated, via method annotation
@@ -23,19 +22,18 @@ public class NullabilityAtMethodLevel {
     return new Object();
   }
 
-  @org.eclipse.jdt.annotation.NonNullByDefault
+  @javax.annotation.Nonnull
   public Object id2005_type_NON_NULL_level_METHOD(
-    Object id2006_type_NON_NULL_level_METHOD) {
+    @javax.annotation.Nonnull Object id2006_type_NON_NULL_level_METHOD) {
     return new Object();
   }
 
-  @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.PARAMETER)
+  @javax.annotation.ParametersAreNonnullByDefault
   public Object id2007_type_NO_ANNOTATION_level_PACKAGE(
     Object id2008_type_NON_NULL_level_METHOD) {
     return new Object();
   }
 
-  @org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.FIELD)
   public Object id2009_type_NO_ANNOTATION_level_PACKAGE(
     Object id2010_type_NO_ANNOTATION_level_PACKAGE) {
     return new Object();

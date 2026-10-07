@@ -2,7 +2,6 @@ package annotations.nullability.javax_nullable_by_default;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.annotation.DefaultLocation;
 
 public class NullabilityAtPackageLevel {
 
@@ -16,13 +15,4 @@ public class NullabilityAtPackageLevel {
     @Nonnull Object id4005_type_NON_NULL_level_VARIABLE) {
     return new Object();
   }
-}
-
-@org.eclipse.jdt.annotation.NonNullByDefault(DefaultLocation.PARAMETER)
-class NullabilityAtPackageLevel2 {
-  public Object id4006_type_NO_ANNOTATION_level_PACKAGE(
-    Object id4007_type_NON_NULL_level_CLASS) {
-    return new Object();
-  }
-
 }

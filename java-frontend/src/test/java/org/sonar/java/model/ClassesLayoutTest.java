@@ -45,52 +45,27 @@ class ClassesLayoutTest {
 
   @Test
   void identifier() {
-    assertThat(countFields(IdentifierTreeImpl.class)).isEqualTo(9);
+    assertThat(countFields(IdentifierTreeImpl.class)).isEqualTo(7);
   }
 
   @Test
   void literal() {
-    assertThat(countFields(LiteralTreeImpl.class)).isEqualTo(6);
+    assertThat(countFields(LiteralTreeImpl.class)).isEqualTo(5);
   }
 
   @Test
   void variable_declaration() {
-    assertThat(countFields(VariableTreeImpl.class)).isEqualTo(10);
+    assertThat(countFields(VariableTreeImpl.class)).isEqualTo(9);
   }
 
   @Test
   void member_select() {
-    assertThat(countFields(MemberSelectExpressionTreeImpl.class)).isEqualTo(8);
+    assertThat(countFields(MemberSelectExpressionTreeImpl.class)).isEqualTo(7);
   }
 
   @Test
   void method_invocation() {
-    assertThat(countFields(MethodInvocationTreeImpl.class)).isEqualTo(8);
-  }
-
-  @Test
-  void type() {
-    assertThat(countFields(JType.class)).isEqualTo(7);
-  }
-
-  @Test
-  void symbol_type() {
-    assertThat(countFields(JTypeSymbol.class)).isEqualTo(11);
-  }
-
-  @Test
-  void symbol_method() {
-    assertThat(countFields(JMethodSymbol.class)).isEqualTo(11);
-  }
-
-  @Test
-  void symbol_variable() {
-    assertThat(countFields(JVariableSymbol.class)).isEqualTo(7);
-  }
-
-  @Test
-  void annotation() {
-    assertThat(countFields(JSymbolMetadata.JAnnotationInstance.class)).isEqualTo(3);
+    assertThat(countFields(MethodInvocationTreeImpl.class)).isEqualTo(6);
   }
 
   /** Count number of fields in instances, including inherited fields. */

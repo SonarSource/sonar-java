@@ -44,6 +44,9 @@ public class EqualsParametersMarkedNonNullCheck extends IssuableSubscriptionVisi
 
   @Override
   public void visitNode(Tree tree) {
+    if (context.getSemanticModel() == null) {
+      return;
+    }
     MethodTree methodTree = (MethodTree) tree;
     if (!MethodTreeUtils.isEqualsMethod(methodTree)) {
       return;

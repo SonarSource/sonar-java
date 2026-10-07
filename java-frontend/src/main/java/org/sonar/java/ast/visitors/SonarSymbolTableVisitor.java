@@ -92,7 +92,7 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitLabeledStatement(LabeledStatementTree tree) {
-    createSymbol(tree.label(), tree.symbol().usages());
+    createSymbol(tree.label(), tree.symbol() == null ? List.of() : tree.symbol().usages());
     super.visitLabeledStatement(tree);
   }
 
@@ -115,12 +115,23 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
   }
 
   private void createSymbol(IdentifierTree declaration, List<IdentifierTree> usages) {
-    Range range = declaration.identifierToken().range();
+    Range declarationRange = declaration.identifierToken().range();
+    Range range = declarationRange;
     NewSymbol newSymbol = newSymbolTable.newSymbol(
       range.start().line(), range.start().columnOffset(),
       range.end().line(), range.end().columnOffset());
     for (IdentifierTree usage : usages) {
+      Tree ancestor = usage;
+      while (ancestor.parent() != null) {
+        ancestor = ancestor.parent();
+      }
+      if (ancestor != outerClass) {
+        continue;
+      }
       range = usage.identifierToken().range();
+      if (range.equals(declarationRange)) {
+        continue;
+      }
       newSymbol.newReference(
         range.start().line(), range.start().columnOffset(),
         range.end().line(), range.end().columnOffset());

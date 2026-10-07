@@ -2,7 +2,7 @@ package checks.naming;
 
 import javax.persistence.Version;
 
-import org.eclipse.jdt.annotation.NonNull;
+import javax.annotation.Nonnull;
 
 class AA {
   int hashcode() { // Noncompliant {{Either override Object.hashCode(), or totally rename the method to prevent any confusion.}}
@@ -70,7 +70,7 @@ interface I {
 
 interface I2 {
   @Version
-  @NonNull
+  @Nonnull
   <T> int hashcode(); // Noncompliant
   String tostring(); // Noncompliant
 }

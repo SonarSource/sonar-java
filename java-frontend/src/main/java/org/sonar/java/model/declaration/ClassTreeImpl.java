@@ -16,7 +16,6 @@
  */
 package org.sonar.java.model.declaration;
 
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
@@ -68,8 +67,6 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Nullable
   private SyntaxToken permitsKeyword;
   private ListTree<TypeTree> permittedTypes;
-  @Nullable
-  public ITypeBinding typeBinding;
 
   public ClassTreeImpl(Kind kind, @Nullable SyntaxToken openBraceToken, List<Tree> members, @Nullable SyntaxToken closeBraceToken) {
     this.kind = kind;
@@ -218,9 +215,10 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   @Override
   public Symbol.TypeSymbol symbol() {
-    return typeBinding != null
-      ? root.sema.typeSymbol(typeBinding)
-      : Symbol.TypeSymbol.UNKNOWN_TYPE;
+    if (root.javacSema != null && root.javacSema.symbolFor(this) instanceof Symbol.TypeSymbol symbol) {
+      return symbol;
+    }
+    return Symbol.TypeSymbol.UNKNOWN_TYPE;
   }
 
   @Nullable

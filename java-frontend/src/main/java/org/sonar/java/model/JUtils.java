@@ -16,7 +16,6 @@
  */
 package org.sonar.java.model;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -26,7 +25,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.sonar.java.model.javac.JavacSymbols;
+import org.sonar.java.model.javac.JavacType;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -67,19 +67,15 @@ public final class JUtils {
   }
 
   public static boolean isIntersectionType(Type type) {
-    return !type.isUnknown() && ((JType) type).typeBinding.isIntersectionType();
+    return !type.isUnknown() && type.isIntersectionType();
   }
 
-  public static void collectSuperTypes(Set<Type> result, JSema sema, ITypeBinding typeBinding) {
-    ITypeBinding s = typeBinding.getSuperclass();
-    if (s != null) {
-      result.add(sema.type(s));
-      collectSuperTypes(result, sema, s);
+  public static void collectSuperTypes(Set<Type> result, Type type) {
+    for (Type ancestor : directSuperTypes(type)) {
+      if (result.add(ancestor)) {
+        collectSuperTypes(result, ancestor);
+      }
     }
-    Arrays.stream(typeBinding.getInterfaces()).forEach(i -> {
-      result.add(sema.type(i));
-      collectSuperTypes(result, sema, i);
-    });
   }
 
   public static Symbol getPackage(Symbol symbol) {
@@ -94,7 +90,7 @@ public final class JUtils {
     if (method.isUnknown()) {
       return null;
     }
-    return ((JMethodSymbol) method).methodBinding().getDefaultValue();
+    return JavacSymbols.defaultValue(method);
   }
 
   /**
@@ -124,14 +120,9 @@ public final class JUtils {
     }
     keys.add(erasedFqn);
     keys.add(typeKey(type));
-    Symbol.TypeSymbol symbol = type.symbol();
-    Type superClass = symbol.superClass();
-    if (superClass != null && !superClass.isUnknown()) {
-      walkTypeHierarchy(superClass, keys, visited);
-    }
-    for (Type iface : symbol.interfaces()) {
-      if (!iface.isUnknown()) {
-        walkTypeHierarchy(iface, keys, visited);
+    for (Type ancestor : directSuperTypes(type)) {
+      if (!ancestor.isUnknown()) {
+        walkTypeHierarchy(ancestor, keys, visited);
       }
     }
   }
@@ -161,15 +152,16 @@ public final class JUtils {
     if (type.isUnknown()) {
       return Collections.emptySet();
     }
-    Set<Type> result = new HashSet<>();
-    JType t = (JType) type;
-    ITypeBinding superclass = t.typeBinding.getSuperclass();
-    if (superclass != null) {
-      result.add(t.sema.type(superclass));
+    if (type instanceof JavacType javacType) {
+      return javacType.directSupertypes();
     }
-    Arrays.stream(t.typeBinding.getInterfaces())
-      .map(t.sema::type)
-      .forEach(result::add);
+    Set<Type> result = new HashSet<>();
+    Symbol.TypeSymbol symbol = type.symbol();
+    Type superclass = symbol.superClass();
+    if (superclass != null) {
+      result.add(superclass);
+    }
+    result.addAll(symbol.interfaces());
     return result;
   }
 

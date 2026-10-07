@@ -228,7 +228,6 @@ class RedundantTypeCastCheckSample_G<T> {
       return s;
     }
     String foo() {
-      // FN introduced due to ECJ 3.44
       return (String) getValue(""); // Compliant
     }
   }

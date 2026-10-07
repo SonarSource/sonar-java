@@ -157,14 +157,12 @@ public class UnusedLocalVariableCheck_java22 {
 
     switch (ballHolder) {
       case BallHolder(RedBall _) -> System.out.println("One Red"); // Compliant
-      // FIXME: the following line is commented because ECJ 3.39.0 is not able to parse it, Syntax error on the second _.
-      // case BallHolder(BlueBall _), BallHolder(GreenBall _) -> System.out.println("Blue or Green Ball"); // Compliant
+      case BallHolder(BlueBall _), BallHolder(GreenBall _) -> System.out.println("Blue or Green Ball"); // Compliant
       case BallHolder(var _) -> System.out.println("Other"); // Compliant
     }
 
     switch (ballHolder) {
-      // FIXME: the following line is commented because ECJ 3.39.0 is not able to parse it, Syntax error on the second _.
-      // case BallHolder(RedBall _), BallHolder(BlueBall _) -> System.out.println("Red or Blue Ball"); // Compliant
+      case BallHolder(RedBall _), BallHolder(BlueBall _) -> System.out.println("Red or Blue Ball"); // Compliant
       case BallHolder(_) -> System.out.println("Other Ball"); // Compliant
       default -> System.out.println("Other Ball");
     }

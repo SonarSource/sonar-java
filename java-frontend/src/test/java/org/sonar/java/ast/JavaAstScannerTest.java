@@ -53,7 +53,6 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.telemetry.TelemetryKey;
@@ -190,11 +189,11 @@ class JavaAstScannerTest {
     assertThat(logTester.logs(Level.ERROR))
       .containsExactlyInAnyOrder(
         "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
-        "Parse error at line 3 column 13: Switch Expressions are supported from Java 14 onwards only");
+        "Parse error at line 3 column 13: switch expressions are not supported in -source 8\n  (use -source 14 or higher to enable switch expressions)");
   }
 
   @Test
-  void ecj_does_not_raise_problems_on_non_compiling_switch_expression() {
+  void javac_rejects_switch_expressions_at_java_8_source_level() {
     var source = """
       public class File {
         void java15SwitchExpression() {
@@ -209,16 +208,9 @@ class JavaAstScannerTest {
       """;
     JavaVersionImpl oldJavaVersionThatDoesNotSupportSwitchExpressions = new JavaVersionImpl(8);
 
-    // BUG in ECJ 3.41: When the Java source version is 8, ECJ incorrectly does not report errors for switch expressions (introduced in later Java versions).
-    // But now the bug has been fixed in ECJ 3.42, so the following code throws a RecognitionException as expected.
     assertThatThrownBy(() -> JParserTestUtils.parse(source, oldJavaVersionThatDoesNotSupportSwitchExpressions))
       .isInstanceOf(RecognitionException.class)
-      .hasMessage("Parse error at line 4 column 13: Switch Expressions are supported from Java 14 onwards only");
-    // Affected tests:
-    // - module_info_should_not_be_analyzed_or_change_the_version
-    // - remove_info_ro_warning_log_related_to_module_info
-    // - test_should_log_fail_parsing_with_incorrect_version
-    // Once the ECJ bug is fixed, these tests should be updated to expect logging error.
+      .hasMessage("Parse error at line 4 column 13: switch expressions are not supported in -source 8\n  (use -source 14 or higher to enable switch expressions)");
   }
 
   @ParameterizedTest
@@ -318,12 +310,11 @@ class JavaAstScannerTest {
 
     List<String> logs = globalLogTester.logs(Level.INFO);
     List<String> filteredLogs = TestUtils.filterOutAnalysisProgressLogLines(logs);
-    assertThat(filteredLogs).contains("1/1 source file has been analyzed");
-    assertThat(filteredLogs.size()).isBetween(3,4);
+    assertThat(filteredLogs).contains("Did not optimize analysis for any files, performed a full analysis for all 1 files.");
     assertThat(logTester.logs(Level.ERROR))
       .containsExactlyInAnyOrder(
         "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
-        "Parse error at line 3 column 13: Switch Expressions are supported from Java 14 onwards only");
+        "Parse error at line 3 column 13: switch expressions are not supported in -source 8\n  (use -source 14 or higher to enable switch expressions)");
     assertThat(logTester.logs(Level.WARN))
       // two files, only one log
       .hasSize(1)
@@ -346,7 +337,7 @@ class JavaAstScannerTest {
     assertThat(logTester.logs(Level.ERROR))
           .containsExactlyInAnyOrder(
             "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
-            "Parse error at line 3 column 13: Switch Expressions are supported from Java 14 onwards only");
+            "Parse error at line 3 column 13: switch expressions are not supported in -source 8\n  (use -source 14 or higher to enable switch expressions)");
   }
 
   @Test
@@ -468,8 +459,7 @@ class JavaAstScannerTest {
       var clazz = (ClassTreeImpl) ((JavaTree.CompilationUnitTreeImpl) compilationUnit).types().get(0);
       assertThat(clazz.simpleName().name()).isEqualTo("C");
       assertThat(clazz.simpleName().symbol().isUnknown()).isFalse();
-      IdentifierTreeImpl identifierTree = (IdentifierTreeImpl) clazz.simpleName();
-      identifierTree.binding = null;
+      ((JavaTree.CompilationUnitTreeImpl) compilationUnit).javacSema = null;
     });
 
   }
@@ -533,8 +523,8 @@ class JavaAstScannerTest {
 
   private void scanTwoFilesWithVisitor(JavaFileScanner visitor, boolean failOnException, boolean autoscanMode) {
     scanFilesWithVisitors(Arrays.asList(
-      TestUtils.inputFile("src/test/files/metrics/Classes.java"),
-      TestUtils.inputFile("src/test/files/metrics/Methods.java")
+      TestUtils.inputFile("src/test/resources/AstScannerSimpleOne.txt"),
+      TestUtils.inputFile("src/test/resources/AstScannerSimpleTwo.txt")
     ), Collections.singletonList(visitor),
       -1,
       failOnException,

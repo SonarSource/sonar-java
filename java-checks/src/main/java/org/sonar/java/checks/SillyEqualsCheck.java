@@ -115,7 +115,6 @@ public class SillyEqualsCheck extends AbstractMethodDetection {
   }
 
   private static boolean areNotRelated(Type type1, Type type2) {
-    // At this point, the type should not be unknown, but to prevent FP in case of strange semantic from ECJ, we check it again.
     return !type1.isUnknown() && !type2.isUnknown() && !type1.isSubtypeOf(type2) && !type2.isSubtypeOf(type1);
   }
 

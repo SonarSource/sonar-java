@@ -58,8 +58,6 @@ public class ClassNamedLikeExceptionCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean hasUnknownSuperType(ClassTree classTree, Symbol.TypeSymbol symbol) {
-    // In ECJ batch mode with compilation errors, an unresolvable supertype yields superClass() == null
-    // rather than an UnknownType. Guard against this to avoid false positives.
     if (classTree.superClass() != null && symbol.superClass() == null) {
       return true;
     }

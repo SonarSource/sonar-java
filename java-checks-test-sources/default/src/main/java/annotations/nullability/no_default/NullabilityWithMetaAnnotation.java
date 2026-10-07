@@ -39,24 +39,9 @@ public class NullabilityWithMetaAnnotation {
   Object id90102_type_NON_NULL_level_VARIABLE_line_37;
 }
 
-@org.eclipse.jdt.annotation.NonNullByDefault
-class NullabilityWithMetaAnnotation2 {
-  // Meta annotation directly annotated has higher priority than class level annotation
-  @MyCheckFroNullMetaAnnotation
-  Object id9011_type_STRONG_NULLABLE_level_VARIABLE_meta;
 
-  Object id9012_type_NON_NULL_level_CLASS;
-}
 
-@MyNonNullByDefault
-class NullabilityWithMetaAnnotation3 {
-  Object id9012_type_NON_NULL_level_CLASS_meta;
 
-  // Meta annotation directly annotated has higher priority than class level annotation
-  @MyCheckFroNullMetaAnnotation
-  Object id9011_type_STRONG_NULLABLE_level_VARIABLE_meta;
-
-}
 
 @javax.annotation.CheckForNull
 @interface MyCheckFroNullMetaAnnotation {
@@ -82,8 +67,4 @@ class NullabilityWithMetaAnnotation3 {
 
 @javax.annotation.CheckForNull
 @interface MyCheckFroNullMetaAnnotationC {
-}
-
-@org.eclipse.jdt.annotation.NonNullByDefault
-@interface MyNonNullByDefault {
 }

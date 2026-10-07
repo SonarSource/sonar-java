@@ -43,8 +43,7 @@ class KeywordThisTest {
     assertThat(keywordThis.symbolType().name()).isEqualTo("A");
 
     // simulate a binding problem
-    keywordThis.binding = null;
-    keywordThis.typeBinding = null;
+    ((JavaTree.CompilationUnitTreeImpl) ast).javacSema = null;
 
     assertThat(keywordThis.symbol().isUnknown()).isTrue();
     assertThat(keywordThis.symbolType().isUnknown()).isTrue();

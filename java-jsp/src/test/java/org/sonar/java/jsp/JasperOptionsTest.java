@@ -56,11 +56,11 @@ class JasperOptionsTest {
     assertThat(options.getTrimSpaces()).isEqualTo(TrimSpacesOption.FALSE);
     assertThat(options.getIeClassId()).isEqualTo(JasperOptions.DEFAULT_IE_CLASS_ID);
     assertThat(options.getScratchDir()).isEqualTo(output.toFile());
-    assertThat(options.getClassPath()).isNull();
+    assertThat(options.getClassPath()).contains(System.getProperty("java.class.path"));
     assertThat(options.getCompiler()).isNull();
-    assertThat(options.getCompilerTargetVM()).isNull();
-    assertThat(options.getCompilerSourceVM()).isNull();
-    assertThat(options.getCompilerClassName()).isNull();
+    assertThat(options.getCompilerTargetVM()).isEqualTo(Integer.toString(Runtime.version().feature()));
+    assertThat(options.getCompilerSourceVM()).isEqualTo(Integer.toString(Runtime.version().feature()));
+    assertThat(options.getCompilerClassName()).isEqualTo("org.apache.jasper.compiler.JavaCompiler");
     assertThat(options.getTldCache()).isNotNull();
     assertThat(options.getJavaEncoding()).isEqualTo("UTF-8");
     assertThat(options.getFork()).isFalse();

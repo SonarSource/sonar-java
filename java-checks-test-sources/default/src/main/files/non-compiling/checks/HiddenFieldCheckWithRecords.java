@@ -1,7 +1,7 @@
 package checks;
 
 record HiddenFieldCheckWithRecords(int x) {
-  int y = 23;
+  static int y = 23;
 
   void f() {
     int x = 42; // FN - no full support for records while it's still a preview feature.

@@ -28,9 +28,8 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.CheckForNull;
-import org.eclipse.jdt.core.compiler.IProblem;
-import org.eclipse.jdt.core.dom.CompilationUnit;
+import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.location.InternalPosition;
@@ -46,7 +45,7 @@ public final class JWarning extends JProblem {
 
   private Tree syntaxTree;
 
-  JWarning(String message, Type type, int startLine, int startColumnOffset, int endLine, int endColumnOffset) {
+  public JWarning(String message, Type type, int startLine, int startColumnOffset, int endLine, int endColumnOffset) {
     super(message, type);
     this.start = InternalPosition.atOffset(startLine, startColumnOffset);
     this.end = InternalPosition.atOffset(endLine, endColumnOffset);
@@ -97,30 +96,35 @@ public final class JWarning extends JProblem {
 
     private final PriorityQueue<JWarning> warnings = new PriorityQueue<>(Comparator.comparing(JWarning::start).thenComparing(JWarning::end));
 
-    private Mapper(CompilationUnit ast, LineColumnConverter lineColumnConverter) {
-      Stream.of(ast.getProblems())
-        .map(problem -> convert(problem, ast, lineColumnConverter))
+    private Mapper(List<Diagnostic<? extends JavaFileObject>> diagnostics, LineColumnConverter lineColumnConverter) {
+      diagnostics.stream()
+        .map(diagnostic -> convert(diagnostic, lineColumnConverter))
         .filter(Objects::nonNull)
         .forEach(warnings::add);
     }
 
-    @CheckForNull
-    private static JWarning convert(IProblem problem, CompilationUnit root, LineColumnConverter lineColumnConverter) {
-      for (Type type : Type.values()) {
-        if (type.matches(problem)) {
-          LineColumnConverter.Pos start = lineColumnConverter.toPos(problem.getSourceStart());
-          LineColumnConverter.Pos end = lineColumnConverter.toPos(problem.getSourceStart());
-          return new JWarning(problem.getMessage(),
-            type,
-            start.line(), start.columnOffset(),
-            end.line(), end.columnOffset());
-        }
+    private static JWarning convert(Diagnostic<? extends JavaFileObject> diagnostic, LineColumnConverter lineColumnConverter) {
+      Type type = switch (diagnostic.getCode()) {
+        case "compiler.err.except.already.caught" -> Type.MASKED_CATCH;
+        case "compiler.warn.redundant.cast" -> Type.REDUNDANT_CAST;
+        default -> null;
+      };
+      if (type == null || diagnostic.getStartPosition() < 0) {
+        return null;
       }
-      return null;
+      LineColumnConverter.Pos start = lineColumnConverter.toPos((int) diagnostic.getStartPosition());
+      LineColumnConverter.Pos end = lineColumnConverter.toPos((int) diagnostic.getEndPosition());
+      return new JWarning(diagnostic.getMessage(null), type,
+        start.line(), start.columnOffset(), end.line(), end.columnOffset());
     }
 
-    public static Mapper warningsFor(CompilationUnit ast, LineColumnConverter lineColumnConverter) {
-      return new Mapper(ast, lineColumnConverter);
+    public static Mapper warningsFor(List<Diagnostic<? extends JavaFileObject>> diagnostics, LineColumnConverter lineColumnConverter) {
+      return new Mapper(diagnostics, lineColumnConverter);
+    }
+
+    public Mapper withWarnings(List<JWarning> additionalWarnings) {
+      warnings.addAll(additionalWarnings);
+      return this;
     }
 
     public void mappedInto(JavaTree.CompilationUnitTreeImpl cut) {

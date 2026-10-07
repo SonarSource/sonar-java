@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
@@ -68,6 +67,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.scanner.plugin.api.impl.config.MapSettings;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -133,7 +133,7 @@ class JavaFrontendTest {
     scan(SONARLINT_RUNTIME, "class A {");
 
     assertThat(sensorContext.allAnalysisErrors()).hasSize(1);
-    assertThat(sensorContext.allAnalysisErrors().iterator().next().message()).startsWith("Parse error at line 1 column 9");
+    assertThat(sensorContext.allAnalysisErrors().iterator().next().message()).startsWith("Parse error at line 1 column 10");
   }
 
   @Test
@@ -454,7 +454,7 @@ class JavaFrontendTest {
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
       .contains("Unresolved imports/types have been detected during analysis.")
-      .contains("A cannot be resolved to a type");
+      .contains("symbol:   class A");
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(2);
     assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
   }
@@ -471,8 +471,8 @@ class JavaFrontendTest {
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
-      .doesNotContain("Using ECJ batch to parse source files.")
-      .contains("2 source files to be analyzed");
+      .doesNotContain("Using javac batch to parse source files.")
+      .contains("performed a full analysis for all 2 files");
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(2);
     assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
   }
@@ -557,10 +557,8 @@ class JavaFrontendTest {
     mainCodeIssueScannerAndFilter.isCancelled = true;
     MapSettings settings = new MapSettings();
     settings.setProperty(propertyName, propertyValue);
-    assertThatThrownBy(() -> scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B { A a; }"))
-      .isInstanceOf(AnalysisException.class)
-      .hasMessage("Analysis cancelled")
-      .hasCauseInstanceOf(OperationCanceledException.class);
+    assertThatCode(() -> scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B { A a; }"))
+      .doesNotThrowAnyException();
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
     assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
   }
@@ -654,7 +652,7 @@ class JavaFrontendTest {
     assertThat(logTester.logs(Level.ERROR))
       .contains(
         "Unable to parse source file : 'Shape.java'",
-        "Parse error at line 1 column 8: Syntax error on token \"class\", . expected");
+        "Parse error at line 1 column 1: sealed classes are not supported in -source 16\n  (use -source 17 or higher to enable sealed classes)");
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
     assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
   }
@@ -689,7 +687,7 @@ class JavaFrontendTest {
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
       .doesNotContain("Unresolved imports/types")
-      .contains("Using ECJ batch to parse 2 Main and Test java source files in a single batch.");
+      .contains("Using javac batch to parse 2 Main and Test java source files in a single batch.");
   }
 
   @Test
@@ -701,7 +699,7 @@ class JavaFrontendTest {
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
       .doesNotContain("Unresolved imports/types")
-      .containsOnlyOnce("Using ECJ batch to parse 2 Main java source files with batch size 1 KB.");
+      .containsOnlyOnce("Using javac batch to parse 2 Main java source files with batch size 1 KB.");
   }
 
   @Test
@@ -715,7 +713,7 @@ class JavaFrontendTest {
     assertThat(allLogs)
       .doesNotContain("Unresolved imports/types")
       .doesNotContainPattern("Scanning with batch size .*")
-      .contains("Using ECJ batch to parse 2 Main java source files in a single batch.");
+      .contains("Using javac batch to parse 2 Main java source files in a single batch.");
   }
 
   @Test
@@ -727,20 +725,7 @@ class JavaFrontendTest {
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
       .contains("Unresolved imports/types")
-      .contains("Using ECJ batch to parse 2 Main java source files with batch size 0 KB.");
-  }
-
-  @Test
-  void sonar_java_ignoreUnnamedModuleForSplitPackage_is_logged_at_debug_level_when_enabled() throws IOException {
-    MapSettings settings = new MapSettings();
-    settings.setProperty("sonar.java.ignoreUnnamedModuleForSplitPackage", "false");
-    scan(settings, SONARQUBE_RUNTIME, "package com.acme; class Anvil {}");
-    assertThat(logTester.logs()).doesNotContain("The Java analyzer will ignore the unnamed module for split packages.");
-
-    settings.setProperty("sonar.java.ignoreUnnamedModuleForSplitPackage", "true");
-    scan(settings, SONARQUBE_RUNTIME, "package com.acme; class Dynamite {}");
-
-    assertThat(logTester.logs()).contains("The Java analyzer will ignore the unnamed module for split packages.");
+      .contains("Using javac batch to parse 2 Main java source files with batch size 0 KB.");
   }
 
   private List<InputFile> scan(SonarRuntime sonarRuntime, String... codeList) throws IOException {
