@@ -56,6 +56,7 @@ import org.sonar.api.utils.Version;
 import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
+import org.sonar.java.classpath.ClasspathProperties;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JavaVersionImpl;
@@ -478,6 +479,9 @@ class JavaFrontendTest {
     JavaVersion version = JavaVersionImpl.readFromConfiguration(sensorContext.config());
     assertThat(BytecodeCompiler.compile(List.of(dependencySource), bytecodeDirectory, version, version)).isTrue();
     Files.delete(dependencySource);
+    sensorContext.settings().setProperty(ClasspathProperties.SONAR_JAVA_BINARIES, bytecodeDirectory.toString());
+    ClasspathForMain mainClasspath = new ClasspathForMain(sensorContext.config(), sensorContext.fileSystem());
+    ClasspathForTest testClasspath = new ClasspathForTest(sensorContext.config(), sensorContext.fileSystem());
 
     String mainSource = previewEnabled
       ? "class Main extends generated.Dependency { boolean matches(Object value) { return value instanceof int number && number > 0; } }"
@@ -493,6 +497,12 @@ class JavaFrontendTest {
       @Override
       public void scanFile(JavaFileScannerContext context) {
         assertThat(staleBytecode).doesNotExist();
+        assertThat(mainClasspath.getBinaryDirs()).contains(bytecodeDirectory.toFile(), compilerOutput.resolve("main").toFile())
+          .doesNotContain(compilerOutput.resolve("test").toFile());
+        assertThat(testClasspath.getBinaryDirs()).containsExactly(compilerOutput.resolve("test").toFile());
+        if (!autoScan) {
+          assertThat(mainClasspath.getBinaryDirs()).contains(compilerOutput.resolve("generated").toFile());
+        }
         ClassTree declaration = (ClassTree) context.getTree().types().get(0);
         resolvedTypes.add(declaration.superClass().symbolType().fullyQualifiedName());
         compiledFiles.add(frontend.new AutoScanBatchContext().getClasspath().stream()
@@ -504,7 +514,7 @@ class JavaFrontendTest {
     BytecodeCheck check = new BytecodeCheck();
     FileLinesContextFactory linesFactory = mock(FileLinesContextFactory.class);
     when(linesFactory.createFor(any(InputFile.class))).thenReturn(mock(FileLinesContext.class));
-    SonarComponents components = new SonarComponents(linesFactory, sensorContext.fileSystem(), mock(ClasspathForMain.class), mock(ClasspathForTest.class),
+    SonarComponents components = new SonarComponents(linesFactory, sensorContext.fileSystem(), mainClasspath, testClasspath,
       mock(CheckFactory.class), mock(ActiveRules.class), new CheckRegistrar[0]);
     components.setSensorContext(sensorContext);
     components.testChecks().add(check);
@@ -512,9 +522,6 @@ class JavaFrontendTest {
     JavaFrontend frontend = new JavaFrontend(version, components, new Measurer(sensorContext, mock(NoSonarFilter.class)),
       new NoOpTelemetry(), mock(JavaResourceLocator.class), null, check);
     check.frontend = frontend;
-    frontend.addGeneratedBytecodeToClasspath(bytecodeDirectory);
-    frontend.addGeneratedBytecodeToClasspath(bytecodeDirectory.resolve("."));
-    frontend.addGeneratedBytecodeToClasspath(temp.resolve("missing bytecode"));
 
     frontend.scan(List.of(mainFile), List.of(testFile), autoScan ? List.of() : List.of(generatedFile));
 
@@ -528,8 +535,12 @@ class JavaFrontendTest {
     assertThat(compilerOutput).doesNotExist();
     assertThat(scannerState).hasContent("scanner state");
     assertThat(logTester.logs(Level.WARN)).noneMatch(message -> message.contains("Unresolved imports/types"));
-    assertThat(components.getJavaClasspath()).isEmpty();
+    assertThat(components.getJavaClasspath()).containsExactly(bytecodeDirectory.toFile());
     assertThat(components.getJavaTestClasspath()).isEmpty();
+    assertThat(mainClasspath.getBinaryDirs()).containsExactly(bytecodeDirectory.toFile());
+    assertThat(testClasspath.getBinaryDirs()).isEmpty();
+    assertThat(sensorContext.config().getStringArray(ClasspathProperties.SONAR_JAVA_BINARIES)).containsExactly(bytecodeDirectory.toString());
+    assertThat(sensorContext.config().hasKey(ClasspathProperties.SONAR_JAVA_TEST_BINARIES)).isFalse();
     assertThat(frontend.new AutoScanBatchContext().getClasspath())
       .containsOnlyOnce(bytecodeDirectory.toFile())
       .containsAll(components.getJspClasspath());

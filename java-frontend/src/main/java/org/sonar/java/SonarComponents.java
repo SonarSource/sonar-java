@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -122,6 +124,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
   private final ClasspathForMain javaClasspath;
   private final ClasspathForTest javaTestClasspath;
+  private boolean hasGeneratedMainBinaries;
   private final Map<JProblem, List<String>> problemsToFilePaths = new HashMap<>();
 
   private final CheckFactory checkFactory;
@@ -267,7 +270,16 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   }
 
   public List<File> getJavaTestClasspath() {
+    if (hasGeneratedMainBinaries) {
+      return Stream.concat(javaClasspath.getBinaryDirs().stream(), javaTestClasspath.getElements().stream()).distinct().toList();
+    }
     return javaTestClasspath.getElements();
+  }
+
+  public void setGeneratedBytecodeDirectories(List<Path> mainDirectories, List<Path> testDirectories) {
+    javaClasspath.setGeneratedBinaryDirs(mainDirectories);
+    javaTestClasspath.setGeneratedBinaryDirs(testDirectories);
+    hasGeneratedMainBinaries = mainDirectories.stream().anyMatch(Files::isDirectory);
   }
 
   public List<File> getJspClasspath() {

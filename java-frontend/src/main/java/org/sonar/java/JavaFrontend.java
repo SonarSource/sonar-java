@@ -77,7 +77,7 @@ public class JavaFrontend {
   private final JavaVersion javaVersion;
   private final SonarComponents sonarComponents;
   private final Telemetry telemetry;
-  private final List<File> globalClasspath;
+  private List<File> globalClasspath;
   private final JavaAstScanner astScanner;
   private final JavaAstScanner astScannerForTests;
   private final JavaAstScanner astScannerForGeneratedFiles;
@@ -137,26 +137,17 @@ public class JavaFrontend {
     astScannerForGeneratedFiles.setVisitorBridge(new VisitorsBridge(jspCodeVisitors, jspClasspath, sonarComponents, javaVersion, inAndroidContext));
   }
 
-  /**
-   * Adds an existing compiler output directory to all parser classpaths. Call before scanning when using a custom compiler output directory.
-   * Missing directories are ignored so that parsing can continue when compilation has not produced any bytecode.
-   */
-  public void addGeneratedBytecodeToClasspath(Path outputDirectory) {
-    addBytecodeToClasspaths(outputDirectory, astScanner.getClasspath(), astScannerForTests.getClasspath(), astScannerForGeneratedFiles.getClasspath());
+  private void refreshClasspaths() {
+    replaceClasspath(astScanner, sonarComponents.getJavaClasspath());
+    replaceClasspath(astScannerForTests, sonarComponents.getJavaTestClasspath());
+    replaceClasspath(astScannerForGeneratedFiles, sonarComponents.getJspClasspath());
+    globalClasspath = Stream.of(astScanner.getClasspath(), astScannerForTests.getClasspath(), astScannerForGeneratedFiles.getClasspath())
+      .flatMap(Collection::stream).distinct().toList();
   }
 
-  @SafeVarargs
-  private final void addBytecodeToClasspaths(Path outputDirectory, List<File>... classpaths) {
-    Path absoluteOutputDirectory = outputDirectory.toAbsolutePath().normalize();
-    if (Files.isDirectory(absoluteOutputDirectory)) {
-      File bytecodeDirectory = absoluteOutputDirectory.toFile();
-      Stream.concat(Arrays.stream(classpaths), Stream.of(globalClasspath))
-        .forEach(classpath -> {
-          if (classpath.stream().noneMatch(file -> file.toPath().toAbsolutePath().normalize().equals(absoluteOutputDirectory))) {
-            classpath.add(bytecodeDirectory);
-          }
-        });
-    }
+  private static void replaceClasspath(JavaAstScanner scanner, List<File> classpath) {
+    scanner.getClasspath().clear();
+    scanner.getClasspath().addAll(classpath);
   }
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
@@ -183,11 +174,14 @@ public class JavaFrontend {
 
     try {
       compileFiles(mainInputs, astScanner, outputDirectory.resolve("main"));
-      addBytecodeToClasspaths(outputDirectory.resolve("main"), astScanner.getClasspath(), astScannerForTests.getClasspath(), astScannerForGeneratedFiles.getClasspath());
+      sonarComponents.setGeneratedBytecodeDirectories(List.of(outputDirectory.resolve("main")), List.of());
+      refreshClasspaths();
       compileFiles(testInputs, astScannerForTests, outputDirectory.resolve("test"));
-      addBytecodeToClasspaths(outputDirectory.resolve("test"), astScannerForTests.getClasspath());
+      sonarComponents.setGeneratedBytecodeDirectories(List.of(outputDirectory.resolve("main")), List.of(outputDirectory.resolve("test")));
+      refreshClasspaths();
       compileFiles(generatedInputs, astScannerForGeneratedFiles, outputDirectory.resolve("generated"));
-      addBytecodeToClasspaths(outputDirectory.resolve("generated"), astScannerForGeneratedFiles.getClasspath());
+      sonarComponents.setGeneratedBytecodeDirectories(List.of(outputDirectory.resolve("main"), outputDirectory.resolve("generated")), List.of(outputDirectory.resolve("test")));
+      refreshClasspaths();
       scanPreparedFiles(mainInputs, testInputs, generatedInputs);
     } finally {
       removeGeneratedBytecode(outputDirectory);
@@ -216,8 +210,8 @@ public class JavaFrontend {
   }
 
   private void removeGeneratedBytecode(Path outputDirectory) {
-    Stream.of(astScanner.getClasspath(), astScannerForTests.getClasspath(), astScannerForGeneratedFiles.getClasspath(), globalClasspath)
-      .forEach(classpath -> classpath.removeIf(file -> file.toPath().toAbsolutePath().normalize().startsWith(outputDirectory)));
+    sonarComponents.setGeneratedBytecodeDirectories(List.of(), List.of());
+    refreshClasspaths();
     try {
       deleteBytecodeDirectory(outputDirectory);
     } catch (IOException e) {
