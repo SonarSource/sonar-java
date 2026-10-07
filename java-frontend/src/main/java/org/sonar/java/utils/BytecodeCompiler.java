@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -91,6 +92,10 @@ public final class BytecodeCompiler {
    * @return true if compilation succeeded, false otherwise
    */
   public static boolean compile(List<Path> sources, List<Path> classpath, Path outputDirectory, JavaVersion sourceVersion, JavaVersion targetVersion) {
+    return compile(sources, classpath, outputDirectory, sourceVersion, targetVersion, Charset.defaultCharset());
+  }
+
+  public static boolean compile(List<Path> sources, List<Path> classpath, Path outputDirectory, JavaVersion sourceVersion, JavaVersion targetVersion, Charset charset) {
     if (sources.isEmpty()) {
       return true;
     }
@@ -102,7 +107,7 @@ public final class BytecodeCompiler {
       return false;
     }
 
-    String[] args = buildCompilerArgs(sources, classpath, outputDirectory, sourceVersion, targetVersion);
+    String[] args = buildCompilerArgs(sources, classpath, outputDirectory, sourceVersion, targetVersion, charset);
 
     StringWriter outWriter = new StringWriter();
     StringWriter errWriter = new StringWriter();
@@ -133,7 +138,7 @@ public final class BytecodeCompiler {
     return result;
   }
 
-  private static String[] buildCompilerArgs(List<Path> sources, List<Path> classpath, Path outputDirectory, JavaVersion sourceVersion, JavaVersion targetVersion) {
+  private static String[] buildCompilerArgs(List<Path> sources, List<Path> classpath, Path outputDirectory, JavaVersion sourceVersion, JavaVersion targetVersion, Charset charset) {
     List<String> args = new ArrayList<>();
 
     args.add("-d");
@@ -146,6 +151,9 @@ public final class BytecodeCompiler {
 
     args.add("-proc:none");
     args.add("-nowarn");
+
+    args.add("-encoding");
+    args.add(charset.name());
 
     args.add("-source");
     args.add(sourceVersion.effectiveJavaVersionAsString());

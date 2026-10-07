@@ -18,6 +18,7 @@ package org.sonar.java;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -210,7 +211,8 @@ public class JavaFrontend {
       .filter(Files::isRegularFile)
       .toList();
     List<Path> classpath = scanner.getClasspath().stream().map(File::toPath).toList();
-    BytecodeCompiler.compile(sources, classpath, outputDirectory, javaVersion, javaVersion);
+    Charset charset = files.stream().findFirst().map(InputFile::charset).orElseGet(Charset::defaultCharset);
+    BytecodeCompiler.compile(sources, classpath, outputDirectory, javaVersion, javaVersion, charset);
   }
 
   private void removeGeneratedBytecode(Path outputDirectory) {
