@@ -24,6 +24,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.config.Configuration;
 import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.TestUtils;
 import org.sonar.scanner.extension.PropertyDefinitions;
@@ -32,8 +33,6 @@ import org.sonar.scanner.plugin.api.impl.fs.DefaultFileSystem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.sonar.java.classpath.ClasspathProperties.SONAR_JAVA_SOURCEPATH;
 import static org.sonar.java.classpath.ClasspathProperties.SONAR_JAVA_TEST_SOURCEPATH;
 
@@ -48,7 +47,7 @@ class SourcePathTest {
     Path second = Files.createDirectory(temp.resolve("second"));
     var fs = new DefaultFileSystem(temp).setEncoding(StandardCharsets.ISO_8859_1);
     var settings = settings();
-    settings.setProperty(SONAR_JAVA_SOURCEPATH, new String[] {"first", second.toString(), "first/../first"});
+    settings.setProperty(SONAR_JAVA_SOURCEPATH, new String[]{"first", second.toString(), "first/../first"});
     SourcePath sourcePath = SourcePath.resolve(settings.asConfig(), fs, SONAR_JAVA_SOURCEPATH);
     assertThat(sourcePath.roots()).containsExactly(first.toFile(), second.toFile());
     assertThat(sourcePath.encodings()).containsExactly("ISO-8859-1", "ISO-8859-1");
@@ -60,7 +59,9 @@ class SourcePathTest {
     for (String root : List.of("missing", "file.java")) {
       var settings = settings();
       settings.setProperty(SONAR_JAVA_SOURCEPATH, root);
-      assertThatThrownBy(() -> SourcePath.resolve(settings.asConfig(), new DefaultFileSystem(temp), SONAR_JAVA_SOURCEPATH))
+      Configuration config = settings.asConfig();
+      var defaultFs = new DefaultFileSystem(temp);
+      assertThatThrownBy(() -> SourcePath.resolve(config, defaultFs, SONAR_JAVA_SOURCEPATH))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining(SONAR_JAVA_SOURCEPATH)
         .hasMessageContaining("source root is not a directory");
@@ -74,7 +75,8 @@ class SourcePathTest {
     SourcePath main = new SourcePath(List.of(first), List.of("UTF-8"));
     SourcePath test = new SourcePath(List.of(second, first), List.of("UTF-8", "UTF-8"));
     assertThat(SourcePath.combine(main, test)).isEqualTo(new SourcePath(List.of(first, second), List.of("UTF-8", "UTF-8")));
-    assertThatThrownBy(() -> new SourcePath(List.of(first), List.of())).isInstanceOf(IllegalArgumentException.class);
+    var files = List.of(first);
+    assertThatThrownBy(() -> new SourcePath(files, List.of())).isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test

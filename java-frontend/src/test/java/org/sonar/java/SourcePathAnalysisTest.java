@@ -158,7 +158,8 @@ class SourcePathAnalysisTest {
 
   private static SonarComponents components(SensorContextTester context, MapSettings settings) {
     var lines = mock(FileLinesContextFactory.class);
-    when(lines.createFor(any(InputFile.class))).thenReturn(mock(FileLinesContext.class));
+    var fileLinesContext = mock(FileLinesContext.class);
+    when(lines.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
     var components = new SonarComponents(lines, context.fileSystem(),
       new ClasspathForMain(settings.asConfig(), context.fileSystem()),
       new ClasspathForTest(settings.asConfig(), context.fileSystem()), mock(CheckFactory.class), mock(ActiveRules.class));
