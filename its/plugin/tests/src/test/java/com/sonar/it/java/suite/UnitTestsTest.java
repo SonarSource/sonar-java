@@ -16,17 +16,27 @@
  */
 package com.sonar.it.java.suite;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.junit4.OrchestratorRule;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.sonarqube.ws.Measures.Measure;
+import org.sonarqube.ws.client.components.TreeRequest;
 
 import static com.sonar.it.java.suite.JavaTestSuite.getMeasures;
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assume.assumeTrue;
 
 public class UnitTestsTest {
 
@@ -55,6 +65,8 @@ public class UnitTestsTest {
   public void tests_with_report_name_suffix() {
     MavenBuild build = TestUtils.createMavenBuild()
       .setPom(TestUtils.projectPom("tests-surefire-suffix"))
+      .setProperty("sonar.java.internal.semantic.report", System.getProperty("sonar.java.internal.semantic.report",
+        new File(System.getProperty("java.io.tmpdir"), "report.json").getAbsolutePath()))
       .setGoals("clean test-compile surefire:test -Dsurefire.reportNameSuffix=Run1", "test-compile surefire:test -Dsurefire.reportNameSuffix=Run2", "sonar:sonar");
     orchestrator.executeBuild(build);
 
@@ -67,6 +79,72 @@ public class UnitTestsTest {
     assertThat(parseInt(measures.get("skipped_tests").getValue())).isEqualTo(2);
     assertThat(parseInt(measures.get("test_execution_time").getValue())).isPositive();
     assertThat(parseDouble(measures.get("test_success_density").getValue())).isEqualTo(100.0);
+  }
+
+  @Test
+  public void semantic_report_without_compilation() throws IOException {
+    String configured = System.getProperty("sonar.java.internal.semantic.report");
+    assumeTrue("Provide -Dsonar.java.internal.semantic.report=/tmp/report.json to run this test", configured != null && !configured.isBlank());
+    Path reportPath = Path.of(configured).toAbsolutePath();
+    Files.createDirectories(reportPath.getParent());
+    Files.deleteIfExists(reportPath);
+    String projectKey = "semantic-report-without-compilation";
+
+    MavenBuild build = TestUtils.createMavenBuild()
+      .setPom(TestUtils.projectPom("measures-on-directory"))
+      .setProperty("sonar.projectKey", projectKey)
+      .setProperty("sonar.java.binaries", "")
+      .setProperty("sonar.java.libraries", "")
+      .setProperty("sonar.java.internal.semantic.report", reportPath.toString())
+      .setGoals("org.sonarsource.scanner.maven:sonar-maven-plugin:sonar");
+    orchestrator.executeBuild(build);
+
+    var expectedFiles = List.of("src/main/java/org/EmptyFile.java", "src/main/java/org/File1InCycle.java", "src/main/java/org/File2InCycle.java");
+    JsonObject report = JsonParser.parseString(Files.readString(reportPath)).getAsJsonObject();
+    if (report.has("modules")) {
+      assertCanonicalSemanticReport(report);
+    } else {
+      assertThat(SemanticReport.read(reportPath, expectedFiles).totals().total()).isPositive();
+    }
+    var indexed = TestUtils.newAdminWsClient(orchestrator).components().tree(new TreeRequest().setComponent(projectKey)
+      .setStrategy("all").setQualifiers(List.of("FIL")).setPs("100"));
+    assertThat(indexed.getPaging().getTotal()).isEqualTo(expectedFiles.size());
+    assertThat(indexed.getComponentsList().stream().map(component -> component.getPath().replace('\\', '/')).toList())
+      .containsExactlyInAnyOrderElementsOf(expectedFiles);
+  }
+
+  private static void assertCanonicalSemanticReport(JsonObject report) {
+    int resolved = semanticCount(report, "resolvedIdentifierCount");
+    int unknown = semanticCount(report, "unknownIdentifierCount");
+    assertThat(resolved).isPositive();
+    var modules = report.getAsJsonArray("modules");
+    assertThat(modules).isNotNull();
+    var paths = new HashSet<String>();
+    long moduleResolved = 0;
+    long moduleUnknown = 0;
+    for (var element : modules) {
+      JsonObject module = element.getAsJsonObject();
+      var path = module.get("path");
+      assertThat(path).isNotNull();
+      assertThat(path.isJsonPrimitive() && path.getAsJsonPrimitive().isString()).isTrue();
+      assertThat(path.getAsString()).isNotBlank();
+      String normalized = Path.of(path.getAsString().replace('\\', '/')).normalize().toString();
+      assertThat(paths.add(normalized.isEmpty() ? "." : normalized)).as("Module paths must be unique").isTrue();
+      moduleResolved += semanticCount(module, "resolvedIdentifierCount");
+      moduleUnknown += semanticCount(module, "unknownIdentifierCount");
+    }
+    assertThat(paths).containsExactly(".");
+    assertThat(moduleResolved).isEqualTo(resolved);
+    assertThat(moduleUnknown).isEqualTo(unknown);
+  }
+
+  private static int semanticCount(JsonObject report, String key) {
+    var value = report.get(key);
+    assertThat(value).as("Semantic count %s", key).isNotNull();
+    assertThat(value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber()).as("Semantic count %s must be an integer", key).isTrue();
+    int count = value.getAsBigDecimal().intValueExact();
+    assertThat(count).as("Semantic count %s must be nonnegative", key).isNotNegative();
+    return count;
   }
 
 }

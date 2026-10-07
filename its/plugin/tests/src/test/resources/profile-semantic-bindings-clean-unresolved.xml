@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profile>
+  <name>semantic-bindings-clean-unresolved</name>
+  <language>java</language>
+  <rules>
+    <rule>
+      <repositoryKey>java-extension</repositoryKey>
+      <key>semanticbindings</key>
+      <priority>MAJOR</priority>
+      <parameters>
+        <parameter>
+          <key>expectProjectBindingsResolved</key>
+          <value>false</value>
+        </parameter>
+        <parameter>
+          <key>expectMissingTypeProbe</key>
+          <value>false</value>
+        </parameter>
+        <parameter>
+          <key>expectedBytecode</key>
+          <value>absent</value>
+        </parameter>
+      </parameters>
+    </rule>
+    <rule>
+      <repositoryKey>java</repositoryKey>
+      <key>S1874</key>
+      <priority>MAJOR</priority>
+    </rule>
+    <rule>
+      <repositoryKey>java</repositoryKey>
+      <key>S1116</key>
+      <priority>MINOR</priority>
+    </rule>
+  </rules>
+</profile>
