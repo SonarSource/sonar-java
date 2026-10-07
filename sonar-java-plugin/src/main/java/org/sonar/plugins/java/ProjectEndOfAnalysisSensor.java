@@ -16,6 +16,7 @@
  */
 package org.sonar.plugins.java;
 
+import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.DependsUpon;
@@ -23,6 +24,8 @@ import org.sonar.api.batch.Phase;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.scanner.sensor.ProjectSensor;
+import org.sonar.java.SemanticReportScanner;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.model.springcontext.SpringContextModelMetrics;
@@ -30,8 +33,8 @@ import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.telemetry.TelemetryKey;
 
 /**
- * Sensor that runs at the end of the project's analysis to send telemetry data.
- * Telemetry data is collected by several JavaSensor executions, one for each project's module, and aggregated in a shared Telemetry object.
+ * Sensor that runs at the end of the project's analysis to send telemetry and write the optional semantic report.
+ * Data is collected by several JavaSensor executions, one for each project's module, and aggregated in shared objects.
  */
 @Phase(name = Phase.Name.POST)
 @DependsUpon(value = "CollectSpringContextBeforeSendingTelemetry")
@@ -41,10 +44,12 @@ public class ProjectEndOfAnalysisSensor implements ProjectSensor {
 
   private final Telemetry telemetry;
   private final SpringContextModel springContextModel;
+  private final SemanticReportScanner semanticReportScanner;
 
-  public ProjectEndOfAnalysisSensor(Telemetry telemetry, SpringContextModel springContextModel) {
+  public ProjectEndOfAnalysisSensor(Telemetry telemetry, SpringContextModel springContextModel, SemanticReportScanner semanticReportScanner) {
     this.telemetry = telemetry;
     this.springContextModel = springContextModel;
+    this.semanticReportScanner = semanticReportScanner;
   }
 
   @Override
@@ -59,6 +64,8 @@ public class ProjectEndOfAnalysisSensor implements ProjectSensor {
       LOG.debug("Telemetry {}: {}", key, value);
       context.addTelemetryProperty(key, value);
     });
+    context.config().get(SonarComponents.SONAR_SEMANTIC_REPORT)
+      .ifPresent(path -> semanticReportScanner.writeReport(Path.of(path), context.fileSystem().baseDir().toPath()));
   }
 
   /**
