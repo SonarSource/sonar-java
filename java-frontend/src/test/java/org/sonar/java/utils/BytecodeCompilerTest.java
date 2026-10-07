@@ -69,7 +69,7 @@ class BytecodeCompilerTest {
   }
 
   @Test
-  void compile_empty_source_list() throws Exception {
+  void compile_empty_source_list() {
     Path outputDir = temporaryFolder.resolve("output");
 
     boolean result = BytecodeCompiler.compile(List.of(), outputDir, javaVersion(11), javaVersion(11));
