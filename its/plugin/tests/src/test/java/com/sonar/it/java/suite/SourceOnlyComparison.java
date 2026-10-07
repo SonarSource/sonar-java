@@ -85,6 +85,23 @@ final class SourceOnlyComparison {
       return invalid(current, candidate, placeholder, "A semantic report is missing; comparison metrics are unavailable.");
     }
 
+    if (!current.semantics().files().keySet().equals(candidate.semantics().files().keySet())) {
+      var currentOnlyFiles = new TreeSet<>(current.semantics().files().keySet());
+      currentOnlyFiles.removeAll(candidate.semantics().files().keySet());
+      var candidateOnlyFiles = new TreeSet<>(candidate.semantics().files().keySet());
+      candidateOnlyFiles.removeAll(current.semantics().files().keySet());
+      return invalid(current, candidate, placeholder, "Semantic reports cover different files; current-only: "
+        + currentOnlyFiles + "; candidate-only: " + candidateOnlyFiles + ". Comparison metrics are unavailable.");
+    }
+    for (String path : new TreeSet<>(current.semantics().files().keySet())) {
+      int before = current.semantics().files().get(path).total();
+      int after = candidate.semantics().files().get(path).total();
+      if (before != after) {
+        return invalid(current, candidate, placeholder, "Identifier coverage differs for " + path + ": current="
+          + before + ", candidate=" + after + ". Comparison metrics are unavailable.");
+      }
+    }
+
     var candidateOnly = sorted(candidate.findings());
     var currentOnly = new ArrayList<Finding>();
     for (Finding finding : sorted(current.findings())) {
@@ -134,11 +151,20 @@ final class SourceOnlyComparison {
   }
 
   static void write(Path directory, Comparison comparison) throws IOException {
+    write(directory, comparison, Map.of(), List.of(), List.of());
+  }
+
+  static void write(Path directory, Comparison comparison, Map<String, String> metadata,
+                    List<Run> currentSamples, List<Run> candidateSamples) throws IOException {
     Files.createDirectories(directory);
-    Files.writeString(directory.resolve("report.md"), markdown(comparison));
+    Files.writeString(directory.resolve("report.md"), markdown(comparison, metadata, currentSamples, candidateSamples));
   }
 
   static String markdown(Comparison comparison) {
+    return markdown(comparison, Map.of(), List.of(), List.of());
+  }
+
+  static String markdown(Comparison comparison, Map<String, String> metadata, List<Run> currentSamples, List<Run> candidateSamples) {
     var report = new StringBuilder("# Source-only Java analysis comparison\n\n")
       .append("**Runner:** Orchestrator MavenBuild (`sonar:sonar`)\n\n");
     report.append("**Comparison:** ").append(comparison.valid() ? "VALID" : "INVALID")
@@ -150,12 +176,19 @@ final class SourceOnlyComparison {
     appendMetric(report, "Java files analyzed", current.files().size(), candidate.files().size());
     appendSemanticSummary(report, current.semantics(), candidate.semantics());
     appendMetric(report, "Findings", current.findings().size(), candidate.findings().size());
-    appendMetric(report, "Scan time (ms)", current.scanMillis(), candidate.scanMillis());
+    if (currentSamples.isEmpty() && candidateSamples.isEmpty()) {
+      appendMetric(report, "Scan time (ms)", current.scanMillis(), candidate.scanMillis());
+    } else {
+      appendMetric(report, "Median Maven/server time (ms)", median(currentSamples.stream().map(run -> (double) run.scanMillis()).toList()),
+        median(candidateSamples.stream().map(run -> (double) run.scanMillis()).toList()));
+      appendMetric(report, "Median JavaSensor time (ms)", analyzerMedian(currentSamples), analyzerMedian(candidateSamples));
+    }
     appendMetric(report, "Source characters analyzed", telemetry(current, "success.size_chars"), telemetry(candidate, "success.size_chars"));
     appendMetric(report, "Undefined-type errors", telemetry(current, "success.type_error_count"), telemetry(candidate, "success.type_error_count"));
     appendMetric(report, "Source characters with parse errors", telemetry(current, "parse_errors.size_chars"), telemetry(candidate, "parse_errors.size_chars"));
     appendMetric(report, "Source characters with analysis exceptions", telemetry(current, "exceptions.size_chars"), telemetry(candidate, "exceptions.size_chars"));
     if (!comparison.valid()) {
+      appendRunDetails(report, metadata, currentSamples, candidateSamples);
       report.append("\nComparison unavailable: ").append(comparison.error()).append('\n');
       appendFailure(report, current);
       appendFailure(report, candidate);
@@ -178,6 +211,9 @@ final class SourceOnlyComparison {
     if (current.findings().isEmpty() || candidate.findings().isEmpty()) {
       report.append("\nAt least one scan reported no findings; agreement alone does not establish detection quality.\n");
     }
+    appendRunDetails(report, metadata, currentSamples, candidateSamples);
+    appendRankedChanges(report, current.semantics(), candidate.semantics(), true);
+    appendRankedChanges(report, current.semantics(), candidate.semantics(), false);
     appendTopUnknownFiles(report, current.semantics(), candidate.semantics());
     appendFileSemantics(report, current.semantics(), candidate.semantics());
     report.append("\n## Rules with findings\n\n| Rule | Current | Candidate | Shared | Current only | Candidate only | Retention |\n")
@@ -205,8 +241,88 @@ final class SourceOnlyComparison {
       .append("- Per-file counts are current / candidate. A negative change in unknown percentage means fewer unresolved identifiers; it does not prove semantic correctness.\n")
       .append("- Files with no unknown identifiers must contain at least one identifier; their percentage uses all analyzed files. Files with zero identifiers are excluded from improved/unchanged/regressed counts.\n")
       .append("- Configured rules may be disabled when dependencies are absent; zero findings do not prove a rule ran.\n")
-      .append("- Scan times are individual wall-time samples, including Maven startup, scanning, and server processing. Test-server startup is excluded.\n");
+      .append("- Wall times include Maven startup, scanning, and server processing. Analyzer timings are reported separately when available; test-server startup is excluded. Repeated samples exclude warm-up runs.\n");
     return report.toString();
+  }
+
+  private static void appendRunDetails(StringBuilder report, Map<String, String> metadata, List<Run> currentSamples, List<Run> candidateSamples) {
+    if (!metadata.isEmpty()) {
+      report.append("\n## Run metadata\n\n| Setting | Value |\n|---|---|\n");
+      metadata.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry ->
+        report.append("| ").append(escape(entry.getKey())).append(" | ").append(escape(entry.getValue())).append(" |\n"));
+    }
+    if (currentSamples.isEmpty() && candidateSamples.isEmpty()) {
+      return;
+    }
+    report.append("\n## Measured timings\n\nWall time includes Maven and server processing; analyzer time measures JavaSensor execution (parsing, semantics, checks, and metrics). Warm-ups are excluded. Missing analyzer timings are N/A.\n\n")
+      .append("| Sample | Current wall (ms) | Candidate wall (ms) | Current analyzer (ms) | Candidate analyzer (ms) |\n")
+      .append("|---|---:|---:|---:|---:|\n");
+    for (int i = 0; i < Math.max(currentSamples.size(), candidateSamples.size()); i++) {
+      Run current = i < currentSamples.size() ? currentSamples.get(i) : null;
+      Run candidate = i < candidateSamples.size() ? candidateSamples.get(i) : null;
+      report.append("| ").append(i + 1).append(" | ").append(current == null ? "N/A" : current.scanMillis())
+        .append(" | ").append(candidate == null ? "N/A" : candidate.scanMillis())
+        .append(" | ").append(timing(analyzerMillis(current))).append(" | ").append(timing(analyzerMillis(candidate))).append(" |\n");
+    }
+    report.append("| Median | ").append(median(currentSamples.stream().map(run -> (double) run.scanMillis()).toList()))
+      .append(" | ").append(median(candidateSamples.stream().map(run -> (double) run.scanMillis()).toList()))
+      .append(" | ").append(analyzerMedian(currentSamples)).append(" | ").append(analyzerMedian(candidateSamples)).append(" |\n");
+  }
+
+  private static Double analyzerMillis(Run run) {
+    if (run == null) {
+      return null;
+    }
+    String value = run.telemetry().get("comparison.analyzer.time_ms");
+    if (value == null) {
+      return null;
+    }
+    try {
+      double millis = Double.parseDouble(value);
+      return Double.isFinite(millis) && millis >= 0 ? millis : null;
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
+
+  private static String analyzerMedian(List<Run> samples) {
+    var values = samples.stream().map(SourceOnlyComparison::analyzerMillis).toList();
+    return values.stream().anyMatch(value -> value == null) ? "N/A" : median(values);
+  }
+
+  private static String median(List<Double> values) {
+    if (values.isEmpty()) {
+      return "N/A";
+    }
+    var sorted = values.stream().sorted().toList();
+    int middle = sorted.size() / 2;
+    return timing(sorted.size() % 2 == 0 ? (sorted.get(middle - 1) + sorted.get(middle)) / 2 : sorted.get(middle));
+  }
+
+  private static String timing(Double millis) {
+    return millis == null ? "N/A" : String.format(Locale.ROOT, "%.1f", millis);
+  }
+
+  private static void appendRankedChanges(StringBuilder report, SemanticReport current, SemanticReport candidate, boolean improvements) {
+    var paths = current.files().keySet().stream().filter(path -> {
+      Double before = current.files().get(path).unknownPercentage();
+      Double after = candidate.files().get(path).unknownPercentage();
+      return before != null && after != null && (improvements ? after < before : after > before);
+    }).sorted(Comparator.comparingDouble((String path) -> Math.abs(candidate.files().get(path).unknownPercentage()
+      - current.files().get(path).unknownPercentage())).reversed().thenComparing(Comparator.naturalOrder())).limit(5).toList();
+    report.append("\n## Largest semantic ").append(improvements ? "improvements" : "regressions")
+      .append("\n\nTop five by absolute change in unknown percentage.\n\n");
+    if (paths.isEmpty()) {
+      report.append("None.\n");
+      return;
+    }
+    report.append("| File | Current unknown % | Candidate unknown % | Change (pp) |\n|---|---:|---:|---:|\n");
+    for (String path : paths) {
+      Double before = current.files().get(path).unknownPercentage();
+      Double after = candidate.files().get(path).unknownPercentage();
+      report.append("| ").append(escape(path)).append(" | ").append(identifierPercentage(before)).append(" | ")
+        .append(identifierPercentage(after)).append(" | ").append(change(before, after)).append(" |\n");
+    }
   }
 
   private static void appendMetric(StringBuilder report, String metric, Object current, Object candidate) {

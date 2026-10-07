@@ -25,7 +25,7 @@ public class JavaExtensionsCheckRegistrar implements CheckRegistrar {
    * Lists all the checks provided by the plugin
    */
   public static Class<? extends JavaCheck>[] checkClasses() {
-    return new Class[] {ExampleCheck.class, SubscriptionExampleCheck.class, JspCodeCheck.class};
+    return new Class[] {ExampleCheck.class, SubscriptionExampleCheck.class, JspCodeCheck.class, SemanticBindingsCheck.class};
   }
 
   /**

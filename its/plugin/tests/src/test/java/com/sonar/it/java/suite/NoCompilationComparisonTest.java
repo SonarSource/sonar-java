@@ -25,14 +25,20 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+import java.util.jar.JarFile;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -47,22 +53,34 @@ import static org.assertj.core.api.Assertions.assertThat;
 @EnabledIfSystemProperty(named = "comparison.project", matches = ".+")
 class NoCompilationComparisonTest {
 
-  private static final Map<String, String> CANDIDATE_PROPERTIES = Map.of();
   private static final String SOURCE_ROOT = "sonar-xml-plugin/src/main/java";
   private static final String SEMANTIC_REPORT_PROPERTY = "sonar.java.internal.semantic.report";
   private static final Pattern TELEMETRY = Pattern.compile("Telemetry (java\\.analysis\\.main\\.[\\w.]+): (\\S+)");
+  private static final Pattern ANALYZER_TIME = Pattern.compile("Sensor JavaSensor \\[java\\] \\(done\\) \\| time=(\\d+)ms");
+  private static final Pattern BINDING_COMPLETION = Pattern.compile("Semantic binding probes: (\\d+) checked, (\\d+) failed\\.");
   private static OrchestratorRule orchestrator;
+  private static ComparisonSettings settings;
+  private static Path serverWorkspace;
+  private static Path pluginJar;
 
   @TempDir
   Path workspace;
 
   @BeforeAll
-  static void startServer() {
+  static void startServer() throws IOException {
+    settings = ComparisonSettings.load();
+    Path target = repositoryRoot().resolve("its/plugin/tests/target");
+    Files.createDirectories(target);
+    serverWorkspace = Files.createTempDirectory(target, "comparison-orchestrator-");
+    pluginJar = TestClasspathUtils.findModuleJarPath(repositoryRoot().resolve("sonar-java-plugin").toString());
     orchestrator = OrchestratorRule.builderEnv()
       .useDefaultAdminCredentialsForBuilds(true)
-      .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
+      .setSonarVersion(settings.serverVersion())
+      .setOrchestratorProperty("orchestrator.workspaceDir", serverWorkspace.toString())
       .setEdition(Edition.COMMUNITY)
-      .addPlugin(FileLocation.of(TestClasspathUtils.findModuleJarPath(repositoryRoot().resolve("sonar-java-plugin").toString()).toFile()))
+      .addPlugin(FileLocation.of(pluginJar.toFile()))
+      .addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")))
+      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-semantic-bindings.xml"))
       .build();
     orchestrator.start();
   }
@@ -99,8 +117,12 @@ class NoCompilationComparisonTest {
     var expectedFiles = javaFiles.stream().map(checkout::relativize).map(Path::toString).map(NoCompilationComparisonTest::normalize).sorted().toList();
     Path currentProject = workspace.resolve("current");
     Path candidateProject = workspace.resolve("candidate");
+    MessageDigest snapshot = sha256();
     for (Path source : javaFiles) {
       byte[] content = Files.readAllBytes(source);
+      snapshot.update(normalize(checkout.relativize(source).toString()).getBytes(StandardCharsets.UTF_8));
+      snapshot.update((byte) 0);
+      snapshot.update(content);
       for (Path project : List.of(currentProject, candidateProject)) {
         Path target = project.resolve(checkout.relativize(source));
         Files.createDirectories(target.getParent());
@@ -116,15 +138,45 @@ class NoCompilationComparisonTest {
     Path reportDirectory = SourceOnlyComparison.createRunDirectory(root
       .resolve("its/plugin/tests/src/test/java/com/sonar/it/java/suite/results"));
     System.out.println("Source-only analysis results: " + reportDirectory);
-    var current = scan(currentProject, SOURCE_ROOT, "current", Map.of(), expectedFiles);
-    var candidate = scan(candidateProject, SOURCE_ROOT, "candidate", CANDIDATE_PROPERTIES, expectedFiles);
-    var comparison = SourceOnlyComparison.compare(current, candidate, CANDIDATE_PROPERTIES.isEmpty(), rules);
-    SourceOnlyComparison.write(reportDirectory, comparison);
+    var metadata = runMetadata(checkout, HexFormat.of().formatHex(snapshot.digest()));
+    var bindingsCurrent = checkBindings(workspace.resolve("bindings-current"), "bindings-current", Map.of());
+    var bindingsCandidate = checkBindings(workspace.resolve("bindings-candidate"), "bindings-candidate", settings.candidateProperties());
+    metadata.put("Binding correctness/current", bindingSummary(bindingsCurrent));
+    metadata.put("Binding correctness/candidate", bindingSummary(bindingsCandidate));
+    if (settings.repetitions() > 1) {
+      var warmupCurrent = scan(currentProject, SOURCE_ROOT, "warmup-current", Map.of(), expectedFiles);
+      var warmupCandidate = scan(candidateProject, SOURCE_ROOT, "warmup-candidate", settings.candidateProperties(), expectedFiles);
+      assertThat(warmupCurrent.success()).as("Current warm-up: %s", warmupCurrent.error()).isTrue();
+      assertThat(warmupCandidate.success()).as("Candidate warm-up: %s", warmupCandidate.error()).isTrue();
+    }
+    var currentSamples = new ArrayList<SourceOnlyComparison.Run>();
+    var candidateSamples = new ArrayList<SourceOnlyComparison.Run>();
+    for (int i = 0; i < settings.repetitions(); i++) {
+      if (i % 2 == 0) {
+        currentSamples.add(scan(currentProject, SOURCE_ROOT, "current", Map.of(), expectedFiles));
+        candidateSamples.add(scan(candidateProject, SOURCE_ROOT, "candidate", settings.candidateProperties(), expectedFiles));
+      } else {
+        candidateSamples.add(scan(candidateProject, SOURCE_ROOT, "candidate", settings.candidateProperties(), expectedFiles));
+        currentSamples.add(scan(currentProject, SOURCE_ROOT, "current", Map.of(), expectedFiles));
+      }
+    }
+    var current = representative(currentSamples);
+    var candidate = representative(candidateSamples);
+    var comparison = SourceOnlyComparison.compare(current, candidate, settings.candidateProperties().isEmpty(), rules);
+    boolean stable = stable(currentSamples, rules) && stable(candidateSamples, rules);
+    metadata.put("Repeated result stability", stable ? "stable" : "unstable");
+    if (!stable) {
+      comparison = new SourceOnlyComparison.Comparison(false, settings.candidateProperties().isEmpty(),
+        "Measured repetitions produced inconsistent findings or semantics.", current, candidate, List.of(), List.of(), List.of());
+    }
+    SourceOnlyComparison.write(reportDirectory, comparison, metadata, currentSamples, candidateSamples);
     System.out.println("Source-only comparison report: " + reportDirectory.resolve("report.md"));
     assertThat(current.success()).as("Current scan: %s", current.error()).isTrue();
     assertThat(candidate.success()).as("Candidate scan: %s", candidate.error()).isTrue();
     assertThat(comparison.valid()).as("Comparison: %s", comparison.error()).isTrue();
-    if (CANDIDATE_PROPERTIES.isEmpty()) {
+    assertBindingProbe(bindingsCurrent);
+    assertBindingProbe(bindingsCandidate);
+    if (settings.candidateProperties().isEmpty()) {
       assertThat(comparison.currentOnly()).isEmpty();
       assertThat(comparison.candidateOnly()).isEmpty();
       assertThat(candidate.semantics()).isEqualTo(current.semantics());
@@ -133,6 +185,11 @@ class NoCompilationComparisonTest {
 
   private static SourceOnlyComparison.Run scan(Path project, String sourceRoot, String label,
                                                Map<String, String> candidateProperties, List<String> expectedFiles) {
+    return scan(project, sourceRoot, label, candidateProperties, expectedFiles, "Sonar way");
+  }
+
+  private static SourceOnlyComparison.Run scan(Path project, String sourceRoot, String label,
+                                               Map<String, String> candidateProperties, List<String> expectedFiles, String profile) {
     Path semanticReportPath = semanticReportPath(project, label);
     String projectKey = "source-only-" + label + "-" + UUID.randomUUID();
     var properties = new TreeMap<>(Map.of(
@@ -157,7 +214,7 @@ class NoCompilationComparisonTest {
       Files.createDirectories(semanticReportPath.getParent());
       Files.deleteIfExists(semanticReportPath);
       writePom(project, sourceRoot);
-      TestUtils.provisionProject(orchestrator, projectKey, projectKey, "java", "Sonar way");
+      TestUtils.provisionProject(orchestrator, projectKey, projectKey, "java", profile);
       MavenBuild build = TestUtils.createMavenBuild()
         .setPom(project.resolve("pom.xml").toFile())
         .setProperties(properties)
@@ -201,7 +258,7 @@ class NoCompilationComparisonTest {
         var response = client.issues().search(new SearchRequest().setComponentKeys(List.of(projectKey))
           .setPs("500").setP(Integer.toString(page++)));
         for (var issue : response.getIssuesList()) {
-          if (issue.getRule().startsWith("java:")) {
+          if (issue.getRule().startsWith("java:") || issue.getRule().equals("java-extension:semanticbindings")) {
             String path = issue.getComponent().equals(projectKey) ? "<project>" : pathsByComponent.get(issue.getComponent());
             if (path == null) {
               throw new IllegalStateException("Issue component is missing from indexed files: " + issue.getComponent());
@@ -216,6 +273,16 @@ class NoCompilationComparisonTest {
       var matcher = TELEMETRY.matcher(result.getLogs());
       while (matcher.find()) {
         telemetry.put(matcher.group(1), matcher.group(2));
+      }
+      var analyzer = ANALYZER_TIME.matcher(result.getLogs());
+      long analyzerMillis = 0;
+      boolean hasAnalyzerTime = false;
+      while (analyzer.find()) {
+        analyzerMillis += Long.parseLong(analyzer.group(1));
+        hasAnalyzerTime = true;
+      }
+      if (hasAnalyzerTime) {
+        telemetry.put("comparison.analyzer.time_ms", Long.toString(analyzerMillis));
       }
       files.sort(String::compareTo);
       boolean complete = files.equals(expectedFiles);
@@ -245,11 +312,119 @@ class NoCompilationComparisonTest {
             <plugin>
               <groupId>org.sonarsource.scanner.maven</groupId>
               <artifactId>sonar-maven-plugin</artifactId>
+              <version>%s</version>
             </plugin>
           </plugins>
         </build>
       </project>
-      """.formatted(sourceRoot));
+      """.formatted(sourceRoot, settings.scannerVersion()));
+  }
+
+  private static SourceOnlyComparison.Run representative(List<SourceOnlyComparison.Run> samples) {
+    return samples.stream().filter(run -> !run.success()).findFirst().orElse(samples.getFirst());
+  }
+
+  private static boolean stable(List<SourceOnlyComparison.Run> samples, List<String> rules) {
+    var reference = samples.getFirst();
+    return samples.stream().allMatch(run -> {
+      var comparison = SourceOnlyComparison.compare(reference, run, true, rules);
+      return comparison.valid() && comparison.currentOnly().isEmpty() && comparison.candidateOnly().isEmpty()
+        && reference.semantics().equals(run.semantics());
+    });
+  }
+
+  private static SourceOnlyComparison.Run checkBindings(Path project, String label, Map<String, String> candidateProperties) throws IOException {
+    Path sources = project.resolve("bindings");
+    Files.createDirectories(sources);
+    Files.writeString(sources.resolve("BindingFixture.java"), """
+      package bindings;
+      class BindingFixture extends BindingParent {
+        void check() {
+          String text = "x";
+          BindingHelper helper = new BindingHelper();
+          int fieldValue = inheritedValue;
+          String result = helper.select(text);
+          MissingType missing = null;
+        }
+      }
+      """);
+    Files.writeString(sources.resolve("BindingHelper.java"), """
+      package bindings;
+      class BindingHelper {
+        String select(String value) { return value; }
+        int select(int value) { return value; }
+      }
+      class BindingParent { protected int inheritedValue; }
+      """);
+    return scan(project, ".", label, candidateProperties, List.of("bindings/BindingFixture.java", "bindings/BindingHelper.java"), "semantic-bindings");
+  }
+
+  private static String bindingSummary(SourceOnlyComparison.Run run) {
+    if (!run.success()) {
+      return "unavailable: " + run.error();
+    }
+    return run.findings().stream().map(SourceOnlyComparison.Finding::message)
+      .filter(message -> message.startsWith("Semantic binding "))
+      .sorted().collect(java.util.stream.Collectors.joining("; "));
+  }
+
+  private static void assertBindingProbe(SourceOnlyComparison.Run run) {
+    assertThat(run.success()).as("%s binding scan: %s", run.label(), run.error()).isTrue();
+    var completions = run.findings().stream().map(SourceOnlyComparison.Finding::message)
+      .filter(message -> BINDING_COMPLETION.matcher(message).matches()).toList();
+    assertThat(completions).as("Binding probe must execute and emit exactly one completion").hasSize(1);
+    var completion = BINDING_COMPLETION.matcher(completions.getFirst());
+    assertThat(completion.matches()).isTrue();
+    assertThat(Integer.parseInt(completion.group(1))).as("All five expected binding probes must execute").isEqualTo(5);
+    assertThat(Integer.parseInt(completion.group(2))).as("Exact semantic bindings must match the golden fixture: %s", bindingSummary(run)).isZero();
+  }
+
+  private static Map<String, String> runMetadata(Path checkout, String snapshot) throws IOException {
+    var metadata = new TreeMap<String, String>();
+    metadata.put("Recorded at (UTC)", Instant.now().toString());
+    metadata.put("Analyzer checkout revision", git(repositoryRoot(), "rev-parse", "HEAD"));
+    metadata.put("Analyzer checkout dirty", Boolean.toString(!git(repositoryRoot(), "status", "--porcelain").isBlank()));
+    metadata.put("Target checkout revision", git(checkout, "rev-parse", "HEAD"));
+    metadata.put("Target checkout dirty", Boolean.toString(!git(checkout, "status", "--porcelain").isBlank()));
+    metadata.put("Target source snapshot SHA-256", snapshot);
+    metadata.put("Analyzer plugin SHA-256", HexFormat.of().formatHex(sha256().digest(Files.readAllBytes(pluginJar))));
+    metadata.put("Binding probe plugin SHA-256", HexFormat.of().formatHex(sha256().digest(Files.readAllBytes(TestUtils.pluginJar("java-extension-plugin").toPath()))));
+    try (var jar = new JarFile(pluginJar.toFile())) {
+      metadata.put("Analyzer plugin version", jar.getManifest().getMainAttributes().getValue("Plugin-Version"));
+    }
+    metadata.put("Server version", settings.serverVersion());
+    metadata.put("Maven scanner version", settings.scannerVersion());
+    metadata.put("JDK", System.getProperty("java.version") + " / " + System.getProperty("java.vendor"));
+    metadata.put("Java language level", "21");
+    metadata.put("Profile", "Sonar way");
+    metadata.put("Candidate properties", settings.candidateProperties().isEmpty() ? "none (placeholder)" : settings.candidateProperties().toString());
+    metadata.put("Measured repetitions per mode", Integer.toString(settings.repetitions()));
+    metadata.put("Timing protocol", settings.repetitions() > 1 ? "one warm-up per mode excluded; measured order alternates current/candidate" : "single measured pair; no warm-up");
+    metadata.put("Server workspace", serverWorkspace.toString());
+    return metadata;
+  }
+
+  private static String git(Path checkout, String... arguments) {
+    var command = new ArrayList<>(List.of("git", "-C", checkout.toString()));
+    command.addAll(List.of(arguments));
+    try {
+      var process = new ProcessBuilder(command).redirectErrorStream(true).start();
+      String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8).strip();
+      return process.waitFor() == 0 ? output : "unavailable";
+    } catch (IOException e) {
+      return "unavailable";
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new IllegalStateException("Interrupted while recording Git metadata", e);
+    }
+  }
+
+  private static MessageDigest sha256() {
+    try {
+      return MessageDigest.getInstance("SHA-256");
+    } catch (NoSuchAlgorithmException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   private static SourceOnlyComparison.Run failed(String label, long scanMillis, String error) {
