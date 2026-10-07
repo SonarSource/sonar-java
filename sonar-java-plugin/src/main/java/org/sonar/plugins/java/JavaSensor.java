@@ -115,6 +115,8 @@ public class JavaSensor implements Sensor {
     telemetry.aggregateAsSortedSet(JAVA_SCANNER_APP, context.config().get("sonar.scanner.app").orElse("none"));
     telemetry.aggregateAsFlag(JAVA_IS_AUTOSCAN, sonarComponents.isAutoScan());
 
+
+    semanticReportScanner.enterModule(context.fileSystem().baseDir().toPath());
     JavaFrontend frontend = new JavaFrontend(javaVersion,
       sonarComponents,
       measurer,
@@ -124,6 +126,7 @@ public class JavaSensor implements Sensor {
       semanticReportScanner,
       sonarComponents.mainChecks().toArray(new JavaCheck[0]));
     frontend.scan(getSourceFiles(context.fileSystem()), getTestFiles(context.fileSystem()), runJasper(context));
+    semanticReportScanner.leaveModule();
 
     sensorDuration.stop();
   }

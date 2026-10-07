@@ -59,13 +59,13 @@ public class ProjectEndOfAnalysisSensor implements ProjectSensor {
 
   @Override
   public void execute(SensorContext context) {
-    context.config().get(SonarComponents.SONAR_SEMANTIC_REPORT)
-      .ifPresent(path -> semanticReportScanner.writeReport(Path.of(path), context.fileSystem().baseDir().toPath()));
     recordSpringTelemetry();
     telemetry.toMap().forEach((key, value) -> {
       LOG.debug("Telemetry {}: {}", key, value);
       context.addTelemetryProperty(key, value);
     });
+    context.config().get(SonarComponents.SONAR_SEMANTIC_REPORT)
+      .ifPresent(path -> semanticReportScanner.writeReport(Path.of(path), context.fileSystem().baseDir().toPath()));
   }
 
   /**
