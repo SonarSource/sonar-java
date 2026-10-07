@@ -829,6 +829,19 @@ class SonarComponentsTest {
   }
 
   @Test
+  void compile_to_bytecode_getter() {
+    MapSettings settings = new MapSettings();
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
+
+    assertThat(sonarComponents.isCompileToByteCodeEnabled()).isFalse();
+    settings.setProperty(SonarComponents.SONAR_COMPILE_TO_BYTE_CODE, "false");
+    assertThat(sonarComponents.isCompileToByteCodeEnabled()).isFalse();
+    settings.setProperty(SonarComponents.SONAR_COMPILE_TO_BYTE_CODE, "true");
+    assertThat(sonarComponents.isCompileToByteCodeEnabled()).isTrue();
+  }
+
+  @Test
   void file_by_file_getters() {
     MapSettings settings = new MapSettings();
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
