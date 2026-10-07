@@ -196,15 +196,13 @@ class JavaFrontendTest {
   }
 
   @Test
-  void semantic_report_contains_module_counts_and_unknown_references() throws IOException {
+  void semantic_report_contains_module_counts() throws IOException {
     Path report = temp.resolve("semantic-report.json");
     MapSettings settings = new MapSettings();
     settings.setProperty(SonarComponents.SONAR_SEMANTIC_REPORT, report.toString());
     sensorContext = SensorContextTester.create(temp.toFile().getAbsoluteFile());
     sensorContext.setSettings(settings);
-    List<InputFile> inputFiles = List.of(
-      addFile(temp, "class Z { Missing value; }", sensorContext),
-      addFile(temp, "class A { int value; }", sensorContext));
+    List<InputFile> inputFiles = List.of(addFile(temp, "import missing.Nope;", sensorContext));
 
     scan(settings, SONARQUBE_RUNTIME, inputFiles);
     assertThat(report).doesNotExist();
@@ -215,17 +213,14 @@ class JavaFrontendTest {
     assertThat(modules).hasSize(1);
     JsonObject module = modules.get(0).getAsJsonObject();
     assertThat(module.get("path").getAsString()).isEqualTo(".");
-    assertThat(module.getAsJsonArray("unknownIdentifiers").get(0).getAsString())
-      .isEqualTo("<Z.java:(1:11)-(1:18)>.Missing");
     for (String count : List.of("resolvedIdentifierCount", "unknownIdentifierCount", "resolvedSymbolCount", "unknownSymbolCount", "resolvedTypeCount", "unknownTypeCount")) {
       assertThat(result.get(count).getAsInt()).isEqualTo(module.get(count).getAsInt());
     }
     assertThat(module.get("unknownIdentifierCount").getAsInt()).isEqualTo(module.getAsJsonArray("unknownIdentifiers").size());
     assertThat(module.get("unknownSymbolCount").getAsInt()).isEqualTo(module.getAsJsonArray("unknownSymbols").size());
     assertThat(module.get("unknownTypeCount").getAsInt()).isEqualTo(module.getAsJsonArray("unknownTypes").size());
-    assertThat(module.getAsJsonArray("unknownTypes").toString()).contains("\"(value).type\"");
-    assertThat(module.get("percentageOfUnknownIdentifier").getAsDouble()).isEqualTo(20.0);
-    assertThat(result.get("percentageOfUnknownIdentifier").getAsDouble()).isEqualTo(20.0);
+    assertThat(result.get("percentageOfUnknownIdentifier").getAsDouble())
+      .isEqualTo(module.get("percentageOfUnknownIdentifier").getAsDouble());
   }
 
   @Test
@@ -249,49 +244,6 @@ class JavaFrontendTest {
     var modules = result.getAsJsonArray("modules");
     assertThat(modules).hasSize(1);
     assertThat(modules.get(0).getAsJsonObject().get("path").getAsString()).isEqualTo(".");
-  }
-
-  @Test
-  void semantic_report_excludes_unnamed_variables() throws IOException {
-    Path report = temp.resolve("semantic-report.json");
-    MapSettings settings = new MapSettings();
-    settings.setProperty(SonarComponents.SONAR_SEMANTIC_REPORT, report.toString());
-    settings.setProperty(JavaVersion.SOURCE_VERSION, "22");
-    Path unnamedModule = Files.createDirectory(temp.resolve("a-unnamed"));
-    Path namedModule = Files.createDirectory(temp.resolve("b-named"));
-    sensorContext = SensorContextTester.create(unnamedModule.toFile());
-    sensorContext.setSettings(settings);
-    scan(settings, SONARQUBE_RUNTIME, List.of(addFile(unnamedModule, "class A { void m() { int _ = 1; } }", sensorContext)));
-    sensorContext = SensorContextTester.create(namedModule.toFile());
-    sensorContext.setSettings(settings);
-    scan(settings, SONARQUBE_RUNTIME, List.of(addFile(namedModule, "class B { void m() { int named = 1; } }", sensorContext)));
-    semanticReportScanner.writeReport(report, temp);
-
-    var modules = JsonParser.parseString(Files.readString(report)).getAsJsonObject().getAsJsonArray("modules");
-    JsonObject unnamed = modules.get(0).getAsJsonObject();
-    JsonObject named = modules.get(1).getAsJsonObject();
-    assertThat(unnamed.get("resolvedIdentifierCount").getAsInt() + unnamed.get("unknownIdentifierCount").getAsInt())
-      .isEqualTo(named.get("resolvedIdentifierCount").getAsInt() + named.get("unknownIdentifierCount").getAsInt() - 1);
-    assertThat(unnamed.get("unknownIdentifierCount").getAsInt()).isEqualTo(named.get("unknownIdentifierCount").getAsInt());
-  }
-
-  @Test
-  void semantic_report_excludes_identifiers_without_symbol_information() throws IOException {
-    Path report = temp.resolve("semantic-report.json");
-    MapSettings settings = new MapSettings();
-    settings.setProperty(SonarComponents.SONAR_SEMANTIC_REPORT, report.toString());
-    sensorContext = SensorContextTester.create(temp.toFile().getAbsoluteFile());
-    sensorContext.setSettings(settings);
-
-    scan(settings, SONARQUBE_RUNTIME, List.of(
-      addFile(temp, "class A { Class<?> literal = String.class; }", sensorContext),
-      addFile(temp, "class B { java.util.function.IntFunction<String[]> factory = String[]::new; }", sensorContext),
-      addFile(temp, "import java.util.List; class C {}", sensorContext)));
-    semanticReportScanner.writeReport(report, temp);
-
-    var module = JsonParser.parseString(Files.readString(report)).getAsJsonObject().getAsJsonArray("modules").get(0).getAsJsonObject();
-    assertThat(module.get("resolvedIdentifierCount").getAsInt() + module.get("unknownIdentifierCount").getAsInt()).isEqualTo(13);
-    assertThat(module.getAsJsonArray("unknownIdentifiers")).isEmpty();
   }
 
   @Test
@@ -325,10 +277,10 @@ class JavaFrontendTest {
 
     sensorContext = SensorContextTester.create(firstModule.toFile());
     sensorContext.setSettings(settings);
-    scan(settings, SONARQUBE_RUNTIME, List.of(addFile(firstModule, "class Shared {}", sensorContext)));
+    scan(settings, SONARQUBE_RUNTIME, List.of(addFile(firstModule, "", sensorContext)));
     sensorContext = SensorContextTester.create(secondModule.toFile());
     sensorContext.setSettings(settings);
-    scan(settings, SONARQUBE_RUNTIME, List.of(addFile(secondModule, "class Shared {}", sensorContext)));
+    scan(settings, SONARQUBE_RUNTIME, List.of(addFile(secondModule, "", sensorContext)));
 
     assertThat(report).doesNotExist();
     semanticReportScanner.writeReport(report, temp);

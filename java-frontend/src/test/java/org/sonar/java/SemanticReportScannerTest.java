@@ -66,16 +66,52 @@ class SemanticReportScannerTest {
     scanner.leaveModule();
   }
 
+  @Test
+  void reports_unknown_identifiers_and_skips_identifiers_without_symbol_information() throws IOException {
+    SemanticReportScanner scanner = new SemanticReportScanner();
+    Symbol.TypeSymbol source = typeSymbol("example.Source", "example", "Source");
+    scanner.enterModule(temp);
+    for (String name : List.of("new", "class")) {
+      IdentifierTree identifier = mock(IdentifierTree.class);
+      when(identifier.name()).thenReturn(name);
+      scanIdentifier(scanner, source, identifier);
+    }
+    IdentifierTree unnamed = mock(IdentifierTree.class);
+    when(unnamed.name()).thenReturn("_");
+    when(unnamed.isUnnamedVariable()).thenReturn(true);
+    scanIdentifier(scanner, source, unnamed);
+    IdentifierTree missing = mock(IdentifierTree.class);
+    when(missing.name()).thenReturn("Missing");
+    when(missing.symbol()).thenReturn(Symbol.UNKNOWN_SYMBOL);
+    scanIdentifier(scanner, source, missing);
+
+    Path report = temp.resolve("report.json");
+    scanner.writeReport(report, temp);
+    var result = JsonParser.parseString(Files.readString(report)).getAsJsonObject();
+    assertThat(result.get("resolvedIdentifierCount").getAsInt()).isZero();
+    assertThat(result.get("unknownIdentifierCount").getAsInt()).isEqualTo(1);
+    assertThat(result.getAsJsonArray("modules").get(0).getAsJsonObject().getAsJsonArray("unknownIdentifiers").get(0).getAsString())
+      .endsWith(">.Missing");
+    scanner.leaveModule();
+  }
+
   private void assertResolvedSymbols(SemanticReportScanner scanner, Symbol.TypeSymbol source, Symbol.TypeSymbol target, int expected) throws IOException {
+    IdentifierTree identifier = mock(IdentifierTree.class);
+    when(identifier.name()).thenReturn("Target");
+    when(identifier.symbol()).thenReturn(target);
+    scanIdentifier(scanner, source, identifier);
+    Path report = temp.resolve("report.json");
+    scanner.writeReport(report, temp);
+    assertThat(JsonParser.parseString(Files.readString(report)).getAsJsonObject().get("resolvedSymbolCount").getAsInt()).isEqualTo(expected);
+  }
+
+  private void scanIdentifier(SemanticReportScanner scanner, Symbol.TypeSymbol source, IdentifierTree identifier) throws IOException {
     Path file = Files.createTempFile(temp, "Reference", ".java");
     InputFile inputFile = mock(InputFile.class);
     when(inputFile.uri()).thenReturn(file.toUri());
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     when(context.getInputFile()).thenReturn(inputFile);
 
-    IdentifierTree identifier = mock(IdentifierTree.class);
-    when(identifier.name()).thenReturn("Target");
-    when(identifier.symbol()).thenReturn(target);
     doAnswer(invocation -> {
       invocation.getArgument(0, TreeVisitor.class).visitIdentifier(identifier);
       return null;
@@ -98,9 +134,6 @@ class SemanticReportScannerTest {
     when(context.getTree()).thenReturn(compilationUnit);
 
     scanner.scanFile(context);
-    Path report = temp.resolve("report.json");
-    scanner.writeReport(report, temp);
-    assertThat(JsonParser.parseString(Files.readString(report)).getAsJsonObject().get("resolvedSymbolCount").getAsInt()).isEqualTo(expected);
   }
 
   private static Symbol.TypeSymbol typeSymbol(String qualifiedName, String packageName, String name) {
