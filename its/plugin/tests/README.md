@@ -1,7 +1,7 @@
 # Source-only analysis comparison
 
-Compare today's SonarJava against a future source-only mode on the production
-Java sources of `sonar-xml`. Neither scan compiles the target project or resolves
+Compare source-path resolution disabled versus enabled (PR #6308) on the
+production Java sources of `sonar-xml`. Neither scan compiles the target project or resolves
 its dependencies. Both receive only Java sources and the running JDK, with no
 project binaries or dependency libraries.
 
@@ -15,10 +15,12 @@ The comparison gives each invocation a unique Orchestrator workspace under
 `target/comparison-orchestrator-*`, isolating it from the original suite and
 other comparison invocations. Downloaded artifacts remain shared and cached.
 
-Build the local analyzer and the custom-rule artifact required by this IT module once:
+Use an analyzer artifact containing both `alban/SemanticReport` and PR #6308
+(see the evaluation instructions below). Build the custom-rule artifacts
+required by this IT module once:
 
 ```sh
-mvn -pl sonar-java-plugin,docs/java-custom-rules-example,its/plugin/plugins/java-extension-plugin -am install -DskipTests
+mvn -pl docs/java-custom-rules-example,its/plugin/plugins/java-extension-plugin -am install -DskipTests
 ```
 
 Run the comparison, its scanner smoke test, and the comparison and semantic-report tests:
@@ -28,7 +30,9 @@ Orchestrator Maven runner.
 ```sh
 mvn -f its/plugin/tests/pom.xml -Pit-plugin test \
   -Dtest=NoCompilationComparisonTest,SourceOnlyComparisonTest,SemanticReportTest,ComparisonSettingsTest \
-  -Dcomparison.project="$HOME/Work/Code/sonar-xml"
+  -Dcomparison.project="$HOME/Work/Code/sonar-xml" \
+  -Dcomparison.pluginJar=/absolute/path/evaluation/sonar-java-plugin/target/sonar-java-plugin-8.45.0-SNAPSHOT.jar \
+  -Dcomparison.analyzerCheckout=/absolute/path/evaluation
 ```
 
 The entire `NoCompilationComparisonTest` class, including its scanner smoke
@@ -37,14 +41,16 @@ both scanner tests. The smoke test verifies that two Java source files can be
 analyzed without binaries or libraries. The lightweight diff unit tests remain
 part of normal test runs.
 
-Provide `-Dcomparison.candidateProperties=/absolute/path/candidate.properties`
-to load UTF-8 scanner properties enabling the new analyzer. Put the actual
-feature flag supported by your analyzer build in that file. Shared source, JDK,
-classpath, reporting, and logging settings cannot be overridden there. With no
-file, or an empty file, the report labels the candidate as a placeholder and
-requires identical findings and semantic counts. The candidate uses the same plugin, Sonar way rules, Java 21
-language level, JDK, and source files. Autoscan and unchanged-file skipping are
-disabled in both modes.
+The baseline leaves source paths unset. The candidate configures
+`sonar.java.sourcepath` from the source roots copied for each scenario. For
+sonar-xml this is `sonar-xml-plugin/src/main/java`; the dependency fixture uses
+`consumer/src/main/java,dependency/src/main/java`. A candidate properties file
+(`-Dcomparison.candidateProperties=/absolute/path/candidate.properties`) can
+supply additional UTF-8 settings. Shared configuration and scenario-managed
+source paths cannot be overridden there. Both runs use the same combined plugin,
+Sonar way rules, Java 21 language level, JDK, and source files. The source-path
+property is the feature difference unless extra candidate settings are supplied.
+Autoscan and unchanged-file skipping are disabled in both modes.
 
 The Maven build passes the report path with
 `.setProperty("sonar.java.internal.semantic.report", semanticReportPath.toString())`.
@@ -95,6 +101,10 @@ per-file table compares identifier counts and the change in unknown percentage.
 The summary also reports files with no unknown identifiers, improved/unchanged/
 regressed file counts, and the net change in unknown identifiers. A top-five
 table highlights the largest contributors to unknown identifiers in either run.
+Unknown occurrences match by relative file path, name, and token range. The
+report shows unknowns remaining, no longer reported, and newly reported; it
+includes up to 20 changed occurrences per direction and groups counts by AST
+context. Parent kind is a diagnostic context, not a semantic role.
 The rule table includes only rules with findings; the count of
 rules with no findings is summarized separately. Finding locations and messages
 are included below the tables. Scanner failure diagnostics appear in the report
@@ -120,7 +130,9 @@ a quick single pair without warm-ups. All repetitions must produce stable
 findings and semantics. Server startup is excluded, and no CI speed threshold
 is enforced.
 
-Semantic metrics count identifier occurrences, excluding unnamed variables,
+Semantic metrics follow the latest target reporter: imports, unnamed variables,
+and pseudo-identifiers `new` and `class` are excluded. Eligible identifiers are
+counted by occurrence,
 whose symbols the analyzer marks known or unknown. Known identifiers are total
 minus unknown. The global unknown percentage uses the aggregate counts rather
 than averaging file percentages; files with no identifiers show `N/A`.
@@ -172,3 +184,48 @@ return type, inherited field owner/type, and intentionally unresolved
 success. All five checks must run and match the expectations; mismatch details
 are included in report metadata before assertions fail. This profile is not
 active for the real-project scans or existing fixtures.
+
+## Evaluating PR #6308
+
+Build a plugin from an evaluation checkout containing both `alban/SemanticReport`
+and `ac/hackathon` (PR #6308):
+
+```sh
+mvn -pl sonar-java-plugin -am install -Dmaven.test.skip=true
+```
+
+Keep the test PR focused on the harness; the feature implementation need not be
+merged into it. The two branches both touch frontend setup, so preserve the
+semantic reporter when resolving the evaluation merge. If the analyzer has both
+features in the harness checkout, `comparison.pluginJar` can be omitted to use
+its local plugin artifact.
+
+Select that artifact explicitly when running the comparison:
+
+```sh
+mvn -f its/plugin/tests/pom.xml -Pit-plugin test \
+  -Dtest=NoCompilationComparisonTest,SourceOnlyComparisonTest,SemanticReportTest,ComparisonSettingsTest \
+  -Dcomparison.project="$HOME/Work/Code/sonar-xml" \
+  -Dcomparison.pluginJar=/absolute/path/evaluation/sonar-java-plugin/target/sonar-java-plugin-8.45.0-SNAPSHOT.jar \
+  -Dcomparison.analyzerCheckout=/absolute/path/evaluation
+```
+
+`comparison.analyzerCheckout` records the actual build checkout revision and
+dirty state separately from the test harness revision. Artifact hashes remain
+the definitive identity. The test fails if the selected plugin lacks working
+source-path support.
+
+Before the real-repository comparison, a dedicated consumer/dependency fixture
+indexes only `consumer/src/main/java`. Both copies contain dependency source
+roots, but only the candidate makes them visible through `sonar.java.sourcepath`.
+The baseline must leave the project type, overload, and inherited field unknown;
+the candidate must resolve their exact bindings. JDK String remains known and
+MissingType remains unknown in both. Strict indexed-file and semantic-report
+coverage checks ensure dependency files are not analyzed or reported.
+
+External dependency JARs remain excluded in both modes. This experiment measures
+project-source resolution. The dependency fixture makes its effect observable;
+sonar-xml can remain unchanged because ordinary batches already resolve local
+types and external libraries are still absent. Main-source resolution is
+measured first; test source-path isolation and other edge cases remain covered
+by PR #6308's own tests.

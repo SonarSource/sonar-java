@@ -89,6 +89,7 @@ class ComparisonSettingsTest {
     Path path = directory.resolve("candidate.properties");
     for (String key : List.of("sonar.projectKey", "sonar.sources", "sonar.tests", "sonar.java.source", "sonar.java.jdkHome",
       "sonar.projectBaseDir", "sonar.exclusions", "sonar.scanner.skipJreProvisioning",
+      "sonar.java.sourcepath", "sonar.java.test.sourcepath",
       "sonar.java.binaries", "sonar.java.libraries", "sonar.java.test.binaries", "sonar.java.test.libraries",
       "sonar.java.skipUnchanged", "sonar.internal.analysis.autoscan", "sonar.internal.analysis.autoscan.filtering",
       "sonar.java.internal.semantic.report", "sonar.verbose", "sonar.log.level", "org.slf4j.simpleLogger.log.org.sonarsource",

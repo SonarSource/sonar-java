@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -46,6 +47,60 @@ class SemanticReportTest {
   void normalizes_file_paths() throws IOException {
     var report = SemanticReport.read(write(report(1, 0, file("src\\\\A.java", 1, 0))), List.of("src/A.java"));
     assertThat(report.files()).containsOnlyKeys("src/A.java");
+  }
+
+  @Test
+  void preserves_unknown_occurrences_in_normalized_immutable_deterministic_order() throws IOException {
+    var first = unknownIdentifier("A", "1:0-1:1", "VARIABLE");
+    var second = unknownIdentifier("B", "3:0-3:1", "MEMBER_SELECT");
+    var report = SemanticReport.read(write(report(5, 2,
+      fileWithDetails("src/Z.java", 3, 0), fileWithDetails("src\\\\A.java", 2, 2, second, first))),
+      List.of("src/A.java", "src/Z.java"));
+
+    assertThat(report.hasUnknownDetails()).isTrue();
+    assertThat(report.unknownIdentifiers().keySet()).containsExactly("src/A.java", "src/Z.java");
+    assertThat(report.unknownIdentifiers().get("src/A.java")).containsExactly(
+      new SemanticReport.UnknownIdentifier("A", "1:0-1:1", "VARIABLE"),
+      new SemanticReport.UnknownIdentifier("B", "3:0-3:1", "MEMBER_SELECT"));
+    assertThat(report.unknownIdentifiers().get("src/Z.java")).isEmpty();
+    assertThatThrownBy(() -> report.files().clear()).isInstanceOf(UnsupportedOperationException.class);
+    assertThatThrownBy(() -> report.unknownIdentifiers().clear()).isInstanceOf(UnsupportedOperationException.class);
+    assertThatThrownBy(() -> report.unknownIdentifiers().get("src/A.java").clear()).isInstanceOf(UnsupportedOperationException.class);
+  }
+
+  @Test
+  void legacy_counts_have_no_occurrence_details_and_empty_projects_have_complete_details() throws IOException {
+    var legacy = SemanticReport.read(write(report(1, 0, file("A.java", 1, 0))), List.of("A.java"));
+    assertThat(legacy.hasUnknownDetails()).isFalse();
+    assertThat(legacy.unknownIdentifiers()).isEmpty();
+    var constructed = new SemanticReport(new SemanticReport.Counts(1, 0), Map.of("A.java", new SemanticReport.Counts(1, 0)));
+    assertThat(constructed.hasUnknownDetails()).isFalse();
+    assertThat(SemanticReport.read(write(report(0, 0)), List.of()).hasUnknownDetails()).isTrue();
+  }
+
+  @Test
+  void rejects_mismatched_and_partial_unknown_details() throws IOException {
+    var identifier = unknownIdentifier("A", "1:0-1:1", "VARIABLE");
+    assertInvalid(report(1, 1, fileWithDetails("A.java", 1, 1)), List.of("A.java"), "detail count");
+    assertInvalid(report(1, 0, fileWithDetails("A.java", 1, 0, identifier)), List.of("A.java"), "detail count");
+    assertInvalid(report(2, 1, fileWithDetails("A.java", 1, 1, identifier), file("B.java", 1, 0)),
+      List.of("A.java", "B.java"), "every file or none");
+    assertInvalid(report(1, 0, file("A.java", 1, 0).replace("}", ",\"unknownIdentifiers\":null}")),
+      List.of("A.java"), "Invalid unknown identifier details");
+  }
+
+  @Test
+  void rejects_invalid_unknown_fields_and_duplicate_occurrences() throws IOException {
+    var identifier = unknownIdentifier("A", "1:0-1:1", "VARIABLE");
+    for (String invalid : List.of(
+      identifier.replace("\"name\":\"A\",", ""),
+      identifier.replace("\"A\"", "\" \""),
+      identifier.replace("\"1:0-1:1\"", "42"),
+      identifier.replace("\"VARIABLE\"", "null"))) {
+      assertInvalid(report(1, 1, fileWithDetails("A.java", 1, 1, invalid)), List.of("A.java"), "invalid unknown identifier string");
+    }
+    assertInvalid(report(2, 2, fileWithDetails("A.java", 2, 2,
+      identifier, identifier.replace("VARIABLE", "MEMBER_SELECT"))), List.of("A.java"), "Duplicate unknown identifier occurrence");
   }
 
   @Test
@@ -102,5 +157,14 @@ class SemanticReportTest {
 
   private static String file(String path, int total, int unknown) {
     return "{\"path\":\"" + path + "\",\"numberOfIdentifier\":" + total + ",\"numberOfUnknownIdentifier\":" + unknown + "}";
+  }
+
+  private static String fileWithDetails(String path, int total, int unknown, String... identifiers) {
+    String file = file(path, total, unknown);
+    return file.substring(0, file.length() - 1) + ",\"unknownIdentifiers\":[" + String.join(",", identifiers) + "]}";
+  }
+
+  private static String unknownIdentifier(String name, String range, String parentKind) {
+    return "{\"name\":\"" + name + "\",\"range\":\"" + range + "\",\"parentKind\":\"" + parentKind + "\"}";
   }
 }
