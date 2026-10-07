@@ -189,17 +189,9 @@ public class SemanticReportScanner implements JavaFileScanner {
       currentModuleReferences.unknownSymbols.add(symbolLocation.get());
       return;
     }
-    Type referencedType = null;
-    if (symbol instanceof Symbol.TypeSymbol typeSymbol && !typeSymbol.type().isUnknown()) {
-      Type type = typeSymbol.type();
-      Type erasure = type.erasure();
-      if (erasure != null && !erasure.isUnknown()) {
-        Symbol.TypeSymbol erasedSymbol = erasure.symbol();
-        if (erasedSymbol != null && !erasedSymbol.isUnknown()) {
-          symbol = erasedSymbol;
-          referencedType = type;
-        }
-      }
+    Symbol referencedSymbol = symbol;
+    if (symbol instanceof Symbol.TypeSymbol typeSymbol) {
+      symbol = erasedTypeSymbol(typeSymbol);
     }
     Symbol.TypeSymbol targetClass = symbol instanceof Symbol.TypeSymbol typeSymbol ? typeSymbol : symbol.enclosingClass();
     int visibility = visibility(sourceClass, targetClass);
@@ -211,9 +203,22 @@ public class SemanticReportScanner implements JavaFileScanner {
     if (currentModuleReferences.symbolSources.computeIfAbsent(symbol, ignored -> newIdentitySet()).add(sourceClass)) {
       currentModuleReferences.symbolsToResolve.push(new SymbolReference(symbol, sourceClass));
     }
-    if (referencedType != null) {
-      collectType(referencedType, locationOf(symbol.name(), "type"), sourceClass);
+    if (referencedSymbol != symbol) {
+      collectType(referencedSymbol.type(), locationOf(symbol.name(), "type"), sourceClass);
     }
+  }
+
+  private static Symbol.TypeSymbol erasedTypeSymbol(Symbol.TypeSymbol typeSymbol) {
+    Type type = typeSymbol.type();
+    if (type.isUnknown()) {
+      return typeSymbol;
+    }
+    Type erasure = type.erasure();
+    if (erasure == null || erasure.isUnknown()) {
+      return typeSymbol;
+    }
+    Symbol.TypeSymbol erasedSymbol = erasure.symbol();
+    return erasedSymbol == null || erasedSymbol.isUnknown() ? typeSymbol : erasedSymbol;
   }
 
   private void collectSymbolChildren(Symbol symbol, @Nullable Symbol.TypeSymbol sourceClass) {
