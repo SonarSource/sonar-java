@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -37,6 +38,7 @@ import org.sonar.java.ast.visitors.Java25FeaturesTelemetryVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.classpath.DependencyVersionInference;
+import org.sonar.java.classpath.SourcePath;
 import org.sonar.java.collections.CollectionUtils;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
@@ -48,8 +50,8 @@ import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonarsource.performance.measure.PerformanceMeasure;
 import org.sonarsource.performance.measure.PerformanceMeasure.Duration;
+import org.sonarsource.performance.measure.PerformanceMeasure;
 
 import static org.sonar.java.telemetry.TelemetryKey.JAVA_DEPENDENCY_LOMBOK;
 import static org.sonar.java.telemetry.TelemetryKey.JAVA_DEPENDENCY_SPRING_BOOT;
@@ -71,6 +73,7 @@ public class JavaFrontend {
   private final SonarComponents sonarComponents;
   private final Telemetry telemetry;
   private final List<File> globalClasspath;
+  private final SourcePath globalSourcePath;
   private final JavaAstScanner astScanner;
   private final JavaAstScanner astScannerForTests;
   private final JavaAstScanner astScannerForGeneratedFiles;
@@ -110,6 +113,9 @@ public class JavaFrontend {
     List<File> classpath = sonarComponents.getJavaClasspath();
     List<File> testClasspath = sonarComponents.getJavaTestClasspath();
     List<File> jspClasspath = sonarComponents.getJspClasspath();
+    SourcePath mainSourcePath = Objects.requireNonNullElse(sonarComponents.getJavaSourcePath(), SourcePath.EMPTY);
+    SourcePath testSourcePath = Objects.requireNonNullElse(sonarComponents.getJavaTestSourcePath(), SourcePath.EMPTY);
+    globalSourcePath = SourcePath.combine(mainSourcePath, testSourcePath);
     testCodeVisitors.addAll(sonarComponents.testChecks());
     List<JavaCheck> jspCodeVisitors = sonarComponents.jspChecks();
     boolean inAndroidContext = sonarComponents.inAndroidContext();
@@ -119,15 +125,15 @@ public class JavaFrontend {
 
     //AstScanner for main files
     astScanner = new JavaAstScanner(sonarComponents, telemetry, TelemetryKey.JAVA_ANALYSIS_MAIN);
-    astScanner.setVisitorBridge(new VisitorsBridge(codeVisitors, classpath, sonarComponents, javaVersion, inAndroidContext));
+    astScanner.setVisitorBridge(new VisitorsBridge(codeVisitors, classpath, mainSourcePath, sonarComponents, javaVersion, inAndroidContext));
 
     //AstScanner for test files
     astScannerForTests = new JavaAstScanner(sonarComponents, telemetry, TelemetryKey.JAVA_ANALYSIS_TEST);
-    astScannerForTests.setVisitorBridge(new VisitorsBridge(testCodeVisitors, testClasspath, sonarComponents, javaVersion, inAndroidContext));
+    astScannerForTests.setVisitorBridge(new VisitorsBridge(testCodeVisitors, testClasspath, testSourcePath, sonarComponents, javaVersion, inAndroidContext));
 
     //AstScanner for generated files
     astScannerForGeneratedFiles = new JavaAstScanner(sonarComponents, telemetry, TelemetryKey.JAVA_ANALYSIS_GENERATED);
-    astScannerForGeneratedFiles.setVisitorBridge(new VisitorsBridge(jspCodeVisitors, jspClasspath, sonarComponents, javaVersion, inAndroidContext));
+    astScannerForGeneratedFiles.setVisitorBridge(new VisitorsBridge(jspCodeVisitors, jspClasspath, mainSourcePath, sonarComponents, javaVersion, inAndroidContext));
   }
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
@@ -244,7 +250,7 @@ public class JavaFrontend {
     analysisProgress.startBatch(batchFiles.size());
     Set<Runnable> environmentsCleaners = new HashSet<>();
     JParserConfig.Mode.BATCH
-      .create(javaVersion, context.getClasspath(), sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage())
+      .create(javaVersion, context.getClasspath(), context.getSourcePath(), sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage())
       .parse(batchFiles, sonarComponents::analysisCancelled, analysisProgress, (input, result) -> scanAsBatchCallback(input, result, context, environmentsCleaners));
     // Due to a bug in ECJ, JAR files remain locked after the analysis on Windows, we unlock them manually, at the end of each batches. See SONARJAVA-3609.
     environmentsCleaners.forEach(Runnable::run);
@@ -268,6 +274,8 @@ public class JavaFrontend {
 
     List<File> getClasspath();
 
+    SourcePath getSourcePath();
+
     JavaAstScanner selectScanner(InputFile input);
 
     void endOfAnalysis();
@@ -288,6 +296,11 @@ public class JavaFrontend {
     @Override
     public List<File> getClasspath() {
       return globalClasspath;
+    }
+
+    @Override
+    public SourcePath getSourcePath() {
+      return globalSourcePath;
     }
 
     @Override
@@ -326,6 +339,11 @@ public class JavaFrontend {
     @Override
     public List<File> getClasspath() {
       return scanner.getClasspath();
+    }
+
+    @Override
+    public SourcePath getSourcePath() {
+      return scanner.getSourcePath();
     }
 
     @Override

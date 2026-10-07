@@ -100,7 +100,7 @@ class ClasspathForMainTest {
 
   @Test
   void properties() {
-    assertThat(ClasspathProperties.getProperties()).hasSize(5);
+    assertThat(ClasspathProperties.getProperties()).hasSize(7);
   }
 
   @Test

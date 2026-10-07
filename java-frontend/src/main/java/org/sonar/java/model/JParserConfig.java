@@ -43,6 +43,7 @@ import org.sonar.java.AnalysisProgress;
 import org.sonar.java.ExecutionTimeReport;
 import org.sonar.java.ProgressMonitor;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.classpath.SourcePath;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonarsource.analyzer.commons.ProgressReport;
 import org.sonarsource.performance.measure.PerformanceMeasure;
@@ -58,11 +59,13 @@ public abstract class JParserConfig {
 
   final JavaVersion javaVersion;
   final List<File> classpath;
+  final SourcePath sourcePath;
   final boolean shouldIgnoreUnnamedModuleForSplitPackage;
 
-  private JParserConfig(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
+  private JParserConfig(JavaVersion javaVersion, List<File> classpath, SourcePath sourcePath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
     this.javaVersion = javaVersion;
     this.classpath = classpath;
+    this.sourcePath = sourcePath;
     this.shouldIgnoreUnnamedModuleForSplitPackage = shouldIgnoreUnnamedModuleForSplitPackage;
   }
 
@@ -84,10 +87,14 @@ public abstract class JParserConfig {
     }
 
     public JParserConfig create(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
+      return create(javaVersion, classpath, SourcePath.EMPTY, shouldIgnoreUnnamedModuleForSplitPackage);
+    }
+
+    public JParserConfig create(JavaVersion javaVersion, List<File> classpath, SourcePath sourcePath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
       if (shouldIgnoreUnnamedModuleForSplitPackage) {
         LOG.info("The Java analyzer will ignore the unnamed module for split packages.");
       }
-      return supplier.apply(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
+      return supplier.apply(javaVersion, classpath, sourcePath, shouldIgnoreUnnamedModuleForSplitPackage);
     }
   }
 
@@ -133,9 +140,11 @@ public abstract class JParserConfig {
     boolean includeRunningVMBootclasspath = classpath.stream()
       .noneMatch(f -> JRE_JARS.contains(f.getName()));
 
-    astParser.setEnvironment(classpath.stream()
-      .map(File::getAbsolutePath)
-      .toArray(String[]::new), new String[] {}, new String[] {}, includeRunningVMBootclasspath);
+    astParser.setEnvironment(
+      classpath.stream().map(File::getAbsolutePath).toArray(String[]::new),
+      sourcePath.roots().stream().map(File::getAbsolutePath).toArray(String[]::new),
+      sourcePath.encodings().toArray(String[]::new),
+      includeRunningVMBootclasspath);
 
     astParser.setResolveBindings(true);
     astParser.setBindingsRecovery(true);
@@ -147,7 +156,11 @@ public abstract class JParserConfig {
   static class Batch extends JParserConfig {
 
     Batch(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
-      super(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
+      this(javaVersion, classpath, SourcePath.EMPTY, shouldIgnoreUnnamedModuleForSplitPackage);
+    }
+
+    Batch(JavaVersion javaVersion, List<File> classpath, SourcePath sourcePath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
+      super(javaVersion, classpath, sourcePath, shouldIgnoreUnnamedModuleForSplitPackage);
     }
 
     @Override
@@ -224,8 +237,8 @@ public abstract class JParserConfig {
 
   private static class FileByFile extends JParserConfig {
 
-    private FileByFile(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
-      super(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
+    private FileByFile(JavaVersion javaVersion, List<File> classpath, SourcePath sourcePath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
+      super(javaVersion, classpath, sourcePath, shouldIgnoreUnnamedModuleForSplitPackage);
     }
 
     @Override
@@ -280,9 +293,10 @@ public abstract class JParserConfig {
   static boolean shouldEnablePreviewFlag(JavaVersion currentVersion) {
     return currentVersion.arePreviewFeaturesEnabled();
   }
+
   @FunctionalInterface
   public interface ParserConfigConstructor {
-    JParserConfig apply(JavaVersion version, List<File> files, Boolean shouldIgnoreUnnamedModuleForSplitPackage);
+    JParserConfig apply(JavaVersion version, List<File> files, SourcePath sourcePath, Boolean shouldIgnoreUnnamedModuleForSplitPackage);
   }
 
 }
