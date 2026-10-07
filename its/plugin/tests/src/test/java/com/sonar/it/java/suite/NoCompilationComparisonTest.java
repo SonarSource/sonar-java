@@ -72,7 +72,10 @@ class NoCompilationComparisonTest {
     Path target = repositoryRoot().resolve("its/plugin/tests/target");
     Files.createDirectories(target);
     serverWorkspace = Files.createTempDirectory(target, "comparison-orchestrator-");
-    pluginJar = TestClasspathUtils.findModuleJarPath(repositoryRoot().resolve("sonar-java-plugin").toString());
+    String configuredPlugin = System.getProperty("comparison.pluginJar");
+    pluginJar = configuredPlugin == null ? TestClasspathUtils.findModuleJarPath(repositoryRoot().resolve("sonar-java-plugin").toString())
+      : Path.of(configuredPlugin).toAbsolutePath();
+    assertThat(pluginJar).as("Analyzer plugin containing semantic reporting and PR #6308 source-path support").isRegularFile();
     orchestrator = OrchestratorRule.builderEnv()
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(settings.serverVersion())
@@ -81,6 +84,7 @@ class NoCompilationComparisonTest {
       .addPlugin(FileLocation.of(pluginJar.toFile()))
       .addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-semantic-bindings.xml"))
+      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-semantic-bindings-unresolved.xml"))
       .build();
     orchestrator.start();
   }
@@ -139,13 +143,23 @@ class NoCompilationComparisonTest {
       .resolve("its/plugin/tests/src/test/java/com/sonar/it/java/suite/results"));
     System.out.println("Source-only analysis results: " + reportDirectory);
     var metadata = runMetadata(checkout, HexFormat.of().formatHex(snapshot.digest()));
+    var datasetCandidate = candidateProperties(List.of(SOURCE_ROOT));
     var bindingsCurrent = checkBindings(workspace.resolve("bindings-current"), "bindings-current", Map.of());
-    var bindingsCandidate = checkBindings(workspace.resolve("bindings-candidate"), "bindings-candidate", settings.candidateProperties());
+    var bindingsCandidate = checkBindings(workspace.resolve("bindings-candidate"), "bindings-candidate", candidateProperties(List.of(".")));
+    var sourcepathCurrent = checkDependencyBindings(workspace.resolve("sourcepath-current"), "sourcepath-current", false);
+    var sourcepathCandidate = checkDependencyBindings(workspace.resolve("sourcepath-candidate"), "sourcepath-candidate", true);
     metadata.put("Binding correctness/current", bindingSummary(bindingsCurrent));
     metadata.put("Binding correctness/candidate", bindingSummary(bindingsCandidate));
+    metadata.put("Source-path fixture/current (project bindings expected unknown)", bindingSummary(sourcepathCurrent));
+    metadata.put("Source-path fixture/candidate (project bindings expected known)", bindingSummary(sourcepathCandidate));
+    metadata.put("Source-path fixture/analyzed files", "consumer/src/main/java/bindings/BindingFixture.java only; dependency sources excluded");
+    recordFixtureCounts(metadata, "current", sourcepathCurrent);
+    recordFixtureCounts(metadata, "candidate", sourcepathCandidate);
+    metadata.put("Current source paths", "none");
+    metadata.put("Candidate source paths", SOURCE_ROOT);
     if (settings.repetitions() > 1) {
       var warmupCurrent = scan(currentProject, SOURCE_ROOT, "warmup-current", Map.of(), expectedFiles);
-      var warmupCandidate = scan(candidateProject, SOURCE_ROOT, "warmup-candidate", settings.candidateProperties(), expectedFiles);
+      var warmupCandidate = scan(candidateProject, SOURCE_ROOT, "warmup-candidate", datasetCandidate, expectedFiles);
       assertThat(warmupCurrent.success()).as("Current warm-up: %s", warmupCurrent.error()).isTrue();
       assertThat(warmupCandidate.success()).as("Candidate warm-up: %s", warmupCandidate.error()).isTrue();
     }
@@ -154,19 +168,19 @@ class NoCompilationComparisonTest {
     for (int i = 0; i < settings.repetitions(); i++) {
       if (i % 2 == 0) {
         currentSamples.add(scan(currentProject, SOURCE_ROOT, "current", Map.of(), expectedFiles));
-        candidateSamples.add(scan(candidateProject, SOURCE_ROOT, "candidate", settings.candidateProperties(), expectedFiles));
+        candidateSamples.add(scan(candidateProject, SOURCE_ROOT, "candidate", datasetCandidate, expectedFiles));
       } else {
-        candidateSamples.add(scan(candidateProject, SOURCE_ROOT, "candidate", settings.candidateProperties(), expectedFiles));
+        candidateSamples.add(scan(candidateProject, SOURCE_ROOT, "candidate", datasetCandidate, expectedFiles));
         currentSamples.add(scan(currentProject, SOURCE_ROOT, "current", Map.of(), expectedFiles));
       }
     }
     var current = representative(currentSamples);
     var candidate = representative(candidateSamples);
-    var comparison = SourceOnlyComparison.compare(current, candidate, settings.candidateProperties().isEmpty(), rules);
+    var comparison = SourceOnlyComparison.compare(current, candidate, false, rules);
     boolean stable = stable(currentSamples, rules) && stable(candidateSamples, rules);
     metadata.put("Repeated result stability", stable ? "stable" : "unstable");
     if (!stable) {
-      comparison = new SourceOnlyComparison.Comparison(false, settings.candidateProperties().isEmpty(),
+      comparison = new SourceOnlyComparison.Comparison(false, false,
         "Measured repetitions produced inconsistent findings or semantics.", current, candidate, List.of(), List.of(), List.of());
     }
     SourceOnlyComparison.write(reportDirectory, comparison, metadata, currentSamples, candidateSamples);
@@ -176,11 +190,20 @@ class NoCompilationComparisonTest {
     assertThat(comparison.valid()).as("Comparison: %s", comparison.error()).isTrue();
     assertBindingProbe(bindingsCurrent);
     assertBindingProbe(bindingsCandidate);
-    if (settings.candidateProperties().isEmpty()) {
-      assertThat(comparison.currentOnly()).isEmpty();
-      assertThat(comparison.candidateOnly()).isEmpty();
-      assertThat(candidate.semantics()).isEqualTo(current.semantics());
-    }
+    assertBindingProbe(sourcepathCurrent);
+    assertBindingProbe(sourcepathCandidate);
+    assertThat(sourcepathCandidate.semantics().totals().unknown()).as("Source paths must reduce unresolved project references in the targeted fixture")
+      .isLessThan(sourcepathCurrent.semantics().totals().unknown());
+  }
+
+  static Map<String, String> sourcePathProperties(Map<String, String> extraProperties, List<String> roots) {
+    var properties = new TreeMap<>(extraProperties);
+    properties.put("sonar.java.sourcepath", String.join(",", roots));
+    return Map.copyOf(properties);
+  }
+
+  private static Map<String, String> candidateProperties(List<String> roots) {
+    return sourcePathProperties(settings.candidateProperties(), roots);
   }
 
   private static SourceOnlyComparison.Run scan(Path project, String sourceRoot, String label,
@@ -359,6 +382,36 @@ class NoCompilationComparisonTest {
     return scan(project, ".", label, candidateProperties, List.of("bindings/BindingFixture.java", "bindings/BindingHelper.java"), "semantic-bindings");
   }
 
+  private static SourceOnlyComparison.Run checkDependencyBindings(Path project, String label, boolean sourcePaths) throws IOException {
+    Path consumer = project.resolve("consumer/src/main/java/bindings");
+    Path dependency = project.resolve("dependency/src/main/java/bindings");
+    Files.createDirectories(consumer);
+    Files.createDirectories(dependency);
+    Files.writeString(consumer.resolve("BindingFixture.java"), """
+      package bindings;
+      class BindingFixture extends BindingParent {
+        void check() {
+          String text = "x";
+          BindingHelper helper = new BindingHelper();
+          int fieldValue = inheritedValue;
+          String result = helper.select(text);
+          MissingType missing = null;
+        }
+      }
+      """);
+    Files.writeString(dependency.resolve("BindingHelper.java"), """
+      package bindings;
+      public class BindingHelper {
+        public String select(String value) { return value; }
+        public int select(int value) { return value; }
+      }
+      """);
+    Files.writeString(dependency.resolve("BindingParent.java"), "package bindings; public class BindingParent { protected int inheritedValue; }");
+    var properties = sourcePaths ? candidateProperties(List.of("consumer/src/main/java", "dependency/src/main/java")) : Map.<String, String>of();
+    return scan(project, "consumer/src/main/java", label, properties, List.of("consumer/src/main/java/bindings/BindingFixture.java"),
+      sourcePaths ? "semantic-bindings" : "semantic-bindings-unresolved");
+  }
+
   private static String bindingSummary(SourceOnlyComparison.Run run) {
     if (!run.success()) {
       return "unavailable: " + run.error();
@@ -366,6 +419,13 @@ class NoCompilationComparisonTest {
     return run.findings().stream().map(SourceOnlyComparison.Finding::message)
       .filter(message -> message.startsWith("Semantic binding "))
       .sorted().collect(java.util.stream.Collectors.joining("; "));
+  }
+
+  private static void recordFixtureCounts(Map<String, String> metadata, String mode, SourceOnlyComparison.Run run) {
+    metadata.put("Source-path fixture/" + mode + " files", Integer.toString(run.files().size()));
+    metadata.put("Source-path fixture/" + mode + " identifiers", run.semantics() == null ? "N/A" : Integer.toString(run.semantics().totals().total()));
+    metadata.put("Source-path fixture/" + mode + " known identifiers", run.semantics() == null ? "N/A" : Integer.toString(run.semantics().totals().known()));
+    metadata.put("Source-path fixture/" + mode + " unknown identifiers", run.semantics() == null ? "N/A" : Integer.toString(run.semantics().totals().unknown()));
   }
 
   private static void assertBindingProbe(SourceOnlyComparison.Run run) {
@@ -382,8 +442,13 @@ class NoCompilationComparisonTest {
   private static Map<String, String> runMetadata(Path checkout, String snapshot) throws IOException {
     var metadata = new TreeMap<String, String>();
     metadata.put("Recorded at (UTC)", Instant.now().toString());
-    metadata.put("Analyzer checkout revision", git(repositoryRoot(), "rev-parse", "HEAD"));
-    metadata.put("Analyzer checkout dirty", Boolean.toString(!git(repositoryRoot(), "status", "--porcelain").isBlank()));
+    metadata.put("Test harness revision", git(repositoryRoot(), "rev-parse", "HEAD"));
+    metadata.put("Test harness dirty", Boolean.toString(!git(repositoryRoot(), "status", "--porcelain").isBlank()));
+    String analyzerCheckout = System.getProperty("comparison.analyzerCheckout");
+    metadata.put("Analyzer checkout revision", analyzerCheckout == null ? "not supplied; identify artifact by SHA-256"
+      : git(Path.of(analyzerCheckout), "rev-parse", "HEAD"));
+    metadata.put("Analyzer checkout dirty", analyzerCheckout == null ? "not supplied"
+      : Boolean.toString(!git(Path.of(analyzerCheckout), "status", "--porcelain").isBlank()));
     metadata.put("Target checkout revision", git(checkout, "rev-parse", "HEAD"));
     metadata.put("Target checkout dirty", Boolean.toString(!git(checkout, "status", "--porcelain").isBlank()));
     metadata.put("Target source snapshot SHA-256", snapshot);
@@ -391,13 +456,16 @@ class NoCompilationComparisonTest {
     metadata.put("Binding probe plugin SHA-256", HexFormat.of().formatHex(sha256().digest(Files.readAllBytes(TestUtils.pluginJar("java-extension-plugin").toPath()))));
     try (var jar = new JarFile(pluginJar.toFile())) {
       metadata.put("Analyzer plugin version", jar.getManifest().getMainAttributes().getValue("Plugin-Version"));
+      metadata.put("Analyzer build manifest revision", java.util.Objects.toString(jar.getManifest().getMainAttributes().getValue("Implementation-Build"), "not recorded"));
     }
+    metadata.put("Analyzer plugin path", pluginJar.toString());
     metadata.put("Server version", settings.serverVersion());
     metadata.put("Maven scanner version", settings.scannerVersion());
     metadata.put("JDK", System.getProperty("java.version") + " / " + System.getProperty("java.vendor"));
     metadata.put("Java language level", "21");
     metadata.put("Profile", "Sonar way");
-    metadata.put("Candidate properties", settings.candidateProperties().isEmpty() ? "none (placeholder)" : settings.candidateProperties().toString());
+    metadata.put("Candidate properties", new TreeMap<>(candidateProperties(List.of(SOURCE_ROOT))).toString());
+    metadata.put("Candidate feature", "PR #6308 source-path resolution enabled; same plugin used for both runs");
     metadata.put("Measured repetitions per mode", Integer.toString(settings.repetitions()));
     metadata.put("Timing protocol", settings.repetitions() > 1 ? "one warm-up per mode excluded; measured order alternates current/candidate" : "single measured pair; no warm-up");
     metadata.put("Server workspace", serverWorkspace.toString());

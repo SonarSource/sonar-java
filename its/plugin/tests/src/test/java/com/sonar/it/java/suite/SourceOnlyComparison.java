@@ -42,6 +42,15 @@ final class SourceOnlyComparison {
   private record Key(String rule, String path, Integer line) {
   }
 
+  private record UnknownOccurrence(String path, SemanticReport.UnknownIdentifier identifier) {
+    UnknownKey key() {
+      return new UnknownKey(path, identifier.name(), identifier.range());
+    }
+  }
+
+  private record UnknownKey(String path, String name, String range) {
+  }
+
   record Run(String label, boolean success, long scanMillis, List<String> files, List<Finding> findings,
              Map<String, String> telemetry, SemanticReport semantics, String error) {
   }
@@ -211,6 +220,8 @@ final class SourceOnlyComparison {
     if (current.findings().isEmpty() || candidate.findings().isEmpty()) {
       report.append("\nAt least one scan reported no findings; agreement alone does not establish detection quality.\n");
     }
+    appendSourcePathFixture(report, metadata);
+    appendUnknownOccurrences(report, current.semantics(), candidate.semantics());
     appendRunDetails(report, metadata, currentSamples, candidateSamples);
     appendRankedChanges(report, current.semantics(), candidate.semantics(), true);
     appendRankedChanges(report, current.semantics(), candidate.semantics(), false);
@@ -237,6 +248,7 @@ final class SourceOnlyComparison {
       .append("- Retention measures agreement with current source-only findings, not accuracy.\n")
       .append("- Undefined-type errors are a diagnostic count, not resolution coverage. Missing telemetry is shown as N/A.\n")
       .append("- Identifier counts come from the semantic report: known = total − unknown. They count identifier occurrences, not distinct fields or properties.\n")
+      .append("- Unknown occurrences match by file, name, and token range. Removed means no longer reported unknown; correctness is checked separately. AST context is diagnostic, not a method/type/field classification.\n")
       .append("- Unknown percentage = unknown / total × 100. The project percentage uses aggregate counts, not an average of file percentages. No identifiers means N/A.\n")
       .append("- Per-file counts are current / candidate. A negative change in unknown percentage means fewer unresolved identifiers; it does not prove semantic correctness.\n")
       .append("- Files with no unknown identifiers must contain at least one identifier; their percentage uses all analyzed files. Files with zero identifiers are excluded from improved/unchanged/regressed counts.\n")
@@ -267,6 +279,69 @@ final class SourceOnlyComparison {
     report.append("| Median | ").append(median(currentSamples.stream().map(run -> (double) run.scanMillis()).toList()))
       .append(" | ").append(median(candidateSamples.stream().map(run -> (double) run.scanMillis()).toList()))
       .append(" | ").append(analyzerMedian(currentSamples)).append(" | ").append(analyzerMedian(candidateSamples)).append(" |\n");
+  }
+
+  private static List<UnknownOccurrence> unknownOccurrences(SemanticReport semantics) {
+    return semantics.unknownIdentifiers().entrySet().stream()
+      .flatMap(entry -> entry.getValue().stream().map(identifier -> new UnknownOccurrence(entry.getKey(), identifier)))
+      .sorted(Comparator.comparing(UnknownOccurrence::path).thenComparing(value -> value.identifier().range())
+        .thenComparing(value -> value.identifier().name())).toList();
+  }
+
+  private static void appendSourcePathFixture(StringBuilder report, Map<String, String> metadata) {
+    if (!metadata.containsKey("Source-path fixture/current identifiers")) {
+      return;
+    }
+    report.append("\n## Source-path correctness fixture\n\nOnly the consumer is analyzed; dependency files are used for resolution only.\n\n")
+      .append("| Metric | Without source paths | With source paths |\n|---|---:|---:|\n");
+    for (String metric : List.of("files", "identifiers", "known identifiers", "unknown identifiers")) {
+      appendMetric(report, metric, metadata.get("Source-path fixture/current " + metric), metadata.get("Source-path fixture/candidate " + metric));
+    }
+    report.append("\nExact type, overload, and inherited-field checks expect project references unknown in the baseline and known in the candidate. MissingType must remain unknown in both.\n");
+  }
+
+  private static void appendUnknownOccurrences(StringBuilder report, SemanticReport current, SemanticReport candidate) {
+    report.append("\n## Unknown identifier occurrences\n\n");
+    if (!current.hasUnknownDetails() || !candidate.hasUnknownDetails()) {
+      report.append("Unavailable: at least one semantic report contains counts only.\n");
+      return;
+    }
+    var before = unknownOccurrences(current);
+    var after = unknownOccurrences(candidate);
+    var beforeKeys = before.stream().map(UnknownOccurrence::key).collect(java.util.stream.Collectors.toSet());
+    var afterKeys = after.stream().map(UnknownOccurrence::key).collect(java.util.stream.Collectors.toSet());
+    var removed = before.stream().filter(value -> !afterKeys.contains(value.key())).toList();
+    var added = after.stream().filter(value -> !beforeKeys.contains(value.key())).toList();
+    report.append("| Metric | Count |\n|---|---:|\n")
+      .append("| Still unknown in both runs | ").append(before.size() - removed.size()).append(" |\n")
+      .append("| No longer reported unknown | ").append(removed.size()).append(" |\n")
+      .append("| Newly reported unknown | ").append(added.size()).append(" |\n");
+    appendUnknownList(report, "No longer reported unknown", removed);
+    appendUnknownList(report, "Newly reported unknown", added);
+    var contexts = new TreeSet<String>();
+    before.forEach(value -> contexts.add(value.identifier().parentKind()));
+    after.forEach(value -> contexts.add(value.identifier().parentKind()));
+    report.append("\n### Unknown occurrences by AST context\n\n| Context | Current | Candidate |\n|---|---:|---:|\n");
+    for (String context : contexts) {
+      report.append("| ").append(context).append(" | ")
+        .append(before.stream().filter(value -> value.identifier().parentKind().equals(context)).count()).append(" | ")
+        .append(after.stream().filter(value -> value.identifier().parentKind().equals(context)).count()).append(" |\n");
+    }
+  }
+
+  private static void appendUnknownList(StringBuilder report, String title, List<UnknownOccurrence> values) {
+    report.append("\n### ").append(title).append("\n\n");
+    if (values.isEmpty()) {
+      report.append("None.\n");
+      return;
+    }
+    report.append("| File | Range | Identifier | AST context |\n|---|---|---|---|\n");
+    values.stream().limit(20).forEach(value -> report.append("| ").append(escape(value.path())).append(" | ")
+      .append(escape(value.identifier().range())).append(" | ").append(escape(value.identifier().name())).append(" | ")
+      .append(escape(value.identifier().parentKind())).append(" |\n"));
+    if (values.size() > 20) {
+      report.append("\n").append(values.size() - 20).append(" additional occurrences omitted.\n");
+    }
   }
 
   private static Double analyzerMillis(Run run) {

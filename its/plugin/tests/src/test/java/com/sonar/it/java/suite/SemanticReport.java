@@ -21,13 +21,39 @@ import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-record SemanticReport(Counts totals, Map<String, Counts> files) {
+record SemanticReport(Counts totals, Map<String, Counts> files, Map<String, List<UnknownIdentifier>> unknownIdentifiers) {
+
+  SemanticReport {
+    files = Collections.unmodifiableMap(new TreeMap<>(files));
+    Map<String, List<UnknownIdentifier>> details = new TreeMap<>();
+    unknownIdentifiers.forEach((path, identifiers) -> details.put(path, identifiers.stream()
+      .sorted(Comparator.comparing(UnknownIdentifier::name).thenComparing(UnknownIdentifier::range).thenComparing(UnknownIdentifier::parentKind))
+      .toList()));
+    unknownIdentifiers = Collections.unmodifiableMap(details);
+  }
+
+  SemanticReport(Counts totals, Map<String, Counts> files) {
+    this(totals, files, Map.of());
+  }
+
+  record UnknownIdentifier(String name, String range, String parentKind) {
+  }
+
+  private record Occurrence(String name, String range) {
+  }
+
+  boolean hasUnknownDetails() {
+    return files.keySet().equals(unknownIdentifiers.keySet());
+  }
 
   record Counts(int total, int unknown) {
     Counts {
@@ -50,6 +76,7 @@ record SemanticReport(Counts totals, Map<String, Counts> files) {
       JsonObject report = JsonParser.parseString(Files.readString(json)).getAsJsonObject();
       Counts totals = counts(report, "totalNumberOfIdentifier", "totalNumberOfUnknownIdentifier");
       Map<String, Counts> files = new TreeMap<>();
+      Map<String, List<UnknownIdentifier>> unknownIdentifiers = new TreeMap<>();
       for (var element : report.getAsJsonArray("files")) {
         JsonObject file = element.getAsJsonObject();
         var pathElement = file.get("path");
@@ -63,6 +90,12 @@ record SemanticReport(Counts totals, Map<String, Counts> files) {
         if (files.putIfAbsent(path, counts(file, "numberOfIdentifier", "numberOfUnknownIdentifier")) != null) {
           throw new IllegalArgumentException("Duplicate file: " + path);
         }
+        if (file.has("unknownIdentifiers")) {
+          unknownIdentifiers.put(path, unknownIdentifiers(file, path, files.get(path).unknown()));
+        }
+      }
+      if (!unknownIdentifiers.isEmpty() && !unknownIdentifiers.keySet().equals(files.keySet())) {
+        throw new IllegalArgumentException("Unknown identifier details must be provided for every file or none");
       }
       var expected = new TreeSet<>(expectedFiles.stream().map(SemanticReport::normalize).toList());
       if (!files.keySet().equals(expected)) {
@@ -77,10 +110,41 @@ record SemanticReport(Counts totals, Map<String, Counts> files) {
       if (totals.total() != total || totals.unknown() != unknown) {
         throw new IllegalArgumentException("Aggregate identifier counts do not match per-file sums");
       }
-      return new SemanticReport(totals, Collections.unmodifiableMap(files));
+      return new SemanticReport(totals, files, unknownIdentifiers);
     } catch (IOException | RuntimeException e) {
       throw new IOException("Failed to read semantic report " + json + ": " + e.getMessage(), e);
     }
+  }
+
+  private static List<UnknownIdentifier> unknownIdentifiers(JsonObject file, String path, int expectedCount) {
+    var values = file.get("unknownIdentifiers");
+    if (!values.isJsonArray()) {
+      throw new IllegalArgumentException("Invalid unknown identifier details for " + path);
+    }
+    List<UnknownIdentifier> identifiers = new ArrayList<>();
+    var occurrences = new HashSet<Occurrence>();
+    for (var element : values.getAsJsonArray()) {
+      JsonObject identifier = element.getAsJsonObject();
+      String name = string(identifier, "name");
+      String range = string(identifier, "range");
+      String parentKind = string(identifier, "parentKind");
+      if (!occurrences.add(new Occurrence(name, range))) {
+        throw new IllegalArgumentException("Duplicate unknown identifier occurrence in " + path + ": " + name + " at " + range);
+      }
+      identifiers.add(new UnknownIdentifier(name, range, parentKind));
+    }
+    if (identifiers.size() != expectedCount) {
+      throw new IllegalArgumentException("Unknown identifier detail count does not match numberOfUnknownIdentifier for " + path);
+    }
+    return identifiers;
+  }
+
+  private static String string(JsonObject object, String key) {
+    var value = object.get(key);
+    if (value == null || !value.isJsonPrimitive() || !value.getAsJsonPrimitive().isString() || value.getAsString().isBlank()) {
+      throw new IllegalArgumentException("Missing or invalid unknown identifier string: " + key);
+    }
+    return value.getAsString();
   }
 
   private static Counts counts(JsonObject object, String total, String unknown) {

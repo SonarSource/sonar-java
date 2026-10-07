@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -30,6 +31,12 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "semanticbindings", priority = Priority.MAJOR, name = "Semantic binding probes", description = "Checks expected bindings in the source-only comparison fixture")
 public class SemanticBindingsCheck extends IssuableSubscriptionVisitor {
+
+  @RuleProperty(
+    key = "expectProjectBindingsResolved",
+    description = "Whether project type, inherited field, and method bindings should resolve in the comparison fixture.",
+    defaultValue = "true")
+  public boolean expectProjectBindingsResolved = true;
 
   private static final Set<String> EXPECTED = Set.of("String", "BindingHelper", "select", "inheritedValue", "MissingType");
   private final Set<String> checked = new HashSet<>();
@@ -55,16 +62,16 @@ public class SemanticBindingsCheck extends IssuableSubscriptionVisitor {
         case "String" -> verify(identifier, "String", "type java.lang.String", describe(symbol));
         case "BindingHelper" -> {
           if (identifier.parent().is(Tree.Kind.VARIABLE)) {
-            verify(identifier, "BindingHelper", "type bindings.BindingHelper", describe(symbol));
+            verify(identifier, "BindingHelper", expectedProjectBinding("type bindings.BindingHelper"), describe(symbol));
           }
         }
-        case "inheritedValue" -> verify(identifier, "inheritedValue", "variable bindings.BindingParent.inheritedValue:int", describe(symbol));
+        case "inheritedValue" -> verify(identifier, "inheritedValue", expectedProjectBinding("variable bindings.BindingParent.inheritedValue:int"), describe(symbol));
         case "MissingType" -> verify(identifier, "MissingType", "unknown", describe(symbol));
         default -> { }
       }
     } else if (tree instanceof MethodInvocationTree invocation && invocation.methodSelect() instanceof MemberSelectExpressionTree select
       && select.identifier().name().equals("select")) {
-      verify(invocation, "select", "method bindings.BindingHelper.select(java.lang.String):java.lang.String", describe(invocation.methodSymbol()));
+      verify(invocation, "select", expectedProjectBinding("method bindings.BindingHelper.select(java.lang.String):java.lang.String"), describe(invocation.methodSymbol()));
     }
   }
 
@@ -87,6 +94,10 @@ public class SemanticBindingsCheck extends IssuableSubscriptionVisitor {
       failed.add(probe);
       reportIssue(tree, "Semantic binding mismatch for " + probe + ": expected " + expected + ", actual " + actual + ".");
     }
+  }
+
+  private String expectedProjectBinding(String resolved) {
+    return expectProjectBindingsResolved ? resolved : "unknown";
   }
 
   private static String describe(Symbol symbol) {

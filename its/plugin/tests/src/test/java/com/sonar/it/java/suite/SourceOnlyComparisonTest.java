@@ -268,6 +268,29 @@ class SourceOnlyComparisonTest {
     return new SourceOnlyComparison.Run("scan", true, millis, List.of("src/Example.java"), List.of(), telemetry, semantics(10, 3), null);
   }
 
+  @Test
+  void source_roots_are_configured_per_scenario_without_overriding_extra_flags() {
+    var dataset = NoCompilationComparisonTest.sourcePathProperties(Map.of("sonar.java.internal.example", "true"), List.of("sonar-xml-plugin/src/main/java"));
+    var fixture = NoCompilationComparisonTest.sourcePathProperties(Map.of(), List.of("consumer/src/main/java", "dependency/src/main/java"));
+    assertThat(dataset).containsEntry("sonar.java.sourcepath", "sonar-xml-plugin/src/main/java").containsEntry("sonar.java.internal.example", "true");
+    assertThat(fixture).containsEntry("sonar.java.sourcepath", "consumer/src/main/java,dependency/src/main/java");
+  }
+
+  @Test
+  void unknown_occurrence_comparison_exposes_changes_hidden_by_equal_totals() {
+    var counts = new SemanticReport.Counts(10, 2);
+    var shared = new SemanticReport.UnknownIdentifier("shared", "2:1-2:7", "VARIABLE");
+    var removed = new SemanticReport.UnknownIdentifier("old", "3:1-3:4", "MEMBER_SELECT");
+    var added = new SemanticReport.UnknownIdentifier("newName", "4:1-4:8", "METHOD_INVOCATION");
+    var before = new SemanticReport(counts, Map.of("A.java", counts), Map.of("A.java", List.of(shared, removed)));
+    var after = new SemanticReport(counts, Map.of("A.java", counts), Map.of("A.java", List.of(shared, added)));
+    var current = new SourceOnlyComparison.Run("current", true, 12, List.of("A.java"), List.of(), Map.of(), before, null);
+    var candidate = new SourceOnlyComparison.Run("candidate", true, 12, List.of("A.java"), List.of(), Map.of(), after, null);
+    String report = SourceOnlyComparison.markdown(SourceOnlyComparison.compare(current, candidate, false, List.of()));
+    assertThat(report).contains("| Still unknown in both runs | 1 |", "| No longer reported unknown | 1 |", "| Newly reported unknown | 1 |",
+      "| A.java | 3:1-3:4 | old | MEMBER_SELECT |", "| A.java | 4:1-4:8 | newName | METHOD_INVOCATION |");
+  }
+
   private static SourceOnlyComparison.Finding finding(String rule, String path, Integer line, String message) {
     return new SourceOnlyComparison.Finding(rule, path, line, message);
   }
