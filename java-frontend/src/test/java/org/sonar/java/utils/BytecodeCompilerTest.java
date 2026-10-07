@@ -19,6 +19,8 @@ package org.sonar.java.utils;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.sonar.java.model.JavaVersionImpl;
@@ -90,6 +92,35 @@ class BytecodeCompilerTest {
   }
 
   @Test
+  void compile_with_dependency_directory() throws Exception {
+    Path dependencyOutput = compileDependency("Dependency", "dependency classes");
+    Path sourceFile = createSourceFile("Foo.java", "public class Foo extends com.example.Dependency {}");
+    Path outputDir = temporaryFolder.resolve("output");
+
+    assertThat(BytecodeCompiler.compile(List.of(sourceFile), outputDir, javaVersion(11), javaVersion(11))).isFalse();
+    assertThat(BytecodeCompiler.compile(List.of(sourceFile), List.of(dependencyOutput), outputDir, javaVersion(11), javaVersion(11))).isTrue();
+    assertThat(outputDir.resolve("Foo.class")).exists();
+  }
+
+  @Test
+  void compile_with_dependency_jar_and_directory() throws Exception {
+    Path dependencyOutput = compileDependency("Dependency", "dependency classes");
+    Path otherOutput = compileDependency("Other", "other classes");
+    Path dependencyJar = temporaryFolder.resolve("dependency library.jar");
+    try (JarOutputStream jar = new JarOutputStream(Files.newOutputStream(dependencyJar))) {
+      jar.putNextEntry(new JarEntry("com/example/Dependency.class"));
+      Files.copy(dependencyOutput.resolve("com/example/Dependency.class"), jar);
+      jar.closeEntry();
+    }
+    Path sourceFile = createSourceFile("Foo.java", "public class Foo extends com.example.Dependency { com.example.Other other; }");
+    Path outputDir = temporaryFolder.resolve("output");
+
+    assertThat(BytecodeCompiler.compile(List.of(sourceFile), List.of(otherOutput), outputDir, javaVersion(11), javaVersion(11))).isFalse();
+    assertThat(BytecodeCompiler.compile(List.of(sourceFile), List.of(dependencyJar, otherOutput), outputDir, javaVersion(11), javaVersion(11))).isTrue();
+    assertThat(outputDir.resolve("Foo.class")).exists();
+  }
+
+  @Test
   void compile_with_different_source_and_target_versions() throws Exception {
     Path sourceFile = createSourceFile("Foo.java", "public class Foo {}");
     Path outputDir = temporaryFolder.resolve("output");
@@ -102,6 +133,14 @@ class BytecodeCompilerTest {
 
   private JavaVersion javaVersion(int version) {
     return new JavaVersionImpl(version);
+  }
+
+  private Path compileDependency(String className, String outputDirectory) throws Exception {
+    Path sourceFile = createSourceFile(className + ".java", "package com.example; public class " + className + " {}");
+    Path outputDir = temporaryFolder.resolve(outputDirectory);
+    assertThat(BytecodeCompiler.compile(List.of(sourceFile), outputDir, javaVersion(11), javaVersion(11))).isTrue();
+    Files.delete(sourceFile);
+    return outputDir;
   }
 
   private Path createSourceFile(String filename, String content) throws Exception {

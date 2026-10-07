@@ -16,6 +16,7 @@
  */
 package org.sonar.java.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -23,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.eclipse.jdt.internal.compiler.batch.Main;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +50,20 @@ public final class BytecodeCompiler {
    * @return true if compilation succeeded, false otherwise
    */
   public static boolean compile(List<Path> sources, JavaVersion sourceVersion, JavaVersion targetVersion) {
-    return compile(sources, OUTPUT_DIRECTORY, sourceVersion, targetVersion);
+    return compile(sources, List.of(), OUTPUT_DIRECTORY, sourceVersion, targetVersion);
+  }
+
+  /**
+   * Compiles sources against dependency JARs and class directories, writing bytecode to the default output directory.
+   *
+   * @param sources list of paths to Java source files
+   * @param classpath dependency JARs and directories containing compiled classes
+   * @param sourceVersion the Java version for source code compatibility
+   * @param targetVersion the Java version for target bytecode compatibility
+   * @return true if compilation succeeded, false otherwise
+   */
+  public static boolean compile(List<Path> sources, List<Path> classpath, JavaVersion sourceVersion, JavaVersion targetVersion) {
+    return compile(sources, classpath, OUTPUT_DIRECTORY, sourceVersion, targetVersion);
   }
 
   /**
@@ -62,6 +77,20 @@ public final class BytecodeCompiler {
    * @return true if compilation succeeded, false otherwise
    */
   public static boolean compile(List<Path> sources, Path outputDirectory, JavaVersion sourceVersion, JavaVersion targetVersion) {
+    return compile(sources, List.of(), outputDirectory, sourceVersion, targetVersion);
+  }
+
+  /**
+   * Compiles sources against dependency JARs and class directories, writing bytecode to the specified output directory.
+   *
+   * @param sources list of paths to Java source files
+   * @param classpath dependency JARs and directories containing compiled classes
+   * @param outputDirectory path to write compiled bytecode files
+   * @param sourceVersion the Java version for source code compatibility
+   * @param targetVersion the Java version for target bytecode compatibility
+   * @return true if compilation succeeded, false otherwise
+   */
+  public static boolean compile(List<Path> sources, List<Path> classpath, Path outputDirectory, JavaVersion sourceVersion, JavaVersion targetVersion) {
     if (sources.isEmpty()) {
       return true;
     }
@@ -73,7 +102,7 @@ public final class BytecodeCompiler {
       return false;
     }
 
-    String[] args = buildCompilerArgs(sources, outputDirectory, sourceVersion, targetVersion);
+    String[] args = buildCompilerArgs(sources, classpath, outputDirectory, sourceVersion, targetVersion);
 
     StringWriter outWriter = new StringWriter();
     StringWriter errWriter = new StringWriter();
@@ -104,11 +133,16 @@ public final class BytecodeCompiler {
     return result;
   }
 
-  private static String[] buildCompilerArgs(List<Path> sources, Path outputDirectory, JavaVersion sourceVersion, JavaVersion targetVersion) {
+  private static String[] buildCompilerArgs(List<Path> sources, List<Path> classpath, Path outputDirectory, JavaVersion sourceVersion, JavaVersion targetVersion) {
     List<String> args = new ArrayList<>();
 
     args.add("-d");
     args.add(outputDirectory.toAbsolutePath().toString());
+
+    if (!classpath.isEmpty()) {
+      args.add("-classpath");
+      args.add(classpath.stream().map(path -> path.toAbsolutePath().toString()).collect(Collectors.joining(File.pathSeparator)));
+    }
 
     args.add("-proc:none");
     args.add("-nowarn");
