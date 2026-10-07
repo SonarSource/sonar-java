@@ -114,7 +114,7 @@ class ProjectEndOfAnalysisSensorTest {
     assertThat(report).doesNotExist();
     sensor.execute(context);
 
-    assertThat(Files.readString(report)).contains("\"totalNumberOfIdentifier\": 0", "\"files\": []");
+    assertThat(Files.readString(report)).contains("\"resolvedIdentifierCount\": 0", "\"unknownIdentifierCount\": 0", "\"modules\": []");
   }
 
   private static BeanDefinitionHolder newHolder(String type) {

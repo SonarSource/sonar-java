@@ -77,7 +77,6 @@ public class SemanticReportScanner implements JavaFileScanner {
 
       private static boolean isIdentifierExpectSymbol(IdentifierTree tree) {
         String name = tree.name();
-        // We currently do not provide a symbol for "String::new", "String.class", "_"
         return !"new".equals(name) && !"class".equals(name) && !tree.isUnnamedVariable();
       }
 
@@ -178,7 +177,9 @@ public class SemanticReportScanner implements JavaFileScanner {
       }
       collectType(typeSymbol.superClass(), locationOf(name, "superClass"));
       collectTypes(typeSymbol.interfaces(), locationOf(name, "interfaces"));
-      collectSymbols(typeSymbol.memberSymbols(), locationOf(name, "memberSymbols"));
+      if (typeSymbol.declaration() != null) {
+        collectSymbols(typeSymbol.memberSymbols(), locationOf(name, "memberSymbols"));
+      }
       collectTypes(typeSymbol.superTypes(), locationOf(name, "superTypes"));
     } else if (symbol instanceof Symbol.MethodSymbol methodSymbol) {
       name = methodSymbol.signature();
@@ -314,6 +315,8 @@ public class SemanticReportScanner implements JavaFileScanner {
     void clearASTElements() {
       allReferencedTypes.clear();
       allReferencedSymbols.clear();
+      typesToResolve.clear();
+      symbolsToResolve.clear();
     }
   }
 
