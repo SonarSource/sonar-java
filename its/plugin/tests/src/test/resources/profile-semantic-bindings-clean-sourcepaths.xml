@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profile>
+  <name>semantic-bindings-clean-sourcepaths</name>
+  <language>java</language>
+  <rules>
+    <rule>
+      <repositoryKey>java-extension</repositoryKey>
+      <key>semanticbindings</key>
+      <priority>MAJOR</priority>
+      <parameters>
+        <parameter>
+          <key>expectMissingTypeProbe</key>
+          <value>false</value>
+        </parameter>
+        <parameter>
+          <key>expectedBytecode</key>
+          <value>absent</value>
+        </parameter>
+      </parameters>
+    </rule>
+  </rules>
+</profile>

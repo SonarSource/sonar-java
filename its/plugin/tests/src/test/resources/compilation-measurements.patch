@@ -1,0 +1,57 @@
+diff --git a/java-frontend/src/main/java/org/sonar/java/JavaFrontend.java b/java-frontend/src/main/java/org/sonar/java/JavaFrontend.java
+index 715d63e1d4..282a2a8323 100644
+--- a/java-frontend/src/main/java/org/sonar/java/JavaFrontend.java
++++ b/java-frontend/src/main/java/org/sonar/java/JavaFrontend.java
+@@ -175,6 +175,9 @@ public class JavaFrontend {
+     List<InputFile> testInputs = StreamSupport.stream(testFiles.spliterator(), false).toList();
+     List<? extends InputFile> generatedInputs = StreamSupport.stream(generatedFiles.spliterator(), false).toList();
+     if (mainInputs.isEmpty() && testInputs.isEmpty() && generatedInputs.isEmpty()) {
++      logCompilationResult("main", "SKIPPED", 0, 0, 0);
++      logCompilationResult("test", "SKIPPED", 0, 0, 0);
++      logCompilationResult("generated", "SKIPPED", 0, 0, 0);
+       scanPreparedFiles(mainInputs, testInputs, generatedInputs);
+       return;
+     }
+@@ -184,6 +187,9 @@ public class JavaFrontend {
+       outputDirectory = createBytecodeOutputDirectory();
+     } catch (IOException e) {
+       LOG.warn("Unable to create bytecode output directory. Continuing analysis without compiling sources.", e);
++      logCompilationResult("main", mainInputs.isEmpty() ? "SKIPPED" : "FAILED", mainInputs.size(), 0, 0);
++      logCompilationResult("test", testInputs.isEmpty() ? "SKIPPED" : "FAILED", testInputs.size(), 0, 0);
++      logCompilationResult("generated", generatedInputs.isEmpty() ? "SKIPPED" : "FAILED", generatedInputs.size(), 0, 0);
+       scanPreparedFiles(mainInputs, testInputs, generatedInputs);
+       return;
+     }
+@@ -218,7 +224,31 @@ public class JavaFrontend {
+       .filter(Files::isRegularFile)
+       .toList();
+     List<Path> classpath = scanner.getClasspath().stream().map(File::toPath).toList();
+-    BytecodeCompiler.compile(sources, classpath, outputDirectory, javaVersion, javaVersion);
++    if (sources.isEmpty()) {
++      logCompilationResult(outputDirectory.getFileName().toString(), "SKIPPED", 0, 0, 0);
++      return;
++    }
++    long started = System.nanoTime();
++    boolean success = BytecodeCompiler.compile(sources, classpath, outputDirectory, javaVersion, javaVersion);
++    long elapsedMillis = (System.nanoTime() - started) / 1_000_000;
++    long classes = countGeneratedClasses(outputDirectory);
++    logCompilationResult(outputDirectory.getFileName().toString(), success ? "SUCCESS" : "FAILED", sources.size(), classes, elapsedMillis);
++  }
++
++  private static long countGeneratedClasses(Path outputDirectory) {
++    if (!Files.isDirectory(outputDirectory)) {
++      return 0;
++    }
++    try (Stream<Path> paths = Files.walk(outputDirectory)) {
++      return paths.filter(Files::isRegularFile).filter(path -> path.getFileName().toString().endsWith(".class")).count();
++    } catch (IOException e) {
++      LOG.warn("Unable to count generated classes in {}", outputDirectory, e);
++      return 0;
++    }
++  }
++
++  private static void logCompilationResult(String scope, String status, int sources, long classes, long elapsedMillis) {
++    LOG.info("Java bytecode compilation: scope={} status={} sources={} classes={} time_ms={}", scope, status, sources, classes, elapsedMillis);
+   }
+
+   private void removeGeneratedBytecode(Path outputDirectory) {
