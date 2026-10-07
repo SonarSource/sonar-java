@@ -251,7 +251,9 @@ public class SemanticReportScanner implements JavaFileScanner {
 
     }
     collectSymbol(symbol.owner(), locationOf(name, "owner"), sourceClass);
-    collectType(symbol.type(), locationOf(name, "type"), sourceClass);
+    if (!(symbol instanceof Symbol.MethodSymbol)) {
+      collectType(symbol.type(), locationOf(name, "type"), sourceClass);
+    }
     collectSymbol(symbol.enclosingClass(), locationOf(name, "enclosingClass"), sourceClass);
     collectSymbols(symbol.metadata().symbolAnnotations()
       .stream()

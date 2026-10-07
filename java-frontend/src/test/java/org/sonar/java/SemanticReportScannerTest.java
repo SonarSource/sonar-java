@@ -36,6 +36,8 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class SemanticReportScannerTest {
@@ -117,7 +119,7 @@ class SemanticReportScannerTest {
     when(method.isPublic()).thenReturn(true);
     when(method.owner()).thenReturn(target);
     when(method.enclosingClass()).thenReturn(target);
-    when(method.type()).thenReturn(arrayType);
+    when(method.type()).thenReturn(Type.UNKNOWN);
     when(method.parameterTypes()).thenReturn(List.of(arrayType));
     Symbol parameter = member(target, "parameter", 0);
     when(method.declarationParameters()).thenReturn(List.of(parameter));
@@ -142,6 +144,9 @@ class SemanticReportScannerTest {
     assertThat(result.get("resolvedTypeCount").getAsInt()).isEqualTo(1);
     assertThat(result.get("unknownSymbolCount").getAsInt()).isPositive();
     assertThat(result.get("unknownTypeCount").getAsInt()).isPositive();
+    assertThat(result.getAsJsonArray("modules").get(0).getAsJsonObject().getAsJsonArray("unknownTypes").toString())
+      .doesNotContain("(call()).type");
+    verify(method, never()).type();
     scanner.leaveModule();
   }
 
