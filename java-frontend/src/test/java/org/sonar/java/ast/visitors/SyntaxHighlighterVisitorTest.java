@@ -33,6 +33,7 @@ import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.java.JavaFrontend;
+import org.sonar.java.SemanticReportScanner;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
@@ -254,7 +255,7 @@ class SyntaxHighlighterVisitorTest {
 
   private void scan(InputFile inputFile) {
     JavaVersion javaVersion = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    JavaFrontend frontend = new JavaFrontend(javaVersion, mockSonarComponents(), mock(Measurer.class), new NoOpTelemetry(), null, null, syntaxHighlighterVisitor);
+    JavaFrontend frontend = new JavaFrontend(javaVersion, mockSonarComponents(), mock(Measurer.class), new NoOpTelemetry(), null, null, new SemanticReportScanner(), syntaxHighlighterVisitor);
     frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
   }
 
