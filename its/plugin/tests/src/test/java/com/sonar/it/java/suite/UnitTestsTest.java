@@ -18,6 +18,11 @@ package com.sonar.it.java.suite;
 
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.junit4.OrchestratorRule;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -27,6 +32,7 @@ import static com.sonar.it.java.suite.JavaTestSuite.getMeasures;
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assume.assumeTrue;
 
 public class UnitTestsTest {
 
@@ -55,6 +61,8 @@ public class UnitTestsTest {
   public void tests_with_report_name_suffix() {
     MavenBuild build = TestUtils.createMavenBuild()
       .setPom(TestUtils.projectPom("tests-surefire-suffix"))
+      .setProperty("sonar.java.internal.semantic.report", System.getProperty("sonar.java.internal.semantic.report",
+        new File(System.getProperty("java.io.tmpdir"), "report.json").getAbsolutePath()))
       .setGoals("clean test-compile surefire:test -Dsurefire.reportNameSuffix=Run1", "test-compile surefire:test -Dsurefire.reportNameSuffix=Run2", "sonar:sonar");
     orchestrator.executeBuild(build);
 
@@ -67,6 +75,28 @@ public class UnitTestsTest {
     assertThat(parseInt(measures.get("skipped_tests").getValue())).isEqualTo(2);
     assertThat(parseInt(measures.get("test_execution_time").getValue())).isPositive();
     assertThat(parseDouble(measures.get("test_success_density").getValue())).isEqualTo(100.0);
+  }
+
+  @Test
+  public void semantic_report_without_compilation() throws IOException {
+    String configured = System.getProperty("sonar.java.internal.semantic.report");
+    assumeTrue("Provide -Dsonar.java.internal.semantic.report=/tmp/report.json to run this test", configured != null && !configured.isBlank());
+    Path reportPath = Path.of(configured).toAbsolutePath();
+    Files.createDirectories(reportPath.getParent());
+    Files.deleteIfExists(reportPath);
+
+    MavenBuild build = TestUtils.createMavenBuild()
+      .setPom(TestUtils.projectPom("measures-on-directory"))
+      .setProperty("sonar.projectKey", "semantic-report-without-compilation")
+      .setProperty("sonar.java.binaries", "")
+      .setProperty("sonar.java.libraries", "")
+      .setProperty("sonar.java.internal.semantic.report", reportPath.toString())
+      .setGoals("org.sonarsource.scanner.maven:sonar-maven-plugin:sonar");
+    orchestrator.executeBuild(build);
+
+    var report = SemanticReport.read(reportPath, List.of("src/main/java/org/EmptyFile.java",
+      "src/main/java/org/File1InCycle.java", "src/main/java/org/File2InCycle.java"));
+    assertThat(report.totals().total()).isPositive();
   }
 
 }

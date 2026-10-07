@@ -3,23 +3,29 @@
 Compare today's SonarJava against a future source-only mode on the production
 Java sources of `sonar-xml`. Neither scan compiles the target project or resolves
 its dependencies. Both receive only Java sources and the running JDK, with no
-`sonar.java.binaries` or `sonar.java.libraries` properties.
+project binaries or dependency libraries.
 
-The scanner integration tester simulates the server context, so no running
-SonarQube instance is needed. Maven must have access to SonarSource's artifact
-repository to resolve the integration tester. Use your normal authenticated
-Maven settings (`-s /path/to/settings.xml` if necessary).
+The comparison uses the same `TestUtils.createMavenBuild()` and
+`orchestrator.executeBuild(build)` runner as `UnitTestsTest`. Orchestrator starts
+a temporary Community Edition SonarQube server with the local Java plugin and
+stops it after the tests. Maven and Orchestrator need access to their artifact
+repositories for the test dependencies, scanner, and server distribution. Use
+your normal authenticated Maven settings (`-s /path/to/settings.xml` if needed).
+Run Orchestrator invocations from this module serially: separate test JVMs share
+the default server installation directories under `target`.
 
-Build the local analyzer and its required modules once:
+Build the local analyzer and the custom-rule artifact required by this IT module once:
 
 ```sh
-mvn -pl sonar-java-plugin -am install -DskipTests
+mvn -pl sonar-java-plugin,docs/java-custom-rules-example -am install -DskipTests
 ```
 
 Run the comparison, its scanner smoke test, and the comparison and semantic-report tests:
+Maven must be on PATH, or supply `-Dmaven.binary=/absolute/path/to/mvn` for the
+Orchestrator Maven runner.
 
 ```sh
-mvn -f its/scanner-integration-tests/pom.xml test \
+mvn -f its/plugin/tests/pom.xml -Pit-plugin test \
   -Dtest=NoCompilationComparisonTest,SourceOnlyComparisonTest,SemanticReportTest \
   -Dcomparison.project="$HOME/Work/Code/sonar-xml"
 ```
@@ -36,6 +42,11 @@ empty, the report labels the candidate as a placeholder, and the test asserts
 identical findings. The candidate uses the same plugin, Sonar way rules, Java 21
 language level, JDK, and source files. Autoscan and unchanged-file skipping are
 disabled in both modes.
+
+The Maven build passes the report path with
+`.setProperty("sonar.java.internal.semantic.report", semanticReportPath.toString())`.
+This is equivalent to passing `-Dsonar.java.internal.semantic.report=/tmp/report.json`
+to the Maven analysis command.
 
 Both scans enable the semantic reporter from `alban/SemanticReport` by setting
 `sonar.java.internal.semantic.report` to a separate JSON output path. By default
@@ -56,11 +67,14 @@ set in IntelliJ's test run configuration VM options. It selects the output path,
 not the candidate analyzer mode.
 
 Each scan uses its own temporary directory containing copies of only the
-production `.java` files. The original checkout and its build outputs are never
-used as an analysis classpath or modified.
+production `.java` files and a generated minimal POM without project
+dependencies. `MavenBuild` runs only `sonar:sonar`: it never runs `compile`,
+`test-compile`, or tests for the target project. Empty `sonar.java.binaries` and
+`sonar.java.libraries` override Maven scanner defaults. The original checkout
+and its build outputs are never used as an analysis classpath or modified.
 
 Results are stored beside the test in
-`its/scanner-integration-tests/src/test/java/org/sonar/java/it/results/`.
+`its/plugin/tests/src/test/java/com/sonar/it/java/suite/results/`.
 Each invocation creates the next numbered directory: `run-001`, `run-002`, etc.
 Previous results are preserved, including across Maven clean builds. Maven and
 IntelliJ use the same location, and the selected directory is printed when the
@@ -91,7 +105,9 @@ findings show `N/A`, and empty result sets are highlighted. Rules can be inactiv
 in practice when required dependencies are absent; a zero count is not proof
 that a rule ran. Unresolved-type telemetry counts particular errors, not semantic
 resolution coverage. Times cover scanner execution, including engine setup, and
-are single samples rather than a performance benchmark.
+are single samples rather than a performance benchmark. With the Maven runner,
+wall time includes Maven startup, scanning, and waiting for server processing;
+test-server startup is outside the per-run measurement.
 
 Semantic metrics count identifier occurrences, excluding unnamed variables,
 whose symbols the analyzer marks known or unknown. Known identifiers are total
@@ -103,3 +119,26 @@ semantic resolution, and these metrics do not count distinct object properties.
 Files with no unknown identifiers must have at least one identifier. Files with
 zero identifiers in either run have no comparable percentage and are reported
 separately from improved, unchanged, and regressed files.
+
+## Small test beside the original Maven example
+
+`UnitTestsTest.semantic_report_without_compilation` uses the existing
+`JavaTestSuite.ORCHESTRATOR` and `TestUtils.createMavenBuild()` directly. It scans
+the existing `measures-on-directory` fixture without compilation and checks that
+the requested JSON report contains all three production files. It is opt-in via
+the semantic-report output property.
+
+```sh
+mvn -f its/plugin/tests/pom.xml -Pit-plugin test \
+  '-Dtest=UnitTestsTest#semantic_report_without_compilation' \
+  -Dsonar.java.internal.semantic.report=/tmp/report.json
+```
+
+This existing suite uses the Enterprise lightweight server and needs a GitHub
+token with access to SonarSource's test-license repository (`github.token` in
+Orchestrator configuration or `GITHUB_TOKEN`). The test uses the fully qualified
+Sonar Maven goal so it does not depend on shorthand plugin-prefix resolution.
+
+The original `tests-surefire-suffix` fixture contains only test sources. The
+semantic reporter currently counts production sources, so its report can be
+empty; the small semantic test deliberately uses a fixture with main sources.

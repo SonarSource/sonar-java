@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.it;
+package com.sonar.it.java.suite;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
@@ -139,7 +139,8 @@ final class SourceOnlyComparison {
   }
 
   static String markdown(Comparison comparison) {
-    var report = new StringBuilder("# Source-only Java analysis comparison\n\n");
+    var report = new StringBuilder("# Source-only Java analysis comparison\n\n")
+      .append("**Runner:** Orchestrator MavenBuild (`sonar:sonar`)\n\n");
     report.append("**Comparison:** ").append(comparison.valid() ? "VALID" : "INVALID")
       .append(" · **Candidate:** ").append(comparison.placeholder() ? "placeholder (same analyzer and settings)" : "configured")
       .append("\n\n## Summary\n\n| Metric | Current | Candidate |\n|---|---:|---:|\n");
@@ -204,7 +205,7 @@ final class SourceOnlyComparison {
       .append("- Per-file counts are current / candidate. A negative change in unknown percentage means fewer unresolved identifiers; it does not prove semantic correctness.\n")
       .append("- Files with no unknown identifiers must contain at least one identifier; their percentage uses all analyzed files. Files with zero identifiers are excluded from improved/unchanged/regressed counts.\n")
       .append("- Configured rules may be disabled when dependencies are absent; zero findings do not prove a rule ran.\n")
-      .append("- Scan times are individual wall-time samples, including engine setup.\n");
+      .append("- Scan times are individual wall-time samples, including Maven startup, scanning, and server processing. Test-server startup is excluded.\n");
     return report.toString();
   }
 
