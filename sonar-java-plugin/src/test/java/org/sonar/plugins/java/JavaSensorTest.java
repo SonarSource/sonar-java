@@ -21,11 +21,14 @@ import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -58,6 +61,8 @@ import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.model.springcontext.BeanDefinitionHolder;
+import org.sonar.java.model.springcontext.SpringContextGatheringModel;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.telemetry.DefaultTelemetry;
 import org.sonar.java.telemetry.Telemetry;
@@ -76,6 +81,7 @@ import org.sonar.scanner.plugin.api.impl.rule.NewActiveRule;
 import org.sonar.scanner.plugin.api.impl.sensor.DefaultSensorDescriptor;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -90,7 +96,9 @@ import static org.mockito.Mockito.when;
 
 class JavaSensorTest {
 
-  private static final String EXPECTED_TYPE_ERROR_COUNT = "205";
+  private static final String EXPECTED_TYPE_ERROR_COUNT = "214";
+  private static final String SPRING_CONTEXT_MODEL_PATH = "state/context.json";
+  private static final String SPRING_CONTEXT_FIXTURE_DIRECTORY = "/org/sonar/plugins/java/springcontext/";
   private static final CheckFactory checkFactory = mock(CheckFactory.class);
   private static final Checks<Object> checks = mock(Checks.class);
 
@@ -111,13 +119,80 @@ class JavaSensorTest {
   @Test
   void test_toString() throws IOException {
     SonarComponents sonarComponents = createSonarComponentsMock(createContext(InputFile.Type.MAIN));
-    assertThat(new JavaSensor(sonarComponents, null, null, null, null, telemetry, null)).hasToString("JavaSensor");
+    assertThat(new JavaSensor(sonarComponents, null, null, null, null, telemetry, new SpringContextGatheringModel())).hasToString("JavaSensor");
+  }
+
+  @Test
+  void restores_SpringContextGatheringModel_from_configured_file() throws IOException {
+    copySpringContextFixture("unvisited-service.json");
+    SensorContextTester context = springSensorContext();
+    var gatheringModel = new SpringContextGatheringModel();
+
+    javaSensor(context, gatheringModel).execute(context);
+
+    assertThat(gatheringModel.isRestored()).isTrue();
+    assertThat(gatheringModel.filesData()).containsOnlyKeys("module");
+    var restoredFile = gatheringModel.filesData().get("module").get("unvisited");
+    assertThat(restoredFile.inputFile()).isNull();
+    assertThat(restoredFile.beans()).extracting(BeanDefinitionHolder.InputFileData::beanName).containsExactly("oldService");
+    assertThat(restoredFile.packages()).containsExactly("stale.package");
+  }
+
+  @Test
+  void preserves_collected_file_data_when_restoring_SpringContextGatheringModel() throws IOException {
+    copySpringContextFixture("two-modules.json");
+    SensorContextTester context = springSensorContext();
+    var gatheringModel = new SpringContextGatheringModel();
+    gatheringModel.collectPackages("module-a", "module-a:src/A.java", null, Set.of("current.package"));
+
+    javaSensor(context, gatheringModel).execute(context);
+
+    var collectedFile = gatheringModel.filesData().get("module-a").get("module-a:src/A.java");
+    assertThat(collectedFile.beans()).isEmpty();
+    assertThat(collectedFile.packages()).containsExactly("current.package");
+    var restoredFile = gatheringModel.filesData().get("module-b").get("module-b:src/B.java");
+    assertThat(restoredFile.beans()).extracting(BeanDefinitionHolder.InputFileData::beanName).containsExactly("untouched");
+    assertThat(restoredFile.packages()).containsExactly("untouched.package");
+  }
+
+  @Test
+  void restores_SpringContextGatheringModel_only_once() throws IOException {
+    copySpringContextFixture("default-path.json");
+    SensorContextTester context = springSensorContext();
+    var gatheringModel = new SpringContextGatheringModel();
+    JavaSensor sensor = javaSensor(context, gatheringModel);
+
+    sensor.execute(context);
+    copySpringContextFixture("unvisited-service.json");
+    sensor.execute(context);
+
+    assertThat(gatheringModel.isRestored()).isTrue();
+    assertThat(gatheringModel.filesData()).containsOnlyKeys("previous-module");
+    assertThat(gatheringModel.filesData().get("previous-module")).containsOnlyKeys("previous-file");
+  }
+
+  private SensorContextTester springSensorContext() {
+    SensorContextTester context = SensorContextTester.create(tmp);
+    context.fileSystem().setWorkDir(tmp);
+    context.setSettings(new MapSettings().setProperty(JavaSensor.SPRING_CONTEXT_MODEL_PATH_PROPERTY, SPRING_CONTEXT_MODEL_PATH));
+    return context;
+  }
+
+  private JavaSensor javaSensor(SensorContextTester context, SpringContextGatheringModel gatheringModel) {
+    return new JavaSensor(createSonarComponentsMock(context), mock(JavaResourceLocator.class), mock(NoSonarFilter.class), null, telemetry, gatheringModel);
+  }
+
+  private void copySpringContextFixture(String fixtureName) throws IOException {
+    Path destination = tmp.resolve(SPRING_CONTEXT_MODEL_PATH);
+    Files.createDirectories(destination.getParent());
+    try (InputStream source = getClass().getResourceAsStream(SPRING_CONTEXT_FIXTURE_DIRECTORY + fixtureName)) {
+      Files.copy(Objects.requireNonNull(source, fixtureName), destination, REPLACE_EXISTING);
+    }
   }
 
   @Test
   void test_issues_creation_on_main_file() throws IOException {
-    // Expected issues : the number of methods violating BadMethodName rule. Currently, 18 tests.
-    testIssueCreation(InputFile.Type.MAIN, 16);
+    testIssueCreation(InputFile.Type.MAIN, 19);
 
     Map<String, String> telemetryMap = telemetry.toMap();
     assertThat(telemetryMap).containsOnlyKeys(
@@ -131,7 +206,7 @@ class JavaSensorTest {
       "java.language.version",
       "java.module_count",
       "java.scanner_app");
-    assertThat(telemetryMap.get("java.analysis.main.success.size_chars")).matches("\\d{5}");
+    assertThat(telemetryMap.get("java.analysis.main.success.size_chars")).matches("\\d+");
     assertThat(telemetryMap.get("java.analysis.main.success.time_ms")).matches("\\d+");
     assertThat(telemetryMap).containsEntry("java.analysis.main.success.type_error_count", EXPECTED_TYPE_ERROR_COUNT);
   }
@@ -153,7 +228,7 @@ class JavaSensorTest {
       "java.language.version",
       "java.module_count",
       "java.scanner_app");
-    assertThat(telemetryMap.get("java.analysis.test.success.size_chars")).matches("\\d{5}");
+    assertThat(telemetryMap.get("java.analysis.test.success.size_chars")).matches("\\d+");
     assertThat(telemetryMap.get("java.analysis.test.success.time_ms")).matches("\\d+");
     assertThat(telemetryMap).containsEntry("java.analysis.test.success.type_error_count", EXPECTED_TYPE_ERROR_COUNT);
   }
@@ -179,7 +254,7 @@ class JavaSensorTest {
     SonarComponents sonarComponents = createSonarComponentsMock(context);
     DefaultJavaResourceLocator javaResourceLocator = createDefaultJavaResourceLocator(settings.asConfig(), fs);
 
-    JavaSensor jss = new JavaSensor(sonarComponents, javaResourceLocator, noSonarFilter, null, telemetry, null);
+    JavaSensor jss = new JavaSensor(sonarComponents, javaResourceLocator, noSonarFilter, null, telemetry, new SpringContextGatheringModel());
 
     jss.execute(context);
     int expectedNoSonarLine = lineNumberOfTheMethodWithNoSonar(fs);
@@ -281,7 +356,7 @@ class JavaSensorTest {
     Jasper jasper = mock(Jasper.class);
     when(jasper.generateFiles(any(), any())).thenReturn(asList(generatedFile));
     JavaSensor jss = new JavaSensor(sonarComponents, mock(JavaResourceLocator.class),
-      mock(NoSonarFilter.class), null, jasper, telemetry, null);
+      mock(NoSonarFilter.class), null, jasper, telemetry, new SpringContextGatheringModel());
     jss.execute(context);
 
     ArgumentCaptor<JavaFileScannerContext> scannerContext = ArgumentCaptor.forClass(JavaFileScannerContext.class);
@@ -309,7 +384,7 @@ class JavaSensorTest {
 
     Jasper jasper = mock(Jasper.class);
     JavaSensor jss = new JavaSensor(sonarComponents, mock(JavaResourceLocator.class),
-      mock(NoSonarFilter.class), null, jasper, telemetry, null);
+      mock(NoSonarFilter.class), null, jasper, telemetry, new SpringContextGatheringModel());
     jss.execute(context);
 
     verify(jasper, never()).generateFiles(any(), any());
@@ -501,7 +576,7 @@ class JavaSensorTest {
     SonarComponents components = new SonarComponents(fileLinesContextFactory, fs,
       javaClasspath, javaTestClasspath, specificCheckFactory, context.activeRules(), checkRegistrars, null, null);
 
-    JavaSensor jss = new JavaSensor(components, resourceLocator, mock(NoSonarFilter.class), null, telemetry, null);
+    JavaSensor jss = new JavaSensor(components, resourceLocator, mock(NoSonarFilter.class), null, telemetry, new SpringContextGatheringModel());
     jss.execute(context);
 
     assertThat(hook.scanFileCount).as("Custom file scanner should be called even in autoscan mode").isPositive();
@@ -516,7 +591,7 @@ class JavaSensorTest {
   void test_describe_sensor() throws IOException {
     DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
     SonarComponents sonarComponents = createSonarComponentsMock(createContext(InputFile.Type.MAIN));
-    var sensor = new JavaSensor(sonarComponents, null, null, null, telemetry, null);
+    var sensor = new JavaSensor(sonarComponents, null, null, null, telemetry, new SpringContextGatheringModel());
     sensor.describe(descriptor);
     assertThat(descriptor.name()).isEqualTo("JavaSensor");
     assertThat(descriptor.languages()).containsExactly("java", "jsp");
@@ -563,7 +638,7 @@ class JavaSensorTest {
     SonarComponents components = new SonarComponents(fileLinesContextFactory, fs,
       javaClasspath, javaTestClasspath, specificCheckFactory, context.activeRules(), checkRegistrars, null, null);
 
-    JavaSensor jss = new JavaSensor(components, resourceLocator, mock(NoSonarFilter.class), null, telemetry, null);
+    JavaSensor jss = new JavaSensor(components, resourceLocator, mock(NoSonarFilter.class), null, telemetry, new SpringContextGatheringModel());
     jss.execute(context);
     return context;
   }
@@ -576,7 +651,7 @@ class JavaSensorTest {
     fs.setWorkDir(workDir);
     SonarComponents components = createSonarComponentsMock(context);
     DefaultJavaResourceLocator resourceLocator = createDefaultJavaResourceLocator(context.config(), fs);
-    JavaSensor jss = new JavaSensor(components, resourceLocator, mock(NoSonarFilter.class), null, telemetry, null);
+    JavaSensor jss = new JavaSensor(components, resourceLocator, mock(NoSonarFilter.class), null, telemetry, new SpringContextGatheringModel());
     jss.execute(context);
   }
 

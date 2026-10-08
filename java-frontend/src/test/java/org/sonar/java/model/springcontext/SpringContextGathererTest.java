@@ -55,9 +55,6 @@ abstract class SpringContextGathererTest {
   protected void scan(List<File> classpath, SensorContextTester ctx, String... filePaths) {
     var sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(ctx);
-    sonarComponents.setSpringContextModel(model);
-
-
     VisitorsBridge visitorsBridge = new VisitorsBridge(List.of((JavaCheck) gatherer), classpath, sonarComponents);
     for (String filePath : filePaths) {
       File file = new File(filePath);
@@ -66,6 +63,7 @@ abstract class SpringContextGathererTest {
       visitorsBridge.visitFile(compilationUnit, false);
     }
     visitorsBridge.endOfAnalysis();
+    model = SpringContextModel.of(gatherer.springContextGatheringModel);
   }
 
   protected static CacheContext mockCacheContext(JavaReadCache readCache, JavaWriteCache writeCache) {
