@@ -54,16 +54,18 @@ import org.sonar.plugins.java.api.tree.Tree;
  */
 public abstract class SpringContextModelGatherer extends IssuableSubscriptionVisitor implements EndOfAnalysis, DependencyVersionAware {
 
+  protected final SpringContextGatheringModel springContextGatheringModel;
   private final Telemetry telemetry;
   private final LongSupplier nanoTime;
   private long gatheringTimeNanos;
 
-  protected SpringContextModelGatherer(Telemetry telemetry) {
-    this(telemetry, System::nanoTime);
+  protected SpringContextModelGatherer(SpringContextGatheringModel springContextGatheringModel, Telemetry telemetry) {
+    this(springContextGatheringModel, telemetry, System::nanoTime);
   }
 
   @VisibleForTesting
-  SpringContextModelGatherer(Telemetry telemetry, LongSupplier nanoTime) {
+  SpringContextModelGatherer(SpringContextGatheringModel springContextGatheringModel, Telemetry telemetry, LongSupplier nanoTime) {
+    this.springContextGatheringModel = springContextGatheringModel;
     this.telemetry = telemetry;
     this.nanoTime = nanoTime;
   }

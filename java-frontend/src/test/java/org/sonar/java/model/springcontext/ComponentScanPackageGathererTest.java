@@ -46,7 +46,7 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
 
   @BeforeEach
   void setUp() {
-    gatherer = new ComponentScanPackageGatherer(new NoOpTelemetry());
+    gatherer = new ComponentScanPackageGatherer(new SpringContextGatheringModel(), new NoOpTelemetry());
     model = new SpringContextModel();
   }
 
@@ -135,6 +135,16 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
     assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY)).isEmpty();
   }
 
+  @Test
+  void module_without_scanned_files_collects_nothing() {
+    ModuleScannerContext context = mock(ModuleScannerContext.class);
+    when(context.getModuleKey()).thenReturn(MODULE_KEY);
+
+    gatherer.gatherSpringContextData(context, model);
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY)).isEmpty();
+  }
+
   // ---- Multiple files -------------------------------------------------------
 
   @Test
@@ -177,6 +187,7 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
     InputFileScannerContext context = mock(InputFileScannerContext.class);
     when(context.getInputFile()).thenReturn(inputFile);
     when(context.getCacheContext()).thenReturn(cacheContext);
+    when(context.getModuleKey()).thenReturn(MODULE_KEY);
 
     assertThat(gatherer.scanWithoutParsing(context)).isTrue();
 
@@ -201,6 +212,7 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
     InputFileScannerContext context = mock(InputFileScannerContext.class);
     when(context.getInputFile()).thenReturn(inputFile);
     when(context.getCacheContext()).thenReturn(cacheContext);
+    when(context.getModuleKey()).thenReturn(MODULE_KEY);
 
     assertThat(gatherer.scanWithoutParsing(context)).isTrue();
 
