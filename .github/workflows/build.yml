@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
-          version: 2026.9.18
+          version: 2026.10.0
       - uses: SonarSource/ci-github-actions/build-maven@v2
         id: build-maven
         env:
@@ -80,7 +80,7 @@ jobs:
           submodules: recursive
       - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
-          version: 2026.9.18
+          version: 2026.10.0
       - name: Select Java Version
         shell: bash # Set explicitly so Bash is used on Windows runners too.
         run: |
@@ -200,7 +200,7 @@ jobs:
           submodules: recursive
       - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
-          version: 2026.9.18
+          version: 2026.10.0
       - name: Select Java Version
         shell: bash # Set explicitly so Bash is used on Windows runners too.
         run: |
@@ -251,7 +251,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
-          version: 2026.9.18
+          version: 2026.10.0
       - uses: SonarSource/vault-action-wrapper@v3
         id: secrets
         with:
@@ -298,7 +298,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
-          version: 2026.9.18
+          version: 2026.10.0
       - uses: SonarSource/vault-action-wrapper@v3
         id: secrets
         with:
@@ -335,7 +335,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
-          version: 2026.9.18
+          version: 2026.10.0
       - uses: SonarSource/vault-action-wrapper@v3
         id: secrets
         with:
@@ -385,7 +385,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
-          version: 2026.9.18
+          version: 2026.10.0
       - uses: ./.github/actions/maven-cache
         with:
           namespace: qa-os-win
