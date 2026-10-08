@@ -52,7 +52,7 @@ public class JspTest {
     }
     OrchestratorRuleBuilder orchestratorBuilder = OrchestratorRule.builderEnv()
       .useDefaultAdminCredentialsForBuilds(true)
-      .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
+      .setSonarVersion(System.getProperty("sonar.runtimeVersion", "DEV"))
       .setEdition(Edition.ENTERPRISE_LW)
       .activateLicense()
       .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION)
