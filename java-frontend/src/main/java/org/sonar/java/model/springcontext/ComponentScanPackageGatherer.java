@@ -30,7 +30,6 @@ import org.sonar.java.utils.PackageUtils;
 import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -38,9 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 /**
- * Collects packages registered for Spring component scanning and stores them in
- * {@link org.sonar.java.model.springcontext.ProjectPackageScan} within the shared
- * {@link SpringContextModel}.
+ * Collects packages registered for Spring component scanning.
  *
  * <p>Scanned packages are derived from:
  * <ul>
@@ -49,8 +46,7 @@ import org.sonarsource.analyzer.commons.collections.SetUtils;
  *   <li>{@code @SpringBootApplication} without explicit attributes — the annotated class's own package</li>
  * </ul>
  *
- * <p>Packages are grouped by module and written to {@link org.sonar.java.model.springcontext.ProjectPackageScan}
- * at the end of each module's analysis. Per-file results are cached to speed up incremental analyses.
+ * <p>Per-file results are cached to speed up incremental analyses.
  */
 public class ComponentScanPackageGatherer extends SpringContextModelGatherer implements FileCachingCheck<Set<String>> {
 
@@ -125,11 +121,6 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
     springContextGatheringModel.collectPackages(context.getModuleKey(), currentFile.key(), currentFile, packages);
     writeToCache(context, packages);
     packagesCollectedAtFileLevel.clear();
-  }
-
-  @Override
-  public void gatherSpringContextData(ModuleScannerContext context, SpringContextModel springContextModel) {
-    springContextModel.getProjectPackageScan().addPackages(context.getModuleKey(), springContextGatheringModel.getPackages(context.getModuleKey()));
   }
 
   private void collectFromComponentScan(SymbolMetadata metadata) {
