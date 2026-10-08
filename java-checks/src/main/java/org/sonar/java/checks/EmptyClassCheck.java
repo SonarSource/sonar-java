@@ -36,9 +36,8 @@ public class EmptyClassCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     IdentifierTree simpleName = classTree.simpleName();
-    if (simpleName != null && isNotExtending(classTree) && isEmpty(classTree)) {
-      reportIssue(simpleName, "Remove this empty class, write its code or make it an \"interface\".");
-    }
+    if (simpleName!=null)
+    reportIssue(simpleName, "Remove this empty class, write its code or make it an \"interface\".");
   }
 
   private static boolean isNotExtending(ClassTree tree) {
