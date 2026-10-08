@@ -1,0 +1,26 @@
+{
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductServiceImpl.java": [
+31
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminServiceImpl.java": [
+45
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/HomeServiceImpl.java": [
+24
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java": [
+33
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalProductServiceImpl.java": [
+24
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCouponServiceImpl.java": [
+27
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberServiceImpl.java": [
+40
+],
+"com.macro.mall:mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java": [
+36
+]
+}

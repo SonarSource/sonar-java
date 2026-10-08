@@ -1,0 +1,21 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MapBasedRawMeasureRepositoryTest.java": [
+80
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/IssueServiceMediumTest.java": [
+70
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/QProfileExportersTest.java": [
+79
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/RuleUpdaterTest.java": [
+85
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/ws/UpdateActionTest.java": [
+101
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/user/index/UserIndexTest.java": [
+42,
+43
+]
+}

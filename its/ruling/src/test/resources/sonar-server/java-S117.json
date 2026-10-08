@@ -1,0 +1,26 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java": [
+514,
+515
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/PersistTestsStepTest.java": [
+267,
+271
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/index/IssueIndexDebtTest.java": [
+233
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/index/IssueIndexTest.java": [
+786,
+802,
+819,
+837,
+868,
+883
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/project/ws/SearchMyProjectsActionTest.java": [
+128,
+129,
+130
+]
+}

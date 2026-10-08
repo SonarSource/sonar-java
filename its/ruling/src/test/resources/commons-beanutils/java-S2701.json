@@ -1,0 +1,108 @@
+{
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanToPropertyValueTransformerTestCase.java": [
+186,
+244
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java": [
+209,
+278,
+338,
+1508,
+1512,
+1530
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConstructorUtilsTestCase.java": [
+115,
+124,
+148,
+173,
+185,
+194
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java": [
+131,
+135,
+225,
+232,
+267,
+343,
+347,
+351,
+355,
+359,
+363,
+367,
+371,
+375,
+379,
+383,
+387,
+391,
+395,
+399,
+403,
+551,
+558,
+577,
+592,
+596,
+607
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java": [
+220,
+296,
+365,
+427
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java": [
+208
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/MethodUtilsTestCase.java": [
+250
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java": [
+278,
+2651
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ArrayConverterTestCase.java": [
+322,
+335
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ByteConverterTestCase.java": [
+154,
+162
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/CharacterConverterTestCase.java": [
+72
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ClassConverterTestCase.java": [
+71,
+119,
+120
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/FloatConverterTestCase.java": [
+163
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/IntegerConverterTestCase.java": [
+156,
+164
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ShortConverterTestCase.java": [
+155,
+163
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/expression/DefaultResolverTestCase.java": [
+162,
+172
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java": [
+269,
+276,
+311
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverterTestCase.java": [
+164,
+177,
+186
+]
+}

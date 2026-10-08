@@ -1,0 +1,13 @@
+{
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminCacheServiceImpl.java": [
+87
+],
+"com.macro.mall:mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java": [
+156,
+208
+],
+"com.macro.mall:mall:mall-security/src/main/java/com/macro/mall/security/component/DynamicAuthorizationManager.java": [
+58,
+65
+]
+}
