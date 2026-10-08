@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.LongSupplier;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.model.DefaultModuleScannerContext;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.plugins.java.api.DependencyVersionAware;
@@ -34,10 +33,9 @@ import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.tree.Tree;
 
 /**
- * Base class for visitors that need to gather data in the SpringContextModel at the end of the analysis.
+ * Base class for visitors that collect data for the project-wide Spring context model.
  * Extending classes gather relevant spring-related data by implementing {@link #visitSpringNode},
- * {@link #leaveSpringFile} and {@link #scanSpringFileWithoutParsing}, and store it in the SpringContextModel at the
- * end of a module analysis.
+ * {@link #leaveSpringFile} and {@link #scanSpringFileWithoutParsing}.
  *
  * <p>The corresponding scanner entry points are final: this class implements them to measure how long gathering takes
  * and report it under {@link TelemetryKey#JAVA_SPRING_CONTEXT_MODEL_GATHERING_TIME_MS}. Durations are accumulated in
@@ -139,26 +137,12 @@ public abstract class SpringContextModelGatherer extends IssuableSubscriptionVis
 
   @Override
   public final void endOfAnalysis(ModuleScannerContext context) {
-    var defaultModuleContext = (DefaultModuleScannerContext) context;
-    long startTime = nanoTime.getAsLong();
-    try {
-      gatherSpringContextData(context, defaultModuleContext.getSpringContextModel());
-    } finally {
-      recordElapsedTime(startTime);
-      telemetry.aggregateAsCounter(
-        TelemetryKey.JAVA_SPRING_CONTEXT_MODEL_GATHERING_TIME_MS,
-        TimeUnit.NANOSECONDS.toMillis(gatheringTimeNanos));
-      gatheringTimeNanos = 0;
-    }
+    telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_CONTEXT_MODEL_GATHERING_TIME_MS, TimeUnit.NANOSECONDS.toMillis(gatheringTimeNanos));
+    gatheringTimeNanos = 0;
   }
 
   private void recordElapsedTime(long startTime) {
     gatheringTimeNanos += nanoTime.getAsLong() - startTime;
   }
-
-  /**
-   * Method called at the end of the analysis of a module, allowing to store gathered data in the SpringContextModel.
-   */
-  public abstract void gatherSpringContextData(ModuleScannerContext context, SpringContextModel springContextModel);
 
 }
