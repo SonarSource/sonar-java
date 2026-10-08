@@ -1,0 +1,11 @@
+{
+"com.google.guava:guava:src/com/google/common/base/Predicates.java": [
+707
+],
+"com.google.guava:guava:src/com/google/common/collect/MinMaxPriorityQueue.java": [
+222
+],
+"com.google.guava:guava:src/com/google/common/hash/Hashing.java": [
+502
+]
+}

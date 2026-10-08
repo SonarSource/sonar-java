@@ -1,0 +1,11 @@
+{
+"com.macro.mall:mall:mall-common/src/main/java/com/macro/mall/common/log/WebLogAspect.java": [
+39
+],
+"com.macro.mall:mall:mall-security/src/main/java/com/macro/mall/security/aspect/RedisCacheAspect.java": [
+24
+],
+"com.macro.mall:mall:mall-security/src/main/java/com/macro/mall/security/util/SpringUtil.java": [
+13
+]
+}

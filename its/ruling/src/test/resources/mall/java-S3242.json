@@ -1,0 +1,10 @@
+{
+"com.macro.mall:mall:mall-common/src/main/java/com/macro/mall/common/exception/GlobalExceptionHandler.java": [
+61
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/controller/AlipayController.java": [
+39,
+48,
+57
+]
+}

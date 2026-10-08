@@ -1,0 +1,11 @@
+{
+"com.macro.mall:mall:mall-common/src/main/java/com/macro/mall/common/util/RequestUtil.java": [
+16
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java": [
+94
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCouponServiceImpl.java": [
+115
+]
+}

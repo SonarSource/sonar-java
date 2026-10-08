@@ -1,0 +1,10 @@
+{
+"com.macro.mall:mall:mall-common/src/main/java/com/macro/mall/common/log/WebLogAspect.java": [
+89
+],
+"com.macro.mall:mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java": [
+151,
+203,
+237
+]
+}

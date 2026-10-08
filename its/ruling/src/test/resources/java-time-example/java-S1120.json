@@ -1,0 +1,22 @@
+{
+"example:java-time-example:src/main/java/example/AppointmentService.java": [
+11,
+12
+],
+"example:java-time-example:src/main/java/example/CalendarUtils.java": [
+12,
+13
+],
+"example:java-time-example:src/main/java/example/EventScheduler.java": [
+12,
+13
+],
+"example:java-time-example:src/main/java/example/HolidayChecker.java": [
+12,
+13
+],
+"example:java-time-example:src/main/java/example/ReportGenerator.java": [
+12,
+13
+]
+}

@@ -1,0 +1,31 @@
+{
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java": [
+364,
+367,
+370,
+413
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java": [
+1344,
+1346,
+1390,
+1392,
+1433,
+1435,
+1479,
+1481,
+2150
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaBeanTestCase.java": [
+227,
+230,
+449,
+452
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaMapTestCase.java": [
+217,
+220,
+439,
+442
+]
+}

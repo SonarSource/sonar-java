@@ -1,0 +1,16 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/OrganizationCreationImplTest.java": [
+80
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/projectlink/ws/CreateActionTest.java": [
+59,
+60
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/projectlink/ws/SearchActionTest.java": [
+59,
+60
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/ui/PageRepositoryTest.java": [
+48
+]
+}
