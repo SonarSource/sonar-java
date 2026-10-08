@@ -38,6 +38,7 @@ import org.sonar.java.AnalysisProgress;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.InputFileUtils;
+import org.sonar.java.classpath.SourcePath;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JavaTree;
@@ -68,6 +69,10 @@ public class JavaAstScanner {
     this.sonarComponents = sonarComponents;
     this.telemetry = telemetry;
     this.javaAnalysisKeys = javaAnalysisKeys;
+  }
+
+  public SourcePath getSourcePath() {
+    return visitor.getSourcePath();
   }
 
   public List<File> getClasspath() {
@@ -110,7 +115,7 @@ public class JavaAstScanner {
       boolean shouldIgnoreUnnamedModuleForSplitPacakge = sonarComponents != null &&
         sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage();
       JParserConfig.Mode.FILE_BY_FILE
-        .create(visitor.getJavaVersion(), visitor.getClasspath(), shouldIgnoreUnnamedModuleForSplitPacakge)
+        .create(visitor.getJavaVersion(), visitor.getClasspath(), visitor.getSourcePath(), shouldIgnoreUnnamedModuleForSplitPacakge)
         .parse(filesNames,
           this::analysisCancelled,
           analysisProgress,
