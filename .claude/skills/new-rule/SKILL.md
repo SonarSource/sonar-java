@@ -89,7 +89,7 @@ If **ruling** fails (likely for a new rule), a PR updating the expectations is c
 2. **Sample** new findings before classifying (do not analyze unbounded volumes):
    - Let `N` be the sample size (default **100**).
    - If total new findings ≤ `N` → analyze **all**.
-   - Else sample up to `N` across projects (water-filling / largest-remainder):
+   - Else sample up to `N` across projects (water-filling, i.e. equal shares capped by each project's count):
      1. Give every project with findings its fair equal share of the remaining budget among projects that still have unsampled issues.
      2. Projects with fewer findings than their share contribute **all** of theirs; leftover budget is redistributed evenly to projects that still have unsampled issues.
      3. Repeat until the budget is exhausted.
