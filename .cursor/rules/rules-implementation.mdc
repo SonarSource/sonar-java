@@ -1,0 +1,12 @@
+---
+description: Guide for implementing Java analyzer rules (checks). Delegates to the rule-implementation Claude skill — the single source of truth.
+globs: **/*checks*/**/*.java
+alwaysApply: false
+---
+# Rule implementation
+
+Do **not** follow outdated guidance that may appear elsewhere. The single source of truth is:
+
+`.claude/skills/new-rule/SKILL.md`
+
+Read that skill and follow it whenever implementing, placing, or wiring a new or existing Java check.
