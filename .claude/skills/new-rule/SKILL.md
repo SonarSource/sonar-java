@@ -18,7 +18,7 @@ Execute **in order**. Never skip. Never combine steps into one commit. If precis
 
 ### Step 0 — Pre-flight (once, before any rule work)
 
-**Run once** before Step 1. When implementing multiple rules in parallel (subagents), collect answers **here only**, then start each rule with the answers already known — do not re-ask per rule.
+**Run once** before Step 1. When implementing multiple rules in parallel (subagents), collect answers **here only** once at the beginning, then start each rule with the answers already known — do not re-ask later.
 
 Verify / ask as needed:
 
