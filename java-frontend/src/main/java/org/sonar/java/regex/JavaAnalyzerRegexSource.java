@@ -87,7 +87,8 @@ public class JavaAnalyzerRegexSource extends JavaRegexSource {
       result.add(new TextSpan(startSpan.startLine, startSpan.startCharacter + startOffset, startSpan.endLine, startSpan.endCharacter));
       int indexAfterStartSpan = startEntry.startIndex + startSpan.endCharacter - startSpan.startCharacter;
       result.addAll(indexToTextSpan.textSpansBetween(indexAfterStartSpan, endEntry.startIndex));
-      result.add(new TextSpan(endSpan.startLine, endSpan.startCharacter, endSpan.endLine, endSpan.startCharacter + endOffset));
+      TextSpan newEndSpan = new TextSpan(endSpan.startLine, endSpan.startCharacter, endSpan.endLine, endSpan.startCharacter + endOffset);
+      result.add(shouldUseLine(endSpan, newEndSpan) ? endSpan : newEndSpan);
     }
     return result;
   }
