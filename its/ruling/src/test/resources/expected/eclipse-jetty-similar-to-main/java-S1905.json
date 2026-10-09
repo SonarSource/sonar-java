@@ -1,8 +1,8 @@
 {
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
 279
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/Session.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/Session.java": [
 498
 ]
 }

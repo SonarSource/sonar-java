@@ -1,0 +1,10 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/authentication/JwtSerializer.java": [
+101
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/index/ProjectMeasuresQuery.java": [
+80,
+89,
+98
+]
+}

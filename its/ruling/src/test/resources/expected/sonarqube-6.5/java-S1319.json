@@ -1,0 +1,12 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/es/EsUtils.java": [
+69
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/Facets.java": [
+50,
+156
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/SearchAdditionalField.java": [
+71
+]
+}

@@ -1,12 +1,12 @@
 {
-"com.macro.mall:mall:mall-common/src/main/java/com/macro/mall/common/api/CommonPage.java": [
+"mall:mall-common/src/main/java/com/macro/mall/common/api/CommonPage.java": [
 12,
 37,
 37,
 51,
 51
 ],
-"com.macro.mall:mall:mall-common/src/main/java/com/macro/mall/common/api/CommonResult.java": [
+"mall:mall-common/src/main/java/com/macro/mall/common/api/CommonResult.java": [
 7,
 35,
 45,

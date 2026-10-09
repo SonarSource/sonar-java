@@ -1,0 +1,92 @@
+{
+"sonarqube-6.5:src/test/java/org/sonar/server/app/TomcatConnectorsTest.java": [
+82
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/batch/ProjectDataLoaderTest.java": [
+121
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MapBasedRawMeasureRepositoryTest.java": [
+187
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureRepositoryImplTest.java": [
+244
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/step/ComputationStepExecutorTest.java": [
+134
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/es/SearchOptionsTest.java": [
+76
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/es/SortingTest.java": [
+128
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/es/request/ProxyDeleteRequestBuilderTest.java": [
+61,
+71,
+81
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/issue/index/IssueIndexTest.java": [
+1299
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/issue/index/IssueIndexerTest.java": [
+116
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/issue/workflow/IssueWorkflowTest.java": [
+214
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/permission/GroupPermissionChangerTest.java": [
+90,
+320,
+337,
+354
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/permission/ws/AddGroupActionTest.java": [
+372
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/plugins/PluginDownloaderTest.java": [
+212,
+230
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/project/ws/UpdateVisibilityActionTest.java": [
+155
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/QProfileBackuperImplTest.java": [
+187,
+200,
+212
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/QProfileCopierTest.java": [
+92
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/QProfileExportersTest.java": [
+131,
+141
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/QProfilesWsMediumTest.java": [
+236
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/RestoreBuiltInActionTest.java": [
+54
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/rule/RuleTagHelperTest.java": [
+64
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/rule/RuleUpdaterTest.java": [
+97
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java": [
+931
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/user/SecurityRealmFactoryTest.java": [
+67,
+101,
+124
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/user/UserUpdaterTest.java": [
+392
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/util/cache/DiskCacheTest.java": [
+57,
+73
+]
+}

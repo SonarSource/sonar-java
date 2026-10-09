@@ -1,10 +1,10 @@
 {
-"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
+"guava:src/com/google/common/cache/LocalCache.java": [
 1295,
 1618,
 1665
 ],
-"com.google.guava:guava:src/com/google/common/collect/AbstractMapBasedMultimap.java": [
+"guava:src/com/google/common/collect/AbstractMapBasedMultimap.java": [
 625,
 789,
 943,
@@ -12,10 +12,10 @@
 990,
 1000
 ],
-"com.google.guava:guava:src/com/google/common/collect/ConcurrentHashMultiset.java": [
+"guava:src/com/google/common/collect/ConcurrentHashMultiset.java": [
 579
 ],
-"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+"guava:src/com/google/common/collect/MapMakerInternalMap.java": [
 1182,
 1439,
 1704,
@@ -23,13 +23,13 @@
 1743,
 1759
 ],
-"com.google.guava:guava:src/com/google/common/io/BaseEncoding.java": [
+"guava:src/com/google/common/io/BaseEncoding.java": [
 870
 ],
-"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractExecutionThreadService.java": [
+"guava:src/com/google/common/util/concurrent/AbstractExecutionThreadService.java": [
 58
 ],
-"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractScheduledService.java": [
+"guava:src/com/google/common/util/concurrent/AbstractScheduledService.java": [
 207,
 237
 ]

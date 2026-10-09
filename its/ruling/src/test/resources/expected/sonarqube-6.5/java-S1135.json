@@ -1,0 +1,105 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/component/ComponentService.java": [
+46,
+56
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/SourceSimilarity.java": [
+27
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/BaseIssuesLoader.java": [
+59,
+62
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/CloseIssuesOnRemovedComponentsVisitor.java": [
+63
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/DebtCalculator.java": [
+52,
+57
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IntegrateIssuesVisitor.java": [
+107,
+109
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IssueCounter.java": [
+121
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/NewEffortCalculator.java": [
+81
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/CommentDensityRule.java": [
+85
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/LineCoverageRule.java": [
+42
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/BulkIndexer.java": [
+120
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/EsClient.java": [
+172
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/Facets.java": [
+98
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/Result.java": [
+84
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/index/IssueIndex.java": [
+131,
+132
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/SearchResponseLoader.java": [
+250
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/notification/email/EmailNotificationChannel.java": [
+153
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/GroupsAction.java": [
+102
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/platformlevel/PlatformLevelStartup.java": [
+65
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/BuiltInQProfileInsertImpl.java": [
+93
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/QProfileExporters.java": [
+122
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/RuleActivator.java": [
+494
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/setting/ThreadLocalSettings.java": [
+70
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/issue/notification/MyNewIssuesEmailTemplateTest.java": [
+97,
+125
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/issue/notification/NewIssuesEmailTemplateTest.java": [
+114,
+125
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualitygate/ws/QualityGatesWsTest.java": [
+52
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/BuiltInQProfileInsertImplTest.java": [
+165,
+166
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/QProfileFactoryImplTest.java": [
+320,
+330
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RegisterQualityProfilesMediumTest.java": [
+55,
+111
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java": [
+66
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesTest.java": [
+225
+]
+}

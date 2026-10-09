@@ -1,8 +1,8 @@
 {
-"com.google.guava:guava:src/com/google/common/io/FileBackedOutputStream.java": [
+"guava:src/com/google/common/io/FileBackedOutputStream.java": [
 160
 ],
-"com.google.guava:guava:src/com/google/common/io/Files.java": [
+"guava:src/com/google/common/io/Files.java": [
 501,
 502
 ]

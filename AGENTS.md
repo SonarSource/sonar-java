@@ -259,11 +259,11 @@ str="<line including <substring>>"; sub="<substring>"; pre="${str%%"$sub"*}" suf
 
 # Ruling Tests
 
-Ruling tests validate that rule fixes don't break existing true positives. They run the analyzer against real-world Java projects (`guava`, `commons-beanutils`, `eclipse-jetty`, `sonar-server`, `jboss-ejb3-tutorial`, `regex-examples`) and compare results to expected baselines.
+Ruling tests validate that rule fixes don't break existing true positives. They run the analyzer against real-world Java projects (`guava`, `commons-beanutils`, `eclipse-jetty`, `sonarqube-6.5`, `jboss-ejb3-tutorial`, `regex-examples`, `mall`, `vibebot`) and compare results to expected baselines.
 
 - Expected ruling files: `its/ruling/src/test/resources/expected/<project>/java-<RULE_ID>.json`
 - Actual ruling output: `its/ruling/target/actual/<project>/java-<RULE_ID>.json`
-- Format: `{"group:artifact:path/to/File.java": [line1, line2, ...], ...}`
+- Format: `{"<projectKey>:path/to/File.java": [line1, line2, ...], ...}` where `<projectKey>` is the project's folder name under `its/sources/`
 - Ruling sources: `its/sources/<project>/`
 
 Do not try to run these locally. A PR should be created automatically when they fail on CI.

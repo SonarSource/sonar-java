@@ -1,0 +1,55 @@
+{
+"sonarqube-6.5:src/test/java/org/sonar/ce/log/CeProcessLoggingTest.java": [
+180,
+237,
+294,
+356
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/app/WebServerProcessLoggingTest.java": [
+204,
+261,
+318,
+380
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/authentication/JwtCsrfVerifierTest.java": [
+109
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadPeriodsStepTest.java": [
+133
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/debt/DebtRulesXMLImporterTest.java": [
+62
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/CreateActionTest.java": [
+310
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/permission/ws/UsersActionTest.java": [
+140
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/permission/ws/template/UpdateTemplateActionTest.java": [
+142
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/platform/ws/LogsActionTest.java": [
+99
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/plugins/ServerPluginRepositoryTest.java": [
+318
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/serverid/ws/GenerateActionTest.java": [
+126
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/user/UserUpdaterTest.java": [
+279
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/user/ws/UpdateActionTest.java": [
+157
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/user/ws/UsersWsTest.java": [
+72
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/ws/WebServiceEngineTest.java": [
+72,
+119,
+212
+]
+}

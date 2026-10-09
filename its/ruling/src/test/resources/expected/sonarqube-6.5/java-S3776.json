@@ -1,0 +1,15 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/RuleActivator.java": [
+97,
+301
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/RegisterRules.java": [
+97
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/index/RuleIndex.java": [
+214
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/user/UserUpdater.java": [
+332
+]
+}

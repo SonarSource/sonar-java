@@ -1,0 +1,42 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/batch/BatchIndex.java": [
+61
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/FileMoveDetectionStep.java": [
+216
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/duplication/ws/DuplicationsParser.java": [
+67
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/SearchResponseLoader.java": [
+297
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/ServerIdGenerator.java": [
+130
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/plugins/ServerExtensionInstaller.java": [
+80
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/plugins/ServerPluginRepository.java": [
+318
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/RuleActivator.java": [
+320,
+326
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/RegisterRules.java": [
+107
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/source/HtmlTextDecorator.java": [
+65
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/source/ws/IndexAction.java": [
+88
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/user/UserUpdater.java": [
+343
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/util/ClassLoaderUtils.java": [
+86
+]
+}

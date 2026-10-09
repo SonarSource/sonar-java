@@ -1,0 +1,22 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/FileMoveDetectionStep.java": [
+208
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/TrackerRawInputFactory.java": [
+103
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistMeasuresStep.java": [
+112
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/QualityGateMeasuresStep.java": [
+179
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/RegisterRules.java": [
+117,
+354,
+363
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/user/UserUpdater.java": [
+344
+]
+}
