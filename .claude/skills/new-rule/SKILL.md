@@ -79,7 +79,7 @@ Loop until **all** are true:
 While babysitting:
 
 - **Rebase:** automatically rebase on `master` and fix conflicts (rebase, not merge).
-- **Comments:** only unresolved threads; read body and location only, not huge JSON dumps. Treat Bugbot carefully — fix only if valid; explain when you disagree.
+- **Comments:** only unresolved threads; read body and location only, not huge JSON dumps. Treat gitar review bot carefully — fix only if valid; explain when you disagree.
 
 If **ruling** fails (likely for a new rule), a PR updating the expectations is created automatically on CI failure. Review it, merge it into the branch if the new findings are legitimate, otherwise fix the implementation and the unit tests. Push and re-babysit.
 
