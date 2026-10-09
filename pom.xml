@@ -92,7 +92,7 @@
     <!-- Compile and test against the latest plugin API. Runtime compatibility is validated independently. -->
     <sonar.plugin.api.version>14.1.0.5543</sonar.plugin.api.version>
     <sonar.scanner.version>13.15.0.6376</sonar.scanner.version>
-    <sonarlint.plugin.api.version>12.0.2.87499</sonarlint.plugin.api.version>
+    <sonarlint.plugin.api.version>12.1.0.87730</sonarlint.plugin.api.version>
     <sonar.sca.exclusions>its/**,java-checks-test-sources/**</sonar.sca.exclusions>
     <analyzer.commons.version>2.33.0.5369</analyzer.commons.version>
     <orchestrator.version>6.4.3.4676</orchestrator.version>
