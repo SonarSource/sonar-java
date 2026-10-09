@@ -10,7 +10,7 @@ description: >-
 
 This skill provides sonar-java-specific guidelines for implementing new rules.
 
-**Non-negotiable:** every rule PR must follow the [Mandatory delivery workflow](#mandatory-delivery-workflow). Do not open or merge a PR that is not fully green, has open review-bot comments, messy history, or a TP ratio of 90% or below.
+**Non-negotiable:** every rule PR must follow the [Mandatory delivery workflow](#mandatory-delivery-workflow). Do not end before a PR that is not fully green, has open review-bot comments, messy history, or a TP ratio of 90% or below.
 
 ## Mandatory delivery workflow
 
