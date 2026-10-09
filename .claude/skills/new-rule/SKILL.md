@@ -124,10 +124,6 @@ The PR is done **only** when:
   - `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S{RULE_ID}.json`
   - `sonar-java-plugin/src/main/resources/profiles/{Sonar_way|Sonar_agentic_AI}/S{RULE_ID}`
 
-### Tests
-Ruling test expectation files, located in `its/ruling/src/test/resources`, are updated by merging an automatically
-generated PR into the branch when CI checks fail.
-
 ### MethodMatchers
 
 Use `MethodMatchers` to match method calls by type, name, and signature:
