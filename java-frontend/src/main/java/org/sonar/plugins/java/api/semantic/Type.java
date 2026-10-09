@@ -299,4 +299,20 @@ public interface Type {
    */
   Type[] getIntersectionTypes();
 
+  /**
+   * Check if this type is a union type. For example, return true for the type of {@code e} in a multi-catch clause.
+   *
+   * <pre>
+   * try { } catch (IOException | SQLException e) { }
+   * </pre>
+   */
+  boolean isUnionType();
+
+  /**
+   * Returns the types that form this union type. For a non-union type, returns an array that contains this type.
+   *
+   * @return the union type alternatives
+   */
+  Type[] getUnionTypes();
+
 }
