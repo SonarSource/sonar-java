@@ -25,7 +25,7 @@ Verify / ask as needed:
 - [ ] Access to the RSpec repository and a local `rule-api` jar (see [Metadata Files](#metadata-files))
 - [ ] Rule id(s) to implement
 - [ ] RSpec status per rule: merged on `master` **or** branch name — look up branch/PR **only** in https://github.com/SonarSource/rspec (never in this repo)
-- [ ] RSpec Jira ticket → its **epic parent** key (from the RSpec PR title/branch) — used in the PR body as `Part of <EPIC>` (Step 4); **not** reused as the implementation ticket
+- [ ] RSpec Jira ticket key (from the RSpec PR title/branch) — reused as the implementation ticket and as the PR title prefix (Step 4)
 - [ ] Rule title (for the PR title format in Step 4)
 - [ ] Any path/env overrides needed
 
@@ -60,11 +60,10 @@ Stop and resolve gaps before Step 1.
 
 Push the branch, named with your GitHub username convention (e.g. `<username>/short-kebab-description`), and open the PR.
 
-**Separate Jira tickets (mandatory):** RSpec and rule implementation use **different** SONARJAVA tickets. Do **not** put a Jira key in the initial PR title or in commits.
+**Single Jira ticket (mandatory):** the RSpec and the rule implementation share the **same** SONARJAVA ticket. Do **not** create a second ticket, and do **not** put the Jira key in commits.
 
-1. Open the analyzer PR with title exactly: `Implement rule SXXXX - <rule title>` (rule id and title from RSpec; no `SONARJAVA-…` prefix).
-2. In the **PR body**, include a line `Part of <EPIC-KEY>`, the **epic parent** of the RSpec ticket. Jira automation creates the implementation ticket in that epic.
-3. After the ticket exists: change its issue type from the automation default (**Maintenance**) to **Feature** (new rules are features). Do not invent an epic or ticket key.
+1. Open the analyzer PR with title exactly: `SONARJAVA-XXXX Implement rule SXXXX - <rule title>`, reusing the RSpec ticket key as prefix (rule id and title from RSpec).
+2. Do not invent a ticket key — take it from the RSpec PR or branch.
 
 Do not stop here.
 
