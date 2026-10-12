@@ -1,26 +1,26 @@
 {
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnectionFactory.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnectionFactory.java": [
 100
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java": [
 466
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/BufferedResponseHandler.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/BufferedResponseHandler.java": [
 270
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java": [
 368
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java": [
 765
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java": [
 240
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java": [
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java": [
 177
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpWriterTest.java": [
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpWriterTest.java": [
 243
 ]
 }

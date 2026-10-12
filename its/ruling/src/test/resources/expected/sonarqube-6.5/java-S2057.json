@@ -1,0 +1,17 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/authentication/event/AuthenticationEvent.java": [
+97
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/index/IssueDoc.java": [
+40
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/notification/IssueChangeNotification.java": [
+32
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/notification/MyNewIssuesNotification.java": [
+28
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/user/index/UserDoc.java": [
+31
+]
+}

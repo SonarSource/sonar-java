@@ -1,10 +1,10 @@
 {
-"com.macro.mall:mall:mall-common/src/main/java/com/macro/mall/common/api/CommonPage.java": [
+"mall:mall-common/src/main/java/com/macro/mall/common/api/CommonPage.java": [
 38,
 39,
 52
 ],
-"com.macro.mall:mall:mall-common/src/main/java/com/macro/mall/common/api/CommonResult.java": [
+"mall:mall-common/src/main/java/com/macro/mall/common/api/CommonResult.java": [
 36,
 46,
 54,
@@ -14,7 +14,7 @@
 100,
 107
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/Generator.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/Generator.java": [
 19
 ]
 }

@@ -1,5 +1,5 @@
 {
-"com.google.guava:guava:src/com/google/common/base/Charsets.java": [
+"guava:src/com/google/common/base/Charsets.java": [
 49,
 49,
 59,
@@ -13,7 +13,7 @@
 99,
 99
 ],
-"com.google.guava:guava:src/com/google/common/net/MediaType.java": [
+"guava:src/com/google/common/net/MediaType.java": [
 86
 ]
 }

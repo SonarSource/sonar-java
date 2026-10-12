@@ -1,14 +1,14 @@
 {
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaList.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaList.java": [
 667
 ],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java": [
 974
 ],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java": [
 353
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java": [
 106,
 107,
 153,
@@ -16,10 +16,10 @@
 234,
 236
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java": [
 146
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java": [
 537,
 548,
 559,
@@ -31,7 +31,7 @@
 625,
 636
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java": [
 296,
 454,
 455,
@@ -42,7 +42,7 @@
 529,
 530
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java": [
 892,
 903,
 914,
@@ -57,13 +57,13 @@
 1013,
 1811
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSetMetaData.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSetMetaData.java": [
 127
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira347TestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira347TestCase.java": [
 117
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java": [
 109,
 114,
 115,
@@ -76,7 +76,7 @@
 234,
 253
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java": [
 84,
 85,
 86,

@@ -1,0 +1,77 @@
+{
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/AnalysisImplTest.java": [
+116
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/OrganizationTest.java": [
+90
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/ComponentImplTest.java": [
+107
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/MeasureComputerDefinitionImplTest.java": [
+156
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/duplication/DuplicationTest.java": [
+157
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/event/EventTest.java": [
+63
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/filemove/MatchTest.java": [
+55,
+66
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureKeyTest.java": [
+53
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/period/PeriodTest.java": [
+59
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/scm/ChangesetTest.java": [
+129
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/es/IndexDefinitionHashTest.java": [
+34
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/exceptions/MessageTest.java": [
+67
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/issue/ResultTest.java": [
+74,
+78,
+90,
+95
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/issue/RulesAggregationTest.java": [
+70
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/issue/workflow/TransitionTest.java": [
+132
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/measure/custom/ws/SearchActionTest.java": [
+107
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/measure/custom/ws/UpdateActionTest.java": [
+166
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/plugins/ws/PluginUpdateAggregatorTest.java": [
+76
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/QualityProfileTest.java": [
+71
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ChangelogActionDatabaseTest.java": [
+158
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/source/HtmlTextDecoratorTest.java": [
+325,
+361,
+392
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/source/OpeningHtmlTagTest.java": [
+42
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/user/DefaultUserTest.java": [
+33
+]
+}

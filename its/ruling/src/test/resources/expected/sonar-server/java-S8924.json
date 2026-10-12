@@ -1,8 +1,0 @@
-{
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/ce/log/CeLoggingTest.java": [
-64
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/ws/ShowActionTest.java": [
-150
-]
-}

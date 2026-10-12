@@ -1,0 +1,30 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/GroupsAction.java": [
+102
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/RegisterRules.java": [
+402,
+444
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureToMeasureDtoTest.java": [
+133
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/issue/IssueServiceMediumTest.java": [
+144
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/permission/ws/template/DeleteTemplateActionTest.java": [
+373
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/plugins/ServerPluginJarExploderTest.java": [
+52
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/QProfileFactoryImplTest.java": [
+325
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java": [
+252
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionMediumTest.java": [
+27
+]
+}

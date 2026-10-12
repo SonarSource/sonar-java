@@ -1,0 +1,39 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/TrackerRawInputFactory.java": [
+91
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/EsUtils.java": [
+63
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/SearchIdResult.java": [
+61
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/IssueQueryFactory.java": [
+317
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/notification/NotificationService.java": [
+103
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/plugins/PluginDownloader.java": [
+110
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/QProfileExporters.java": [
+97
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/DefaultRuleFinder.java": [
+125
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/RegisterRules.java": [
+201
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/index/RuleIndex.java": [
+277
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/test/index/TestDoc.java": [
+148,
+156
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/util/EnumUtils.java": [
+38
+]
+}

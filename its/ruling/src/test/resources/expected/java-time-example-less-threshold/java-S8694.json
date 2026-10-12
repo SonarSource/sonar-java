@@ -1,5 +1,5 @@
 {
-"example:java-time-example:src/main/java/example/AppointmentService.java": [
+"java-time-example:src/main/java/example/AppointmentService.java": [
 20,
 21,
 23,
@@ -11,7 +11,7 @@
 30,
 31
 ],
-"example:java-time-example:src/main/java/example/CalendarUtils.java": [
+"java-time-example:src/main/java/example/CalendarUtils.java": [
 21,
 22,
 24,
@@ -23,7 +23,7 @@
 32,
 33
 ],
-"example:java-time-example:src/main/java/example/EventScheduler.java": [
+"java-time-example:src/main/java/example/EventScheduler.java": [
 21,
 22,
 24,
@@ -35,7 +35,7 @@
 32,
 33
 ],
-"example:java-time-example:src/main/java/example/HolidayChecker.java": [
+"java-time-example:src/main/java/example/HolidayChecker.java": [
 21,
 22,
 24,
@@ -47,7 +47,7 @@
 32,
 33
 ],
-"example:java-time-example:src/main/java/example/ReportGenerator.java": [
+"java-time-example:src/main/java/example/ReportGenerator.java": [
 21,
 22,
 24,

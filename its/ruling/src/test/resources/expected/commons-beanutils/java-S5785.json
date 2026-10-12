@@ -1,9 +1,9 @@
 {
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java": [
 469,
 843
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanComparatorTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanComparatorTestCase.java": [
 100,
 111,
 124,
@@ -11,7 +11,7 @@
 209,
 219
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanPropertyValueChangeClosureTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanPropertyValueChangeClosureTestCase.java": [
 50,
 83,
 92,
@@ -22,7 +22,7 @@
 197,
 289
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java": [
 440,
 446,
 495,
@@ -35,13 +35,13 @@
 886,
 892
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java": [
 301,
 304,
 307,
 475
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java": [
 568,
 574,
 594,
@@ -54,43 +54,43 @@
 922,
 928
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyTestCase.java": [
 107,
 108,
 109
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java": [
 934,
 1206,
 2055,
 2349
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaResultSetTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaResultSetTestCase.java": [
 137
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaRowSetTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaRowSetTestCase.java": [
 140
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java": [
 1442,
 1975,
 3332,
 3626
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/WrapDynaBeanTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/WrapDynaBeanTestCase.java": [
 259
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira61TestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira61TestCase.java": [
 413,
 430,
 447,
 464
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ClassReloaderTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ClassReloaderTestCase.java": [
 57,
 62
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/MemoryTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/MemoryTestCase.java": [
 105,
 111,
 117,
@@ -101,7 +101,7 @@
 217,
 223
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java": [
 295,
 298,
 474

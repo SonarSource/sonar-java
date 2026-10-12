@@ -1,17 +1,17 @@
 {
-"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java": [
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java": [
 1311
 ],
-"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java": [
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java": [
 56
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java": [
 587,
 589,
 599,
 601
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java": [
 122,
 415,
 417,

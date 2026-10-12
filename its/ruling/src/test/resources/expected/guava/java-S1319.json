@@ -1,5 +1,5 @@
 {
-"com.google.guava:guava:src/com/google/common/collect/Lists.java": [
+"guava:src/com/google/common/collect/Lists.java": [
 88,
 110,
 142,
@@ -11,7 +11,7 @@
 274,
 286
 ],
-"com.google.guava:guava:src/com/google/common/collect/Maps.java": [
+"guava:src/com/google/common/collect/Maps.java": [
 164,
 181,
 219,
@@ -25,14 +25,14 @@
 359,
 369
 ],
-"com.google.guava:guava:src/com/google/common/collect/Queues.java": [
+"guava:src/com/google/common/collect/Queues.java": [
 61,
 71,
 85,
 93,
 242
 ],
-"com.google.guava:guava:src/com/google/common/collect/Sets.java": [
+"guava:src/com/google/common/collect/Sets.java": [
 143,
 164,
 181,

@@ -1,28 +1,28 @@
 {
-"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java": [
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java": [
 106
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
 597
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java": [
 698
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java": [
 992
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
 359,
 360,
 366
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/StatisticsHandler.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/StatisticsHandler.java": [
 575
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/DatabaseAdaptor.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DatabaseAdaptor.java": [
 109
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java": [
 277,
 324,
 326,
