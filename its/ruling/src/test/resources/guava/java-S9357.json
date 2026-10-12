@@ -1,0 +1,176 @@
+{
+"com.google.guava:guava:src/com/google/common/base/Converter.java": [
+180
+],
+"com.google.guava:guava:src/com/google/common/base/Optional.java": [
+297
+],
+"com.google.guava:guava:src/com/google/common/base/Splitter.java": [
+148,
+179,
+230,
+294
+],
+"com.google.guava:guava:src/com/google/common/cache/CacheBuilder.java": [
+183
+],
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
+2327,
+3547
+],
+"com.google.guava:guava:src/com/google/common/cache/LongAddables.java": [
+38,
+45
+],
+"com.google.guava:guava:src/com/google/common/cache/RemovalListeners.java": [
+45,
+48
+],
+"com.google.guava:guava:src/com/google/common/collect/Collections2.java": [
+302
+],
+"com.google.guava:guava:src/com/google/common/collect/FilteredEntryMultimap.java": [
+398
+],
+"com.google.guava:guava:src/com/google/common/collect/Interners.java": [
+46
+],
+"com.google.guava:guava:src/com/google/common/collect/Iterables.java": [
+1014
+],
+"com.google.guava:guava:src/com/google/common/collect/Iterators.java": [
+1296
+],
+"com.google.guava:guava:src/com/google/common/collect/MapConstraints.java": [
+227,
+485
+],
+"com.google.guava:guava:src/com/google/common/collect/Maps.java": [
+1863,
+1874,
+1888,
+1922,
+3098
+],
+"com.google.guava:guava:src/com/google/common/collect/Multimaps.java": [
+519,
+1202,
+1702
+],
+"com.google.guava:guava:src/com/google/common/collect/Multisets.java": [
+305
+],
+"com.google.guava:guava:src/com/google/common/collect/MutableClassToInstanceMap.java": [
+64
+],
+"com.google.guava:guava:src/com/google/common/collect/Range.java": [
+117,
+129
+],
+"com.google.guava:guava:src/com/google/common/collect/RegularImmutableTable.java": [
+114
+],
+"com.google.guava:guava:src/com/google/common/collect/StandardTable.java": [
+721,
+794
+],
+"com.google.guava:guava:src/com/google/common/collect/Tables.java": [
+240,
+390,
+419,
+429,
+592
+],
+"com.google.guava:guava:src/com/google/common/collect/TreeBasedTable.java": [
+321
+],
+"com.google.guava:guava:src/com/google/common/escape/Escaper.java": [
+90
+],
+"com.google.guava:guava:src/com/google/common/eventbus/Subscriber.java": [
+76
+],
+"com.google.guava:guava:src/com/google/common/io/CharSource.java": [
+442
+],
+"com.google.guava:guava:src/com/google/common/net/MediaType.java": [
+406,
+744
+],
+"com.google.guava:guava:src/com/google/common/reflect/ClassPath.java": [
+64
+],
+"com.google.guava:guava:src/com/google/common/reflect/MutableTypeToInstanceMap.java": [
+124
+],
+"com.google.guava:guava:src/com/google/common/reflect/TypeToken.java": [
+701
+],
+"com.google.guava:guava:src/com/google/common/reflect/Types.java": [
+61
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractExecutionThreadService.java": [
+45,
+50,
+145
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractIdleService.java": [
+40,
+50,
+64,
+95
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractScheduledService.java": [
+205,
+210,
+232,
+304
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/AggregateFuture.java": [
+138
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/AtomicLongMap.java": [
+294
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/Callables.java": [
+44,
+94
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/Futures.java": [
+1168,
+1494,
+1569,
+1662,
+1749
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/FuturesGetChecked.java": [
+253
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/JdkFutureAdapters.java": [
+160
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java": [
+204,
+754,
+856
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/Runnables.java": [
+31
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java": [
+598
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/Striped.java": [
+199,
+214,
+236,
+252,
+283
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/ThreadFactoryBuilder.java": [
+161
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/WrappingExecutorService.java": [
+67
+]
+}

@@ -1,0 +1,49 @@
+{
+"com.google.guava:guava:src/com/google/common/base/CharMatcher.java": [
+1275
+],
+"com.google.guava:guava:src/com/google/common/math/BigIntegerMath.java": [
+76,
+80,
+85,
+176,
+180,
+185,
+217,
+220,
+228
+],
+"com.google.guava:guava:src/com/google/common/math/DoubleMath.java": [
+260
+],
+"com.google.guava:guava:src/com/google/common/math/IntMath.java": [
+94,
+98,
+103,
+137,
+140,
+144,
+238,
+241,
+245,
+317
+],
+"com.google.guava:guava:src/com/google/common/math/LongMath.java": [
+93,
+97,
+102,
+137,
+140,
+144,
+306,
+312,
+319,
+384
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractService.java": [
+207,
+363,
+367,
+470
+]
+}
