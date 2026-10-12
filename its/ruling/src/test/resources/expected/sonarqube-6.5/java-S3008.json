@@ -1,0 +1,83 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/web/MasterServletFilter.java": [
+44
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/authentication/IdentityProviderRepositoryTest.java": [
+36,
+41,
+46
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/authentication/UserIdentityAuthenticatorTest.java": [
+59,
+61,
+68
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/batch/IssuesActionTest.java": [
+77
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/AnalysisMetadataHolderImplTest.java": [
+36
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/duplication/CrossProjectDuplicationStatusHolderImplTest.java": [
+33
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/TrackerRawInputFactoryTest.java": [
+52,
+54,
+55
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/CommentDensityRuleTest.java": [
+46,
+48
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/CoverageRuleTest.java": [
+45
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/DuplicatedBlockRuleTest.java": [
+45,
+47
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/SkippedTestRuleTest.java": [
+45,
+47
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/TestErrorRuleTest.java": [
+45,
+47
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ValidateProjectStepTest.java": [
+45
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/es/EsServerHolder.java": [
+39
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/issue/ws/BulkChangeActionTest.java": [
+90
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/notification/NotificationDaemonTest.java": [
+48,
+49,
+50
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/organization/BillingValidationsProxyImplTest.java": [
+34,
+35
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/SearchActionTest.java": [
+69,
+70,
+71
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ShowActionTest.java": [
+61,
+62,
+63
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/setting/ws/ValuesActionTest.java": [
+74
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/user/ws/IdentityProvidersActionTest.java": [
+37,
+46
+]
+}

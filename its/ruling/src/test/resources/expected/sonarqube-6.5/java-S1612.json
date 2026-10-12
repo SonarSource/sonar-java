@@ -1,0 +1,17 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/NewSizeMeasuresStep.java": [
+143
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/filemove/FileMoveDetectionStepTest.java": [
+528
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/DeleteActionTest.java": [
+107
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/UpdateActionTest.java": [
+79
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/AppActionTest.java": [
+72
+]
+}

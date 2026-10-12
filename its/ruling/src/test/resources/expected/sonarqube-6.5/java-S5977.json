@@ -1,0 +1,59 @@
+{
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ComponentFunctionsTest.java": [
+35
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/duplication/TextBlockTest.java": [
+90
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/filemove/MutableMovedFilesRepositoryImplTest.java": [
+96
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/source/HighlightingLineReaderTest.java": [
+303
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ReportPersistComponentsStepTest.java": [
+771
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ViewsPersistComponentsStepTest.java": [
+375
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/organization/OrganizationValidationImplTest.java": [
+77
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/SearchActionTest.java": [
+141
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/project/ws/UpdateVisibilityActionTest.java": [
+98
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/projectlink/ws/CreateActionTest.java": [
+240
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/projectlink/ws/SearchActionTest.java": [
+228
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/BuiltInQProfileRepositoryImplTest.java": [
+160
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/BuiltInQualityProfilesNotificationTest.java": [
+37
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RegisterQualityProfilesNotificationTest.java": [
+70
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java": [
+842
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/rule/CachingRuleFinderTest.java": [
+129
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/setting/ws/ResetActionTest.java": [
+416
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/setting/ws/SetActionTest.java": [
+1001
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/user/ServerUserSessionTest.java": [
+393
+]
+}

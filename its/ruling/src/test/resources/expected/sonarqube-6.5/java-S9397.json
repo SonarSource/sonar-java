@@ -1,0 +1,44 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/webhook/WebhookPostTask.java": [
+73,
+81,
+82
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/workflow/Transition.java": [
+118
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/SearchAction.java": [
+187
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/custom/ws/CustomMeasureValueDescription.java": [
+35
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/Platform.java": [
+229,
+232
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/web/RedirectFilter.java": [
+80,
+134,
+153
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/plugins/privileged/PrivilegedPluginsStopper.java": [
+54
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/QProfileName.java": [
+69
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/ws/SearchAction.java": [
+139,
+152
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/util/OkHttpClientProvider.java": [
+64
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/es/EsClientProviderTest.java": [
+125
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/plugins/TestProjectUtils.java": [
+33
+]
+}

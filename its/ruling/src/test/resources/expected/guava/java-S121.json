@@ -1,9 +1,9 @@
 {
-"com.google.guava:guava:src/com/google/common/cache/LongAdder.java": [
+"guava:src/com/google/common/cache/LongAdder.java": [
 73,
 111
 ],
-"com.google.guava:guava:src/com/google/common/cache/Striped64.java": [
+"guava:src/com/google/common/cache/Striped64.java": [
 200,
 222,
 229,

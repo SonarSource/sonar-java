@@ -1,54 +1,54 @@
 {
-"com.google.guava:guava:src/com/google/common/cache/CacheBuilder.java": [
+"guava:src/com/google/common/cache/CacheBuilder.java": [
 767
 ],
-"com.google.guava:guava:src/com/google/common/collect/FilteredMultimap.java": [
+"guava:src/com/google/common/collect/FilteredMultimap.java": [
 33
 ],
-"com.google.guava:guava:src/com/google/common/collect/GeneralRange.java": [
+"guava:src/com/google/common/collect/GeneralRange.java": [
 139
 ],
-"com.google.guava:guava:src/com/google/common/collect/ImmutableSetMultimap.java": [
+"guava:src/com/google/common/collect/ImmutableSetMultimap.java": [
 513
 ],
-"com.google.guava:guava:src/com/google/common/collect/Maps.java": [
+"guava:src/com/google/common/collect/Maps.java": [
 649
 ],
-"com.google.guava:guava:src/com/google/common/collect/MinMaxPriorityQueue.java": [
+"guava:src/com/google/common/collect/MinMaxPriorityQueue.java": [
 903
 ],
-"com.google.guava:guava:src/com/google/common/collect/RegularImmutableAsList.java": [
+"guava:src/com/google/common/collect/RegularImmutableAsList.java": [
 49
 ],
-"com.google.guava:guava:src/com/google/common/collect/SortedIterable.java": [
+"guava:src/com/google/common/collect/SortedIterable.java": [
 34
 ],
-"com.google.guava:guava:src/com/google/common/collect/SortedIterables.java": [
+"guava:src/com/google/common/collect/SortedIterables.java": [
 53
 ],
-"com.google.guava:guava:src/com/google/common/collect/SortedSetMultimap.java": [
+"guava:src/com/google/common/collect/SortedSetMultimap.java": [
 114
 ],
-"com.google.guava:guava:src/com/google/common/collect/TreeBasedTable.java": [
+"guava:src/com/google/common/collect/TreeBasedTable.java": [
 151,
 159
 ],
-"com.google.guava:guava:src/com/google/common/collect/TreeMultimap.java": [
+"guava:src/com/google/common/collect/TreeMultimap.java": [
 156
 ],
-"com.google.guava:guava:src/com/google/common/reflect/Element.java": [
+"guava:src/com/google/common/reflect/Element.java": [
 48
 ],
-"com.google.guava:guava:src/com/google/common/reflect/Invokable.java": [
+"guava:src/com/google/common/reflect/Invokable.java": [
 67,
 108
 ],
-"com.google.guava:guava:src/com/google/common/reflect/Parameter.java": [
+"guava:src/com/google/common/reflect/Parameter.java": [
 56,
 61,
 61
 ],
-"com.google.guava:guava:src/com/google/common/reflect/TypeToken.java": [
+"guava:src/com/google/common/reflect/TypeToken.java": [
 157,
 238,
 275,
@@ -58,7 +58,7 @@
 985,
 1202
 ],
-"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractScheduledService.java": [
+"guava:src/com/google/common/util/concurrent/AbstractScheduledService.java": [
 157
 ]
 }

@@ -1,8 +1,8 @@
 {
-"com.google.guava:guava:src/com/google/common/cache/CacheStats.java": [
+"guava:src/com/google/common/cache/CacheStats.java": [
 61
 ],
-"com.google.guava:guava:src/com/google/common/net/InetAddresses.java": [
+"guava:src/com/google/common/net/InetAddresses.java": [
 625
 ]
 }

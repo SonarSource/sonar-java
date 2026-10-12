@@ -1,0 +1,8 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/CachingRuleFinder.java": [
+98
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/WebServerRuleFinderImpl.java": [
+57
+]
+}

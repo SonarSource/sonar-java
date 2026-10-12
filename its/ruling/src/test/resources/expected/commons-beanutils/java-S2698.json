@@ -1,5 +1,5 @@
 {
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java": [
 272,
 284,
 293,
@@ -14,15 +14,15 @@
 428,
 437
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira422TestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira422TestCase.java": [
 68,
 75
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira422bTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira422bTestCase.java": [
 36,
 44
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira492TestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira492TestCase.java": [
 59,
 60,
 65,
@@ -37,10 +37,10 @@
 106,
 116
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira493TestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira493TestCase.java": [
 40
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/MemoryTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/MemoryTestCase.java": [
 51,
 85,
 105,
@@ -54,7 +54,7 @@
 217,
 223
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java": [
 81,
 128,
 130,
