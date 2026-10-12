@@ -235,6 +235,40 @@ class MessageDigestInstanceFieldCheckSample {
     }
   }
 
+  static class QualifiedAccessHolder {
+    private final Object lockA = new Object();
+    private MessageDigest otherMethodDigest; // Noncompliant {{Make this MessageDigest a local variable.}}
+//                        ^^^^^^^^^^^^^^^^^
+    private MessageDigest otherLockDigest; // Noncompliant {{Make this MessageDigest a local variable.}}
+//                        ^^^^^^^^^^^^^^^
+    private MessageDigest thisDigest; // Compliant, every usage is on this and holds the instance monitor
+    private static MessageDigest staticDigest; // Compliant, every usage holds the class monitor
+
+    synchronized void merge(QualifiedAccessHolder other, byte[] payload) {
+      otherMethodDigest.update(payload);
+      other.otherMethodDigest.update(payload);
+    }
+
+    void mergeWithLock(QualifiedAccessHolder other, byte[] payload) {
+      synchronized (lockA) {
+        otherLockDigest.update(payload);
+        other.otherLockDigest.update(payload);
+      }
+    }
+
+    synchronized void updateThis(byte[] payload) {
+      this.thisDigest.update(payload);
+      thisDigest.reset();
+    }
+
+    static void updateStatic(byte[] payload) {
+      synchronized (QualifiedAccessHolder.class) {
+        QualifiedAccessHolder.staticDigest.update(payload);
+        staticDigest.reset();
+      }
+    }
+  }
+
   interface PayloadConsumer {
     void accept(byte[] payload) throws Exception;
   }

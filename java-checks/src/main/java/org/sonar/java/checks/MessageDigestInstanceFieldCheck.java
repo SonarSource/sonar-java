@@ -82,7 +82,8 @@ public class MessageDigestInstanceFieldCheck extends IssuableSubscriptionVisitor
    * A private field is considered safe when none of its usages can alter the digest state concurrently. Assignments of the field
    * are ignored, and the remaining usages must either all be calls which do not alter the digest state (e.g. {@code clone()},
    * when the field is only used as a prototype), or all be guarded by the same known monitor. For a static field, this monitor
-   * must be shared by all instances: a static final lock field, a class literal or a static synchronized method.
+   * must be shared by all instances: a static final lock field, a class literal or a static synchronized method. When the monitor
+   * belongs to an instance, the field must be accessed through {@code this}.
    */
   private static boolean isOnlyUsedSafely(Symbol symbol) {
     if (!symbol.isPrivate()) {
@@ -95,7 +96,7 @@ public class MessageDigestInstanceFieldCheck extends IssuableSubscriptionVisitor
       return true;
     }
     Set<Optional<Monitor>> monitors = readUsages.stream()
-      .map(MessageDigestInstanceFieldCheck::monitorOf)
+      .map(usage -> monitorOf(usage).filter(monitor -> monitor.instanceOwner() == null || isAccessedOnThis(usage)))
       .collect(Collectors.toSet());
     return monitors.size() == 1 && monitors.iterator().next().filter(monitor -> monitor.canGuard(symbol)).isPresent();
   }
@@ -106,6 +107,11 @@ public class MessageDigestInstanceFieldCheck extends IssuableSubscriptionVisitor
       return parent;
     }
     return usage;
+  }
+
+  private static boolean isAccessedOnThis(IdentifierTree usage) {
+    Tree expression = fieldExpression(usage);
+    return expression == usage || ExpressionUtils.isSelectOnThisOrSuper((MemberSelectExpressionTree) expression);
   }
 
   private static boolean isAssignedTo(IdentifierTree usage) {
