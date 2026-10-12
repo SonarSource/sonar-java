@@ -223,6 +223,20 @@ class VisitorsBridgeTest {
   }
 
   @Test
+  void cleanup_failure_does_not_mask_visit_failure() {
+    StatefulVisitorWithoutLeaveFileDelegation failingVisitor = new StatefulVisitorWithoutLeaveFileDelegation(true);
+    ThrowingCleanupVisitor cleanupVisitor = new ThrowingCleanupVisitor(new IllegalStateException("Cleanup failure"));
+    VisitorsBridge visitorsBridge = visitorsBridge(List.of(failingVisitor, cleanupVisitor), true);
+
+    assertThatThrownBy(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
+      .isInstanceOf(AnalysisException.class)
+      .hasRootCause(NPE);
+
+    assertThat(failingVisitor.clearCount).isEqualTo(2);
+    assertThat(cleanupVisitor.cleanupCount).isEqualTo(2);
+  }
+
+  @Test
   void swallow_exception_when_hidden_property_set_to_false_with_all_kinds_of_visisitors() {
     assertThatCode(() -> {
       visitorsBridge(Arrays.asList(

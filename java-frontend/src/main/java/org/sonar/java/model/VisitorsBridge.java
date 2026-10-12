@@ -428,36 +428,50 @@ public class VisitorsBridge {
     @Override
     public void scanFile(JavaFileScannerContext javaFileScannerContext) {
       PerformanceMeasure.Duration issuableSubscriptionVisitorsDuration = PerformanceMeasure.start("IssuableSubscriptionVisitors");
+      CheckFailureException primaryFailure = null;
       try {
         forEach(subscriptionVisitors, s -> s.setContext(javaFileScannerContext));
         visit(javaFileScannerContext.getTree());
         forEach(subscriptionVisitors, s -> s.leaveFile(javaFileScannerContext));
       } catch (CheckFailureException e) {
-        interruptIfFailFast(e);
+        primaryFailure = e;
       } finally {
+        CheckFailureException cleanupFailure;
         try {
-          CheckFailureException cleanupFailure = null;
-          for (SubscriptionVisitor visitor : subscriptionVisitors) {
-            if (visitor instanceof IssuableSubscriptionVisitor issuableVisitor) {
-              PerformanceMeasure.Duration visitorDuration = PerformanceMeasure.start(visitor);
-              try {
-                runScanner(issuableVisitor::clearStateAfterFile, visitor);
-              } catch (CheckFailureException e) {
-                if (cleanupFailure == null) {
-                  cleanupFailure = e;
-                }
-              } finally {
-                visitorDuration.stop();
-              }
-            }
-          }
-          if (cleanupFailure != null) {
-            interruptIfFailFast(cleanupFailure);
-          }
+          cleanupFailure = clearAllStates();
         } finally {
           issuableSubscriptionVisitorsDuration.stop();
         }
+        CheckFailureException toReport = primaryFailure != null ? primaryFailure : cleanupFailure;
+        if (toReport != null) {
+          interruptIfFailFast(toReport);
+        }
       }
+    }
+
+    /**
+     * Clears the per-file state of every issuable subscription visitor, continuing even if some of them fail.
+     *
+     * @return the first cleanup failure, or {@code null} if all cleanups succeeded
+     */
+    @Nullable
+    private CheckFailureException clearAllStates() {
+      CheckFailureException cleanupFailure = null;
+      for (SubscriptionVisitor visitor : subscriptionVisitors) {
+        if (visitor instanceof IssuableSubscriptionVisitor issuableVisitor) {
+          PerformanceMeasure.Duration visitorDuration = PerformanceMeasure.start(visitor);
+          try {
+            runScanner(issuableVisitor::clearStateAfterFile, visitor);
+          } catch (CheckFailureException e) {
+            if (cleanupFailure == null) {
+              cleanupFailure = e;
+            }
+          } finally {
+            visitorDuration.stop();
+          }
+        }
+      }
+      return cleanupFailure;
     }
 
     @Override
