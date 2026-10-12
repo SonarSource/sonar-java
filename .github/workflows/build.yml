@@ -142,7 +142,7 @@ jobs:
   ruling-update-notify:
     name: Ruling Update and Notify
     needs: ruling-qa
-    if: always() && github.event_name == 'pull_request'
+    if: always() && github.event_name == 'pull_request' && (needs.ruling-qa.result == 'success' || needs.ruling-qa.result == 'failure')
     runs-on: warp-custom-ubuntu-24-04
     permissions:
       contents: write
@@ -165,7 +165,7 @@ jobs:
           # Check if any ruling-qa job failed
           # For matrix jobs, needs.ruling-qa.result can be 'success' only if ALL jobs succeeded
           RULING_FAILED=false
-          if [[ "${{ needs.ruling-qa.result }}" != "success" ]]; then
+          if [[ "${{ needs.ruling-qa.result }}" == "failure" ]]; then
             RULING_FAILED=true
           fi
           echo "ruling-failed=$RULING_FAILED" >> "$GITHUB_OUTPUT"
