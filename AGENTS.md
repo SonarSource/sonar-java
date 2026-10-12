@@ -4,7 +4,7 @@ SonarJava is a static code analyzer for Java.
 
 The rules are implemented in **Java** using the SonarJava API. Test resources are **Java** files annotated with special comment markers.
 
-For step-by-step guidance on implementing a new rule (including metadata generation), see `.claude/skills/new-rule/SKILL.md`.
+For step-by-step guidance on implementing a new rule (including metadata generation), see `.agents/skills/new-rule/SKILL.md`.
 
 ---
 
