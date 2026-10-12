@@ -50,7 +50,7 @@ public class NPEThrowCheck extends IssuableSubscriptionVisitor {
 
   private void raiseIssueOnNpe(Tree tree, Type type) {
     if (type.is("java.lang.NullPointerException")) {
-      reportIssue(treeAtFault(tree), "Throw some other exception here, such as \"IllegalArgumentException\".");
+      reportIssue(treeAtFault(tree), "Use Objects.requireNonNull() instead of explicitly throwing NullPointerException.");
     }
   }
 

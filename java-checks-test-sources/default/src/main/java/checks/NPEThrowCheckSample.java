@@ -1,16 +1,16 @@
 package checks;
 
 class NPEThrowCheckSample {
-  void foo() throws NullPointerException { // Noncompliant {{Throw some other exception here, such as "IllegalArgumentException".}}
+  void foo() throws NullPointerException { // Noncompliant {{Use Objects.requireNonNull() instead of explicitly throwing NullPointerException.}}
 //                  ^^^^^^^^^^^^^^^^^^^^
   }
   void bar() {
     throw new
-    NullPointerException // Noncompliant {{Throw some other exception here, such as "IllegalArgumentException".}}
+    NullPointerException // Noncompliant {{Use Objects.requireNonNull() instead of explicitly throwing NullPointerException.}}
     ();
   }
   void baz() {
-    throw new java.lang.NullPointerException(); // Noncompliant {{Throw some other exception here, such as "IllegalArgumentException".}}
+    throw new java.lang.NullPointerException(); // Noncompliant {{Use Objects.requireNonNull() instead of explicitly throwing NullPointerException.}}
 //            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
   void qix() throws IllegalArgumentException {
