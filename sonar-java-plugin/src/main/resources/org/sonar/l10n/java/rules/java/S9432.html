@@ -1,0 +1,57 @@
+<p>This rule raises an issue when code calls a method that removes leading and trailing whitespace from a string and then checks its length or
+emptiness to determine if the string contains only whitespace.</p>
+<p>In Java, this specifically refers to the <code>trim()</code> and <code>strip()</code> methods.</p>
+<h2>Why is this an issue?</h2>
+<p>Invoking operations that create new string objects with whitespace removed incurs unnecessary memory allocation and management overhead. When the
+goal is simply to check if a string contains only whitespace, creating this intermediate string object is wasteful.</p>
+<p>The following patterns are inefficient:</p>
+<ul>
+  <li>Removing whitespace from a string, then checking if the resulting string has zero length or is empty</li>
+  <li>Removing whitespace from a string, then checking if the result contains only whitespace (redundant since the whitespace removal operation
+  already eliminates whitespace)</li>
+</ul>
+<p>These checks create a temporary string object just to examine it, which is discarded immediately after the check completes.</p>
+<p>In performance-sensitive code or when processing many strings, this inefficiency can accumulate, increasing memory pressure and CPU usage for
+memory management operations.</p>
+<p>In Java specifically, this applies to patterns like <code>string.trim().length() &gt; 0</code>, <code>string.trim().isEmpty()</code>,
+<code>string.strip().length() &gt; 0</code>, <code>string.strip().isEmpty()</code>, or <code>string.strip().isBlank()</code>.</p>
+<h3>What is the potential impact?</h3>
+<p>The performance impact of this issue depends on how frequently the code executes:</p>
+<ul>
+  <li><strong>In tight loops or high-throughput services</strong>: The repeated allocation of temporary String objects can significantly increase
+  memory consumption and garbage collection frequency, degrading application performance.</li>
+  <li><strong>In typical application code</strong>: The impact is minor but still represents unnecessary overhead that accumulates over the
+  application’s lifetime.</li>
+</ul>
+<p>The issue also affects code readability. Using the appropriate whitespace-checking method makes the intent clearer than checking the length of a
+trimmed string.</p>
+<p>In Java, the appropriate method is <code>isBlank()</code>.</p>
+<h2>How to fix it</h2>
+<p>For Java 11 and later, replace trim/strip-based checks with the <code>isBlank()</code> method, which efficiently checks if a string contains only
+whitespace without creating intermediate objects.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public void validate(String input) {
+    if (input != null &amp;&amp; input.trim().length() &gt; 0) { // Noncompliant
+        process(input);
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public void validate(String input) {
+    if (input != null &amp;&amp; !input.isBlank()) {
+        process(input);
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java SE Documentation - <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html#isBlank()">String (Java SE
+  11 &amp; JDK 11)</a></li>
+  <li>Apache Commons Lang Documentation - <a
+  href="https://commons.apache.org/proper/commons-lang/apidocs/org/apache/commons/lang3/StringUtils.html#isBlank-java.lang.CharSequence-">StringUtils</a></li>
+</ul>
+
