@@ -1,0 +1,22 @@
+{
+"guava:src/com/google/common/collect/CartesianList.java": [
+37,
+38
+],
+"guava:src/com/google/common/collect/ImmutableEnumMap.java": [
+49
+],
+"guava:src/com/google/common/collect/ImmutableRangeSet.java": [
+113
+],
+"guava:src/com/google/common/collect/RegularImmutableSortedSet.java": [
+49
+],
+"guava:src/com/google/common/collect/Sets.java": [
+1157,
+1158
+],
+"guava:src/com/google/common/hash/AbstractStreamingHashFunction.java": [
+85
+]
+}

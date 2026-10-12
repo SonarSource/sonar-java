@@ -1,0 +1,34 @@
+{
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/CyclicTimeoutTest.java": [
+144
+],
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/SocketChannelEndPointTest.java": [
+452
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectorTimeoutTest.java": [
+286,
+347,
+403,
+446
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/InclusiveByteRangeTest.java": [
+284,
+303,
+316
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/NotAcceptingTest.java": [
+153
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SelectChannelServerSslTest.java": [
+243
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SslUploadTest.java": [
+87
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/ReservedThreadExecutorTest.java": [
+271
+],
+"eclipse-jetty:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlConfigurationTest.java": [
+1090
+]
+}

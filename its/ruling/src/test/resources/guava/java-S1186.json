@@ -1,0 +1,96 @@
+{
+"guava:src/com/google/common/cache/AbstractCache.java": [
+215
+],
+"guava:src/com/google/common/cache/CacheBuilder.java": [
+161,
+164,
+167,
+170,
+173,
+194
+],
+"guava:src/com/google/common/cache/LocalCache.java": [
+725,
+860,
+883,
+891,
+899,
+907,
+915,
+923,
+1598,
+1645,
+1716,
+3615,
+3752
+],
+"guava:src/com/google/common/cache/LongAdder.java": [
+61
+],
+"guava:src/com/google/common/collect/ComputingConcurrentHashMap.java": [
+245,
+285
+],
+"guava:src/com/google/common/collect/ForwardingMultiset.java": [
+252
+],
+"guava:src/com/google/common/collect/ForwardingNavigableMap.java": [
+276
+],
+"guava:src/com/google/common/collect/GenericMapMaker.java": [
+56
+],
+"guava:src/com/google/common/collect/ImmutableListMultimap.java": [
+145
+],
+"guava:src/com/google/common/collect/ImmutableMultimap.java": [
+174
+],
+"guava:src/com/google/common/collect/ImmutableTable.java": [
+159
+],
+"guava:src/com/google/common/collect/MapMaker.java": [
+135
+],
+"guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+608,
+730,
+753,
+761,
+769,
+777,
+785,
+1800,
+3250
+],
+"guava:src/com/google/common/collect/TreeRangeMap.java": [
+302
+],
+"guava:src/com/google/common/hash/HashingInputStream.java": [
+88
+],
+"guava:src/com/google/common/io/ByteStreams.java": [
+550
+],
+"guava:src/com/google/common/io/CharStreams.java": [
+187,
+228,
+232
+],
+"guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
+151
+],
+"guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java": [
+237
+],
+"guava:src/com/google/common/util/concurrent/ExecutionList.java": [
+60
+],
+"guava:src/com/google/common/util/concurrent/Runnables.java": [
+33
+],
+"guava:src/com/google/common/util/concurrent/ThreadFactoryBuilder.java": [
+56
+]
+}

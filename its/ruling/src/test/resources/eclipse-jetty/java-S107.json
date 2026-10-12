@@ -1,0 +1,12 @@
+{
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCookie.java": [
+105,
+110
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java": [
+178
+],
+"eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/StdErrAppender.java": [
+134
+]
+}

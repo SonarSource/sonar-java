@@ -1,0 +1,56 @@
+{
+"guava:src/com/google/common/base/Predicates.java": [
+567
+],
+"guava:src/com/google/common/collect/Collections2.java": [
+112,
+128
+],
+"guava:src/com/google/common/collect/ForwardingSortedMap.java": [
+141,
+143
+],
+"guava:src/com/google/common/collect/ForwardingSortedSet.java": [
+122,
+124,
+153
+],
+"guava:src/com/google/common/collect/Maps.java": [
+3441,
+3456,
+3471
+],
+"guava:src/com/google/common/collect/RegularImmutableSortedSet.java": [
+123,
+173
+],
+"guava:src/com/google/common/collect/Sets.java": [
+1396
+],
+"guava:src/com/google/common/collect/TreeMultiset.java": [
+239,
+283
+],
+"guava:src/com/google/common/reflect/Types.java": [
+575
+],
+"guava:src/com/google/common/util/concurrent/AbstractCheckedFuture.java": [
+84,
+113
+],
+"guava:src/com/google/common/util/concurrent/Futures.java": [
+1763
+],
+"guava:src/com/google/common/util/concurrent/FuturesGetChecked.java": [
+279,
+281,
+283
+],
+"guava:src/com/google/common/util/concurrent/MoreExecutors.java": [
+782,
+784,
+804,
+807,
+810
+]
+}

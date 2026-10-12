@@ -1,0 +1,25 @@
+{
+"guava:src/com/google/common/io/Closer.java": [
+252
+],
+"guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
+822
+],
+"guava:src/com/google/common/util/concurrent/ExecutionList.java": [
+148
+],
+"guava:src/com/google/common/util/concurrent/Futures.java": [
+151
+],
+"guava:src/com/google/common/util/concurrent/ListenerCallQueue.java": [
+93,
+121
+],
+"guava:src/com/google/common/util/concurrent/SerializingExecutor.java": [
+192
+],
+"guava:src/com/google/common/util/concurrent/ServiceManager.java": [
+283,
+763
+]
+}

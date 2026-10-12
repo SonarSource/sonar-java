@@ -1,0 +1,12 @@
+{
+"guava:src/com/google/common/collect/BinaryTreeTraverser.java": [
+113,
+150
+],
+"guava:src/com/google/common/collect/Iterators.java": [
+1123
+],
+"guava:src/com/google/common/collect/TreeTraverser.java": [
+209
+]
+}

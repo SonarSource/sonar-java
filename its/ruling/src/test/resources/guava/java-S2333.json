@@ -1,0 +1,27 @@
+{
+"guava:src/com/google/common/base/StandardSystemProperty.java": [
+122
+],
+"guava:src/com/google/common/cache/LocalCache.java": [
+4715
+],
+"guava:src/com/google/common/cache/LongAdder.java": [
+56
+],
+"guava:src/com/google/common/cache/RemovalNotification.java": [
+86
+],
+"guava:src/com/google/common/cache/Striped64.java": [
+99
+],
+"guava:src/com/google/common/collect/ImmutableSortedMap.java": [
+797,
+809
+],
+"guava:src/com/google/common/collect/SingletonImmutableSet.java": [
+75
+],
+"guava:src/com/google/thirdparty/publicsuffix/PublicSuffixType.java": [
+38
+]
+}
