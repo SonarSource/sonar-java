@@ -1,0 +1,11 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/index/IssueDoc.java": [
+40
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/index/RuleDoc.java": [
+38
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/index/RuleQuery.java": [
+34
+]
+}

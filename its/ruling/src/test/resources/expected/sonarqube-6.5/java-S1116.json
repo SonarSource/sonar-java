@@ -1,0 +1,20 @@
+{
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/IssueCounterTest.java": [
+142
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/issue/notification/DoNotFixNotificationDispatcherTest.java": [
+40
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualitygate/ws/QualityGatesWsTest.java": [
+212
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexDefinitionTest.java": [
+38
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java": [
+445
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/test/index/TestResultSetIteratorTest.java": [
+141
+]
+}

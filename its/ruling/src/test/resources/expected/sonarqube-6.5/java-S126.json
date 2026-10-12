@@ -1,0 +1,125 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/app/TomcatAccessLog.java": [
+73
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/app/TomcatContexts.java": [
+74
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/authentication/CredentialsAuthenticator.java": [
+92
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/ComponentImpl.java": [
+50
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/VariationSumFormula.java": [
+94
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/counter/IntSumCounter.java": [
+63
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/counter/LongSumCounter.java": [
+63
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IssueCounter.java": [
+246
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewReliabilityAndSecurityRatingMeasuresVisitor.java": [
+162
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/ReliabilityAndSecurityRatingMeasuresVisitor.java": [
+153
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/DuplicationMeasuresStep.java": [
+121
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/QualityGateMeasuresStep.java": [
+249
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/QualityProfileEventsStep.java": [
+124
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/SendIssueNotificationsStep.java": [
+98
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/debt/DebtRulesXMLImporter.java": [
+115,
+133,
+161
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/IssueQueryFactory.java": [
+230,
+262,
+356
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/index/IssueIndex.java": [
+242,
+250,
+446
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/ComponentTreeSort.java": [
+128
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/SetDefaultTemplateAction.java": [
+119
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/UrlSettings.java": [
+95
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/db/CheckDatabaseCharsetAtStartup.java": [
+45
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/ws/ProjectStatusAction.java": [
+129
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/ws/ShowAction.java": [
+88
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/QProfileBackuperImpl.java": [
+158,
+194,
+222
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/RuleActivator.java": [
+214,
+267,
+481,
+513
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/AddProjectAction.java": [
+101
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/RegisterRules.java": [
+285,
+398,
+416
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/RuleCreator.java": [
+103
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/index/RuleIndex.java": [
+318
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/source/HtmlTextDecorator.java": [
+80
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/source/ws/LinesAction.java": [
+170,
+183,
+196
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/startup/RegisterMetrics.java": [
+92
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/user/UserUpdater.java": [
+291
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/user/ws/GroupsAction.java": [
+155
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/usergroups/ws/UsersAction.java": [
+127
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/util/RubyUtils.java": [
+49
+]
+}

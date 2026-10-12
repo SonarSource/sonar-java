@@ -1,0 +1,12 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/SearchTemplatesDataLoader.java": [
+96
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/ws/ShowAction.java": [
+140
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java": [
+863,
+898
+]
+}

@@ -1,12 +1,12 @@
 {
-"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java": [
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java": [
 85,
 101
 ],
-"org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/IOTest.java": [
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/IOTest.java": [
 311
 ],
-"org.eclipse.jetty:jetty-project:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/MBeanContainerLifeCycleTest.java": [
+"eclipse-jetty:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/MBeanContainerLifeCycleTest.java": [
 95
 ]
 }

@@ -1,0 +1,20 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/app/ServerProcessLogging.java": [
+134
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/app/TomcatAccessLog.java": [
+62
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/app/TomcatStartupLogs.java": [
+29
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/EsClient.java": [
+77
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/web/RootFilter.java": [
+49
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/user/SecurityRealmFactory.java": [
+81
+]
+}

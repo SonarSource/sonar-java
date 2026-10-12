@@ -1,5 +1,5 @@
 {
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MappedPropertyDescriptor.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/MappedPropertyDescriptor.java": [
 313,
 436,
 439,
@@ -8,7 +8,7 @@
 471,
 478
 ],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java": [
 61
 ]
 }

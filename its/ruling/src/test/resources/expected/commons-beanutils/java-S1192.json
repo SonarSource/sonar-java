@@ -1,11 +1,11 @@
 {
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java": [
 945
 ],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java": [
 220
 ],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java": [
 292,
 292,
 1625,
