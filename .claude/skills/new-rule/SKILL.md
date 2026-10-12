@@ -95,7 +95,7 @@ If **ruling** fails (likely for a new rule), a PR updating the expectations is c
    - Examples: A=1000, B=10_000_000 → about 50 each of 100; A=1, B=100, C=3 → take 1/96/3.
 3. For **every** sampled finding: classify **TP** (correct) or **FP** (incorrect).
 4. Compute `TP% = 100 * TPs / (TPs + FPs)` on the sample.
-5. **Must be > 90%.** If 90% or below: extend the reproducer with cases for those FPs, then **restart from Step 1** and repeat the full workflow (new commits per step; clean history again at the end).
+5. **Must be > 90%.** If 90% or below: add reproducers for the FPs as new test cases and confirm the test fails (Step 2 commit), then introduce heuristics in the implementation to reduce the noise until it passes (Step 3 commit), and re-run Steps 5 and 6. Do not restart from Step 1: metadata and the check class already exist.
 
 ### Step 7 — Clean history
 
