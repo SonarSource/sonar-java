@@ -189,8 +189,13 @@ public abstract class ScannerIntegrationAbstractTest {
       if (mavenHelper != null) {
         properties.put(prefix + "sonar.sources", MavenBuildHelper.SOURCES_DIR);
         properties.put(prefix + "sonar.java.binaries", MavenBuildHelper.BINARIES_DIR);
-        properties.put(prefix + "sonar.java.libraries",
-          mavenHelper.resolveLibraries(moduleName, moduleFiles.keySet()));
+        String libraries = mavenHelper.resolveLibraries(moduleName, moduleFiles.keySet());
+        properties.put(prefix + "sonar.java.libraries", libraries);
+        if (mavenHelper.hasTestSources(moduleName)) {
+          properties.put(prefix + "sonar.tests", MavenBuildHelper.TEST_SOURCES_DIR);
+          properties.put(prefix + "sonar.java.test.binaries", MavenBuildHelper.TEST_BINARIES_DIR);
+          properties.put(prefix + "sonar.java.test.libraries", libraries);
+        }
       } else {
         properties.put(prefix + "sonar.sources", ".");
         Path emptyBinDir = projectBaseDir.resolve(moduleName + "-binaries");
