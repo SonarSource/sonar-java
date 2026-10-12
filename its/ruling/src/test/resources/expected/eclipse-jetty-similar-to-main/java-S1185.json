@@ -12,5 +12,9 @@
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/CachingSessionDataStore.java": [
 142,
 148
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/HostMap.java": [
+51,
+58
 ]
 }

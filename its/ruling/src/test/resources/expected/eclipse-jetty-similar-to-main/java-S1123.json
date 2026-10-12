@@ -48,5 +48,19 @@
 140,
 144,
 152
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java": [
+336,
+403,
+421,
+431,
+463,
+474
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/log/Log.java": [
+28
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/log/Slf4jLogger.java": [
+24
 ]
 }

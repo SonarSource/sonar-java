@@ -6,5 +6,8 @@
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/UnwriteableSessionDataException.java": [
 26,
 27
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/MultiException.java": [
+38
 ]
 }
