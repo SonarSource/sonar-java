@@ -115,6 +115,126 @@ class MessageDigestInstanceFieldCheckSample {
     }
   }
 
+  static class MonitorHolder {
+    private static final Object LOCK = new Object();
+    private static Object mutableLock = new Object();
+    private final Object lockA = new Object();
+    private final Object lockB = new Object();
+    private static MessageDigest staticInMethodDigest; // Noncompliant
+    private static MessageDigest staticSynchronizedDigest; // Compliant, every usage holds the class monitor
+    private static MessageDigest classLiteralDigest; // Compliant, every usage holds the class monitor
+    private MessageDigest mixedLockDigest; // Noncompliant
+    private MessageDigest twoLocksDigest; // Noncompliant
+    private MessageDigest instanceLockDigest; // Compliant, every usage holds lockA
+    private static MessageDigest staticInstanceLockDigest; // Noncompliant
+    private MessageDigest thisLockDigest; // Compliant, every usage holds this
+    private MessageDigest innerClassDigest; // Noncompliant
+    private MessageDigest mutableLockDigest; // Noncompliant
+    private MessageDigest localLockDigest; // Noncompliant
+    private MessageDigest otherInstanceLockDigest; // Noncompliant
+    private MessageDigest clonedOutsideLockDigest; // Noncompliant
+    private MessageDigest clonedInsideLockDigest; // Compliant, every usage holds LOCK
+    private MessageDigest unsynchronizedDigest; // Noncompliant
+
+    synchronized void staticInMethod(byte[] payload) {
+      staticInMethodDigest.update(payload);
+    }
+
+    static synchronized void staticSynchronized(byte[] payload) {
+      staticSynchronizedDigest.update(payload);
+    }
+
+    static void classLiteral(byte[] payload) {
+      synchronized (MonitorHolder.class) {
+        classLiteralDigest.update(payload);
+      }
+    }
+
+    synchronized void classLiteralInMethod(byte[] payload) {
+      synchronized (MonitorHolder.class) {
+        classLiteralDigest.update(payload);
+      }
+    }
+
+    void mixedLock(byte[] payload) {
+      synchronized (LOCK) {
+        mixedLockDigest.update(payload);
+      }
+    }
+
+    synchronized byte[] mixedLockInMethod() {
+      return mixedLockDigest.digest();
+    }
+
+    void twoLocks(byte[] payload) {
+      synchronized (lockA) {
+        twoLocksDigest.update(payload);
+        instanceLockDigest.update(payload);
+        staticInstanceLockDigest.update(payload);
+      }
+      synchronized (this.lockB) {
+        twoLocksDigest.update(payload);
+      }
+      synchronized (this.lockA) {
+        instanceLockDigest.update(payload);
+      }
+    }
+
+    void thisLock(byte[] payload) {
+      synchronized (this) {
+        thisLockDigest.update(payload);
+      }
+    }
+
+    synchronized byte[] thisLockInMethod() {
+      return thisLockDigest.digest();
+    }
+
+    void mutableLock(byte[] payload) {
+      synchronized (mutableLock) {
+        mutableLockDigest.update(payload);
+      }
+    }
+
+    void localLock(byte[] payload) {
+      Object lock = new Object();
+      synchronized (lock) {
+        localLockDigest.update(payload);
+      }
+    }
+
+    void otherInstanceLock(MonitorHolder other, byte[] payload) {
+      synchronized (other.lockA) {
+        otherInstanceLockDigest.update(payload);
+      }
+    }
+
+    MessageDigest clonedOutsideLock(byte[] payload) throws Exception {
+      synchronized (LOCK) {
+        clonedOutsideLockDigest.update(payload);
+      }
+      return (MessageDigest) clonedOutsideLockDigest.clone();
+    }
+
+    MessageDigest clonedInsideLock(byte[] payload) throws Exception {
+      synchronized ((LOCK)) {
+        clonedInsideLockDigest = MessageDigest.getInstance("SHA-256");
+        clonedInsideLockDigest.update(payload);
+        return (MessageDigest) clonedInsideLockDigest.clone();
+      }
+    }
+
+    MonitorHolder() {
+      unsynchronizedDigest.reset();
+    }
+
+    class Inner {
+      synchronized void update(byte[] payload) {
+        innerClassDigest.update(payload);
+      }
+    }
+  }
+
   interface PayloadConsumer {
     void accept(byte[] payload) throws Exception;
   }

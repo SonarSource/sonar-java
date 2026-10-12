@@ -17,7 +17,12 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -25,11 +30,13 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -72,29 +79,44 @@ public class MessageDigestInstanceFieldCheck extends IssuableSubscriptionVisitor
   }
 
   /**
-   * A private field is considered safe when none of its usages can alter the digest state concurrently: each usage is either
-   * an assignment of the field, a call to a method which does not depend on the digest state (e.g. {@code clone()}),
-   * or is located in a {@code synchronized} block or method.
+   * A private field is considered safe when none of its usages can alter the digest state concurrently. Assignments of the field
+   * are ignored, and the remaining usages must either all be calls which do not alter the digest state (e.g. {@code clone()},
+   * when the field is only used as a prototype), or all be guarded by the same known monitor. For a static field, this monitor
+   * must be shared by all instances: a static final lock field, a class literal or a static synchronized method.
    */
   private static boolean isOnlyUsedSafely(Symbol symbol) {
-    return symbol.isPrivate() && symbol.usages().stream().allMatch(MessageDigestInstanceFieldCheck::isSafeUsage);
+    if (!symbol.isPrivate()) {
+      return false;
+    }
+    List<IdentifierTree> readUsages = symbol.usages().stream()
+      .filter(usage -> !isAssignedTo(usage))
+      .toList();
+    if (readUsages.stream().allMatch(MessageDigestInstanceFieldCheck::isReceiverOfStatelessCall)) {
+      return true;
+    }
+    Set<Optional<Monitor>> monitors = readUsages.stream()
+      .map(MessageDigestInstanceFieldCheck::monitorOf)
+      .collect(Collectors.toSet());
+    return monitors.size() == 1 && monitors.iterator().next().filter(monitor -> monitor.canGuard(symbol)).isPresent();
   }
 
-  private static boolean isSafeUsage(IdentifierTree usage) {
-    Tree expression = usage;
+  private static Tree fieldExpression(IdentifierTree usage) {
     Tree parent = usage.parent();
     if (parent.is(Tree.Kind.MEMBER_SELECT) && ((MemberSelectExpressionTree) parent).identifier() == usage) {
-      expression = parent;
-      parent = parent.parent();
+      return parent;
     }
-    return isAssignedTo(expression, parent) || isReceiverOfStatelessCall(expression, parent) || isInSynchronizedContext(usage);
+    return usage;
   }
 
-  private static boolean isAssignedTo(Tree expression, Tree parent) {
+  private static boolean isAssignedTo(IdentifierTree usage) {
+    Tree expression = fieldExpression(usage);
+    Tree parent = expression.parent();
     return parent.is(Tree.Kind.ASSIGNMENT) && ((AssignmentExpressionTree) parent).variable() == expression;
   }
 
-  private static boolean isReceiverOfStatelessCall(Tree expression, Tree parent) {
+  private static boolean isReceiverOfStatelessCall(IdentifierTree usage) {
+    Tree expression = fieldExpression(usage);
+    Tree parent = expression.parent();
     if (!parent.is(Tree.Kind.MEMBER_SELECT) || ((MemberSelectExpressionTree) parent).expression() != expression) {
       return false;
     }
@@ -102,20 +124,60 @@ public class MessageDigestInstanceFieldCheck extends IssuableSubscriptionVisitor
     return invocation.is(Tree.Kind.METHOD_INVOCATION) && STATELESS_METHODS.matches((MethodInvocationTree) invocation);
   }
 
-  private static boolean isInSynchronizedContext(Tree tree) {
+  private static Optional<Monitor> monitorOf(Tree tree) {
     Tree current = tree.parent();
-    while (current != null) {
+    while (!current.is(Tree.Kind.CONSTRUCTOR, Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.RECORD, Tree.Kind.INTERFACE)) {
       if (current.is(Tree.Kind.SYNCHRONIZED_STATEMENT)) {
-        return true;
+        return lockMonitor(((SynchronizedStatementTree) current).expression());
       }
-      if (current.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)) {
-        return ModifiersUtils.hasModifier(((MethodTree) current).modifiers(), Modifier.SYNCHRONIZED);
-      }
-      if (current.is(Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.RECORD, Tree.Kind.INTERFACE)) {
-        return false;
+      if (current.is(Tree.Kind.METHOD)) {
+        return methodMonitor((MethodTree) current);
       }
       current = current.parent();
     }
-    return false;
+    return Optional.empty();
+  }
+
+  private static Optional<Monitor> methodMonitor(MethodTree method) {
+    if (!ModifiersUtils.hasModifier(method.modifiers(), Modifier.SYNCHRONIZED)) {
+      return Optional.empty();
+    }
+    Symbol owner = method.symbol().owner();
+    return Optional.of(new Monitor(owner, method.symbol().isStatic() ? null : owner));
+  }
+
+  private static Optional<Monitor> lockMonitor(ExpressionTree lock) {
+    ExpressionTree expression = ExpressionUtils.skipParentheses(lock);
+    if (expression.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) expression).name())) {
+      Symbol owner = expression.symbolType().symbol();
+      return Optional.of(new Monitor(owner, owner));
+    }
+    if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expression;
+      if ("class".equals(memberSelect.identifier().name())) {
+        return Optional.of(new Monitor(memberSelect.expression().symbolType().symbol(), null));
+      }
+      if (!ExpressionUtils.isSelectOnThisOrSuper(memberSelect)) {
+        return Optional.empty();
+      }
+      expression = memberSelect.identifier();
+    }
+    if (expression.is(Tree.Kind.IDENTIFIER)) {
+      Symbol lockSymbol = ((IdentifierTree) expression).symbol();
+      if (lockSymbol.isVariableSymbol() && lockSymbol.owner().isTypeSymbol() && lockSymbol.isFinal()) {
+        return Optional.of(new Monitor(lockSymbol, lockSymbol.isStatic() ? null : lockSymbol.owner()));
+      }
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * Object whose lock guards a usage. {@code instanceOwner} is the class whose instances each hold their own monitor, or
+   * {@code null} when the monitor is shared by all instances.
+   */
+  private record Monitor(Symbol symbol, @Nullable Symbol instanceOwner) {
+    boolean canGuard(Symbol field) {
+      return instanceOwner == null || (!field.isStatic() && instanceOwner.equals(field.owner()));
+    }
   }
 }
