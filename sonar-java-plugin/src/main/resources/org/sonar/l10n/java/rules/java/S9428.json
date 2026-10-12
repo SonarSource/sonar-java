@@ -1,0 +1,33 @@
+{
+  "title": "MessageDigest instances should not be stored as fields",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "concurrency",
+    "cryptography",
+    "pitfall"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-9428",
+  "sqKey": "S9428",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "SECURITY": "MEDIUM",
+      "RELIABILITY": "HIGH",
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "COMPLETE"
+  },
+  "securityStandards": {
+    "CWE": [
+      "362",
+      "567"
+    ]
+  }
+}
