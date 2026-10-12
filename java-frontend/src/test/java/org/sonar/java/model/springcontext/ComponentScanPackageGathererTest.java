@@ -66,6 +66,13 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
       );
   }
 
+  @Test
+  void componentScan_declared_in_test_scope_does_not_widen_the_scan_scope() {
+    scanAsTestScope("src/test/files/springcontext/ComponentScanWithBasePackages.java");
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY)).isEmpty();
+  }
+
   // ---- @SpringBootApplication -----------------------------------------------
 
   @Test
@@ -159,7 +166,7 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
   @Test
   void leaveFile_writes_collected_packages_to_cache() {
     WriteCache writeCache = mock(WriteCache.class);
-    SensorContextTester ctx = SensorContextTester.create(new File(""));
+    SensorContextTester ctx = mainScopeSensorContext();
     ctx.setCacheEnabled(true);
     ctx.setNextCache(writeCache);
 
