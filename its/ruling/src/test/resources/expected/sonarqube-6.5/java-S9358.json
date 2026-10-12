@@ -1,0 +1,14 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitygate/ConditionEvaluator.java": [
+113
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/QualityGateConditionsUpdater.java": [
+175
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/RuleActivator.java": [
+200
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/setting/ws/ValuesAction.java": [
+247
+]
+}

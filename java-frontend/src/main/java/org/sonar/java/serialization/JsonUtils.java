@@ -42,6 +42,7 @@ public final class JsonUtils {
   private static final String VERSION = "version";
 
   // Spring properties:
+  public static final String FILES_DATA = "filesData";
   public static final String BEANS = "beans";
   public static final String PACKAGES = "packages";
 

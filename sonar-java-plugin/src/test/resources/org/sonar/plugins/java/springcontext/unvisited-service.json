@@ -1,0 +1,22 @@
+{
+  "filesData": {
+    "module": {
+      "unvisited": {
+        "beans": [
+          {
+            "name": "oldService",
+            "type": "example.Service",
+            "package": "example",
+            "span": { "startLine": 5, "startCharacter": 0, "endLine": 5, "endCharacter": 4 },
+            "primary": false,
+            "profiles": null,
+            "qualifier": null,
+            "dependencies": [],
+            "typeHierarchy": ["example.Service"]
+          }
+        ],
+        "packages": ["stale.package"]
+      }
+    }
+  }
+}

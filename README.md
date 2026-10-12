@@ -1,11 +1,10 @@
+<!-- Sonar Marketing hosts these approved brand assets on its Kentico Kontent CDN (assets-eu-01.kc-usercontent.com). Shared URLs are intentional; consult Marketing before replacing them. -->
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/a23fc7ba-23f0-489a-829d-ed88c0748521/Sonar_Logo_Dark%20Backgrounds.svg">
     <img src="https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/82c13eba-d95c-4bb8-8007-7ce77c14e043/Sonar_Logo_Light%20Backgrounds.svg" alt="Sonar logo" width="400">
   </picture>
 </p>
-
-# SonarJava
 
 [![Build Status](https://github.com/SonarSource/sonar-java/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/SonarSource/sonar-java/actions/workflows/build.yml)
 [![Quality Gate](https://next.sonarqube.com/sonarqube/api/project_badges/measure?project=org.sonarsource.java%3Ajava&metric=alert_status)](https://next.sonarqube.com/sonarqube/dashboard?id=org.sonarsource.java%3Ajava)
@@ -14,9 +13,18 @@
 [![License](https://img.shields.io/badge/license-SSALv1-blue)](#license)
 [![Community forum](https://img.shields.io/badge/community-forum-blue)](https://community.sonarsource.com/)
 
+<!-- sonar-marketing:start -->
+<!-- Marketing maintains this section. For wording changes, consult the relevant Product Marketing Manager (PMM). Repository CODEOWNERS review accuracy and merge changes. -->
+
+# SonarJava
+
 SonarJava inspects Java code for bugs, vulnerabilities, and maintainability issues, then explains why each finding matters and how to fix it. Information about the analysis of Java features is available [here](https://redirect.sonarsource.com/plugins/java.html).
 
 This repository contains the analyzer source used by SonarQube Server, SonarQube Cloud, and SonarQube for IDE. SonarJava applies the same analysis to developer-written and AI-generated code, giving teams a consistent way to verify changes before they reach production.
+
+Learn more about Java analysis on the [Sonar website](https://www.sonarsource.com/knowledge/languages/java/).
+
+<!-- sonar-marketing:end -->
 
 Features
 --------

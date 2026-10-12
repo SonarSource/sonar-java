@@ -28,7 +28,6 @@ import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.TestUtils;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.plugins.java.api.InputFileScannerContext;
-import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
@@ -46,7 +45,7 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
 
   @BeforeEach
   void setUp() {
-    gatherer = new ComponentScanPackageGatherer(new NoOpTelemetry());
+    gatherer = new ComponentScanPackageGatherer(new SpringContextGatheringModel(), new NoOpTelemetry());
     model = new SpringContextModel();
   }
 
@@ -135,6 +134,13 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
     assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY)).isEmpty();
   }
 
+  @Test
+  void module_without_scanned_files_collects_nothing() {
+    model = SpringContextModel.of(gatherer.springContextGatheringModel);
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY)).isEmpty();
+  }
+
   // ---- Multiple files -------------------------------------------------------
 
   @Test
@@ -177,12 +183,11 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
     InputFileScannerContext context = mock(InputFileScannerContext.class);
     when(context.getInputFile()).thenReturn(inputFile);
     when(context.getCacheContext()).thenReturn(cacheContext);
+    when(context.getModuleKey()).thenReturn(MODULE_KEY);
 
     assertThat(gatherer.scanWithoutParsing(context)).isTrue();
 
-    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
-    when(moduleScannerContext.getModuleKey()).thenReturn(MODULE_KEY);
-    gatherer.gatherSpringContextData(moduleScannerContext, model);
+    model = SpringContextModel.of(gatherer.springContextGatheringModel);
 
     assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
       .containsExactlyInAnyOrder("com.example.service", "com.example.web");
@@ -201,6 +206,7 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
     InputFileScannerContext context = mock(InputFileScannerContext.class);
     when(context.getInputFile()).thenReturn(inputFile);
     when(context.getCacheContext()).thenReturn(cacheContext);
+    when(context.getModuleKey()).thenReturn(MODULE_KEY);
 
     assertThat(gatherer.scanWithoutParsing(context)).isTrue();
 

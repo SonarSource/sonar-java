@@ -4,7 +4,7 @@ SonarJava is a static code analyzer for Java.
 
 The rules are implemented in **Java** using the SonarJava API. Test resources are **Java** files annotated with special comment markers.
 
-For step-by-step guidance on implementing a new rule (including metadata generation), see `.claude/skills/new-rule/SKILL.md`.
+For step-by-step guidance on implementing a new rule (including metadata generation), see `.agents/skills/new-rule/SKILL.md`.
 
 ---
 
@@ -124,6 +124,41 @@ JavaQuickFix quickFix = JavaQuickFix.newQuickFix("Remove redundant check")
   .build();
 reportIssue(tree, "Message").withQuickFix(() -> quickFix);
 ```
+
+### Per-File State Cleanup
+
+Rules that accumulate state in collections or mutable fields during file analysis **must clear that state between files**. A single rule instance is reused across all files in a module.
+
+For `IssuableSubscriptionVisitor` subclasses, override `clearState()` — it is called automatically before and after each file:
+
+```java
+@Rule(key = "S1234")
+public class MyCheck extends IssuableSubscriptionVisitor {
+
+  private final Set<Symbol> seen = new HashSet<>();
+
+  @Override
+  protected void clearState() {
+    seen.clear();
+  }
+}
+```
+
+For `BaseTreeVisitor` / `JavaFileScanner` implementations, clear state in `scanFile()` (typically in a `finally` block):
+
+```java
+@Override
+public void scanFile(JavaFileScannerContext context) {
+  this.context = context;
+  try {
+    scan(context.getTree());
+  } finally {
+    myCollection.clear();
+  }
+}
+```
+
+**Do not** clear lazy-initialized caches derived from immutable configuration (e.g. parsed `@RuleProperty` values) — those are intentionally computed once per rule instance.
 
 ### Dependency-Aware Rules
 
@@ -259,11 +294,11 @@ str="<line including <substring>>"; sub="<substring>"; pre="${str%%"$sub"*}" suf
 
 # Ruling Tests
 
-Ruling tests validate that rule fixes don't break existing true positives. They run the analyzer against real-world Java projects (`guava`, `commons-beanutils`, `eclipse-jetty`, `sonar-server`, `jboss-ejb3-tutorial`, `regex-examples`) and compare results to expected baselines.
+Ruling tests validate that rule fixes don't break existing true positives. They run the analyzer against real-world Java projects (`guava`, `commons-beanutils`, `eclipse-jetty`, `sonarqube-6.5`, `jboss-ejb3-tutorial`, `regex-examples`, `mall`) and compare results to expected baselines.
 
 - Expected ruling files: `its/ruling/src/test/resources/expected/<project>/java-<RULE_ID>.json`
 - Actual ruling output: `its/ruling/target/actual/<project>/java-<RULE_ID>.json`
-- Format: `{"group:artifact:path/to/File.java": [line1, line2, ...], ...}`
+- Format: `{"<projectKey>:path/to/File.java": [line1, line2, ...], ...}` where `<projectKey>` is the project's folder name under `its/sources/`
 - Ruling sources: `its/sources/<project>/`
 
 Do not try to run these locally. A PR should be created automatically when they fail on CI.

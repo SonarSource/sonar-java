@@ -1,0 +1,9 @@
+{
+"sonarqube-6.5:src/test/java/org/sonar/server/duplication/ws/ShowResponseBuilderTest.java": [
+122,
+123
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/es/IndexerStartupTaskTest.java": [
+56
+]
+}

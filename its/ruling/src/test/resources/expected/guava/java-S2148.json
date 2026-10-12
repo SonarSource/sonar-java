@@ -1,40 +1,40 @@
 {
-"com.google.guava:guava:src/com/google/common/base/CharMatcher.java": [
+"guava:src/com/google/common/base/CharMatcher.java": [
 1233
 ],
-"com.google.guava:guava:src/com/google/common/collect/LexicographicalOrdering.java": [
+"guava:src/com/google/common/collect/LexicographicalOrdering.java": [
 70
 ],
-"com.google.guava:guava:src/com/google/common/collect/NullsFirstOrdering.java": [
+"guava:src/com/google/common/collect/NullsFirstOrdering.java": [
 73
 ],
-"com.google.guava:guava:src/com/google/common/collect/NullsLastOrdering.java": [
+"guava:src/com/google/common/collect/NullsLastOrdering.java": [
 73
 ],
-"com.google.guava:guava:src/com/google/common/hash/Hashing.java": [
+"guava:src/com/google/common/hash/Hashing.java": [
 81,
 168,
 168,
 569
 ],
-"com.google.guava:guava:src/com/google/common/hash/Murmur3_128HashFunction.java": [
+"guava:src/com/google/common/hash/Murmur3_128HashFunction.java": [
 82,
 83,
 186,
 188
 ],
-"com.google.guava:guava:src/com/google/common/hash/SipHashFunction.java": [
+"guava:src/com/google/common/hash/SipHashFunction.java": [
 109,
 110,
 111,
 112
 ],
-"com.google.guava:guava:src/com/google/common/math/DoubleUtils.java": [
+"guava:src/com/google/common/math/DoubleUtils.java": [
 45,
 49,
 53
 ],
-"com.google.guava:guava:src/com/google/common/math/IntMath.java": [
+"guava:src/com/google/common/math/IntMath.java": [
 173,
 173,
 173,
@@ -45,7 +45,7 @@
 177,
 177
 ],
-"com.google.guava:guava:src/com/google/common/math/LongMath.java": [
+"guava:src/com/google/common/math/LongMath.java": [
 116,
 183,
 184,
@@ -106,7 +106,7 @@
 779,
 779
 ],
-"com.google.guava:guava:src/com/google/common/primitives/UnsignedLong.java": [
+"guava:src/com/google/common/primitives/UnsignedLong.java": [
 45
 ]
 }

@@ -45,12 +45,15 @@ public final class InjectionPointTypeAdapter extends TypeAdapter<InjectionPoint.
 
   @Override
   public void write(JsonWriter out, InjectionPoint.InputFileData injectionPoint) throws IOException {
+    boolean serializeNulls = out.getSerializeNulls();
+    out.setSerializeNulls(true);
     out.beginObject();
     out.name(NAME).value(injectionPoint.name());
     out.name(SPAN);
     TextSpanTypeAdapter.getInstance().write(out, injectionPoint.span());
     out.name(MULTIPLE).value(injectionPoint.multiple());
     out.endObject();
+    out.setSerializeNulls(serializeNulls);
   }
 
   @Override

@@ -1,0 +1,22 @@
+{
+  "filesData": {
+    "previous-module": {
+      "previous-file": {
+        "beans": [
+          {
+            "name": "previous",
+            "type": "example.Bean",
+            "package": "example",
+            "span": { "startLine": 1, "startCharacter": 0, "endLine": 1, "endCharacter": 4 },
+            "primary": false,
+            "profiles": null,
+            "qualifier": null,
+            "dependencies": [],
+            "typeHierarchy": ["example.Bean"]
+          }
+        ],
+        "packages": []
+      }
+    }
+  }
+}

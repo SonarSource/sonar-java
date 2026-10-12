@@ -1,0 +1,11 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/source/HtmlTextDecorator.java": [
+55
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/util/ClassLoaderUtils.java": [
+65
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/util/cache/DiskCache.java": [
+47
+]
+}

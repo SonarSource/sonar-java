@@ -31,14 +31,15 @@ jobs:
       deployed: ${{ steps.build-maven.outputs.deployed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
-          version: 2026.9.14
+          version: 2026.10.0
       - uses: SonarSource/ci-github-actions/build-maven@v2
         id: build-maven
         env:
           MAVEN_OPTS: "-Xmx8g"
         with:
+          repox-url: https://repox-internal.dev.sonar.build
           deploy-pull-request: true
           sonar-platform: none # Prevent analysis
           # Override artifactory roles for public repo using private access
@@ -50,6 +51,13 @@ jobs:
             --define maven.test.skip=true
             --define sonar.skip=true
             --projects !java-checks-test-sources/aws,!java-checks-test-sources/default,!java-checks-test-sources/java-17,!java-checks-test-sources/spring-3.2,!java-checks-test-sources/spring-web-4.0
+
+      # PVF: publish the concrete deployed plugin version so pvf-comment.yml can dispatch a performance-validation run into peachee-java-kotlin.
+      - name: Prepare PVF candidate version
+        if: ${{ steps.build-maven.outputs.deployed }}
+        uses: SonarSource/core-languages-tooling-public/prepare-pvf@master
+        with:
+          build-version: ${{ steps.build-maven.outputs.project-version }}
 
   ruling-qa:
     strategy:
@@ -77,9 +85,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
-      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
-          version: 2026.9.14
+          version: 2026.10.0
       - name: Select Java Version
         shell: bash # Set explicitly so Bash is used on Windows runners too.
         run: |
@@ -93,6 +101,7 @@ jobs:
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v2
         with:
+          repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
@@ -196,9 +205,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
-      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
-          version: 2026.9.14
+          version: 2026.10.0
       - name: Select Java Version
         shell: bash # Set explicitly so Bash is used on Windows runners too.
         run: |
@@ -212,6 +221,7 @@ jobs:
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v2
         with:
+          repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
@@ -246,9 +256,9 @@ jobs:
       BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
-          version: 2026.9.14
+          version: 2026.10.0
       - uses: SonarSource/vault-action-wrapper@v3
         id: secrets
         with:
@@ -260,6 +270,7 @@ jobs:
           namespace: sanity
       - uses: SonarSource/ci-github-actions/config-maven@v2
         with:
+          repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
@@ -292,9 +303,9 @@ jobs:
       BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
-          version: 2026.9.14
+          version: 2026.10.0
       - uses: SonarSource/vault-action-wrapper@v3
         id: secrets
         with:
@@ -303,6 +314,7 @@ jobs:
             development/kv/data/next token | SONAR_TOKEN;
       - uses: SonarSource/ci-github-actions/build-maven@v2
         with:
+          repox-url: https://repox-internal.dev.sonar.build
           deploy: false
           artifactory-reader-role: private-reader    # Override default public-reader
           artifactory-deployer-role: qa-deployer     # Override default public-deployer
@@ -328,9 +340,9 @@ jobs:
       BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
-          version: 2026.9.14
+          version: 2026.10.0
       - uses: SonarSource/vault-action-wrapper@v3
         id: secrets
         with:
@@ -342,6 +354,7 @@ jobs:
           namespace: custom-rules-license-check
       - uses: SonarSource/ci-github-actions/config-maven@v2
         with:
+          repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
@@ -377,15 +390,16 @@ jobs:
       - name: Config Git
         run: git config --global core.autocrlf input
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
-          version: 2026.9.14
+          version: 2026.10.0
       - uses: ./.github/actions/maven-cache
         with:
           namespace: qa-os-win
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v2
         with:
+          repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}

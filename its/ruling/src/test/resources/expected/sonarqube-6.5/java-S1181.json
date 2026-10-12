@@ -1,0 +1,27 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/container/TaskContainerImpl.java": [
+79
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/step/ComputationStepExecutor.java": [
+72
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/RecoveryIndexer.java": [
+138
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/Platform.java": [
+376
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/db/migration/DatabaseMigrationImpl.java": [
+113
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/web/PlatformServletContextListener.java": [
+49
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/web/RootFilter.java": [
+63
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/plugins/ServerExtensionInstaller.java": [
+86,
+99
+]
+}

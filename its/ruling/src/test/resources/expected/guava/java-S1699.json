@@ -1,5 +1,5 @@
 {
-"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
+"guava:src/com/google/common/cache/LocalCache.java": [
 256,
 257,
 257,
@@ -12,17 +12,17 @@
 2094,
 2094
 ],
-"com.google.guava:guava:src/com/google/common/collect/AbstractBiMap.java": [
+"guava:src/com/google/common/collect/AbstractBiMap.java": [
 58
 ],
-"com.google.guava:guava:src/com/google/common/collect/LinkedListMultimap.java": [
+"guava:src/com/google/common/collect/LinkedListMultimap.java": [
 210,
 331,
 336,
 480,
 485
 ],
-"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+"guava:src/com/google/common/collect/MapMakerInternalMap.java": [
 210,
 210,
 219,
@@ -33,13 +33,13 @@
 2095,
 2095
 ],
-"com.google.guava:guava:src/com/google/common/collect/TreeBasedTable.java": [
+"guava:src/com/google/common/collect/TreeBasedTable.java": [
 193
 ],
-"com.google.guava:guava:src/com/google/common/collect/TreeMultimap.java": [
+"guava:src/com/google/common/collect/TreeMultimap.java": [
 130
 ],
-"com.google.guava:guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java": [
+"guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java": [
 529,
 534,
 538

@@ -68,6 +68,8 @@ public final class BeanDefinitionHolderTypeAdapter extends TypeAdapter<BeanDefin
 
   @Override
   public void write(JsonWriter out, BeanDefinitionHolder.InputFileData bean) throws IOException {
+    boolean serializeNulls = out.getSerializeNulls();
+    out.setSerializeNulls(true);
     out.beginObject();
     out.name(NAME).value(bean.beanName());
     out.name(TYPE).value(bean.type());
@@ -82,6 +84,7 @@ public final class BeanDefinitionHolderTypeAdapter extends TypeAdapter<BeanDefin
     out.name(TYPE_HIERARCHY);
     writeStrings(out, bean.typeHierarchy());
     out.endObject();
+    out.setSerializeNulls(serializeNulls);
   }
 
   @Override

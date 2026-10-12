@@ -1,0 +1,65 @@
+{
+  "filesData": {
+    "module": {
+      "restored-one": {
+        "beans": [
+          {
+            "name": "componentOne",
+            "type": "example.Service",
+            "package": "example",
+            "span": { "startLine": 5, "startCharacter": 0, "endLine": 5, "endCharacter": 4 },
+            "primary": false,
+            "profiles": null,
+            "qualifier": null,
+            "dependencies": [],
+            "typeHierarchy": ["example.Service"]
+          }
+        ],
+        "packages": []
+      },
+      "restored-two": {
+        "beans": [
+          {
+            "name": "componentTwo",
+            "type": "example.Service",
+            "package": "example",
+            "span": { "startLine": 5, "startCharacter": 0, "endLine": 5, "endCharacter": 4 },
+            "primary": false,
+            "profiles": null,
+            "qualifier": null,
+            "dependencies": [],
+            "typeHierarchy": ["example.Service"]
+          }
+        ],
+        "packages": []
+      },
+      "restored-consumer": {
+        "beans": [
+          {
+            "name": "oldConsumer",
+            "type": "example.OldConsumer",
+            "package": "example",
+            "span": { "startLine": 5, "startCharacter": 0, "endLine": 5, "endCharacter": 4 },
+            "primary": false,
+            "profiles": null,
+            "qualifier": null,
+            "dependencies": [
+              {
+                "type": "example.Service",
+                "injectionPoints": [
+                  {
+                    "name": "contextAware",
+                    "span": { "startLine": 13, "startCharacter": 13, "endLine": 13, "endCharacter": 25 },
+                    "multiple": false
+                  }
+                ]
+              }
+            ],
+            "typeHierarchy": ["example.OldConsumer"]
+          }
+        ],
+        "packages": []
+      }
+    }
+  }
+}

@@ -34,6 +34,7 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.rule.RuleScope;
 import org.sonar.java.GeneratedCheckList;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
@@ -42,7 +43,8 @@ import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.java.model.springcontext.SpringContextModel;
+import org.sonar.java.model.springcontext.SpringContextGatheringModel;
+import org.sonar.java.model.springcontext.SpringContextModelGatherers;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -62,6 +64,7 @@ public class JavaSensor implements Sensor {
   private static final String PERFORMANCE_MEASURE_ACTIVATION_PROPERTY = "sonar.java.performance.measure";
   private static final String PERFORMANCE_MEASURE_FILE_PATH_PROPERTY = "sonar.java.performance.measure.path";
   private static final String PERFORMANCE_MEASURE_DESTINATION_FILE = "sonar.java.performance.measure.json";
+  public static final String SPRING_CONTEXT_MODEL_PATH_PROPERTY = "sonar.java.springContext.model.path";
 
   private final SonarComponents sonarComponents;
   private final JavaResourceLocator javaResourceLocator;
@@ -70,25 +73,28 @@ public class JavaSensor implements Sensor {
   private final Jasper jasper;
   private final PostAnalysisIssueFilter postAnalysisIssueFilter;
   private final Telemetry telemetry;
+  private final SpringContextGatheringModel springContextGatheringModel;
 
-  public JavaSensor(SonarComponents sonarComponents, JavaResourceLocator javaResourceLocator,
-                    NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter,
-                    Telemetry telemetry, SpringContextModel springContextModel) {
-    this(sonarComponents, javaResourceLocator, noSonarFilter, postAnalysisIssueFilter, null, telemetry, springContextModel);
+  public JavaSensor(SonarComponents sonarComponents, JavaResourceLocator javaResourceLocator, NoSonarFilter noSonarFilter,
+    PostAnalysisIssueFilter postAnalysisIssueFilter, Telemetry telemetry, SpringContextGatheringModel springContextGatheringModel) {
+    this(sonarComponents, javaResourceLocator, noSonarFilter, postAnalysisIssueFilter, null, telemetry, springContextGatheringModel);
   }
 
-  public JavaSensor(SonarComponents sonarComponents, JavaResourceLocator javaResourceLocator,
-                    NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter,
-                    @Nullable Jasper jasper, Telemetry telemetry, SpringContextModel springContextModel) {
+  public JavaSensor(SonarComponents sonarComponents, JavaResourceLocator javaResourceLocator, NoSonarFilter noSonarFilter,
+    PostAnalysisIssueFilter postAnalysisIssueFilter, @Nullable Jasper jasper, Telemetry telemetry, SpringContextGatheringModel springContextGatheringModel) {
     this.noSonarFilter = noSonarFilter;
     this.sonarComponents = sonarComponents;
     this.javaResourceLocator = javaResourceLocator;
     this.postAnalysisIssueFilter = postAnalysisIssueFilter;
     this.jasper = jasper;
     this.telemetry = telemetry;
+    this.springContextGatheringModel = springContextGatheringModel;
     this.sonarComponents.registerMainChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaChecks());
     this.sonarComponents.registerTestChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaTestChecks());
-    this.sonarComponents.setSpringContextModel(springContextModel);
+    SpringContextModelGatherers.getAllGatherers(springContextGatheringModel, telemetry)
+      .forEach(gatherer -> this.sonarComponents.registerCustomFileScanner(RuleScope.MAIN, gatherer));
+    SpringContextModelGatherers.getAllGatherers(springContextGatheringModel, telemetry)
+      .forEach(gatherer -> this.sonarComponents.registerCustomFileScanner(RuleScope.TEST, gatherer));
   }
 
   @Override
@@ -101,6 +107,12 @@ public class JavaSensor implements Sensor {
     PerformanceMeasure.Duration sensorDuration = createPerformanceMeasureReport(context);
 
     sonarComponents.setSensorContext(context);
+    // Restore the Spring context gathering model from the previous analysis, if it hasn't been restored already
+    // (i.e. the model is only restored the first time the sensor is run on a module and is reused between modules).
+    if (!springContextGatheringModel.isRestored()) {
+      var path = SpringContextModelPersistence.modelPath(context, sonarComponents.projectLevelBaseDir());
+      springContextGatheringModel.restoreFrom(SpringContextModelPersistence.load(path));
+    }
     sonarComponents.setCheckFilter(createCheckFilter(sonarComponents.isAutoScanCheckFiltering()));
 
     Measurer measurer = new Measurer(context, noSonarFilter);

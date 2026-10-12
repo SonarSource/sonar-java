@@ -1,18 +1,18 @@
 {
-"com.google.guava:guava:src/com/google/common/collect/ForwardingImmutableList.java": [
+"guava:src/com/google/common/collect/ForwardingImmutableList.java": [
 27
 ],
-"com.google.guava:guava:src/com/google/common/collect/ForwardingImmutableMap.java": [
+"guava:src/com/google/common/collect/ForwardingImmutableMap.java": [
 27,
 27
 ],
-"com.google.guava:guava:src/com/google/common/collect/ForwardingImmutableSet.java": [
+"guava:src/com/google/common/collect/ForwardingImmutableSet.java": [
 27
 ],
-"com.google.guava:guava:src/com/google/common/reflect/TypeCapture.java": [
+"guava:src/com/google/common/reflect/TypeCapture.java": [
 29
 ],
-"com.google.guava:guava:src/com/google/common/reflect/Types.java": [
+"guava:src/com/google/common/reflect/Types.java": [
 137,
 618
 ]

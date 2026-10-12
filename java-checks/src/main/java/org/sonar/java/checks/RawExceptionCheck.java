@@ -64,7 +64,12 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
   public void scanFile(JavaFileScannerContext context) {
     this.context = (FluentReporting) context;
     this.javaVersion = context.getJavaVersion();
-    scan(context.getTree());
+    exceptionsThrownByMethodInvocations.clear();
+    try {
+      scan(context.getTree());
+    } finally {
+      exceptionsThrownByMethodInvocations.clear();
+    }
   }
 
   @Override

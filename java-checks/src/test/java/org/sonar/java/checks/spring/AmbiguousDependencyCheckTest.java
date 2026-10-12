@@ -38,6 +38,7 @@ import org.sonar.java.model.springcontext.BeanDefinitionGatherer;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.ProfileExpression;
+import org.sonar.java.model.springcontext.SpringContextGatheringModel;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.telemetry.NoOpTelemetry;
@@ -111,6 +112,12 @@ class AmbiguousDependencyCheckTest {
   @Test
   void map_keyed_by_bean_name_is_never_ambiguous() {
     SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "MapInjectionConsumer.java");
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
+  void value_annotated_constructor_parameters_are_not_injection_points() {
+    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "ValueConstructorParameterConsumer.java");
     assertThat(check.execute(model)).isEmpty();
   }
 
@@ -372,10 +379,8 @@ class AmbiguousDependencyCheckTest {
     List<File> classpath = TestClasspathUtils.DEFAULT_MODULE.getClassPath();
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(SensorContextTester.create(new File("")));
-    SpringContextModel model = new SpringContextModel();
-    sonarComponents.setSpringContextModel(model);
-
-    BeanDefinitionGatherer gatherer = new BeanDefinitionGatherer(new NoOpTelemetry());
+    var gatheringModel = new SpringContextGatheringModel();
+    BeanDefinitionGatherer gatherer = new BeanDefinitionGatherer(gatheringModel, new NoOpTelemetry());
     VisitorsBridge visitorsBridge = new VisitorsBridge(List.of((JavaCheck) gatherer), classpath, sonarComponents);
     for (String filePath : filePaths) {
       File file = new File(filePath);
@@ -384,7 +389,7 @@ class AmbiguousDependencyCheckTest {
       visitorsBridge.visitFile(compilationUnit, false);
     }
     visitorsBridge.endOfAnalysis();
-    return model;
+    return SpringContextModel.of(gatheringModel);
   }
 
   private static InputFile inputFile(File file) {

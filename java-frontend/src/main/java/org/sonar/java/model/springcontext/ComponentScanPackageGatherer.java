@@ -18,20 +18,18 @@ package org.sonar.java.model.springcontext;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.caching.FileCachingCheck;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.utils.PackageUtils;
 import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -39,9 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 /**
- * Collects packages registered for Spring component scanning and stores them in
- * {@link org.sonar.java.model.springcontext.ProjectPackageScan} within the shared
- * {@link SpringContextModel}.
+ * Collects packages registered for Spring component scanning.
  *
  * <p>Scanned packages are derived from:
  * <ul>
@@ -50,8 +46,7 @@ import org.sonarsource.analyzer.commons.collections.SetUtils;
  *   <li>{@code @SpringBootApplication} without explicit attributes — the annotated class's own package</li>
  * </ul>
  *
- * <p>Packages are grouped by module and written to {@link org.sonar.java.model.springcontext.ProjectPackageScan}
- * at the end of each module's analysis. Per-file results are cached to speed up incremental analyses.
+ * <p>Per-file results are cached to speed up incremental analyses.
  */
 public class ComponentScanPackageGatherer extends SpringContextModelGatherer implements FileCachingCheck<Set<String>> {
 
@@ -62,17 +57,12 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
   private static final Set<String> SCAN_BASE_ANNOTATIONS = SetUtils.immutableSetOf("scanBasePackages", "scanBasePackageClasses");
 
   /**
-   * Packages accumulated across all files in the current module, mapped by input file key.
-   */
-  private final Map<String, Set<String>> collectedPackagesByFile = new HashMap<>();
-
-  /**
    * Packages found in the file currently being scanned, used for per-file cache writes.
    */
   private final Set<String> packagesCollectedAtFileLevel = new HashSet<>();
 
-  public ComponentScanPackageGatherer(Telemetry telemetry) {
-    super(telemetry);
+  public ComponentScanPackageGatherer(SpringContextGatheringModel springContextGatheringModel, Telemetry telemetry) {
+    super(springContextGatheringModel, telemetry);
   }
 
   @Override
@@ -102,7 +92,8 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
 
   @Override
   public void restore(InputFileScannerContext context, Set<String> packages) {
-    collectedPackagesByFile.put(context.getInputFile().key(), Set.copyOf(packages));
+    InputFile currentFile = context.getInputFile();
+    springContextGatheringModel.collectPackages(context.getModuleKey(), currentFile.key(), currentFile, Set.copyOf(packages));
   }
 
   @Override
@@ -126,16 +117,10 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
   @Override
   protected void leaveSpringFile(JavaFileScannerContext context) {
     var packages = Set.copyOf(packagesCollectedAtFileLevel);
-    collectedPackagesByFile.put(context.getInputFile().key(), packages);
+    InputFile currentFile = context.getInputFile();
+    springContextGatheringModel.collectPackages(context.getModuleKey(), currentFile.key(), currentFile, packages);
     writeToCache(context, packages);
     packagesCollectedAtFileLevel.clear();
-  }
-
-  @Override
-  public void gatherSpringContextData(ModuleScannerContext context, SpringContextModel springContextModel) {
-    Set<String> collectedPackages = new HashSet<>();
-    collectedPackagesByFile.values().forEach(collectedPackages::addAll);
-    springContextModel.getProjectPackageScan().addPackages(context.getModuleKey(), collectedPackages);
   }
 
   private void collectFromComponentScan(SymbolMetadata metadata) {

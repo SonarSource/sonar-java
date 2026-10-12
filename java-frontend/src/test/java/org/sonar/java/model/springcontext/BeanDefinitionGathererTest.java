@@ -35,7 +35,6 @@ import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.TestUtils;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.plugins.java.api.InputFileScannerContext;
-import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
@@ -51,7 +50,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
   @BeforeEach
   void setUp() {
-    gatherer = new BeanDefinitionGatherer(new NoOpTelemetry());
+    gatherer = new BeanDefinitionGatherer(new SpringContextGatheringModel(), new NoOpTelemetry());
     model = new SpringContextModel();
   }
 
@@ -315,15 +314,14 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     InputFileScannerContext context = mock(InputFileScannerContext.class);
     when(context.getInputFile()).thenReturn(inputFile);
     when(context.getCacheContext()).thenReturn(cacheContext);
+    when(context.getModuleKey()).thenReturn("");
 
-    gatherer = new BeanDefinitionGatherer(new NoOpTelemetry());
+    gatherer = new BeanDefinitionGatherer(new SpringContextGatheringModel(), new NoOpTelemetry());
     model = new SpringContextModel();
     assertThat(gatherer.scanWithoutParsing(context)).isTrue();
     verify(writeCache).copyFromPrevious(entry.key());
 
-    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
-    when(moduleScannerContext.getModuleKey()).thenReturn("");
-    gatherer.gatherSpringContextData(moduleScannerContext, model);
+    model = SpringContextModel.of(gatherer.springContextGatheringModel);
 
     var beans = model.getBeanDefinitionRegistry().getByName("qualifiedFieldDependencies");
     assertThat(beans).hasSize(1);
@@ -351,8 +349,9 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     InputFileScannerContext context = mock(InputFileScannerContext.class);
     when(context.getInputFile()).thenReturn(inputFile);
     when(context.getCacheContext()).thenReturn(cacheContext);
+    when(context.getModuleKey()).thenReturn("");
 
-    gatherer = new BeanDefinitionGatherer(new NoOpTelemetry());
+    gatherer = new BeanDefinitionGatherer(new SpringContextGatheringModel(), new NoOpTelemetry());
     model = new SpringContextModel();
     assertThat(gatherer.scanWithoutParsing(context)).isTrue();
 

@@ -1,8 +1,8 @@
 {
-"com.google.guava:guava:src/com/google/common/net/InternetDomainName.java": [
+"guava:src/com/google/common/net/InternetDomainName.java": [
 510
 ],
-"com.google.guava:guava:src/com/google/common/net/PercentEscaper.java": [
+"guava:src/com/google/common/net/PercentEscaper.java": [
 100
 ]
 }
