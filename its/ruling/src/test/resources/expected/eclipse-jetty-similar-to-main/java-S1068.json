@@ -1,4 +1,10 @@
 {
+"eclipse-jetty:jetty-jmx/src/test/java/com/acme/DerivedExtended.java": [
+28
+],
+"eclipse-jetty:jetty-jmx/src/test/java/com/acme/jmx/DerivedMBean.java": [
+32
+],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java": [
 1825
 ],
@@ -25,5 +31,12 @@
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java": [
 61
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/PathWatcherTest.java": [
+301
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/TestIntrospectionUtil.java": [
+55,
+63
 ]
 }
