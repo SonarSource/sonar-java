@@ -118,7 +118,7 @@ class SpringContextModelGathererTest {
   }
 
   private VisitorsBridge bridgeFor(JavaCheck check, List<File> classpath) {
-    SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
+    SensorContextTester sensorContextTester = SpringContextGathererTest.mainScopeSensorContext();
     var sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContextTester);
     return new VisitorsBridge(List.of(check), classpath, sonarComponents);
