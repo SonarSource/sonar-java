@@ -23,6 +23,7 @@ import java.util.function.LongSupplier;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.telemetry.TelemetryKey;
+import org.sonar.java.utils.JavaFileTypeClassifier;
 import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -45,6 +46,12 @@ import org.sonar.plugins.java.api.tree.Tree;
  * <p>All gatherers are skipped when none of {@code spring-context}, {@code spring-beans},
  * {@code spring-boot-starter}, or {@code spring-boot-starter-web} is present in the module classpath.
  *
+ * <p>Nothing is gathered from files in test scope, as determined by {@link JavaFileTypeClassifier#isTestFile}.
+ * Spring Boot's {@code TestTypeExcludeFilter} keeps test classes, {@code @TestConfiguration} classes, and
+ * anything nested inside them out of component scanning, so the beans and injection points they declare are
+ * never part of the application context the gathered model describes. {@link #leaveSpringFile} still runs for
+ * such files, so they publish an empty result and keep a valid cache entry.
+ *
  * <p>Extends {@link IssuableSubscriptionVisitor} so that {@link #leaveFile} is invoked by
  * {@code IssuableSubscriptionVisitorsRunner} after each file. This is required for per-file cache
  * writes: without it, cache entries are never stored and {@link #scanWithoutParsing} always misses,
@@ -56,6 +63,7 @@ public abstract class SpringContextModelGatherer extends IssuableSubscriptionVis
   private final Telemetry telemetry;
   private final LongSupplier nanoTime;
   private long gatheringTimeNanos;
+  private boolean currentFileIsInTestScope;
 
   protected SpringContextModelGatherer(SpringContextGatheringModel springContextGatheringModel, Telemetry telemetry) {
     this(springContextGatheringModel, telemetry, System::nanoTime);
@@ -78,7 +86,16 @@ public abstract class SpringContextModelGatherer extends IssuableSubscriptionVis
   }
 
   @Override
+  public void setContext(JavaFileScannerContext context) {
+    super.setContext(context);
+    currentFileIsInTestScope = JavaFileTypeClassifier.isTestFile(context);
+  }
+
+  @Override
   public final void visitNode(Tree tree) {
+    if (currentFileIsInTestScope) {
+      return;
+    }
     long startTime = nanoTime.getAsLong();
     try {
       visitSpringNode(tree);

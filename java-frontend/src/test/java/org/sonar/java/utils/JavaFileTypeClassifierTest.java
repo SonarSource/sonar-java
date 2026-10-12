@@ -17,6 +17,7 @@
 package org.sonar.java.utils;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
@@ -87,21 +88,66 @@ class JavaFileTypeClassifierTest {
   }
 
   @Test
+  void hasTestFrameworkAnnotation_detects_TestConfiguration() {
+    assertAnnotationSignal(true, "src/test/files/utils/SampleWithTestConfiguration.java");
+  }
+
+  @Test
   void hasTestFrameworkAnnotation_returnsFalse_forPlainClass() {
     assertAnnotationSignal(false, "src/test/files/utils/PlainSample.java");
   }
 
+  @Test
+  void hasTestFrameworkAnnotation_returnsFalse_forClassWithOnlyTestMethods() {
+    // Method-level markers are deliberately out of scope here; declaresTestMethods covers them.
+    assertAnnotationSignal(false, "src/test/files/utils/SampleWithTestMethods.java");
+  }
+
   private void assertAnnotationSignal(boolean expected, String filePath) {
+    assertThat(JavaFileTypeClassifier.hasTestFrameworkAnnotation(contextFor(filePath)))
+      .as("Expected hasTestFrameworkAnnotation=%s for '%s'", expected, filePath)
+      .isEqualTo(expected);
+  }
+
+  // -------------------------------------------------------------------------
+  // declaresTestMethods
+  // -------------------------------------------------------------------------
+
+  @Test
+  void declaresTestMethods_returnsFalse_whenNotParsed() {
+    JavaFileScannerContext context = mock(JavaFileScannerContext.class);
+    when(context.fileParsed()).thenReturn(false);
+    assertThat(JavaFileTypeClassifier.declaresTestMethods(context)).isFalse();
+  }
+
+  @Test
+  void declaresTestMethods_detects_plainClassHoldingTestMethods() {
+    assertTestMethodSignal(true, "src/test/files/utils/SampleWithTestMethods.java");
+  }
+
+  @Test
+  void declaresTestMethods_detects_plainClassHoldingNestedTestClass() {
+    assertTestMethodSignal(true, "src/test/files/utils/SampleWithNestedTestClass.java");
+  }
+
+  @Test
+  void declaresTestMethods_returnsFalse_forPlainClass() {
+    assertTestMethodSignal(false, "src/test/files/utils/PlainSample.java");
+  }
+
+  private void assertTestMethodSignal(boolean expected, String filePath) {
+    assertThat(JavaFileTypeClassifier.declaresTestMethods(contextFor(filePath)))
+      .as("Expected declaresTestMethods=%s for '%s'", expected, filePath)
+      .isEqualTo(expected);
+  }
+
+  private static JavaFileScannerContext contextFor(String filePath) {
     var classpath = TestClasspathUtils.DEFAULT_MODULE.getClassPath();
     var bridge = new VisitorsBridgeForTests.Builder(List.of())
       .enableSemanticWithProjectClasspath(classpath)
       .build();
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile(filePath), bridge);
-
-    JavaFileScannerContext context = bridge.testContexts().get(0);
-    assertThat(JavaFileTypeClassifier.hasTestFrameworkAnnotation(context))
-      .as("Expected hasTestFrameworkAnnotation=%s for '%s'", expected, filePath)
-      .isEqualTo(expected);
+    return bridge.testContexts().get(0);
   }
 
   // -------------------------------------------------------------------------
@@ -203,6 +249,28 @@ class JavaFileTypeClassifierTest {
   }
 
   // -------------------------------------------------------------------------
+  // isTestFile — no Configuration available
+  // -------------------------------------------------------------------------
+
+  @Test
+  void isTestFile_withoutConfiguration_skipsPathHeuristicInsteadOfThrowing() {
+    // A context built without SonarComponents has no Configuration. Throwing here would be swallowed by the
+    // scanner and would silently classify every file as main code.
+    JavaFileScannerContext context = contextWithInputFileAndConfig(
+      TestUtils.emptyInputFile("FooTest.java", InputFile.Type.MAIN), null);
+
+    assertThat(JavaFileTypeClassifier.isTestFile(context)).isFalse();
+  }
+
+  @Test
+  void isTestFile_withoutConfiguration_stillHonoursThePlatformSignal() {
+    JavaFileScannerContext context = contextWithInputFileAndConfig(
+      TestUtils.emptyInputFile("Foo.java", InputFile.Type.TEST), null);
+
+    assertThat(JavaFileTypeClassifier.isTestFile(context)).isTrue();
+  }
+
+  // -------------------------------------------------------------------------
   // isTestFile — no signal
   // -------------------------------------------------------------------------
 
@@ -239,7 +307,7 @@ class JavaFileTypeClassifierTest {
     return contextWithInputFileAndConfig(inputFile, NO_SONAR_TESTS_CONFIG);
   }
 
-  private static JavaFileScannerContext contextWithInputFileAndConfig(InputFile inputFile, Configuration config) {
+  private static JavaFileScannerContext contextWithInputFileAndConfig(InputFile inputFile, @Nullable Configuration config) {
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     when(context.getInputFile()).thenReturn(inputFile);
     when(context.getConfiguration()).thenReturn(config);
