@@ -47,7 +47,14 @@ public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implemen
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     loopCount = 0;
-    scan(context.getTree());
+    breakAndContinueCounter.clear();
+    currentScopeIsSwitch.clear();
+    try {
+      scan(context.getTree());
+    } finally {
+      breakAndContinueCounter.clear();
+      currentScopeIsSwitch.clear();
+    }
   }
 
   @Override

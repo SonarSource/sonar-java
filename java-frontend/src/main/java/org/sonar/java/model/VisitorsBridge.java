@@ -435,7 +435,28 @@ public class VisitorsBridge {
       } catch (CheckFailureException e) {
         interruptIfFailFast(e);
       } finally {
-        issuableSubscriptionVisitorsDuration.stop();
+        try {
+          CheckFailureException cleanupFailure = null;
+          for (SubscriptionVisitor visitor : subscriptionVisitors) {
+            if (visitor instanceof IssuableSubscriptionVisitor issuableVisitor) {
+              PerformanceMeasure.Duration visitorDuration = PerformanceMeasure.start(visitor);
+              try {
+                runScanner(issuableVisitor::clearStateAfterFile, visitor);
+              } catch (CheckFailureException e) {
+                if (cleanupFailure == null) {
+                  cleanupFailure = e;
+                }
+              } finally {
+                visitorDuration.stop();
+              }
+            }
+          }
+          if (cleanupFailure != null) {
+            interruptIfFailFast(cleanupFailure);
+          }
+        } finally {
+          issuableSubscriptionVisitorsDuration.stop();
+        }
       }
     }
 

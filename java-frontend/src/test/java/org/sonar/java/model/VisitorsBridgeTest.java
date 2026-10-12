@@ -29,6 +29,8 @@ import java.util.function.Function;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -167,6 +169,57 @@ class VisitorsBridgeTest {
     assertThat(logTester.logs(Level.ERROR)).hasSize(1);
     assertThat(logTester.logs(Level.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsOnly("IV1_ThrowingNPEVisitingClass - IV1");
+  }
+
+  @Test
+  void clear_state_when_leave_file_does_not_delegate() {
+    StatefulVisitorWithoutLeaveFileDelegation visitor = new StatefulVisitorWithoutLeaveFileDelegation(false);
+
+    visitorsBridge(visitor, false).visitFile(COMPILATION_UNIT_TREE, false);
+
+    assertThat(visitor.state).isFalse();
+    assertThat(visitor.leaveCalled).isTrue();
+    assertThat(visitor.clearCount).isEqualTo(2);
+  }
+
+  @Test
+  void clear_state_when_visit_fails_before_leave_file() {
+    StatefulVisitorWithoutLeaveFileDelegation visitor = new StatefulVisitorWithoutLeaveFileDelegation(true);
+
+    VisitorsBridge visitorsBridge = visitorsBridge(visitor, true);
+
+    assertThatThrownBy(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
+      .isInstanceOf(AnalysisException.class);
+
+    assertThat(visitor.state).isFalse();
+    assertThat(visitor.leaveCalled).isFalse();
+    assertThat(visitor.clearCount).isEqualTo(2);
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {false, true})
+  void clear_all_visitors_state_when_cleanup_fails(boolean failOnException) {
+    RuntimeException firstFailure = new IllegalStateException("First cleanup failure");
+    ThrowingCleanupVisitor firstVisitor = new ThrowingCleanupVisitor(firstFailure);
+    ThrowingCleanupVisitor secondVisitor = new ThrowingCleanupVisitor(new IllegalStateException("Second cleanup failure"));
+    StatefulVisitorWithoutLeaveFileDelegation lastVisitor = new StatefulVisitorWithoutLeaveFileDelegation(false);
+    VisitorsBridge visitorsBridge = visitorsBridge(List.of(firstVisitor, secondVisitor, lastVisitor), failOnException);
+
+    if (failOnException) {
+      assertThatThrownBy(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
+        .isInstanceOf(AnalysisException.class)
+        .hasRootCause(firstFailure);
+    } else {
+      assertThatCode(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false)).doesNotThrowAnyException();
+    }
+
+    assertThat(lastVisitor.state).isFalse();
+    assertThat(lastVisitor.clearCount).isEqualTo(2);
+    assertThat(firstVisitor.cleanupCount).isEqualTo(2);
+    assertThat(secondVisitor.cleanupCount).isEqualTo(2);
+    assertThat(logTester.logs(Level.ERROR).stream()
+      .filter(message -> message.contains(ThrowingCleanupVisitor.class.getName())))
+      .hasSize(2);
   }
 
   @Test
@@ -750,6 +803,65 @@ class VisitorsBridgeTest {
     @Override
     public void leaveNode(Tree tree) {
       throw NPE;
+    }
+  }
+
+  private static class StatefulVisitorWithoutLeaveFileDelegation extends IssuableSubscriptionVisitor {
+    private final boolean failOnVisit;
+    private boolean state;
+    private boolean leaveCalled;
+    private int clearCount;
+
+    private StatefulVisitorWithoutLeaveFileDelegation(boolean failOnVisit) {
+      this.failOnVisit = failOnVisit;
+    }
+
+    @Override
+    public List<Tree.Kind> nodesToVisit() {
+      return List.of(Tree.Kind.COMPILATION_UNIT);
+    }
+
+    @Override
+    public void setContext(JavaFileScannerContext context) {
+      super.setContext(context);
+      state = true;
+    }
+
+    @Override
+    public void visitNode(Tree tree) {
+      if (failOnVisit) {
+        throw NPE;
+      }
+    }
+
+    @Override
+    public void leaveFile(JavaFileScannerContext context) {
+      leaveCalled = true;
+    }
+
+    @Override
+    protected void clearState() {
+      state = false;
+      clearCount++;
+    }
+  }
+
+  private static class ThrowingCleanupVisitor extends StatefulVisitorWithoutLeaveFileDelegation {
+    private final RuntimeException failure;
+    private int cleanupCount;
+
+    private ThrowingCleanupVisitor(RuntimeException failure) {
+      super(false);
+      this.failure = failure;
+    }
+
+    @Override
+    protected void clearState() {
+      super.clearState();
+      cleanupCount++;
+      if (cleanupCount == 2) {
+        throw failure;
+      }
     }
   }
 

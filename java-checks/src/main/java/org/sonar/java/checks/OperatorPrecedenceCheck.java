@@ -105,8 +105,13 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     reportedLines.clear();
-    scan(context.getTree());
-    reportedLines.clear();
+    stack.clear();
+    try {
+      scan(context.getTree());
+    } finally {
+      stack.clear();
+      reportedLines.clear();
+    }
   }
 
   @Override
