@@ -174,10 +174,7 @@ jobs:
       - name: Update ruling and notify
         uses: SonarSource/core-languages-tooling-public/ruling-update-and-notify@master
         with:
-          pr-number: ${{ github.event.pull_request.number }}
           ruling-failed: ${{ steps.check-ruling.outputs.ruling-failed }}
-          ruling-root: 'its/ruling/src/test/resources/expected'
-          sources-root: 'its/sources'
         env:
           GH_TOKEN: ${{ github.token }}
 
