@@ -93,6 +93,11 @@ class JavaFileTypeClassifierTest {
   }
 
   @Test
+  void hasTestFrameworkAnnotation_detects_annotationOnADeeplyNestedType() {
+    assertAnnotationSignal(true, "src/test/files/utils/SampleWithDeeplyNestedTestAnnotation.java");
+  }
+
+  @Test
   void hasTestFrameworkAnnotation_returnsFalse_forPlainClass() {
     assertAnnotationSignal(false, "src/test/files/utils/PlainSample.java");
   }
@@ -128,6 +133,12 @@ class JavaFileTypeClassifierTest {
   @Test
   void declaresTestMethods_detects_plainClassHoldingNestedTestClass() {
     assertTestMethodSignal(true, "src/test/files/utils/SampleWithNestedTestClass.java");
+  }
+
+  @Test
+  void declaresTestMethods_detects_nestedTestClassWithoutNestedAnnotation() {
+    // The outer class carries no test marker at all: only the nested class declares test methods.
+    assertTestMethodSignal(true, "src/test/files/utils/SampleWithNestedTestClassWithoutNestedAnnotation.java");
   }
 
   @Test

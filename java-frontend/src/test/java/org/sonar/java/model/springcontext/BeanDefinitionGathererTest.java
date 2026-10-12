@@ -301,6 +301,15 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
   }
 
   @Test
+  void beans_nested_inside_a_test_class_that_is_itself_nested_are_not_collected() {
+    scan("src/test/files/springcontext/NestedTestClassWithConfiguration.java");
+
+    assertThat(model.getTypeToBeansIndex().getKeys()).isEmpty();
+    assertThat(model.getBeanDefinitionRegistry().getByName("nestedConfiguration")).isEmpty();
+    assertThat(model.getBeanDefinitionRegistry().getByName("nestedApplicationContext")).isEmpty();
+  }
+
+  @Test
   void beans_nested_inside_a_TestConfiguration_class_are_not_collected() {
     scan("src/test/files/springcontext/TestConfigurationWithNestedConfiguration.java");
 

@@ -26,6 +26,7 @@ import org.sonar.api.config.Configuration;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.appsec.TestFileClassifier;
 
@@ -43,12 +44,15 @@ import org.sonarsource.analyzer.commons.appsec.TestFileClassifier;
  *       sonar-analyzer-commons, extended with Java-specific path conventions</li>
  *   <li>AST annotations: class-level test framework annotations ({@code @RunWith},
  *       {@code @SpringBootTest}, etc.)</li>
- *   <li>Test methods: a top-level class holding JUnit/TestNG test methods, via
- *       {@link UnitTestUtils#isTestClass(ClassTree)}</li>
+ *   <li>Test methods: a class holding JUnit/TestNG test methods, via
+ *       {@link UnitTestUtils#isTestClass(ClassTree)} and the methods a type declares itself</li>
  * </ol>
  *
  * <p>The last two signals mirror the markers Spring Boot's {@code TestTypeExcludeFilter} uses to keep
- * test classes, and anything nested inside them, out of component scanning.
+ * test classes, and anything nested inside them, out of component scanning. Both examine nested types at
+ * any depth, not only the top-level ones, because that filter re-applies itself to a candidate's enclosing
+ * class recursively: a test class buried inside an otherwise unremarkable outer class still takes everything
+ * nested within it out of scanning.
  *
  * <p>A file is considered a test file if <em>any</em> signal indicates it. The platform type
  * takes priority when {@code TEST}, but a {@code MAIN}-typed file can be upgraded to test scope
@@ -185,8 +189,8 @@ public final class JavaFileTypeClassifier {
   }
 
   /**
-   * Returns {@code true} if any top-level class in the compilation unit carries a recognized
-   * test framework annotation at the class level.
+   * Returns {@code true} if any type in the compilation unit carries a recognized test framework
+   * annotation at the class level.
    *
    * <p>Gracefully returns {@code false} if the file was not successfully parsed
    * ({@link JavaFileScannerContext#fileParsed()} is {@code false}).
@@ -194,36 +198,60 @@ public final class JavaFileTypeClassifier {
    * @param context the current file scanner context
    */
   static boolean hasTestFrameworkAnnotation(JavaFileScannerContext context) {
-    return anyTopLevelClassMatches(context, JavaFileTypeClassifier::hasTestAnnotation);
+    return anyTypeMatches(context, JavaFileTypeClassifier::hasTestAnnotation);
   }
 
   /**
-   * Returns {@code true} if any top-level class in the compilation unit declares test methods,
-   * as determined by {@link UnitTestUtils#isTestClass(ClassTree)}.
+   * Returns {@code true} if any type in the compilation unit declares test methods.
    *
    * <p>This covers the method-level markers that {@link #TEST_CLASS_ANNOTATIONS} deliberately omits,
-   * such as a plain class holding JUnit {@code @Test} methods.
+   * such as a plain class holding JUnit {@code @Test} methods. A top-level type is matched through
+   * {@link UnitTestUtils#isTestClass(ClassTree)}, which also recognizes a class whose only test code sits in
+   * {@code @Nested} members; any type is matched by declaring test methods itself, which is what catches a
+   * nested test class whose enclosing type carries no test marker of its own.
    *
    * @param context the current file scanner context
    */
   static boolean declaresTestMethods(JavaFileScannerContext context) {
-    return anyTopLevelClassMatches(context, UnitTestUtils::isTestClass);
+    return anyTypeMatches(context, type -> UnitTestUtils.isTestClass(type) || declaresTestMethodsItself(type));
+  }
+
+  private static boolean declaresTestMethodsItself(ClassTree classTree) {
+    return classTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.METHOD))
+      .map(MethodTree.class::cast)
+      .anyMatch(UnitTestUtils::hasTestAnnotation);
   }
 
   /**
-   * Applies {@code predicate} to every top-level class of the compilation unit.
+   * Applies {@code predicate} to every type declared in the compilation unit, nested ones included, at any depth.
+   *
+   * <p>Descending matters because Spring Boot's {@code TestTypeExcludeFilter} resolves the enclosing class of a
+   * candidate and re-applies itself to it, recursively: a class nested inside a test class is excluded from
+   * component scanning however deep it sits, and however unremarkable the outermost class looks. Walking down
+   * from the compilation unit reaches the same set as walking up from each candidate.
    *
    * <p>Gracefully returns {@code false} if the file was not successfully parsed
    * ({@link JavaFileScannerContext#fileParsed()} is {@code false}).
    */
-  private static boolean anyTopLevelClassMatches(JavaFileScannerContext context, Predicate<ClassTree> predicate) {
+  private static boolean anyTypeMatches(JavaFileScannerContext context, Predicate<ClassTree> predicate) {
     if (!context.fileParsed()) {
       return false;
     }
     return context.getTree().types().stream()
-      .filter(tree -> tree.is(Tree.Kind.CLASS))
+      .filter(ClassTree.class::isInstance)
       .map(ClassTree.class::cast)
-      .anyMatch(predicate);
+      .anyMatch(type -> matchesTypeOrNested(type, predicate));
+  }
+
+  private static boolean matchesTypeOrNested(ClassTree classTree, Predicate<ClassTree> predicate) {
+    if (predicate.test(classTree)) {
+      return true;
+    }
+    return classTree.members().stream()
+      .filter(ClassTree.class::isInstance)
+      .map(ClassTree.class::cast)
+      .anyMatch(nested -> matchesTypeOrNested(nested, predicate));
   }
 
   private static boolean hasTestAnnotation(ClassTree classTree) {
