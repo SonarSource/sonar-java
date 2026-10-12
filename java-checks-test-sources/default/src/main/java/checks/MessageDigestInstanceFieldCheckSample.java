@@ -1,7 +1,6 @@
 package checks;
 
 import java.security.MessageDigest;
-import java.util.function.Consumer;
 
 class MessageDigestInstanceFieldCheckSample {
 
@@ -25,7 +24,7 @@ class MessageDigestInstanceFieldCheckSample {
   }
 
   void process(byte[][] payloads) throws Exception {
-    Consumer<byte[]> consumer = payload -> {
+    PayloadConsumer consumer = payload -> {
       MessageDigest digest = MessageDigest.getInstance("SHA-256"); // Compliant
       digest.update(payload);
     };
@@ -47,7 +46,14 @@ class MessageDigestInstanceFieldCheckSample {
     private MessageDigest digest; // Noncompliant {{Make this MessageDigest a local variable.}}
   }
 
+  interface PayloadConsumer {
+    void accept(byte[] payload) throws Exception;
+  }
+
   abstract static class CustomDigest extends MessageDigest {
+    protected CustomDigest(String algorithm) {
+      super(algorithm);
+    }
   }
 }
 
