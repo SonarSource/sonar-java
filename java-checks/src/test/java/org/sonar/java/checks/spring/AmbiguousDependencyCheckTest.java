@@ -115,6 +115,12 @@ class AmbiguousDependencyCheckTest {
     assertThat(check.execute(model)).isEmpty();
   }
 
+  @Test
+  void value_annotated_constructor_parameters_are_not_injection_points() {
+    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "ValueConstructorParameterConsumer.java");
+    assertThat(check.execute(model)).isEmpty();
+  }
+
   // ---- Generic types ---------------------------------------------------------
 
   @Test
