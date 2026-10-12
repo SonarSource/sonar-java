@@ -29,6 +29,7 @@ import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
+import org.sonar.scanner.plugin.api.impl.config.MapSettings;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -53,6 +54,10 @@ class SpringContextModelTest {
     when(sonarComponents.getJavaClasspath()).thenReturn(TestClasspathUtils.DEFAULT_MODULE.getClassPath());
     when(sonarComponents.getJavaTestClasspath()).thenReturn(TestClasspathUtils.DEFAULT_MODULE.getClassPath());
     when(sonarComponents.getModuleKey()).thenReturn("a");
+    // The main fixture below lives under src/test/files/, which the path heuristic would read as test scope;
+    // declaring sonar.tests disables it, as it does in a real analysis.
+    when(sonarComponents.getConfiguration())
+      .thenReturn(new MapSettings().setProperty("sonar.tests", "src/test/java").asConfig());
 
     var gatheringModel = new SpringContextGatheringModel();
     var telemetry = new NoOpTelemetry();
@@ -71,10 +76,9 @@ class SpringContextModelTest {
     assertThat(springContextModel.getProjectPackageScan().getModules()).isNotEmpty();
     assertThat(springContextModel.getProjectPackageScan().getPackagesForModule("a"))
       .containsExactly("springcontext");
-    assertThat(springContextModel.getBeanDefinitionRegistry().getByName("springContextComponent"))
-      .hasSize(1)
-      .first()
-      .satisfies(bean -> assertThat(bean.getType()).isEqualTo("springcontext.SpringContextComponent"));
+    // SpringContextComponent is scanned as a test file, so its bean is not registered: Spring Boot's
+    // TestTypeExcludeFilter keeps test classes out of component scanning.
+    assertThat(springContextModel.getBeanDefinitionRegistry().getByName("springContextComponent")).isEmpty();
   }
 
 }
