@@ -92,8 +92,13 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    if (context.getSemanticModel() != null) {
-      scan(context.getTree());
+    methodReferences.clear();
+    try {
+      if (context.getSemanticModel() != null) {
+        scan(context.getTree());
+      }
+    } finally {
+      methodReferences.clear();
     }
   }
 

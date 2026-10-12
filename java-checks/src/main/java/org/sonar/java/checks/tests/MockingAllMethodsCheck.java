@@ -106,4 +106,10 @@ public class MockingAllMethodsCheck extends AbstractMethodDetection {
     return symbol.isMethodSymbol() && !symbol.isPrivate() && declaration != null
       && !declaration.is(Tree.Kind.CONSTRUCTOR);
   }
+  @Override
+  protected void clearState() {
+    mockedMethodsPerObject.clear();
+    whenCalls.clear();
+  }
+
 }

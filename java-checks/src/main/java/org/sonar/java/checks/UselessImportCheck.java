@@ -15,7 +15,6 @@
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
 package org.sonar.java.checks;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -206,4 +205,12 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
     }
     return quickFix.build();
   }
+  @Override
+  protected void clearState() {
+    imports.clear();
+    importsNames.clear();
+    duplicatedImports.clear();
+    usedInJavaDoc.clear();
+  }
+
 }

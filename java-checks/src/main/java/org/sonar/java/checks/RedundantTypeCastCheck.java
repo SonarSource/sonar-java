@@ -15,7 +15,6 @@
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
 package org.sonar.java.checks;
-
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -109,6 +108,11 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       return tree.equals(skipParentheses(warningTree));
     }
     return tree.equals(warningTree);
+  }
+
+  @Override
+  protected void clearState() {
+    warnings = null;
   }
 
 }

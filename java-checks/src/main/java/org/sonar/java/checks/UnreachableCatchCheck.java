@@ -149,4 +149,9 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
     secondaries.sort(LOCATION_COMPARATOR);
     return secondaries;
   }
+  @Override
+  protected void clearState() {
+    warnings.clear();
+  }
+
 }

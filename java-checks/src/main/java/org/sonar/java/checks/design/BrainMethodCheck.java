@@ -128,6 +128,7 @@ public class BrainMethodCheck extends IssuableSubscriptionVisitor implements End
       IssueFound issueFound = issuesFound.get(i);
       defaultContext.reportIssue(issueFound.analyzerMessage);
     }
+    issuesFound.clear();
   }
 
   private static class IssueFound {
