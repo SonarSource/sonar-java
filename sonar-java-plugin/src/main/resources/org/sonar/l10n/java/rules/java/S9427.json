@@ -1,0 +1,24 @@
+{
+  "title": "Java assert statements should not be used in test code",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "junit",
+    "assertion"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-9427",
+  "sqKey": "S9427",
+  "scope": "Tests",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "COMPLETE"
+  }
+}
