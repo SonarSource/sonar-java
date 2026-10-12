@@ -108,7 +108,7 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
-              <test>!org.sonar.java.it.JavaRulingTest#sonarqube_server, !org.sonar.java.it.JavaRulingTest#vibebot</test>
+              <test>!org.sonar.java.it.JavaRulingTest#sonarqube_server</test>
             </configuration>
           </plugin>
         </plugins>

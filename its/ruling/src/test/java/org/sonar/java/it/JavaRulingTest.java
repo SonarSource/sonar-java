@@ -432,16 +432,6 @@ public class JavaRulingTest {
     executeBuildWithCommonProperties(build, projectName);
   }
 
-  /**
-   * Vibe-bot runs this test when testing samples; so it's excluded from the GitHub Actions workflow.
-   */
-  @Test
-  public void vibebot() throws IOException {
-    String projectName = "vibebot";
-    MavenBuild build = test_project(projectName);
-    executeBuildWithCommonProperties(build, projectName);
-  }
-
   private static MavenBuild test_project(String projectName) throws IOException {
     return test_project(projectName, null, projectName);
   }
