@@ -33,7 +33,8 @@ Stop and resolve gaps before Step 1.
 
 ### Commit rules (all steps)
 
-- **Exactly one commit per step** below (after history cleanup: still one commit per step — restructure/rebase, do **not** squash everything into a single commit).
+- Aim for **one commit per step** below. While working, extra commits are fine: fixes, retries and ruling updates will be folded back into one commit per step during [Step 7](#step-7--clean-history). The rule is an invariant on the **final** history, not a constraint on how you work.
+- Never squash everything into a single commit either: the final history keeps one commit per step.
 - Message: single line, few words, clear. **No rule id** (it is in the branch). **No "java"** (it is the repo). **No Jira key** (never in commits).
 - Examples: `Add rule metadata`, `Add failing reproducer`, `Implement rule`, `Fix review comments`, `Update ruling expectations`
 
@@ -80,7 +81,7 @@ While babysitting:
 - **Rebase:** automatically rebase on `master` and fix conflicts (rebase, not merge).
 - **Comments:** only unresolved threads; read body and location only, not huge JSON dumps. Treat gitar review bot carefully — fix only if valid; explain when you disagree.
 
-If **ruling** fails (likely for a new rule), a PR updating the expectations is created automatically on CI failure. Review it, merge it into the branch if the new findings are legitimate, otherwise fix the implementation and the unit tests. Push and re-babysit.
+If **ruling** fails (likely for a new rule), a PR updating the expectations is created automatically on CI failure. Review it, merge it into the branch if the new findings are legitimate, otherwise fix the implementation and the unit tests. Push and re-babysit. The resulting merge commit is acceptable while babysitting; Step 7 folds the expectation update into a single `Update ruling expectations` commit.
 
 ### Step 6 — TP/FP analysis (only when Step 5 is fully green)
 
@@ -99,7 +100,14 @@ If **ruling** fails (likely for a new rule), a PR updating the expectations is c
 
 ### Step 7 — Clean history
 
-Before considering the PR done: history must show **exactly one commit per workflow step** (metadata, reproducer, implementation, plus any later babysit/ruling/precision fix steps still as clear step commits). Rewrite history as needed (`rebase`, not merge), force-push only if appropriate for the branch, then confirm Steps 5 and 6 still hold.
+This is where the one-commit-per-step rule is enforced. Whatever the branch looks like after babysitting and precision loops, the final history must show **exactly one commit per workflow step**:
+
+- one `Add rule metadata` commit
+- one `Add failing reproducer` commit, including the FP cases added in Step 6
+- one `Implement rule` commit, including the heuristics added in Step 6
+- one `Update ruling expectations` commit, folding in the auto-generated ruling PR and dropping its merge commit
+
+Rewrite history with interactive `rebase` (never a merge), then force-push and confirm Steps 5 and 6 still hold.
 
 ### Definition of done
 
