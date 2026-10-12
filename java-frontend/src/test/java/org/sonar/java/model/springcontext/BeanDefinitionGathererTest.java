@@ -34,6 +34,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.TestUtils;
 import org.sonar.java.telemetry.NoOpTelemetry;
+import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
@@ -279,6 +280,58 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(beans.get(0).getBeanPackage()).isEqualTo("checks.spring.context");
   }
 
+  // ---- Test scope is excluded, mirroring Spring Boot's TestTypeExcludeFilter ----
+
+  @Test
+  void beans_in_a_file_the_scanner_classified_as_test_are_not_collected() {
+    scanAsTestScope("src/test/files/springcontext/SimpleComponent.java");
+
+    assertThat(model.getTypeToBeansIndex().getKeys()).isEmpty();
+    assertThat(model.getBeanDefinitionRegistry().getByName("simpleComponent")).isEmpty();
+  }
+
+  @Test
+  void beans_nested_inside_a_class_holding_test_methods_are_not_collected() {
+    scan("src/test/files/springcontext/TestClassWithNestedConfiguration.java");
+
+    assertThat(model.getTypeToBeansIndex().getKeys()).isEmpty();
+    assertThat(model.getBeanDefinitionRegistry().getByName("nestedConfiguration")).isEmpty();
+    assertThat(model.getBeanDefinitionRegistry().getByName("nestedApplicationContext")).isEmpty();
+    assertThat(model.getBeanDefinitionRegistry().getByName("deeplyNestedComponent")).isEmpty();
+  }
+
+  @Test
+  void beans_nested_inside_a_TestConfiguration_class_are_not_collected() {
+    scan("src/test/files/springcontext/TestConfigurationWithNestedConfiguration.java");
+
+    assertThat(model.getTypeToBeansIndex().getKeys()).isEmpty();
+    assertThat(model.getBeanDefinitionRegistry().getByName("nestedConfiguration")).isEmpty();
+    assertThat(model.getBeanDefinitionRegistry().getByName("nestedApplicationContext")).isEmpty();
+  }
+
+  @Test
+  void injection_points_in_test_scope_are_not_collected() {
+    scanAsTestScope("src/test/files/springcontext/QualifiedFieldDependencies.java");
+
+    assertThat(model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.context.ApplicationContext")).isEmpty();
+  }
+
+  @Test
+  void a_test_file_still_writes_an_empty_cache_entry() {
+    WriteCache writeCache = mock(WriteCache.class);
+    SensorContextTester ctx = mainScopeSensorContext();
+    ctx.setCacheEnabled(true);
+    ctx.setNextCache(writeCache);
+
+    scan(TestClasspathUtils.DEFAULT_MODULE.getClassPath(), ctx, InputFile.Type.TEST,
+      "src/test/files/springcontext/SimpleComponent.java");
+
+    var dataCaptor = ArgumentCaptor.forClass(byte[].class);
+    verify(writeCache).write(anyString(), dataCaptor.capture());
+    assertThat(JsonParser.parseString(new String(dataCaptor.getValue(), StandardCharsets.UTF_8))
+      .getAsJsonObject().getAsJsonArray("beans")).isEmpty();
+  }
+
   // ---- Caching: what the gatherer collects reaches the cache and comes back ----
 
   @Test
@@ -415,7 +468,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
    */
   private CacheEntry scanAndCaptureCacheEntry(String filePath) {
     WriteCache writeCache = mock(WriteCache.class);
-    SensorContextTester ctx = SensorContextTester.create(new File(""));
+    SensorContextTester ctx = mainScopeSensorContext();
     ctx.setCacheEnabled(true);
     ctx.setNextCache(writeCache);
 
