@@ -48,7 +48,9 @@ import org.assertj.core.api.Fail;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ErrorCollector;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +89,9 @@ public class JavaRulingTest {
 
   @ClassRule
   public static TemporaryFolder tmpDumpOldFolder = new TemporaryFolder();
+
+  @Rule
+  public final ErrorCollector errorCollector = new ErrorCollector();
 
   private static Path effectiveDumpOldFolder;
 
@@ -250,7 +255,7 @@ public class JavaRulingTest {
       if ("eclipse-jetty-similar-to-main".equals(projectName)) {
         build.setProperty("sonar.java.ignoreUnnamedModuleForSplitPackage", "true");
       }
-      executeBuildWithCommonProperties(build, projectName);
+      errorCollector.checkSucceeds(() -> executeBuildWithCommonProperties(build, projectName));
     }
   }
 
