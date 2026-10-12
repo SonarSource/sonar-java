@@ -165,8 +165,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   private final Map<InputFile, List<CachedIssue>> issuesByFile = new HashMap<>();
 
   @Override
-  public void setContext(JavaFileScannerContext context) {
-    super.setContext(context);
+  protected void clearState() {
     importSupplier = null;
     currentFileTotalUsageCount = 0;
     currentFileNoEnumUsageCount = 0;
@@ -175,7 +174,6 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    importSupplier = null;
     CachedFileData restored = restoredFiles.remove(context.getInputFile());
     if (restored != null) {
       projectTotalUsageCount -= restored.totalCount();
@@ -200,9 +198,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
       }
     }
 
-    currentFileTotalUsageCount = 0;
-    currentFileNoEnumUsageCount = 0;
-    currentFileIssues.clear();
+    super.leaveFile(context);
   }
 
   @Override
@@ -354,6 +350,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     }
     projectTotalUsageCount = 0;
     projectTotalNoEnumUsageCount = 0;
+    currentFileIssues.clear();
     issuesByFile.clear();
     restoredFiles.clear();
   }

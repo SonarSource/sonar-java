@@ -15,7 +15,6 @@
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
 package org.sonar.java.checks;
-
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
@@ -142,6 +141,12 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
     return tryCatches.stream()
       .flatMap(List::stream)
       .noneMatch(type::isSubtypeOf);
+  }
+
+  @Override
+  protected void clearState() {
+    shouldCheck.clear();
+    tryCatches.clear();
   }
 
 }

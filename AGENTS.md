@@ -125,6 +125,41 @@ JavaQuickFix quickFix = JavaQuickFix.newQuickFix("Remove redundant check")
 reportIssue(tree, "Message").withQuickFix(() -> quickFix);
 ```
 
+### Per-File State Cleanup
+
+Rules that accumulate state in collections or mutable fields during file analysis **must clear that state between files**. A single rule instance is reused across all files in a module.
+
+For `IssuableSubscriptionVisitor` subclasses, override `clearState()` — it is called automatically before and after each file:
+
+```java
+@Rule(key = "S1234")
+public class MyCheck extends IssuableSubscriptionVisitor {
+
+  private final Set<Symbol> seen = new HashSet<>();
+
+  @Override
+  protected void clearState() {
+    seen.clear();
+  }
+}
+```
+
+For `BaseTreeVisitor` / `JavaFileScanner` implementations, clear state in `scanFile()` (typically in a `finally` block):
+
+```java
+@Override
+public void scanFile(JavaFileScannerContext context) {
+  this.context = context;
+  try {
+    scan(context.getTree());
+  } finally {
+    myCollection.clear();
+  }
+}
+```
+
+**Do not** clear lazy-initialized caches derived from immutable configuration (e.g. parsed `@RuleProperty` values) — those are intentionally computed once per rule instance.
+
 ### Dependency-Aware Rules
 
 When a rule should only apply when a specific library is present, or when its behaviour depends on a dependency version, implement `DependencyVersionAware` alongside the visitor base class:
