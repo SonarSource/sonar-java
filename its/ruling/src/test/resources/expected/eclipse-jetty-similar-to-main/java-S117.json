@@ -30,5 +30,16 @@
 ],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DebugHandler.java": [
 54
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/UnixCrypt.java": [
+397,
+398,
+415,
+415,
+418,
+419,
+434,
+470,
+511
 ]
 }

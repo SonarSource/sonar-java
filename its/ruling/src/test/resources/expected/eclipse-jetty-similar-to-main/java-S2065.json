@@ -9,5 +9,8 @@
 50,
 51,
 52
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/URLResource.java": [
+48
 ]
 }
