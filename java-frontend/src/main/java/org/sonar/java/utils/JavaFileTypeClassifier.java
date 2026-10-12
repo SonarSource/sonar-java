@@ -156,9 +156,22 @@ public final class JavaFileTypeClassifier {
    */
   public static boolean isTestFile(JavaFileScannerContext context) {
     return isPlatformTestFile(context)
-      || getClassifier(context.getConfiguration()).looksLikeTestFile(context.getInputFile())
+      || looksLikeTestPath(context)
       || hasTestFrameworkAnnotation(context)
       || declaresTestMethods(context);
+  }
+
+  /**
+   * Returns {@code true} if the path/naming heuristic recognizes the file as test code.
+   *
+   * <p>The heuristic is the only signal that needs the module {@link Configuration}, which a context built without
+   * {@code SonarComponents} does not have. It is skipped in that case rather than failing, so that the platform,
+   * annotation and test-method signals keep working: throwing here would be swallowed by the scanner and would
+   * silently turn every file into non-test code.
+   */
+  private static boolean looksLikeTestPath(JavaFileScannerContext context) {
+    Configuration configuration = context.getConfiguration();
+    return configuration != null && getClassifier(configuration).looksLikeTestFile(context.getInputFile());
   }
 
   /**

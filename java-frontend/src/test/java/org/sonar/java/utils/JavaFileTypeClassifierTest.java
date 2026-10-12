@@ -17,6 +17,7 @@
 package org.sonar.java.utils;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
@@ -248,6 +249,28 @@ class JavaFileTypeClassifierTest {
   }
 
   // -------------------------------------------------------------------------
+  // isTestFile — no Configuration available
+  // -------------------------------------------------------------------------
+
+  @Test
+  void isTestFile_withoutConfiguration_skipsPathHeuristicInsteadOfThrowing() {
+    // A context built without SonarComponents has no Configuration. Throwing here would be swallowed by the
+    // scanner and would silently classify every file as main code.
+    JavaFileScannerContext context = contextWithInputFileAndConfig(
+      TestUtils.emptyInputFile("FooTest.java", InputFile.Type.MAIN), null);
+
+    assertThat(JavaFileTypeClassifier.isTestFile(context)).isFalse();
+  }
+
+  @Test
+  void isTestFile_withoutConfiguration_stillHonoursThePlatformSignal() {
+    JavaFileScannerContext context = contextWithInputFileAndConfig(
+      TestUtils.emptyInputFile("Foo.java", InputFile.Type.TEST), null);
+
+    assertThat(JavaFileTypeClassifier.isTestFile(context)).isTrue();
+  }
+
+  // -------------------------------------------------------------------------
   // isTestFile — no signal
   // -------------------------------------------------------------------------
 
@@ -284,7 +307,7 @@ class JavaFileTypeClassifierTest {
     return contextWithInputFileAndConfig(inputFile, NO_SONAR_TESTS_CONFIG);
   }
 
-  private static JavaFileScannerContext contextWithInputFileAndConfig(InputFile inputFile, Configuration config) {
+  private static JavaFileScannerContext contextWithInputFileAndConfig(InputFile inputFile, @Nullable Configuration config) {
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     when(context.getInputFile()).thenReturn(inputFile);
     when(context.getConfiguration()).thenReturn(config);
