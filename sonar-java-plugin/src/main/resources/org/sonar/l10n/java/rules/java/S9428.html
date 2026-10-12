@@ -1,0 +1,83 @@
+<p>This rule raises an issue when a cryptographic digest/hash object is declared as a class-level variable (either instance-level or shared across all
+instances).</p>
+<p>In Java, this specifically refers to <code>MessageDigest</code> instances.</p>
+<h2>Why is this an issue?</h2>
+<p>Cryptographic hash computation objects are stateful components that calculate hash values by maintaining internal state as data is incrementally
+processed through their methods.</p>
+<p>The problem is that these hash computation objects are not thread-safe. When stored as shared state (such as class-level fields or instance
+variables), the same object becomes accessible to multiple threads or multiple method invocations. If two threads invoke methods on the same hash
+computation object simultaneously, or if the object is reused between method calls without proper synchronization, the internal state becomes
+corrupted.</p>
+<p>This corruption leads to incorrect hash calculations. The resulting hash values may be completely wrong or inconsistent, which defeats the purpose
+of using cryptographic hashing in the first place.</p>
+<p>While it’s technically possible to synchronize access to a shared hash computation object, this approach adds complexity and potential performance
+bottlenecks. The synchronization overhead often negates any perceived performance benefits of reusing the object.</p>
+<p>Creating a new hash computation object for each use is relatively inexpensive. Modern runtime environments optimize object allocation efficiently,
+and the cost of instantiation is negligible compared to the actual hash computation work.</p>
+<p>In Java, this specifically refers to the <code>MessageDigest</code> class from the Java Security API, which provides methods like
+<code>update()</code> and <code>digest()</code> for hash computation.</p>
+<h3>What is the potential impact?</h3>
+<p>When hash calculations produce incorrect results due to unsynchronized access to shared hash computation objects or functions, the consequences can
+be severe:</p>
+<ul>
+  <li><strong>Data integrity failures</strong>: File integrity checks or data verification mechanisms may incorrectly report that data has been
+  corrupted when it hasn’t, or worse, fail to detect actual corruption.</li>
+  <li><strong>Authentication bypasses</strong>: Password hashing or authentication token generation may produce wrong values, potentially allowing
+  unauthorized access or preventing legitimate users from authenticating.</li>
+  <li><strong>Digital signature failures</strong>: Cryptographic signatures may be computed incorrectly, causing signature verification to fail or
+  producing signatures that don’t actually correspond to the signed data.</li>
+  <li><strong>Cache or deduplication errors</strong>: Systems using content hashes for caching or deduplication may incorrectly identify different
+  data as identical or fail to recognize identical data.</li>
+</ul>
+<p>These issues are particularly insidious because they may occur intermittently based on timing, making them difficult to detect during testing but
+capable of causing production failures.</p>
+<h2>How to fix it</h2>
+<p>Create the <code>MessageDigest</code> instance locally within the method that needs it, rather than storing it as a field. This ensures each
+operation has its own instance with isolated state.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import java.security.MessageDigest;
+
+public class HashCalculator {
+    private final MessageDigest digest; // Noncompliant
+
+    public HashCalculator() throws Exception {
+        digest = MessageDigest.getInstance("SHA-256");
+    }
+
+    public byte[] computeHash(byte[] data) {
+        digest.reset();
+        digest.update(data);
+        return digest.digest();
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import java.security.MessageDigest;
+
+public class HashCalculator {
+    public byte[] computeHash(byte[] data) throws Exception {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        digest.update(data);
+        return digest.digest();
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/security/MessageDigest.html">MessageDigest (Java SE 17 &amp; JDK
+  17)</a></li>
+  <li>Oracle Java Tutorials - <a href="https://docs.oracle.com/javase/tutorial/security/apisign/index.html">Generating and Verifying
+  Signatures</a></li>
+</ul>
+<h3>Standards</h3>
+<ul>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/362.html">CWE-362: Concurrent Execution using Shared Resource with Improper
+  Synchronization ('Race Condition')</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/567.html">CWE-567: Unsynchronized Access to Shared Data in a Multithreaded
+  Context</a></li>
+</ul>
