@@ -242,6 +242,9 @@ public final class SpringUtils {
   /**
    * Collect the given method's parameters as dependencies.
    *
+   * <p>Parameters annotated with {@code @Value} are skipped: Spring resolves them from a property or SpEL
+   * expression instead of matching a bean of their type, so they are not injection points.
+   *
    * @param method Method whose parameters are stored as dependencies, either {@code @Autowired} constructors/setters or
    *               {@code @Bean} factory methods
    * @return The collected dependencies, mapped by required type FQN to the {@link InjectionPoint.InputFileData} that require it
@@ -249,6 +252,9 @@ public final class SpringUtils {
   public static Map<String, Set<InjectionPoint.InputFileData>> collectDependenciesOnMethod(MethodTree method) {
     Map<String, Set<InjectionPoint.InputFileData>> deps = new LinkedHashMap<>();
     for (var p : method.parameters()) {
+      if (p.symbol().metadata().isAnnotatedWith(VALUE_ANNOTATION)) {
+        continue;
+      }
       DependencyTarget target = resolveDependencyTarget(p.symbol().type());
       String name = dependencyKey(p.simpleName().name(), SpringUtils.extractQualifierValue(p.symbol().metadata()));
       var span = AnalyzerMessage.textSpanFor(p.simpleName());

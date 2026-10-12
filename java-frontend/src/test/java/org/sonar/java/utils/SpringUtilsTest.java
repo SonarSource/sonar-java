@@ -478,6 +478,39 @@ class SpringUtilsTest {
     }
   }
 
+  @Test
+  void collect_dependencies_on_method_skips_value_annotated_parameters() {
+    var compilationUnit = JParserTestUtils.parse("BeanFactory", """
+      class BeanFactory {
+        @org.springframework.context.annotation.Bean
+        Object createBean(
+          PaymentProcessor paymentProcessor,
+          @org.springframework.beans.factory.annotation.Value("${payment.currency}") String currency) {
+          return new Object();
+        }
+      }
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var createBean = (MethodTreeImpl) ((ClassTreeImpl) compilationUnit.types().get(0)).members().get(0);
+
+    assertThat(SpringUtils.collectDependenciesOnMethod(createBean)).containsOnlyKeys("PaymentProcessor");
+  }
+
+  @Test
+  void collect_autowired_dependencies_skips_value_annotated_constructor_parameters() {
+    var compilationUnit = JParserTestUtils.parse("OrderService", """
+      class OrderService {
+        OrderService(
+          PaymentProcessor paymentProcessor,
+          @org.springframework.beans.factory.annotation.Value("${order.timeout}") int timeout,
+          @org.springframework.beans.factory.annotation.Value("#{emailServices.primary}") EmailService emailService) {
+        }
+      }
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var orderService = (ClassTreeImpl) compilationUnit.types().get(0);
+
+    assertThat(SpringUtils.collectAutowiredDependenciesOnClass(orderService)).containsOnlyKeys("PaymentProcessor");
+  }
+
   // ---- Collection and array injection points ----------------------------------------
 
   @Nested
