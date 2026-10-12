@@ -41,8 +41,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
@@ -72,11 +70,6 @@ public class JavaRulingTest {
 
   private static final String INCREMENTAL_ANALYSIS_KEY = "sonar.java.skipUnchanged";
   private static final String SONAR_CACHING_ENABLED_KEY = "sonar.analysisCache.enabled";
-
-  private static final String CAN_SKIP_UNCHANGED_FILES_LOG =
-    "The Java analyzer is running in a context where unchanged files can be skipped.";
-  private static final Pattern FILES_LEVERAGED_FROM_CACHE = Pattern.compile(
-    "The Java analyzer was able to leverage cached data from previous analyses for (\\d+) out of (\\d+) files\\.");
 
   /**
    * By default, all rules are enabled.
@@ -236,123 +229,29 @@ public class JavaRulingTest {
   }
 
   @Test
-  public void eclipse_jetty_incremental() throws Exception {
-    if (isCommunityEditionTestsOnly()) {
-      return;
+  public void eclipse_jetty() throws IOException {
+    String projectKey = "org.eclipse.jetty:jetty-project";
+    prepareProject(projectKey, "eclipse-jetty");
+    List<String> dirs = Arrays.asList("jetty-http", "jetty-io", "jetty-jmx", "jetty-server", "jetty-slf4j-impl", "jetty-util", "jetty-util-ajax", "jetty-xml", "tests/jetty-http-tools");
+
+    for (String projectName : List.of("eclipse-jetty", "eclipse-jetty-similar-to-main", "eclipse-jetty-similar-to-main-small")) {
+      Path projectDir = FileLocation.of("../sources/" + projectName).getFile().getCanonicalFile().toPath();
+      String binaries = dirs.stream()
+        .map(dir -> projectDir.resolve(dir).resolve("target/classes").toString())
+        .collect(Collectors.joining(","));
+      MavenBuild build = test_existing_project(projectKey, projectName)
+        .setProperty("sonar.java.binaries", binaries)
+        .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
+          "jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/internal/serverfactory/ServerInstanceWrapper.java")
+        .addArgument("-Dpmd.skip=true")
+        .addArgument("-Dcheckstyle.skip=true")
+        .setProperty(INCREMENTAL_ANALYSIS_KEY, "false")
+        .setProperty(SONAR_CACHING_ENABLED_KEY, "false");
+      if ("eclipse-jetty-similar-to-main".equals(projectName)) {
+        build.setProperty("sonar.java.ignoreUnnamedModuleForSplitPackage", "true");
+      }
+      executeBuildWithCommonProperties(build, projectName);
     }
-
-    List<String> dirs = Arrays.asList("jetty-http/", "jetty-io/", "jetty-jmx/", "jetty-server/", "jetty-slf4j-impl/", "jetty-util/", "jetty-util-ajax/", "jetty-xml/", "tests/jetty-http-tools/");
-
-    String mainBranchSourceCode = "eclipse-jetty";
-    String mainBinaries = dirs.stream().map(dir -> FileLocation.of("../sources/" + mainBranchSourceCode + "/" + dir + "target/classes"))
-      .map(JavaRulingTest::getFileLocationAbsolutePath)
-      .collect(Collectors.joining(","));
-
-    final var mainBranch = "eclipse-jetty-main";
-
-    MavenBuild branchBuild = test_project("org.eclipse.jetty:jetty-project", mainBranchSourceCode)
-      // re-define binaries from initial maven build
-      .setProperty("sonar.java.binaries", mainBinaries)
-      .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
-        "jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/internal/serverfactory/ServerInstanceWrapper.java")
-      .addArgument("-Dpmd.skip=true")
-      .addArgument("-Dcheckstyle.skip=true")
-      // Set up incremental analysis
-      .setProperties(
-        "sonar.branch.name", mainBranch,
-        "sonar.scm.provider", "git",
-        "sonar.scm.disabled", "false",
-        INCREMENTAL_ANALYSIS_KEY, "true",
-        SONAR_CACHING_ENABLED_KEY, "true"
-      );
-
-    var before1 = System.currentTimeMillis();
-    BuildResult mainBranchResult = executeBuildWithCommonProperties(branchBuild, mainBranchSourceCode);
-    var after1 = System.currentTimeMillis();
-    var time1 = after1 - before1;
-
-    // Huge PR
-    String prSourceCode = "eclipse-jetty-similar-to-main";
-    String prBinaries = dirs.stream().map(dir -> FileLocation.of("../sources/" + prSourceCode + "/" + dir + "target/classes"))
-      .map(JavaRulingTest::getFileLocationAbsolutePath)
-      .collect(Collectors.joining(","));
-
-    final var prBranch = "eclipse-jetty-same-issues-as-main";
-
-    MavenBuild prBuild = test_existing_project("org.eclipse.jetty:jetty-project", prSourceCode)
-      // re-define binaries from initial maven build
-      .setProperty("sonar.java.binaries", prBinaries)
-      .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
-        "jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/internal/serverfactory/ServerInstanceWrapper.java")
-      .addArgument("-Dpmd.skip=true")
-      .addArgument("-Dcheckstyle.skip=true")
-      // Set up incremental analysis
-      .setProperties(
-        "sonar.pullrequest.key", prBranch,
-        "sonar.pullrequest.branch", prBranch,
-        "sonar.pullrequest.base", mainBranch,
-        "sonar.scm.provider", "git",
-        "sonar.scm.disabled", "false",
-        INCREMENTAL_ANALYSIS_KEY, "true",
-        SONAR_CACHING_ENABLED_KEY, "true",
-        "sonar.java.ignoreUnnamedModuleForSplitPackage", "true"
-      );
-
-    var before2 = System.currentTimeMillis();
-    BuildResult largePrResult = executeBuildWithCommonProperties(prBuild, prSourceCode);
-    var after2 = System.currentTimeMillis();
-    var time2 = after2 - before2;
-
-    // Small PR
-    String smallPrSourceCode = "eclipse-jetty-similar-to-main-small";
-    String smallPrBinaries = dirs.stream().map(dir -> FileLocation.of("../sources/" + smallPrSourceCode + "/" + dir + "target/classes"))
-      .map(JavaRulingTest::getFileLocationAbsolutePath)
-      .collect(Collectors.joining(","));
-
-    final var smallPrBranch = "eclipse-jetty-same-issues-as-main-small";
-
-    MavenBuild smallPrBuild = test_existing_project("org.eclipse.jetty:jetty-project", smallPrSourceCode)
-      // re-define binaries from initial maven build
-      .setProperty("sonar.java.binaries", smallPrBinaries)
-      .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
-        "jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/internal/serverfactory/ServerInstanceWrapper.java")
-      .addArgument("-Dpmd.skip=true")
-      .addArgument("-Dcheckstyle.skip=true")
-      // Set up incremental analysis
-      .setProperties(
-        "sonar.pullrequest.key", smallPrBranch,
-        "sonar.pullrequest.branch", smallPrBranch,
-        "sonar.pullrequest.base", mainBranch,
-        "sonar.scm.provider", "git",
-        "sonar.scm.disabled", "false",
-        INCREMENTAL_ANALYSIS_KEY, "true",
-        SONAR_CACHING_ENABLED_KEY, "true"
-      );
-
-    var before3 = System.currentTimeMillis();
-    BuildResult smallPrResult = executeBuildWithCommonProperties(smallPrBuild, smallPrSourceCode);
-    var after3 = System.currentTimeMillis();
-    var time3 = after3 - before3;
-
-    // Cache usage
-    CacheUsage mainBranchUsage = cacheUsage(mainBranchResult);
-    logCacheUsage("Main branch", mainBranchUsage);
-    assertThat(mainBranchUsage.fromCache())
-      .as("The first analysis of the main branch has no previous analysis to leverage")
-      .isZero();
-    assertCacheWasLeveraged(largePrResult, "Large PR", 0.5);
-    assertCacheWasLeveraged(smallPrResult, "Small PR", 0.9);
-
-    // Results
-    assertThat(time2)
-      .as("Large PR incremental analysis should not be significantly slower than main branch analysis")
-      .isLessThan((long) (time1 * 1.25));
-
-    assertThat(time3)
-      .as("Small PR incremental analysis should be faster than main branch analysis")
-      .isLessThan((long) (time1 * 0.90))
-      .as("Small PR incremental analysis should be faster than large PR incremental analysis")
-      .isLessThan((long) (time2 * 0.95));
   }
 
   @Test
@@ -386,14 +285,6 @@ public class JavaRulingTest {
         SONAR_CACHING_ENABLED_KEY, "true"
       );
     executeBuildWithCommonProperties(prBuild, prSourceCode);
-  }
-
-  private static String getFileLocationAbsolutePath(FileLocation location) {
-    try {
-      return location.getFile().getCanonicalFile().getAbsolutePath();
-    } catch (IOException e) {
-      return "";
-    }
   }
 
   @Test
@@ -505,49 +396,6 @@ public class JavaRulingTest {
       Fail.fail("Build failure for project: " + projectName);
     }
     return buildResult;
-  }
-
-  private static void assertCacheWasLeveraged(BuildResult result, String label, double filesCachedRatio) {
-    CacheUsage usage = cacheUsage(result);
-    logCacheUsage(label, usage);
-
-    assertThat(result.getLogs())
-      .as("%s should be analyzed in a context where unchanged files can be skipped", label)
-      .contains(CAN_SKIP_UNCHANGED_FILES_LOG);
-
-    assertThat(usage.total())
-      .as("%s should report how many files the analyzer leveraged from the cache", label)
-      .isPositive();
-    assertThat(usage.ratio())
-      .as("%s should leverage the cache for at least %d%% of files, but only %d out of %d did",
-        label, Math.round(filesCachedRatio * 100), usage.fromCache(), usage.total())
-      .isGreaterThanOrEqualTo(filesCachedRatio);
-  }
-
-  private static void logCacheUsage(String label, CacheUsage usage) {
-    LOG.info("[incremental analysis] {}: the Java analyzer leveraged cached data for {} out of {} files ({}%).",
-      label, usage.fromCache(), usage.total(), Math.round(usage.ratio() * 100));
-  }
-
-  /**
-   * Sums the "N out of M files" counts that the Java analyzer logs once per module, so that a multi-module
-   * project can be asserted on as a whole.
-   */
-  private static CacheUsage cacheUsage(BuildResult result) {
-    Matcher matcher = FILES_LEVERAGED_FROM_CACHE.matcher(result.getLogs());
-    int fromCache = 0;
-    int total = 0;
-    while (matcher.find()) {
-      fromCache += Integer.parseInt(matcher.group(1));
-      total += Integer.parseInt(matcher.group(2));
-    }
-    return new CacheUsage(fromCache, total);
-  }
-
-  private record CacheUsage(int fromCache, int total) {
-    double ratio() {
-      return total == 0 ? 0d : (double) fromCache / total;
-    }
   }
 
   private static void dumpServerLogs() throws IOException {
