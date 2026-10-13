@@ -1,6 +1,6 @@
 {
 "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/ScmAccountToUserLoaderTest.java": [
-93
+92
 ],
 "sonarqube-6.5:src/test/java/org/sonar/server/util/ObjectInputStreamIteratorTest.java": [
 52,
