@@ -156,7 +156,7 @@ Several locations can be marked on one caret line:
 
 ```java
 Arrays.fill(textBuffer, 42); // Noncompliant {{Message.}}
-//          ^^^^ ^^^^^^^^^^<
+//     ^^^^ ^^^^^^^^^^<
 ```
 
 Use `[[sc=…;ec=…]]` / `[[secondary=…]]` only when carets cannot work: a token at column 1, a multi-line span, or quickfix declarations (`[[quickfixes=qf1]]`).
@@ -246,7 +246,13 @@ public class MyCheck extends IssuableSubscriptionVisitor {
 
 If a rule genuinely needs cross-node context, compute it from the subscribed node by walking the AST, or subscribe to the enclosing node (class, method, compilation unit) and do the whole analysis there with local state.
 
-The only accepted non-static fields are the ones the API itself requires: the `JavaFileScannerContext` of a `BaseTreeVisitor` rule, assigned at the start of `scanFile`, and the flags a `DependencyVersionAware` rule sets in `isCompatibleWithDependencies` before the scan starts.
+The only accepted non-static fields are the ones the API itself requires, all set before the scan and never mutated during it:
+
+- `@RuleProperty` parameter fields, which the platform injects and therefore cannot be `static final`
+- the `JavaFileScannerContext` of a `BaseTreeVisitor` rule, assigned at the start of `scanFile`
+- the flags a `DependencyVersionAware` rule sets in `isCompatibleWithDependencies`
+
+Because a stateless check has nothing to reset, it does not need `clearState()`. The `clearState()` guidance in `AGENTS.md` applies to existing checks that still hold per-file state, not to new rules.
 
 ### External Dependencies in Tests
 - **DO NOT** add external library dependencies for test samples
