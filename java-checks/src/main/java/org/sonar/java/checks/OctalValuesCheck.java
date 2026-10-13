@@ -16,6 +16,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -25,6 +26,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S1314")
 public class OctalValuesCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  /**
+   * Matches Unix file permission modes such as {@code 0644}, {@code 0755} or {@code 04755}:
+   * an optional special bits digit (setuid, setgid, sticky) followed by owner, group and others digits,
+   * where owner has at least read permission and each digit is one of the common values 0, 4, 5, 6 or 7.
+   */
+  private static final Pattern PERMISSION_PATTERN = Pattern.compile("0[1-7]?[4-7][04-7]{2}");
 
   private JavaFileScannerContext context;
 
@@ -36,13 +44,22 @@ public class OctalValuesCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitLiteral(LiteralTree tree) {
-    if (tree.is(Tree.Kind.INT_LITERAL) && isOctal(tree.value())) {
-      context.reportIssue(this, tree, "Use decimal values instead of octal ones.");
+    String value = tree.value();
+    if (tree.is(Tree.Kind.INT_LITERAL) && isOctal(value) && value.length() > 2 && !hasExplicitOctalPrefix(value) && !isPermission(value)) {
+      context.reportIssue(this, tree, "Use decimal values instead of octal ones. If an octal value is intended, use the more explicit \"0_\" prefix.");
     }
   }
 
   private static boolean isOctal(String value) {
     return value.charAt(0) == '0'  && !"0".equals(value) && !isHexadecimal(value) && !isBinary(value);
+  }
+
+  private static boolean hasExplicitOctalPrefix(String value) {
+    return value.startsWith("0_");
+  }
+
+  private static boolean isPermission(String value) {
+    return PERMISSION_PATTERN.matcher(value).matches();
   }
 
   private static boolean isHexadecimal(String value) {
