@@ -23,20 +23,23 @@ import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class AssertStatementInTestCheckTest {
 
+  private static final String SAMPLE = testCodeSourcesPath("checks/tests/AssertStatementInTestCheckSample.java");
+  private static final AssertStatementInTestCheck CHECK = new AssertStatementInTestCheck();
+
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/AssertStatementInTestCheckSample.java"))
-      .withCheck(new AssertStatementInTestCheck())
+      .onFile(SAMPLE)
+      .withCheck(CHECK)
       .verifyIssues();
   }
 
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/AssertStatementInTestCheckSample.java"))
-      .withCheck(new AssertStatementInTestCheck())
+      .onFile(SAMPLE)
+      .withCheck(CHECK)
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyIssues();
   }
 }

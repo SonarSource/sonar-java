@@ -40,7 +40,7 @@ public class AssertStatementInTestCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     var assertStatement = (AssertStatementTree) tree;
     var enclosingTree = ExpressionUtils.getEnclosingTree(assertStatement, Tree.Kind.METHOD);
-    if (context.getSemanticModel() != null && enclosingTree instanceof MethodTree method && hasTestAnnotation(method)) {
+    if (enclosingTree instanceof MethodTree method && hasTestAnnotation(method)) {
       reportIssue(assertStatement.assertKeyword(), MESSAGE);
     }
   }
