@@ -1,0 +1,25 @@
+{
+  "title": "Classes should not declare more than one logger",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "logging",
+    "confusing"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9436",
+  "sqKey": "S9436",
+  "scope": "All",
+  "quickfix": "infeasible",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM",
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "LOGICAL"
+  }
+}
