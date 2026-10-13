@@ -28,11 +28,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class OctalValuesCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   /**
-   * Matches Unix file permission modes such as {@code 0644}, {@code 0755} or {@code 04755}:
-   * an optional special bits digit (setuid, setgid, sticky) followed by owner, group and others digits,
-   * where owner has at least read permission and each digit is one of the common values 0, 4, 5, 6 or 7.
+   * Matches Unix file permission modes such as {@code 0644} or {@code 0755}:
+   * owner, group and others digits, where owner has at least read permission
+   * and each digit is one of the common values 0, 4, 5, 6 or 7.
    */
-  private static final Pattern PERMISSION_PATTERN = Pattern.compile("0[1-7]?[4-7][04-7]{2}");
+  private static final Pattern PERMISSION_PATTERN = Pattern.compile("0[4-7][04-7]{2}");
+
+  private static final String EXPLICIT_PREFIX_MESSAGE = "If an octal value is intended, use the more explicit \"0_\" prefix.";
 
   private JavaFileScannerContext context;
 
@@ -45,9 +47,29 @@ public class OctalValuesCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitLiteral(LiteralTree tree) {
     String value = tree.value();
-    if (tree.is(Tree.Kind.INT_LITERAL) && isOctal(value) && value.length() > 2 && !hasExplicitOctalPrefix(value) && !isPermission(value)) {
-      context.reportIssue(this, tree, "Use decimal values instead of octal ones. If an octal value is intended, use the more explicit \"0_\" prefix.");
+    if (!tree.is(Tree.Kind.INT_LITERAL) || !isOctal(value) || value.length() <= 2 || hasExplicitOctalPrefix(value)) {
+      return;
     }
+    if (isPermission(value)) {
+      context.reportIssue(this, tree, String.format("Use the symbolic permission string \"%s\" instead of this octal value. %s", toSymbolicPermissions(value), EXPLICIT_PREFIX_MESSAGE));
+    } else {
+      context.reportIssue(this, tree, "Use decimal values instead of octal ones. " + EXPLICIT_PREFIX_MESSAGE);
+    }
+  }
+
+  /**
+   * Converts an octal permission mode such as {@code 0755} into its symbolic representation such as {@code rwxr-xr-x},
+   * as accepted by {@code java.nio.file.attribute.PosixFilePermissions.fromString}.
+   */
+  private static String toSymbolicPermissions(String value) {
+    StringBuilder sb = new StringBuilder();
+    for (char digit : value.substring(1).toCharArray()) {
+      int bits = digit - '0';
+      sb.append((bits & 4) != 0 ? 'r' : '-')
+        .append((bits & 2) != 0 ? 'w' : '-')
+        .append((bits & 1) != 0 ? 'x' : '-');
+    }
+    return sb.toString();
   }
 
   private static boolean isOctal(String value) {
