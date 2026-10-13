@@ -46,15 +46,15 @@ Stop and resolve gaps before Step 1.
 
 ### Step 2 — Failing reproducer → commit
 
-1. Write the test sample (`java-checks-test-sources/default/src/main/java/checks/{RuleId}CheckSample.java`) covering **every** edge case, noncompliant and compliant, with precise location markers (see the test conventions in `AGENTS.md`).
-2. Write `{RuleId}CheckTest.java`, with both a semantic and a `withoutSemantic()` test.
+1. Write the test sample (`java-checks-test-sources/default/src/main/java/checks/{RuleId}CheckSample.java`) covering **every** edge case, noncompliant and compliant, with caret markers on **every** primary and secondary location (see [Test sample location markers](#test-sample-location-markers)).
+2. Write `{RuleId}CheckTest.java`, with both a semantic and a `withoutSemantic()` test, free of duplication (see [Test class structure](#test-class-structure)).
 3. Add an **empty** check class (`@Rule(key = "SXXXX")`, minimal `nodesToVisit`/`visitNode`).
 4. Run the test — it **must fail**.
 5. Commit (reproducer + empty check + test).
 
 ### Step 3 — Implementation → commit
 
-1. Implement the check until the unit test **passes**.
+1. Implement the check until the unit test **passes**. Match methods and types with [matchers](#method-and-type-matching), never with raw strings, and keep the check [stateless](#stateless-checks).
 2. Commit.
 
 ### Step 4 — Push & PR
@@ -131,22 +131,122 @@ The PR is done **only** when:
   - `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S{RULE_ID}.json`
   - `sonar-java-plugin/src/main/resources/profiles/{Sonar_way|Sonar_agentic_AI}/S{RULE_ID}`
 
-### MethodMatchers
+### Test sample location markers
 
-Use `MethodMatchers` to match method calls by type, name, and signature:
+Every **primary** and **secondary** location must be asserted with caret markers. Never leave a bare `// Noncompliant` when the rule reports on a sub-expression: a test that does not pin the location does not protect it.
+
+Put the carets in a comment on the line **below** the reported line, aligned under the flagged token:
 
 ```java
-private static final MethodMatchers MY_MATCHER = MethodMatchers.create()
-  .ofTypes("java.util.List")
-  .names("add")
-  .withAnyParameters()
+b = sb1.length() == 0; // Noncompliant {{Use "isEmpty()" to check whether a "StringBuilder" is empty or not.}}
+//  ^^^^^^^^^^^^^^^^^
+```
+
+Secondary locations use the same carets plus a direction marker: `<` when the primary is **above**, `>` when it is **below**.
+
+```java
+new Thread(() -> {
+//  ^^^^^^>
+  Thread.sleep(1000); // Noncompliant {{Message.}}
+//       ^^^^^
+});
+```
+
+Several locations can be marked on one caret line:
+
+```java
+Arrays.fill(textBuffer, 42); // Noncompliant {{Message.}}
+//          ^^^^ ^^^^^^^^^^<
+```
+
+Use `[[sc=…;ec=…]]` / `[[secondary=…]]` only when carets cannot work: a token at column 1, a multi-line span, or quickfix declarations (`[[quickfixes=qf1]]`).
+
+To build an aligned caret line:
+
+```shell
+str="<line including <substring>>"; sub="<substring>"; pre="${str%%"$sub"*}"; echo "${pre//?/ }${sub//?/^}"
+```
+
+### Test class structure
+
+Extract the sample path and the verifier setup so neither the path nor the check instantiation is repeated. Declare the sample path as a constant and build the verifier in one private factory:
+
+```java
+class MoreThanOneLoggerCheckTest {
+
+  private static final String SAMPLE = "checks/MoreThanOneLoggerCheckSample.java";
+
+  @Test
+  void test() {
+    createCheckVerifier().verifyIssues();
+  }
+
+  @Test
+  void test_without_semantic() {
+    createCheckVerifier()
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
+
+  private static CheckVerifier createCheckVerifier() {
+    return CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath(SAMPLE))
+      .withCheck(new MoreThanOneLoggerCheck());
+  }
+}
+```
+
+When a test needs different samples (non-compiling, Java version variants), keep one constant per sample and one factory parameterised by path — still no inline duplication.
+
+### Method and type matching
+
+Match methods with `MethodMatchers` and types with the type API. **Never** compare fully qualified names, method names or type names with raw strings (`equals`, `contains`, `startsWith`): matchers handle overloads, inheritance and unknown symbols correctly.
+
+```java
+private static final MethodMatchers CONSTRUCTOR_LOOKUP = MethodMatchers.create()
+  .ofTypes("java.lang.Class")
+  .names("getConstructor", "getDeclaredConstructor")
+  .addParametersMatcher("java.lang.Class[]")
   .build();
 
 // In visitNode:
-if (MY_MATCHER.matches(methodInvocationTree)) {
+if (CONSTRUCTOR_LOOKUP.matches(methodInvocationTree)) {
   reportIssue(methodInvocationTree, "Message.");
 }
 ```
+
+Prefer an explicit `addParametersMatcher(...)` over `withAnyParameters()` whenever the rule only targets specific overloads. For types, use `symbolType().isSubtypeOf("java.util.Collection")` rather than string checks on the type name.
+
+### Stateless checks
+
+A check instance is reused across files, so it must carry **no mutable state**. A check class may only declare `private static final` fields (messages, matchers, immutable constants).
+
+Anything accumulated during a scan — sets of visited symbols, maps, counters, lookup tables — must live in a local variable and be passed explicitly through the call graph, never stored in a field.
+
+```java
+@Rule(key = "SXXXX")
+public class MyCheck extends IssuableSubscriptionVisitor {
+
+  private static final String MESSAGE = "Message.";
+  private static final MethodMatchers MATCHER = MethodMatchers.create() /* … */ .build();
+
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return List.of(Tree.Kind.CLASS);
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    Set<Symbol> seen = new HashSet<>();
+    collectFields((ClassTree) tree, seen);
+    report(seen);
+  }
+}
+```
+
+If a rule genuinely needs cross-node context, compute it from the subscribed node by walking the AST, or subscribe to the enclosing node (class, method, compilation unit) and do the whole analysis there with local state.
+
+The only accepted non-static fields are the ones the API itself requires: the `JavaFileScannerContext` of a `BaseTreeVisitor` rule, assigned at the start of `scanFile`, and the flags a `DependencyVersionAware` rule sets in `isCompatibleWithDependencies` before the scan starts.
 
 ### External Dependencies in Tests
 - **DO NOT** add external library dependencies for test samples
