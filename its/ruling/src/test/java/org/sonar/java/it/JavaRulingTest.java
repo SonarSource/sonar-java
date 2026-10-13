@@ -235,8 +235,6 @@ public class JavaRulingTest {
 
   @Test
   public void eclipse_jetty() throws IOException {
-    String projectKey = "org.eclipse.jetty:jetty-project";
-    prepareProject(projectKey, "eclipse-jetty");
     List<String> dirs = Arrays.asList("jetty-http", "jetty-io", "jetty-jmx", "jetty-server", "jetty-slf4j-impl", "jetty-util", "jetty-util-ajax", "jetty-xml", "tests/jetty-http-tools");
 
     for (String projectName : List.of("eclipse-jetty", "eclipse-jetty-similar-to-main", "eclipse-jetty-similar-to-main-small")) {
@@ -244,7 +242,7 @@ public class JavaRulingTest {
       String binaries = dirs.stream()
         .map(dir -> projectDir.resolve(dir).resolve("target/classes").toString())
         .collect(Collectors.joining(","));
-      MavenBuild build = test_existing_project(projectKey, projectName)
+      MavenBuild build = test_project(projectName)
         .setProperty("sonar.java.binaries", binaries)
         .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
           "jetty-osgi/jetty-osgi-boot/src/main/java/org/eclipse/jetty/osgi/boot/internal/serverfactory/ServerInstanceWrapper.java")
