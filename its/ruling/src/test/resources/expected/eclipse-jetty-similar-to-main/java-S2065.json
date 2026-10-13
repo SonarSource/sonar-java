@@ -1,16 +1,16 @@
 {
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncRequestLogWriter.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncRequestLogWriter.java": [
 36
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
 285
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/RequestLogWriter.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/RequestLogWriter.java": [
 50,
 51,
 52
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/URLResource.java": [
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/resource/URLResource.java": [
 48
 ]
 }

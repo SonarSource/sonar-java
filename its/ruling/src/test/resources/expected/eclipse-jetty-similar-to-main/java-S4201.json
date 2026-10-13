@@ -1,13 +1,13 @@
 {
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java": [
 700,
 706,
 712
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
 539
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java": [
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java": [
 163
 ]
 }

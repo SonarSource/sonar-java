@@ -1,8 +1,8 @@
 {
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ManagedAttributeListener.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ManagedAttributeListener.java": [
 47
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/TopologicalSort.java": [
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/TopologicalSort.java": [
 70
 ]
 }
