@@ -80,6 +80,7 @@ class MessageDigestInstanceFieldCheckSample {
 
   static class NonPrivatePrototypeHolder {
     final MessageDigest prototype = null; // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     Object newDigest() throws Exception {
       return prototype.clone();
@@ -88,8 +89,11 @@ class MessageDigestInstanceFieldCheckSample {
 
   static class EscapingPrototypeHolder {
     private MessageDigest returnedDigest; // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     private MessageDigest passedDigest; // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     private MessageDigest aliasedDigest; // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     MessageDigest returned() throws Exception {
       returnedDigest.clone();
@@ -114,7 +118,9 @@ class MessageDigestInstanceFieldCheckSample {
   static class SynchronizedHolder {
     private static final Object LOCK = new Object();
     private static MessageDigest lockedDigest; // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     private MessageDigest methodDigest; // Noncompliant
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     byte[] hash(byte[] payload) throws Exception {
       synchronized (LOCK) {
