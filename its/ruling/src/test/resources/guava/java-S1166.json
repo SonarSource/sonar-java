@@ -1,0 +1,215 @@
+{
+"guava:src/com/google/common/base/FinalizableReferenceQueue.java": [
+258,
+265
+],
+"guava:src/com/google/common/base/Predicates.java": [
+565,
+567
+],
+"guava:src/com/google/common/base/Throwables.java": [
+295,
+339,
+372
+],
+"guava:src/com/google/common/base/internal/Finalizer.java": [
+205
+],
+"guava:src/com/google/common/cache/AbstractLoadingCache.java": [
+52
+],
+"guava:src/com/google/common/cache/LocalCache.java": [
+2393,
+4008,
+4843
+],
+"guava:src/com/google/common/cache/LongAddables.java": [
+44
+],
+"guava:src/com/google/common/cache/Striped64.java": [
+319,
+333
+],
+"guava:src/com/google/common/collect/CartesianList.java": [
+60
+],
+"guava:src/com/google/common/collect/Collections2.java": [
+110,
+112,
+126,
+128
+],
+"guava:src/com/google/common/collect/ConcurrentHashMultiset.java": [
+244
+],
+"guava:src/com/google/common/collect/Cut.java": [
+100,
+180
+],
+"guava:src/com/google/common/collect/ForwardingQueue.java": [
+88,
+103,
+118
+],
+"guava:src/com/google/common/collect/ForwardingSortedMap.java": [
+139,
+141,
+143
+],
+"guava:src/com/google/common/collect/ForwardingSortedSet.java": [
+120,
+122,
+124,
+151,
+153
+],
+"guava:src/com/google/common/collect/ImmutableRangeSet.java": [
+381,
+493
+],
+"guava:src/com/google/common/collect/Iterables.java": [
+191
+],
+"guava:src/com/google/common/collect/MapConstraints.java": [
+452
+],
+"guava:src/com/google/common/collect/MapMaker.java": [
+883
+],
+"guava:src/com/google/common/collect/Maps.java": [
+1212,
+3439,
+3441,
+3454,
+3456,
+3469,
+3471,
+3761,
+3775,
+3789,
+3855,
+3864
+],
+"guava:src/com/google/common/collect/RegularContiguousSet.java": [
+124
+],
+"guava:src/com/google/common/collect/RegularImmutableSortedSet.java": [
+74,
+121,
+123,
+171,
+173,
+278
+],
+"guava:src/com/google/common/collect/Sets.java": [
+1394,
+1396
+],
+"guava:src/com/google/common/collect/TreeMultiset.java": [
+237,
+239,
+281,
+283
+],
+"guava:src/com/google/common/collect/TreeRangeMap.java": [
+509
+],
+"guava:src/com/google/common/collect/TreeRangeSet.java": [
+327,
+597,
+719
+],
+"guava:src/com/google/common/eventbus/Subscriber.java": [
+81
+],
+"guava:src/com/google/common/eventbus/SubscriberRegistry.java": [
+230
+],
+"guava:src/com/google/common/hash/MessageDigestHashFunction.java": [
+60,
+88
+],
+"guava:src/com/google/common/io/ByteSource.java": [
+192
+],
+"guava:src/com/google/common/io/Closer.java": [
+274,
+287
+],
+"guava:src/com/google/common/io/FileBackedOutputStream.java": [
+106
+],
+"guava:src/com/google/common/net/HostSpecifier.java": [
+89,
+143
+],
+"guava:src/com/google/common/net/InetAddresses.java": [
+518
+],
+"guava:src/com/google/common/net/InternetDomainName.java": [
+500
+],
+"guava:src/com/google/common/primitives/UnsignedBytes.java": [
+360,
+378,
+452
+],
+"guava:src/com/google/common/reflect/ClassPath.java": [
+333,
+345
+],
+"guava:src/com/google/common/reflect/TypeResolver.java": [
+208
+],
+"guava:src/com/google/common/reflect/Types.java": [
+362,
+386
+],
+"guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
+114,
+680,
+718,
+869,
+885
+],
+"guava:src/com/google/common/util/concurrent/AggregateFuture.java": [
+225
+],
+"guava:src/com/google/common/util/concurrent/Callables.java": [
+119
+],
+"guava:src/com/google/common/util/concurrent/Futures.java": [
+774,
+1391,
+1397,
+1403,
+1757,
+2038
+],
+"guava:src/com/google/common/util/concurrent/FuturesGetChecked.java": [
+60,
+80,
+192,
+220,
+277,
+279,
+281,
+283
+],
+"guava:src/com/google/common/util/concurrent/JdkFutureAdapters.java": [
+173
+],
+"guava:src/com/google/common/util/concurrent/MoreExecutors.java": [
+786,
+801,
+804,
+807,
+827
+],
+"guava:src/com/google/common/util/concurrent/SmoothRateLimiter.java": [
+362
+],
+"guava:src/com/google/common/util/concurrent/UncaughtExceptionHandlers.java": [
+68
+]
+}

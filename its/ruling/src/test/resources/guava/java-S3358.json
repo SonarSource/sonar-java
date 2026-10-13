@@ -1,0 +1,24 @@
+{
+"guava:src/com/google/common/collect/ComparisonChain.java": [
+122
+],
+"guava:src/com/google/common/io/LineBuffer.java": [
+89,
+90
+],
+"guava:src/com/google/common/primitives/Booleans.java": [
+80
+],
+"guava:src/com/google/common/primitives/Ints.java": [
+130
+],
+"guava:src/com/google/common/primitives/Longs.java": [
+99
+],
+"guava:src/com/google/common/util/concurrent/Monitor.java": [
+928
+],
+"guava:src/com/google/common/util/concurrent/MoreExecutors.java": [
+483
+]
+}

@@ -1,0 +1,22 @@
+{
+"guava:src/com/google/common/cache/LocalCache.java": [
+2524,
+2528
+],
+"guava:src/com/google/common/cache/Striped64.java": [
+319
+],
+"guava:src/com/google/common/collect/Cut.java": [
+100
+],
+"guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+2237,
+2241
+],
+"guava:src/com/google/common/reflect/ClassPath.java": [
+345
+],
+"guava:src/com/google/common/reflect/TypeResolver.java": [
+366
+]
+}

@@ -1,0 +1,258 @@
+{
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/CookieCutter.java": [
+284
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/GZIPContentDecoder.java": [
+242
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCookie.java": [
+330
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpField.java": [
+215,
+299
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java": [
+883
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java": [
+406,
+612,
+695
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java": [
+485,
+818,
+998,
+1169,
+1536
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpURI.java": [
+997
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java": [
+214,
+262,
+455,
+497,
+617,
+624,
+666
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedCSVParser.java": [
+163
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java": [
+122
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/MappedResource.java": [
+68
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/ServletPathSpec.java": [
+81,
+121
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java": [
+395
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
+982
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/RetainableByteBuffer.java": [
+79
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SocketChannelEndPoint.java": [
+245
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
+882,
+904,
+1227,
+1468,
+1517
+],
+"eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java": [
+227,
+513
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java": [
+288
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncContextEvent.java": [
+161
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CachedContentFactory.java": [
+599
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ClassLoaderDump.java": [
+88
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java": [
+421,
+612,
+615,
+644,
+647,
+661,
+668
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelOverHttp.java": [
+151
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java": [
+838
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnection.java": [
+275,
+302,
+434,
+505
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java": [
+326,
+852,
+929
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/InclusiveByteRange.java": [
+199
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java": [
+600,
+681,
+717
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java": [
+467,
+522,
+587,
+1858
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java": [
+291,
+299,
+978,
+999,
+1349
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResponseWriter.java": [
+491
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SecureRequestCustomizer.java": [
+215,
+261
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
+402
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/AbstractHandlerContainer.java": [
+84
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+269,
+1151,
+1618,
+2230
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ResourceHandler.java": [
+167
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ScopedHandler.java": [
+227
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHandler.java": [
+185,
+627
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/jmx/AbstractHandlerMBean.java": [
+55
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCache.java": [
+383
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/HouseKeeper.java": [
+124
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java": [
+585,
+683
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java": [
+1604
+],
+"eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java": [
+703,
+845,
+1272
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/HttpCookieStore.java": [
+100
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java": [
+654,
+1195
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java": [
+224,
+743,
+779
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SearchPattern.java": [
+181
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TopologicalSort.java": [
+175
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/URIUtil.java": [
+1283,
+1299
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java": [
+136,
+139,
+208,
+237,
+282,
+328,
+365,
+406,
+443,
+484,
+588,
+627,
+722,
+808
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/Dumpable.java": [
+164
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/compression/CompressionPool.java": [
+70
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java": [
+409
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
+138,
+510
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/UnixCrypt.java": [
+265
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ExecutorThreadPool.java": [
+351
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java": [
+273,
+873
+],
+"eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
+752,
+1776
+],
+"eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java": [
+766
+],
+"eclipse-jetty:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java": [
+232
+]
+}

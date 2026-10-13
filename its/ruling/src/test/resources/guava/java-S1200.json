@@ -1,0 +1,51 @@
+{
+"guava:src/com/google/common/cache/CacheBuilder.java": [
+152
+],
+"guava:src/com/google/common/cache/LocalCache.java": [
+96,
+1975
+],
+"guava:src/com/google/common/collect/ArrayTable.java": [
+88
+],
+"guava:src/com/google/common/collect/FluentIterable.java": [
+73
+],
+"guava:src/com/google/common/collect/ImmutableSetMultimap.java": [
+53
+],
+"guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+73
+],
+"guava:src/com/google/common/collect/Maps.java": [
+85
+],
+"guava:src/com/google/common/collect/Multimaps.java": [
+68
+],
+"guava:src/com/google/common/collect/Sets.java": [
+65
+],
+"guava:src/com/google/common/collect/Synchronized.java": [
+60
+],
+"guava:src/com/google/common/io/Files.java": [
+66
+],
+"guava:src/com/google/common/reflect/TypeToken.java": [
+94
+],
+"guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
+64
+],
+"guava:src/com/google/common/util/concurrent/Futures.java": [
+68
+],
+"guava:src/com/google/common/util/concurrent/MoreExecutors.java": [
+67
+],
+"guava:src/com/google/common/util/concurrent/ServiceManager.java": [
+397
+]
+}

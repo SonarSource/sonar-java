@@ -1,0 +1,21 @@
+{
+"guava:src/com/google/common/cache/LocalCache.java": [
+1964
+],
+"guava:src/com/google/common/collect/HashBiMap.java": [
+358
+],
+"guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+1975
+],
+"guava:src/com/google/common/io/ByteSource.java": [
+213,
+236
+],
+"guava:src/com/google/common/io/CharSource.java": [
+154
+],
+"guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java": [
+773
+]
+}

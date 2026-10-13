@@ -1,0 +1,15 @@
+{
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/LocalConnector.java": [
+155,
+203
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java": [
+264
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
+690
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/statistic/SampleStatistic.java": [
+127
+]
+}

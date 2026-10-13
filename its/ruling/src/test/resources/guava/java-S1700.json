@@ -1,0 +1,11 @@
+{
+"guava:src/com/google/common/base/Defaults.java": [
+38
+],
+"guava:src/com/google/common/eventbus/Dispatcher.java": [
+130
+],
+"guava:src/com/google/common/reflect/TypeToken.java": [
+923
+]
+}
