@@ -1,0 +1,20 @@
+{
+"guava:src/com/google/common/io/AppendableWriter.java": [
+54
+],
+"guava:src/com/google/common/io/ByteArrayDataInput.java": [
+36,
+38
+],
+"guava:src/com/google/common/io/ByteArrayDataOutput.java": [
+31,
+32
+],
+"guava:src/com/google/common/io/ByteStreams.java": [
+254,
+262
+],
+"guava:src/com/google/common/io/MultiReader.java": [
+52
+]
+}

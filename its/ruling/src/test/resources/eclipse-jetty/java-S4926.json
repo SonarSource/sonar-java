@@ -1,0 +1,19 @@
+{
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java": [
+46
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/UnreadableSessionDataException.java": [
+29
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Credential.java": [
+47,
+147,
+187
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Password.java": [
+57
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/AutoLock.java": [
+38
+]
+}

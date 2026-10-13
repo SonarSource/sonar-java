@@ -1,0 +1,303 @@
+{
+"guava:src/com/google/common/base/Converter.java": [
+219,
+301,
+302,
+410,
+411
+],
+"guava:src/com/google/common/base/Equivalence.java": [
+175,
+176,
+266,
+267
+],
+"guava:src/com/google/common/base/FunctionalEquivalence.java": [
+40,
+41
+],
+"guava:src/com/google/common/base/Functions.java": [
+116,
+166,
+167,
+217,
+218,
+265,
+309,
+356
+],
+"guava:src/com/google/common/base/PairwiseEquivalence.java": [
+29
+],
+"guava:src/com/google/common/base/Predicates.java": [
+327,
+364,
+406,
+448,
+555,
+596,
+597
+],
+"guava:src/com/google/common/base/Present.java": [
+33
+],
+"guava:src/com/google/common/base/Suppliers.java": [
+58,
+59,
+115,
+174,
+230,
+272
+],
+"guava:src/com/google/common/cache/CacheLoader.java": [
+141,
+209
+],
+"guava:src/com/google/common/cache/LocalCache.java": [
+2010,
+2051,
+2057,
+2064,
+2077,
+2084,
+2087,
+4577,
+4578,
+4582,
+4584,
+4585,
+4586,
+4730
+],
+"guava:src/com/google/common/collect/ArrayTable.java": [
+138,
+139,
+142,
+143,
+144
+],
+"guava:src/com/google/common/collect/ByFunctionOrdering.java": [
+35,
+36
+],
+"guava:src/com/google/common/collect/ComparatorOrdering.java": [
+31
+],
+"guava:src/com/google/common/collect/CompoundOrdering.java": [
+27
+],
+"guava:src/com/google/common/collect/ComputingConcurrentHashMap.java": [
+43
+],
+"guava:src/com/google/common/collect/ContiguousSet.java": [
+79
+],
+"guava:src/com/google/common/collect/Cut.java": [
+38
+],
+"guava:src/com/google/common/collect/DescendingImmutableSortedSet.java": [
+29
+],
+"guava:src/com/google/common/collect/EmptyContiguousSet.java": [
+147
+],
+"guava:src/com/google/common/collect/EvictingQueue.java": [
+48
+],
+"guava:src/com/google/common/collect/ExplicitOrdering.java": [
+29
+],
+"guava:src/com/google/common/collect/GeneralRange.java": [
+98,
+100,
+103
+],
+"guava:src/com/google/common/collect/HashBiMap.java": [
+681
+],
+"guava:src/com/google/common/collect/ImmutableAsList.java": [
+65
+],
+"guava:src/com/google/common/collect/ImmutableClassToInstanceMap.java": [
+159
+],
+"guava:src/com/google/common/collect/ImmutableEntry.java": [
+30,
+31
+],
+"guava:src/com/google/common/collect/ImmutableEnumMap.java": [
+107
+],
+"guava:src/com/google/common/collect/ImmutableList.java": [
+588
+],
+"guava:src/com/google/common/collect/ImmutableMap.java": [
+626,
+627
+],
+"guava:src/com/google/common/collect/ImmutableMapEntrySet.java": [
+104
+],
+"guava:src/com/google/common/collect/ImmutableMapKeySet.java": [
+35,
+74
+],
+"guava:src/com/google/common/collect/ImmutableMapValues.java": [
+36,
+98
+],
+"guava:src/com/google/common/collect/ImmutableMultiset.java": [
+366,
+378
+],
+"guava:src/com/google/common/collect/ImmutableRangeMap.java": [
+332
+],
+"guava:src/com/google/common/collect/ImmutableRangeSet.java": [
+391,
+534
+],
+"guava:src/com/google/common/collect/ImmutableSet.java": [
+375
+],
+"guava:src/com/google/common/collect/ImmutableSortedMap.java": [
+844
+],
+"guava:src/com/google/common/collect/ImmutableSortedMultiset.java": [
+517,
+518
+],
+"guava:src/com/google/common/collect/ImmutableSortedSet.java": [
+763,
+764
+],
+"guava:src/com/google/common/collect/LexicographicalOrdering.java": [
+33
+],
+"guava:src/com/google/common/collect/LinkedHashMultimap.java": [
+165,
+166
+],
+"guava:src/com/google/common/collect/Lists.java": [
+319,
+320,
+362,
+363,
+364,
+561,
+562,
+602,
+603
+],
+"guava:src/com/google/common/collect/MapConstraints.java": [
+407,
+408
+],
+"guava:src/com/google/common/collect/MapMaker.java": [
+752,
+830
+],
+"guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+158,
+161,
+180,
+186,
+192,
+2021,
+2057,
+2063,
+2070,
+2083,
+2090,
+3907,
+3908,
+3913
+],
+"guava:src/com/google/common/collect/Maps.java": [
+1373,
+1471,
+1472,
+1473,
+3171
+],
+"guava:src/com/google/common/collect/MultimapBuilder.java": [
+250
+],
+"guava:src/com/google/common/collect/Multimaps.java": [
+496,
+932
+],
+"guava:src/com/google/common/collect/Multisets.java": [
+98,
+218
+],
+"guava:src/com/google/common/collect/NullsFirstOrdering.java": [
+28
+],
+"guava:src/com/google/common/collect/NullsLastOrdering.java": [
+28
+],
+"guava:src/com/google/common/collect/Ordering.java": [
+954
+],
+"guava:src/com/google/common/collect/RegularContiguousSet.java": [
+181
+],
+"guava:src/com/google/common/collect/RegularImmutableAsList.java": [
+32,
+33
+],
+"guava:src/com/google/common/collect/RegularImmutableBiMap.java": [
+255
+],
+"guava:src/com/google/common/collect/ReverseOrdering.java": [
+31
+],
+"guava:src/com/google/common/collect/Sets.java": [
+1432
+],
+"guava:src/com/google/common/collect/StandardTable.java": [
+70,
+71
+],
+"guava:src/com/google/common/collect/Synchronized.java": [
+64,
+65
+],
+"guava:src/com/google/common/collect/Tables.java": [
+72,
+73,
+74,
+460
+],
+"guava:src/com/google/common/collect/TreeBasedTable.java": [
+80,
+84
+],
+"guava:src/com/google/common/hash/BloomFilter.java": [
+96
+],
+"guava:src/com/google/common/hash/ChecksumHashFunction.java": [
+31
+],
+"guava:src/com/google/common/hash/Funnels.java": [
+93
+],
+"guava:src/com/google/common/hash/MessageDigestHashFunction.java": [
+34
+],
+"guava:src/com/google/common/reflect/TypeToken.java": [
+96
+],
+"guava:src/com/google/common/reflect/Types.java": [
+234,
+267,
+268,
+458,
+459
+],
+"guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java": [
+791,
+874
+]
+}

@@ -1,0 +1,116 @@
+{
+"guava:src/com/google/common/base/Functions.java": [
+131,
+182,
+232,
+278,
+322,
+369
+],
+"guava:src/com/google/common/base/Predicates.java": [
+345,
+389,
+431,
+466,
+502,
+538,
+574,
+611,
+656
+],
+"guava:src/com/google/common/base/Suppliers.java": [
+73,
+243
+],
+"guava:src/com/google/common/cache/LocalCache.java": [
+4415
+],
+"guava:src/com/google/common/cache/RemovalNotification.java": [
+91
+],
+"guava:src/com/google/common/collect/AbstractMapEntry.java": [
+48
+],
+"guava:src/com/google/common/collect/AbstractRangeSet.java": [
+86
+],
+"guava:src/com/google/common/collect/Cut.java": [
+94
+],
+"guava:src/com/google/common/collect/EmptyContiguousSet.java": [
+127
+],
+"guava:src/com/google/common/collect/ImmutableRangeMap.java": [
+314
+],
+"guava:src/com/google/common/collect/ImmutableSet.java": [
+324
+],
+"guava:src/com/google/common/collect/Interners.java": [
+136
+],
+"guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+3746
+],
+"guava:src/com/google/common/collect/Maps.java": [
+507,
+566
+],
+"guava:src/com/google/common/collect/Multisets.java": [
+805
+],
+"guava:src/com/google/common/collect/RegularImmutableSortedSet.java": [
+147
+],
+"guava:src/com/google/common/collect/Tables.java": [
+107
+],
+"guava:src/com/google/common/collect/TreeRangeMap.java": [
+459,
+636
+],
+"guava:src/com/google/common/hash/Funnels.java": [
+110,
+193
+],
+"guava:src/com/google/common/primitives/Booleans.java": [
+442
+],
+"guava:src/com/google/common/primitives/Bytes.java": [
+355
+],
+"guava:src/com/google/common/primitives/Chars.java": [
+556
+],
+"guava:src/com/google/common/primitives/Doubles.java": [
+547
+],
+"guava:src/com/google/common/primitives/Floats.java": [
+542
+],
+"guava:src/com/google/common/primitives/Ints.java": [
+604
+],
+"guava:src/com/google/common/primitives/Longs.java": [
+640
+],
+"guava:src/com/google/common/primitives/Shorts.java": [
+603
+],
+"guava:src/com/google/common/reflect/ClassPath.java": [
+197
+],
+"guava:src/com/google/common/reflect/Element.java": [
+154
+],
+"guava:src/com/google/common/reflect/TypeToken.java": [
+780
+],
+"guava:src/com/google/common/reflect/Types.java": [
+253,
+311,
+435,
+446,
+477
+]
+}
