@@ -37,6 +37,6 @@ class MessageDigestInstanceFieldCheckTest {
       .onFile(mainCodeSourcesPath("checks/MessageDigestInstanceFieldCheckSample.java"))
       .withCheck(new MessageDigestInstanceFieldCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyIssues();
   }
 }
