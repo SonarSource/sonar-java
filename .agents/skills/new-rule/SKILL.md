@@ -169,34 +169,34 @@ str="<line including <substring>>"; sub="<substring>"; pre="${str%%"$sub"*}"; ec
 
 ### Test class structure
 
-Extract the sample path and the verifier setup so neither the path nor the check instantiation is repeated. Declare the sample path as a constant and build the verifier in one private factory:
+Do not repeat the sample path or the check instantiation in each test method. Extract them as constants and keep the verifier chain in the tests:
 
 ```java
-class MoreThanOneLoggerCheckTest {
+class FooCheckTest {
 
-  private static final String SAMPLE = "checks/MoreThanOneLoggerCheckSample.java";
+  private static final String SAMPLE = "checks/FooCheckSample.java";
+  private static final FooCheck CHECK = new FooCheck();
 
   @Test
   void test() {
-    createCheckVerifier().verifyIssues();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath(SAMPLE))
+      .withCheck(CHECK)
+      .verifyIssues();
   }
 
   @Test
   void test_without_semantic() {
-    createCheckVerifier()
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath(SAMPLE))
+      .withCheck(CHECK)
       .withoutSemantic()
       .verifyNoIssues();
-  }
-
-  private static CheckVerifier createCheckVerifier() {
-    return CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath(SAMPLE))
-      .withCheck(new MoreThanOneLoggerCheck());
   }
 }
 ```
 
-When a test needs different samples (non-compiling, Java version variants), keep one constant per sample and one factory parameterised by path — still no inline duplication.
+A single shared check instance is safe because checks are [stateless](#stateless-checks). When a test needs several samples (non-compiling or Java version variants), declare one constant per sample.
 
 ### Method and type matching
 
