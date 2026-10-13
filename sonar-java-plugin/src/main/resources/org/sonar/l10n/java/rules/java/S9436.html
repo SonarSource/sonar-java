@@ -1,0 +1,82 @@
+<p>A class that declares more than one logger splits its own log output across several loggers, so the logging configuration that applies to the class
+governs only part of what it logs.</p>
+<h2>Why is this an issue?</h2>
+<p>A class is expected to log through a single logger. That logger defines one category for the whole class, and the logging configuration attaches a
+level and appenders to it, so the output of the class is filtered and routed as one unit.</p>
+<p>Declaring a second logger field breaks that. The reader now has to work out which logger each call site uses before being able to tell where a
+message goes, and the two loggers do not necessarily resolve to the same category. When they do not, the level configured for the class governs only
+part of its output: raising it to <code>DEBUG</code> during an incident produces a partial trace, with no indication that anything is missing. When
+they do resolve to the same category, the second field is pure duplication and the class ends up with two names for one thing.</p>
+<p>More than one logger in a class is almost always accidental: a field left behind by a refactoring that split or merged classes, a declaration
+copied along with the code that used it, or two logging facades that ended up in the same file.</p>
+<p>This rule raises an issue when a class declares more than one logger field, for SLF4J, Log4j, Log4j 2, Commons Logging and
+<code>java.util.logging</code>.</p>
+<h3>Exceptions</h3>
+<p>A nested or inner class is a class of its own, so a logger it declares is not counted against the logger of the enclosing class. Only the fields
+declared directly in the same class body are counted together.</p>
+<p>A non-static logger field declared next to a static one still raises an issue, because the class still ends up with two loggers, regardless of the
+modifiers. Rule {rule:java:S1312} covers the modifiers a logger field should have.</p>
+<p>A logger field that is not initialized where it is declared does not count. Such a field is a configurable property, assigned at startup or
+injected from outside, often exposed through a getter and a setter. It is not a second category that the class gives itself, and it usually cannot be
+removed without changing the API of the class.</p>
+<p>A logger whose name is derived from another logger of the same class, as in <code>LoggerFactory.getLogger(LOG.getName() + ".config")</code>, does
+not count either. That call creates a child category, which inherits the level and the appenders configured for the parent, so the output of the class
+is still governed as one unit and the problem described above does not arise.</p>
+<h2>How to fix it</h2>
+<p>Keep one logger and remove the other field, then point the calls that used the removed logger at the remaining one.</p>
+<p>The second logger is sometimes deliberate: a separate stream is wanted for audit or metrics messages, so that they can be routed to their own file
+and kept at their own level. In that case, do not simply merge the calls, as that would lose the distinction. Tag the messages with an SLF4J
+<code>Marker</code> instead: create the marker once with <code>MarkerFactory.getMarker("AUDIT")</code>, pass it as the first argument of the logging
+call, and route it in the logging configuration with a marker filter. A marker keeps the distinction and the routing without giving the class a second
+logger.</p>
+<p>With Log4j 2, <code>MarkerManager.getMarker</code> plays the same role. With <code>java.util.logging</code>, which has no marker concept, keep the
+single logger and either use a dedicated level or a <code>Filter</code> on the handler.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class PaymentService {
+
+  private static final Logger LOG = LoggerFactory.getLogger(PaymentService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PaymentService.class); // Noncompliant
+
+  public void capture(Payment payment) {
+    LOG.debug("Capturing payment {}", payment.id());
+    gateway.capture(payment);
+    LOGGER.info("Payment {} captured for {}", payment.id(), payment.amount());
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class PaymentService {
+
+  private static final Logger LOG = LoggerFactory.getLogger(PaymentService.class);
+
+  public void capture(Payment payment) {
+    LOG.debug("Capturing payment {}", payment.id());
+    gateway.capture(payment);
+    LOG.info("Payment {} captured for {}", payment.id(), payment.amount());
+  }
+}
+</pre>
+<h3>How does this work?</h3>
+<p>The class now has a single logger, so everything it logs is filtered and routed by the configuration that targets its category, and a call site no
+longer says anything about where its message goes beyond the level it uses.</p>
+<p>The refactoring preserves behavior as long as every call moved to the remaining logger keeps its level and its arguments. When the removed logger
+used a different category, check the logging configuration before deleting the field, otherwise messages that used to be written to a dedicated
+appender silently move to the main log. If that separation has to be kept, use a marker as described above rather than a second logger.</p>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>SLF4J Documentation - <a href="https://www.slf4j.org/faq.html#marker_interface">What is a Marker?</a></li>
+  <li>Log4j 2 Documentation - <a href="https://logging.apache.org/log4j/2.x/manual/markers.html">Markers</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.logging/java/util/logging/Logger.html"><code>java.util.logging.Logger</code></a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S1312} - Loggers should be "private static final" and should share a naming convention</li>
+  <li>{rule:java:S3416} - Loggers should be named for their enclosing classes</li>
+</ul>
+<p>Those two rules constrain the form and the name of a logger field. This rule is about their number: a class should declare only one.</p>
+
