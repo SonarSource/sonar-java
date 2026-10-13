@@ -127,6 +127,8 @@ reportIssue(tree, "Message").withQuickFix(() -> quickFix);
 
 ### Per-File State Cleanup
 
+New rules must be **stateless**: see the stateless-checks section of `.agents/skills/new-rule/SKILL.md`. The guidance below applies to existing checks that still accumulate per-file state.
+
 Rules that accumulate state in collections or mutable fields during file analysis **must clear that state between files**. A single rule instance is reused across all files in a module.
 
 For `IssuableSubscriptionVisitor` subclasses, override `clearState()` — it is called automatically before and after each file:
