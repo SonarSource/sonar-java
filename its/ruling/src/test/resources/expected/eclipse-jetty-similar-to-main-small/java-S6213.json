@@ -1,0 +1,11 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelOverHttp.java": [
+339
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/statistic/RateStatistic.java": [
+110
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/statistic/SampleStatistic.java": [
+58
+]
+}

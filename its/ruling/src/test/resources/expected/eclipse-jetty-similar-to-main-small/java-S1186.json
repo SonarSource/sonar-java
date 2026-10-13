@@ -1,0 +1,271 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java": [
+290
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/test/java/org/eclipse/jetty/http/HttpGeneratorServerHTTPTest.java": [
+229,
+253
+],
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferOutputStream.java": [
+40,
+44
+],
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java": [
+164,
+169
+],
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
+795
+],
+"eclipse-jetty-similar-to-main-small:jetty-io/src/test/java/org/eclipse/jetty/io/SelectorManagerTest.java": [
+105
+],
+"eclipse-jetty-similar-to-main-small:jetty-io/src/test/java/org/eclipse/jetty/io/WriteFlusherTest.java": [
+394,
+430
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/CachedContentFactory.java": [
+545
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/ConnectionLimit.java": [
+256
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
+929
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java": [
+306,
+310
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/LocalConnector.java": [
+364,
+387,
+398
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
+572
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/ServletRequestHttpWrapper.java": [
+217,
+223
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/ServletResponseHttpWrapper.java": [
+41,
+78,
+83,
+88,
+93,
+98,
+103,
+108,
+113,
+118,
+123,
+129
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/SocketCustomizationListener.java": [
+87,
+92
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/AsyncDelayHandler.java": [
+148
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+2530
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java": [
+74
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HandlerWrapper.java": [
+47
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HotSwapHandler.java": [
+41
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/IdleTimeoutHandler.java": [
+95,
+100
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ResourceHandler.java": [
+73
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/session/DatabaseAdaptor.java": [
+66
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/session/NullSessionCache.java": [
+49
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncStressTest.java": [
+332,
+344,
+350
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/DetectorConnectionTest.java": [
+528,
+589
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/HalfCloseTest.java": [
+147,
+171
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/HttpChannelEventTest.java": [
+283
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/HttpOutputTest.java": [
+82,
+785,
+996
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/LocalAsyncContextTest.java": [
+69,
+270,
+476,
+481
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/MockConnector.java": [
+31
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartCaptureTest.java": [
+347,
+352,
+357,
+362,
+367
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartFormInputStreamTest.java": [
+246
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/NotAcceptingTest.java": [
+272,
+427
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/ResponseTest.java": [
+164,
+169
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/SuspendHandler.java": [
+40,
+178,
+190,
+195
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/handler/HandlerTest.java": [
+274
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/handler/NcsaRequestLogTest.java": [
+654
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/handler/StatisticsHandlerTest.java": [
+310,
+315,
+320,
+605,
+610,
+720,
+725,
+730
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/session/SessionCookieTest.java": [
+48,
+109
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SelectChannelServerSslTest.java": [
+237,
+243
+],
+"eclipse-jetty-similar-to-main-small:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java": [
+305
+],
+"eclipse-jetty-similar-to-main-small:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/AsyncJSONTest.java": [
+409,
+423
+],
+"eclipse-jetty-similar-to-main-small:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONTest.java": [
+548
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/ByteArrayISO8859Writer.java": [
+213,
+223
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/Callback.java": [
+286
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/DeprecationWarning.java": [
+83
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/HttpCookieStore.java": [
+113
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java": [
+493,
+498,
+503,
+508,
+513,
+550,
+555,
+560,
+565,
+570,
+575,
+580
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java": [
+751
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java": [
+312
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java": [
+292
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/component/StopLifeCycle.java": [
+40,
+58,
+63,
+68
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/resource/EmptyResource.java": [
+48
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ReservedThreadExecutor.java": [
+52
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ThreadPoolBudget.java": [
+75
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/test/java/org/eclipse/jetty/util/TestIntrospectionUtil.java": [
+71,
+75,
+79,
+83,
+90,
+94,
+98,
+102
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/test/java/org/eclipse/jetty/util/component/ContainerLifeCycleTest.java": [
+504,
+509
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/test/java/org/eclipse/jetty/util/ssl/X509CertificateAdapter.java": [
+42,
+47,
+82,
+87
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/test/java/org/eclipse/jetty/util/thread/ReservedThreadExecutorTest.java": [
+46
+],
+"eclipse-jetty-similar-to-main-small:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
+336
+],
+"eclipse-jetty-similar-to-main-small:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlConfigurationTest.java": [
+663,
+667,
+671,
+675,
+679,
+683
+]
+}

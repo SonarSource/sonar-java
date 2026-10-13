@@ -1,8 +1,40 @@
 {
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
 279
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/Session.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/session/Session.java": [
 498
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTernaryTrie.java": [
+305,
+360,
+411,
+454
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTrie.java": [
+253,
+309,
+312,
+350,
+389
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/AtomicBiInteger.java": [
+268,
+269,
+282,
+297
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java": [
+175
+],
+"eclipse-jetty-similar-to-main:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java": [
+269,
+271,
+280,
+389,
+395,
+406,
+417,
+428
 ]
 }

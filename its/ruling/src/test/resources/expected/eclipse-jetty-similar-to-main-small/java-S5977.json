@@ -1,0 +1,35 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-io/src/test/java/org/eclipse/jetty/io/WriteFlusherTest.java": [
+285
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncStressTest.java": [
+64
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/StressTest.java": [
+73
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/ThreadStarvationTest.java": [
+114
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/handler/DebugHandlerTest.java": [
+123
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLCloseTest.java": [
+61
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLEngineTest.java": [
+143
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLSelectChannelConnectorLoadTest.java": [
+237
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/test/java/org/eclipse/jetty/util/BlockingArrayQueueTest.java": [
+235
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/test/java/org/eclipse/jetty/util/statistic/CounterStatisticTest.java": [
+103
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/test/java/org/eclipse/jetty/util/thread/SerializedExecutorTest.java": [
+47
+]
+}

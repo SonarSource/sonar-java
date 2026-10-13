@@ -1,0 +1,106 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/CookieCutter.java": [
+46
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/GZIPContentDecoder.java": [
+160
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java": [
+358,
+573
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java": [
+571,
+1080,
+1613
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/HttpURI.java": [
+783
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java": [
+416,
+563
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedCSVParser.java": [
+96
+],
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
+595,
+959,
+1147
+],
+"eclipse-jetty-similar-to-main-small:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MBeanContainer.java": [
+297
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/CachedContentFactory.java": [
+213
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
+579
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java": [
+328
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/InclusiveByteRange.java": [
+140
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java": [
+518
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java": [
+563
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java": [
+481,
+640
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/Utf8HttpWriter.java": [
+42
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+2097
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHandler.java": [
+547
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java": [
+1589
+],
+"eclipse-jetty-similar-to-main-small:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/AsyncJSON.java": [
+265
+],
+"eclipse-jetty-similar-to-main-small:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java": [
+984
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java": [
+716
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/URIUtil.java": [
+92,
+456,
+797,
+911
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java": [
+672
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/resource/JarResource.java": [
+136
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
+481
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java": [
+270
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java": [
+853
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/thread/strategy/EatWhatYouKill.java": [
+184
+],
+"eclipse-jetty-similar-to-main-small:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
+506,
+1277
+]
+}
