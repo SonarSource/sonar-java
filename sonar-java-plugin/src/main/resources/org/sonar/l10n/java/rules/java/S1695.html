@@ -1,20 +1,23 @@
 <h2>Why is this an issue?</h2>
 <p>A <code>NullPointerException</code> should indicate that a <code>null</code> value was unexpectedly encountered. Good programming practice dictates
 that code is structured to avoid NPE’s.</p>
-<p>Explicitly throwing <code>NullPointerException</code> forces a method’s callers to explicitly catch it, rather than coding to avoid it. Further, it
-makes it difficult to distinguish between the unexpectedly-encountered <code>null</code> value and the condition which causes the method to purposely
-throw an NPE.</p>
-<p>If an NPE is being thrown to indicate that a parameter to the method should not have been null, use the <code>@NotNull</code> annotation
-instead.</p>
+<p>Explicitly throwing <code>NullPointerException</code> or declaring it in a <code>throws</code> clause suggests that callers should catch it,
+rather than coding to avoid it. Since <code>NullPointerException</code> is an unchecked exception, declaring it in a <code>throws</code> clause is
+unnecessary.</p>
+<p>If an NPE is being thrown to indicate that a parameter to the method should not have been null, use <code>Objects.requireNonNull()</code> instead.
+It makes the intent explicit and produces a consistent, descriptive error. Additionally, the parameter can be annotated with <code>@NotNull</code> to
+document the contract and allow tools to detect violations.</p>
 <h3>Noncompliant code example</h3>
 <pre>
 public void doSomething (String aString) throws NullPointerException {
-     throw new NullPointerException();
+  if (aString == null) {
+    throw new NullPointerException();
+  }
 }
 </pre>
 <h3>Compliant solution</h3>
 <pre>
 public void doSomething (@NotNull String aString) {
+  Objects.requireNonNull(aString, "aString must not be null");
 }
 </pre>
-

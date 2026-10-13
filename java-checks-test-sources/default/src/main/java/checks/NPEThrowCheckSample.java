@@ -1,7 +1,7 @@
 package checks;
 
 class NPEThrowCheckSample {
-  void foo() throws NullPointerException { // Noncompliant {{Use Objects.requireNonNull() instead of explicitly throwing NullPointerException.}}
+  void foo() throws NullPointerException { // Noncompliant {{Remove NullPointerException from the throws clause.}}
 //                  ^^^^^^^^^^^^^^^^^^^^
   }
   void bar() {

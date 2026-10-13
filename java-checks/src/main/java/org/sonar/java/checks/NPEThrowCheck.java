@@ -40,17 +40,17 @@ public class NPEThrowCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.THROW_STATEMENT)) {
       ExpressionTree expressionTree = ((ThrowStatementTree) tree).expression();
-      raiseIssueOnNpe(expressionTree, expressionTree.symbolType());
+      raiseIssueOnNpe(expressionTree, expressionTree.symbolType(), "Use Objects.requireNonNull() instead of explicitly throwing NullPointerException.");
     } else {
       for (TypeTree throwClause : ((MethodTree) tree).throwsClauses()) {
-        raiseIssueOnNpe(throwClause, throwClause.symbolType());
+        raiseIssueOnNpe(throwClause, throwClause.symbolType(), "Remove NullPointerException from the throws clause.");
       }
     }
   }
 
-  private void raiseIssueOnNpe(Tree tree, Type type) {
+  private void raiseIssueOnNpe(Tree tree, Type type, String message) {
     if (type.is("java.lang.NullPointerException")) {
-      reportIssue(treeAtFault(tree), "Use Objects.requireNonNull() instead of explicitly throwing NullPointerException.");
+      reportIssue(treeAtFault(tree), message);
     }
   }
 
