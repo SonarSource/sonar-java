@@ -21,12 +21,10 @@ env:
 runs:
   using: composite
   steps:
-    - name: Upload Actual Results
-      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+    - name: Prepare Ruling Artifact
+      uses: SonarSource/core-languages-tooling-public/prepare-ruling-artifact@master
       with:
-        name: actual_${{ inputs.name }}
-        path: ${{ inputs.it-dir }}/${{ inputs.actual-dir }}
-        retention-days: ${{ env.RETENTION_DAYS }}
+        artifact-name: actual_${{ inputs.name }}
 
     - name: Configure NPM
       uses: SonarSource/ci-github-actions/config-npm@v2
