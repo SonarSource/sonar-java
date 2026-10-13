@@ -1,0 +1,89 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/HttpField.java": [
+361
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java": [
+802
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/PrecompressedHttpContent.java": [
+179
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/UriTemplatePathSpec.java": [
+307
+],
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/WriteFlusher.java": [
+437
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/CachedContentFactory.java": [
+663
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java": [
+306
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java": [
+824,
+843,
+1060
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/ServletRequestHttpWrapper.java": [
+56,
+213
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/ServletResponseHttpWrapper.java": [
+142,
+148
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+480,
+1516,
+1895,
+2631,
+2767,
+2774,
+2788,
+2802
+],
+"eclipse-jetty-similar-to-main-small:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLoggerConfiguration.java": [
+256,
+269
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/LazyList.java": [
+265
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/MultiMap.java": [
+63
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/StringUtil.java": [
+840,
+855
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/resource/BadResource.java": [
+97
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/resource/EmptyResource.java": [
+121
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java": [
+579
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/resource/URLResource.java": [
+281
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java": [
+1923,
+1950,
+1955
+],
+"eclipse-jetty-similar-to-main-small:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
+746,
+1646,
+1663,
+1687
+],
+"eclipse-jetty-similar-to-main-small:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java": [
+638
+],
+"eclipse-jetty-similar-to-main-small:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java": [
+361
+]
+}

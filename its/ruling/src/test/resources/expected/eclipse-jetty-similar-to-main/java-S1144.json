@@ -1,5 +1,9 @@
 {
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
 433
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/test/java/org/eclipse/jetty/util/TestIntrospectionUtil.java": [
+71,
+90
 ]
 }

@@ -1,8 +1,8 @@
 {
-"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java": [
+"eclipse-jetty-similar-to-main:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java": [
 80
 ],
-"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ForwardedRequestCustomizerTest.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/test/java/org/eclipse/jetty/server/ForwardedRequestCustomizerTest.java": [
 377,
 532,
 545,
@@ -12,8 +12,53 @@
 609,
 635
 ],
-"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpConnectionTest.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/test/java/org/eclipse/jetty/server/HttpConnectionTest.java": [
 375,
 429
+],
+"eclipse-jetty-similar-to-main:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyConnectionTest.java": [
+281
+],
+"eclipse-jetty-similar-to-main:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLogger.java": [
+132,
+151
+],
+"eclipse-jetty-similar-to-main:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/JettyLoggerTest.java": [
+610
+],
+"eclipse-jetty-similar-to-main:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/Slf4jEffort.java": [
+59,
+75,
+171,
+239,
+247
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslSelectionDump.java": [
+71,
+74,
+79
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/test/java/org/eclipse/jetty/util/URIUtilTest.java": [
+685
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/test/java/org/eclipse/jetty/util/resource/JarResourceTest.java": [
+163,
+169,
+175
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/test/java/org/eclipse/jetty/util/ssl/SslContextFactoryTest.java": [
+98,
+122,
+127
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/test/java/org/eclipse/jetty/util/thread/SchedulerTest.java": [
+65
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/test/java/org/eclipse/jetty/util/thread/strategy/ExecutionStrategyTest.java": [
+77
+],
+"eclipse-jetty-similar-to-main:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
+369,
+403
 ]
 }

@@ -1,0 +1,15 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java": [
+129
+],
+"eclipse-jetty-similar-to-main-small:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MBeanContainer.java": [
+362,
+373
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/JavaVersion.java": [
+58
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/test/java/org/eclipse/jetty/util/statistic/CounterStatisticTest.java": [
+91
+]
+}
