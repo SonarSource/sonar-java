@@ -2,7 +2,7 @@ class A {
   int a = 0;
   int b = 1;
   int c = 42;
-  int d = 010; // Noncompliant {{Use decimal values instead of octal ones.}}
+  int d = 010; // Noncompliant {{Use decimal values instead of octal ones. If an octal value is intended, use the more explicit "0_" prefix.}}
 //        ^^^
   int e = 00;
   int f = 0.;
@@ -36,4 +36,15 @@ class A {
   int perm15 = 01777;
   int perm16 = 02755;
   int perm17 = 04755;
+  int perm18 = 0_755;
+  int perm19 = 0_644;
+
+  int explicit1 = 0_7;
+  int explicit2 = 0_13;
+  int explicit3 = 0_123;
+  int explicit4 = 0_311;
+  int explicit5 = 0_1234;
+  int explicit6 = 0_12_34;
+  int underscore1 = 01_234; // Noncompliant
+  int underscore2 = 00_13; // Noncompliant
 }

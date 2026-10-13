@@ -45,13 +45,17 @@ public class OctalValuesCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitLiteral(LiteralTree tree) {
     String value = tree.value();
-    if (tree.is(Tree.Kind.INT_LITERAL) && isOctal(value) && value.length() > 2 && !isPermission(value)) {
-      context.reportIssue(this, tree, "Use decimal values instead of octal ones.");
+    if (tree.is(Tree.Kind.INT_LITERAL) && isOctal(value) && value.length() > 2 && !hasExplicitOctalPrefix(value) && !isPermission(value)) {
+      context.reportIssue(this, tree, "Use decimal values instead of octal ones. If an octal value is intended, use the more explicit \"0_\" prefix.");
     }
   }
 
   private static boolean isOctal(String value) {
     return value.charAt(0) == '0'  && !"0".equals(value) && !isHexadecimal(value) && !isBinary(value);
+  }
+
+  private static boolean hasExplicitOctalPrefix(String value) {
+    return value.startsWith("0_");
   }
 
   private static boolean isPermission(String value) {
