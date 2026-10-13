@@ -4,19 +4,24 @@ on:
     - cron: "0 4 * * 1-5" # Run the workflow Mon-Fri at 04:00 UTC
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  unified-platform-dogfooding:
+  build:
     runs-on: warp-custom-ubuntu-24-04-l
-    name: Unified Platform Dogfooding
+    name: Build for Shadow Scan
     permissions:
       id-token: write
-      contents: read
+      contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
           version: 2026.10.0
-      - uses: SonarSource/ci-github-actions/build-maven@v2
+      - name: SQC shadow scans
+        uses: SonarSource/ci-github-actions/build-maven@v2
         env:
           MAVEN_OPTS: "-Xmx8g"
           JAVA_TOOL_OPTIONS: ""
@@ -26,6 +31,20 @@ jobs:
           artifactory-reader-role: private-reader
           artifactory-deployer-role: qa-deployer
           scanner-java-opts: '-Xmx2g'
+
+  run_iris:
+    needs: [ build ]
+    if: ${{ !cancelled() && needs.build.result == 'success' }}
+    concurrency:
+      group: iris
+      cancel-in-progress: false
+      queue: single
+    runs-on: sonar-xs
+    name: Run IRIS
+    permissions:
+      id-token: write
+      contents: write
+    steps:
       - name: Run IRIS Analysis
         uses: SonarSource/unified-dogfooding-actions/run-iris@v1
         with:
