@@ -1,0 +1,14 @@
+{
+"guava:src/com/google/common/cache/LocalCache.java": [
+1912
+],
+"guava:src/com/google/common/collect/MinMaxPriorityQueue.java": [
+732
+],
+"guava:src/com/google/common/net/InetAddresses.java": [
+553
+],
+"guava:src/com/google/common/net/InternetDomainName.java": [
+294
+]
+}

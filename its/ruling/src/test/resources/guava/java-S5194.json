@@ -1,0 +1,48 @@
+{
+"guava:src/com/google/common/base/CharMatcher.java": [
+335,
+1263
+],
+"guava:src/com/google/common/base/Joiner.java": [
+462
+],
+"guava:src/com/google/common/base/Stopwatch.java": [
+242
+],
+"guava:src/com/google/common/cache/CacheBuilderSpec.java": [
+420
+],
+"guava:src/com/google/common/collect/ImmutableCollection.java": [
+286
+],
+"guava:src/com/google/common/collect/ImmutableEnumSet.java": [
+36
+],
+"guava:src/com/google/common/collect/ImmutableList.java": [
+272,
+372
+],
+"guava:src/com/google/common/collect/ImmutableSet.java": [
+298
+],
+"guava:src/com/google/common/collect/ImmutableSortedMap.java": [
+494
+],
+"guava:src/com/google/common/collect/ImmutableTable.java": [
+227
+],
+"guava:src/com/google/common/collect/MinMaxPriorityQueue.java": [
+315
+],
+"guava:src/com/google/common/collect/Range.java": [
+249,
+287
+],
+"guava:src/com/google/common/collect/TreeMultiset.java": [
+181,
+203
+],
+"guava:src/com/google/common/net/MediaType.java": [
+423
+]
+}

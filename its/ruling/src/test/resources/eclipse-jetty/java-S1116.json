@@ -1,0 +1,18 @@
+{
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/CookieCutterLenientTest.java": [
+204
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpFieldsTest.java": [
+940,
+1008
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/BufferedResponseHandler.java": [
+197
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestBase.java": [
+1481
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/NcsaRequestLogTest.java": [
+867
+]
+}

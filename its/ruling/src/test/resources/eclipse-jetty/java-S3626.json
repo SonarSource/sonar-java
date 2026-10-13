@@ -1,0 +1,11 @@
+{
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/resource/SeekableByteChannelRangeWriter.java": [
+103
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/StringUtil.java": [
+981
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/compression/CompressionPool.java": [
+88
+]
+}

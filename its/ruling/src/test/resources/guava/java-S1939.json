@@ -1,0 +1,35 @@
+{
+"guava:src/com/google/common/cache/LocalCache.java": [
+4684
+],
+"guava:src/com/google/common/cache/LongAdder.java": [
+50
+],
+"guava:src/com/google/common/collect/MapMaker.java": [
+869
+],
+"guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+1014,
+1061,
+1096,
+1268,
+1316,
+1352,
+1526,
+1574,
+1610
+],
+"guava:src/com/google/common/collect/Synchronized.java": [
+1109
+],
+"guava:src/com/google/common/hash/Funnels.java": [
+92,
+173
+],
+"guava:src/com/google/common/primitives/UnsignedLong.java": [
+43
+],
+"guava:src/com/google/common/util/concurrent/AtomicDouble.java": [
+55
+]
+}

@@ -1,0 +1,34 @@
+{
+"guava:src/com/google/common/collect/ImmutableBiMap.java": [
+212
+],
+"guava:src/com/google/common/collect/ImmutableMap.java": [
+273
+],
+"guava:src/com/google/common/collect/ImmutableSortedMap.java": [
+324
+],
+"guava:src/com/google/common/collect/ImmutableTable.java": [
+92
+],
+"guava:src/com/google/common/io/LineBuffer.java": [
+62
+],
+"guava:src/com/google/common/math/BigIntegerMath.java": [
+85
+],
+"guava:src/com/google/common/math/DoubleMath.java": [
+93,
+102
+],
+"guava:src/com/google/common/math/IntMath.java": [
+317,
+475,
+539
+],
+"guava:src/com/google/common/math/LongMath.java": [
+384,
+591,
+661
+]
+}

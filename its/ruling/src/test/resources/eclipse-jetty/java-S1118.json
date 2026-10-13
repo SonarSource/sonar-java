@@ -1,0 +1,41 @@
+{
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/Syntax.java": [
+29
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HomeBaseWarning.java": [
+39
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/resource/HttpContentRangeWriter.java": [
+34
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java": [
+95
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java": [
+46
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java": [
+31
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Loader.java": [
+41
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ProcessorUtils.java": [
+27
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java": [
+63
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/log/Log.java": [
+28
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceCollators.java": [
+26
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateUtils.java": [
+30
+],
+"eclipse-jetty:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/matchers/HttpFieldsMatchers.java": [
+25
+]
+}
