@@ -1,0 +1,11 @@
+{
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/FutureCallback.java": [
+34
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/JavaVersion.java": [
+64
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java": [
+405
+]
+}

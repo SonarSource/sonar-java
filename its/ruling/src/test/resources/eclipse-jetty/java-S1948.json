@@ -1,0 +1,11 @@
+{
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/UnreadableSessionDataException.java": [
+31
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/UnwriteableSessionDataException.java": [
+27
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/AutoLock.java": [
+101
+]
+}

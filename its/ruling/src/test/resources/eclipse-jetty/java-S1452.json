@@ -1,0 +1,23 @@
+{
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/ComplianceViolation.java": [
+42,
+44
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpContent.java": [
+78
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceCollators.java": [
+55,
+67,
+79
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateUtils.java": [
+61
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java": [
+270
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java": [
+1136
+]
+}
