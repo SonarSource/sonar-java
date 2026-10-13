@@ -35,6 +35,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class S9432Check extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   private static final String MESSAGE = "Use \"isBlank()\" on the original string instead.";
+  private static final String TRIM_MESSAGE = "Use \"isBlank()\" on the original string instead, "
+    + "if Unicode whitespace should be treated as blank and control characters as non-blank.";
   private static final String STRING_TYPE = "java.lang.String";
 
   private static final MethodMatchers WHITESPACE_REMOVAL_METHODS = MethodMatchers.create()
@@ -73,7 +75,8 @@ public class S9432Check extends IssuableSubscriptionVisitor implements JavaVersi
       return;
     }
     if (BLANKNESS_METHODS.matches(invocation) || (LENGTH_METHOD.matches(invocation) && isEmptinessCheck(invocation))) {
-      reportIssue(removalInvocation, MESSAGE);
+      String message = "trim".equals(removalInvocation.methodSymbol().name()) ? TRIM_MESSAGE : MESSAGE;
+      reportIssue(removalInvocation, message);
     }
   }
 

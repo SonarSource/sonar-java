@@ -4,21 +4,21 @@ public class S9432CheckSample {
 
   boolean hasContent(String input) {
     boolean result;
-    result = input.trim().length() == 0; // Noncompliant {{Use "isBlank()" on the original string instead.}}
-    result = input.trim().length() <= 0; // Noncompliant {{Use "isBlank()" on the original string instead.}}
-    result = input.trim().length() < 1; // Noncompliant {{Use "isBlank()" on the original string instead.}}
+    result = input.trim().length() == 0; // Noncompliant {{Use "isBlank()" on the original string instead, if Unicode whitespace should be treated as blank and control characters as non-blank.}}
+    result = input.trim().length() <= 0; // Noncompliant {{Use "isBlank()" on the original string instead, if Unicode whitespace should be treated as blank and control characters as non-blank.}}
+    result = input.trim().length() < 1; // Noncompliant {{Use "isBlank()" on the original string instead, if Unicode whitespace should be treated as blank and control characters as non-blank.}}
     result = input.strip().length() != 0; // Noncompliant {{Use "isBlank()" on the original string instead.}}
     result = input.strip().length() > 0; // Noncompliant {{Use "isBlank()" on the original string instead.}}
     result = input.strip().length() >= 1; // Noncompliant {{Use "isBlank()" on the original string instead.}}
-    result = 0 == input.trim().length(); // Noncompliant {{Use "isBlank()" on the original string instead.}}
-    result = 0 >= input.trim().length(); // Noncompliant {{Use "isBlank()" on the original string instead.}}
-    result = 1 > input.trim().length(); // Noncompliant {{Use "isBlank()" on the original string instead.}}
+    result = 0 == input.trim().length(); // Noncompliant {{Use "isBlank()" on the original string instead, if Unicode whitespace should be treated as blank and control characters as non-blank.}}
+    result = 0 >= input.trim().length(); // Noncompliant {{Use "isBlank()" on the original string instead, if Unicode whitespace should be treated as blank and control characters as non-blank.}}
+    result = 1 > input.trim().length(); // Noncompliant {{Use "isBlank()" on the original string instead, if Unicode whitespace should be treated as blank and control characters as non-blank.}}
     result = 0 != input.strip().length(); // Noncompliant {{Use "isBlank()" on the original string instead.}}
     result = 0 < input.strip().length(); // Noncompliant {{Use "isBlank()" on the original string instead.}}
     result = 1 <= input.strip().length(); // Noncompliant {{Use "isBlank()" on the original string instead.}}
-    result = input.trim().isEmpty(); // Noncompliant {{Use "isBlank()" on the original string instead.}}
+    result = input.trim().isEmpty(); // Noncompliant {{Use "isBlank()" on the original string instead, if Unicode whitespace should be treated as blank and control characters as non-blank.}}
     result = !input.strip().isEmpty(); // Noncompliant {{Use "isBlank()" on the original string instead.}}
-    result = input.trim().isBlank(); // Noncompliant {{Use "isBlank()" on the original string instead.}}
+    result = input.trim().isBlank(); // Noncompliant {{Use "isBlank()" on the original string instead, if Unicode whitespace should be treated as blank and control characters as non-blank.}}
     result = input.strip().isBlank(); // Noncompliant {{Use "isBlank()" on the original string instead.}}
     return result;
   }
