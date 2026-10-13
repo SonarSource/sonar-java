@@ -1,0 +1,13 @@
+{
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java": [
+143
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/HttpCookieStore.java": [
+84
+],
+"eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
+1324,
+1333,
+1485
+]
+}
