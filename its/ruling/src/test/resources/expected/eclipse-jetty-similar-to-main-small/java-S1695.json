@@ -1,0 +1,11 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/PrecompressedHttpContent.java": [
+43
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/BlockingArrayQueue.java": [
+468
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/component/ContainerLifeCycle.java": [
+768
+]
+}

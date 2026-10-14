@@ -1,10 +1,10 @@
 {
-"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpGeneratorServerTest.java": [
+"eclipse-jetty-similar-to-main:jetty-http/src/test/java/org/eclipse/jetty/http/HttpGeneratorServerTest.java": [
 38,
 148,
 793
 ],
-"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/QuotedQualityCSVTest.java": [
+"eclipse-jetty-similar-to-main:jetty-http/src/test/java/org/eclipse/jetty/http/QuotedQualityCSVTest.java": [
 34,
 42,
 51,
@@ -12,10 +12,10 @@
 70,
 85
 ],
-"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/SslEngineBehaviorTest.java": [
+"eclipse-jetty-similar-to-main:jetty-io/src/test/java/org/eclipse/jetty/io/SslEngineBehaviorTest.java": [
 61
 ],
-"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ErrorHandlerTest.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/test/java/org/eclipse/jetty/server/ErrorHandlerTest.java": [
 140,
 157,
 172,
@@ -29,13 +29,13 @@
 333,
 352
 ],
-"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpConnectionTest.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/test/java/org/eclipse/jetty/server/HttpConnectionTest.java": [
 550
 ],
-"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartParserTest.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartParserTest.java": [
 518
 ],
-"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java": [
 81,
 107,
 132,
@@ -59,5 +59,52 @@
 582,
 605,
 628
+],
+"eclipse-jetty-similar-to-main:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java": [
+1033
+],
+"eclipse-jetty-similar-to-main:jetty-server/src/test/java/org/eclipse/jetty/server/handler/StatisticsHandlerTest.java": [
+370,
+429,
+485
+],
+"eclipse-jetty-similar-to-main:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SslUploadTest.java": [
+87
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/test/java/org/eclipse/jetty/util/JavaVersionTest.java": [
+43,
+54,
+65,
+76,
+87,
+98,
+109,
+120,
+131
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/test/java/org/eclipse/jetty/util/MultiReleaseJarFileTest.java": [
+75,
+103
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/test/java/org/eclipse/jetty/util/TypeUtilTest.java": [
+41,
+177
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/test/java/org/eclipse/jetty/util/component/ContainerLifeCycleTest.java": [
+351
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/test/java/org/eclipse/jetty/util/thread/ReservedThreadExecutorTest.java": [
+271
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/test/java/org/eclipse/jetty/util/thread/SerializedExecutorTest.java": [
+36
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/test/java/org/eclipse/jetty/util/thread/strategy/ExecutionStrategyTest.java": [
+92,
+112,
+150
+],
+"eclipse-jetty-similar-to-main:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlAppendableTest.java": [
+31
 ]
 }

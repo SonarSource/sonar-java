@@ -1,0 +1,14 @@
+{
+"eclipse-jetty-similar-to-main:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyCustomizerTest.java": [
+97
+],
+"eclipse-jetty-similar-to-main:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerTest.java": [
+792
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java": [
+840
+],
+"eclipse-jetty-similar-to-main:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlConfigurationTest.java": [
+693
+]
+}

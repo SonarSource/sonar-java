@@ -118,6 +118,29 @@
               <include>com/sonar/it/java/*Test.java</include>
             </includes>
           </configuration>
+          <executions>
+            <execution>
+              <id>default-test</id>
+              <configuration>
+                <excludes>
+                  <exclude>com/sonar/it/java/IncrementalAnalysisTest.java</exclude>
+                </excludes>
+              </configuration>
+            </execution>
+            <execution>
+              <id>incremental-analysis</id>
+              <goals>
+                <goal>test</goal>
+              </goals>
+              <configuration>
+                <parallel>none</parallel>
+                <useUnlimitedThreads>false</useUnlimitedThreads>
+                <includes combine.self="override">
+                  <include>com/sonar/it/java/IncrementalAnalysisTest.java</include>
+                </includes>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>com.googlecode.maven-download-plugin</groupId>
