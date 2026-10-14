@@ -22,8 +22,8 @@ runs:
       uses: SonarSource/gh-action_cache@v1
       with:
         path: ${{ env.ORCHESTRATOR_HOME }}
-        key: orchestrator-${{ inputs.sq-version }}-${{ env.ORCHESTRATOR_CACHE_KEY }}-${{ github.run_id }}
-        restore-keys: orchestrator-${{ inputs.sq-version }}-${{ env.ORCHESTRATOR_CACHE_KEY }}-
+        key: orchestrator-production-${{ inputs.sq-version }}-${{ env.ORCHESTRATOR_CACHE_KEY }}-${{ github.run_id }}
+        restore-keys: orchestrator-production-${{ inputs.sq-version }}-${{ env.ORCHESTRATOR_CACHE_KEY }}-
 
     - name: Setup Orchestrator Home Directory
       shell: bash
