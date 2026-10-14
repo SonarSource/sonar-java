@@ -18,11 +18,24 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VarTypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S9439")
 public class ShortArrayInitializerCheck extends IssuableSubscriptionVisitor {
+
+  private static final String MESSAGE = "Remove the redundant array creation and keep only the array initializer.";
+  private static final String QUICK_FIX_MESSAGE = "Remove the redundant array creation";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -31,5 +44,38 @@ public class ShortArrayInitializerCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    VariableTree variable = (VariableTree) tree;
+    if (variable.type() instanceof VarTypeTree) {
+      return;
+    }
+    ExpressionTree initializer = variable.initializer();
+    if (initializer == null || !initializer.is(Tree.Kind.NEW_ARRAY)) {
+      return;
+    }
+    NewArrayTree newArray = (NewArrayTree) initializer;
+    SyntaxToken newKeyword = newArray.newKeyword();
+    SyntaxToken openBrace = newArray.openBraceToken();
+    if (newKeyword == null || openBrace == null || !isSameType(variable, newArray)) {
+      return;
+    }
+    QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onRange(newKeyword, lastCloseBracketToken(newArray))
+      .withMessage(MESSAGE)
+      .withQuickFix(() -> JavaQuickFix.newQuickFix(QUICK_FIX_MESSAGE)
+        .addTextEdit(JavaTextEdit.replaceBetweenTree(newKeyword, true, openBrace, false, ""))
+        .build())
+      .report();
+  }
+
+  private static boolean isSameType(VariableTree variable, NewArrayTree newArray) {
+    Type declaredType = variable.symbol().type();
+    Type createdType = newArray.symbolType();
+    return !declaredType.isUnknown() && !createdType.isUnknown() && declaredType.equals(createdType);
+  }
+
+  private static SyntaxToken lastCloseBracketToken(NewArrayTree newArray) {
+    List<ArrayDimensionTree> dimensions = newArray.dimensions();
+    return dimensions.get(dimensions.size() - 1).closeBracketToken();
   }
 }
