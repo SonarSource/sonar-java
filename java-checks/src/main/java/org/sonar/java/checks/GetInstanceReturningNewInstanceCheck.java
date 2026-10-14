@@ -22,7 +22,7 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -66,8 +66,8 @@ public class GetInstanceReturningNewInstanceCheck extends IssuableSubscriptionVi
 
   /**
    * Returns the instance creation of a method whose body is nothing but {@code return new Something(…);}, or {@code null}
-   * when the body does anything else. Anything else includes reading or assigning a field, so a lazily initialised
-   * accessor is never returned here.
+   * when the body is anything else. A lazily initialised accessor therefore never matches, because testing and assigning
+   * the cached field takes more than that single statement.
    */
   @CheckForNull
   private static NewClassTree onlyStatementInstantiation(MethodTree method) {
@@ -92,7 +92,7 @@ public class GetInstanceReturningNewInstanceCheck extends IssuableSubscriptionVi
   }
 
   private static boolean instantiatesOwnClass(NewClassTree instantiation, MethodTree method) {
-    Symbol createdType = instantiation.symbolType().symbol();
-    return !createdType.isUnknown() && createdType.equals(method.symbol().owner());
+    Type createdType = instantiation.symbolType();
+    return !createdType.isUnknown() && createdType.erasure().equals(method.symbol().owner().type().erasure());
   }
 }

@@ -7,8 +7,8 @@ duplicated per call site, and every write performed through one instance is invi
 <p>Because each object works perfectly in isolation, the defect does not fail loudly. It surfaces much later, as state that silently goes missing
 between two unrelated parts of the application. This shape is typically introduced when the caching logic is dropped during a refactoring, or when a
 class is turned into a singleton by renaming its factory method without adding the field that backs it.</p>
-<p>This rule raises an issue when a static method named <code>getInstance</code> returns a newly created instance of its own class on every call,
-without reading or assigning any static field.</p>
+<p>This rule raises an issue when a static method named <code>getInstance</code> unconditionally returns a newly created instance of its own class,
+instead of a cached one.</p>
 <p>The issue is always worth reviewing, but it is not always worth fixing as reported. If the class is stateless and the name is the only problem,
 renaming the method is enough. If callers are documented as receiving a fresh, independent object, the name is misleading but the behaviour may be
 deliberate, and renaming is again the fix rather than caching.</p>

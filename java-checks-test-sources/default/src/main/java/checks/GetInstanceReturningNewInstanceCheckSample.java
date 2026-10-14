@@ -33,6 +33,24 @@ class GetInstanceReturningNewInstanceCheckSample {
     }
   }
 
+  static class GenericNoCache<T> {
+
+    static <U> GenericNoCache<U> getInstance() {
+//                               ^^^^^^^^^^^>
+      return new GenericNoCache<>(); // Noncompliant
+//           ^^^^^^^^^^^^^^^^^^^^^^
+    }
+  }
+
+  static class RawNoCache<T> {
+
+    static RawNoCache getInstance() {
+//                    ^^^^^^^^^^^>
+      return new RawNoCache(); // Noncompliant
+//           ^^^^^^^^^^^^^^^^
+    }
+  }
+
   static class EagerlyCached {
 
     private static final EagerlyCached INSTANCE = new EagerlyCached();
