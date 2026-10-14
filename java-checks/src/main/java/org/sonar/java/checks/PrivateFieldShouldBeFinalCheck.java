@@ -104,6 +104,7 @@ public class PrivateFieldShouldBeFinalCheck extends IssuableSubscriptionVisitor 
       && symbol.isPrivate()
       && !symbol.isStatic()
       && !symbol.isFinal()
+      && !symbol.isVolatile()
       && field.modifiers().annotations().isEmpty();
   }
 
