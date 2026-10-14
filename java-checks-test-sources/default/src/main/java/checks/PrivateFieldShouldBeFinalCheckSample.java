@@ -7,11 +7,11 @@ import javax.annotation.Nullable;
 
 class PrivateFieldShouldBeFinalCheckSample {
 
-  private String assignedInConstructor; // Noncompliant {{Make this private field "final", it is never reassigned after construction.}} [[secondary=38]]
+  private String assignedInConstructor; // Noncompliant {{Make this private field "final", it is never reassigned after construction.}} [[secondary=39]]
 //               ^^^^^^^^^^^^^^^^^^^^^
   private List<String> assignedAtDeclaration = new ArrayList<>(); // Noncompliant
 //                     ^^^^^^^^^^^^^^^^^^^^^
-  private int assignedInInitializerBlock; // Noncompliant [[secondary=34]]
+  private int assignedInInitializerBlock; // Noncompliant [[secondary=35]]
 //            ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   private int reassignedInMethod;
@@ -24,6 +24,7 @@ class PrivateFieldShouldBeFinalCheckSample {
   private String lazilyInitialized;
   private String assignedInHelperMethod;
   private String assignedOnAnotherInstance;
+  private volatile String volatileField;
   private final String alreadyFinal = "final";
   private static String staticField;
   String packagePrivate;
@@ -49,6 +50,7 @@ class PrivateFieldShouldBeFinalCheckSample {
     Runnable r = () -> this.assignedInLambda = value;
     r.run();
     initialize(value);
+    this.volatileField = value;
     PrivateFieldShouldBeFinalCheckSample other = new PrivateFieldShouldBeFinalCheckSample();
     other.assignedOnAnotherInstance = value;
   }
@@ -77,13 +79,14 @@ class PrivateFieldShouldBeFinalCheckSample {
     return assignedInConstructor + assignedAtDeclaration + assignedInInitializerBlock + neverAssigned
       + assignedTwiceInConstructor + assignedConditionally + assignedInTry + assignedInLambda
       + assignedInHelperMethod + assignedOnAnotherInstance + alreadyFinal + staticField
-      + packagePrivate + protectedField + publicField + reassignedInMethod + incrementedInMethod;
+      + packagePrivate + protectedField + publicField + reassignedInMethod + incrementedInMethod
+      + volatileField;
   }
 }
 
 class AssignedInEveryConstructor {
 
-  private String value; // Noncompliant [[secondary=91,96]]
+  private String value; // Noncompliant [[secondary=94,99]]
 //               ^^^^^
   private String assignedInOnlyOneConstructor;
 
@@ -118,7 +121,7 @@ class AnnotatedFields {
 enum EnumWithPrivateField {
   INSTANCE("name");
 
-  private String label; // Noncompliant [[secondary=126]]
+  private String label; // Noncompliant [[secondary=129]]
 //               ^^^^^
   private int counter;
 
