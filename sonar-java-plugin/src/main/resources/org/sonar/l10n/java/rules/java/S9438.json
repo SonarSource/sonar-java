@@ -1,0 +1,24 @@
+{
+  "title": "Private fields that are never reassigned after construction should be declared \"final\"",
+  "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM",
+      "RELIABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "design"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-9438",
+  "sqKey": "S9438",
+  "scope": "Main",
+  "quickfix": "targeted"
+}
