@@ -40,6 +40,6 @@ class GetInstanceReturningNewInstanceCheckTest {
       .onFile(mainCodeSourcesPath(SAMPLE))
       .withCheck(CHECK)
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyIssues();
   }
 }
