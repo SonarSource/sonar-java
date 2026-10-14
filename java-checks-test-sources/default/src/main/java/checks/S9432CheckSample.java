@@ -20,6 +20,9 @@ public class S9432CheckSample {
     result = !input.strip().isEmpty(); // Noncompliant {{Use "isBlank()" on the original string instead.}}
     result = input.trim().isBlank(); // Noncompliant {{Use "isBlank()" on the original string instead, if Unicode whitespace should be treated as blank and control characters as non-blank.}}
     result = input.strip().isBlank(); // Noncompliant {{Use "isBlank()" on the original string instead.}}
+    result = (input.trim().length()) == 0; // Noncompliant {{Use "isBlank()" on the original string instead, if Unicode whitespace should be treated as blank and control characters as non-blank.}}
+    result = 0 < ((input.strip().length())); // Noncompliant {{Use "isBlank()" on the original string instead.}}
+    result = (input.trim()).isEmpty(); // Noncompliant {{Use "isBlank()" on the original string instead, if Unicode whitespace should be treated as blank and control characters as non-blank.}}
     return result;
   }
 
@@ -28,10 +31,15 @@ public class S9432CheckSample {
     boolean present = !input.isBlank();
     boolean longEnough = input.trim().length() > 1;
     boolean exactLength = input.strip().length() == 5;
+    boolean otherComparisons = input.trim().length() != 2 || input.trim().length() <= 1 || input.trim().length() < 2 || input.trim().length() >= 2
+      || 2 != input.trim().length() || 1 >= input.trim().length() || 2 > input.trim().length() || 2 <= input.trim().length() || 5 == input.trim().length() || 0 > input.trim().length();
+    int trimmedLength = input.trim().length();
+    boolean sumIsZero = input.trim().length() + trimmedLength == 0;
+    boolean parenthesizedSum = (input.strip().length()) + 1 > 0;
     boolean matches = input.trim().equals("value");
     String normalized = input.trim();
     audit(input.strip());
-    audit(normalized + blank + present + longEnough + exactLength + matches);
+    audit(normalized + blank + present + longEnough + exactLength + matches + sumIsZero + parenthesizedSum + otherComparisons);
   }
 
   void audit(String input) {

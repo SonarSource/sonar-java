@@ -106,14 +106,11 @@ public class S9432Check extends IssuableSubscriptionVisitor implements JavaVersi
       return false;
     }
     ExpressionTree left = ExpressionUtils.skipParentheses(binaryExpression.leftOperand());
-    ExpressionTree right = ExpressionUtils.skipParentheses(binaryExpression.rightOperand());
     if (left == lengthInvocation) {
+      ExpressionTree right = ExpressionUtils.skipParentheses(binaryExpression.rightOperand());
       return comparisonWithLiteralOnRight(binaryExpression, right);
     }
-    if (right == lengthInvocation) {
-      return comparisonWithLiteralOnLeft(binaryExpression, left);
-    }
-    return false;
+    return comparisonWithLiteralOnLeft(binaryExpression, left);
   }
 
   private static boolean comparisonWithLiteralOnRight(BinaryExpressionTree binaryExpression, ExpressionTree literal) {
