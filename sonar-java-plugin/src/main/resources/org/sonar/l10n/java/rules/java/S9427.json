@@ -8,7 +8,8 @@
   },
   "tags": [
     "junit",
-    "assertion"
+    "assertion",
+    "tests"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-9427",
