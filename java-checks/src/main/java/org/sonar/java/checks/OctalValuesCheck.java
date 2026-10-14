@@ -51,7 +51,11 @@ public class OctalValuesCheck extends BaseTreeVisitor implements JavaFileScanner
       return;
     }
     if (isPermission(value)) {
-      context.reportIssue(this, tree, String.format("If this is a file permission mode, use the symbolic permission string \"%s\"; otherwise use the decimal value. %s", toSymbolicPermissions(value), EXPLICIT_PREFIX_MESSAGE));
+      String message = String.format(
+        "If this is a file permission mode, use the symbolic permission string \"%s\"; otherwise use the decimal value. %s",
+        toSymbolicPermissions(value),
+        EXPLICIT_PREFIX_MESSAGE);
+      context.reportIssue(this, tree, message);
     } else {
       context.reportIssue(this, tree, "Use decimal values instead of octal ones. " + EXPLICIT_PREFIX_MESSAGE);
     }
