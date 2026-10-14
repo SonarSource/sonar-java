@@ -241,27 +241,6 @@ public class PrivateFieldShouldBeFinalCheck extends IssuableSubscriptionVisitor 
       .toList();
   }
 
-  /**
-   * A constructor delegating to another one of the same class must not assign a final field itself,
-   * so it does not take part in the "every constructor assigns the field" requirement.
-   */
-  private static boolean delegatesToAnotherConstructor(MethodTree constructor) {
-    BlockTree block = constructor.block();
-    if (block == null || block.body().isEmpty()) {
-      return false;
-    }
-    StatementTree first = block.body().get(0);
-    if (!first.is(Tree.Kind.EXPRESSION_STATEMENT)) {
-      return false;
-    }
-    ExpressionTree expression = ((ExpressionStatementTree) first).expression();
-    if (!expression.is(Tree.Kind.METHOD_INVOCATION)) {
-      return false;
-    }
-    ExpressionTree methodSelect = ((MethodInvocationTree) expression).methodSelect();
-    return methodSelect.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) methodSelect).name());
-  }
-
   private static class InitializationWrites {
 
     private final List<MethodTree> assigningConstructors = new ArrayList<>();
@@ -310,11 +289,32 @@ public class PrivateFieldShouldBeFinalCheck extends IssuableSubscriptionVisitor 
         .filter(constructor -> !delegatesToAnotherConstructor(constructor))
         .toList();
       return !required.isEmpty()
-        && required.stream().allMatch(constructor -> assignedExactlyOnceIn(constructor));
+        && required.stream().allMatch(this::assignedExactlyOnceIn);
     }
 
     private boolean assignedExactlyOnceIn(MethodTree constructor) {
       return assigningConstructors.stream().filter(constructor::equals).count() == 1;
+    }
+
+    /**
+     * A constructor delegating to another one of the same class must not assign a final field itself,
+     * so it does not take part in the "every constructor assigns the field" requirement.
+     */
+    private static boolean delegatesToAnotherConstructor(MethodTree constructor) {
+      BlockTree block = constructor.block();
+      if (block == null || block.body().isEmpty()) {
+        return false;
+      }
+      StatementTree first = block.body().get(0);
+      if (!first.is(Tree.Kind.EXPRESSION_STATEMENT)) {
+        return false;
+      }
+      ExpressionTree expression = ((ExpressionStatementTree) first).expression();
+      if (!expression.is(Tree.Kind.METHOD_INVOCATION)) {
+        return false;
+      }
+      ExpressionTree methodSelect = ((MethodInvocationTree) expression).methodSelect();
+      return methodSelect.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) methodSelect).name());
     }
   }
 }
