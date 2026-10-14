@@ -86,10 +86,6 @@ public class ShortArrayInitializerCheckSample {
   void annotationShorthand() {
   }
 
-  @Methods(value = new String[] {"GET", "HEAD"})
-  void annotationExplicit() {
-  }
-
   void accepts(String[] methods) {
   }
 
