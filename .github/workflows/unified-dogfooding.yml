@@ -43,7 +43,7 @@ jobs:
     name: Run IRIS
     permissions:
       id-token: write
-      contents: write
+      contents: read
     steps:
       - name: Run IRIS Analysis
         uses: SonarSource/unified-dogfooding-actions/run-iris@v1
