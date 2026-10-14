@@ -19,21 +19,21 @@ class A {
   int r = 0311; // Noncompliant
   int s = 01234; // Noncompliant
 
-  int perm1 = 0400; // Noncompliant {{Use the symbolic permission string "r--------" instead of this octal value. If an octal value is intended, use the more explicit "0_" prefix.}}
+  int perm1 = 0400; // Noncompliant {{If this is a file permission mode, use the symbolic permission string "r--------"; otherwise use the decimal value. If an octal value is intended, use the more explicit "0_" prefix.}}
 //            ^^^^
-  int perm2 = 0444; // Noncompliant {{Use the symbolic permission string "r--r--r--" instead of this octal value. If an octal value is intended, use the more explicit "0_" prefix.}}
-  int perm3 = 0600; // Noncompliant {{Use the symbolic permission string "rw-------" instead of this octal value. If an octal value is intended, use the more explicit "0_" prefix.}}
-  int perm4 = 0640; // Noncompliant {{Use the symbolic permission string "rw-r-----" instead of this octal value. If an octal value is intended, use the more explicit "0_" prefix.}}
-  int perm5 = 0644; // Noncompliant {{Use the symbolic permission string "rw-r--r--" instead of this octal value. If an octal value is intended, use the more explicit "0_" prefix.}}
-  int perm6 = 0660; // Noncompliant {{Use the symbolic permission string "rw-rw----" instead of this octal value. If an octal value is intended, use the more explicit "0_" prefix.}}
-  int perm7 = 0664; // Noncompliant {{Use the symbolic permission string "rw-rw-r--" instead of this octal value. If an octal value is intended, use the more explicit "0_" prefix.}}
-  int perm8 = 0666; // Noncompliant {{Use the symbolic permission string "rw-rw-rw-" instead of this octal value. If an octal value is intended, use the more explicit "0_" prefix.}}
-  int perm9 = 0700; // Noncompliant {{Use the symbolic permission string "rwx------" instead of this octal value. If an octal value is intended, use the more explicit "0_" prefix.}}
-  int perm10 = 0750; // Noncompliant {{Use the symbolic permission string "rwxr-x---" instead of this octal value. If an octal value is intended, use the more explicit "0_" prefix.}}
-  int perm11 = 0755; // Noncompliant {{Use the symbolic permission string "rwxr-xr-x" instead of this octal value. If an octal value is intended, use the more explicit "0_" prefix.}}
-  int perm12 = 0770; // Noncompliant {{Use the symbolic permission string "rwxrwx---" instead of this octal value. If an octal value is intended, use the more explicit "0_" prefix.}}
-  int perm13 = 0775; // Noncompliant {{Use the symbolic permission string "rwxrwxr-x" instead of this octal value. If an octal value is intended, use the more explicit "0_" prefix.}}
-  int perm14 = 0777; // Noncompliant {{Use the symbolic permission string "rwxrwxrwx" instead of this octal value. If an octal value is intended, use the more explicit "0_" prefix.}}
+  int perm2 = 0444; // Noncompliant {{If this is a file permission mode, use the symbolic permission string "r--r--r--"; otherwise use the decimal value. If an octal value is intended, use the more explicit "0_" prefix.}}
+  int perm3 = 0600; // Noncompliant {{If this is a file permission mode, use the symbolic permission string "rw-------"; otherwise use the decimal value. If an octal value is intended, use the more explicit "0_" prefix.}}
+  int perm4 = 0640; // Noncompliant {{If this is a file permission mode, use the symbolic permission string "rw-r-----"; otherwise use the decimal value. If an octal value is intended, use the more explicit "0_" prefix.}}
+  int perm5 = 0644; // Noncompliant {{If this is a file permission mode, use the symbolic permission string "rw-r--r--"; otherwise use the decimal value. If an octal value is intended, use the more explicit "0_" prefix.}}
+  int perm6 = 0660; // Noncompliant {{If this is a file permission mode, use the symbolic permission string "rw-rw----"; otherwise use the decimal value. If an octal value is intended, use the more explicit "0_" prefix.}}
+  int perm7 = 0664; // Noncompliant {{If this is a file permission mode, use the symbolic permission string "rw-rw-r--"; otherwise use the decimal value. If an octal value is intended, use the more explicit "0_" prefix.}}
+  int perm8 = 0666; // Noncompliant {{If this is a file permission mode, use the symbolic permission string "rw-rw-rw-"; otherwise use the decimal value. If an octal value is intended, use the more explicit "0_" prefix.}}
+  int perm9 = 0700; // Noncompliant {{If this is a file permission mode, use the symbolic permission string "rwx------"; otherwise use the decimal value. If an octal value is intended, use the more explicit "0_" prefix.}}
+  int perm10 = 0750; // Noncompliant {{If this is a file permission mode, use the symbolic permission string "rwxr-x---"; otherwise use the decimal value. If an octal value is intended, use the more explicit "0_" prefix.}}
+  int perm11 = 0755; // Noncompliant {{If this is a file permission mode, use the symbolic permission string "rwxr-xr-x"; otherwise use the decimal value. If an octal value is intended, use the more explicit "0_" prefix.}}
+  int perm12 = 0770; // Noncompliant {{If this is a file permission mode, use the symbolic permission string "rwxrwx---"; otherwise use the decimal value. If an octal value is intended, use the more explicit "0_" prefix.}}
+  int perm13 = 0775; // Noncompliant {{If this is a file permission mode, use the symbolic permission string "rwxrwxr-x"; otherwise use the decimal value. If an octal value is intended, use the more explicit "0_" prefix.}}
+  int perm14 = 0777; // Noncompliant {{If this is a file permission mode, use the symbolic permission string "rwxrwxrwx"; otherwise use the decimal value. If an octal value is intended, use the more explicit "0_" prefix.}}
   int perm15 = 01777; // Noncompliant {{Use decimal values instead of octal ones. If an octal value is intended, use the more explicit "0_" prefix.}}
   int perm16 = 02755; // Noncompliant {{Use decimal values instead of octal ones. If an octal value is intended, use the more explicit "0_" prefix.}}
   int perm17 = 04755; // Noncompliant {{Use decimal values instead of octal ones. If an octal value is intended, use the more explicit "0_" prefix.}}
