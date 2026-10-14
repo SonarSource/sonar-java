@@ -18,6 +18,7 @@ package org.sonar.java.matcher;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -35,27 +36,36 @@ public class MethodMatchersList implements MethodMatchers {
 
   @Override
   public boolean matches(NewClassTree newClassTree) {
-    return matchers.stream().anyMatch(matcher -> matcher.matches(newClassTree));
+    return matchesAny(matcher -> matcher.matches(newClassTree));
   }
 
   @Override
   public boolean matches(MethodInvocationTree mit) {
-    return matchers.stream().anyMatch(matcher -> matcher.matches(mit));
+    return matchesAny(matcher -> matcher.matches(mit));
   }
 
   @Override
   public boolean matches(MethodTree methodTree) {
-    return matchers.stream().anyMatch(matcher -> matcher.matches(methodTree));
+    return matchesAny(matcher -> matcher.matches(methodTree));
   }
 
   @Override
   public boolean matches(MethodReferenceTree methodReferenceTree) {
-    return matchers.stream().anyMatch(matcher -> matcher.matches(methodReferenceTree));
+    return matchesAny(matcher -> matcher.matches(methodReferenceTree));
   }
 
   @Override
   public boolean matches(Symbol symbol) {
-    return matchers.stream().anyMatch(matcher -> matcher.matches(symbol));
+    return matchesAny(matcher -> matcher.matches(symbol));
+  }
+
+  private boolean matchesAny(Predicate<MethodMatchers> predicate) {
+    for (MethodMatchers matcher : matchers) {
+      if (predicate.test(matcher)) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }
