@@ -1,0 +1,104 @@
+{
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java": [
+1108
+],
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/ArrayConverter.java": [
+135
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanMapTestCase.java": [
+181,
+208,
+226
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java": [
+679,
+681
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java": [
+305,
+306,
+494,
+496
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanMapDecoratorTestCase.java": [
+44,
+53
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java": [
+530,
+532
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java": [
+42
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java": [
+212,
+1030,
+1031,
+1051,
+1052,
+1167,
+2603,
+2604,
+2620,
+2621,
+3082
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestBean.java": [
+514
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira345TestCase.java": [
+98,
+100
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira381TestCase.java": [
+52
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira465TestCase.java": [
+83,
+95
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/other/Jira18BeanFactory.java": [
+43
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/other/Jira61BeanFactory.java": [
+44
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ArrayConverterTestCase.java": [
+76,
+79,
+80,
+81,
+82,
+217,
+225,
+226,
+271
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/BooleanConverterTestCase.java": [
+28,
+32
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/DateConverterTestBase.java": [
+316
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/expression/DefaultResolverTestCase.java": [
+31,
+32,
+35,
+36,
+37,
+40,
+41,
+42,
+44,
+45,
+46
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java": [
+352,
+353,
+548,
+550
+]
+}

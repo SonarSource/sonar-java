@@ -1,0 +1,106 @@
+{
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java": [
+50,
+821
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpParserTest.java": [
+374,
+379,
+748
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/UriTemplatePathSpecBadSpecsTest.java": [
+36
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/WriteFlusher.java": [
+50
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java": [
+374
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHttpOutputInterceptor.java": [
+47
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpChannelEventTest.java": [
+111
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestBase.java": [
+598,
+630
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartParserTest.java": [
+477
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyProtocolTest.java": [
+124,
+125
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ResponseTest.java": [
+957,
+958,
+1034,
+1035,
+1361,
+1434
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerCollectionTest.java": [
+104
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/InetAccessHandlerTest.java": [
+149,
+165
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/SecuredRedirectHandlerTest.java": [
+100
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SelectChannelServerSslTest.java": [
+193
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Utf8Appendable.java": [
+56
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java": [
+56,
+57
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java": [
+450,
+467,
+520,
+536,
+597,
+618,
+684,
+706,
+1863,
+1878,
+1895,
+2014,
+2037,
+2102,
+2121
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/SearchPatternTest.java": [
+227
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/TrieTest.java": [
+86
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/URIUtilTest.java": [
+680
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/URLEncodedTest.java": [
+171
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/Utf8AppendableTest.java": [
+260
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/JarResourceTest.java": [
+205,
+233,
+257
+],
+"eclipse-jetty:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlConfigurationTest.java": [
+1306,
+1335
+]
+}
