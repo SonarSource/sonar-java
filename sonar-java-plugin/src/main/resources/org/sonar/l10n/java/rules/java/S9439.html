@@ -1,0 +1,64 @@
+<h2>Why is this an issue?</h2>
+<p>When an array variable or field is declared and initialized in the same statement, Java allows the array initializer to stand on its own:
+<code>int[] delays = {100, 500, 2000};</code>. Writing an explicit array creation expression in front of it, as in <code>int[] delays = new int[]
+{100, 500, 2000};</code>, repeats the element type and the array-ness that the declaration on the left already states.</p>
+<p>The line then carries the same type information twice and pushes the values, the only part that actually differs between two such declarations,
+further to the right. In a class holding several constant arrays, this repetition makes the declarations harder to scan and to compare.</p>
+<p>Both forms compile to the same bytecode, so dropping the redundant <code>new &lt;type&gt;[]</code> prefix changes nothing at runtime.</p>
+<p>This rule raises an issue when a local variable declaration or a field declaration uses an array initializer preceded by an explicit array creation
+expression whose type is the same as the declared type.</p>
+<p>To fix it, delete the <code>new &lt;type&gt;[]</code> prefix and keep the curly-brace initializer alone.</p>
+<h3>Exceptions</h3>
+<p>The shorthand initializer is only legal in a declaration. Everywhere else the explicit array creation expression is mandatory, so no issue is
+raised on:</p>
+<ul>
+  <li>an assignment to an already-declared variable, as in <code>delays = new int[] {100, 500};</code></li>
+  <li>a method argument, as in <code>handler.accepts(new String[] {"GET", "HEAD"});</code></li>
+  <li>a return statement, as in <code>return new int[] {0};</code></li>
+  <li>a varargs call site that passes an explicit array, as in <code>List.of(new String[] {"a", "b"});</code></li>
+  <li>an annotation element value, as in <code>@SuppressWarnings(value = new String[] {"unchecked"})</code></li>
+</ul>
+<p>No issue is raised either when the created type differs from the declared type, because dropping the prefix would change the runtime type of the
+array:</p>
+<pre>
+Object[] values = new String[] {"GET", "HEAD"};
+</pre>
+<p>Declarations using <code>var</code> are not reported, since <code>var values = {1, 2};</code> does not compile: an array initializer carries no
+type of its own and <code>var</code> needs one.</p>
+<h2>How to fix it</h2>
+<p>Remove the <code>new &lt;type&gt;[]</code> part that sits between the <code>=</code> sign and the opening brace, and leave the initializer as is.
+The number and the order of the elements stay untouched, and the declared type on the left keeps driving the type of the created array, so the fix
+preserves behavior.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class HttpDefaults {
+
+  private static final String[] SAFE_METHODS = new String[] {"GET", "HEAD", "OPTIONS"}; // Noncompliant
+
+  public int retryDelay(int attempt) {
+    int[] delays = new int[] {100, 500, 2000}; // Noncompliant
+    return delays[Math.min(attempt, delays.length - 1)];
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class HttpDefaults {
+
+  private static final String[] SAFE_METHODS = {"GET", "HEAD", "OPTIONS"};
+
+  public int retryDelay(int attempt) {
+    int[] delays = {100, 500, 2000};
+    return delays[Math.min(attempt, delays.length - 1)];
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/arrays.html">Arrays</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-10.html">Java Language Specification - Chapter 10.
+  Arrays</a></li>
+</ul>
+
