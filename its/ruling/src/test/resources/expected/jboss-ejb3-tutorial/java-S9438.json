@@ -1,0 +1,23 @@
+{
+"jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/bean/EntityTestBean.java": [
+50
+],
+"jboss-ejb3-tutorial:injection/src/org/jboss/tutorial/injection/bean/ShoppingCartBean.java": [
+35
+],
+"jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/bean/ShoppingCartBean.java": [
+29
+],
+"jboss-ejb3-tutorial:jndibinding/src/org/jboss/tutorial/jndibinding/bean/CustomerBean.java": [
+46
+],
+"jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/ExternalCallbackListener.java": [
+40
+],
+"jboss-ejb3-tutorial:stateful/src/org/jboss/tutorial/stateful/bean/ShoppingCartBean.java": [
+35
+],
+"jboss-ejb3-tutorial:stateful_deployment_descriptor/src/org/jboss/tutorial/stateful_deployment_descriptor/bean/ShoppingCartBean.java": [
+29
+]
+}
