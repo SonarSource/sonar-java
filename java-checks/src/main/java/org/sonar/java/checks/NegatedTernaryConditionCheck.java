@@ -18,11 +18,18 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 @Rule(key = "S9435")
 public class NegatedTernaryConditionCheck extends IssuableSubscriptionVisitor {
+
+  private static final String MESSAGE = "Invert this negated condition and swap the two branches of the ternary.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -31,6 +38,34 @@ public class NegatedTernaryConditionCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    // FIXME implemented in the next step
+    ExpressionTree condition = ((ConditionalExpressionTree) tree).condition();
+    if (isNegated(ExpressionUtils.skipParentheses(condition))) {
+      reportIssue(condition, MESSAGE);
+    }
+  }
+
+  private static boolean isNegated(ExpressionTree condition) {
+    if (condition.is(Tree.Kind.LOGICAL_COMPLEMENT)) {
+      ExpressionTree negated = ExpressionUtils.skipParentheses(((UnaryExpressionTree) condition).expression());
+      // "!(value == null)" is a null check spelled the long way, and is exempt like "value != null".
+      return !isNullComparison(negated, Tree.Kind.EQUAL_TO);
+    }
+    return isNotEqualButNotNullCheck(condition);
+  }
+
+  private static boolean isNotEqualButNotNullCheck(ExpressionTree condition) {
+    return condition.is(Tree.Kind.NOT_EQUAL_TO) && !isNullComparison(condition, Tree.Kind.NOT_EQUAL_TO);
+  }
+
+  private static boolean isNullComparison(ExpressionTree expression, Tree.Kind kind) {
+    if (!expression.is(kind)) {
+      return false;
+    }
+    BinaryExpressionTree comparison = (BinaryExpressionTree) expression;
+    return isNullLiteral(comparison.leftOperand()) || isNullLiteral(comparison.rightOperand());
+  }
+
+  private static boolean isNullLiteral(ExpressionTree expression) {
+    return ExpressionUtils.skipParentheses(expression).is(Tree.Kind.NULL_LITERAL);
   }
 }
