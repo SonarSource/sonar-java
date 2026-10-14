@@ -86,6 +86,47 @@ class Fields {
     public final int foo = 1; // WithIssue
   }
 
+  // A generated setter reassigns the field, so it cannot be made final
+  @lombok.Setter
+  class SetterAssignedInConstructor { // WithIssue
+    private int foo; // NoIssue
+
+    SetterAssignedInConstructor(int foo) {
+      this.foo = foo;
+    }
+
+    int read() {
+      return foo;
+    }
+  }
+
+  // A generated no-arg constructor leaves the field unassigned, so it cannot be made final
+  @lombok.NoArgsConstructor
+  class NoArgsConstructorAssignedInConstructor { // WithIssue
+    private int foo; // NoIssue
+
+    NoArgsConstructorAssignedInConstructor(int foo) {
+      this.foo = foo;
+    }
+
+    int read() {
+      return foo;
+    }
+  }
+
+  // Without a generated setter, a field assigned only in the constructor should be made final
+  class SetterAssignedInConstructor2 { // WithIssue
+    private int foo; // WithIssue
+
+    SetterAssignedInConstructor2(int foo) {
+      this.foo = foo;
+    }
+
+    int read() {
+      return foo;
+    }
+  }
+
   @lombok.ToString
   class ToString { // WithIssue
     private int foo; // NoIssue
