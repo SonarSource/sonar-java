@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class GetInstanceReturningNewInstanceCheckTest {
 
@@ -41,5 +42,13 @@ class GetInstanceReturningNewInstanceCheckTest {
       .withCheck(CHECK)
       .withoutSemantic()
       .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath(SAMPLE))
+      .withCheck(CHECK)
+      .verifyNoIssues();
   }
 }

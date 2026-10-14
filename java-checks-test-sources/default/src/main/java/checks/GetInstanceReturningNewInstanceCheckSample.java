@@ -152,6 +152,25 @@ class GetInstanceReturningNewInstanceCheckSample {
     }
   }
 
+  static class NativeAccessor {
+
+    static native NativeAccessor getInstance();
+  }
+
+  static class Throwing {
+
+    static Throwing getInstance() {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  static class ReturnsNothing {
+
+    static void getInstance() {
+      return;
+    }
+  }
+
   interface WithoutBody {
 
     static WithoutBody getInstance() {
