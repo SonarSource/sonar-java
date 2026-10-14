@@ -1,0 +1,57 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/MeasureComputerDefinitionImpl.java": [
+85
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LanguageDistributionMeasuresStep.java": [
+58
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/NewSizeMeasuresStep.java": [
+169
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/UnitTestMeasuresStep.java": [
+53
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/index/ProjectMeasuresIndex.java": [
+112,
+113,
+114
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/plugins/ServerPluginRepository.java": [
+78
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/ws/SearchAction.java": [
+106
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/MaintainabilityMeasuresVisitorTest.java": [
+69
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewMaintainabilityMeasuresVisitorTest.java": [
+68
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/RatingGridTest.java": [
+44
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/source/HighlightingLineReaderTest.java": [
+126
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadMeasureComputersStepTest.java": [
+61,
+70,
+85,
+105,
+122,
+132,
+142,
+149,
+177,
+187,
+221
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/platform/web/WebPagesFilterTest.java": [
+179
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/QProfileExportersTest.java": [
+74,
+76
+]
+}
