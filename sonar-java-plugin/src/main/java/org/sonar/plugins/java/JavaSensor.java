@@ -91,10 +91,11 @@ public class JavaSensor implements Sensor {
     this.springContextGatheringModel = springContextGatheringModel;
     this.sonarComponents.registerMainChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaChecks());
     this.sonarComponents.registerTestChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaTestChecks());
+    // Main scope only: the Spring context model describes the application context, which never contains the beans
+    // declared by test code. Gatherers registered for RuleScope.TEST would be handed exactly the files
+    // JavaFileTypeClassifier already excludes, and collect nothing.
     SpringContextModelGatherers.getAllGatherers(springContextGatheringModel, telemetry)
       .forEach(gatherer -> this.sonarComponents.registerCustomFileScanner(RuleScope.MAIN, gatherer));
-    SpringContextModelGatherers.getAllGatherers(springContextGatheringModel, telemetry)
-      .forEach(gatherer -> this.sonarComponents.registerCustomFileScanner(RuleScope.TEST, gatherer));
   }
 
   @Override

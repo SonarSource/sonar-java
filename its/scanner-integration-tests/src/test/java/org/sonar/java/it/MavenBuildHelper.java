@@ -31,6 +31,8 @@ class MavenBuildHelper {
 
   static final String SOURCES_DIR = "src/main/java";
   static final String BINARIES_DIR = "target/classes";
+  static final String TEST_SOURCES_DIR = "src/test/java";
+  static final String TEST_BINARIES_DIR = "target/test-classes";
 
   private static final long BUILD_TIMEOUT_SECONDS = 45;
 
@@ -41,7 +43,15 @@ class MavenBuildHelper {
   }
 
   void build() {
-    runMaven("clean", "compile", "dependency:build-classpath", "-Dmdep.outputFile=target/classpath.txt");
+    runMaven("clean", "test-compile", "dependency:build-classpath", "-Dmdep.outputFile=target/classpath.txt");
+  }
+
+  /**
+   * Returns whether the given module declares test sources, so that {@code sonar.tests} is only set for modules
+   * that have them: the scanner fails on a path that does not exist.
+   */
+  boolean hasTestSources(String moduleName) {
+    return Files.isDirectory(projectBaseDir.resolve(moduleName).resolve(TEST_SOURCES_DIR));
   }
 
   String resolveLibraries(String moduleName, Set<String> allModuleNames) {
