@@ -29,6 +29,7 @@ import org.sonar.java.checks.EqualsNotOverriddenInSubclassCheck;
 import org.sonar.java.checks.EqualsNotOverriddenWithCompareToCheck;
 import org.sonar.java.checks.ExceptionsShouldBeImmutableCheck;
 import org.sonar.java.checks.FieldModifierCheck;
+import org.sonar.java.checks.PrivateFieldShouldBeFinalCheck;
 import org.sonar.java.checks.PrivateFieldUsedLocallyCheck;
 import org.sonar.java.checks.RegexPatternsNeedlesslyCheck;
 import org.sonar.java.checks.SillyEqualsCheck;
@@ -66,6 +67,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     /* S1165 */ ExceptionsShouldBeImmutableCheck.class,
     /* S2039 */ FieldModifierCheck.class,
     /* S1450 */ PrivateFieldUsedLocallyCheck.class,
+    /* S9438 */ PrivateFieldShouldBeFinalCheck.class,
     /* S4248 */ RegexPatternsNeedlesslyCheck.class,
     /* S2159 */ SillyEqualsCheck.class,
     /* S2325 */ StaticMethodCheck.class,
@@ -105,6 +107,12 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     LOMBOK_DATA,
     LOMBOK_VALUE);
 
+  private static final List<String> GENERATE_SETTERS = List.of(
+    "lombok.Setter",
+    LOMBOK_DATA,
+    LOMBOK_BUILDER,
+    LOMBOK_SUPER_BUILDER);
+
   private static final List<String> UTILITY_CLASS = Collections.singletonList("lombok.experimental.UtilityClass");
 
   private static final List<String> NON_FINAL = Collections.singletonList("lombok.experimental.NonFinal");
@@ -129,6 +137,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
 
     excludeLinesIfTrue(generatesEquals || usesAnnotation(tree, GENERATE_UNUSED_FIELD_RELATED_METHODS), tree, UnusedPrivateFieldCheck.class, PrivateFieldUsedLocallyCheck.class);
     excludeLinesIfTrue(usesAnnotation(tree, GENERATE_CONSTRUCTOR), tree, AtLeastOneConstructorCheck.class);
+    excludeLinesIfTrue(usesAnnotation(tree, GENERATE_SETTERS), tree, PrivateFieldShouldBeFinalCheck.class);
     excludeLinesIfTrue(generatesEquals, tree, EqualsNotOverriddenInSubclassCheck.class, EqualsNotOverriddenWithCompareToCheck.class);
     excludeLinesIfTrue(generatesNonPublicConstructor(tree), tree, UtilityClassWithPublicConstructorCheck.class);
     boolean isUtilityClass = usesAnnotation(tree, UTILITY_CLASS);

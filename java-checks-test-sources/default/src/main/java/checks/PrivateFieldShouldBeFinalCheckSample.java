@@ -7,11 +7,11 @@ import javax.annotation.Nullable;
 
 class PrivateFieldShouldBeFinalCheckSample {
 
-  private String assignedInConstructor; // Noncompliant {{Make this private field "final", it is never reassigned after construction.}}
+  private String assignedInConstructor; // Noncompliant {{Make this private field "final", it is never reassigned after construction.}} [[secondary=38]]
 //               ^^^^^^^^^^^^^^^^^^^^^
   private List<String> assignedAtDeclaration = new ArrayList<>(); // Noncompliant
 //                     ^^^^^^^^^^^^^^^^^^^^^
-  private int assignedInInitializerBlock; // Noncompliant
+  private int assignedInInitializerBlock; // Noncompliant [[secondary=34]]
 //            ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   private int reassignedInMethod;
@@ -32,12 +32,10 @@ class PrivateFieldShouldBeFinalCheckSample {
 
   {
     assignedInInitializerBlock = 1;
-//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
   }
 
   PrivateFieldShouldBeFinalCheckSample(String value) {
     this.assignedInConstructor = value;
-//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
     this.assignedTwiceInConstructor = value;
     this.assignedTwiceInConstructor = value + value;
     if (value != null) {
@@ -85,19 +83,17 @@ class PrivateFieldShouldBeFinalCheckSample {
 
 class AssignedInEveryConstructor {
 
-  private String value; // Noncompliant
+  private String value; // Noncompliant [[secondary=91,96]]
 //               ^^^^^
   private String assignedInOnlyOneConstructor;
 
   AssignedInEveryConstructor() {
     this.value = "default";
-//  ^^^^^^^^^^^^^^^^^^^^^^<
     this.assignedInOnlyOneConstructor = "default";
   }
 
   AssignedInEveryConstructor(String value) {
     this.value = value;
-//  ^^^^^^^^^^^^^^^^^^<
   }
 
   String read() {
@@ -122,13 +118,12 @@ class AnnotatedFields {
 enum EnumWithPrivateField {
   INSTANCE("name");
 
-  private String label; // Noncompliant
+  private String label; // Noncompliant [[secondary=126]]
 //               ^^^^^
   private int counter;
 
   EnumWithPrivateField(String label) {
     this.label = label;
-//  ^^^^^^^^^^^^^^^^^^<
   }
 
   void increment() {
