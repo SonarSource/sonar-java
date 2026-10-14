@@ -1,0 +1,24 @@
+{
+  "title": "\"getInstance()\" methods should not return a new instance on every call",
+  "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH",
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "design"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9437",
+  "sqKey": "S9437",
+  "scope": "All",
+  "quickfix": "infeasible"
+}
