@@ -56,6 +56,7 @@ final class SpringContextModelPersistence {
       if (model == null) {
         throw new IllegalArgumentException("JSON document is empty");
       }
+      LOG.info("Restoring model from file {}.", path);
       return model;
     } catch (IOException | RuntimeException e) {
       LOG.warn("Unable to load Spring context model from {}, starting from an empty model", path, e);
