@@ -1,0 +1,51 @@
+<p>An issue is raised when a literal value (numeric, boolean, or other primitive) is converted to a string by concatenating it with an empty string
+rather than using explicit conversion methods.</p>
+<h2>Why is this an issue?</h2>
+<p>Converting literals to strings by concatenating them with empty strings is an inefficient and unclear approach.</p>
+<p>When you write an expression that concatenates an empty string with a non-string value, the language runtime must:</p>
+<ul>
+  <li>Create a string building object or buffer</li>
+  <li>Append the empty string</li>
+  <li>Append the value after converting it to a string</li>
+  <li>Call a method to extract the final string result</li>
+</ul>
+<p>This creates unnecessary intermediate objects and performs extra operations. More importantly, the intent is unclear - a developer reading an empty
+string concatenated with a value must infer that this is a type conversion, rather than seeing an explicit conversion call.</p>
+<p>Most languages provide explicit, efficient methods for converting primitives to strings:</p>
+<ul>
+  <li>Type-specific conversion functions (e.g., functions that convert integers to strings, booleans to strings)</li>
+  <li>Generic conversion functions that accept any value type</li>
+</ul>
+<p>These methods directly convert the value to a string without unnecessary intermediate steps, making both the intent and the operation clearer.</p>
+<p>In Java, these explicit methods include <code>Integer.toString()</code>, <code>Boolean.toString()</code>, and other type-specific methods, or the
+generic <code>String.valueOf()</code> method.</p>
+<h3>What is the potential impact?</h3>
+<p>The performance impact of using string operations as an indirect method for type conversion is typically small in individual cases, but can
+accumulate in large applications or performance-sensitive code paths. More significantly, this pattern reduces code readability and maintainability by
+obscuring the developer’s intent.</p>
+<h2>How to fix it</h2>
+<p>Replace empty string concatenation with explicit type conversion methods. For primitive types, use the wrapper class’s static
+<code>toString()</code> method (e.g., <code>Integer.toString()</code>, <code>Long.toString()</code>, <code>Boolean.toString()</code>). Alternatively,
+use <code>String.valueOf()</code> which works for all types.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+String s = "" + 123;   // Noncompliant
+String b = "" + true;  // Noncompliant
+String f = "" + 3.14f; // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+String s = Integer.toString(123);
+String b = Boolean.toString(true);
+String f = Float.toString(3.14f);
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html#valueOf(int)">String
+  (Java SE 17 &amp; JDK 17)</a></li>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html#toString(int)">Integer
+  (Java SE 17 &amp; JDK 17)</a></li>
+</ul>
+
