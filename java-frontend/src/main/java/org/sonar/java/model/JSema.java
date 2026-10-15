@@ -102,11 +102,19 @@ public final class JSema implements Sema {
   }
 
   public JInitializerBlockSymbol initializerBlockSymbol(JTypeSymbol owner) {
-    return initializerBlockSymbols.computeIfAbsent(owner, k -> new JInitializerBlockSymbol(owner, false));
+    JInitializerBlockSymbol cached = initializerBlockSymbols.get(owner);
+    if (cached != null) {
+      return cached;
+    }
+    return initializerBlockSymbols.computeIfAbsent(owner, k -> new JInitializerBlockSymbol(k, false));
   }
 
   public JInitializerBlockSymbol staticInitializerBlockSymbol(JTypeSymbol owner) {
-    return staticInitializerBlockSymbols.computeIfAbsent(owner, k -> new JInitializerBlockSymbol(owner, true));
+    JInitializerBlockSymbol cached = staticInitializerBlockSymbols.get(owner);
+    if (cached != null) {
+      return cached;
+    }
+    return staticInitializerBlockSymbols.computeIfAbsent(owner, k -> new JInitializerBlockSymbol(k, true));
   }
 
 
