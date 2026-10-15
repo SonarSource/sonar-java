@@ -42,7 +42,7 @@ class StringIsEmptyCheckTest {
   }
 
   @Test
-  void trim_11() {
+  void blank_11() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/StringIsBlankCheckSample.java"))
       .withCheck(new StringIsEmptyCheck())
@@ -51,7 +51,7 @@ class StringIsEmptyCheckTest {
   }
 
   @Test
-  void trim_11_without_semantic() {
+  void blank_11_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/StringIsBlankCheckSample.java"))
       .withCheck(new StringIsEmptyCheck())

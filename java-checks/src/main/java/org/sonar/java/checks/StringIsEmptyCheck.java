@@ -39,8 +39,8 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 /**
  * Implement rule that <pre>CharSequence.length() == 0</pre> should be replaced with
- * <pre>CharSequence.isEmpty()</pre>, and <pre>String.trim().length() == 0</pre> with
- * <pre>String.isBlank()</pre>.
+ * <pre>CharSequence.isEmpty()</pre>, and <pre>String.strip().length() == 0</pre> or
+ * <pre>String.trim().length() == 0</pre> with <pre>String.isBlank()</pre>.
  */
 @Rule(key = "S7158")
 public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
@@ -56,11 +56,23 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
     .addWithoutParametersMatcher()
     .build();
 
-  private static final MethodMatchers STRING_TRIM_METHOD = MethodMatchers.create()
+  private static final String TRIM_NAME = "trim";
+
+  private static final MethodMatchers STRING_WHITESPACE_REMOVAL_METHODS = MethodMatchers.create()
     .ofTypes(JAVA_LANG_STRING)
-    .names("trim")
+    .names("strip", TRIM_NAME)
     .addWithoutParametersMatcher()
     .build();
+
+  /**
+   * <pre>trim()</pre> removes every character up to and including <pre>U+0020</pre>, while <pre>isBlank()</pre> relies on
+   * <pre>Character.isWhitespace</pre>. They disagree on control characters below <pre>U+0020</pre> and on Unicode white
+   * space above it, so replacing one with the other can change behaviour.
+   */
+  private static final String TRIM_CAVEAT =
+    "Use this if Unicode whitespace should be treated as blank and control characters as non-blank.";
+
+  private static final String TRIM_FIX_CAVEAT = " (Unicode whitespace is treated as blank, control characters as non-blank)";
 
   private static final MethodMatchers CHARSEQUENCE_LENGTH_METHOD = MethodMatchers.create()
     .ofSubTypes("java.lang.CharSequence")
@@ -129,28 +141,33 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
     }
 
     if (lengthCall != null && isEmptinessCheck(comparisonType)) {
-      // `s.trim().length() == 0` is a blankness check, which `isBlank()` expresses directly.
-      MethodInvocationTree trimCall = getTrimCall(lengthCall);
-      String replacedMethod = trimCall != null ? "isBlank()" : "isEmpty()";
-      String adjective = trimCall != null ? "blank" : "empty";
-      MethodInvocationTree replacementStart = trimCall != null ? trimCall : lengthCall;
+      // `s.strip().length() == 0` and `s.trim().length() == 0` are blankness checks, which `isBlank()` expresses directly.
+      MethodInvocationTree whitespaceRemovalCall = getWhitespaceRemovalCall(lengthCall);
+      boolean isBlankCheck = whitespaceRemovalCall != null;
+      boolean usesTrim = isBlankCheck && TRIM_NAME.equals(ExpressionUtils.methodName(whitespaceRemovalCall).name());
+
+      String replacedMethod = isBlankCheck ? "isBlank()" : "isEmpty()";
+      MethodInvocationTree replacementStart = isBlankCheck ? whitespaceRemovalCall : lengthCall;
+      String message = "Use \"" + replacedMethod + "\" to check whether a \"" + ownerName(lengthCall) + "\" is "
+        + (isBlankCheck ? "blank" : "empty") + " or not." + (usesTrim ? (" " + TRIM_CAVEAT) : "");
+      String fixDescription = "Replace with \"" + replacedMethod + "\"" + (usesTrim ? TRIM_FIX_CAVEAT : "");
 
       QuickFixHelper
         .newIssue(context)
         .forRule(this)
         .onTree(tree)
-        .withMessage("Use \"" + replacedMethod + "\" to check whether a \"" + ownerName(lengthCall) + "\" is " + adjective + " or not.")
-        .withQuickFix(() -> getQuickFix(tree, lengthCall, replacementStart, replacedMethod, comparisonType))
+        .withMessage(message)
+        .withQuickFix(() -> getQuickFix(tree, lengthCall, replacementStart, replacedMethod, fixDescription, comparisonType))
         .report();
     }
   }
 
   private static JavaQuickFix getQuickFix(Tree comparisonExpression, MethodInvocationTree lengthInvocation,
-    MethodInvocationTree replacedInvocation, String replacedMethod, ComparisonType comparisonType) {
+    MethodInvocationTree replacedInvocation, String replacedMethod, String fixDescription, ComparisonType comparisonType) {
     // There are two cases to deal with:
     //   s.length() OP CONST
     //   CONST OP s.length()
-    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix("Replace with \"" + replacedMethod + "\"");
+    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(fixDescription);
 
     // Replace "[CONST OP]" with "!"/"".
     AnalyzerMessage.TextSpan prefixSpan = AnalyzerMessage.textSpanBetween(comparisonExpression, true, lengthInvocation, false);
@@ -159,7 +176,7 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
       builder.addTextEdit(JavaTextEdit.replaceTextSpan(prefixSpan, prefixReplacement));
     }
 
-    // Replace "length() [OP CONST]" with "isEmpty()", or "trim().length() [OP CONST]" with "isBlank()".
+    // Replace "length() [OP CONST]" with "isEmpty()", or "strip()/trim().length() [OP CONST]" with "isBlank()".
     IdentifierTree replacedIdentifier = ExpressionUtils.methodName(replacedInvocation);
     builder.addTextEdit(JavaTextEdit.replaceBetweenTree(
       replacedIdentifier,
@@ -181,15 +198,15 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
   }
 
   /**
-   * @return the <pre>trim()</pre> invocation the given <pre>length()</pre> call is applied to, or null when there is none,
-   *         when it is not directly chained, or when <pre>String.isBlank()</pre> is not available.
+   * @return the <pre>strip()</pre> or <pre>trim()</pre> invocation the given <pre>length()</pre> call is applied to, or
+   *         null when there is none, when it is not directly chained, or when <pre>String.isBlank()</pre> is not available.
    */
   @Nullable
-  private MethodInvocationTree getTrimCall(MethodInvocationTree lengthCall) {
+  private MethodInvocationTree getWhitespaceRemovalCall(MethodInvocationTree lengthCall) {
     if (context.getJavaVersion().asInt() >= JAVA_11
       && lengthCall.methodSelect() instanceof MemberSelectExpressionTree sel
       && sel.expression() instanceof MethodInvocationTree mit
-      && STRING_TRIM_METHOD.matches(mit)) {
+      && STRING_WHITESPACE_REMOVAL_METHODS.matches(mit)) {
       return mit;
     }
     return null;
