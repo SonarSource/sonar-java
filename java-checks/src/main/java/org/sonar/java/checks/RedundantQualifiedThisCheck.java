@@ -17,12 +17,19 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S9434")
 public class RedundantQualifiedThisCheck extends IssuableSubscriptionVisitor {
+
+  private static final String MESSAGE = "Remove this redundant qualifier.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -31,5 +38,30 @@ public class RedundantQualifiedThisCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) tree;
+    if (!ExpressionUtils.isThis(memberSelect.identifier())) {
+      return;
+    }
+    Symbol qualifier = memberSelect.expression().symbolType().symbol();
+    if (!qualifier.isUnknown() && qualifier.equals(innermostEnclosingClass(memberSelect))) {
+      reportIssue(memberSelect, MESSAGE);
+    }
+  }
+
+  /**
+   * Returns the symbol of the class whose instance an unqualified {@code this} would denote at the given position.
+   * Lambda bodies are transparent because a lambda does not introduce its own {@code this}, while anonymous and
+   * local classes do and are therefore returned like any other class.
+   */
+  @CheckForNull
+  private static Symbol innermostEnclosingClass(Tree tree) {
+    Tree parent = tree.parent();
+    while (parent != null) {
+      if (parent instanceof ClassTree classTree) {
+        return classTree.symbol();
+      }
+      parent = parent.parent();
+    }
+    return null;
   }
 }
