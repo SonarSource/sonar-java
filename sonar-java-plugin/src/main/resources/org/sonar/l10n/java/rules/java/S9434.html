@@ -1,0 +1,78 @@
+<h2>Why is this an issue?</h2>
+<p>A qualified <code>this</code> expression, written <code>Outer.this</code>, is the Java syntax for reaching the instance of an enclosing class from
+inside an inner class. It is only needed when a plain <code>this</code> would refer to something else.</p>
+<p>When the qualifier names the class that the expression is already lexically inside, and no inner class sits between the expression and that class,
+<code>Outer.this</code> and <code>this</code> denote the very same object. The qualifier therefore adds no information.</p>
+<p>This hurts readability in two ways. The expression is longer than it needs to be, and, more importantly, it tells the reader that an enclosing
+instance is involved when none is. Anyone reading the code has to look for a surrounding class to understand which object is being accessed, only to
+discover that it is the obvious one.</p>
+<p>Lambdas are the case developers most often get wrong. A lambda body does not introduce its own <code>this</code>: inside a lambda,
+<code>this</code> is still the instance of the class where the lambda is written. A qualified <code>this</code> in a lambda declared directly in the
+class it names is just as redundant as one written in a method body.</p>
+<p>To fix an issue, delete the qualifier and keep the plain <code>this</code>. The expression keeps referring to the same object, so the change cannot
+alter behavior.</p>
+<h3>Exceptions</h3>
+<p>No issue is raised when the qualifier is required to disambiguate. Inside an anonymous class or a named inner class, plain <code>this</code> refers
+to the instance of that inner class, so the qualified form is the only way to reach the enclosing instance:</p>
+<pre>
+public class Invoice {
+  private String id;
+
+  public Runnable renamer(String newId) {
+    return new Runnable() {
+      @Override
+      public void run() {
+        Invoice.this.id = newId; // Compliant: "this" would be the Runnable
+      }
+    };
+  }
+}
+</pre>
+<p>Removing the qualifier is therefore safe only when the enclosing class is the innermost class around the expression. If an issue is raised on a
+qualified <code>this</code> that does resolve to a different object than a plain <code>this</code> would, the finding is a false positive and worth
+reporting rather than silencing.</p>
+<h2>How to fix it</h2>
+<p>Remove the class name and the dot in front of <code>this</code>, leaving a plain <code>this</code>. If the member access is not ambiguous either,
+for example because no local variable or parameter shadows the field, you may drop <code>this</code> as well, but keeping it is enough to resolve the
+issue.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class Invoice {
+  private String id;
+  private List&lt;String&gt; lines = new ArrayList&lt;&gt;();
+
+  public String describe() {
+    return "Invoice " + Invoice.this.id; // Noncompliant: "Invoice.this" is the same object as "this"
+  }
+
+  public List&lt;String&gt; nonEmptyLines() {
+    return Invoice.this.lines.stream() // Noncompliant: a lambda does not introduce its own "this"
+      .filter(line -&gt; !line.isEmpty() &amp;&amp; line.startsWith(Invoice.this.id))
+      .collect(Collectors.toList());
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class Invoice {
+  private String id;
+  private List&lt;String&gt; lines = new ArrayList&lt;&gt;();
+
+  public String describe() {
+    return "Invoice " + this.id;
+  }
+
+  public List&lt;String&gt; nonEmptyLines() {
+    return this.lines.stream()
+      .filter(line -&gt; !line.isEmpty() &amp;&amp; line.startsWith(this.id))
+      .collect(Collectors.toList());
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-15.html#jls-15.8.4">Qualified This</a></li>
+</ul>
+
