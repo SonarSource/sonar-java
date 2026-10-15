@@ -56,7 +56,11 @@ public final class JSema implements Sema {
   }
 
   public JType type(ITypeBinding typeBinding) {
-    return types.computeIfAbsent(typeBinding, k -> new JType(this, JType.normalize(typeBinding)));
+    JType cached = types.get(typeBinding);
+    if (cached != null) {
+      return cached;
+    }
+    return types.computeIfAbsent(typeBinding, k -> new JType(this, JType.normalize(k)));
   }
 
   List<Type> types(ITypeBinding[] typeBindings) {
@@ -74,14 +78,26 @@ public final class JSema implements Sema {
     if (packageBinding == null) {
       return Symbol.ROOT_PACKAGE;
     }
+    JSymbol cached = symbols.get(packageBinding);
+    if (cached != null) {
+      return cached;
+    }
     return symbols.computeIfAbsent(packageBinding, k -> new JPackageSymbol(this, (IPackageBinding) k));
   }
 
   public JTypeSymbol typeSymbol(ITypeBinding typeBinding) {
+    JTypeSymbol cached = (JTypeSymbol) symbols.get(typeBinding);
+    if (cached != null) {
+      return cached;
+    }
     return (JTypeSymbol) symbols.computeIfAbsent(typeBinding, k -> new JTypeSymbol(this, JType.normalize((ITypeBinding) k)));
   }
 
   public JMethodSymbol methodSymbol(IMethodBinding methodBinding) {
+    JMethodSymbol cached = (JMethodSymbol) symbols.get(methodBinding);
+    if (cached != null) {
+      return cached;
+    }
     return (JMethodSymbol) symbols.computeIfAbsent(methodBinding, k -> new JMethodSymbol(this, (IMethodBinding) k));
   }
 
@@ -95,10 +111,18 @@ public final class JSema implements Sema {
 
 
   public JVariableSymbol variableSymbol(IVariableBinding variableBinding) {
+    JVariableSymbol cached = (JVariableSymbol) symbols.get(variableBinding);
+    if (cached != null) {
+      return cached;
+    }
     return (JVariableSymbol) symbols.computeIfAbsent(variableBinding, k -> new JVariableSymbol(this, (IVariableBinding) k));
   }
 
   JSymbolMetadata.JAnnotationInstance annotation(IAnnotationBinding annotationBinding) {
+    JSymbolMetadata.JAnnotationInstance cached = annotations.get(annotationBinding);
+    if (cached != null) {
+      return cached;
+    }
     return annotations.computeIfAbsent(annotationBinding, k -> new JSymbolMetadata.JAnnotationInstance(this, k));
   }
 
@@ -117,6 +141,10 @@ public final class JSema implements Sema {
 
   @Override
   public Type getClassType(String fullyQualifiedName) {
+    Type cached = nameToTypeCache.get(fullyQualifiedName);
+    if (cached != null) {
+      return cached;
+    }
     return nameToTypeCache.computeIfAbsent(fullyQualifiedName, t -> {
       ITypeBinding typeBinding = resolveType(t);
       return typeBinding != null ? type(typeBinding) : Type.UNKNOWN;
