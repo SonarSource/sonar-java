@@ -23,6 +23,7 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -50,23 +51,42 @@ public class LiteralToStringByConcatenationCheck extends IssuableSubscriptionVis
   }
 
   /**
-   * Returns true when the expression is used where a compile-time constant is expected or meaningful:
-   * annotation arguments, case labels, and initializers of constant fields (static final fields, or interface fields).
-   * In these contexts, replacing the concatenation with an explicit conversion would not compile or would change semantics.
+   * Returns true when the expression is part of a constant expression used where a compile-time constant is expected
+   * or meaningful: annotation arguments, annotation element default values, case labels, and initializers of constant
+   * fields (static final fields, or interface fields).
+   * Only parentheses, string concatenations and conditional expressions are traversed to find the enclosing context,
+   * so that concatenations nested in method invocations or other non-constant expressions are still reported.
    */
   private static boolean isInConstantContext(Tree tree) {
+    Tree expression = tree;
     Tree parent = tree.parent();
-    while (parent != null && !parent.is(Tree.Kind.BLOCK, Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR)
-      && !Tree.Kind.CLASS_KINDS.contains(parent.kind())) {
-      if (parent.is(Tree.Kind.ANNOTATION, Tree.Kind.CASE_LABEL)) {
-        return true;
-      }
-      if (parent.is(Tree.Kind.VARIABLE)) {
-        return isConstantField((VariableTree) parent);
-      }
+    while (parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION, Tree.Kind.PLUS, Tree.Kind.CONDITIONAL_EXPRESSION)) {
+      expression = parent;
       parent = parent.parent();
     }
-    return false;
+    if (parent.is(Tree.Kind.CASE_LABEL)) {
+      return true;
+    }
+    if (parent.is(Tree.Kind.VARIABLE)) {
+      return isConstantField((VariableTree) parent);
+    }
+    return isAnnotationValue(expression);
+  }
+
+  private static boolean isAnnotationValue(Tree expression) {
+    Tree value = expression;
+    Tree parent = expression.parent();
+    if (parent.is(Tree.Kind.LIST) && parent.parent().is(Tree.Kind.NEW_ARRAY)) {
+      value = parent.parent();
+      parent = value.parent();
+    }
+    if (parent.is(Tree.Kind.METHOD)) {
+      return value == ((MethodTree) parent).defaultValue();
+    }
+    if (parent.is(Tree.Kind.ASSIGNMENT)) {
+      parent = parent.parent();
+    }
+    return parent.is(Tree.Kind.ARGUMENTS) && parent.parent().is(Tree.Kind.ANNOTATION);
   }
 
   private static boolean isConstantField(VariableTree variable) {

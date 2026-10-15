@@ -1,5 +1,7 @@
 package checks;
 
+import java.util.List;
+
 class LiteralToStringByConcatenationCheckSample {
 
   private static final String EMPTY = "";
@@ -8,13 +10,44 @@ class LiteralToStringByConcatenationCheckSample {
   final String instanceField = "" + 42; // Noncompliant
   static String staticField = "" + 42; // Noncompliant
   static final Runnable LAMBDA = () -> System.out.println("" + 42); // Noncompliant
+  static final List<String> LIST = List.of("" + 1); // Noncompliant
+  static final String FORMATTED = String.format("%s", "" + 42); // Noncompliant
+  static final String[] ARRAY = {"" + 1}; // Noncompliant
+  static final String CONDITIONAL = true ? "" + 1 : "x";
+  static final String NESTED = "a" + ("" + 1);
+  static final int SELECTOR = 1;
+  static final String SWITCHED = switch (SELECTOR) {
+    case 1 -> "" + 1; // Noncompliant
+    default -> "";
+  };
 
   interface Constants {
     String INTERFACE_CONSTANT = "" + 42;
   }
 
+  @interface WithDefault {
+    String value() default "" + 1;
+    String[] values() default {"" + 1};
+  }
+
   @SuppressWarnings("" + 1)
   void annotated() {
+  }
+
+  @SuppressWarnings(value = "" + 1)
+  void named() {
+  }
+
+  @SuppressWarnings({"" + 1})
+  void arrayAnnotation() {
+  }
+
+  @SuppressWarnings(value = {"" + 1, ("" + 2)})
+  void namedArrayAnnotation() {
+  }
+
+  void assignmentInArguments(String s) {
+    System.out.println(s = "" + 1); // Noncompliant
   }
 
   String switchOnString(String input) {
