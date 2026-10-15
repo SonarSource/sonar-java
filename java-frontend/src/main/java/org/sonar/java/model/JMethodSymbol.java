@@ -22,7 +22,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.ASTUtils;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -158,11 +157,12 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   private void findOverridesInTypes(Collection<MethodSymbol> accumulator, Predicate<IMethodBinding> overridesCondition, ITypeBinding... types) {
     for (ITypeBinding type : types) {
       if (type != null) {
-        Stream.of(type.getDeclaredMethods())
-          .filter(overridesCondition)
-          .findFirst()
-          .map(sema::methodSymbol)
-          .ifPresent(accumulator::add);
+        for (IMethodBinding declaredMethod : type.getDeclaredMethods()) {
+          if (overridesCondition.test(declaredMethod)) {
+            accumulator.add(sema.methodSymbol(declaredMethod));
+            break;
+          }
+        }
         findOverridesInParentTypes(accumulator, overridesCondition, type);
       }
     }
