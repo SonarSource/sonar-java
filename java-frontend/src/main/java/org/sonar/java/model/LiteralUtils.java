@@ -152,8 +152,19 @@ public class LiteralUtils {
     return tree.is(Kind.BOOLEAN_LITERAL) && "false".equals(((LiteralTree) tree).value());
   }
 
+  /**
+   * @return true when the expression is an int literal whose value is zero, in any base:
+   *         decimal ({@code 0}), hexadecimal ({@code 0x0}), octal ({@code 00}) or binary ({@code 0b0}).
+   */
   public static boolean isZero(ExpressionTree tree) {
-    return tree.is(Kind.INT_LITERAL) && "0".equals(((LiteralTree) tree).value());
+    if (!tree.is(Kind.INT_LITERAL)) {
+      return false;
+    }
+    try {
+      return intLiteralValue((LiteralTree) tree) == 0;
+    } catch (NumberFormatException e) {
+      return false;
+    }
   }
 
   public static boolean isOne(ExpressionTree tree) {

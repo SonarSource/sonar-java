@@ -39,14 +39,26 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 /**
  * Implement rule that <pre>CharSequence.length() == 0</pre> should be replaced with
- * <pre>CharSequence.isEmpty()</pre>.
+ * <pre>CharSequence.isEmpty()</pre>, and <pre>String.trim().length() == 0</pre> with
+ * <pre>String.isBlank()</pre>.
  */
 @Rule(key = "S7158")
 public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
+  private static final String JAVA_LANG_STRING = "java.lang.String";
+
+  // `String.isBlank()` is available since Java 11
+  private static final int JAVA_11 = 11;
+
   private static final MethodMatchers STRING_LENGTH_METHOD = MethodMatchers.create()
-    .ofTypes("java.lang.String")
+    .ofTypes(JAVA_LANG_STRING)
     .names("length")
+    .addWithoutParametersMatcher()
+    .build();
+
+  private static final MethodMatchers STRING_TRIM_METHOD = MethodMatchers.create()
+    .ofTypes(JAVA_LANG_STRING)
+    .names("trim")
     .addWithoutParametersMatcher()
     .build();
 
@@ -117,21 +129,28 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
     }
 
     if (lengthCall != null && isEmptinessCheck(comparisonType)) {
+      // `s.trim().length() == 0` is a blankness check, which `isBlank()` expresses directly.
+      MethodInvocationTree trimCall = getTrimCall(lengthCall);
+      String replacedMethod = trimCall != null ? "isBlank()" : "isEmpty()";
+      String adjective = trimCall != null ? "blank" : "empty";
+      MethodInvocationTree replacementStart = trimCall != null ? trimCall : lengthCall;
+
       QuickFixHelper
         .newIssue(context)
         .forRule(this)
         .onTree(tree)
-        .withMessage("Use \"isEmpty()\" to check whether a \"" + ownerName(lengthCall) + "\" is empty or not.")
-        .withQuickFix(() -> getQuickFix(tree, lengthCall, comparisonType))
+        .withMessage("Use \"" + replacedMethod + "\" to check whether a \"" + ownerName(lengthCall) + "\" is " + adjective + " or not.")
+        .withQuickFix(() -> getQuickFix(tree, lengthCall, replacementStart, replacedMethod, comparisonType))
         .report();
     }
   }
 
-  private static JavaQuickFix getQuickFix(Tree comparisonExpression, MethodInvocationTree lengthInvocation, ComparisonType comparisonType) {
+  private static JavaQuickFix getQuickFix(Tree comparisonExpression, MethodInvocationTree lengthInvocation,
+    MethodInvocationTree replacedInvocation, String replacedMethod, ComparisonType comparisonType) {
     // There are two cases to deal with:
     //   s.length() OP CONST
     //   CONST OP s.length()
-    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix("Replace with \"isEmpty()\"");
+    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix("Replace with \"" + replacedMethod + "\"");
 
     // Replace "[CONST OP]" with "!"/"".
     AnalyzerMessage.TextSpan prefixSpan = AnalyzerMessage.textSpanBetween(comparisonExpression, true, lengthInvocation, false);
@@ -140,14 +159,14 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
       builder.addTextEdit(JavaTextEdit.replaceTextSpan(prefixSpan, prefixReplacement));
     }
 
-    // Replace "length() [OP CONST]" with "isEmpty()".
-    IdentifierTree lengthIdentifier = ExpressionUtils.methodName(lengthInvocation);
+    // Replace "length() [OP CONST]" with "isEmpty()", or "trim().length() [OP CONST]" with "isBlank()".
+    IdentifierTree replacedIdentifier = ExpressionUtils.methodName(replacedInvocation);
     builder.addTextEdit(JavaTextEdit.replaceBetweenTree(
-      lengthIdentifier,
+      replacedIdentifier,
       true,
       comparisonExpression,
       true,
-      "isEmpty()"
+      replacedMethod
     ));
 
     return builder.build();
@@ -159,6 +178,21 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
     } else {
       return lengthCall.methodSymbol().owner().name();
     }
+  }
+
+  /**
+   * @return the <pre>trim()</pre> invocation the given <pre>length()</pre> call is applied to, or null when there is none,
+   *         when it is not directly chained, or when <pre>String.isBlank()</pre> is not available.
+   */
+  @Nullable
+  private MethodInvocationTree getTrimCall(MethodInvocationTree lengthCall) {
+    if (context.getJavaVersion().asInt() >= JAVA_11
+      && lengthCall.methodSelect() instanceof MemberSelectExpressionTree sel
+      && sel.expression() instanceof MethodInvocationTree mit
+      && STRING_TRIM_METHOD.matches(mit)) {
+      return mit;
+    }
+    return null;
   }
 
   @Nullable
