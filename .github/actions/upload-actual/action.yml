@@ -14,9 +14,10 @@ inputs:
   actual-dir:
     description: Relative path to actual test results.
     required: true
-
-env:
-  RETENTION_DAYS: 7
+  retention-days:
+    description: Number of days to retain the uploaded artifacts.
+    required: false
+    default: '7'
 
 runs:
   using: composite
@@ -25,7 +26,7 @@ runs:
       uses: SonarSource/core-languages-tooling-public/prepare-ruling-artifact@master
       with:
         artifact-name: actual_${{ inputs.name }}
-        retention-days: ${{ env.RETENTION_DAYS }}
+        retention-days: ${{ inputs.retention-days }}
 
     - name: Configure NPM
       uses: SonarSource/ci-github-actions/config-npm@v2
@@ -51,4 +52,4 @@ runs:
       with:
         name: diff_${{ inputs.name }}
         path: ${{ inputs.it-dir }}/target/diff_${{ inputs.name }}.html
-        retention-days: ${{ env.RETENTION_DAYS }}
+        retention-days: ${{ inputs.retention-days }}
