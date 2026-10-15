@@ -48,6 +48,7 @@ final class SpringContextModelPersistence {
 
   static SpringContextGatheringModel load(Path path) {
     if (!Files.exists(path)) {
+      LOG.warn("Spring context model file does not exist: {}. Starting with an empty Spring context.", path);
       return new SpringContextGatheringModel();
     }
     try (var reader = Files.newBufferedReader(path, UTF_8)) {
@@ -55,6 +56,7 @@ final class SpringContextModelPersistence {
       if (model == null) {
         throw new IllegalArgumentException("JSON document is empty");
       }
+      LOG.info("Restoring model from file {}.", path);
       return model;
     } catch (IOException | RuntimeException e) {
       LOG.warn("Unable to load Spring context model from {}, starting from an empty model", path, e);
