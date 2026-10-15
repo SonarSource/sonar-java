@@ -1,27 +1,36 @@
-/*
- * SonarQube Java
- * Copyright (C) 2012-2026 SonarSource SA
- * mailto:contact AT sonarsource DOT com
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public License
- * as published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- */
 package checks;
 
 class LiteralToStringByConcatenationCheckSample {
 
   private static final String EMPTY = "";
+  static final String CONSTANT = "" + 42;
+  static final String PARENTHESIZED_CONSTANT = ("" + 42);
+  final String instanceField = "" + 42; // Noncompliant
+  static String staticField = "" + 42; // Noncompliant
+  static final Runnable LAMBDA = () -> System.out.println("" + 42); // Noncompliant
+
+  interface Constants {
+    String INTERFACE_CONSTANT = "" + 42;
+  }
+
+  @SuppressWarnings("" + 1)
+  void annotated() {
+  }
+
+  String switchOnString(String input) {
+    switch (input) {
+      case "" + 42:
+        return "" + 1; // Noncompliant
+      default:
+        return input;
+    }
+  }
+
+  void loopVariable() {
+    for (String s = "" + 0; s.isEmpty(); ) { // Noncompliant
+      break;
+    }
+  }
 
   String convertLiterals(int value) {
     String itemCount = "" + 123; // Noncompliant {{Use an explicit conversion instead of concatenating this literal with an empty string.}}
@@ -31,11 +40,11 @@ class LiteralToStringByConcatenationCheckSample {
     String ratio = "" + 3.14f; // Noncompliant {{Use an explicit conversion instead of concatenating this literal with an empty string.}}
 //                 ^^^^^^^^^^
     String initial = "" + 'A'; // Noncompliant {{Use an explicit conversion instead of concatenating this literal with an empty string.}}
-//                   ^^^^^^^^^
+//                   ^^^^^^^^
     String timeout = 42L + ""; // Noncompliant {{Use an explicit conversion instead of concatenating this literal with an empty string.}}
 //                   ^^^^^^^^
     String rate = ("") + (2.5d); // Noncompliant {{Use an explicit conversion instead of concatenating this literal with an empty string.}}
-//                ^^^^^^^^^^^^^^
+//                ^^^^^^^^^^^^^
     return itemCount + enabled + ratio + initial + timeout + rate;
   }
 
