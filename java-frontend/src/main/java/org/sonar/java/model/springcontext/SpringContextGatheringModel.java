@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.scanner.ScannerSide;
 import org.sonar.java.serialization.SpringContextGatheringModelTypeAdapter;
@@ -45,6 +47,8 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 @SonarLintSide
 @JsonAdapter(SpringContextGatheringModelTypeAdapter.class)
 public class SpringContextGatheringModel {
+
+  private static final Logger LOG = LoggerFactory.getLogger(SpringContextGatheringModel.class);
 
   public static final class InputFileData {
     @Nullable
@@ -105,11 +109,19 @@ public class SpringContextGatheringModel {
     if (restored) {
       return;
     }
-    previous.filesData.forEach((moduleKey, moduleData) -> {
-      Map<String, InputFileData> current = filesData.computeIfAbsent(moduleKey, key -> new HashMap<>());
-      moduleData.forEach(current::putIfAbsent);
-    });
+    int beanCount = 0;
+    int packageCount = 0;
+    for (var moduleEntry : previous.filesData.entrySet()) {
+      Map<String, InputFileData> current = filesData.computeIfAbsent(moduleEntry.getKey(), key -> new HashMap<>());
+      for (var fileEntry : moduleEntry.getValue().entrySet()) {
+        if (current.putIfAbsent(fileEntry.getKey(), fileEntry.getValue()) == null) {
+          beanCount += fileEntry.getValue().beans().size();
+          packageCount += fileEntry.getValue().packages().size();
+        }
+      }
+    }
     restored = true;
+    LOG.info("Restored Spring context: {} modules, {} beans, {} packages.", previous.filesData.size(), beanCount, packageCount);
   }
 
   /**
