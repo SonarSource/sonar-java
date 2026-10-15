@@ -25,6 +25,7 @@ runs:
       uses: SonarSource/core-languages-tooling-public/prepare-ruling-artifact@master
       with:
         artifact-name: actual_${{ inputs.name }}
+        retention-days: ${{ env.RETENTION_DAYS }}
 
     - name: Configure NPM
       uses: SonarSource/ci-github-actions/config-npm@v2
