@@ -111,7 +111,12 @@ public class LiteralToStringByConcatenationCheck extends IssuableSubscriptionVis
     if (expression instanceof LiteralTree literal) {
       return literalValue(literal);
     }
-    return expression.asConstant();
+    Optional<Object> value = expression.asConstant();
+    if (expression.symbolType().is("char")) {
+      return value.filter(Integer.class::isInstance)
+        .map(codeUnit -> (char) ((Integer) codeUnit).intValue());
+    }
+    return value;
   }
 
   private static Optional<Object> literalValue(LiteralTree literal) {
