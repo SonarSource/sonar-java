@@ -100,12 +100,7 @@ public class LiteralToStringByConcatenationCheck extends IssuableSubscriptionVis
   }
 
   private static boolean isPrimitiveLiteral(ExpressionTree tree) {
-    return tree.is(
-      Tree.Kind.BOOLEAN_LITERAL,
-      Tree.Kind.CHAR_LITERAL,
-      Tree.Kind.INT_LITERAL,
-      Tree.Kind.LONG_LITERAL,
-      Tree.Kind.FLOAT_LITERAL,
-      Tree.Kind.DOUBLE_LITERAL);
+    return Tree.Kind.LITERAL_KINDS.contains(tree.kind())
+      && !tree.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK, Tree.Kind.NULL_LITERAL);
   }
 }

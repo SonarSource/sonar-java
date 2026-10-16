@@ -81,6 +81,15 @@ class LiteralToStringByConcatenationCheckSample {
     return itemCount + enabled + ratio + initial + timeout + rate;
   }
 
+  String longerConcatenations() {
+    String leading = "" + 3 + 4; // Noncompliant
+//                   ^^^^^^
+    String trailing = 3 + "" + 4; // Noncompliant
+//                    ^^^^^^
+    String computedFirst = 3 + 4 + "";
+    return leading + trailing + computedFirst;
+  }
+
   String explicitOrOrdinaryConcatenation(int value) {
     String explicitInteger = Integer.toString(123);
     String explicitBoolean = Boolean.toString(true);
@@ -89,8 +98,10 @@ class LiteralToStringByConcatenationCheckSample {
     String variable = "" + value;
     String absent = "" + null;
     String text = "" + "ready";
+    String block = "" + """
+      ready""";
     String constant = EMPTY + 123;
     String computed = "" + (1 + 2);
-    return explicitInteger + explicitBoolean + explicitGeneric + prefixed + variable + absent + text + constant + computed;
+    return explicitInteger + explicitBoolean + explicitGeneric + prefixed + variable + absent + text + block + constant + computed;
   }
 }
