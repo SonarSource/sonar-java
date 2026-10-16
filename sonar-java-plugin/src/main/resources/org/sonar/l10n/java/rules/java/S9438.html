@@ -1,0 +1,109 @@
+<p>This rule raises an issue on a <code>private</code>, non-<code>final</code> instance field whose value is assigned only during object
+initialization and never reassigned afterwards. Such a field is already immutable in practice, and declaring it <code>final</code> states that
+contract in the code instead of leaving it to be rediscovered.</p>
+<h2>Why is this an issue?</h2>
+<p>A private instance field whose only assignments happen during object initialization, in its declaration, in an instance initializer block, or in a
+constructor, never changes value once the constructor returns. As long as it is not declared <code>final</code>, nothing says so:</p>
+<ul>
+  <li>A reader who needs to know whether the value can change has to scan the whole class for another assignment.</li>
+  <li>A later change can reassign the field by mistake, and the compiler will accept it. With <code>final</code>, the same mistake does not
+  compile.</li>
+  <li>The field has no safe-publication guarantee. A <code>final</code> field is guaranteed to be visible, fully initialized, to any thread that reads
+  the object after construction, even if the reference was published without synchronization.</li>
+</ul>
+<p>Note that <code>final</code> is shallow: it freezes the reference, not the object behind it. A <code>final List</code> field can still have
+elements added to it, and a <code>final</code> field holding a mutable object says nothing about that object’s state. Use <code>final</code> to
+express "this field always points at the same value", not "this object cannot change".</p>
+<h3>Exceptions</h3>
+<p>No issue is raised in the following cases.</p>
+<ul>
+  <li>Fields that are not <code>private</code>. Proving that a package-private, <code>protected</code> or <code>public</code> field is never
+  reassigned would require analyzing every class that can see it, so the rule deliberately stops at <code>private</code>.</li>
+  <li>Fields assigned by a framework through reflection, outside any constructor. Adding <code>final</code> to those fields breaks the framework or
+  the build. This covers at least:
+    <ul>
+      <li>JPA and Hibernate entity fields, for example fields in a type annotated with <code>@Entity</code> or <code>@Embeddable</code>, and fields
+      annotated with <code>@Id</code>, <code>@Column</code>, <code>@ManyToOne</code> or <code>@OneToMany</code>.</li>
+      <li>Deserialization targets, for example fields annotated with <code>@JsonProperty</code>, <code>@JsonCreator</code>, <code>@XmlElement</code>
+      or <code>@JsonbProperty</code>.</li>
+      <li>Injected fields, for example fields annotated with <code>@Autowired</code>, <code>@Value</code>, <code>@Inject</code>,
+      <code>@Resource</code> or <code>@PersistenceContext</code>.</li>
+      <li>Lombok-generated code, for example fields in a type annotated with <code>@Setter</code>, <code>@Data</code> or <code>@Builder</code>.</li>
+      <li>Test doubles, for example fields annotated with <code>@Mock</code>, <code>@Spy</code>, <code>@InjectMocks</code> or
+      <code>@Captor</code>.</li>
+    </ul></li>
+  <li>Fields that are not assigned exactly once by a statement placed directly in the body of every constructor that does not delegate to another one
+  with <code>this(…​)</code>. This covers fields assigned inside a conditional, a loop or a <code>try</code> block, and fields assigned in a
+  constructor that can return early. A <code>final</code> field must be definitely assigned by the end of each constructor, and the rule does not
+  follow the control flow to prove it in these cases.</li>
+  <li>Lazily initialized fields, assigned on first use rather than during construction, including caches and memoized values.</li>
+  <li>Fields reassigned through a reference to the object under construction that escapes the constructor, for example a field written by a callback
+  invoked from the constructor.</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Add the <code>final</code> modifier to the field declaration. The change preserves behavior: if the code compiles afterwards, the field was
+effectively final already, and <code>final</code> only documents it and locks it in.</p>
+<p>If the compiler then rejects the field because it is "possibly already assigned" or "might not have been initialized", the field is not effectively
+final after all, and the issue should be reviewed instead of fixed. That happens when an assignment was missed on a constructor path or when the field
+is assigned more than once.</p>
+<p>An issue on a field that a framework writes by reflection through an annotation this rule does not know about is a false positive and should be
+reported as such. An issue on a field that is effectively final today but is expected to become mutable as the class evolves is a genuine match, and
+leaving it as-is is a deliberate trade-off rather than a false positive.</p>
+<p>Do not reach for <code>final</code> as a way to make a class immutable. A field pointing at a mutable object stays mutable through that object, so
+also consider defensive copying or an unmodifiable view if immutability is the goal.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class ShipmentTracker {
+
+  private String carrier; // Noncompliant: assigned only in the constructor
+  private int deliveredCount;
+  private final List&lt;String&gt; events = new ArrayList&lt;&gt;();
+
+  public ShipmentTracker(String carrier) {
+    this.carrier = carrier;
+  }
+
+  public void recordDelivery(String trackingNumber) {
+    deliveredCount++;
+    events.add(carrier + ":" + trackingNumber);
+  }
+}
+</pre>
+<p>The <code>deliveredCount</code> field is incremented in <code>recordDelivery</code>, so it is genuinely mutable and no issue is raised on it.</p>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class ShipmentTracker {
+
+  private final String carrier;
+  private int deliveredCount;
+  private final List&lt;String&gt; events = new ArrayList&lt;&gt;();
+
+  public ShipmentTracker(String carrier) {
+    this.carrier = carrier;
+  }
+
+  public void recordDelivery(String trackingNumber) {
+    deliveredCount++;
+    events.add(carrier + ":" + trackingNumber);
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.3.1.2">JLS 8.3.1.2. <code>final</code>
+  Fields</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html#jls-17.5">JLS 17.5. <code>final</code> Field
+  Semantics</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S1170} - Public constants and fields initialized at declaration should be "static final" rather than merely "final"</li>
+  <li>{rule:java:S1450} - Private fields only used as local variables in methods should become local variables</li>
+  <li>{rule:java:S6206} - Records should be used instead of ordinary classes when representing immutable data structure</li>
+</ul>
+<p>{rule:java:S1170} covers fields that are also constant and should become <code>static final</code>, whereas this rule covers per-instance values
+that differ between objects. {rule:java:S1450} applies when a private field is used in a single method and should not be a field at all.
+{rule:java:S6206} is the next step once every field of a data carrier is final, replacing the class with a record.</p>
+
