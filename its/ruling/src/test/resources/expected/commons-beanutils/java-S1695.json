@@ -1,16 +1,4 @@
 {
-"commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaBean.java": [
-121,
-202,
-234,
-276,
-307,
-343,
-385
-],
-"commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java": [
-501
-],
 "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ResultSetDynaClass.java": [
 163
 ],
