@@ -1,0 +1,25 @@
+{
+  "title": "Custom exceptions should extend \"Exception\" or \"RuntimeException\" rather than \"Throwable\"",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "exception",
+    "api-design",
+    "convention"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9431",
+  "sqKey": "S9431",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}
