@@ -5,16 +5,48 @@ import java.util.List;
 class LiteralToStringByConcatenationCheckSample {
 
   private static final String EMPTY = "";
-  static final String CONSTANT = "" + 42;
-  static final String PARENTHESIZED_CONSTANT = ("" + 42);
+  static final String CONSTANT = "" + 42; // Noncompliant {{Replace this concatenation with the string literal "42".}}
+//                               ^^^^^^^
+  static final String PARENTHESIZED_CONSTANT = ("" + 42); // Noncompliant {{Replace this concatenation with the string literal "42".}}
+//                                             ^^^^^^^
   final String instanceField = "" + 42; // Noncompliant
   static String staticField = "" + 42; // Noncompliant
   static final Runnable LAMBDA = () -> System.out.println("" + 42); // Noncompliant
   static final List<String> LIST = List.of("" + 1); // Noncompliant
   static final String FORMATTED = String.format("%s", "" + 42); // Noncompliant
   static final String[] ARRAY = {"" + 1}; // Noncompliant
-  static final String CONDITIONAL = true ? "" + 1 : "x";
-  static final String NESTED = "a" + ("" + 1);
+  static final String CONDITIONAL = true ? "" + 1 : "x"; // Noncompliant {{Replace this concatenation with the string literal "1".}}
+//                                        ^^^^^^
+  static final String NESTED = "a" + ("" + 1); // Noncompliant {{Replace this concatenation with the string literal "a1".}}
+//                            ^^^^^^^^^^^^^^
+  static final String REPEATED = ("" + 1) + ("" + 2); // Noncompliant {{Replace this concatenation with the string literal "12".}}
+//                              ^^^^^^^^^^^^^^^^^^^
+  static final String LONGER = "" + 3 + 4; // Noncompliant {{Replace this concatenation with the string literal "34".}}
+//                            ^^^^^^^^^^^
+  static final String TRAILING = 3 + "" + 4; // Noncompliant {{Replace this concatenation with the string literal "34".}}
+//                              ^^^^^^^^^^
+  static final String ARITHMETIC = (1 + 2) + ("" + 4); // Noncompliant {{Replace this concatenation with the string literal "34".}}
+//                                ^^^^^^^^^^^^^^^^^^
+  static final String BOOLEAN = "" + true; // Noncompliant {{Replace this concatenation with the string literal "true".}}
+//                             ^^^^^^^^^
+  static final String CHARACTER = "" + 'A'; // Noncompliant {{Replace this concatenation with the string literal "A".}}
+//                               ^^^^^^^^
+  static final String FLOAT = "" + 3.14f; // Noncompliant {{Replace this concatenation with the string literal "3.14".}}
+//                           ^^^^^^^^^^
+  static final String DOUBLE = "" + 2.5d; // Noncompliant {{Replace this concatenation with the string literal "2.5".}}
+//                            ^^^^^^^^^
+  static final String LONG = "" + 42L; // Noncompliant {{Replace this concatenation with the string literal "42".}}
+//                          ^^^^^^^^
+  static final String HEX = "" + 0xff; // Noncompliant {{Replace this concatenation with the string literal "255".}}
+//                         ^^^^^^^^^
+  static final String ESCAPED = "\"\\\n" + ("" + '\t'); // Noncompliant {{Replace this concatenation with the string literal "\"\\\n\t".}}
+//                             ^^^^^^^^^^^^^^^^^^^^^
+  static final String CONTROL = "" + '\0'; // Noncompliant {{Replace this concatenation with the string literal "\u0000".}}
+//                              ^^^^^^^^^
+  static final String DYNAMIC = System.getProperty("prefix") + ("" + 1); // Noncompliant {{Replace this concatenation with the string literal "1".}}
+//                                                            ^^^^^^
+  static final String ORDINARY = "a" + "b";
+  static final String LITERAL = "a1";
   static final int SELECTOR = 1;
   static final String SWITCHED = switch (SELECTOR) {
     case 1 -> "" + 1; // Noncompliant
@@ -22,27 +54,36 @@ class LiteralToStringByConcatenationCheckSample {
   };
 
   interface Constants {
-    String INTERFACE_CONSTANT = "" + 42;
+    String INTERFACE_CONSTANT = "" + 42; // Noncompliant {{Replace this concatenation with the string literal "42".}}
+//                              ^^^^^^^
   }
 
   @interface WithDefault {
-    String value() default "" + 1;
-    String[] values() default {"" + 1};
+    String value() default "" + 1; // Noncompliant {{Replace this concatenation with the string literal "1".}}
+//                         ^^^^^^
+    String[] values() default {"" + 1}; // Noncompliant {{Replace this concatenation with the string literal "1".}}
+//                             ^^^^^^
   }
 
-  @SuppressWarnings("" + 1)
+  @SuppressWarnings("" + 1) // Noncompliant {{Replace this concatenation with the string literal "1".}}
+//                  ^^^^^^
   void annotated() {
   }
 
-  @SuppressWarnings(value = "" + 1)
+  @SuppressWarnings(value = "" + 1) // Noncompliant {{Replace this concatenation with the string literal "1".}}
+//                          ^^^^^^
   void named() {
   }
 
-  @SuppressWarnings({"" + 1})
+  @SuppressWarnings({"" + 1}) // Noncompliant {{Replace this concatenation with the string literal "1".}}
+//                   ^^^^^^
   void arrayAnnotation() {
   }
 
-  @SuppressWarnings(value = {"" + 1, ("" + 2)})
+  @SuppressWarnings(value = {"" + 1, // Noncompliant {{Replace this concatenation with the string literal "1".}}
+//                           ^^^^^^
+    ("" + 2)}) // Noncompliant {{Replace this concatenation with the string literal "2".}}
+//   ^^^^^^
   void namedArrayAnnotation() {
   }
 
@@ -52,7 +93,8 @@ class LiteralToStringByConcatenationCheckSample {
 
   String switchOnString(String input) {
     switch (input) {
-      case "" + 42:
+      case "" + 42: // Noncompliant {{Replace this concatenation with the string literal "42".}}
+//         ^^^^^^^
         return "" + 1; // Noncompliant
       default:
         return input;
