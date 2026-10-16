@@ -24,7 +24,7 @@ class OctalValuesCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/OctalValuesCheck.java")
+      .onFile("src/test/files/checks/OctalValuesCheckSample.java")
       .withCheck(new OctalValuesCheck())
       .verifyIssues();
   }
@@ -32,7 +32,7 @@ class OctalValuesCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/OctalValuesCheck.java")
+      .onFile("src/test/files/checks/OctalValuesCheckSample.java")
       .withCheck(new OctalValuesCheck())
       .withoutSemantic()
       .verifyIssues();
