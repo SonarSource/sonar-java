@@ -8,7 +8,7 @@ class LiteralToStringByConcatenationCheckSample {
   static final String CONSTANT = "" + 42; // Noncompliant {{Replace this concatenation with the string literal "42".}}
 //                               ^^^^^^^
   static final String PARENTHESIZED_CONSTANT = ("" + 42); // Noncompliant {{Replace this concatenation with the string literal "42".}}
-//                                             ^^^^^^^
+//                                              ^^^^^^^
   final String instanceField = "" + 42; // Noncompliant
   static String staticField = "" + 42; // Noncompliant
   static final Runnable LAMBDA = () -> System.out.println("" + 42); // Noncompliant
@@ -16,37 +16,46 @@ class LiteralToStringByConcatenationCheckSample {
   static final String FORMATTED = String.format("%s", "" + 42); // Noncompliant
   static final String[] ARRAY = {"" + 1}; // Noncompliant
   static final String CONDITIONAL = true ? "" + 1 : "x"; // Noncompliant {{Replace this concatenation with the string literal "1".}}
-//                                        ^^^^^^
+//                                         ^^^^^^
   static final String NESTED = "a" + ("" + 1); // Noncompliant {{Replace this concatenation with the string literal "a1".}}
-//                            ^^^^^^^^^^^^^^
+//                             ^^^^^^^^^^^^^^
   static final String REPEATED = ("" + 1) + ("" + 2); // Noncompliant {{Replace this concatenation with the string literal "12".}}
-//                              ^^^^^^^^^^^^^^^^^^^
+//                               ^^^^^^^^^^^^^^^^^^^
   static final String LONGER = "" + 3 + 4; // Noncompliant {{Replace this concatenation with the string literal "34".}}
-//                            ^^^^^^^^^^^
+//                             ^^^^^^^^^^
   static final String TRAILING = 3 + "" + 4; // Noncompliant {{Replace this concatenation with the string literal "34".}}
-//                              ^^^^^^^^^^
+//                               ^^^^^^^^^^
   static final String ARITHMETIC = (1 + 2) + ("" + 4); // Noncompliant {{Replace this concatenation with the string literal "34".}}
-//                                ^^^^^^^^^^^^^^^^^^
+//                                 ^^^^^^^^^^^^^^^^^^
   static final String BOOLEAN = "" + true; // Noncompliant {{Replace this concatenation with the string literal "true".}}
-//                             ^^^^^^^^^
+//                              ^^^^^^^^^
   static final String CHARACTER = "" + 'A'; // Noncompliant {{Replace this concatenation with the string literal "A".}}
-//                               ^^^^^^^^
+//                                ^^^^^^^^
   static final String FLOAT = "" + 3.14f; // Noncompliant {{Replace this concatenation with the string literal "3.14".}}
-//                           ^^^^^^^^^^
+//                            ^^^^^^^^^^
   static final String DOUBLE = "" + 2.5d; // Noncompliant {{Replace this concatenation with the string literal "2.5".}}
-//                            ^^^^^^^^^
+//                             ^^^^^^^^^
   static final String LONG = "" + 42L; // Noncompliant {{Replace this concatenation with the string literal "42".}}
-//                          ^^^^^^^^
+//                           ^^^^^^^^
   static final String HEX = "" + 0xff; // Noncompliant {{Replace this concatenation with the string literal "255".}}
-//                         ^^^^^^^^^
+//                          ^^^^^^^^^
   static final String ESCAPED = "\"\\\n" + ("" + '\t'); // Noncompliant {{Replace this concatenation with the string literal "\"\\\n\t".}}
-//                             ^^^^^^^^^^^^^^^^^^^^^
+//                              ^^^^^^^^^^^^^^^^^^^^^^
   static final String CONTROL = "" + '\0'; // Noncompliant {{Replace this concatenation with the string literal "\u0000".}}
 //                              ^^^^^^^^^
   static final String DYNAMIC = System.getProperty("prefix") + ("" + 1); // Noncompliant {{Replace this concatenation with the string literal "1".}}
-//                                                            ^^^^^^
+//                                                              ^^^^^^
   static final String ORDINARY = "a" + "b";
   static final String LITERAL = "a1";
+  static final String NON_CONSTANT = ("" + 1) + (1 / 0); // Noncompliant {{Replace this concatenation with the string literal "1".}}
+//                                    ^^^^^^
+  static final String UNICODE = "" + '\u0041'; // Noncompliant {{Replace this concatenation with a string literal.}}
+//                              ^^^^^^^^^^^^^
+  static final String OTHER_ESCAPES = "" + '\r' + '\b' + '\f'; // Noncompliant {{Replace this concatenation with the string literal "\r\b\f".}}
+//                                    ^^^^^^^^^^^^^^^^^^^^^^^
+  static final String WITH_TEXT_BLOCK = """
+    text""" + ("" + 1); // Noncompliant {{Replace this concatenation with the string literal "1".}}
+//             ^^^^^^
   static final int SELECTOR = 1;
   static final String SWITCHED = switch (SELECTOR) {
     case 1 -> "" + 1; // Noncompliant

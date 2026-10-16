@@ -17,12 +17,16 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -41,13 +45,102 @@ public class LiteralToStringByConcatenationCheck extends IssuableSubscriptionVis
   @Override
   public void visitNode(Tree tree) {
     BinaryExpressionTree binaryExpression = (BinaryExpressionTree) tree;
-    ExpressionTree leftOperand = ExpressionUtils.skipParentheses(binaryExpression.leftOperand());
-    ExpressionTree rightOperand = ExpressionUtils.skipParentheses(binaryExpression.rightOperand());
-    boolean isLiteralConversion = (isEmptyStringLiteral(leftOperand) && isPrimitiveLiteral(rightOperand))
-      || (isPrimitiveLiteral(leftOperand) && isEmptyStringLiteral(rightOperand));
-    if (isLiteralConversion && !isInConstantContext(binaryExpression)) {
+    if (!isLiteralConversion(binaryExpression)) {
+      return;
+    }
+    if (isInConstantContext(binaryExpression)) {
+      ExpressionTree concatenation = enclosingConstantConcatenation(binaryExpression);
+      if (firstLiteralConversion(concatenation).filter(first -> first == binaryExpression).isPresent()) {
+        String replacement = constantValue(concatenation)
+          .map(value -> "the string literal \"" + escapeString(value.toString()) + "\"")
+          .orElse("a string literal");
+        reportIssue(concatenation, "Replace this concatenation with " + replacement + ".");
+      }
+    } else {
       reportIssue(binaryExpression, MESSAGE);
     }
+  }
+
+  private static boolean isLiteralConversion(BinaryExpressionTree binaryExpression) {
+    ExpressionTree leftOperand = ExpressionUtils.skipParentheses(binaryExpression.leftOperand());
+    ExpressionTree rightOperand = ExpressionUtils.skipParentheses(binaryExpression.rightOperand());
+    return (isEmptyStringLiteral(leftOperand) && isPrimitiveLiteral(rightOperand))
+      || (isPrimitiveLiteral(leftOperand) && isEmptyStringLiteral(rightOperand));
+  }
+
+  private static ExpressionTree enclosingConstantConcatenation(ExpressionTree tree) {
+    ExpressionTree expression = tree;
+    Tree parent = expression.parent();
+    while (parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION, Tree.Kind.PLUS)
+      && constantValue((ExpressionTree) parent).filter(String.class::isInstance).isPresent()) {
+      expression = (ExpressionTree) parent;
+      parent = expression.parent();
+    }
+    return ExpressionUtils.skipParentheses(expression);
+  }
+
+  private static Optional<BinaryExpressionTree> firstLiteralConversion(ExpressionTree tree) {
+    ExpressionTree expression = ExpressionUtils.skipParentheses(tree);
+    if (!(expression instanceof BinaryExpressionTree binaryExpression) || !expression.is(Tree.Kind.PLUS)) {
+      return Optional.empty();
+    }
+    if (isLiteralConversion(binaryExpression)) {
+      return Optional.of(binaryExpression);
+    }
+    return firstLiteralConversion(binaryExpression.leftOperand())
+      .or(() -> firstLiteralConversion(binaryExpression.rightOperand()));
+  }
+
+  private static Optional<Object> constantValue(ExpressionTree tree) {
+    try {
+      return resolveConstantValue(ExpressionUtils.skipParentheses(tree));
+    } catch (IllegalArgumentException | ArithmeticException exception) {
+      return Optional.empty();
+    }
+  }
+
+  private static Optional<Object> resolveConstantValue(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.PLUS)) {
+      BinaryExpressionTree binaryExpression = (BinaryExpressionTree) expression;
+      return constantValue(binaryExpression.leftOperand()).flatMap(left ->
+        constantValue(binaryExpression.rightOperand()).flatMap(right ->
+          left instanceof String || right instanceof String
+            ? Optional.of(left.toString() + right)
+            : expression.asConstant()));
+    }
+    if (expression instanceof LiteralTree literal) {
+      return literalValue(literal);
+    }
+    return expression.asConstant();
+  }
+
+  private static Optional<Object> literalValue(LiteralTree literal) {
+    return switch (literal.kind()) {
+      case STRING_LITERAL -> Optional.of(LiteralUtils.trimQuotes(literal.value()).translateEscapes());
+      case CHAR_LITERAL -> Optional.of(LiteralUtils.trimQuotes(literal.value()).translateEscapes().charAt(0));
+      case FLOAT_LITERAL -> Optional.of(Float.parseFloat(literal.value().replace("_", "")));
+      case DOUBLE_LITERAL -> Optional.of(Double.parseDouble(literal.value().replace("_", "")));
+      case TEXT_BLOCK -> Optional.empty();
+      default -> literal.asConstant();
+    };
+  }
+
+  private static String escapeString(String value) {
+    StringBuilder escaped = new StringBuilder();
+    for (int index = 0; index < value.length(); index++) {
+      char character = value.charAt(index);
+      escaped.append(switch (character) {
+        case '\\' -> "\\\\";
+        case '"' -> "\\\"";
+        case '\n' -> "\\n";
+        case '\r' -> "\\r";
+        case '\t' -> "\\t";
+        case '\b' -> "\\b";
+        case '\f' -> "\\f";
+        default -> Character.isISOControl(character) ? String.format(Locale.ROOT, "\\u%04x", (int) character) : Character.toString(character);
+      });
+    }
+    return escaped.toString();
   }
 
   /**
