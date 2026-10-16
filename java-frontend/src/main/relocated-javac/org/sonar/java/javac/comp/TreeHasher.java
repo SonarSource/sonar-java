@@ -1,0 +1,132 @@
+/*
+ * Copyright (c) 2018, Google LLC. All rights reserved.
+ * Copyright (c) 2019, 2024, Oracle and/or its affiliates. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This code is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 only, as
+ * published by the Free Software Foundation.  Oracle designates this
+ * particular file as subject to the "Classpath" exception as provided
+ * by Oracle in the LICENSE file that accompanied this code.
+ *
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * version 2 for more details (a copy is included in the LICENSE file that
+ * accompanied this code).
+ *
+ * You should have received a copy of the GNU General Public License version
+ * 2 along with this work; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
+ * or visit www.oracle.com if you need additional information or have any
+ * questions.
+ */
+
+package org.sonar.java.javac.comp;
+
+import org.sonar.java.javac.code.Symbol;
+import org.sonar.java.javac.code.Types;
+import org.sonar.java.javac.jvm.PoolConstant;
+import org.sonar.java.javac.tree.JCTree;
+import org.sonar.java.javac.tree.JCTree.JCClassDecl;
+import org.sonar.java.javac.tree.JCTree.JCFieldAccess;
+import org.sonar.java.javac.tree.JCTree.JCIdent;
+import org.sonar.java.javac.tree.JCTree.JCLiteral;
+import org.sonar.java.javac.tree.JCTree.JCVariableDecl;
+import org.sonar.java.javac.tree.TreeInfo;
+import org.sonar.java.javac.tree.TreeScanner;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+/** A tree visitor that computes a hash code. */
+public class TreeHasher extends TreeScanner {
+
+    private final Map<Symbol, Integer> symbolHashes;
+    private final Types types;
+    private int result = 17;
+
+    public TreeHasher(Types types, Map<Symbol, Integer> symbolHashes) {
+        this.symbolHashes = Objects.requireNonNull(symbolHashes);
+        this.types = types;
+    }
+
+    public static int hash(Types types, JCTree tree, Collection<? extends Symbol> symbols) {
+        if (tree == null) {
+            return 0;
+        }
+        Map<Symbol, Integer> symbolHashes = new HashMap<>();
+        symbols.forEach(s -> symbolHashes.put(s, symbolHashes.size()));
+        TreeHasher hasher = new TreeHasher(types, symbolHashes);
+        tree.accept(hasher);
+        return hasher.result;
+    }
+
+    private void hash(Object object) {
+        result = 31 * result + Objects.hashCode(object);
+    }
+
+    @Override
+    public void scan(JCTree tree) {
+        if (tree == null) {
+            return;
+        }
+        tree = TreeInfo.skipParens(tree);
+        if (tree.type != null) {
+            Object value = tree.type.constValue();
+            if (value != null) {
+                hash(value);
+                return;
+            }
+        }
+        hash(tree.getTag());
+        tree.accept(this);
+    }
+
+    @Override
+    public void visitLiteral(JCLiteral tree) {
+        hash(tree.value);
+        super.visitLiteral(tree);
+    }
+
+    @Override
+    public void visitClassDef(JCClassDecl tree) {
+        hash(tree.sym);
+    }
+
+    @Override
+    public void visitIdent(JCIdent tree) {
+        Symbol sym = tree.sym;
+        if (sym != null) {
+            Integer hash = symbolHashes.get(sym);
+            if (hash != null) {
+                hash(hash);
+                return;
+            }
+        }
+        hashSymbol(sym);
+    }
+
+    @Override
+    public void visitSelect(JCFieldAccess tree) {
+        hashSymbol(tree.sym);
+        super.visitSelect(tree);
+    }
+
+    private void hashSymbol(Symbol sym) {
+        if (sym instanceof PoolConstant.Dynamic dynamic) {
+            hash(dynamic.bsmKey(types));
+        } else {
+            hash(sym);
+        }
+    }
+
+    @Override
+    public void visitVarDef(JCVariableDecl tree) {
+        symbolHashes.computeIfAbsent(tree.sym, k -> symbolHashes.size());
+        super.visitVarDef(tree);
+    }
+}

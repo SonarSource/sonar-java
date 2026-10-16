@@ -16,7 +16,7 @@
  */
 package org.sonar.java.model.javac;
 
-import com.sun.source.tree.CompilationUnitTree;
+import org.sonar.java.javac.source.tree.CompilationUnitTree;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.IOException;
 import java.net.URI;
@@ -111,7 +111,7 @@ public final class JavacBatchAnalysis implements AutoCloseable {
     parsed.close();
   }
 
-  private record Mapping(CompilationUnitTree unit, com.sun.source.tree.Tree javacTree,
+  private record Mapping(CompilationUnitTree unit, org.sonar.java.javac.source.tree.Tree javacTree,
     org.sonar.plugins.java.api.tree.Tree sonarTree) {
   }
 }

@@ -35,7 +35,7 @@ public final class JParser {
   public static JavaTree.CompilationUnitTreeImpl parse(JavaVersion version, String unitName, String source, List<File> classpath) {
     JavacParser.Options options = JavacParser.Options.defaults()
       .withClasspath(classpath.stream().map(File::toPath).toList())
-      .withSourceVersion(version.asInt() > 0 ? Math.max(8, version.asInt()) : Runtime.version().feature())
+      .withSourceVersion(version.asInt() > 0 ? Math.max(8, version.asInt()) : 27)
       .withPreview(version.arePreviewFeaturesEnabled() || version.asInt() <= 0);
     try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze(unitName, source, options)) {
       return analysis.tree();

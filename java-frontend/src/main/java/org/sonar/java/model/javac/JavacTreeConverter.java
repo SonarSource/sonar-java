@@ -16,45 +16,45 @@
  */
 package org.sonar.java.model.javac;
 
-import com.sun.source.tree.BlockTree;
-import com.sun.source.tree.AnnotationTree;
-import com.sun.source.tree.AssertTree;
-import com.sun.source.tree.BreakTree;
-import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.ImportTree;
-import com.sun.source.tree.IfTree;
-import com.sun.source.tree.ContinueTree;
-import com.sun.source.tree.DoWhileLoopTree;
-import com.sun.source.tree.LabeledStatementTree;
-import com.sun.source.tree.SynchronizedTree;
-import com.sun.source.tree.SwitchTree;
-import com.sun.source.tree.CaseTree;
-import com.sun.source.tree.ConstantCaseLabelTree;
-import com.sun.source.tree.DefaultCaseLabelTree;
-import com.sun.source.tree.PatternCaseLabelTree;
-import com.sun.source.tree.YieldTree;
-import com.sun.source.tree.ModuleTree;
-import com.sun.source.tree.DirectiveTree;
-import com.sun.source.tree.RequiresTree;
-import com.sun.source.tree.ExportsTree;
-import com.sun.source.tree.OpensTree;
-import com.sun.source.tree.UsesTree;
-import com.sun.source.tree.ProvidesTree;
-import com.sun.source.tree.ForLoopTree;
-import com.sun.source.tree.EnhancedForLoopTree;
-import com.sun.source.tree.MemberSelectTree;
-import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.ModifiersTree;
-import com.sun.source.tree.PrimitiveTypeTree;
-import com.sun.source.tree.TypeParameterTree;
-import com.sun.source.tree.ReturnTree;
-import com.sun.source.tree.ThrowTree;
-import com.sun.source.tree.TryTree;
-import com.sun.source.tree.VariableTree;
-import com.sun.source.tree.WhileLoopTree;
-import com.sun.source.util.SourcePositions;
-import com.sun.source.util.Trees;
+import org.sonar.java.javac.source.tree.BlockTree;
+import org.sonar.java.javac.source.tree.AnnotationTree;
+import org.sonar.java.javac.source.tree.AssertTree;
+import org.sonar.java.javac.source.tree.BreakTree;
+import org.sonar.java.javac.source.tree.ClassTree;
+import org.sonar.java.javac.source.tree.CompilationUnitTree;
+import org.sonar.java.javac.source.tree.ImportTree;
+import org.sonar.java.javac.source.tree.IfTree;
+import org.sonar.java.javac.source.tree.ContinueTree;
+import org.sonar.java.javac.source.tree.DoWhileLoopTree;
+import org.sonar.java.javac.source.tree.LabeledStatementTree;
+import org.sonar.java.javac.source.tree.SynchronizedTree;
+import org.sonar.java.javac.source.tree.SwitchTree;
+import org.sonar.java.javac.source.tree.CaseTree;
+import org.sonar.java.javac.source.tree.ConstantCaseLabelTree;
+import org.sonar.java.javac.source.tree.DefaultCaseLabelTree;
+import org.sonar.java.javac.source.tree.PatternCaseLabelTree;
+import org.sonar.java.javac.source.tree.YieldTree;
+import org.sonar.java.javac.source.tree.ModuleTree;
+import org.sonar.java.javac.source.tree.DirectiveTree;
+import org.sonar.java.javac.source.tree.RequiresTree;
+import org.sonar.java.javac.source.tree.ExportsTree;
+import org.sonar.java.javac.source.tree.OpensTree;
+import org.sonar.java.javac.source.tree.UsesTree;
+import org.sonar.java.javac.source.tree.ProvidesTree;
+import org.sonar.java.javac.source.tree.ForLoopTree;
+import org.sonar.java.javac.source.tree.EnhancedForLoopTree;
+import org.sonar.java.javac.source.tree.MemberSelectTree;
+import org.sonar.java.javac.source.tree.MethodTree;
+import org.sonar.java.javac.source.tree.ModifiersTree;
+import org.sonar.java.javac.source.tree.PrimitiveTypeTree;
+import org.sonar.java.javac.source.tree.TypeParameterTree;
+import org.sonar.java.javac.source.tree.ReturnTree;
+import org.sonar.java.javac.source.tree.ThrowTree;
+import org.sonar.java.javac.source.tree.TryTree;
+import org.sonar.java.javac.source.tree.VariableTree;
+import org.sonar.java.javac.source.tree.WhileLoopTree;
+import org.sonar.java.javac.source.util.SourcePositions;
+import org.sonar.java.javac.source.util.Trees;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -133,7 +133,7 @@ public final class JavacTreeConverter {
   private final SourcePositions positions;
   private final String source;
   private final SourceTokens tokens;
-  private final BiConsumer<com.sun.source.tree.Tree, Tree> registration;
+  private final BiConsumer<org.sonar.java.javac.source.tree.Tree, Tree> registration;
   private final Map<String, JLabelSymbol> activeLabels = new HashMap<>();
   private final Map<String, TypeTree> variableTypes = new HashMap<>();
   private final Map<String, ModifiersTreeImpl> variableModifiers = new HashMap<>();
@@ -155,7 +155,7 @@ public final class JavacTreeConverter {
   }
 
   private JavacTreeConverter(CompilationUnitTree unit, Trees trees, String source, int sourceVersion,
-    BiConsumer<com.sun.source.tree.Tree, Tree> registration) {
+    BiConsumer<org.sonar.java.javac.source.tree.Tree, Tree> registration) {
     this.unit = unit;
     this.positions = trees.getSourcePositions();
     this.source = source;
@@ -164,16 +164,16 @@ public final class JavacTreeConverter {
   }
 
   public static JavaTree.CompilationUnitTreeImpl convert(CompilationUnitTree unit, Trees trees, String source) {
-    return convert(unit, trees, source, Runtime.version().feature(), (javacTree, sonarTree) -> { });
+    return convert(unit, trees, source, 27, (javacTree, sonarTree) -> { });
   }
 
   public static JavaTree.CompilationUnitTreeImpl convert(CompilationUnitTree unit, Trees trees, String source,
-    BiConsumer<com.sun.source.tree.Tree, Tree> registration) {
-    return convert(unit, trees, source, Runtime.version().feature(), registration);
+    BiConsumer<org.sonar.java.javac.source.tree.Tree, Tree> registration) {
+    return convert(unit, trees, source, 27, registration);
   }
 
   public static JavaTree.CompilationUnitTreeImpl convert(CompilationUnitTree unit, Trees trees, String source, int sourceVersion,
-    BiConsumer<com.sun.source.tree.Tree, Tree> registration) {
+    BiConsumer<org.sonar.java.javac.source.tree.Tree, Tree> registration) {
     return new JavacTreeConverter(unit, trees, source, sourceVersion, registration).convert();
   }
 
@@ -203,11 +203,11 @@ public final class JavacTreeConverter {
     }
     List<Tree> types = new ArrayList<>();
     boolean seenType = false;
-    for (com.sun.source.tree.Tree declaration : unit.getTypeDecls()) {
+    for (org.sonar.java.javac.source.tree.Tree declaration : unit.getTypeDecls()) {
       if (declaration instanceof ClassTree classTree) {
         types.add(classDeclaration(classTree));
         seenType = true;
-      } else if (declaration.getKind() == com.sun.source.tree.Tree.Kind.EMPTY_STATEMENT) {
+      } else if (declaration.getKind() == org.sonar.java.javac.source.tree.Tree.Kind.EMPTY_STATEMENT) {
         EmptyStatementTreeImpl empty = new EmptyStatementTreeImpl(token(find(start(declaration), end(declaration), ";"), ";"));
         if (seenType) {
           types.add(empty);
@@ -233,12 +233,12 @@ public final class JavacTreeConverter {
     SourceTokens.Token module = tokens.tokensBetween(start + 6, start(tree.getQualifiedIdentifier())).stream()
       .filter(part -> part.text().equals("module")).findFirst().orElse(null);
     InternalSyntaxToken moduleToken = module == null ? null : tokens.syntaxToken(module);
-    com.sun.source.tree.Tree imported = tree.getQualifiedIdentifier();
+    org.sonar.java.javac.source.tree.Tree imported = tree.getQualifiedIdentifier();
     if (imported instanceof MemberSelectTree select && select.getIdentifier().toString().equals("<error>")) {
       imported = select.getExpression();
     }
     JavaTree.ImportTreeImpl result = new JavaTree.ImportTreeImpl(importToken, staticToken, moduleToken,
-      expression((com.sun.source.tree.ExpressionTree) imported), token(findLast(start, end, ";"), ";"));
+      expression((org.sonar.java.javac.source.tree.ExpressionTree) imported), token(findLast(start, end, ";"), ";"));
     registration.accept(tree, result);
     return result;
   }
@@ -292,7 +292,7 @@ public final class JavacTreeConverter {
       result = new UsesDirectiveTreeImpl(token(find(start, end, "uses"), "uses"), type(uses.getServiceName()), semicolon);
     } else if (directive instanceof ProvidesTree provides) {
       QualifiedIdentifierListTreeImpl implementations = QualifiedIdentifierListTreeImpl.emptyList();
-      for (com.sun.source.tree.ExpressionTree implementation : provides.getImplementationNames()) {
+      for (org.sonar.java.javac.source.tree.ExpressionTree implementation : provides.getImplementationNames()) {
         if (!implementations.isEmpty()) {
           implementations.separators().add(token(find(end(provides.getImplementationNames().get(implementations.size() - 1)), start(implementation), ","), ","));
         }
@@ -307,7 +307,7 @@ public final class JavacTreeConverter {
     return result;
   }
 
-  private ModuleNameListTreeImpl moduleNames(List<? extends com.sun.source.tree.ExpressionTree> names) {
+  private ModuleNameListTreeImpl moduleNames(List<? extends org.sonar.java.javac.source.tree.ExpressionTree> names) {
     ModuleNameListTreeImpl result = ModuleNameListTreeImpl.emptyList();
     if (names == null) {
       return result;
@@ -321,7 +321,7 @@ public final class JavacTreeConverter {
     return result;
   }
 
-  private ModuleNameTree moduleName(com.sun.source.tree.ExpressionTree tree) {
+  private ModuleNameTree moduleName(org.sonar.java.javac.source.tree.ExpressionTree tree) {
     ModuleNameTreeImpl result = ModuleNameTreeImpl.emptyList();
     int cursor = start(tree);
     for (String part : tree.toString().split("\\.")) {
@@ -347,7 +347,7 @@ public final class JavacTreeConverter {
     int headEnd = tree.getMembers().isEmpty() ? end : start(tree.getMembers().get(0));
     if (kind == Tree.Kind.CLASS && tokens.tokensBetween(start, headEnd).stream().noneMatch(part -> part.text().equals("class"))) {
       List<Tree> implicitMembers = new ArrayList<>();
-      for (com.sun.source.tree.Tree member : tree.getMembers()) {
+      for (org.sonar.java.javac.source.tree.Tree member : tree.getMembers()) {
         if (member instanceof MethodTree method) {
           implicitMembers.add(methodDeclaration(method, tree.getSimpleName().toString()));
         } else if (member instanceof VariableTree variable) {
@@ -379,7 +379,7 @@ public final class JavacTreeConverter {
     int memberCursor = openBrace + 1;
     boolean afterEnumConstant = false;
     List<org.sonar.plugins.java.api.tree.VariableTree> recordComponents = new ArrayList<>();
-    for (com.sun.source.tree.Tree member : tree.getMembers()) {
+    for (org.sonar.java.javac.source.tree.Tree member : tree.getMembers()) {
       if (kind == Tree.Kind.RECORD && start(member) < openBrace && member instanceof VariableTree component) {
         String componentName = component.getName().toString();
         VariableTreeImpl converted = new VariableTreeImpl(ModifiersTreeImpl.emptyModifiers(), type(component.getType()),
@@ -393,13 +393,13 @@ public final class JavacTreeConverter {
         continue;
       }
       addEmptyClassMembers(members, memberCursor, start(member), afterEnumConstant);
-      if (member.getKind() == com.sun.source.tree.Tree.Kind.ERRONEOUS) {
+      if (member.getKind() == org.sonar.java.javac.source.tree.Tree.Kind.ERRONEOUS) {
         SourceTokens.Token following = tokens.tokenAtOrAfter(end(member));
         memberCursor = following.text().equals(";") ? following.end() : end(member);
         continue;
       }
       if (member instanceof VariableTree variable) {
-        members.add(kind == Tree.Kind.ENUM && variable.getInitializer() instanceof com.sun.source.tree.NewClassTree
+        members.add(kind == Tree.Kind.ENUM && variable.getInitializer() instanceof org.sonar.java.javac.source.tree.NewClassTree
           ? enumConstant(variable) : variableDeclaration(variable));
       } else if (member instanceof MethodTree method) {
         members.add(methodDeclaration(method, tree.getSimpleName().toString()));
@@ -412,7 +412,7 @@ public final class JavacTreeConverter {
       }
       memberCursor = end(member);
       afterEnumConstant = kind == Tree.Kind.ENUM && member instanceof VariableTree variable
-        && variable.getInitializer() instanceof com.sun.source.tree.NewClassTree;
+        && variable.getInitializer() instanceof org.sonar.java.javac.source.tree.NewClassTree;
     }
     addEmptyClassMembers(members, memberCursor, closeBrace, afterEnumConstant);
     IdentifierTreeImpl simpleName = identifier(namePos, tree.getSimpleName().toString());
@@ -432,7 +432,7 @@ public final class JavacTreeConverter {
     }
     if (!tree.getImplementsClause().isEmpty()) {
       QualifiedIdentifierListTreeImpl interfaces = QualifiedIdentifierListTreeImpl.emptyList();
-      for (com.sun.source.tree.Tree implemented : tree.getImplementsClause()) {
+      for (org.sonar.java.javac.source.tree.Tree implemented : tree.getImplementsClause()) {
         if (!interfaces.isEmpty()) {
           interfaces.separators().add(token(find(end(tree.getImplementsClause().get(interfaces.size() - 1)), start(implemented), ","), ","));
         }
@@ -443,7 +443,7 @@ public final class JavacTreeConverter {
     }
     if (!tree.getPermitsClause().isEmpty()) {
       QualifiedIdentifierListTreeImpl permitted = QualifiedIdentifierListTreeImpl.emptyList();
-      for (com.sun.source.tree.Tree permit : tree.getPermitsClause()) {
+      for (org.sonar.java.javac.source.tree.Tree permit : tree.getPermitsClause()) {
         if (!permitted.isEmpty()) {
           permitted.separators().add(token(find(end(tree.getPermitsClause().get(permitted.size() - 1)), start(permit), ","), ","));
         }
@@ -495,7 +495,7 @@ public final class JavacTreeConverter {
       }
     }
     QualifiedIdentifierListTreeImpl throwsClauses = QualifiedIdentifierListTreeImpl.emptyList();
-    for (com.sun.source.tree.ExpressionTree exception : tree.getThrows()) {
+    for (org.sonar.java.javac.source.tree.ExpressionTree exception : tree.getThrows()) {
       if (!throwsClauses.isEmpty()) {
         throwsClauses.separators().add(token(find(end(tree.getThrows().get(throwsClauses.size() - 1)), start(exception), ","), ","));
       }
@@ -509,7 +509,7 @@ public final class JavacTreeConverter {
     MethodTreeImpl result = tree.getDefaultValue() == null
       ? new MethodTreeImpl(returnType, simpleName, parameters, throwsToken, throwsClauses, body, semicolon)
       : new MethodTreeImpl(parameters, token(find(closeParen + 1, start(tree.getDefaultValue()), "default"), "default"),
-        valueExpression((com.sun.source.tree.ExpressionTree) tree.getDefaultValue())).complete(returnType, simpleName, semicolon);
+        valueExpression((org.sonar.java.javac.source.tree.ExpressionTree) tree.getDefaultValue())).complete(returnType, simpleName, semicolon);
     result.completeWithModifiers(modifiers(tree.getModifiers()));
     result.completeWithTypeParameters(typeParameters(tree.getTypeParameters(), start));
     registration.accept(tree, result);
@@ -535,7 +535,7 @@ public final class JavacTreeConverter {
       int namePos = find(start(parameter), end(parameter), parameter.getName().toString());
       IdentifierTreeImpl name = identifier(namePos, parameter.getName().toString());
       QualifiedIdentifierListTreeImpl bounds = QualifiedIdentifierListTreeImpl.emptyList();
-      for (com.sun.source.tree.Tree bound : parameter.getBounds()) {
+      for (org.sonar.java.javac.source.tree.Tree bound : parameter.getBounds()) {
         if (!bounds.isEmpty()) {
           bounds.separators().add(token(find(end(parameter.getBounds().get(bounds.size() - 1)), start(bound), "&"), "&"));
         }
@@ -559,10 +559,10 @@ public final class JavacTreeConverter {
     }
     int namePos = findLast(start, tree.getInitializer() == null ? end : start(tree.getInitializer()), name);
     TypeTree declaredType;
-    if (tree.getType() == null) {
+    if (tree.getType() == null || tree.getType().getKind() == org.sonar.java.javac.source.tree.Tree.Kind.VAR_TYPE) {
       declaredType = new VarTypeTreeImpl(token(find(start, namePos, "var"), "var"));
     } else {
-      com.sun.source.tree.Tree javacType = tree.getType();
+      org.sonar.java.javac.source.tree.Tree javacType = tree.getType();
       String key = javacType.getKind() + ":" + start(javacType) + ":" + end(javacType);
       declaredType = variableTypes.computeIfAbsent(key, unused -> type(javacType));
     }
@@ -600,9 +600,9 @@ public final class JavacTreeConverter {
     String name = tree.getName().toString();
     int namePosition = find(start, end, name);
     IdentifierTreeImpl simpleName = identifier(namePosition, name);
-    com.sun.source.tree.NewClassTree creation = (com.sun.source.tree.NewClassTree) tree.getInitializer();
+    org.sonar.java.javac.source.tree.NewClassTree creation = (org.sonar.java.javac.source.tree.NewClassTree) tree.getInitializer();
     ArgumentListTreeImpl arguments = ArgumentListTreeImpl.emptyList();
-    List<? extends com.sun.source.tree.ExpressionTree> values = creation.getArguments();
+    List<? extends org.sonar.java.javac.source.tree.ExpressionTree> values = creation.getArguments();
     for (int i = 0; i < values.size(); i++) {
       if (i > 0) {
         arguments.separators().add(token(find(end(values.get(i - 1)), start(values.get(i)), ","), ","));
@@ -637,7 +637,7 @@ public final class JavacTreeConverter {
     int start = start(tree);
     int end = end(tree);
     List<StatementTree> statements = new ArrayList<>();
-    for (com.sun.source.tree.StatementTree statement : tree.getStatements()) {
+    for (org.sonar.java.javac.source.tree.StatementTree statement : tree.getStatements()) {
       statements.add(statement(statement));
     }
     BlockTreeImpl result = new BlockTreeImpl(kind, token(find(start, end, "{"), "{"), statements, token(findLast(start, end, "}"), "}"));
@@ -649,7 +649,7 @@ public final class JavacTreeConverter {
     int start = start(tree);
     int end = end(tree);
     List<StatementTree> statements = new ArrayList<>();
-    for (com.sun.source.tree.StatementTree statement : tree.getStatements()) {
+    for (org.sonar.java.javac.source.tree.StatementTree statement : tree.getStatements()) {
       statements.add(statement(statement));
     }
     int openBrace = find(start, end, "{");
@@ -659,13 +659,13 @@ public final class JavacTreeConverter {
     return result;
   }
 
-  private StatementTree statement(com.sun.source.tree.StatementTree tree) {
+  private StatementTree statement(org.sonar.java.javac.source.tree.StatementTree tree) {
     StatementTree result = statementValue(tree);
     registration.accept(tree, result);
     return result;
   }
 
-  private StatementTree statementValue(com.sun.source.tree.StatementTree tree) {
+  private StatementTree statementValue(org.sonar.java.javac.source.tree.StatementTree tree) {
     int start = start(tree);
     int end = end(tree);
     if (tree instanceof BreakTree branch) {
@@ -698,7 +698,7 @@ public final class JavacTreeConverter {
       return result;
     }
     if (tree instanceof DoWhileLoopTree loop) {
-      var condition = ((com.sun.source.tree.ParenthesizedTree) loop.getCondition()).getExpression();
+      var condition = ((org.sonar.java.javac.source.tree.ParenthesizedTree) loop.getCondition()).getExpression();
       int whileStart = find(end(loop.getStatement()), start(condition), "while");
       int open = find(whileStart + 5, start(condition), "(");
       int close = find(end(condition), end, ")");
@@ -714,18 +714,18 @@ public final class JavacTreeConverter {
       return result;
     }
     if (tree instanceof SynchronizedTree synchronizedTree) {
-      var expression = ((com.sun.source.tree.ParenthesizedTree) synchronizedTree.getExpression()).getExpression();
+      var expression = ((org.sonar.java.javac.source.tree.ParenthesizedTree) synchronizedTree.getExpression()).getExpression();
       return new SynchronizedStatementTreeImpl(token(find(start, start(expression), "synchronized"), "synchronized"),
         token(find(start, start(expression), "("), "("), valueExpression(expression),
         token(find(end(expression), start(synchronizedTree.getBlock()), ")"), ")"), block(synchronizedTree.getBlock()));
     }
     if (tree instanceof TryTree tryTree) {
       ResourceListTreeImpl resources = ResourceListTreeImpl.emptyList();
-      for (com.sun.source.tree.Tree resource : tryTree.getResources()) {
+      for (org.sonar.java.javac.source.tree.Tree resource : tryTree.getResources()) {
         if (!resources.isEmpty()) {
           resources.separators().add(token(findLast(start(tryTree.getResources().get(resources.size() - 1)), start(resource), ";"), ";"));
         }
-        resources.add(resource instanceof VariableTree variable ? variableDeclaration(variable) : valueExpression((com.sun.source.tree.ExpressionTree) resource));
+        resources.add(resource instanceof VariableTree variable ? variableDeclaration(variable) : valueExpression((org.sonar.java.javac.source.tree.ExpressionTree) resource));
       }
       int tryKeyword = find(start, start(tryTree.getBlock()), "try");
       InternalSyntaxToken openParen = resources.isEmpty() ? null : token(find(tryKeyword + 3, start(tryTree.getResources().get(0)), "("), "(");
@@ -737,7 +737,7 @@ public final class JavacTreeConverter {
         }
       }
       List<org.sonar.plugins.java.api.tree.CatchTree> catches = new ArrayList<>();
-      for (com.sun.source.tree.CatchTree catcher : tryTree.getCatches()) {
+      for (org.sonar.java.javac.source.tree.CatchTree catcher : tryTree.getCatches()) {
         int catchStart = start(catcher);
         int parameterStart = start(catcher.getParameter());
         int parameterEnd = end(catcher.getParameter());
@@ -755,7 +755,7 @@ public final class JavacTreeConverter {
         block(tryTree.getBlock()), catches, finallyKeyword, finallyBlock);
     }
     if (tree instanceof SwitchTree selection) {
-      var expression = ((com.sun.source.tree.ParenthesizedTree) selection.getExpression()).getExpression();
+      var expression = ((org.sonar.java.javac.source.tree.ParenthesizedTree) selection.getExpression()).getExpression();
       int firstCase = selection.getCases().isEmpty() ? end : start(selection.getCases().get(0));
       int open = find(start, start(expression), "(");
       int close = find(end(expression), firstCase, ")");
@@ -769,7 +769,7 @@ public final class JavacTreeConverter {
         valueExpression(yield.getValue()), token(findLast(start, end, ";"), ";"));
     }
     if (tree instanceof IfTree conditional) {
-      var condition = ((com.sun.source.tree.ParenthesizedTree) conditional.getCondition()).getExpression();
+      var condition = ((org.sonar.java.javac.source.tree.ParenthesizedTree) conditional.getCondition()).getExpression();
       int open = find(start, start(condition), "(");
       int close = find(end(condition), start(conditional.getThenStatement()), ")");
       StatementTree thenStatement = statement(conditional.getThenStatement());
@@ -780,7 +780,7 @@ public final class JavacTreeConverter {
         valueExpression(condition), token(close, ")"), thenStatement, elseToken, elseStatement);
     }
     if (tree instanceof WhileLoopTree loop) {
-      var condition = ((com.sun.source.tree.ParenthesizedTree) loop.getCondition()).getExpression();
+      var condition = ((org.sonar.java.javac.source.tree.ParenthesizedTree) loop.getCondition()).getExpression();
       int open = find(start, start(condition), "(");
       int close = find(end(condition), start(loop.getStatement()), ")");
       return new WhileStatementTreeImpl(token(find(start, open, "while"), "while"), token(open, "("),
@@ -792,11 +792,11 @@ public final class JavacTreeConverter {
       int secondSemicolon = find(firstSemicolon + 1, end, ";");
       int close = findLast(secondSemicolon + 1, start(loop.getStatement()), ")");
       StatementListTreeImpl initializer = StatementListTreeImpl.emptyList();
-      for (com.sun.source.tree.StatementTree part : loop.getInitializer()) {
+      for (org.sonar.java.javac.source.tree.StatementTree part : loop.getInitializer()) {
         initializer.add(forPart(part));
       }
       StatementListTreeImpl update = StatementListTreeImpl.emptyList();
-      for (com.sun.source.tree.ExpressionStatementTree part : loop.getUpdate()) {
+      for (org.sonar.java.javac.source.tree.ExpressionStatementTree part : loop.getUpdate()) {
         update.add(new ExpressionStatementTreeImpl(valueExpression(part.getExpression()), null));
       }
       if (loop.getInitializer().stream().anyMatch(part -> !(part instanceof VariableTree))) {
@@ -823,7 +823,7 @@ public final class JavacTreeConverter {
       return new ThrowStatementTreeImpl(token(find(start, end, "throw"), "throw"),
         valueExpression(throwTree.getExpression()), token(findLast(start, end, ";"), ";"));
     }
-    if (tree instanceof com.sun.source.tree.ExpressionStatementTree expressionStatement) {
+    if (tree instanceof org.sonar.java.javac.source.tree.ExpressionStatementTree expressionStatement) {
       return new ExpressionStatementTreeImpl(valueExpression(expressionStatement.getExpression()),
         token(findLast(start, end, ";"), ";"));
     }
@@ -836,7 +836,7 @@ public final class JavacTreeConverter {
     if (tree instanceof BlockTree blockTree) {
       return block(blockTree);
     }
-    if (tree.getKind() == com.sun.source.tree.Tree.Kind.EMPTY_STATEMENT) {
+    if (tree.getKind() == org.sonar.java.javac.source.tree.Tree.Kind.EMPTY_STATEMENT) {
       return new EmptyStatementTreeImpl(token(find(start, end, ";"), ";"));
     }
     throw unsupported(tree);
@@ -855,10 +855,10 @@ public final class JavacTreeConverter {
       String keyword = defaultCase ? "default" : "case";
       String separator = caseTree.getCaseKind() == CaseTree.CaseKind.RULE ? "->" : ":";
       List<ExpressionTree> expressions = new ArrayList<>();
-      for (com.sun.source.tree.CaseLabelTree caseLabel : caseTree.getLabels()) {
+      for (org.sonar.java.javac.source.tree.CaseLabelTree caseLabel : caseTree.getLabels()) {
         if (caseLabel instanceof ConstantCaseLabelTree constant) {
           ExpressionTree converted = valueExpression(constant.getConstantExpression());
-          expressions.add(constant.getConstantExpression().getKind() == com.sun.source.tree.Tree.Kind.NULL_LITERAL
+          expressions.add(constant.getConstantExpression().getKind() == org.sonar.java.javac.source.tree.Tree.Kind.NULL_LITERAL
             ? new NullPatternTreeImpl((org.sonar.plugins.java.api.tree.LiteralTree) converted) : converted);
         } else if (caseLabel instanceof PatternCaseLabelTree patternLabel) {
           org.sonar.plugins.java.api.tree.PatternTree converted = new JavacExpressionConverter(unit, positions, tokens, registration,
@@ -879,12 +879,12 @@ public final class JavacTreeConverter {
       pendingCases.add(caseTree);
       StatementListTreeImpl body = StatementListTreeImpl.emptyList();
       if (caseTree.getStatements() != null) {
-        for (com.sun.source.tree.StatementTree caseStatement : caseTree.getStatements()) {
+        for (org.sonar.java.javac.source.tree.StatementTree caseStatement : caseTree.getStatements()) {
           body.add(statement(caseStatement));
         }
-      } else if (caseTree.getBody() instanceof com.sun.source.tree.StatementTree caseStatement) {
+      } else if (caseTree.getBody() instanceof org.sonar.java.javac.source.tree.StatementTree caseStatement) {
         body.add(statement(caseStatement));
-      } else if (caseTree.getBody() instanceof com.sun.source.tree.ExpressionTree caseExpression) {
+      } else if (caseTree.getBody() instanceof org.sonar.java.javac.source.tree.ExpressionTree caseExpression) {
         body.add(expressionContext ? new YieldStatementTreeImpl(null, valueExpression(caseExpression),
           token(find(end(caseExpression), end, ";"), ";")) : new ExpressionStatementTreeImpl(valueExpression(caseExpression), null));
       }
@@ -902,8 +902,8 @@ public final class JavacTreeConverter {
     return groups;
   }
 
-  private StatementTree forPart(com.sun.source.tree.StatementTree tree) {
-    if (tree instanceof com.sun.source.tree.ExpressionStatementTree expressionStatement) {
+  private StatementTree forPart(org.sonar.java.javac.source.tree.StatementTree tree) {
+    if (tree instanceof org.sonar.java.javac.source.tree.ExpressionStatementTree expressionStatement) {
       return new ExpressionStatementTreeImpl(valueExpression(expressionStatement.getExpression()), null);
     }
     if (tree instanceof VariableTree variable) {
@@ -916,20 +916,20 @@ public final class JavacTreeConverter {
     throw unsupported(tree);
   }
 
-  private void addForSeparators(StatementListTreeImpl result, List<? extends com.sun.source.tree.StatementTree> parts) {
+  private void addForSeparators(StatementListTreeImpl result, List<? extends org.sonar.java.javac.source.tree.StatementTree> parts) {
     for (int i = 1; i < parts.size(); i++) {
       result.separators().add(token(findLast(start(parts.get(i - 1)), end(parts.get(i)), ","), ","));
     }
   }
 
-  private ExpressionTree valueExpression(com.sun.source.tree.ExpressionTree tree) {
+  private ExpressionTree valueExpression(org.sonar.java.javac.source.tree.ExpressionTree tree) {
     return new JavacExpressionConverter(unit, positions, tokens, registration, this::anonymousClass, this::block, this::switchExpression).convert(tree);
   }
 
-  private ExpressionTree switchExpression(com.sun.source.tree.SwitchExpressionTree selection) {
+  private ExpressionTree switchExpression(org.sonar.java.javac.source.tree.SwitchExpressionTree selection) {
     int start = start(selection);
     int end = end(selection);
-    var expression = ((com.sun.source.tree.ParenthesizedTree) selection.getExpression()).getExpression();
+    var expression = ((org.sonar.java.javac.source.tree.ParenthesizedTree) selection.getExpression()).getExpression();
     int firstCase = selection.getCases().isEmpty() ? end : start(selection.getCases().get(0));
     int open = find(start, start(expression), "(");
     int close = find(end(expression), firstCase, ")");
@@ -949,9 +949,9 @@ public final class JavacTreeConverter {
     int closeBrace = findLast(openBrace, end, "}");
     List<Tree> members = new ArrayList<>();
     int memberCursor = openBrace + 1;
-    for (com.sun.source.tree.Tree member : tree.getMembers()) {
+    for (org.sonar.java.javac.source.tree.Tree member : tree.getMembers()) {
       addEmptyClassMembers(members, memberCursor, start(member), false);
-      if (member.getKind() == com.sun.source.tree.Tree.Kind.ERRONEOUS) {
+      if (member.getKind() == org.sonar.java.javac.source.tree.Tree.Kind.ERRONEOUS) {
         SourceTokens.Token following = tokens.tokenAtOrAfter(end(member));
         memberCursor = following.text().equals(";") ? following.end() : end(member);
         continue;
@@ -1007,7 +1007,7 @@ public final class JavacTreeConverter {
     int end = end(annotation);
     TypeTree annotationType = type(annotation.getAnnotationType());
     ArgumentListTreeImpl arguments = ArgumentListTreeImpl.emptyList();
-    List<? extends com.sun.source.tree.ExpressionTree> values = annotation.getArguments();
+    List<? extends org.sonar.java.javac.source.tree.ExpressionTree> values = annotation.getArguments();
     for (int i = 0; i < values.size(); i++) {
       if (i > 0) {
         arguments.separators().add(token(find(end(values.get(i - 1)), start(values.get(i)), ","), ","));
@@ -1023,12 +1023,12 @@ public final class JavacTreeConverter {
     return result;
   }
 
-  private TypeTree type(com.sun.source.tree.Tree tree) {
+  private TypeTree type(org.sonar.java.javac.source.tree.Tree tree) {
     return new JavacExpressionConverter(unit, positions, tokens, registration, this::anonymousClass, this::block, this::switchExpression).convertType(tree);
   }
 
-  private ExpressionTree expression(com.sun.source.tree.Tree tree) {
-    if (tree instanceof com.sun.source.tree.ExpressionTree expressionTree) {
+  private ExpressionTree expression(org.sonar.java.javac.source.tree.Tree tree) {
+    if (tree instanceof org.sonar.java.javac.source.tree.ExpressionTree expressionTree) {
       return valueExpression(expressionTree);
     }
     throw unsupported(tree);
@@ -1110,15 +1110,15 @@ public final class JavacTreeConverter {
     return tokens.lastToken(start, end, text).start();
   }
 
-  private int start(com.sun.source.tree.Tree tree) {
+  private int start(org.sonar.java.javac.source.tree.Tree tree) {
     return Math.toIntExact(positions.getStartPosition(unit, tree));
   }
 
-  private int end(com.sun.source.tree.Tree tree) {
+  private int end(org.sonar.java.javac.source.tree.Tree tree) {
     return Math.toIntExact(positions.getEndPosition(unit, tree));
   }
 
-  private static IllegalArgumentException unsupported(com.sun.source.tree.Tree tree) {
+  private static IllegalArgumentException unsupported(org.sonar.java.javac.source.tree.Tree tree) {
     return new IllegalArgumentException("Unsupported javac tree: " + tree.getKind());
   }
 

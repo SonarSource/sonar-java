@@ -16,10 +16,10 @@
  */
 package org.sonar.java.model.javac;
 
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.util.JavacTask;
-import com.sun.source.util.SourcePositions;
-import com.sun.source.util.Trees;
+import org.sonar.java.javac.source.tree.CompilationUnitTree;
+import org.sonar.java.javac.source.util.JavacTask;
+import org.sonar.java.javac.source.util.SourcePositions;
+import org.sonar.java.javac.source.util.Trees;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -36,7 +36,7 @@ import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
-import javax.tools.ToolProvider;
+import org.sonar.java.javac.api.JavacTool;
 
 /** Parses Java source with the compiler in the running JDK. */
 public final class JavacParser {
@@ -113,7 +113,7 @@ public final class JavacParser {
   }
 
   private static JavaCompiler systemCompiler() {
-    return Objects.requireNonNull(ToolProvider.getSystemJavaCompiler(), "A JDK is required to parse Java source");
+    return JavacTool.create();
   }
 
   public static boolean isFatalSyntaxError(Diagnostic<? extends JavaFileObject> diagnostic) {
@@ -136,8 +136,12 @@ public final class JavacParser {
       compilerOptions.add("-source");
       compilerOptions.add(Integer.toString(options.sourceVersion));
     }
-    if (options.enablePreview) {
+    if (options.enablePreview && options.sourceVersion() == 27) {
       compilerOptions.add("--enable-preview");
+    }
+    if (options.system != null) {
+      compilerOptions.add("--system");
+      compilerOptions.add(options.system.toString());
     }
     JavacTask task = (JavacTask) compiler.getTask(null, fileManager, diagnostics, compilerOptions, null, sourceFiles);
     List<CompilationUnitTree> units = new ArrayList<>();
@@ -154,36 +158,43 @@ public final class JavacParser {
     private final Integer sourceVersion;
     private final boolean enablePreview;
     private final boolean analyze;
+    private final Path system;
 
-    private Options(List<Path> classpath, Integer sourceVersion, boolean enablePreview, boolean analyze) {
+    private Options(List<Path> classpath, Integer sourceVersion, boolean enablePreview, boolean analyze, Path system) {
       this.classpath = classpath;
       this.sourceVersion = sourceVersion;
       this.enablePreview = enablePreview;
       this.analyze = analyze;
+      this.system = system;
     }
 
     public static Options defaults() {
-      return new Options(List.of(), null, false, false);
+      String system = System.getProperty("sonar.java.javac.system");
+      return new Options(List.of(), null, false, false, system == null || system.isBlank() ? null : Path.of(system));
     }
 
     public int sourceVersion() {
-      return sourceVersion == null ? Runtime.version().feature() : sourceVersion;
+      return sourceVersion == null ? 27 : sourceVersion;
     }
 
     public Options withClasspath(List<Path> classpath) {
-      return new Options(List.copyOf(classpath), sourceVersion, enablePreview, analyze);
+      return new Options(List.copyOf(classpath), sourceVersion, enablePreview, analyze, system);
     }
 
     public Options withSourceVersion(int sourceVersion) {
-      return new Options(classpath, sourceVersion, enablePreview, analyze);
+      return new Options(classpath, sourceVersion, enablePreview, analyze, system);
     }
 
     public Options withPreview(boolean enablePreview) {
-      return new Options(classpath, sourceVersion, enablePreview, analyze);
+      return new Options(classpath, sourceVersion, enablePreview, analyze, system);
     }
 
     public Options withAnalysis(boolean analyze) {
-      return new Options(classpath, sourceVersion, enablePreview, analyze);
+      return new Options(classpath, sourceVersion, enablePreview, analyze, system);
+    }
+
+    public Options withSystem(Path system) {
+      return new Options(classpath, sourceVersion, enablePreview, analyze, system);
     }
   }
 

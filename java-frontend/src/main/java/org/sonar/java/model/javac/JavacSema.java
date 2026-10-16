@@ -16,9 +16,9 @@
  */
 package org.sonar.java.model.javac;
 
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.util.TreePath;
-import com.sun.source.util.Trees;
+import org.sonar.java.javac.source.tree.CompilationUnitTree;
+import org.sonar.java.javac.source.util.TreePath;
+import org.sonar.java.javac.source.util.Trees;
 import java.io.IOException;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -108,7 +108,7 @@ public final class JavacSema implements Sema {
     }
     Type resolved = type(path);
     if (resolved.isUnknown() && tree instanceof org.sonar.plugins.java.api.tree.AnnotationTree
-      && path.getLeaf() instanceof com.sun.source.tree.AnnotationTree annotation) {
+      && path.getLeaf() instanceof org.sonar.java.javac.source.tree.AnnotationTree annotation) {
       return type(new TreePath(path, annotation.getAnnotationType()));
     }
     return resolved;
@@ -120,7 +120,7 @@ public final class JavacSema implements Sema {
       return Symbol.UNKNOWN_SYMBOL;
     }
     if (tree instanceof org.sonar.plugins.java.api.tree.ImportTree
-      && path.getLeaf() instanceof com.sun.source.tree.ImportTree importTree) {
+      && path.getLeaf() instanceof org.sonar.java.javac.source.tree.ImportTree importTree) {
       return symbol(new TreePath(path, importTree.getQualifiedIdentifier()));
     }
     if (tree instanceof IdentifierTree
@@ -134,8 +134,8 @@ public final class JavacSema implements Sema {
       }
     }
     if (tree instanceof org.sonar.plugins.java.api.tree.MethodInvocationTree
-      && path.getLeaf() instanceof com.sun.source.tree.MethodInvocationTree invocation
-      && invocation.getMethodSelect() instanceof com.sun.source.tree.MemberSelectTree select
+      && path.getLeaf() instanceof org.sonar.java.javac.source.tree.MethodInvocationTree invocation
+      && invocation.getMethodSelect() instanceof org.sonar.java.javac.source.tree.MemberSelectTree select
       && trees.getElement(path) instanceof ExecutableElement method) {
       TreePath selection = new TreePath(path, invocation.getMethodSelect());
       TypeMirror receiver = trees.getTypeMirror(new TreePath(selection, select.getExpression()));
@@ -146,15 +146,15 @@ public final class JavacSema implements Sema {
       }
     }
     if (tree instanceof org.sonar.plugins.java.api.tree.NewClassTree
-      && path.getLeaf() instanceof com.sun.source.tree.NewClassTree
+      && path.getLeaf() instanceof org.sonar.java.javac.source.tree.NewClassTree
       && trees.getElement(path) instanceof ExecutableElement constructor
       && trees.getTypeMirror(path) instanceof DeclaredType declared) {
       return symbols.methodAt(constructor, declared, null);
     }
     Symbol resolved = symbol(path);
-    if (resolved.isUnknown() && path.getLeaf() instanceof com.sun.source.tree.MethodInvocationTree invocation) {
+    if (resolved.isUnknown() && path.getLeaf() instanceof org.sonar.java.javac.source.tree.MethodInvocationTree invocation) {
       resolved = symbol(new TreePath(path, invocation.getMethodSelect()));
-      if (resolved.isUnknown() && invocation.getMethodSelect() instanceof com.sun.source.tree.MemberSelectTree select) {
+      if (resolved.isUnknown() && invocation.getMethodSelect() instanceof org.sonar.java.javac.source.tree.MemberSelectTree select) {
         TypeMirror receiver = trees.getTypeMirror(new TreePath(new TreePath(path, invocation.getMethodSelect()), select.getExpression()));
         Element owner = receiver == null ? null : types.asElement(receiver);
         if (owner instanceof TypeElement type) {
@@ -274,7 +274,7 @@ public final class JavacSema implements Sema {
     }
   }
 
-  public void register(CompilationUnitTree unit, com.sun.source.tree.Tree javacTree, Tree sonarTree) {
+  public void register(CompilationUnitTree unit, org.sonar.java.javac.source.tree.Tree javacTree, Tree sonarTree) {
     TreePath path = TreePath.getPath(unit, javacTree);
     if (path == null) {
       return;
@@ -290,8 +290,8 @@ public final class JavacSema implements Sema {
       || sonarTree instanceof org.sonar.plugins.java.api.tree.VariableTree) {
       registerDeclaration(path, sonarTree);
       if (sonarTree instanceof EnumConstantTree constant
-        && javacTree instanceof com.sun.source.tree.VariableTree variable
-        && variable.getInitializer() instanceof com.sun.source.tree.NewClassTree initializer) {
+        && javacTree instanceof org.sonar.java.javac.source.tree.VariableTree variable
+        && variable.getInitializer() instanceof org.sonar.java.javac.source.tree.NewClassTree initializer) {
         registerUsage(new TreePath(path, initializer), constant.simpleName());
       }
     } else if (sonarTree instanceof IdentifierTree identifier) {

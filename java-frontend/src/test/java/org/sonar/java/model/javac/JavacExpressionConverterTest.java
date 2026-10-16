@@ -16,9 +16,9 @@
  */
 package org.sonar.java.model.javac;
 
-import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.ReturnTree;
+import org.sonar.java.javac.source.tree.ClassTree;
+import org.sonar.java.javac.source.tree.MethodTree;
+import org.sonar.java.javac.source.tree.ReturnTree;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

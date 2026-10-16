@@ -213,7 +213,7 @@ class JavacTreeConverterTest {
   void records_declarations_and_identifier_usages() throws IOException {
     String source = "class A { int field; int method() { return field + 1; } }";
     try (JavacParser.Result parsed = JavacParser.parse("A.java", source)) {
-      List<Map.Entry<com.sun.source.tree.Tree, Tree>> registrations = new ArrayList<>();
+      List<Map.Entry<org.sonar.java.javac.source.tree.Tree, Tree>> registrations = new ArrayList<>();
       JavacTreeConverter.convert(parsed.unit(), parsed.trees(), source,
         (javacTree, sonarTree) -> registrations.add(Map.entry(javacTree, sonarTree)));
       assertThat(registrations).extracting(entry -> entry.getValue().kind())

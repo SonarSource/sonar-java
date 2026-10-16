@@ -16,10 +16,10 @@
  */
 package org.sonar.java.model.javac;
 
-import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.VariableTree;
-import com.sun.source.util.TreePath;
-import com.sun.source.util.TreePathScanner;
+import org.sonar.java.javac.source.tree.ClassTree;
+import org.sonar.java.javac.source.tree.VariableTree;
+import org.sonar.java.javac.source.util.TreePath;
+import org.sonar.java.javac.source.util.TreePathScanner;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -69,7 +69,7 @@ class JavacSemaTest {
       sema.register(parsed.unit(), field, sonarDeclaration);
       new TreePathScanner<Void, Void>() {
         @Override
-        public Void visitIdentifier(com.sun.source.tree.IdentifierTree identifier, Void unused) {
+        public Void visitIdentifier(org.sonar.java.javac.source.tree.IdentifierTree identifier, Void unused) {
           if (identifier.getName().contentEquals("value")) {
             sema.register(parsed.unit(), identifier, sonarUsage);
           }
@@ -139,9 +139,9 @@ class JavacSemaTest {
       "class Sample { void method() {} void method() {} }", JavacParser.Options.defaults().withAnalysis(true))) {
       JavacSema sema = new JavacSema(parsed);
       ClassTree type = (ClassTree) parsed.unit().getTypeDecls().get(0);
-      com.sun.source.tree.MethodTree second = type.getMembers().stream()
-        .filter(com.sun.source.tree.MethodTree.class::isInstance)
-        .map(com.sun.source.tree.MethodTree.class::cast)
+      org.sonar.java.javac.source.tree.MethodTree second = type.getMembers().stream()
+        .filter(org.sonar.java.javac.source.tree.MethodTree.class::isInstance)
+        .map(org.sonar.java.javac.source.tree.MethodTree.class::cast)
         .filter(method -> method.getName().contentEquals("method"))
         .skip(1).findFirst().orElseThrow();
       org.sonar.plugins.java.api.tree.MethodTree duplicate = mock(org.sonar.plugins.java.api.tree.MethodTree.class);

@@ -47,4 +47,15 @@ class JavacSourceAnalysisTest {
       assertThat(analysis.diagnostics()).noneMatch(diagnostic -> diagnostic.getKind() == Diagnostic.Kind.ERROR);
     }
   }
+
+  @Test
+  void converts_java_27_preview_source_on_java_26() throws IOException {
+    String source = "class Sample { boolean test(Object value) { return value instanceof int i && i > 0; } }";
+    JavacParser.Options options = JavacParser.Options.defaults().withSourceVersion(27).withPreview(true);
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("Sample.java", source, options)) {
+      assertThat(analysis.tree().types()).hasSize(1);
+      assertThat(analysis.sema().getClassType("Sample").symbol().name()).isEqualTo("Sample");
+      assertThat(analysis.diagnostics()).noneMatch(diagnostic -> diagnostic.getKind() == Diagnostic.Kind.ERROR);
+    }
+  }
 }

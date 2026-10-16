@@ -16,14 +16,14 @@
  */
 package org.sonar.java.model.javac;
 
-import com.sun.source.tree.AssignmentTree;
-import com.sun.source.tree.CompoundAssignmentTree;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.ExpressionTree;
-import com.sun.source.tree.UnaryTree;
-import com.sun.source.util.TreePath;
-import com.sun.source.util.TreePathScanner;
-import com.sun.source.util.Trees;
+import org.sonar.java.javac.source.tree.AssignmentTree;
+import org.sonar.java.javac.source.tree.CompoundAssignmentTree;
+import org.sonar.java.javac.source.tree.CompilationUnitTree;
+import org.sonar.java.javac.source.tree.ExpressionTree;
+import org.sonar.java.javac.source.tree.UnaryTree;
+import org.sonar.java.javac.source.util.TreePath;
+import org.sonar.java.javac.source.util.TreePathScanner;
+import org.sonar.java.javac.source.util.Trees;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;

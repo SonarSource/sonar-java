@@ -16,9 +16,9 @@
  */
 package org.sonar.java.model.javac;
 
-import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.VariableTree;
-import com.sun.source.util.TreePath;
+import org.sonar.java.javac.source.tree.ClassTree;
+import org.sonar.java.javac.source.tree.VariableTree;
+import org.sonar.java.javac.source.util.TreePath;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -75,6 +75,16 @@ class JavacParserTest {
     try (JavacParser.Result result = JavacParser.parse("Sample.java", "record Sample(int value) {}",
       JavacParser.Options.defaults().withSourceVersion(11))) {
       assertThat(result.diagnostics()).anyMatch(diagnostic -> diagnostic.getKind() == Diagnostic.Kind.ERROR);
+    }
+  }
+
+  @Test
+  void parses_java_27_preview_source_on_java_26() throws IOException {
+    String source = "class Sample { boolean test(Object value) { return value instanceof int i && i > 0; } }";
+    try (JavacParser.Result result = JavacParser.parse("Sample.java", source,
+      JavacParser.Options.defaults().withSourceVersion(27).withPreview(true).withAnalysis(true))) {
+      assertThat(result.units()).hasSize(1);
+      assertThat(result.diagnostics()).noneMatch(diagnostic -> diagnostic.getKind() == Diagnostic.Kind.ERROR);
     }
   }
 

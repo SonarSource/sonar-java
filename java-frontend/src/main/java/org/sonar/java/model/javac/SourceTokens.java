@@ -16,11 +16,21 @@
  */
 package org.sonar.java.model.javac;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import javax.tools.JavaFileObject;
+import javax.tools.SimpleJavaFileObject;
+import org.sonar.java.javac.main.Option;
+import org.sonar.java.javac.parser.Scanner;
+import org.sonar.java.javac.parser.ScannerFactory;
+import org.sonar.java.javac.parser.Tokens;
+import org.sonar.java.javac.util.Context;
+import org.sonar.java.javac.util.Log;
+import org.sonar.java.javac.util.Options;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.InternalSyntaxTrivia;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -36,10 +46,6 @@ public final class SourceTokens {
     }
   }
 
-  private static final List<String> OPERATORS = List.of(
-    ">>>=", "<<=", ">>=", "...", "::", "->", "++", "--", "==", "!=", "<=", ">=", "&&", "||",
-    "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<", ">>>", ">>");
-
   private final String source;
   private final int sourceVersion;
   private final List<Token> tokens;
@@ -47,7 +53,7 @@ public final class SourceTokens {
   private final List<Integer> lineStarts = new ArrayList<>();
 
   public SourceTokens(String source) {
-    this(source, Runtime.version().feature());
+    this(source, 27);
   }
 
   public SourceTokens(String source, int sourceVersion) {
@@ -159,124 +165,41 @@ public final class SourceTokens {
   }
 
   private List<Token> scan() {
+    Context context = new Context();
+    Options options = Options.instance(context);
+    options.put(Option.SOURCE, Integer.toString(sourceVersion));
+    if (sourceVersion < 23) {
+      options.put(Option.DISABLE_LINE_DOC_COMMENTS, "true");
+    }
+    JavaFileObject file = new SimpleJavaFileObject(URI.create("string:///SourceTokens.java"), JavaFileObject.Kind.SOURCE) {
+      @Override
+      public CharSequence getCharContent(boolean ignoreEncodingErrors) {
+        return source;
+      }
+    };
+    Log.instance(context).useSource(file);
+    Scanner scanner = ScannerFactory.instance(context).newScanner(source, true);
     List<Token> result = new ArrayList<>();
-    List<Comment> comments = new ArrayList<>();
-    int offset = 0;
-    while (offset < source.length()) {
-      char c = source.charAt(offset);
-      if (Character.isWhitespace(c)) {
-        offset++;
-        continue;
-      }
-      if (c == '/' && offset + 1 < source.length() && source.charAt(offset + 1) == '/') {
-        SyntaxTrivia.CommentKind kind = sourceVersion >= 23 && source.startsWith("///", offset)
-          ? SyntaxTrivia.CommentKind.MARKDOWN : SyntaxTrivia.CommentKind.LINE;
-        int end = lineCommentEnd(offset);
-        if (kind == SyntaxTrivia.CommentKind.MARKDOWN) {
-          int next = nextMarkdownLine(end);
-          while (next >= 0) {
-            end = lineCommentEnd(next);
-            next = nextMarkdownLine(end);
-          }
-        }
-        comments.add(new Comment(kind, source.substring(offset, end), offset, end));
-        offset = end;
-        continue;
-      }
-      if (c == '/' && offset + 1 < source.length() && source.charAt(offset + 1) == '*') {
-        int close = source.indexOf("*/", offset + 2);
-        int end = close < 0 ? source.length() : close + 2;
-        SyntaxTrivia.CommentKind kind = source.startsWith("/**", offset) ? SyntaxTrivia.CommentKind.JAVADOC : SyntaxTrivia.CommentKind.BLOCK;
-        comments.add(new Comment(kind, source.substring(offset, end), offset, end));
-        offset = end;
-        continue;
-      }
-      int end;
-      if (c == '"') {
-        end = source.startsWith("\"\"\"", offset) ? scanTextBlock(offset) : scanQuoted(offset, '"');
-      } else if (c == '\'') {
-        end = scanQuoted(offset, '\'');
-      } else if (Character.isJavaIdentifierStart(c)) {
-        end = offset + 1;
-        while (end < source.length() && Character.isJavaIdentifierPart(source.charAt(end))) {
-          end++;
-        }
-      } else if (Character.isDigit(c)) {
-        end = scanNumber(offset);
-      } else {
-        end = offset + 1;
-        for (String operator : OPERATORS) {
-          if (source.startsWith(operator, offset) && operator.length() > end - offset) {
-            end = offset + operator.length();
-          }
+    do {
+      scanner.nextToken();
+      Tokens.Token scanned = scanner.token();
+      List<Comment> comments = new ArrayList<>();
+      if (scanned.comments != null) {
+        for (Tokens.Comment comment : scanned.comments.reverse()) {
+          SyntaxTrivia.CommentKind kind = switch (comment.getStyle()) {
+            case LINE -> SyntaxTrivia.CommentKind.LINE;
+            case BLOCK -> SyntaxTrivia.CommentKind.BLOCK;
+            case JAVADOC_LINE -> SyntaxTrivia.CommentKind.MARKDOWN;
+            case JAVADOC_BLOCK -> SyntaxTrivia.CommentKind.JAVADOC;
+          };
+          int start = comment.getPos().getStartPosition();
+          int end = comment.getPos().getEndPosition();
+          comments.add(new Comment(kind, source.substring(start, end), start, end));
         }
       }
-      result.add(new Token(source.substring(offset, end), offset, end, List.copyOf(comments)));
-      comments.clear();
-      offset = end;
-    }
-    result.add(new Token("", source.length(), source.length(), List.copyOf(comments)));
+      String raw = source.substring(scanned.pos, scanned.endPos);
+      result.add(new Token(raw, scanned.pos, scanned.endPos, List.copyOf(comments)));
+    } while (scanner.token().kind != Tokens.TokenKind.EOF);
     return List.copyOf(result);
-  }
-
-  private int lineCommentEnd(int start) {
-    int end = start + 2;
-    while (end < source.length() && source.charAt(end) != '\r' && source.charAt(end) != '\n') {
-      end++;
-    }
-    return end;
-  }
-
-  private int nextMarkdownLine(int end) {
-    int offset = end;
-    if (offset >= source.length()) {
-      return -1;
-    }
-    if (source.charAt(offset++) == '\r' && offset < source.length() && source.charAt(offset) == '\n') {
-      offset++;
-    }
-    while (offset < source.length() && (source.charAt(offset) == ' ' || source.charAt(offset) == '\t')) {
-      offset++;
-    }
-    return source.startsWith("///", offset) ? offset : -1;
-  }
-
-  private int scanQuoted(int start, char delimiter) {
-    int offset = start + 1;
-    while (offset < source.length()) {
-      char c = source.charAt(offset++);
-      if (c == '\\' && offset < source.length()) {
-        offset++;
-      } else if (c == delimiter) {
-        break;
-      }
-    }
-    return offset;
-  }
-
-  private int scanTextBlock(int start) {
-    int offset = start + 3;
-    while (offset < source.length()) {
-      if (source.startsWith("\"\"\"", offset) && (offset == start + 3 || source.charAt(offset - 1) != '\\')) {
-        return offset + 3;
-      }
-      offset++;
-    }
-    return offset;
-  }
-
-  private int scanNumber(int start) {
-    int offset = start + 1;
-    while (offset < source.length()) {
-      char c = source.charAt(offset);
-      if (Character.isLetterOrDigit(c) || c == '_' || c == '.') {
-        offset++;
-      } else if ((c == '+' || c == '-') && offset > start && "eEpP".indexOf(source.charAt(offset - 1)) >= 0) {
-        offset++;
-      } else {
-        break;
-      }
-    }
-    return offset;
   }
 }

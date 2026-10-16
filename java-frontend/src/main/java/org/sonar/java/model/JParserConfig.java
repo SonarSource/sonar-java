@@ -93,7 +93,7 @@ public abstract class JParserConfig {
   protected final JavacParser.Options options() {
     JavacParser.Options options = JavacParser.Options.defaults()
       .withClasspath(classpath.stream().map(File::toPath).toList())
-      .withSourceVersion(javaVersion.asInt() > 0 ? Math.max(8, javaVersion.asInt()) : Runtime.version().feature());
+      .withSourceVersion(javaVersion.asInt() > 0 ? Math.max(8, javaVersion.asInt()) : 27);
     return options.withPreview(shouldEnablePreviewFlag(javaVersion) || javaVersion.asInt() <= 0);
   }
 

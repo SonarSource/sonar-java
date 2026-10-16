@@ -103,9 +103,9 @@ class JavaVersionImplTest {
 
   @Test
   void test_effective_java_version() {
-    assertThat(new JavaVersionImpl().effectiveJavaVersionAsString()).isEqualTo("26");
+    assertThat(new JavaVersionImpl().effectiveJavaVersionAsString()).isEqualTo("27");
     assertThat(new JavaVersionImpl(10).effectiveJavaVersionAsString()).isEqualTo("10");
-    assertThat(new JavaVersionImpl(-1).effectiveJavaVersionAsString()).isEqualTo("26");
+    assertThat(new JavaVersionImpl(-1).effectiveJavaVersionAsString()).isEqualTo("27");
   }
 
   @Test

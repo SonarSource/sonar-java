@@ -48,7 +48,7 @@ public final class JavacSourceAnalysis implements AutoCloseable {
             "Parse error at line " + diagnostic.getLineNumber() + " column " + diagnostic.getColumnNumber() + ": " + diagnostic.getMessage(null));
         }
       }
-      List<Map.Entry<com.sun.source.tree.Tree, org.sonar.plugins.java.api.tree.Tree>> mappings = new ArrayList<>();
+      List<Map.Entry<org.sonar.java.javac.source.tree.Tree, org.sonar.plugins.java.api.tree.Tree>> mappings = new ArrayList<>();
       JavaTree.CompilationUnitTreeImpl tree = JavacTreeConverter.convert(parsed.unit(), parsed.trees(), source, options.sourceVersion(),
         (javacTree, sonarTree) -> mappings.add(Map.entry(javacTree, sonarTree)));
       parsed.task().analyze();
