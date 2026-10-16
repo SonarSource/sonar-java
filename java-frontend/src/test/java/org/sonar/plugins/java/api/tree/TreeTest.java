@@ -44,4 +44,12 @@ class TreeTest {
     assertThat(Tree.Kind.ASSIGNMENT_KINDS).containsExactlyInAnyOrder(expected);
   }
 
+  @Test
+  void literal_kinds_contains_exactly_all_kinds_backed_by_literal_tree() {
+    Tree.Kind[] actual = Arrays.stream(Tree.Kind.values())
+      .filter(kind -> kind.getAssociatedInterface() == LiteralTree.class)
+      .toArray(Tree.Kind[]::new);
+    assertThat(actual).containsExactlyInAnyOrderElementsOf(Tree.Kind.LITERAL_KINDS);
+  }
+
 }
