@@ -24,6 +24,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 class LiteralToStringByConcatenationCheckTest {
 
   private static final String SAMPLE = "checks/LiteralToStringByConcatenationCheckSample.java";
+  private static final String CONSTANTS_SAMPLE = "checks/LiteralToStringByConcatenationCheckConstantsSample.java";
   private static final LiteralToStringByConcatenationCheck CHECK = new LiteralToStringByConcatenationCheck();
 
   @Test
@@ -38,6 +39,23 @@ class LiteralToStringByConcatenationCheckTest {
   void test_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath(SAMPLE))
+      .withCheck(CHECK)
+      .withoutSemantic()
+      .verifyIssues();
+  }
+
+  @Test
+  void character_constants() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath(CONSTANTS_SAMPLE))
+      .withCheck(CHECK)
+      .verifyIssues();
+  }
+
+  @Test
+  void character_constants_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath(CONSTANTS_SAMPLE))
       .withCheck(CHECK)
       .withoutSemantic()
       .verifyIssues();
