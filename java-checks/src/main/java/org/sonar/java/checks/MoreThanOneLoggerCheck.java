@@ -72,18 +72,9 @@ public class MoreThanOneLoggerCheck extends IssuableSubscriptionVisitor {
     List<VariableTree> loggerFields = classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.VARIABLE))
       .map(VariableTree.class::cast)
-      .filter(MoreThanOneLoggerCheck::isDeclaredLogger)
+      .filter(field -> isLoggerType(field.type().symbolType()))
       .toList();
     return withoutDerivedLoggers(loggerFields);
-  }
-
-  /**
-   * A non-final logger field without an initializer is a configurable property, assigned at startup
-   * or injected from outside, rather than a category the class gives itself. A final one has to be
-   * assigned in an initializer or a constructor, so it is a category of the class.
-   */
-  private static boolean isDeclaredLogger(VariableTree field) {
-    return (field.initializer() != null || field.symbol().isFinal()) && isLoggerType(field.type().symbolType());
   }
 
   /**
