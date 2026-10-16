@@ -39,3 +39,4 @@ Desktop.ini
 
 .java-version
 .mvn/.develocity/
+javac-relocated/src/main/java/

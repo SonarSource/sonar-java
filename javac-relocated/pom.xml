@@ -22,14 +22,18 @@
 
   <properties>
     <maven.compiler.release></maven.compiler.release>
+    <openjdk.source.tag>jdk-27+35</openjdk.source.tag>
+    <openjdk.source.commit>815ff4dc327fe17f2433c7d115a5a503af10f3c4</openjdk.source.commit>
+    <openjdk.source.url>https://github.com/openjdk/jdk/archive/${openjdk.source.commit}.zip</openjdk.source.url>
   </properties>
 
   <build>
     <resources>
       <resource>
-        <directory>src/main/relocated-javac</directory>
+        <directory>src/main/java</directory>
         <includes>
           <include>**/*.properties</include>
+          <include>**/version.txt</include>
           <include>OPENJDK-LICENSE</include>
           <include>RELOCATION.txt</include>
         </includes>
@@ -37,16 +41,31 @@
     </resources>
     <plugins>
       <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.6.1</version>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.6.4</version>
         <executions>
           <execution>
-            <id>relocated-javac-sources</id>
+            <id>relocate-openjdk-javac</id>
             <phase>generate-sources</phase>
-            <goals><goal>add-source</goal></goals>
+            <goals><goal>exec</goal></goals>
             <configuration>
-              <sources><source>src/main/relocated-javac</source></sources>
+              <executable>java</executable>
+              <arguments>
+                <argument>${project.basedir}/RelocateJavac.java</argument>
+                <argument>--download</argument>
+                <argument>${openjdk.source.url}</argument>
+                <argument>${openjdk.source.tag}</argument>
+                <argument>${openjdk.source.commit}</argument>
+                <argument>${project.basedir}/src/main/java</argument>
+              </arguments>
             </configuration>
           </execution>
         </executions>
