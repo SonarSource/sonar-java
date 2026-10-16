@@ -1,0 +1,106 @@
+<h2>Why is this an issue?</h2>
+<p>A static method named <code>getInstance</code> is the conventional entry point of the singleton pattern. Its name promises <strong>the</strong>
+instance of the class, so callers assume that every call hands back the same object and that any state the class holds is shared.</p>
+<p>A <code>getInstance</code> method whose body is an unconditional <code>return new Foo();</code> breaks that promise. No static field is read or
+written, so nothing is cached and each call creates a separate object. Caches, connection pools, counters and registries owned by the class are then
+duplicated per call site, and every write performed through one instance is invisible to the holders of the others.</p>
+<p>Because each object works perfectly in isolation, the defect does not fail loudly. It surfaces much later, as state that silently goes missing
+between two unrelated parts of the application. This shape is typically introduced when the caching logic is dropped during a refactoring, or when a
+class is turned into a singleton by renaming its factory method without adding the field that backs it.</p>
+<p>This rule raises an issue when a static method named <code>getInstance</code> unconditionally returns a newly created instance of its own class,
+instead of a cached one.</p>
+<p>The issue is always worth reviewing, but it is not always worth fixing as reported. If the class is stateless and the name is the only problem,
+renaming the method is enough. If callers are documented as receiving a fresh, independent object, the name is misleading but the behaviour may be
+deliberate, and renaming is again the fix rather than caching.</p>
+<h3>Exceptions</h3>
+<p>No issue is raised on a lazily initialised <code>getInstance</code>, which assigns the static field before returning it, because it does cache the
+instance:</p>
+<pre>
+public static synchronized FeatureFlags getInstance() {
+  if (instance == null) {
+    instance = new FeatureFlags();
+  }
+  return instance;
+}
+</pre>
+<p>No issue is raised on factory methods that are not named <code>getInstance</code>, such as <code>create</code>, <code>newInstance</code>,
+<code>of</code> or <code>valueOf</code>. A method called <code>newInstance</code> returning a fresh object is doing exactly what its name says, and
+<code>of</code> or <code>valueOf</code> are conventionally free to return either a cached or a new value.</p>
+<p>Overloads of <code>getInstance</code> that take arguments are also exempt. A parameterised factory such as <code>getInstance(Locale locale)</code>
+cannot have a single instance, and the established JDK convention, for example <code>Calendar.getInstance(TimeZone)</code> or
+<code>MessageDigest.getInstance(String)</code>, is to key or build the result from the arguments. Only the no-argument form carries the "there is
+exactly one" promise, so only that form is reported.</p>
+<h2>How to fix it</h2>
+<p>Decide which instance the method should return, then make it return that one.</p>
+<p>If the class is meant to be a singleton, store the instance in a <code>private static final</code> field and return the field. Also make the
+constructor <code>private</code> so that no caller can bypass the accessor. Prefer this eager form unless the construction is expensive or needs
+configuration that is not available at class-loading time; if it does, use a lazily initialised field guarded against concurrent access, such as a
+holder class or a <code>synchronized</code> accessor.</p>
+<p>If the class is not meant to be a singleton and callers genuinely need their own object, keep the <code>new</code> and rename the method to
+<code>create</code> or <code>newInstance</code>. This fixes the contract instead of the implementation and is the right choice when the class has no
+state to share.</p>
+<p>Both fixes change how many objects exist at runtime, so check the callers before applying either. Sharing an instance that was previously
+per-caller requires the class to be safe to use from several threads, and code that mutates the object after obtaining it, or that relies on object
+identity, may need to be adapted.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class FeatureFlags {
+
+  private final Map&lt;String, Boolean&gt; flags = new HashMap&lt;&gt;();
+
+  public static FeatureFlags getInstance() {
+    return new FeatureFlags(); // Noncompliant, every caller gets its own empty map
+  }
+
+  public void enable(String name) {
+    flags.put(name, true);
+  }
+
+  public boolean isEnabled(String name) {
+    return flags.getOrDefault(name, false);
+  }
+}
+
+// FeatureFlags.getInstance().enable("dark-mode");
+// FeatureFlags.getInstance().isEnabled("dark-mode"); // returns false, the flag was set on another object
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class FeatureFlags {
+
+  private static final FeatureFlags INSTANCE = new FeatureFlags();
+
+  private final Map&lt;String, Boolean&gt; flags = new ConcurrentHashMap&lt;&gt;();
+
+  private FeatureFlags() {
+  }
+
+  public static FeatureFlags getInstance() {
+    return INSTANCE;
+  }
+
+  public void enable(String name) {
+    flags.put(name, true);
+  }
+
+  public boolean isEnabled(String name) {
+    return flags.getOrDefault(name, false);
+  }
+}
+
+// FeatureFlags.getInstance().enable("dark-mode");
+// FeatureFlags.getInstance().isEnabled("dark-mode"); // returns true
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Calendar.html#getInstance()"><code>Calendar.getInstance()</code></a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S3050} - Singletons should have "private" constructors</li>
+  <li>{rule:java:S2125} - Singletons should be implemented as enums</li>
+</ul>
+
