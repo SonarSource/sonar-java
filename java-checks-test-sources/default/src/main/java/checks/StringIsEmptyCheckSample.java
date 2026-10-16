@@ -82,6 +82,36 @@ public class StringIsEmptyCheckSample {
     // fix@qf15 {{Replace with "isEmpty()"}}
     // edit@qf15 [[sc=30;ec=43]]{{isEmpty()}}
 
+    // zero written in a non-decimal base
+    b = s.length() == 0x0; // Noncompliant [[quickfixes=qf16]]
+    // fix@qf16 {{Replace with "isEmpty()"}}
+    // edit@qf16 [[sc=11;ec=26]]{{isEmpty()}}
+
+    b = s.length() == 0X0; // Noncompliant [[quickfixes=qf17]]
+    // fix@qf17 {{Replace with "isEmpty()"}}
+    // edit@qf17 [[sc=11;ec=26]]{{isEmpty()}}
+
+    b = s.length() == 00; // Noncompliant [[quickfixes=qf18]]
+    // fix@qf18 {{Replace with "isEmpty()"}}
+    // edit@qf18 [[sc=11;ec=25]]{{isEmpty()}}
+
+    b = s.length() == 0b0; // Noncompliant [[quickfixes=qf19]]
+    // fix@qf19 {{Replace with "isEmpty()"}}
+    // edit@qf19 [[sc=11;ec=26]]{{isEmpty()}}
+
+    b = s.length() == 0B0; // Noncompliant [[quickfixes=qf20]]
+    // fix@qf20 {{Replace with "isEmpty()"}}
+    // edit@qf20 [[sc=11;ec=26]]{{isEmpty()}}
+
+    b = 0x0 != s.length(); // Noncompliant [[quickfixes=qf21]]
+    // fix@qf21 {{Replace with "isEmpty()"}}
+    // edit@qf21 [[sc=9;ec=16]]{{!}}
+    // edit@qf21 [[sc=18;ec=26]]{{isEmpty()}}
+
+    b = s.length() == 0x1;
+    b = s.length() == 01;
+    b = s.length() == 0b1;
+
     b = s.length() == 1;
     b = s.length() > 3;
     b = s.length() <= 10;
