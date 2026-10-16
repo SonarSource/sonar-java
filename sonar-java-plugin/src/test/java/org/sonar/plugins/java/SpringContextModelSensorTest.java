@@ -166,6 +166,8 @@ class SpringContextModelSensorTest {
 
     assertThat(context.allIssues()).isEmpty();
     assertThat(gatheringModel.filesData().get(MODULE_KEY)).containsOnlyKeys("currentService", "consumer");
+    assertThat(logTester.logs(Level.WARN))
+      .contains("Removed 1 unvisited files from the Spring context gathering model during full project analysis.");
     assertThat(telemetry.toMap())
       .containsEntry("java.spring.bean_count", "2")
       .containsEntry("java.spring.component_scan_package_count", "0");

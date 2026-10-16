@@ -17,6 +17,8 @@
 package org.sonar.plugins.java;
 
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.Phase;
@@ -54,6 +56,8 @@ import org.sonar.java.telemetry.TelemetryKey;
 @DependedUpon(value = "CollectSpringContextBeforeSendingTelemetry")
 public class SpringContextModelSensor implements ProjectSensor {
 
+  private static final Logger LOG = LoggerFactory.getLogger(SpringContextModelSensor.class);
+
   private final Telemetry telemetry;
   private final SpringContextGatheringModel gatheringModel;
 
@@ -77,7 +81,14 @@ public class SpringContextModelSensor implements ProjectSensor {
   @Override
   public void execute(SensorContext context) {
     if (isFullProjectAnalysis(context)) {
+      long unvisitedFileCount = gatheringModel.filesData().values().stream()
+        .flatMap(files -> files.values().stream())
+        .filter(data -> data.inputFile() == null)
+        .count();
       gatheringModel.removeUnvisitedFiles();
+      if (unvisitedFileCount > 0) {
+        LOG.warn("Removed {} unvisited files from the Spring context gathering model during full project analysis.", unvisitedFileCount);
+      }
     }
     long buildingStartTime = System.nanoTime();
     SpringContextModel springContextModel = SpringContextModel.of(gatheringModel);
