@@ -1,0 +1,59 @@
+<h2>Why is this an issue?</h2>
+<p>A ternary expression packs both outcomes of a choice into a single line, so the reader takes in the condition and the two results at once. When the
+condition is negated, that reading no longer works in one pass: the reader has to invert the condition mentally before pairing each result with the
+case it belongs to. In <code>order.status() != Status.SHIPPED ? "Pending" : "Shipped"</code>, the value that goes with "shipped" is the second one,
+even though shipping is what the condition talks about.</p>
+<p>Flipping the condition and swapping the two results expresses exactly the same logic without that double negative. It also settles the ordering
+question in a consistent way: the positive case, which is usually the common one, comes first.</p>
+<p>This rule raises an issue on a ternary expression whose condition is negated. A condition counts as negated when it is a <code>!</code> expression
+such as <code>!verbose</code> or <code>!list.isEmpty()</code>, or a <code>!=</code> comparison.</p>
+<p>The rule is only about the readability of the two branches of a ternary. Negated conditions elsewhere, such as in <code>if</code> statements, are
+out of scope.</p>
+<h3>Exceptions</h3>
+<p>Null checks do not raise an issue. <code>value != null ? value.name() : "unknown"</code> reads naturally as a positive guard, "if there is a
+value", so inverting it would not help the reader.</p>
+<h2>How to fix it</h2>
+<p>Replace the condition with its positive form and swap the two result expressions, keeping each result with the case it handles. For
+<code>!x</code>, use <code>x</code>. For <code>x != y</code>, use <code>x == y</code>. For a negated call such as <code>!list.isEmpty()</code>, use
+<code>list.isEmpty()</code>.</p>
+<p>The rewritten expression must produce the same value as before, so make sure you move both results and not just the condition. Evaluation order
+matters when a result expression has a side effect or can throw, because only the selected branch is evaluated, and swapping the branches must not
+change which one that is for a given input.</p>
+<p>If the negated form is genuinely the clearer one, for example because the negative case is the one the surrounding code exists to handle, this is a
+trade-off you may decide to keep rather than a false positive.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class OrderFormatter {
+
+  public String statusLabel(Order order) {
+    return order.status() != Status.SHIPPED ? "Pending" : "Shipped"; // Noncompliant: negated condition
+  }
+
+  public String summarize(Order order, boolean verbose) {
+    return !verbose ? order.id() : order.id() + " for " + order.customer(); // Noncompliant: negated condition
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class OrderFormatter {
+
+  public String statusLabel(Order order) {
+    return order.status() == Status.SHIPPED ? "Shipped" : "Pending";
+  }
+
+  public String summarize(Order order, boolean verbose) {
+    return verbose ? order.id() + " for " + order.customer() : order.id();
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S1940} - Boolean checks should not be inverted
+    <br>
+    <em>{rule:java:S1940} flags a negation that is redundant in itself, such as <code>!(a == b)</code>, wherever it appears in the code. This rule
+    keeps the negation count unchanged and only reorders the two branches of a ternary.</em></li>
+</ul>
+
