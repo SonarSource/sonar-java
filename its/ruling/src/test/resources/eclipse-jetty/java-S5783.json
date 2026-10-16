@@ -1,9 +1,0 @@
-{
-"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/IOTest.java": [
-264
-],
-"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/SharedBlockingCallbackTest.java": [
-109,
-134
-]
-}
