@@ -42,6 +42,25 @@ class StringIsEmptyCheckTest {
   }
 
   @Test
+  void blank_11() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringIsBlankCheckSample.java"))
+      .withCheck(new StringIsEmptyCheck())
+      .withJavaVersion(11)
+      .verifyIssues();
+  }
+
+  @Test
+  void blank_11_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringIsBlankCheckSample.java"))
+      .withCheck(new StringIsEmptyCheck())
+      .withJavaVersion(11)
+      .withoutSemantic()
+      .verifyIssues();
+  }
+
+  @Test
   void charSequence_15() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/CharSequenceIsEmptyCheckSample.java"))
