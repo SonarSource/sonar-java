@@ -30,6 +30,7 @@ import javax.lang.model.type.TypeMirror;
 import org.sonar.java.model.JSymbolMetadataNullabilityHelper;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.Nullability;
+import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -47,6 +48,8 @@ final class JavacSymbolMetadata implements SymbolMetadata {
   private final JavacSymbols symbols;
   private final Symbol symbol;
   private final List<AnnotationInstance> directAnnotations;
+  private final List<String> sourceAnnotationNames;
+  private final List<String> unknownSourceAnnotationNames;
   private final SymbolMetadata[] parametersMetadata;
   private final boolean typeArgument;
   private final Map<NullabilityTarget, NullabilityData> nullability = new EnumMap<>(NullabilityTarget.class);
@@ -73,7 +76,15 @@ final class JavacSymbolMetadata implements SymbolMetadata {
     this.symbols = symbols;
     this.symbol = symbol;
     this.typeArgument = typeArgument;
-    List<AnnotationInstance> resolvedAnnotations = new ArrayList<>(annotations.stream().<AnnotationInstance>map(this::adapt).toList());
+    sourceAnnotationNames = !typeArgument && symbol.declaration() != null
+      ? ModifiersUtils.getAnnotations(symbol.declaration()).stream().map(annotation -> annotationName(annotation.annotationType())).toList()
+      : List.of();
+    unknownSourceAnnotationNames = !typeArgument && symbol.declaration() != null
+      ? ModifiersUtils.getAnnotations(symbol.declaration()).stream()
+        .filter(annotation -> annotation.symbolType().isUnknown())
+        .map(annotation -> annotationName(annotation.annotationType())).toList()
+      : List.of();
+    List<AnnotationInstance> resolvedAnnotations = new ArrayList<>(annotations.stream().map(this::adapt).map(this::sourceAnnotation).toList());
     if (!typeArgument && symbol.declaration() != null) {
       for (AnnotationTree annotation : ModifiersUtils.getAnnotations(symbol.declaration())) {
         Symbol annotationSymbol = annotation.symbolType().symbol();
@@ -94,14 +105,18 @@ final class JavacSymbolMetadata implements SymbolMetadata {
 
   @Override
   public boolean isAnnotatedWith(String fullyQualifiedName) {
-    return annotations().stream().anyMatch(annotation -> annotation.symbol().type().is(fullyQualifiedName));
+    return unknownSourceAnnotationNames.contains(fullyQualifiedName)
+      || annotations().stream().anyMatch(annotation -> !annotation.symbol().isUnknown() && annotation.symbol().type().is(fullyQualifiedName));
   }
 
   @Nullable
   @Override
   public List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
     return annotations().stream()
-      .filter(annotation -> annotation.symbol().type().is(fullyQualifiedNameOfAnnotation))
+      .filter(annotation -> annotation.symbol().isUnknown()
+        ? unknownSourceAnnotationNames.contains(fullyQualifiedNameOfAnnotation)
+          && annotation.symbol().type().fullyQualifiedName().equals(fullyQualifiedNameOfAnnotation)
+        : annotation.symbol().type().is(fullyQualifiedNameOfAnnotation))
       .map(AnnotationInstance::values)
       .findFirst().orElse(null);
   }
@@ -222,6 +237,30 @@ final class JavacSymbolMetadata implements SymbolMetadata {
       })
       .toList();
     return new Instance(annotationSymbol, values);
+  }
+
+  private AnnotationInstance sourceAnnotation(AnnotationInstance annotation) {
+    if (!annotation.symbol().isUnknown()) {
+      return annotation;
+    }
+    String name = annotation.symbol().type().fullyQualifiedName();
+    if (sourceAnnotationNames.contains(name)) {
+      return annotation;
+    }
+    String sourceName = sourceAnnotationNames.stream()
+      .filter(candidate -> name.endsWith("." + candidate))
+      .findFirst().orElse("!Unknown!");
+    return new Instance(new JavacSyntheticTypeSymbol(new Symbols.UnknownType(sourceName), sourceName), annotation.values());
+  }
+
+  private static String annotationName(Tree expression) {
+    if (expression instanceof IdentifierTree identifier) {
+      return identifier.name();
+    }
+    if (expression instanceof MemberSelectExpressionTree memberSelect) {
+      return annotationName(memberSelect.expression()) + "." + memberSelect.identifier().name();
+    }
+    return "";
   }
 
   @Nullable

@@ -69,4 +69,15 @@ class SourceTokensTest {
       .extracting(SyntaxTrivia::comment)
       .containsExactly("/// Description.\n  /// @param value documented");
   }
+
+  @Test
+  void preserves_comment_before_end_of_file() {
+    String source = "class A {}\n// Noncompliant@0";
+    SourceTokens tokens = new SourceTokens(source);
+
+    SourceTokens.Token eof = tokens.tokens().get(tokens.tokens().size() - 1);
+    assertThat(tokens.syntaxToken(eof).trivias())
+      .extracting(SyntaxTrivia::comment)
+      .containsExactly("// Noncompliant@0");
+  }
 }

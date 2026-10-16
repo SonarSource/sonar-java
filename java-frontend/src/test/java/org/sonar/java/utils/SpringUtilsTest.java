@@ -42,7 +42,7 @@ class SpringUtilsTest {
 
   @Test
   void is_autowired() {
-    var cu = JParserTestUtils.parse("""
+    var cu = JParserTestUtils.parse("A", """
       class A {
         @org.springframework.beans.factory.annotation.Autowired
         Object autowiredObject;
@@ -53,7 +53,7 @@ class SpringUtilsTest {
         @javax.annotation.Nullable
         Object nullableObject;
       }
-      """);
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
     var clazz = (ClassTreeImpl) cu.types().get(0);
     var obj = (VariableTreeImpl) clazz.members().get(0);
     assertThat(SpringUtils.isAutowired(obj.symbol())).isTrue();

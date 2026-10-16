@@ -81,7 +81,7 @@ public final class JavacType implements Type.ArrayType {
 
   @Override
   public boolean is(String fullyQualifiedName) {
-    return fullyQualifiedName().equals(fullyQualifiedName);
+    return mirror.getKind() != TypeKind.ERROR && fullyQualifiedName().equals(fullyQualifiedName);
   }
 
   @Override

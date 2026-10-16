@@ -105,4 +105,12 @@ class JavacParserTest {
         .isEqualTo("dependency.External");
     }
   }
+
+  @Test
+  void excludes_process_classpath_when_no_classpath_is_configured() throws IOException {
+    try (JavacParser.Result result = JavacParser.parse("Sample.java", "class Sample { org.junit.jupiter.api.Test value; }",
+      JavacParser.Options.defaults().withAnalysis(true))) {
+      assertThat(result.diagnostics()).anyMatch(diagnostic -> diagnostic.getKind() == Diagnostic.Kind.ERROR);
+    }
+  }
 }

@@ -21,7 +21,6 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -96,11 +95,8 @@ public class VolatileNonPrimitiveFieldCheck extends IssuableSubscriptionVisitor 
   }
 
   private static boolean isSafelyAnnotated(SymbolMetadata metadata) {
-    return metadata.annotations().stream()
-      .map(SymbolMetadata.AnnotationInstance::symbol)
-      .map(Symbol::type)
-      .anyMatch(type -> type.is("javax.annotation.concurrent.Immutable")
-        || type.is("javax.annotation.concurrent.ThreadSafe"));
+    return metadata.isAnnotatedWith("javax.annotation.concurrent.Immutable")
+      || metadata.isAnnotatedWith("javax.annotation.concurrent.ThreadSafe");
   }
 
   private static boolean isImmutableType(Type type) {

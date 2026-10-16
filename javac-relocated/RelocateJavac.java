@@ -28,12 +28,12 @@ public final class RelocateJavac {
 
   public static void main(String[] args) throws IOException {
     if (args.length < 1 || args.length > 2) {
-      throw new IllegalArgumentException("Usage: java improving-java/RelocateJavac.java <openjdk-root> [output-directory]");
+      throw new IllegalArgumentException("Usage: java javac-relocated/RelocateJavac.java <openjdk-root> [output-directory]");
     }
     Path jdkRoot = Path.of(args[0]).toAbsolutePath().normalize();
     Path output = args.length == 2
       ? Path.of(args[1]).toAbsolutePath().normalize()
-      : Path.of("java-frontend/src/main/relocated-javac").toAbsolutePath().normalize();
+      : Path.of("javac-relocated/src/main/relocated-javac").toAbsolutePath().normalize();
     Path share = jdkRoot.resolve("src/jdk.compiler/share/classes");
     if (!Files.isDirectory(share.resolve(ORIGINAL_COMPILER_PATH)) || !Files.isDirectory(share.resolve(ORIGINAL_TREES_PATH))) {
       throw new IllegalArgumentException("Not an extracted OpenJDK source tree: " + jdkRoot);

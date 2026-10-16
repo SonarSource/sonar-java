@@ -348,6 +348,16 @@ public class Symbols {
   }
 
   public static final class UnknownType implements Type {
+    private final String name;
+
+    public UnknownType() {
+      this("!Unknown!");
+    }
+
+    public UnknownType(String name) {
+      this.name = name;
+    }
+
     @Override
     public boolean is(String fullyQualifiedName) {
       return false;
@@ -437,12 +447,12 @@ public class Symbols {
 
     @Override
     public String fullyQualifiedName() {
-      return "!Unknown!";
+      return name;
     }
 
     @Override
     public String name() {
-      return "!Unknown!";
+      return name;
     }
 
     @Override

@@ -234,6 +234,12 @@
                   </includes>
                 </filter>
                 <filter>
+                  <artifact>org.sonarsource.java:javac-relocated</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <filter>
                   <artifact>xerces:xercesImpl</artifact>
                   <includes>
                     <include>**</include>

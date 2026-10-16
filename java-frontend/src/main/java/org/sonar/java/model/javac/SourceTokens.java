@@ -165,6 +165,7 @@ public final class SourceTokens {
   }
 
   private List<Token> scan() {
+    String scannedSource = source + "\n__sonar_eof__";
     Context context = new Context();
     Options options = Options.instance(context);
     options.put(Option.SOURCE, Integer.toString(sourceVersion));
@@ -174,13 +175,13 @@ public final class SourceTokens {
     JavaFileObject file = new SimpleJavaFileObject(URI.create("string:///SourceTokens.java"), JavaFileObject.Kind.SOURCE) {
       @Override
       public CharSequence getCharContent(boolean ignoreEncodingErrors) {
-        return source;
+        return scannedSource;
       }
     };
     Log.instance(context).useSource(file);
-    Scanner scanner = ScannerFactory.instance(context).newScanner(source, true);
+    Scanner scanner = ScannerFactory.instance(context).newScanner(scannedSource, true);
     List<Token> result = new ArrayList<>();
-    do {
+    while (true) {
       scanner.nextToken();
       Tokens.Token scanned = scanner.token();
       List<Comment> comments = new ArrayList<>();
@@ -193,13 +194,17 @@ public final class SourceTokens {
             case JAVADOC_BLOCK -> SyntaxTrivia.CommentKind.JAVADOC;
           };
           int start = comment.getPos().getStartPosition();
-          int end = comment.getPos().getEndPosition();
+          int end = Math.min(comment.getPos().getEndPosition(), source.length());
           comments.add(new Comment(kind, source.substring(start, end), start, end));
         }
       }
+      if (scanned.pos >= source.length()) {
+        result.add(new Token("", source.length(), source.length(), List.copyOf(comments)));
+        break;
+      }
       String raw = source.substring(scanned.pos, scanned.endPos);
       result.add(new Token(raw, scanned.pos, scanned.endPos, List.copyOf(comments)));
-    } while (scanner.token().kind != Tokens.TokenKind.EOF);
+    }
     return List.copyOf(result);
   }
 }

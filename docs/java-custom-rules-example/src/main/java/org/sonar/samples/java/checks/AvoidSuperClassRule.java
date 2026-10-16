@@ -20,7 +20,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "AvoidSuperClass")
 public class AvoidSuperClassRule extends IssuableSubscriptionVisitor {
 
-  public static final List<String> SUPER_CLASS_AVOID = Collections.singletonList("org.slf4j.Logger");
+  public static final List<String> SUPER_CLASS_AVOID = Collections.singletonList("org.slf4j.helpers.NOPMDCAdapter");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

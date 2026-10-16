@@ -3,15 +3,15 @@
  */
 package org.sonar.samples.java;
 
-import org.slf4j.Logger;
+import org.slf4j.helpers.NOPMDCAdapter;
 
 /**
  * A class with extends another class outside the JVM but in classpath
  */
-public class MyClass extends Logger { // Noncompliant {{The usage of super class org.slf4j.Logger is forbidden}}
+public class MyClass extends NOPMDCAdapter { // Noncompliant {{The usage of super class org.slf4j.helpers.NOPMDCAdapter is forbidden}}
 
   protected MyClass(String name) {
-    super(name);
+    super();
   }
 
   /**

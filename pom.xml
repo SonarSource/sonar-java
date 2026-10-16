@@ -50,6 +50,7 @@
 
   <modules>
     <module>java-checks-test-sources</module>
+    <module>javac-relocated</module>
     <module>java-frontend</module>
     <module>java-checks-testkit</module>
     <module>java-checks</module>

@@ -90,7 +90,7 @@ import static org.mockito.Mockito.when;
 
 class JavaSensorTest {
 
-  private static final String EXPECTED_TYPE_ERROR_COUNT = "153";
+  private static final String EXPECTED_TYPE_ERROR_COUNT = "123";
   private static final CheckFactory checkFactory = mock(CheckFactory.class);
   private static final Checks<Object> checks = mock(Checks.class);
 

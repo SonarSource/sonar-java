@@ -58,4 +58,28 @@ class JavacSourceAnalysisTest {
       assertThat(analysis.diagnostics()).noneMatch(diagnostic -> diagnostic.getKind() == Diagnostic.Kind.ERROR);
     }
   }
+
+  @Test
+  void does_not_resolve_annotations_missing_from_classpath() throws IOException {
+    String source = "import org.springframework.context.annotation.Configuration; @Configuration class Sample {}";
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("Sample.java", source, JavacParser.Options.defaults())) {
+      ClassTree declaration = (ClassTree) analysis.tree().types().get(0);
+      assertThat(declaration.symbol().metadata().annotations()).hasSize(1);
+      assertThat(declaration.symbol().metadata().annotations().get(0).symbol().isUnknown()).isTrue();
+      assertThat(declaration.symbol().metadata().isAnnotatedWith("org.springframework.context.annotation.Configuration")).isFalse();
+    }
+  }
+
+  @Test
+  void does_not_match_types_missing_from_classpath() throws IOException {
+    String source = "import org.junit.jupiter.api.TestInfo; class Sample { TestInfo field; java.util.Optional<TestInfo> optional; }";
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("Sample.java", source, JavacParser.Options.defaults())) {
+      ClassTree declaration = (ClassTree) analysis.tree().types().get(0);
+      VariableTree field = (VariableTree) declaration.members().get(0);
+      assertThat(field.symbol().type().isUnknown()).isTrue();
+      assertThat(field.symbol().type().is("org.junit.jupiter.api.TestInfo")).isFalse();
+      VariableTree optional = (VariableTree) declaration.members().get(1);
+      assertThat(optional.symbol().type().is("java.util.Optional")).isTrue();
+    }
+  }
 }

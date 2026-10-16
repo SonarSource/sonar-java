@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.sonarsource.java</groupId>
+    <artifactId>java</artifactId>
+    <version>8.45.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>javac-relocated</artifactId>
+  <name>SonarJava :: Relocated OpenJDK Javac</name>
+  <description>Relocated OpenJDK compiler sources</description>
+
+  <licenses>
+    <license>
+      <name>GPL-2.0-only with Classpath Exception where designated by source-file headers</name>
+      <url>https://openjdk.org/legal/gplv2+ce.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <properties>
+    <maven.compiler.release></maven.compiler.release>
+  </properties>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/relocated-javac</directory>
+        <includes>
+          <include>**/*.properties</include>
+          <include>OPENJDK-LICENSE</include>
+          <include>RELOCATION.txt</include>
+        </includes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.6.1</version>
+        <executions>
+          <execution>
+            <id>relocated-javac-sources</id>
+            <phase>generate-sources</phase>
+            <goals><goal>add-source</goal></goals>
+            <configuration>
+              <sources><source>src/main/relocated-javac</source></sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerArgs>
+            <arg>--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED</arg>
+            <arg>--add-exports=java.base/jdk.internal.jmod=ALL-UNNAMED</arg>
+            <arg>--add-exports=java.base/jdk.internal.module=ALL-UNNAMED</arg>
+            <arg>--add-exports=java.base/jdk.internal.javac=ALL-UNNAMED</arg>
+            <arg>--add-exports=java.base/sun.reflect.annotation=ALL-UNNAMED</arg>
+            <arg>--add-exports=jdk.internal.opt/jdk.internal.opt=ALL-UNNAMED</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
