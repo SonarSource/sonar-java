@@ -141,29 +141,32 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
     }
 
     if (lengthCall != null && isEmptinessCheck(comparisonType)) {
-      // `s.strip().length() == 0` and `s.trim().length() == 0` are blankness checks, which `isBlank()` expresses directly.
       MethodInvocationTree whitespaceRemovalCall = getWhitespaceRemovalCall(lengthCall);
-      boolean isBlankCheck = whitespaceRemovalCall != null;
-      boolean usesTrim = isBlankCheck && TRIM_NAME.equals(ExpressionUtils.methodName(whitespaceRemovalCall).name());
-
-      String replacedMethod = isBlankCheck ? "isBlank()" : "isEmpty()";
-      MethodInvocationTree replacementStart = isBlankCheck ? whitespaceRemovalCall : lengthCall;
-      String message = "Use \"" + replacedMethod + "\" to check whether a \"" + ownerName(lengthCall) + "\" is "
-        + (isBlankCheck ? "blank" : "empty") + " or not." + (usesTrim ? (" " + TRIM_CAVEAT) : "");
-      String fixDescription = "Replace with \"" + replacedMethod + "\"" + (usesTrim ? TRIM_FIX_CAVEAT : "");
 
       QuickFixHelper
         .newIssue(context)
         .forRule(this)
         .onTree(tree)
-        .withMessage(message)
-        .withQuickFix(() -> getQuickFix(tree, lengthCall, replacementStart, replacedMethod, fixDescription, comparisonType))
+        .withMessage(getMessage(lengthCall, whitespaceRemovalCall))
+        .withQuickFix(() -> getQuickFix(tree, lengthCall, whitespaceRemovalCall, comparisonType))
         .report();
     }
   }
 
+  private static String getMessage(MethodInvocationTree lengthCall, @Nullable MethodInvocationTree whitespaceRemovalCall) {
+    String adjective = whitespaceRemovalCall != null ? "blank" : "empty";
+    String caveat = isTrimBased(whitespaceRemovalCall) ? (" " + TRIM_CAVEAT) : "";
+
+    return "Use \"" + replacementMethodName(whitespaceRemovalCall) + "\" to check whether a \""
+      + ownerName(lengthCall) + "\" is " + adjective + " or not." + caveat;
+  }
+
   private static JavaQuickFix getQuickFix(Tree comparisonExpression, MethodInvocationTree lengthInvocation,
-    MethodInvocationTree replacedInvocation, String replacedMethod, String fixDescription, ComparisonType comparisonType) {
+    @Nullable MethodInvocationTree whitespaceRemovalCall, ComparisonType comparisonType) {
+    String replacedMethod = replacementMethodName(whitespaceRemovalCall);
+    MethodInvocationTree replacedInvocation = whitespaceRemovalCall != null ? whitespaceRemovalCall : lengthInvocation;
+    String fixDescription = "Replace with \"" + replacedMethod + "\"" + (isTrimBased(whitespaceRemovalCall) ? TRIM_FIX_CAVEAT : "");
+
     // There are two cases to deal with:
     //   s.length() OP CONST
     //   CONST OP s.length()
@@ -187,6 +190,14 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
     ));
 
     return builder.build();
+  }
+
+  private static String replacementMethodName(@Nullable MethodInvocationTree whitespaceRemovalCall) {
+    return whitespaceRemovalCall != null ? "isBlank()" : "isEmpty()";
+  }
+
+  private static boolean isTrimBased(@Nullable MethodInvocationTree whitespaceRemovalCall) {
+    return whitespaceRemovalCall != null && TRIM_NAME.equals(ExpressionUtils.methodName(whitespaceRemovalCall).name());
   }
 
   private static String ownerName(MethodInvocationTree lengthCall) {
