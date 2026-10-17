@@ -136,6 +136,17 @@ public final class JavacParser {
       compilerOptions.add("-source");
       compilerOptions.add(Integer.toString(options.sourceVersion));
     }
+    if (options.sourceVersion != null && options.sourceVersion == 8) {
+      options.classpath.stream()
+        .filter(path -> path.getFileName().toString().equals("rt.jar"))
+        .findFirst()
+        .ifPresent(rtJar -> {
+          compilerOptions.add("-target");
+          compilerOptions.add("8");
+          compilerOptions.add("-bootclasspath");
+          compilerOptions.add(rtJar.toString());
+        });
+    }
     if (options.enablePreview && options.sourceVersion() == 27) {
       compilerOptions.add("--enable-preview");
     }
