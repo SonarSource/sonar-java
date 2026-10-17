@@ -71,6 +71,17 @@ class JavacParserTest {
   }
 
   @Test
+  void reads_annotation_values_without_jdk_internal_access() throws IOException {
+    try (JavacParser.Result result = JavacParser.parse("Sample.java",
+      "@Deprecated(since = \"25\", forRemoval = true) class Sample {}",
+      JavacParser.Options.defaults().withAnalysis(true))) {
+      Deprecated annotation = result.task().getElements().getTypeElement("Sample").getAnnotation(Deprecated.class);
+      assertThat(annotation.since()).isEqualTo("25");
+      assertThat(annotation.forRemoval()).isTrue();
+    }
+  }
+
+  @Test
   void honors_source_version() throws IOException {
     try (JavacParser.Result result = JavacParser.parse("Sample.java", "record Sample(int value) {}",
       JavacParser.Options.defaults().withSourceVersion(11))) {

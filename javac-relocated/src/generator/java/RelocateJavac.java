@@ -8,9 +8,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,6 +33,10 @@ public final class RelocateJavac {
   private static final String RELOCATED_TREES_PATH = "org/sonar/java/javac/source";
   private static final String ORIGINAL_DOCLINT_PATH = "com/sun/tools/doclint";
   private static final String RELOCATED_DOCLINT_PATH = "org/sonar/java/javac/doclint";
+  private static final String ORIGINAL_OPTIONS = "jdk.internal.opt";
+  private static final String RELOCATED_OPTIONS = "org.sonar.java.javac.internal.opt";
+  private static final String ORIGINAL_OPTIONS_PATH = "jdk/internal/opt";
+  private static final String RELOCATED_OPTIONS_PATH = "org/sonar/java/javac/internal/opt";
   private static final Path DEFAULT_OUTPUT = Path.of("javac-relocated/src/main/java");
 
   private RelocateJavac() {
@@ -48,7 +54,7 @@ public final class RelocateJavac {
   }
 
   private static void generateFromDownload(String url, String tag, String commit, Path output) throws Exception {
-    String version = "source.url=" + url + "\nsource.tag=" + tag + "\nsource.commit=" + commit + "\nrelocator.version=2\n";
+    String version = version("source.url", url, tag, commit, output);
     Path marker = output.resolve(RELOCATED_COMPILER_PATH).resolve("version.txt");
     if (Files.isRegularFile(marker) && Files.readString(marker).equals(version)
       && Files.isRegularFile(output.resolve(RELOCATED_COMPILER_PATH).resolve("main/JavaCompiler.java"))) {
@@ -67,8 +73,15 @@ public final class RelocateJavac {
   }
 
   private static void generateFromLocal(Path root, String tag, String commit, Path output) throws Exception {
-    String version = "source.local=" + root + "\nsource.tag=" + tag + "\nsource.commit=" + commit + "\nrelocator.version=2\n";
+    String version = version("source.local", root.toString(), tag, commit, output);
     generate(root, output, version, root.toString(), tag, commit);
+  }
+
+  private static String version(String sourceKey, String source, String tag, String commit, Path output) throws Exception {
+    byte[] support = Files.readAllBytes(annotationSupportSource(output));
+    String digest = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(support));
+    return sourceKey + "=" + source + "\nsource.tag=" + tag + "\nsource.commit=" + commit
+      + "\nrelocator.version=6\nannotation.support.sha256=" + digest + "\n";
   }
 
   private static void download(String url, Path archive) throws IOException, InterruptedException {
@@ -110,12 +123,26 @@ public final class RelocateJavac {
 
   private static boolean wantedSource(String path) {
     return path.equals("LICENSE")
-      || path.startsWith("src/jdk.compiler/share/classes/com/sun/tools/javac/")
+      || (path.startsWith("src/jdk.compiler/share/classes/com/sun/tools/javac/")
+        && !excludedCompilerSource(Path.of(path.substring("src/jdk.compiler/share/classes/com/sun/tools/javac/".length()))))
       || path.startsWith("src/jdk.compiler/share/classes/com/sun/source/")
       || path.startsWith("src/jdk.compiler/share/classes/com/sun/tools/doclint/")
+      || path.equals("src/jdk.internal.opt/share/classes/jdk/internal/opt/CommandLine.java")
       || path.startsWith("make/langtools/tools/compileproperties/")
       || path.startsWith("make/langtools/tools/propertiesparser/")
       || path.startsWith("make/langtools/tools/flagsgenerator/");
+  }
+
+  private static boolean excludedCompilerSource(Path relative) {
+    String path = relative.toString().replace('\\', '/');
+    return path.startsWith("launcher/")
+      || path.equals("api/JavacTaskPool.java")
+      || path.equals("api/WrappingJavaFileManager.java")
+      || path.equals("main/JavacToolProvider.java")
+      || path.equals("platform/JDKPlatformProvider.java")
+      || path.endsWith("/package-info.java")
+      || path.equals("package-info.java")
+      || path.startsWith("resources/launcher");
   }
 
   private static void generate(Path root, Path output, String version, String source, String tag, String commit) throws Exception {
@@ -133,13 +160,18 @@ public final class RelocateJavac {
       int count = copyTree(share.resolve(ORIGINAL_COMPILER_PATH), staging, ORIGINAL_COMPILER_PATH);
       count += copyTree(share.resolve(ORIGINAL_TREES_PATH), staging, ORIGINAL_TREES_PATH);
       count += copyTree(share.resolve(ORIGINAL_DOCLINT_PATH), staging, ORIGINAL_DOCLINT_PATH);
+      count += copyTree(root.resolve("src/jdk.internal.opt/share/classes").resolve(ORIGINAL_OPTIONS_PATH), staging, ORIGINAL_OPTIONS_PATH);
       count += copyTree(generated.resolve(ORIGINAL_COMPILER_PATH), staging, ORIGINAL_COMPILER_PATH);
+      Path annotationSupport = staging.resolve(RELOCATED_COMPILER_PATH).resolve("model/AnnotationProxySupport.java");
+      Files.copy(annotationSupportSource(output), annotationSupport);
+      count++;
       Files.copy(root.resolve("LICENSE"), staging.resolve("OPENJDK-LICENSE"));
       Files.writeString(staging.resolve("RELOCATION.txt"),
         "Source: " + source + "\nTag: " + tag + "\nCommit: " + commit + "\n"
           + ORIGINAL_COMPILER + " -> " + RELOCATED_COMPILER + "\n"
           + ORIGINAL_TREES + " -> " + RELOCATED_TREES + "\n"
           + ORIGINAL_DOCLINT + " -> " + RELOCATED_DOCLINT + "\n"
+          + ORIGINAL_OPTIONS + " -> " + RELOCATED_OPTIONS + "\n"
           + "Files: " + count + "\n", StandardCharsets.UTF_8);
       Files.writeString(staging.resolve(RELOCATED_COMPILER_PATH).resolve("version.txt"), version, StandardCharsets.UTF_8);
       deleteTree(output);
@@ -149,6 +181,18 @@ public final class RelocateJavac {
       deleteTree(staging);
       deleteTree(workspace);
     }
+  }
+
+  private static Path annotationSupportSource(Path output) {
+    for (Path candidate : List.of(
+      output.getParent().getParent().getParent().resolve("src/generator/resources/AnnotationProxySupport.java"),
+      Path.of("src/generator/resources/AnnotationProxySupport.java"),
+      Path.of("javac-relocated/src/generator/resources/AnnotationProxySupport.java"))) {
+      if (Files.isRegularFile(candidate)) {
+        return candidate;
+      }
+    }
+    throw new IllegalArgumentException("Cannot find AnnotationProxySupport.java");
   }
 
   private static void verifyRevision(Path root, String commit) throws Exception {
@@ -180,7 +224,9 @@ public final class RelocateJavac {
     Files.createDirectories(generatedResources);
     List<String> propertiesCommand = new ArrayList<>(List.of(javaExecutable("java"), "-cp", classes.toString(), "compileproperties.CompileProperties", "-quiet"));
     try (var files = Files.list(resources)) {
-      for (Path file : files.filter(path -> path.toString().endsWith(".properties")).sorted().toList()) {
+      for (Path file : files.filter(path -> path.toString().endsWith(".properties"))
+        .filter(path -> !path.getFileName().toString().startsWith("launcher"))
+        .sorted().toList()) {
         propertiesCommand.addAll(List.of("-compile", file.toString(), generatedResources.resolve(file.getFileName().toString().replace(".properties", ".java")).toString(), "java.util.ListResourceBundle"));
       }
     }
@@ -194,8 +240,7 @@ public final class RelocateJavac {
     propertiesCommand.addAll(List.of("-compile", versionProperties.toString(), generatedResources.resolve("version.java").toString(), "java.util.ListResourceBundle"));
     run(propertiesCommand, root);
     run(List.of(javaExecutable("java"), "-cp", classes.toString(), "propertiesparser.PropertiesParser",
-      "-compile", resources.resolve("compiler.properties").toString(), generatedResources.toString(),
-      "-compile", resources.resolve("launcher.properties").toString(), generatedResources.toString()), root);
+      "-compile", resources.resolve("compiler.properties").toString(), generatedResources.toString()), root);
     Path flags = generated.resolve("com/sun/tools/javac/code/FlagsEnum.java");
     Files.createDirectories(flags.getParent());
     run(List.of(javaExecutable("java"), "-cp", classes.toString(), "flagsgenerator.FlagsGenerator",
@@ -224,21 +269,46 @@ public final class RelocateJavac {
     try (var files = Files.walk(input)) {
       for (Path file : files.filter(Files::isRegularFile)
         .filter(path -> path.toString().endsWith(".java") || path.toString().endsWith(".properties"))
+        .filter(path -> !excludedCompilerSource(input.relativize(path)))
         .sorted(Comparator.naturalOrder()).toList()) {
         Path relative = Path.of(root).resolve(input.relativize(file));
         String relocated = relative.toString()
           .replace(ORIGINAL_COMPILER_PATH, RELOCATED_COMPILER_PATH)
           .replace(ORIGINAL_TREES_PATH, RELOCATED_TREES_PATH)
           .replace(ORIGINAL_DOCLINT_PATH, RELOCATED_DOCLINT_PATH);
+        relocated = relocated.replace(ORIGINAL_OPTIONS_PATH, RELOCATED_OPTIONS_PATH);
         Path destination = output.resolve(relocated);
         Files.createDirectories(destination.getParent());
         String source = Files.readString(file, StandardCharsets.UTF_8)
           .replace(ORIGINAL_COMPILER, RELOCATED_COMPILER)
           .replace(ORIGINAL_TREES, RELOCATED_TREES)
           .replace(ORIGINAL_DOCLINT, RELOCATED_DOCLINT);
+        source = source.replace(ORIGINAL_OPTIONS, RELOCATED_OPTIONS);
         if (file.toString().endsWith("/code/Source.java") || file.toString().endsWith("/processing/PrintingProcessor.java")) {
           source = source.replace("SourceVersion.RELEASE_27", "SourceVersion.RELEASE_26")
             .replace("case JDK27  -> RELEASE_27;", "case JDK27  -> RELEASE_26;");
+        }
+        if (file.toString().endsWith("/tree/TreeScanner.java") || file.toString().endsWith("/source/tree/AnyPatternTree.java")) {
+          source = source.replace("import jdk.internal.javac.PreviewFeature;\n", "");
+        }
+        if (file.toString().endsWith("/main/Option.java")) {
+          source = source.replace("import jdk.internal.misc.VM;", "import java.lang.management.ManagementFactory;")
+            .replace("VM.getRuntimeArguments()", "ManagementFactory.getRuntimeMXBean().getInputArguments().toArray(String[]::new)");
+        }
+        if (file.toString().endsWith("/file/Locations.java")) {
+          source = source.replace("import jdk.internal.jmod.JmodFile;\n", "")
+            .replace("JmodFile.checkMagic(p);", "try (var jmod = Files.newInputStream(p)) {\n"
+              + "                            byte[] magic = jmod.readNBytes(4);\n"
+              + "                            if (magic.length != 4 || magic[0] != 0x4A || magic[1] != 0x4D || magic[2] != 1 || magic[3] != 0) {\n"
+              + "                                throw new IOException(\"Invalid JMOD file: \" + p);\n"
+              + "                            }\n"
+              + "                        }");
+        }
+        if (file.toString().endsWith("/model/AnnotationProxyMaker.java")) {
+          source = source.replace("import sun.reflect.annotation.*;", "import org.sonar.java.javac.model.AnnotationProxySupport.ExceptionProxy;\n"
+              + "import org.sonar.java.javac.model.AnnotationProxySupport.EnumConstantNotPresentExceptionProxy;")
+            .replace("AnnotationParser.annotationForMap", "AnnotationProxySupport.annotationForMap")
+            .replace("AnnotationType.invocationHandlerReturnType", "AnnotationProxySupport.invocationHandlerReturnType");
         }
         Files.writeString(destination, source, StandardCharsets.UTF_8);
         copied++;
