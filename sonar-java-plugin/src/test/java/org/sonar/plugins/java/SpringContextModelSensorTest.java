@@ -18,7 +18,6 @@ package org.sonar.plugins.java;
 
 import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
-import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -38,7 +37,6 @@ import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
-import org.sonar.api.utils.Version;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.InjectionPoint;
@@ -128,11 +126,10 @@ class SpringContextModelSensorTest {
   }
 
   @Test
-  void restored_beans_affect_analyzed_files_without_reporting_on_restored_files() throws IOException {
+  void restored_beans_affect_analyzed_files_in_SQAA_without_reporting_on_restored_files() throws IOException {
     SensorContextTester context = SensorContextTester.create(tempDir);
     context.setActiveRules(activeRulesWithS9352());
     MapSettings settings = new MapSettings();
-    settings.setProperty(SonarComponents.SONAR_CAN_SKIP_UNCHANGED_FILES_KEY, true);
     settings.setProperty(JavaSensor.SPRING_CONTEXT_MODEL_PATH_PROPERTY, MODEL_PATH);
     context.setSettings(settings);
     InputFile analyzedFile = fakeInputFile(context, "Consumer.java");
@@ -150,25 +147,22 @@ class SpringContextModelSensorTest {
   }
 
   @Test
-  void keeps_unvisited_files_for_incremental_and_sonarlint_analyses() throws IOException {
-    SensorContextTester incrementalContext = SensorContextTester.create(tempDir);
+  void reports_issues_on_analyzed_but_skipped_files_in_incremental_analysis() throws IOException {
+    SensorContextTester context = SensorContextTester.create(tempDir);
+    context.setActiveRules(activeRulesWithS9352());
     MapSettings settings = new MapSettings();
     settings.setProperty(SonarComponents.SONAR_CAN_SKIP_UNCHANGED_FILES_KEY, true);
-    settings.setProperty(JavaSensor.SPRING_CONTEXT_MODEL_PATH_PROPERTY, MODEL_PATH);
-    incrementalContext.setSettings(settings);
-    SensorContextTester sonarLintContext = SensorContextTester.create(tempDir)
-      .setRuntime(TestSonarRuntime.forSonarLint(Version.create(6, 7)));
-    sonarLintContext.setSettings(new MapSettings().setProperty(JavaSensor.SPRING_CONTEXT_MODEL_PATH_PROPERTY, MODEL_PATH));
+    context.setSettings(settings);
+    InputFile skippedFile = fakeInputFile(context, "SkippedConsumer.java");
+    var gatheringModel = restoredModel("ambiguous-restored-beans.json");
+    gatheringModel.collectPackages(MODULE_KEY, "restored-consumer", skippedFile, Set.of());
 
-    for (SensorContextTester context : List.of(incrementalContext, sonarLintContext)) {
-      var gatheringModel = restoredModel("unvisited-service.json");
+    sensor(gatheringModel, new NoOpTelemetry()).execute(context);
 
-      sensor(gatheringModel, new NoOpTelemetry()).execute(context);
-
-      assertThat(gatheringModel.filesData().get(MODULE_KEY)).containsOnlyKeys("unvisited");
-      var savedModel = SpringContextModelPersistence.load(tempDir.resolve(MODEL_PATH));
-      assertThat(savedModel.filesData().get(MODULE_KEY)).containsOnlyKeys("unvisited");
-    }
+    assertThat(context.allIssues()).hasSize(1);
+    Issue issue = context.allIssues().iterator().next();
+    assertThat(issue.ruleKey()).isEqualTo(S9352_RULE_KEY);
+    assertThat(issue.primaryLocation().inputComponent()).isEqualTo(skippedFile);
   }
 
   @Test
@@ -221,7 +215,7 @@ class SpringContextModelSensorTest {
   }
 
   @Test
-  void restores_updates_and_saves_one_model_across_module_contexts_during_incremental_analysis() throws IOException {
+  void restores_updates_and_saves_one_model_across_module_contexts() throws IOException {
     Path moduleA = Files.createDirectory(tempDir.resolve("module-a"));
     Path moduleB = Files.createDirectory(tempDir.resolve("module-b"));
     Path modelPath = tempDir.resolve(MODEL_PATH);
@@ -232,7 +226,7 @@ class SpringContextModelSensorTest {
     String untouchedFileKey = "module-b:src/B.java";
     var gatheringModel = new SpringContextGatheringModel();
     JavaSensor sensor = javaSensor(gatheringModel);
-    sensor.execute(javaSensorContext(moduleA, MODEL_PATH, true));
+    sensor.execute(javaSensorContext(moduleA, MODEL_PATH));
     assertThat(gatheringModel.filesData()).containsOnlyKeys("module-a", "module-b");
 
     var updatedBean = bean("updated");
@@ -240,8 +234,8 @@ class SpringContextModelSensorTest {
     gatheringModel.collectPackages("module-a", analyzedFileKey, analyzedFile, Set.of("updated.package"));
 
     Files.writeString(modelPath, "{");
-    sensor.execute(javaSensorContext(moduleB, MODEL_PATH, true));
-    assertThat(SpringContextModelPersistence.modelPath(javaSensorContext(moduleB, MODEL_PATH, false), tempDir.toFile())).isEqualTo(modelPath);
+    sensor.execute(javaSensorContext(moduleB, MODEL_PATH));
+    assertThat(SpringContextModelPersistence.modelPath(javaSensorContext(moduleB, MODEL_PATH), tempDir.toFile())).isEqualTo(modelPath);
     assertThat(gatheringModel.filesData().get("module-a").get(analyzedFileKey).inputFile()).isSameAs(analyzedFile);
     SpringContextModel projectModel = SpringContextModel.of(gatheringModel);
     assertThat(projectModel.getBeanDefinitionRegistry().getByName("previous")).isEmpty();
@@ -249,7 +243,7 @@ class SpringContextModelSensorTest {
     assertThat(projectModel.getBeanDefinitionRegistry().getByName("untouched")).hasSize(1);
     assertThat(projectModel.getProjectPackageScan().getPackagesForModule("module-b")).containsExactly("untouched.package");
 
-    sensor(gatheringModel, new NoOpTelemetry()).execute(javaSensorContext(tempDir, MODEL_PATH, true));
+    sensor(gatheringModel, new NoOpTelemetry()).execute(javaSensorContext(tempDir, MODEL_PATH));
 
     SpringContextGatheringModel saved = SpringContextModelPersistence.load(modelPath);
     assertThat(saved.filesData()).containsOnlyKeys("module-a", "module-b");
@@ -261,7 +255,7 @@ class SpringContextModelSensorTest {
   }
 
   @Test
-  void ignores_the_default_model_and_saves_current_data_when_the_property_is_unset() throws IOException {
+  void ignores_the_default_model_and_saves_current_data_when_the_sprint_context_model_property_is_unset() throws IOException {
     Path defaultPath = tempDir.resolve(DEFAULT_MODEL_PATH);
 
     for (boolean incremental : List.of(false, true)) {
@@ -289,7 +283,7 @@ class SpringContextModelSensorTest {
     copyModelFixture("default-path.json", tempDir.resolve(DEFAULT_MODEL_PATH));
     var gatheringModel = new SpringContextGatheringModel();
 
-    javaSensor(gatheringModel).execute(javaSensorContext(tempDir, " ", false));
+    javaSensor(gatheringModel).execute(javaSensorContext(tempDir, " "));
 
     assertThat(gatheringModel.isRestored()).isTrue();
     assertThat(gatheringModel.filesData().get("previous-module")).containsKey("previous-file");
@@ -298,7 +292,7 @@ class SpringContextModelSensorTest {
   @Test
   void saves_to_the_default_path_when_the_property_is_unset_or_blank() {
     Path defaultPath = tempDir.resolve(DEFAULT_MODEL_PATH);
-    List<SensorContextTester> contexts = List.of(javaSensorContext(tempDir), javaSensorContext(tempDir, " ", false));
+    List<SensorContextTester> contexts = List.of(javaSensorContext(tempDir), javaSensorContext(tempDir, " "));
 
     for (int i = 0; i < contexts.size(); i++) {
       SensorContextTester analysisContext = contexts.get(i);
@@ -316,7 +310,7 @@ class SpringContextModelSensorTest {
   @Test
   void resolves_the_configured_path_from_the_root_project() throws IOException {
     Path module = Files.createDirectory(tempDir.resolve("module-a"));
-    SensorContextTester moduleContext = javaSensorContext(module, MODEL_PATH, false);
+    SensorContextTester moduleContext = javaSensorContext(module, MODEL_PATH);
     ProjectDefinition rootProject = ProjectDefinition.create();
     rootProject.setBaseDir(tempDir.toFile());
     ProjectDefinition moduleProject = ProjectDefinition.create();
@@ -336,7 +330,7 @@ class SpringContextModelSensorTest {
   void preserves_an_absolute_configured_path() {
     Path absolutePath = tempDir.resolve(MODEL_PATH);
 
-    assertThat(SpringContextModelPersistence.modelPath(javaSensorContext(tempDir, absolutePath.toString(), false), tempDir.toFile()))
+    assertThat(SpringContextModelPersistence.modelPath(javaSensorContext(tempDir, absolutePath.toString()), tempDir.toFile()))
       .isEqualTo(absolutePath);
   }
 
@@ -404,13 +398,10 @@ class SpringContextModelSensorTest {
     return context;
   }
 
-  private static SensorContextTester javaSensorContext(Path baseDirectory, String configuredPath, boolean incremental) {
+  private static SensorContextTester javaSensorContext(Path baseDirectory, String configuredPath) {
     SensorContextTester context = javaSensorContext(baseDirectory);
     MapSettings settings = new MapSettings();
     settings.setProperty(JavaSensor.SPRING_CONTEXT_MODEL_PATH_PROPERTY, configuredPath);
-    if (incremental) {
-      settings.setProperty(SonarComponents.SONAR_CAN_SKIP_UNCHANGED_FILES_KEY, true);
-    }
     context.setSettings(settings);
     return context;
   }
