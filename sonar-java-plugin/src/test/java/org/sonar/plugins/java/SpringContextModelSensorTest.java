@@ -57,9 +57,7 @@ import org.sonar.scanner.plugin.api.impl.sensor.DefaultSensorDescriptor;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 class SpringContextModelSensorTest {
@@ -152,28 +150,6 @@ class SpringContextModelSensorTest {
   }
 
   @Test
-  void removes_unvisited_files_before_building_and_saving_the_model_on_full_analysis() throws IOException {
-    SensorContextTester context = configuredContext();
-    context.setActiveRules(activeRulesWithS9352());
-    InputFile analyzedFile = fakeInputFile(context, "Consumer.java");
-    String type = "example.Service";
-    var gatheringModel = restoredModel("unvisited-service.json");
-    registerBean(gatheringModel, type, "currentService", analyzedFile);
-    registerDependency(gatheringModel, type, "contextAware", analyzedFile);
-
-    var telemetry = new DefaultTelemetry();
-    sensor(gatheringModel, telemetry).execute(context);
-
-    assertThat(context.allIssues()).isEmpty();
-    assertThat(gatheringModel.filesData().get(MODULE_KEY)).containsOnlyKeys("currentService", "consumer");
-    assertThat(telemetry.toMap())
-      .containsEntry("java.spring.bean_count", "2")
-      .containsEntry("java.spring.component_scan_package_count", "0");
-    var savedModel = SpringContextModelPersistence.load(tempDir.resolve(MODEL_PATH));
-    assertThat(savedModel.filesData().get(MODULE_KEY)).containsOnlyKeys("currentService", "consumer");
-  }
-
-  @Test
   void keeps_unvisited_files_for_incremental_and_sonarlint_analyses() throws IOException {
     SensorContextTester incrementalContext = SensorContextTester.create(tempDir);
     MapSettings settings = new MapSettings();
@@ -212,17 +188,6 @@ class SpringContextModelSensorTest {
 
     assertThat(context.allIssues()).hasSize(1);
     assertThat(logTester.logs(Level.WARN)).anyMatch(message -> message.contains("Unable to save Spring context model to "));
-  }
-
-  @Test
-  void keeps_unvisited_files_when_scan_mode_cannot_be_determined() throws IOException {
-    SensorContextTester context = spy(SensorContextTester.create(tempDir));
-    doThrow(new NoSuchMethodError("canSkipUnchangedFiles is unavailable")).when(context).canSkipUnchangedFiles();
-    var gatheringModel = restoredModel("unvisited-service.json");
-
-    sensor(gatheringModel, new NoOpTelemetry()).execute(context);
-
-    assertThat(gatheringModel.filesData().get(MODULE_KEY)).containsOnlyKeys("unvisited");
   }
 
   private static ActiveRules activeRulesWithS9352() {
@@ -296,16 +261,38 @@ class SpringContextModelSensorTest {
   }
 
   @Test
-  void restores_from_the_default_path_when_the_property_is_unset_or_blank() throws IOException {
+  void ignores_the_default_model_and_saves_current_data_when_the_property_is_unset() throws IOException {
     Path defaultPath = tempDir.resolve(DEFAULT_MODEL_PATH);
-    copyModelFixture("default-path.json", defaultPath);
 
-    for (SensorContextTester analysisContext : List.of(javaSensorContext(tempDir), javaSensorContext(tempDir, " ", false))) {
+    for (boolean incremental : List.of(false, true)) {
+      copyModelFixture("default-path.json", defaultPath);
+      SensorContextTester analysisContext = javaSensorContext(tempDir);
+      analysisContext.setSettings(new MapSettings().setProperty(SonarComponents.SONAR_CAN_SKIP_UNCHANGED_FILES_KEY, incremental));
       var gatheringModel = new SpringContextGatheringModel();
+
       javaSensor(gatheringModel).execute(analysisContext);
-      assertThat(gatheringModel.isRestored()).isTrue();
-      assertThat(gatheringModel.filesData().get("previous-module")).containsKey("previous-file");
+
+      assertThat(gatheringModel.isRestored()).isFalse();
+      assertThat(gatheringModel.filesData()).isEmpty();
+      registerBean(gatheringModel, "example.Service", "currentService", fakeInputFile(analysisContext, "Service.java"));
+
+      sensor(gatheringModel, new NoOpTelemetry()).execute(analysisContext);
+
+      var savedModel = SpringContextModelPersistence.load(defaultPath);
+      assertThat(savedModel.filesData()).containsOnlyKeys(MODULE_KEY);
+      assertThat(savedModel.filesData().get(MODULE_KEY)).containsOnlyKeys("currentService");
     }
+  }
+
+  @Test
+  void restores_from_the_default_path_when_the_property_is_blank() throws IOException {
+    copyModelFixture("default-path.json", tempDir.resolve(DEFAULT_MODEL_PATH));
+    var gatheringModel = new SpringContextGatheringModel();
+
+    javaSensor(gatheringModel).execute(javaSensorContext(tempDir, " ", false));
+
+    assertThat(gatheringModel.isRestored()).isTrue();
+    assertThat(gatheringModel.filesData().get("previous-module")).containsKey("previous-file");
   }
 
   @Test
