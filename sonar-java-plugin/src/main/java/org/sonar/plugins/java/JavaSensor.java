@@ -110,7 +110,7 @@ public class JavaSensor implements Sensor {
     sonarComponents.setSensorContext(context);
     // Restore the Spring context gathering model from the previous analysis, if it hasn't been restored already
     // (i.e. the model is only restored the first time the sensor is run on a module and is reused between modules).
-    if (!springContextGatheringModel.isRestored()) {
+    if (context.config().hasKey(SPRING_CONTEXT_MODEL_PATH_PROPERTY) && !springContextGatheringModel.isRestored()) {
       var path = SpringContextModelPersistence.modelPath(context, sonarComponents.projectLevelBaseDir());
       springContextGatheringModel.restoreFrom(SpringContextModelPersistence.load(path));
     }

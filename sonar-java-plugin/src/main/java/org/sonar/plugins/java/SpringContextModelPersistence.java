@@ -48,9 +48,11 @@ final class SpringContextModelPersistence {
 
   static SpringContextGatheringModel load(Path path) {
     if (!Files.exists(path)) {
+      LOG.warn("Spring Context model file does not exist: {}", path);
       return new SpringContextGatheringModel();
     }
     try (var reader = Files.newBufferedReader(path, UTF_8)) {
+      LOG.info("Loading existing Spring context model from {}", path);
       SpringContextGatheringModel model = GSON.fromJson(reader, SpringContextGatheringModel.class);
       if (model == null) {
         throw new IllegalArgumentException("JSON document is empty");
@@ -64,6 +66,7 @@ final class SpringContextModelPersistence {
 
   static void save(Path path, SpringContextGatheringModel model) {
     try {
+      LOG.debug("Saving Spring Context model to {}", path);
       Path directory = path.toAbsolutePath().getParent();
       Files.createDirectories(directory);
       Path temporaryFile = Files.createTempFile(directory, "spring-context-model-", ".tmp");
