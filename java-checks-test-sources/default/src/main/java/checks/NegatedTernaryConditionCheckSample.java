@@ -91,6 +91,23 @@ public class NegatedTernaryConditionCheckSample {
     return !(value == null) ? value.toString() : "unknown";
   }
 
+  // S1940 already reports a negation wrapped around a comparison, so this rule stays silent.
+  String negatedRelationalIsCoveredByS1940() {
+    return !(count > 0) ? "nonpositive" : "positive";
+  }
+
+  String negatedEqualityIsCoveredByS1940() {
+    return !(count == 0) ? "some" : "none";
+  }
+
+  String negatedInequalityIsCoveredByS1940() {
+    return !(count != 0) ? "none" : "some";
+  }
+
+  String parenthesizedNegatedComparisonIsCoveredByS1940() {
+    return (!(count <= 0)) ? "positive" : "nonpositive";
+  }
+
   String relationalComparison() {
     return count > 0 ? "some" : "none";
   }

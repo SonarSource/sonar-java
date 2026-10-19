@@ -31,6 +31,15 @@ public class NegatedTernaryConditionCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Invert this negated condition and swap the two branches of the ternary.";
 
+  private static final Tree.Kind[] COMPARISONS = {
+    Tree.Kind.EQUAL_TO,
+    Tree.Kind.NOT_EQUAL_TO,
+    Tree.Kind.LESS_THAN,
+    Tree.Kind.GREATER_THAN,
+    Tree.Kind.LESS_THAN_OR_EQUAL_TO,
+    Tree.Kind.GREATER_THAN_OR_EQUAL_TO
+  };
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return List.of(Tree.Kind.CONDITIONAL_EXPRESSION);
@@ -47,20 +56,13 @@ public class NegatedTernaryConditionCheck extends IssuableSubscriptionVisitor {
   private static boolean isNegated(ExpressionTree condition) {
     if (condition.is(Tree.Kind.LOGICAL_COMPLEMENT)) {
       ExpressionTree negated = ExpressionUtils.skipParentheses(((UnaryExpressionTree) condition).expression());
-      // "!(value == null)" is a null check spelled the long way, and is exempt like "value != null".
-      return !isNullComparison(negated, Tree.Kind.EQUAL_TO);
+      // A negated comparison such as "!(count > 0)" is already reported by S1940.
+      return !negated.is(COMPARISONS);
     }
-    return isNotEqualButNotNullCheck(condition);
+    return condition.is(Tree.Kind.NOT_EQUAL_TO) && !isNullComparison(condition);
   }
 
-  private static boolean isNotEqualButNotNullCheck(ExpressionTree condition) {
-    return condition.is(Tree.Kind.NOT_EQUAL_TO) && !isNullComparison(condition, Tree.Kind.NOT_EQUAL_TO);
-  }
-
-  private static boolean isNullComparison(ExpressionTree expression, Tree.Kind kind) {
-    if (!expression.is(kind)) {
-      return false;
-    }
+  private static boolean isNullComparison(ExpressionTree expression) {
     BinaryExpressionTree comparison = (BinaryExpressionTree) expression;
     return isNullLiteral(comparison.leftOperand()) || isNullLiteral(comparison.rightOperand());
   }
