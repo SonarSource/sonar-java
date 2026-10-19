@@ -3,11 +3,6 @@
 230,
 230
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ClassLoaderDump.java": [
-58,
-69,
-84
-],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
 773
 ],

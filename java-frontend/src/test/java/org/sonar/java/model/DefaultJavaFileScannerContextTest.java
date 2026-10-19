@@ -213,6 +213,16 @@ class DefaultJavaFileScannerContextTest extends DefaultInputFileScannerContextTe
   }
 
   @Test
+  void ignores_secondary_location_from_another_file() {
+    ClassTree current = (ClassTree) compilationUnitTree.types().get(0);
+    ClassTree other = (ClassTree) JParserTestUtils.parse("class Other { int value; }").types().get(0);
+
+    context.reportIssue(CHECK, current.simpleName(), "msg", List.of(new Location("other", other.simpleName())), null);
+
+    assertThat(reportedMessage.flows).isEmpty();
+  }
+
+  @Test
   void report_issue_between_two_trees() {
     ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
     VariableTree firstMember = (VariableTree) tree.members().get(0);

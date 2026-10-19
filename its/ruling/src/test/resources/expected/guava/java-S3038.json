@@ -1,4 +1,7 @@
 {
+"com.google.guava:guava:src/com/google/common/cache/LoadingCache.java": [
+160
+],
 "com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
 4276
 ],
@@ -10,10 +13,42 @@
 32,
 79
 ],
+"com.google.guava:guava:src/com/google/common/collect/BiMap.java": [
+86
+],
+"com.google.guava:guava:src/com/google/common/collect/ListMultimap.java": [
+83
+],
 "com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
 3608
 ],
-"com.google.guava:guava:src/com/google/common/hash/Hashing.java": [
-320
+"com.google.guava:guava:src/com/google/common/collect/Multiset.java": [
+334,
+372,
+395,
+427,
+444
+],
+"com.google.guava:guava:src/com/google/common/collect/PeekingIterator.java": [
+54,
+67
+],
+"com.google.guava:guava:src/com/google/common/collect/SetMultimap.java": [
+105
+],
+"com.google.guava:guava:src/com/google/common/collect/SortedIterable.java": [
+40
+],
+"com.google.guava:guava:src/com/google/common/collect/SortedMultiset.java": [
+56,
+95,
+103
+],
+"com.google.guava:guava:src/com/google/common/collect/SortedSetMultimap.java": [
+108
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/ListeningExecutorService.java": [
+73,
+94
 ]
 }

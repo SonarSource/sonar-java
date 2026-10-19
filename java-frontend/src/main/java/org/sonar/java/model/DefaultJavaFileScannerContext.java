@@ -189,8 +189,25 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
 
     AnalyzerMessage.TextSpan location = endTree != null ? AnalyzerMessage.textSpanBetween(startTree, endTree) : AnalyzerMessage.textSpanFor(startTree);
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, inputFile, location, message, cost != null ? cost : 0);
-    completeAnalyzerMessageWithFlows(analyzerMessage, flows, loc -> AnalyzerMessage.textSpanFor(loc.syntaxNode), loc -> loc.msg);
+    Tree unit = compilationUnit(startTree);
+    List<List<Location>> localFlows = new ArrayList<>();
+    for (List<Location> flow : flows) {
+      List<Location> local = flow.stream().filter(loc -> unit != null && compilationUnit(loc.syntaxNode) == unit).toList();
+      if (!local.isEmpty()) {
+        localFlows.add(local);
+      }
+    }
+    completeAnalyzerMessageWithFlows(analyzerMessage, localFlows, loc -> AnalyzerMessage.textSpanFor(loc.syntaxNode), loc -> loc.msg);
     return analyzerMessage;
+  }
+
+  private static Tree compilationUnit(Tree tree) {
+    for (Tree current = tree; current != null; current = current.parent()) {
+      if (current.is(Tree.Kind.COMPILATION_UNIT)) {
+        return current;
+      }
+    }
+    return null;
   }
 
   private static <L> void completeAnalyzerMessageWithFlows(

@@ -1,8 +1,4 @@
 {
-"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java": [
-197,
-358
-],
 "org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpCookieTest.java": [
 78,
 114

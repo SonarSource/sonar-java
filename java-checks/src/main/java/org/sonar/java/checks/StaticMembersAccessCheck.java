@@ -57,7 +57,7 @@ public class StaticMembersAccessCheck extends IssuableSubscriptionVisitor {
     MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) tree;
     IdentifierTree memberSelectIdentifier = memberSelect.identifier();
     Symbol memberSelectSymbol = memberSelectIdentifier.symbol();
-    if (memberSelectSymbol.isStatic()) {
+    if (!"class".equals(memberSelectIdentifier.name()) && !memberSelectSymbol.isUnknown() && memberSelectSymbol.isStatic()) {
       ExpressionTree leftOperand = memberSelect.expression();
       ExpressionTree selectExpression = leftOperand.is(Tree.Kind.MEMBER_SELECT)
         ? ((MemberSelectExpressionTree) leftOperand).identifier()

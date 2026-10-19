@@ -58,7 +58,7 @@ public final class JavaIssue {
     } else {
       newIssueLocation = newIssue.newLocation()
         .on(file)
-        .at(file.newRange(startLine, startLineOffset, endLine, endLineOffset))
+        .at(range(file, startLine, startLineOffset, endLine, endLineOffset))
         .message(message);
     }
     newIssue.at(newIssueLocation);
@@ -69,7 +69,7 @@ public final class JavaIssue {
     newIssue.addLocation(
       newIssue.newLocation()
         .on(file)
-        .at(file.newRange(startLine, startLineOffset, endLine, endLineOffset))
+        .at(range(file, startLine, startLineOffset, endLine, endLineOffset))
         .message(message));
     return this;
   }
@@ -90,7 +90,15 @@ public final class JavaIssue {
     if (textSpan.onLine()) {
       return file.selectLine(textSpan.startLine);
     }
-    return file.newRange(textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
+    return range(file, textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
+  }
+
+  private static TextRange range(InputFile file, int startLine, int startOffset, int endLine, int endOffset) {
+    try {
+      return file.newRange(startLine, startOffset, endLine, endOffset);
+    } catch (IllegalArgumentException e) {
+      return file.selectLine(startLine);
+    }
   }
 
 

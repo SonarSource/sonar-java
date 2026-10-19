@@ -12,7 +12,6 @@
 ],
 "org.eclipse.jetty:jetty-project:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MBeanContainer.java": [
 65,
-66,
 67
 ],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/CachedContentFactory.java": [

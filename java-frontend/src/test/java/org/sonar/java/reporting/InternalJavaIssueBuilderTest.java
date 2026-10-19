@@ -196,6 +196,21 @@ class InternalJavaIssueBuilderTest {
   }
 
   @Test
+  void ignores_secondary_from_another_file() {
+    ClassTree current = (ClassTree) compilationUnitTree.types().get(0);
+    ClassTree other = (ClassTree) JParserTestUtils.parse("class Other { int value; }").types().get(0);
+
+    builder.forRule(CHECK)
+      .onTree(current.simpleName())
+      .withMessage("msg")
+      .withSecondaries(new JavaFileScannerContext.Location("other", other.simpleName()))
+      .report();
+
+    Issue issue = sensorContextTester.allIssues().iterator().next();
+    assertThat(issue.flows()).isEmpty();
+  }
+
+  @Test
   void test_report_issue_with_flows() {
     ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
     Tree firstMember = tree.members().get(0);

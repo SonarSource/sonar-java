@@ -46,32 +46,41 @@ public class SimpleClassNameCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     CompilationUnitTree cut = (CompilationUnitTree) tree;
-    cut.types().stream().filter(NOT_EMPTY_STATEMENT).map(t -> ((ClassTree) t).symbol()).forEach(this::checkSymbol);
+    cut.types().stream().filter(NOT_EMPTY_STATEMENT).map(t -> ((ClassTree) t).symbol()).forEach(symbol -> checkSymbol(symbol, cut));
     List<ImportTree> imports = cut.imports().stream().filter(NOT_EMPTY_STATEMENT).map(ImportTree.class::cast).toList();
     boolean fileContainsStarImport = imports.stream()
       .filter(it -> it.qualifiedIdentifier().is(Kind.MEMBER_SELECT))
       .map(it -> ((MemberSelectExpressionTree) it.qualifiedIdentifier()).identifier())
       .anyMatch(i -> "*".equals(i.name()));
     if(!fileContainsStarImport) {
-      checkImports(imports);
+      checkImports(imports, cut);
     }
   }
 
-  private void checkImports(List<ImportTree> imports) {
+  private void checkImports(List<ImportTree> imports, CompilationUnitTree cut) {
     imports.stream()
       .map(ImportTree::symbol)
       .filter(Objects::nonNull)
-      .forEach(this::checkSymbol);
+      .forEach(symbol -> checkSymbol(symbol, cut));
   }
 
-  private void checkSymbol(Symbol symbol) {
+  private void checkSymbol(Symbol symbol, CompilationUnitTree cut) {
     for (IdentifierTree usageIdentifier : symbol.usages()) {
       Tree parent = usageIdentifier.parent();
 
-      if (!isInImport(usageIdentifier) && parent.is(Kind.MEMBER_SELECT) && ((MemberSelectExpressionTree) parent).expression().is(Kind.MEMBER_SELECT)) {
+      if (isInCompilationUnit(usageIdentifier, cut) && !isInImport(usageIdentifier) && parent.is(Kind.MEMBER_SELECT) && ((MemberSelectExpressionTree) parent).expression().is(Kind.MEMBER_SELECT)) {
         reportIssue(parent, String.format(MESSAGE, symbol.name()));
       }
     }
+  }
+
+  private static boolean isInCompilationUnit(Tree tree, CompilationUnitTree cut) {
+    for (Tree current = tree; current != null; current = current.parent()) {
+      if (current.is(Kind.COMPILATION_UNIT)) {
+        return current == cut;
+      }
+    }
+    return false;
   }
 
   private static boolean isInImport(Tree tree) {

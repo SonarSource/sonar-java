@@ -271,6 +271,9 @@ public final class JavacType implements Type.ArrayType {
 
   @Override
   public Type erasure() {
+    if (mirror.getKind() == TypeKind.PACKAGE || mirror.getKind() == TypeKind.MODULE) {
+      return this;
+    }
     return wrap(types.erasure(mirror));
   }
 

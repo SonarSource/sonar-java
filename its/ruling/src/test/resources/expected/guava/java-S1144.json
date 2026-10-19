@@ -1,0 +1,11 @@
+{
+"com.google.guava:guava:src/com/google/common/base/CaseFormat.java": [
+125
+],
+"com.google.guava:guava:src/com/google/common/base/Joiner.java": [
+89
+],
+"com.google.guava:guava:src/com/google/common/hash/Hashing.java": [
+316
+]
+}

@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.sensor.issue.NewIssue;
+import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.batch.sensor.issue.fix.NewInputFileEdit;
 import org.sonar.api.batch.sensor.issue.fix.NewQuickFix;
 import org.sonar.api.rule.RuleKey;
@@ -55,6 +56,7 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
 
   private JavaCheck rule;
   private AnalyzerMessage.TextSpan textSpan;
+  private Tree primaryTree;
   private String message;
   @Nullable
   private List<JavaFileScannerContext.Location> secondaries;
@@ -95,11 +97,13 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
 
   @Override
   public final InternalJavaIssueBuilder onTree(Tree tree) {
+    primaryTree = tree;
     return onRange(AnalyzerMessage.textSpanFor(tree));
   }
 
   @Override
   public final InternalJavaIssueBuilder onRange(Tree from, Tree to) {
+    primaryTree = from;
     return onRange(AnalyzerMessage.textSpanBetween(from, to));
   }
 
@@ -223,12 +227,19 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
 
     if (flows != null) {
       for (List<JavaFileScannerContext.Location> flow : flows) {
-        newIssue.addFlow(flow.stream()
-          .map(location -> newIssue.newLocation()
-            .on(inputFile)
-            .at(range(inputFile, location))
-            .message(location.msg))
-          .toList());
+        List<NewIssueLocation> locations = new ArrayList<>();
+        for (JavaFileScannerContext.Location location : flow) {
+          if (sameCompilationUnit(primaryTree, location.syntaxNode)) {
+            try {
+              locations.add(newIssue.newLocation().on(inputFile).at(range(inputFile, location)).message(location.msg));
+            } catch (IllegalArgumentException e) {
+              LOG.debug("Skipping invalid secondary location", e);
+            }
+          }
+        }
+        if (!locations.isEmpty()) {
+          newIssue.addFlow(locations);
+        }
       }
     }
 
@@ -279,6 +290,20 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
 
   private static TextRange range(InputFile file, JavaFileScannerContext.Location location) {
     return rangeFromTextSpan(file, AnalyzerMessage.textSpanFor(location.syntaxNode));
+  }
+
+  private static boolean sameCompilationUnit(Tree primary, Tree secondary) {
+    Tree unit = compilationUnit(primary);
+    return unit == null || compilationUnit(secondary) == unit;
+  }
+
+  private static Tree compilationUnit(Tree tree) {
+    for (Tree current = tree; current != null; current = current.parent()) {
+      if (current.is(Tree.Kind.COMPILATION_UNIT)) {
+        return current;
+      }
+    }
+    return null;
   }
 
   private static TextRange rangeFromTextSpan(InputFile file, AnalyzerMessage.TextSpan textSpan) {

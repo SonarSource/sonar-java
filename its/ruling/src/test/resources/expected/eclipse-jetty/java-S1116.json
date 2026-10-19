@@ -1,10 +1,46 @@
 {
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/module-info.java": [
+24,
+25,
+27,
+28,
+30,
+32
+],
 "org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/CookieCutterLenientTest.java": [
 204
 ],
 "org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpFieldsTest.java": [
 940,
 1008
+],
+"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/module-info.java": [
+21,
+22,
+24,
+25
+],
+"org.eclipse.jetty:jetty-project:jetty-jmx/src/main/java/module-info.java": [
+21,
+24,
+25,
+26,
+29,
+30
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/module-info.java": [
+21,
+22,
+23,
+24,
+25,
+26,
+28,
+29,
+30,
+33,
+34,
+36
 ],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/BufferedResponseHandler.java": [
 197
@@ -14,5 +50,43 @@
 ],
 "org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/NcsaRequestLogTest.java": [
 867
+],
+"org.eclipse.jetty:jetty-project:jetty-slf4j-impl/src/main/java/module-info.java": [
+24,
+26,
+28
+],
+"org.eclipse.jetty:jetty-project:jetty-util-ajax/src/main/java/module-info.java": [
+21,
+23,
+24
+],
+"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/module-info.java": [
+23,
+24,
+25,
+26,
+27,
+28,
+29,
+30,
+31,
+32,
+33,
+34,
+37,
+40,
+43,
+45,
+47,
+49,
+51
+],
+"org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/module-info.java": [
+23,
+25,
+26,
+27,
+29
 ]
 }

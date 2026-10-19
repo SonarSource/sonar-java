@@ -1,6 +1,6 @@
 # Relocated OpenJDK javac
 
-The [module POM](pom.xml) pins the OpenJDK tag, commit, and source archive URL. During Maven's `generate-sources` phase, [RelocateJavac.java](src/generator/java/RelocateJavac.java) downloads that archive and generates `src/main/java/org/sonar/java/javac`. The generated directory is ignored by Git. `mvn -pl javac-relocated package` works from a fresh SonarJava checkout with Java 26 and network access; no OpenJDK build is needed.
+The [module POM](pom.xml) pins the OpenJDK tag, commit, and source archive URL. During Maven's `generate-sources` phase, [RelocateJavac.java](src/generator/java/RelocateJavac.java) downloads that archive and generates `src/main/java/org/sonar/java/javac`. The generated directory is ignored by Git. `mvn -pl javac-relocated package` works from a fresh SonarJava checkout with Java 21 and network access; no OpenJDK build is needed. The generated compiler can parse Java 27 source on Java 21, and it can resolve Java 27 platform symbols when invoked with `--system` pointing to a JDK 27 image.
 
 The generator compiles and runs OpenJDK's own `CompileProperties`, `PropertiesParser`, and `FlagsGenerator` tools from the archive. They produce the compiler's generated resource and flag classes without running `prepare.sh` or `make images`. Its `version.txt` records the Maven properties and [annotation proxy support source](src/generator/resources/AnnotationProxySupport.java) used for generation. A matching version reuses the directory; changed inputs replace it.
 

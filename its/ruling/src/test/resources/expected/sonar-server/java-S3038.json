@@ -1,0 +1,8 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ce/ws/CeWsAction.java": [
+29
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/RedirectFilter.java": [
+96
+]
+}

@@ -1,5 +1,21 @@
 {
+"com.google.guava:guava:src/com/google/common/collect/DescendingImmutableSortedSet.java": [
+59
+],
+"com.google.guava:guava:src/com/google/common/collect/MapConstraints.java": [
+400
+],
 "com.google.guava:guava:src/com/google/common/collect/Sets.java": [
 588
+],
+"com.google.guava:guava:src/com/google/common/collect/Tables.java": [
+175,
+195,
+210
+],
+"com.google.guava:guava:src/com/google/common/io/LittleEndianDataInputStream.java": [
+103,
+121,
+143
 ]
 }

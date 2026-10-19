@@ -44,6 +44,22 @@ class JavacWarningsTest {
   }
 
   @Test
+  void keeps_used_unresolved_annotation_import() throws IOException {
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("C.java",
+      "import javax.persistence.Id; class C { @Id String value; }", JavacParser.Options.defaults())) {
+      assertThat(analysis.tree().warnings(JProblem.Type.UNUSED_IMPORT)).isEmpty();
+    }
+  }
+
+  @Test
+  void does_not_report_unresolved_import_as_unused() throws IOException {
+    try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("C.java",
+      "import javax.persistence.Id; class C {}", JavacParser.Options.defaults())) {
+      assertThat(analysis.tree().warnings(JProblem.Type.UNUSED_IMPORT)).isEmpty();
+    }
+  }
+
+  @Test
   void maps_redundant_cast_warning() throws IOException {
     try (JavacSourceAnalysis analysis = JavacSourceAnalysis.analyze("C.java",
       "class C { Object f(Object value) { return (Object) value; } }", JavacParser.Options.defaults())) {

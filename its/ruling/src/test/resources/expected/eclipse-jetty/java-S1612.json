@@ -8,9 +8,6 @@
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java": [
 845
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/resource/HttpContentRangeWriter.java": [
-81
-],
 "org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/CustomResourcesMonitorTest.java": [
 115,
 122

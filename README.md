@@ -83,8 +83,7 @@ To run tests locally follow these instructions.
 
 ### Java versions
 
-You need `Java 26` to compile and run the Unit Tests of the project and `Java 21` run most Integration Tests (ITs).
-Note that `Java 21` can be used to build and test all modules except under `java-checks-test-sources` (as they require `Java 26`).
+The analyzer, plugin, and integration tests build and run on `Java 21`. The full unit-test build still needs `Java 26` because some projects under `java-checks-test-sources` compile Java 26 samples.
 If you are adding or moving rule test samples, see [java-checks-test-sources/README.md](java-checks-test-sources/README.md)
 for guidance on when samples belong in the dedicated test-source modules instead of `java-checks/src/test/files`.
 
@@ -111,6 +110,12 @@ With for instance the `ORCHESTRATOR_CONFIG_URL` variable being set as:
     export ORCHESTRATOR_CONFIG_URL=file:///home/user/workspace/orchestrator.properties
 
 Before running the ITs, be sure your MAVEN_HOME environment variable is set.
+If your checkout contains artifacts built before the Java 21 compatibility change, rebuild and install the plugin dependencies on Java 21 first:
+
+    mvn -pl docs/java-custom-rules-example -am clean install -DskipTests
+
+This also rebuilds the custom rules example plugin used by the plugin IT suite.
+If IT test classes were compiled with Java 26, run `mvn clean` in `its` once before running them on Java 21.
 
 #### Sanity Test
 

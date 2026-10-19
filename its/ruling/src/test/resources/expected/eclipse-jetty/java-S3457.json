@@ -54,9 +54,6 @@
 "org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/URIUtilTest.java": [
 691
 ],
-"org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
-486
-],
 "org.eclipse.jetty:jetty-project:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java": [
 557,
 598

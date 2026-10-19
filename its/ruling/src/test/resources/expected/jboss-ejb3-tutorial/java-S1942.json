@@ -1,0 +1,9 @@
+{
+"jboss-ejb3-tutorial:hibernate/src/org/jboss/tutorial/hibernate/bean/AnotherCustomerBean.java": [
+66,
+72
+],
+"jboss-ejb3-tutorial:security/src/org/jboss/tutorial/security/client/Client.java": [
+75
+]
+}

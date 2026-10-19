@@ -78,6 +78,8 @@ class StaticMembersAccessCheckSampleB {
   }
 
   public void compliant() {
+    Class<?> primitive = int.class;
+    Class<?> array = String[].class;
     StaticMembersAccessCheckSampleA.counter ++;
     StaticMembersAccessCheckSampleA.StaticMembersAccessCheckSampleD.counter ++;
     StaticMembersAccessCheckSampleA.StaticMembersAccessCheckSampleD.StaticMembersAccessCheckSampleE.counter ++;

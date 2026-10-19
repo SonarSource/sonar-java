@@ -37,6 +37,7 @@ public final class RelocateJavac {
   private static final String RELOCATED_OPTIONS = "org.sonar.java.javac.internal.opt";
   private static final String ORIGINAL_OPTIONS_PATH = "jdk/internal/opt";
   private static final String RELOCATED_OPTIONS_PATH = "org/sonar/java/javac/internal/opt";
+  private static final String EXACT_CONVERSIONS_SOURCE = "src/java.base/share/classes/java/lang/runtime/ExactConversionsSupport.java";
   private static final Path DEFAULT_OUTPUT = Path.of("javac-relocated/src/main/java");
 
   private RelocateJavac() {
@@ -81,7 +82,7 @@ public final class RelocateJavac {
     byte[] support = Files.readAllBytes(annotationSupportSource(output));
     String digest = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(support));
     return sourceKey + "=" + source + "\nsource.tag=" + tag + "\nsource.commit=" + commit
-      + "\nrelocator.version=6\nannotation.support.sha256=" + digest + "\n";
+      + "\nrelocator.version=9\nannotation.support.sha256=" + digest + "\n";
   }
 
   private static void download(String url, Path archive) throws IOException, InterruptedException {
@@ -123,6 +124,7 @@ public final class RelocateJavac {
 
   private static boolean wantedSource(String path) {
     return path.equals("LICENSE")
+      || path.equals(EXACT_CONVERSIONS_SOURCE)
       || (path.startsWith("src/jdk.compiler/share/classes/com/sun/tools/javac/")
         && !excludedCompilerSource(Path.of(path.substring("src/jdk.compiler/share/classes/com/sun/tools/javac/".length()))))
       || path.startsWith("src/jdk.compiler/share/classes/com/sun/source/")
@@ -162,6 +164,12 @@ public final class RelocateJavac {
       count += copyTree(share.resolve(ORIGINAL_DOCLINT_PATH), staging, ORIGINAL_DOCLINT_PATH);
       count += copyTree(root.resolve("src/jdk.internal.opt/share/classes").resolve(ORIGINAL_OPTIONS_PATH), staging, ORIGINAL_OPTIONS_PATH);
       count += copyTree(generated.resolve(ORIGINAL_COMPILER_PATH), staging, ORIGINAL_COMPILER_PATH);
+      count += copyExactConversionsSupport(root, staging);
+      Path docCommentKind = staging.resolve(RELOCATED_COMPILER_PATH).resolve("tree/DocCommentKind.java");
+      Files.writeString(docCommentKind,
+        "package org.sonar.java.javac.tree;\n\npublic enum DocCommentKind {\n  TRADITIONAL,\n  END_OF_LINE\n}\n",
+        StandardCharsets.UTF_8);
+      count++;
       Path annotationSupport = staging.resolve(RELOCATED_COMPILER_PATH).resolve("model/AnnotationProxySupport.java");
       Files.copy(annotationSupportSource(output), annotationSupport);
       count++;
@@ -205,11 +213,21 @@ public final class RelocateJavac {
   private static Path generateOpenJdkSources(Path root, Path generated, String tag) throws Exception {
     Path tools = root.resolve("make/langtools/tools");
     Path classes = generated.resolve("tools-classes");
+    Path toolSources = generated.resolve("tools-sources");
     Files.createDirectories(classes);
     List<String> compile = new ArrayList<>(List.of(javaExecutable("javac"), "-d", classes.toString()));
     for (String directory : List.of("compileproperties", "propertiesparser", "flagsgenerator")) {
       try (var files = Files.walk(tools.resolve(directory))) {
-        files.filter(path -> path.toString().endsWith(".java")).sorted().map(Path::toString).forEach(compile::add);
+        for (Path file : files.filter(path -> path.toString().endsWith(".java")).sorted().toList()) {
+          Path relocated = toolSources.resolve(tools.relativize(file));
+          Files.createDirectories(relocated.getParent());
+          String source = Files.readString(file, StandardCharsets.UTF_8);
+          if (file.getFileName().toString().equals("FlagsGenerator.java")) {
+            source = source.replace(", _ ->", ", ignored ->");
+          }
+          Files.writeString(relocated, source, StandardCharsets.UTF_8);
+          compile.add(relocated.toString());
+        }
       }
     }
     run(compile, root);
@@ -284,9 +302,38 @@ public final class RelocateJavac {
           .replace(ORIGINAL_TREES, RELOCATED_TREES)
           .replace(ORIGINAL_DOCLINT, RELOCATED_DOCLINT);
         source = source.replace(ORIGINAL_OPTIONS, RELOCATED_OPTIONS);
+        source = source.replace("import javax.lang.model.util.Elements.DocCommentKind;",
+          "import org.sonar.java.javac.tree.DocCommentKind;");
         if (file.toString().endsWith("/code/Source.java") || file.toString().endsWith("/processing/PrintingProcessor.java")) {
-          source = source.replace("SourceVersion.RELEASE_27", "SourceVersion.RELEASE_26")
-            .replace("case JDK27  -> RELEASE_27;", "case JDK27  -> RELEASE_26;");
+          source = source.replace("SourceVersion.RELEASE_27", "SourceVersion.RELEASE_21");
+          for (int version = 22; version <= 27; version++) {
+            source = source.replace("RELEASE_" + version, "RELEASE_21");
+          }
+        }
+        if (file.toString().endsWith("/model/JavacElements.java")) {
+          source = source.replace("import org.sonar.java.javac.tree.DocCommentTable;",
+            "import org.sonar.java.javac.tree.DocCommentTable;\nimport org.sonar.java.javac.tree.DocCommentKind;")
+            .replace("@Override @DefinedBy(Api.LANGUAGE_MODEL)\n    public TypeElement getEnumConstantBody",
+              "@DefinedBy(Api.LANGUAGE_MODEL)\n    public TypeElement getEnumConstantBody")
+            .replace("public DocCommentKind getDocCommentKind(Element e)",
+              "public org.sonar.java.javac.tree.DocCommentKind getRelocatedDocCommentKind(Element e)");
+        }
+        if (file.toString().endsWith("/comp/LambdaToMethod.java")) {
+          source = source.replace("implMethodName, _ ->", "implMethodName, ignored ->");
+        }
+        if (file.toString().endsWith("/comp/ExhaustivenessComputer.java")) {
+          source = source.replace("catch (NumberFormatException _)", "catch (NumberFormatException ignored)")
+            .replace("key, _ ->", "key, ignored ->");
+        }
+        if (file.toString().endsWith("/tree/TreeInfo.java")) {
+          source = source.replace("names, _ -> true", "names, ignored -> true");
+        }
+        if (file.toString().endsWith("/comp/Flow.java")) {
+          source = source.replace("case BindingPattern _ ->", "case BindingPattern ignored ->");
+        }
+        if (file.toString().endsWith("/code/TypeTag.java") || file.toString().endsWith("/code/Types.java")) {
+          source = source.replace("import java.lang.runtime.ExactConversionsSupport;",
+            "import org.sonar.java.javac.runtime.ExactConversionsSupport;");
         }
         if (file.toString().endsWith("/tree/TreeScanner.java") || file.toString().endsWith("/source/tree/AnyPatternTree.java")) {
           source = source.replace("import jdk.internal.javac.PreviewFeature;\n", "");
@@ -315,6 +362,15 @@ public final class RelocateJavac {
       }
     }
     return copied;
+  }
+
+  private static int copyExactConversionsSupport(Path root, Path output) throws IOException {
+    Path destination = output.resolve(RELOCATED_COMPILER_PATH).resolve("runtime/ExactConversionsSupport.java");
+    Files.createDirectories(destination.getParent());
+    String source = Files.readString(root.resolve(EXACT_CONVERSIONS_SOURCE), StandardCharsets.UTF_8)
+      .replace("package java.lang.runtime;", "package org.sonar.java.javac.runtime;");
+    Files.writeString(destination, source, StandardCharsets.UTF_8);
+    return 1;
   }
 
   private static void deleteTree(Path directory) throws IOException {

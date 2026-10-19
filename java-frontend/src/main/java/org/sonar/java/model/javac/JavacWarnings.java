@@ -115,7 +115,8 @@ public final class JavacWarnings {
         : List.of();
       boolean used = usedOutsideImports(sourceTokens, importRanges, simpleName, localOwnerRanges);
       boolean samePackage = name.startsWith(packageName + ".") && name.lastIndexOf('.') == packageName.length();
-      if (!used || duplicate || samePackage) {
+      boolean resolved = declaration.isStatic() || elements.getTypeElement(name) != null;
+      if ((!used && resolved) || duplicate || samePackage) {
         warnings.add(new JWarning("The import " + name + " is never used", JProblem.Type.UNUSED_IMPORT,
           tokens.line(start), tokens.column(start), tokens.line(end), tokens.column(end)));
       }

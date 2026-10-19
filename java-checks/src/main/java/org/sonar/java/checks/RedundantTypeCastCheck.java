@@ -142,7 +142,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     Type operandType = cast.expression().symbolType();
     Type castType = cast.type().symbolType();
     Type variableType = variable.type().symbolType();
-    return !operandType.isUnknown() && !castType.isUnknown() && !variableType.isUnknown()
+    return !operandType.isUnknown() && !castType.isUnknown() && !castType.isTypeVar() && !variableType.isUnknown()
       && operandType.isSubtypeOf(castType)
       && (variableType.is("java.lang.Object") || !castType.isParameterized() && variableType.equals(castType));
   }

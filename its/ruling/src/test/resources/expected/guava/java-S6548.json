@@ -121,10 +121,6 @@
 "com.google.guava:guava:src/com/google/common/primitives/UnsignedLongs.java": [
 166
 ],
-"com.google.guava:guava:src/com/google/common/util/concurrent/FuturesGetChecked.java": [
-121,
-143
-],
 "com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java": [
 453
 ]

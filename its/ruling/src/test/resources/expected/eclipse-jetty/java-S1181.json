@@ -1,31 +1,18 @@
 {
-"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java": [
-1594
-],
-"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/PreEncodedHttpField.java": [
-55
-],
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractConnection.java": [
 221,
 249
 ],
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnector.java": [
-263,
 285
 ],
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/FillInterest.java": [
 85
 ],
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
-176,
-206,
-335,
 399,
 412,
-539,
-600,
 656,
-765,
 786,
 843,
 860,
@@ -50,27 +37,14 @@
 467
 ],
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/SocketChannelEndPoint.java": [
-86,
-387
-],
-"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/WriteFlusher.java": [
-297,
-398
+86
 ],
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslClientConnectionFactory.java": [
 168
 ],
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
-540,
-775,
-802,
-885,
 930,
 951,
-1124,
-1137,
-1230,
-1300,
 1313,
 1339,
 1373,
@@ -81,10 +55,7 @@
 184
 ],
 "org.eclipse.jetty:jetty-project:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MBeanContainer.java": [
-261,
-399,
-438,
-488
+438
 ],
 "org.eclipse.jetty:jetty-project:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java": [
 103
@@ -97,22 +68,13 @@
 674,
 735
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncRequestLogWriter.java": [
-86
-],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/DetectorConnectionFactory.java": [
 216
 ],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java": [
-414,
 427,
-516,
 551,
-569,
-649,
-787,
 820,
-878,
 999,
 1016,
 1032
@@ -124,15 +86,8 @@
 1006
 ],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java": [
-596,
 705,
-859,
-934,
 1002,
-1279,
-1296,
-1456,
-1466,
 1552
 ],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java": [
@@ -174,17 +129,12 @@
 1380,
 1401
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DebugHandler.java": [
-91
-],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java": [
 107
 ],
 "org.eclipse.jetty:jetty-project:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/AsyncJSON.java": [
 391,
-440,
-853,
-1114
+440
 ],
 "org.eclipse.jetty:jetty-project:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONObjectConvertor.java": [
 94
@@ -239,12 +189,8 @@
 140
 ],
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/component/ContainerLifeCycle.java": [
-138,
 154,
 210,
-237,
-412,
-444,
 685
 ],
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/component/Dumpable.java": [
@@ -291,11 +237,6 @@
 "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/thread/strategy/EatWhatYouKill.java": [
 177,
 340,
-352,
-364,
 390
-],
-"org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
-1838
 ]
 }
