@@ -89,7 +89,8 @@ public class JavaPlugin implements Plugin {
       PropertyDefinition.builder(JavaSensor.SPRING_CONTEXT_MODEL_PATH_PROPERTY)
         .name("Spring context model file")
         .description("Path to the JSON file used to restore Spring context data at the start of analysis and save it afterward. "
-          + "When unset or blank, the path defaults to .sonar/spring-context-model.json. Relative paths use the root project directory.")
+          + "When unset, no previous context is loaded. When blank, the path defaults to .sonar/spring-context-model.json. "
+          + "Relative paths use the root project directory.")
         .category(JavaConstants.JAVA_CATEGORY)
         .subCategory("Frameworks")
         .onConfigScopes(Set.of(PropertyDefinition.ConfigScope.PROJECT))

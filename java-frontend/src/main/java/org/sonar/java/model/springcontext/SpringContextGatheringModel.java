@@ -37,9 +37,8 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
  * passed to {@code SpringContextCheck} instances to raise issues.</p>
  *
  * <p>The structure is serialized to JSON and saved to a file at the end of the analysis, so it can be restored and
- * reused in later analyses. Partial analyses retain restored data for unvisited files to provide whole-project context.
- * Full analyses remove data for unvisited files before building the context model, to reflect changes due to deleted
- * files.</p>
+ * reused in later analyses when {@code sonar.java.springContext.model.path} is explicitly set. Restored data for
+ * unvisited files is retained to provide whole-project context during partial analyses.</p>
  */
 @ScannerSide
 @SonarLintSide
@@ -110,13 +109,6 @@ public class SpringContextGatheringModel {
       moduleData.forEach(current::putIfAbsent);
     });
     restored = true;
-  }
-
-  /**
-   * Removes data restored from a previous analysis for files that were not visited during the current analysis.
-   */
-  public void removeUnvisitedFiles() {
-    filesData.values().forEach(moduleData -> moduleData.values().removeIf(data -> data.inputFile() == null));
   }
 
   /**

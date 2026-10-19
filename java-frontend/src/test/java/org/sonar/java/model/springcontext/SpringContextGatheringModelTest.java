@@ -87,26 +87,6 @@ class SpringContextGatheringModelTest {
   }
 
   @Test
-  void remove_unvisited_files_keeps_visited_files_and_empty_modules() {
-    var previous = new SpringContextGatheringModel();
-    previous.collectPackages("module", "stale", null, Set.of("stale.package"));
-    previous.collectPackages("other", "stale", null, Set.of("other.package"));
-    previous.ensureModule("empty");
-    var model = new SpringContextGatheringModel();
-    InputFile visitedFile = mock(InputFile.class);
-    model.collectPackages("module", "visited", visitedFile, Set.of("current.package"));
-    model.restoreFrom(previous);
-
-    model.removeUnvisitedFiles();
-
-    assertThat(model.filesData()).containsOnlyKeys("module", "other", "empty");
-    assertThat(model.filesData().get("module")).containsOnlyKeys("visited");
-    assertThat(model.filesData().get("module").get("visited").inputFile()).isSameAs(visitedFile);
-    assertThat(model.filesData().get("other")).isEmpty();
-    assertThat(model.filesData().get("empty")).isEmpty();
-  }
-
-  @Test
   void builds_deduplicated_packages_by_module() {
     var model = new SpringContextGatheringModel();
     model.collectPackages("module", "first", null, Set.of("shared", "first"));
