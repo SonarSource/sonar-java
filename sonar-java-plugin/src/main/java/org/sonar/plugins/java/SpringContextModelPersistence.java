@@ -46,9 +46,19 @@ final class SpringContextModelPersistence {
     return rootDirectory.toPath().resolve(path).toAbsolutePath().normalize();
   }
 
+  /**
+   * Loads an existing Spring context gathering model saved in a JSON file.
+   * <p>
+   * The path passed to this method is derived from the {@code sonar.java.springContext.model.path} property, when it
+   * is passed to the analyzer. If the path does not refer to an existing file (e.g. because this is the first time the
+   * project is being analyzed), the failure to read the file is logged and the analysis starts with an empty model.
+   *
+   * @param path The path to the JSON file containing the model to load.
+   * @return The restored Spring context model.
+   */
   static SpringContextGatheringModel load(Path path) {
     if (!Files.exists(path)) {
-      LOG.warn("Spring Context model file does not exist: {}", path);
+      LOG.debug("Spring Context model file does not exist: {}", path);
       return new SpringContextGatheringModel();
     }
     try (var reader = Files.newBufferedReader(path, UTF_8)) {

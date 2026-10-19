@@ -255,7 +255,7 @@ class SpringContextModelSensorTest {
   }
 
   @Test
-  void ignores_the_default_model_and_saves_current_data_when_the_sprint_context_model_property_is_unset() throws IOException {
+  void ignores_the_default_model_and_saves_current_data_when_the_spring_context_model_property_is_unset() throws IOException {
     Path defaultPath = tempDir.resolve(DEFAULT_MODEL_PATH);
 
     for (boolean incremental : List.of(false, true)) {
@@ -279,7 +279,7 @@ class SpringContextModelSensorTest {
   }
 
   @Test
-  void restores_from_the_default_path_when_the_property_is_blank() throws IOException {
+  void restores_from_the_default_path_when_the_spring_context_model_property_is_blank() throws IOException {
     copyModelFixture("default-path.json", tempDir.resolve(DEFAULT_MODEL_PATH));
     var gatheringModel = new SpringContextGatheringModel();
 
@@ -290,7 +290,7 @@ class SpringContextModelSensorTest {
   }
 
   @Test
-  void saves_to_the_default_path_when_the_property_is_unset_or_blank() {
+  void saves_to_the_default_path_when_the_spring_context_model_property_is_unset_or_blank() {
     Path defaultPath = tempDir.resolve(DEFAULT_MODEL_PATH);
     List<SensorContextTester> contexts = List.of(javaSensorContext(tempDir), javaSensorContext(tempDir, " "));
 

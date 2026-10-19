@@ -20,20 +20,19 @@ import com.google.gson.JsonParser;
 import com.sonarsource.scanner.integrationtester.dsl.issue.FileIssue;
 import com.sonarsource.scanner.integrationtester.dsl.issue.TextRange;
 import com.sonarsource.scanner.integrationtester.dsl.issue.TextRangeIssue;
-import org.junit.jupiter.api.Test;
-import org.sonar.java.it.ScannerIntegrationAbstractTest;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import org.junit.jupiter.api.Test;
+import org.sonar.java.it.ScannerIntegrationAbstractTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AmbiguousDependencyCrossModuleTest extends ScannerIntegrationAbstractTest {
 
   @Test
-  void test() {
+  void reports_ambiguous_dependencies_and_persists_spring_context_without_test_beans() throws IOException {
     var issues = analyze(Path.of("ambiguous-dependencies-should-be-resolved"), "S9352");
     assertThat(issues)
       .hasSize(4)
@@ -57,11 +56,10 @@ class AmbiguousDependencyCrossModuleTest extends ScannerIntegrationAbstractTest 
           "java:S9352",
           "Multiple beans match this dependency (defaultAuditLogger, stagingAuditLogger) in profile 'staging'; disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".",
           new TextRange(16, 16, 24, 35)));
-  }
-
-  @Test
-  void spring_context_model_json_is_created() throws IOException {
-    analyze(Path.of("ambiguous-dependencies-should-be-resolved"), "S9352");
+    // Make sure that test beans aren't collected by Spring context gathering.
+    assertThat(issues)
+      .extracting(FileIssue::message)
+      .noneMatch(message -> message.contains("testPaymentGateway"));
 
     var modelPath = projectBaseDir.resolve(".sonar/spring-context-model.json");
     assertThat(modelPath).isRegularFile().isNotEmptyFile();
@@ -80,18 +78,5 @@ class AmbiguousDependencyCrossModuleTest extends ScannerIntegrationAbstractTest 
         .flatExtracting(file -> file.getAsJsonObject().getAsJsonArray("beans").asList())
         .extracting(bean -> bean.getAsJsonObject().get("name").getAsString())
         .contains(beanName));
-  }
-
-  /**
-   * {@code app/src/test/java} declares a third PaymentGateway bean inside a nested {@code @Configuration} of a JUnit
-   * test class. Spring Boot's TestTypeExcludeFilter keeps it out of component scanning, so it must not be collected:
-   * were it, PaymentConsumer's issue above would name three candidates instead of two.
-   */
-  @Test
-  void beans_declared_in_test_scope_are_not_candidates() {
-    var issues = analyze(Path.of("ambiguous-dependencies-should-be-resolved"), "S9352");
-    assertThat(issues)
-      .extracting(FileIssue::message)
-      .noneMatch(message -> message.contains("testPaymentGateway"));
   }
 }
