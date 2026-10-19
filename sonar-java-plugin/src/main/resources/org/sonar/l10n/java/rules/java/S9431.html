@@ -1,0 +1,55 @@
+<p>This rule raises an issue when a class directly extends the root exception base class in the language’s exception hierarchy.</p>
+<p>In Java, this specifically refers to the <code>java.lang.Throwable</code> class.</p>
+<h2>Why is this an issue?</h2>
+<p>In this language, all exceptions and errors inherit from a root exception class. However, directly extending this root class is considered poor
+practice because it creates ambiguity in your exception hierarchy.</p>
+<p>The exception system is built around two distinct categories:</p>
+<ul>
+  <li><strong>Compiler-enforced exceptions</strong> (extending the recoverable exception class): These represent recoverable conditions that calling
+  code should handle. The compiler enforces that these exceptions are either caught or declared in the function signature.</li>
+  <li><strong>Runtime exceptions</strong> (extending the unchecked exception class): These represent programming errors or unrecoverable conditions.
+  The compiler does not require them to be caught or declared.</li>
+</ul>
+<p>When you extend the root exception class directly, it is unclear whether your exception is compiler-enforced or unchecked. This creates confusion
+for developers using your exception class:</p>
+<ul>
+  <li>They don’t know if they need to handle it (compiler-enforced) or if it indicates a programming error (unchecked)</li>
+  <li>Exception handling code becomes less predictable</li>
+  <li>The intent of your exception class is obscured</li>
+</ul>
+<p>The language’s API design guidelines and best practices consistently recommend extending either the recoverable exception class or the unchecked
+exception class to make your intent clear. This convention is followed throughout the standard library and third-party libraries.</p>
+<p>Additionally, the system-level error class also extends the root exception class, but it is reserved for serious system-level problems (like
+out-of-memory conditions). Custom application exceptions should never extend the system-level error class.</p>
+<p>In Java specifically, the root exception class is <code>Throwable</code>, the recoverable exception class is <code>Exception</code>, the unchecked
+exception class is <code>RuntimeException</code>, and the system-level error class is <code>Error</code>. For example, serious system-level problems
+include <code>OutOfMemoryError</code>.</p>
+<h3>What is the potential impact?</h3>
+<p>This issue primarily affects code maintainability and clarity:</p>
+<ul>
+  <li>Developers may be confused about whether to handle your error type using standard error handling mechanisms or declare it in function
+  interfaces</li>
+  <li>Code reviews become more difficult because the error type’s purpose and relationship to the standard error hierarchy is ambiguous</li>
+  <li>Error handlers that catch standard error types may not catch your custom error class, leading to unexpected behavior</li>
+  <li>The codebase becomes harder to understand and maintain over time</li>
+</ul>
+<h2>How to fix it</h2>
+<p>If you want a checked exception (one that must be declared or caught), extend <code>Exception</code> instead of <code>Throwable</code>. Checked
+exceptions are appropriate for recoverable conditions that calling code should handle.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class CustomException extends Throwable { // Noncompliant
+    public CustomException(String message) {
+        super(message);
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class CustomException extends Exception {
+    public CustomException(String message) {
+        super(message);
+    }
+}
+</pre>
