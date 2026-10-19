@@ -1,20 +1,70 @@
+<p>An issue is raised when code explicitly throws a <code>NullPointerException</code> using a <code>throw</code> statement.</p>
 <h2>Why is this an issue?</h2>
-<p>A <code>NullPointerException</code> should indicate that a <code>null</code> value was unexpectedly encountered. Good programming practice dictates
-that code is structured to avoid NPE’s.</p>
-<p>Explicitly throwing <code>NullPointerException</code> forces a method’s callers to explicitly catch it, rather than coding to avoid it. Further, it
-makes it difficult to distinguish between the unexpectedly-encountered <code>null</code> value and the condition which causes the method to purposely
-throw an NPE.</p>
-<p>If an NPE is being thrown to indicate that a parameter to the method should not have been null, use the <code>@NotNull</code> annotation
-instead.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-public void doSomething (String aString) throws NullPointerException {
-     throw new NullPointerException();
+<p>Explicitly throwing a <code>NullPointerException</code> is almost always done to validate that a value is not <code>null</code>, typically with an
+<code>if</code> statement followed by <code>throw new NullPointerException(…​)</code>. This is a verbose, hand-rolled way to perform a
+<code>null</code> check that the Java standard library already provides. The rule therefore raises an issue on every explicit <code>throw</code> of a
+<code>NullPointerException</code>, whether or not it is wrapped in a <code>null</code> check.</p>
+<p>According to <em>Effective Java, 3rd Edition, Item 72</em>, while <code>IllegalArgumentException</code> might seem appropriate for null parameter
+validation, Java conventions actually dictate that <code>NullPointerException</code> should be used for <code>null</code> values. Rather than throwing
+it manually, you should use the standard validation utility that throws it for you: <code>Objects.requireNonNull()</code>, which has been available
+since Java 7. This method:</p>
+<ul>
+  <li>Is a standard idiom that developers instantly recognize across codebases</li>
+  <li>Replaces a multi-line <code>if</code>/<code>throw</code> block with a single, concise statement</li>
+  <li>Allows custom error messages for better diagnostics</li>
+  <li>Returns the validated object, enabling inline validation and assignment</li>
+</ul>
+<h3>What is the potential impact?</h3>
+<p>Hand-written <code>null</code> checks reduce code maintainability and readability:</p>
+<ul>
+  <li>Boilerplate <code>if</code>/<code>throw</code> blocks add noise and make the actual logic of a method harder to follow</li>
+  <li>Each manual check is an opportunity for mistakes, such as a wrong condition or a missing message</li>
+  <li>The codebase becomes inconsistent if some methods use manual throws while others use standard validation approaches</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Replace manual <code>NullPointerException</code> throws with <code>Objects.requireNonNull()</code>. This method validates that an object is not
+<code>null</code> and throws a <code>NullPointerException</code> if it is, using a concise and widely recognized idiom that follows Java
+conventions.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class UserService {
+    private String username;
+
+    public void setUsername(String username) {
+        if (username == null) {
+            throw new NullPointerException("username must not be null"); // Noncompliant
+        }
+        this.username = username;
+    }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-public void doSomething (@NotNull String aString) {
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class UserService {
+    private String username;
+
+    public void setUsername(String username) {
+        this.username = Objects.requireNonNull(username, "username must not be null");
+    }
 }
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Objects.html">Objects (Java SE 17 &amp; JDK
+  17)</a></li>
+  <li>Baeldung - <a href="https://www.baeldung.com/java-objects-requirenonnull">Validate Input with Objects.requireNonNull</a></li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li>Effective Java - <a href="https://www.oreilly.com/library/view/effective-java/9780134686097/">Item 72: Favor the use of standard
+  exceptions</a></li>
+</ul>
+<h3>Standards</h3>
+<ul>
+  <li>CERT - <a
+  href="https://cmu-sei.github.io/secure-coding-standards/sei-cert-oracle-coding-standard-for-java/rules/exceptional-behavior-err/err08-j">ERR08-J. Do
+  not catch NullPointerException or any of its ancestors</a></li>
+</ul>
 
