@@ -18,7 +18,10 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
@@ -30,6 +33,7 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 public class NegatedTernaryConditionCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Invert this negated condition and swap the two branches of the ternary.";
+  private static final String QUICK_FIX = "Invert the condition and swap the branches";
 
   private static final Tree.Kind[] COMPARISONS = {
     Tree.Kind.EQUAL_TO,
@@ -47,10 +51,31 @@ public class NegatedTernaryConditionCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    ExpressionTree condition = ((ConditionalExpressionTree) tree).condition();
+    ConditionalExpressionTree ternary = (ConditionalExpressionTree) tree;
+    ExpressionTree condition = ternary.condition();
     if (isNegated(ExpressionUtils.skipParentheses(condition))) {
-      reportIssue(condition, MESSAGE);
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(condition)
+        .withMessage(MESSAGE)
+        .withQuickFix(() -> invertAndSwap(ternary))
+        .report();
     }
+  }
+
+  private JavaQuickFix invertAndSwap(ConditionalExpressionTree ternary) {
+    ExpressionTree condition = ternary.condition();
+    ExpressionTree stripped = ExpressionUtils.skipParentheses(condition);
+    JavaQuickFix.Builder fix = JavaQuickFix.newQuickFix(QUICK_FIX);
+    if (stripped.is(Tree.Kind.LOGICAL_COMPLEMENT)) {
+      ExpressionTree positive = ((UnaryExpressionTree) stripped).expression();
+      fix.addTextEdit(JavaTextEdit.replaceTree(condition, QuickFixHelper.contentForTree(positive, context)));
+    } else {
+      fix.addTextEdit(JavaTextEdit.replaceTree(((BinaryExpressionTree) stripped).operatorToken(), "=="));
+    }
+    fix.addTextEdit(JavaTextEdit.replaceTree(ternary.trueExpression(), QuickFixHelper.contentForTree(ternary.falseExpression(), context)));
+    fix.addTextEdit(JavaTextEdit.replaceTree(ternary.falseExpression(), QuickFixHelper.contentForTree(ternary.trueExpression(), context)));
+    return fix.build();
   }
 
   private static boolean isNegated(ExpressionTree condition) {

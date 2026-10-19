@@ -12,18 +12,30 @@ public class NegatedTernaryConditionCheckSample {
   private List<String> items;
 
   String negatedBooleanVariable() {
-    return !verbose ? "short" : "long"; // Noncompliant {{Invert this negated condition and swap the two branches of the ternary.}}
+    return !verbose ? "short" : "long"; // Noncompliant {{Invert this negated condition and swap the two branches of the ternary.}} [[quickfixes=qf1]]
 //         ^^^^^^^^
+    // fix@qf1 {{Invert the condition and swap the branches}}
+    // edit@qf1 [[sc=12;ec=20]] {{verbose}}
+    // edit@qf1 [[sc=23;ec=30]] {{"long"}}
+    // edit@qf1 [[sc=33;ec=39]] {{"short"}}
   }
 
   String notEqualComparison() {
-    return count != 0 ? "some" : "none"; // Noncompliant
+    return count != 0 ? "some" : "none"; // Noncompliant [[quickfixes=qf2]]
 //         ^^^^^^^^^^
+    // fix@qf2 {{Invert the condition and swap the branches}}
+    // edit@qf2 [[sc=18;ec=20]] {{==}}
+    // edit@qf2 [[sc=25;ec=31]] {{"none"}}
+    // edit@qf2 [[sc=34;ec=40]] {{"some"}}
   }
 
   String negatedMethodCall() {
-    return !items.isEmpty() ? items.get(0) : "none"; // Noncompliant
+    return !items.isEmpty() ? items.get(0) : "none"; // Noncompliant [[quickfixes=qf3]]
 //         ^^^^^^^^^^^^^^^^
+    // fix@qf3 {{Invert the condition and swap the branches}}
+    // edit@qf3 [[sc=12;ec=28]] {{items.isEmpty()}}
+    // edit@qf3 [[sc=31;ec=43]] {{"none"}}
+    // edit@qf3 [[sc=46;ec=52]] {{items.get(0)}}
   }
 
   String negatedEqualsCall() {
@@ -32,13 +44,21 @@ public class NegatedTernaryConditionCheckSample {
   }
 
   String parenthesizedCondition() {
-    return (!verbose) ? "short" : "long"; // Noncompliant
+    return (!verbose) ? "short" : "long"; // Noncompliant [[quickfixes=qf4]]
 //         ^^^^^^^^^^
+    // fix@qf4 {{Invert the condition and swap the branches}}
+    // edit@qf4 [[sc=12;ec=22]] {{verbose}}
+    // edit@qf4 [[sc=25;ec=32]] {{"long"}}
+    // edit@qf4 [[sc=35;ec=41]] {{"short"}}
   }
 
   String negatedConjunction() {
-    return !(verbose && flag) ? "short" : "long"; // Noncompliant
+    return !(verbose && flag) ? "short" : "long"; // Noncompliant [[quickfixes=qf5]]
 //         ^^^^^^^^^^^^^^^^^^
+    // fix@qf5 {{Invert the condition and swap the branches}}
+    // edit@qf5 [[sc=12;ec=30]] {{(verbose && flag)}}
+    // edit@qf5 [[sc=33;ec=40]] {{"long"}}
+    // edit@qf5 [[sc=43;ec=49]] {{"short"}}
   }
 
   String inLocalVariable() {
