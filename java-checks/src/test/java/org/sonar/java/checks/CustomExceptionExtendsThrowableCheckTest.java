@@ -32,7 +32,7 @@ class CustomExceptionExtendsThrowableCheckTest {
   }
 
   @Test
-  void does_not_report_without_semantic() {
+  void reports_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/CustomExceptionExtendsThrowableCheckSample.java"))
       .withCheck(new CustomExceptionExtendsThrowableCheck())
