@@ -85,7 +85,6 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
   private static boolean validationEnabledOnOverriddenParameter(Symbol.MethodSymbol method, int index) {
     return method.overriddenSymbols().stream()
       .map(Symbol.MethodSymbol::declarationParameters)
-      .filter(overriddenParameters -> index < overriddenParameters.size())
       .anyMatch(overriddenParameters -> isAnnotatedWithAny(overriddenParameters.get(index).metadata(), JSR380_VALID_ANNOTATIONS));
   }
 
