@@ -28,6 +28,11 @@
     <tag>${project.parent.scm.tag}</tag>
   </scm>
 
+  <properties>
+    <!-- FIXME use a released version -->
+    <version.sonar-packaging.plugin>2.1.0.3074</version.sonar-packaging.plugin>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -155,23 +160,6 @@
     </resources>
     <plugins>
       <plugin>
-        <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
-        <artifactId>sonar-packaging-maven-plugin</artifactId>
-        <configuration>
-          <pluginName>Java Code Quality and Security</pluginName>
-          <skipDependenciesPackaging>true</skipDependenciesPackaging>
-          <pluginClass>org.sonar.plugins.java.JavaPlugin</pluginClass>
-          <requiredForLanguages>java,jsp,kotlin</requiredForLanguages>
-          <sonarLintSupported>true</sonarLintSupported>
-          <jreMinVersion>21</jreMinVersion>
-          <archive>
-            <manifestEntries>
-              <Implementation-Version>${project.version}</Implementation-Version>
-            </manifestEntries>
-          </archive>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <executions>
@@ -254,6 +242,36 @@
                 </filter>
               </filters>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!--
+        Declared AFTER maven-shade-plugin above: both bind to the "package" phase, and execution order within a
+        phase follows declaration order in this pom.xml. The "zip" goal wraps whatever jar exists on disk at the
+        time it runs, so it must run after shading has rewritten that jar in place.
+      -->
+      <plugin>
+        <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
+        <artifactId>sonar-packaging-maven-plugin</artifactId>
+        <configuration>
+          <pluginName>Java Code Quality and Security</pluginName>
+          <skipDependenciesPackaging>true</skipDependenciesPackaging>
+          <pluginClass>org.sonar.plugins.java.JavaPlugin</pluginClass>
+          <requiredForLanguages>java,jsp,kotlin</requiredForLanguages>
+          <sonarLintSupported>true</sonarLintSupported>
+          <jreMinVersion>21</jreMinVersion>
+          <archive>
+            <manifestEntries>
+              <Implementation-Version>${project.version}</Implementation-Version>
+            </manifestEntries>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <id>build-zip</id>
+            <goals>
+              <goal>zip</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
