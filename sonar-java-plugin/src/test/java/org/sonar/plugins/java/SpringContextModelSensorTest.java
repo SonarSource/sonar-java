@@ -39,6 +39,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
+import org.sonar.java.model.springcontext.BeanDefinitionKind;
 import org.sonar.java.model.springcontext.InjectionPoint;
 import org.sonar.java.model.springcontext.ProfileExpression;
 import org.sonar.java.model.springcontext.SpringContextGatheringModel;
@@ -63,6 +64,7 @@ class SpringContextModelSensorTest {
   private static final String MODULE_KEY = "module";
   private static final String MODEL_PATH = "state/context.json";
   private static final String DEFAULT_MODEL_PATH = ".sonar/spring-context-model.json";
+  private static final RuleKey S4605_RULE_KEY = RuleKey.of("java", "S4605");
   private static final RuleKey S9352_RULE_KEY = RuleKey.of("java", "S9352");
   private static final String FIXTURE_DIRECTORY = "/org/sonar/plugins/java/springcontext/";
 
@@ -84,7 +86,7 @@ class SpringContextModelSensorTest {
   @Test
   void reports_an_issue_for_an_ambiguous_dependency() {
     SensorContextTester context = SensorContextTester.create(tempDir);
-    context.setActiveRules(activeRulesWithS9352());
+    context.setActiveRules(activeRulesWith(S9352_RULE_KEY));
     var gatheringModel = new SpringContextGatheringModel();
     InputFile inputFile = fakeInputFile(context, "UnresolvedConsumer.java");
     String type = "org.springframework.context.ApplicationContextAware";
@@ -104,6 +106,26 @@ class SpringContextModelSensorTest {
         + " (componentOne, componentTwo); disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".");
     assertThat(issue.primaryLocation().textRange().start().line()).isEqualTo(13);
     assertThat(telemetry.toMap().get("java.spring.context_checks_time_ms")).matches("\\d+");
+  }
+
+  @Test
+  void reports_an_issue_for_an_uncovered_spring_bean() {
+    SensorContextTester context = SensorContextTester.create(tempDir);
+    context.setActiveRules(activeRulesWith(S4605_RULE_KEY));
+    var gatheringModel = new SpringContextGatheringModel();
+    InputFile inputFile = fakeInputFile(context, "MyComponent.java");
+
+    registerBean(gatheringModel, "example.MyComponent", "myComponent", inputFile);
+
+    sensor(gatheringModel, new NoOpTelemetry()).execute(context);
+
+    assertThat(context.allIssues()).hasSize(1);
+    Issue issue = context.allIssues().iterator().next();
+    assertThat(issue.ruleKey()).isEqualTo(S4605_RULE_KEY);
+    assertThat(issue.primaryLocation().message())
+      .isEqualTo("'MyComponent' is not reachable by @ComponentScan or @SpringBootApplication. "
+        + "Either move it to a package configured in @ComponentScan or update your @ComponentScan configuration.");
+    assertThat(issue.primaryLocation().textRange().start().line()).isEqualTo(5);
   }
 
   @Test
@@ -128,7 +150,7 @@ class SpringContextModelSensorTest {
   @Test
   void restored_beans_affect_analyzed_files_in_SQAA_without_reporting_on_restored_files() throws IOException {
     SensorContextTester context = SensorContextTester.create(tempDir);
-    context.setActiveRules(activeRulesWithS9352());
+    context.setActiveRules(activeRulesWith(S9352_RULE_KEY));
     MapSettings settings = new MapSettings();
     settings.setProperty(JavaSensor.SPRING_CONTEXT_MODEL_PATH_PROPERTY, MODEL_PATH);
     context.setSettings(settings);
@@ -149,7 +171,7 @@ class SpringContextModelSensorTest {
   @Test
   void reports_issues_on_analyzed_but_skipped_files_in_incremental_analysis() throws IOException {
     SensorContextTester context = SensorContextTester.create(tempDir);
-    context.setActiveRules(activeRulesWithS9352());
+    context.setActiveRules(activeRulesWith(S9352_RULE_KEY));
     MapSettings settings = new MapSettings();
     settings.setProperty(SonarComponents.SONAR_CAN_SKIP_UNCHANGED_FILES_KEY, true);
     context.setSettings(settings);
@@ -169,7 +191,7 @@ class SpringContextModelSensorTest {
   void reports_issues_when_saving_fails() throws IOException {
     SensorContextTester context = configuredContext();
     context.setSettings(new MapSettings().setProperty(JavaSensor.SPRING_CONTEXT_MODEL_PATH_PROPERTY, "blocked/context.json"));
-    context.setActiveRules(activeRulesWithS9352());
+    context.setActiveRules(activeRulesWith(S9352_RULE_KEY));
     Files.writeString(tempDir.resolve("blocked"), "file");
     var gatheringModel = new SpringContextGatheringModel();
     InputFile inputFile = fakeInputFile(context, "UnresolvedConsumer.java");
@@ -184,9 +206,9 @@ class SpringContextModelSensorTest {
     assertThat(logTester.logs(Level.WARN)).anyMatch(message -> message.contains("Unable to save Spring context model to "));
   }
 
-  private static ActiveRules activeRulesWithS9352() {
+  private static ActiveRules activeRulesWith(RuleKey ruleKey) {
     return new ActiveRulesBuilder()
-      .addRule(new NewActiveRule.Builder().setRuleKey(S9352_RULE_KEY).build())
+      .addRule(new NewActiveRule.Builder().setRuleKey(ruleKey).build())
       .build();
   }
 
@@ -407,12 +429,12 @@ class SpringContextModelSensorTest {
   }
 
   private static BeanDefinitionHolder.InputFileData bean(String name) {
-    return new BeanDefinitionHolder.InputFileData(name, "example.Bean", "example", new TextSpan(1, 0, 1, 4),
+    return new BeanDefinitionHolder.InputFileData(name, "example.Bean", BeanDefinitionKind.STEREOTYPE, "example", new TextSpan(1, 0, 1, 4),
       false, ProfileExpression.UNCONDITIONAL, null, Map.of(), Set.of("example.Bean"));
   }
 
   private static BeanDefinitionHolder.InputFileData gatheredBean(String name, String type, Map<String, Set<InjectionPoint.InputFileData>> dependencies) {
-    return new BeanDefinitionHolder.InputFileData(name, type, "example", new TextSpan(5, 0, 5, 4), false,
+    return new BeanDefinitionHolder.InputFileData(name, type, BeanDefinitionKind.STEREOTYPE, "example", new TextSpan(5, 0, 5, 4), false,
       ProfileExpression.UNCONDITIONAL, null, dependencies, Set.of(type));
   }
 

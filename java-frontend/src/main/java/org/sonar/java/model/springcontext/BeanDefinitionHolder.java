@@ -36,7 +36,7 @@ import org.sonar.java.telemetry.SizeEstimator;
  *
  * <p>Use {@link Builder} to construct instances:
  * <pre>{@code
- * BeanDefinitionHolder bean = new BeanDefinitionHolder.Builder(type, module, pkg, location)
+ * BeanDefinitionHolder bean = new BeanDefinitionHolder.Builder(type, kind, module, pkg, location)
  *     .profileExpression(ProfileExpression.profile("prod"))
  *     .primary()
  *     .build();
@@ -50,6 +50,8 @@ public class BeanDefinitionHolder implements SizeEstimable {
    * Fully-qualified class name of the bean.
    */
   private final String type;
+
+  private final BeanDefinitionKind kind;
 
   /**
    * Module in which the bean is declared.
@@ -92,8 +94,9 @@ public class BeanDefinitionHolder implements SizeEstimable {
   @Nullable
   private String qualifier;
 
-  private BeanDefinitionHolder(String type, String module, String beanPackage, BeanLocation location) {
+  private BeanDefinitionHolder(String type, BeanDefinitionKind kind, String module, String beanPackage, BeanLocation location) {
     this.type = type;
+    this.kind = kind;
     this.module = module;
     this.beanPackage = beanPackage;
     this.location = location;
@@ -117,6 +120,10 @@ public class BeanDefinitionHolder implements SizeEstimable {
 
   public String getType() {
     return type;
+  }
+
+  public BeanDefinitionKind getKind() {
+    return kind;
   }
 
   public String getModule() {
@@ -150,7 +157,7 @@ public class BeanDefinitionHolder implements SizeEstimable {
 
   @Override
   public long estimateSize(SizeEstimator estimator) {
-    long size = estimator.estimateShallowObject(this, 7, 1)
+    long size = estimator.estimateShallowObject(this, 8, 1)
       + estimator.estimateString(type)
       + estimator.estimateString(module)
       + estimator.estimateString(beanPackage)
@@ -169,6 +176,7 @@ public class BeanDefinitionHolder implements SizeEstimable {
 
   public static class Builder {
     private final String type;
+    private final BeanDefinitionKind kind;
     private final String module;
     private final String beanPackage;
     private final BeanLocation location;
@@ -178,8 +186,9 @@ public class BeanDefinitionHolder implements SizeEstimable {
     @Nullable
     private String qualifier;
 
-    public Builder(String type, String module, String beanPackage, BeanLocation location) {
+    public Builder(String type, BeanDefinitionKind kind, String module, String beanPackage, BeanLocation location) {
       this.type = type;
+      this.kind = kind;
       this.module = module;
       this.beanPackage = beanPackage;
       this.location = location;
@@ -206,7 +215,7 @@ public class BeanDefinitionHolder implements SizeEstimable {
     }
 
     public BeanDefinitionHolder build() {
-      BeanDefinitionHolder holder = new BeanDefinitionHolder(type, module, beanPackage, location);
+      BeanDefinitionHolder holder = new BeanDefinitionHolder(type, kind, module, beanPackage, location);
       holder.setDependingBeans(dependingBeans.entrySet().stream()
         .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, e -> Set.copyOf(e.getValue()))));
       holder.setProfileExpression(profileExpression);
@@ -228,6 +237,7 @@ public class BeanDefinitionHolder implements SizeEstimable {
    *
    * @param beanName          The name the bean is registered under.
    * @param type              The fully-qualified name of the bean's type.
+   * @param kind          how the bean definition was declared
    * @param beanPackage       The package of the class declaring the bean.
    * @param textSpan          The text span identifying the bean declaration within its own file.
    * @param isPrimary         Whether the bean is annotated with {@code @Primary}.
@@ -239,6 +249,7 @@ public class BeanDefinitionHolder implements SizeEstimable {
   public record InputFileData(
     String beanName,
     String type,
+    BeanDefinitionKind kind,
     String beanPackage,
     AnalyzerMessage.TextSpan textSpan,
     boolean isPrimary,
