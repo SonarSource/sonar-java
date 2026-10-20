@@ -11,26 +11,6 @@ discover that it is the obvious one.</p>
 class it names is just as redundant as one written in a method body.</p>
 <p>To fix an issue, delete the qualifier and keep the plain <code>this</code>. The expression keeps referring to the same object, so the change cannot
 alter behavior.</p>
-<h3>Exceptions</h3>
-<p>No issue is raised when the qualifier is required to disambiguate. Inside an anonymous class or a named inner class, plain <code>this</code> refers
-to the instance of that inner class, so the qualified form is the only way to reach the enclosing instance:</p>
-<pre>
-public class Invoice {
-  private String id;
-
-  public Runnable renamer(String newId) {
-    return new Runnable() {
-      @Override
-      public void run() {
-        Invoice.this.id = newId; // Compliant: "this" would be the Runnable
-      }
-    };
-  }
-}
-</pre>
-<p>Removing the qualifier is therefore safe only when the enclosing class is the innermost class around the expression. If an issue is raised on a
-qualified <code>this</code> that does resolve to a different object than a plain <code>this</code> would, the finding is a false positive and worth
-reporting rather than silencing.</p>
 <h2>How to fix it</h2>
 <p>Remove the class name and the dot in front of <code>this</code>, leaving a plain <code>this</code>. If the member access is not ambiguous either,
 for example because no local variable or parameter shadows the field, you may drop <code>this</code> as well, but keeping it is enough to resolve the
@@ -70,6 +50,26 @@ public class Invoice {
   }
 }
 </pre>
+<h3>Exceptions</h3>
+<p>No issue is raised when the qualifier is required to disambiguate. Inside an anonymous class or a named inner class, plain <code>this</code> refers
+to the instance of that inner class, so the qualified form is the only way to reach the enclosing instance:</p>
+<pre>
+public class Invoice {
+  private String id;
+
+  public Runnable renamer(String newId) {
+    return new Runnable() {
+      @Override
+      public void run() {
+        Invoice.this.id = newId; // Compliant: "this" would be the Runnable
+      }
+    };
+  }
+}
+</pre>
+<p>Removing the qualifier is therefore safe only when the enclosing class is the innermost class around the expression. If an issue is raised on a
+qualified <code>this</code> that does resolve to a different object than a plain <code>this</code> would, the finding is a false positive and worth
+reporting rather than silencing.</p>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
