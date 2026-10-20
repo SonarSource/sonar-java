@@ -64,11 +64,29 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkMethod(MethodTree method) {
-    if (!isExcluded(method)) {
-      for (VariableTree parameter : method.parameters()) {
-        getIssueMessage(parameter).ifPresent(message -> reportIssue(parameter.type(), message));
-      }
+    if (isExcluded(method)) {
+      return;
     }
+    List<VariableTree> parameters = method.parameters();
+    for (int index = 0; index < parameters.size(); index++) {
+      if (validationEnabledOnOverriddenParameter(method.symbol(), index)) {
+        continue;
+      }
+      VariableTree parameter = parameters.get(index);
+      getIssueMessage(parameter).ifPresent(message -> reportIssue(parameter.type(), message));
+    }
+  }
+
+  /**
+   * Bean Validation providers resolve parameter annotations from the whole method hierarchy, so a parameter is
+   * already validated when the corresponding parameter of any overridden method carries {@code @Valid}. The
+   * overridden declaration may come from bytecode, where the annotation is read from the class file.
+   */
+  private static boolean validationEnabledOnOverriddenParameter(Symbol.MethodSymbol method, int index) {
+    return method.overriddenSymbols().stream()
+      .map(Symbol.MethodSymbol::declarationParameters)
+      .filter(overriddenParameters -> index < overriddenParameters.size())
+      .anyMatch(overriddenParameters -> isAnnotatedWithAny(overriddenParameters.get(index).metadata(), JSR380_VALID_ANNOTATIONS));
   }
 
   private static boolean isExcluded(MethodTree methodTree) {
