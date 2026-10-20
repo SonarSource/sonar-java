@@ -49,4 +49,17 @@ class MissingBeanValidationCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void testWithInheritance() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/MissingBeanValidationCheckInheritanceSample.java"))
+      .withCheck(new MissingBeanValidationCheck())
+      .verifyIssues();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/MissingBeanValidationCheckInheritanceSample.java"))
+      .withCheck(new MissingBeanValidationCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
+
 }
