@@ -139,6 +139,22 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
       .containsExactlyInAnyOrder("com.example.service", "com.example.web");
   }
 
+  @Test
+  void componentScan_with_packages_overrides_springBootApplication_scanBasePackages() {
+    scan("src/test/files/springcontext/SpringBootAppWithComponentScanAndScanBasePackages.java");
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
+      .containsExactlyInAnyOrder("com.example.service", "com.example.web");
+  }
+
+  @Test
+  void componentScan_on_another_class_does_not_suppress_springBootApplication_own_package() {
+    scan("src/test/files/springcontext/ComponentScanBeforeSpringBootApp.java");
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
+      .containsExactlyInAnyOrder("com.example.service", "checks.spring.context");
+  }
+
   // ---- DependencyVersionAware -----------------------------------------------
 
   @Test
