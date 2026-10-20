@@ -194,7 +194,8 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
     var textSpan = AnalyzerMessage.textSpanFor(method.simpleName());
 
     for (String beanName : beanNames) {
-      var beanData = new BeanDefinitionHolder.InputFileData(beanName, returnTypeFqn, BeanDefinitionKind.FACTORY_METHOD, pkg, textSpan, isPrimary, profiles, qualifier, dependencies, typeHierarchy);
+      var beanData = new BeanDefinitionHolder.InputFileData(beanName, returnTypeFqn, BeanDefinitionKind.FACTORY_METHOD,
+        pkg, textSpan, isPrimary, profiles, qualifier, dependencies, typeHierarchy);
       beansCollectedAtFileLevel.add(beanData);
     }
   }
