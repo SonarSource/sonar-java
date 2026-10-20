@@ -6,6 +6,7 @@
           {
             "name": "componentOne",
             "type": "example.Service",
+            "kind": "STEREOTYPE",
             "package": "example",
             "span": { "startLine": 5, "startCharacter": 0, "endLine": 5, "endCharacter": 4 },
             "primary": false,
@@ -22,6 +23,7 @@
           {
             "name": "componentTwo",
             "type": "example.Service",
+            "kind": "STEREOTYPE",
             "package": "example",
             "span": { "startLine": 5, "startCharacter": 0, "endLine": 5, "endCharacter": 4 },
             "primary": false,
@@ -38,6 +40,7 @@
           {
             "name": "oldConsumer",
             "type": "example.OldConsumer",
+            "kind": "STEREOTYPE",
             "package": "example",
             "span": { "startLine": 5, "startCharacter": 0, "endLine": 5, "endCharacter": 4 },
             "primary": false,

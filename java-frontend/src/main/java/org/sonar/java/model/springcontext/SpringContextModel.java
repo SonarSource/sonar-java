@@ -114,7 +114,7 @@ public class SpringContextModel implements SizeEstimable {
     InputFile inputFile = fileData.inputFile();
     for (BeanDefinitionHolder.InputFileData data : fileData.beans()) {
       var location = new BeanLocation(inputFile, data.textSpan());
-      var holderBuilder = new BeanDefinitionHolder.Builder(data.type(), moduleKey, data.beanPackage(), location)
+      var holderBuilder = new BeanDefinitionHolder.Builder(data.type(), data.kind(), moduleKey, data.beanPackage(), location)
         .dependingBeans(projectToNames(data.dependencies()))
         .profileExpression(data.profileExpression())
         .qualifier(data.qualifier());
