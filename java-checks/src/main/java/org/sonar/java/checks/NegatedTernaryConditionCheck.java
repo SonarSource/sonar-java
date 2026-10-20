@@ -23,6 +23,7 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
@@ -70,7 +71,8 @@ public class NegatedTernaryConditionCheck extends IssuableSubscriptionVisitor {
     JavaQuickFix.Builder fix = JavaQuickFix.newQuickFix(QUICK_FIX);
     if (stripped.is(Tree.Kind.LOGICAL_COMPLEMENT)) {
       ExpressionTree positive = ((UnaryExpressionTree) stripped).expression();
-      fix.addTextEdit(JavaTextEdit.replaceTree(condition, QuickFixHelper.contentForTree(positive, context)));
+      String replacement = withSeparator(condition, QuickFixHelper.contentForTree(positive, context));
+      fix.addTextEdit(JavaTextEdit.replaceTree(condition, replacement));
     } else {
       fix.addTextEdit(JavaTextEdit.replaceTree(((BinaryExpressionTree) stripped).operatorToken(), "=="));
     }
@@ -83,6 +85,21 @@ public class NegatedTernaryConditionCheck extends IssuableSubscriptionVisitor {
    * The third operand of {@code ?:} cannot be an assignment, so an assignment moved out of the true branch
    * has to be parenthesized or the rewritten expression does not compile.
    */
+  private String withSeparator(Tree replaced, String replacement) {
+    if (replacement.isEmpty() || Character.isWhitespace(replacement.charAt(0))) {
+      return replacement;
+    }
+    int column = Position.startOf(replaced).columnOffset();
+    if (column == 0) {
+      return replacement;
+    }
+    String line = context.getFileLines().get(Position.startOf(replaced).lineOffset());
+    if (Character.isJavaIdentifierPart(line.charAt(column - 1))) {
+      return " " + replacement;
+    }
+    return replacement;
+  }
+
   private String falseBranchText(ExpressionTree formerTrueBranch) {
     String text = QuickFixHelper.contentForTree(formerTrueBranch, context);
     if (formerTrueBranch instanceof AssignmentExpressionTree) {

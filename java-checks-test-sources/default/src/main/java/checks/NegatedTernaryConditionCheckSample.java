@@ -112,6 +112,24 @@ public class NegatedTernaryConditionCheckSample {
     // edit@qf8 [[sc=30;ec=31]] {{(x = 1)}}
   }
 
+  int negationGluedToReturn() {
+    return!flag ? 1 : 2; // Noncompliant [[quickfixes=qf9]]
+//        ^^^^^
+    // fix@qf9 {{Invert the condition and swap the branches}}
+    // edit@qf9 [[sc=11;ec=16]] {{ flag}}
+    // edit@qf9 [[sc=19;ec=20]] {{2}}
+    // edit@qf9 [[sc=23;ec=24]] {{1}}
+  }
+
+  int parenthesizedNegationGluedToReturn() {
+    return!(verbose && flag) ? 1 : 2; // Noncompliant [[quickfixes=qf10]]
+//        ^^^^^^^^^^^^^^^^^^
+    // fix@qf10 {{Invert the condition and swap the branches}}
+    // edit@qf10 [[sc=11;ec=29]] {{ (verbose && flag)}}
+    // edit@qf10 [[sc=32;ec=33]] {{2}}
+    // edit@qf10 [[sc=36;ec=37]] {{1}}
+  }
+
   // Compliant cases
 
   String positiveCondition() {
