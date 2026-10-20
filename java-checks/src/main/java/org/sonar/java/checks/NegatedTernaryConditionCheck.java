@@ -81,10 +81,6 @@ public class NegatedTernaryConditionCheck extends IssuableSubscriptionVisitor {
     return fix.build();
   }
 
-  /**
-   * The third operand of {@code ?:} cannot be an assignment, so an assignment moved out of the true branch
-   * has to be parenthesized or the rewritten expression does not compile.
-   */
   private String withSeparator(Tree replaced, String replacement) {
     if (replacement.isEmpty() || Character.isWhitespace(replacement.charAt(0))) {
       return replacement;
@@ -100,6 +96,10 @@ public class NegatedTernaryConditionCheck extends IssuableSubscriptionVisitor {
     return replacement;
   }
 
+  /**
+   * The third operand of {@code ?:} cannot be an assignment, so an assignment moved out of the true branch
+   * has to be parenthesized or the rewritten expression does not compile.
+   */
   private String falseBranchText(ExpressionTree formerTrueBranch) {
     String text = QuickFixHelper.contentForTree(formerTrueBranch, context);
     if (formerTrueBranch instanceof AssignmentExpressionTree) {
