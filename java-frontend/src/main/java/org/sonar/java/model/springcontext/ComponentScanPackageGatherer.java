@@ -113,9 +113,18 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
     }
 
     SymbolMetadata metadata = classTree.symbol().metadata();
-    if (!handledByComponentScan(metadata)) {
+    List<SymbolMetadata.AnnotationValue> componentScan = metadata.valuesForAnnotation(COMPONENT_SCAN_ANNOTATION);
+    if (componentScan == null) {
       collectFromSpringBootApplication(classTree.symbol(), metadata);
+      return;
     }
+    List<SymbolMetadata.AnnotationValue> list = componentScan.stream().filter(v -> COMPONENT_SCAN_BASE_ARGUMENTS.contains(v.name())).toList();
+    // if there is no of COMPONENT_SCAN_BASE_ARGUMENTS attribute is present - we collect the declaring class's package;
+    // otherwise we use its values
+    if (list.isEmpty()) {
+      packagesCollectedAtFileLevel.add(PackageUtils.packageNameOf(classTree.symbol()));
+    }
+    list.forEach(this::addAnnotationValueToCollectedPackages);
   }
 
   @Override
@@ -125,23 +134,6 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
     springContextGatheringModel.collectPackages(context.getModuleKey(), currentFile.key(), currentFile, packages);
     writeToCache(context, packages);
     packagesCollectedAtFileLevel.clear();
-  }
-
-  /**
-   * Collects the packages declared by a {@code @ComponentScan} on this class and reports whether it governs the scan.
-   * A directly declared {@code @ComponentScan} shadows the one {@code @SpringBootApplication} contributes as a
-   * meta-annotation, so the latter must then be ignored entirely.
-   */
-  private boolean handledByComponentScan(SymbolMetadata metadata) {
-    List<SymbolMetadata.AnnotationValue> componentScanAttributes = metadata.valuesForAnnotation(COMPONENT_SCAN_ANNOTATION);
-    if (componentScanAttributes == null) {
-      return false;
-    }
-    var componentScanBaseAttributes = componentScanAttributes.stream()
-      .filter(v -> COMPONENT_SCAN_BASE_ARGUMENTS.contains(v.name()))
-      .toList();
-    componentScanBaseAttributes.forEach(this::addAnnotationValueToCollectedPackages);
-    return !componentScanBaseAttributes.isEmpty();
   }
 
   private void collectFromSpringBootApplication(Symbol classSymbol, SymbolMetadata metadata) {
