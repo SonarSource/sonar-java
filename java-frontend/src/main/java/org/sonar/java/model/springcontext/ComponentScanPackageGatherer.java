@@ -113,9 +113,18 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
     }
 
     SymbolMetadata metadata = classTree.symbol().metadata();
-    if (!handledByComponentScan(metadata)) {
+    List<SymbolMetadata.AnnotationValue> componentScan = metadata.valuesForAnnotation(COMPONENT_SCAN_ANNOTATION);
+    if (componentScan == null) {
       collectFromSpringBootApplication(classTree.symbol(), metadata);
+      return;
     }
+    List<SymbolMetadata.AnnotationValue> list = componentScan.stream().filter(v -> COMPONENT_SCAN_BASE_ARGUMENTS.contains(v.name())).toList();
+    // if there is no of COMPONENT_SCAN_BASE_ARGUMENTS attribute is present - we collect the declaring class's package;
+    // otherwise we use its values
+    if (list.isEmpty()) {
+      packagesCollectedAtFileLevel.add(PackageUtils.packageNameOf(classTree.symbol()));
+    }
+    list.forEach(this::addAnnotationValueToCollectedPackages);
   }
 
   @Override

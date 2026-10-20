@@ -148,6 +148,22 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
   }
 
   @Test
+  void componentScan_without_packages_overrides_springBootApplication_scanBasePackages_resolves_to_class_package() {
+    scan("src/test/files/springcontext/SpringBootAppWithComponentScanWithoutPackages.java");
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
+      .containsExactly("checks.spring.context");
+  }
+
+  @Test
+  void componentScan_with_empty_packages_does_not_scan_at_all() {
+    scan("src/test/files/springcontext/SpringBootAppWithComponentScanWithEmptyPackages.java");
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
+      .isEmpty();
+  }
+
+  @Test
   void componentScan_on_another_class_does_not_suppress_springBootApplication_own_package() {
     scan("src/test/files/springcontext/ComponentScanBeforeSpringBootApp.java");
 
