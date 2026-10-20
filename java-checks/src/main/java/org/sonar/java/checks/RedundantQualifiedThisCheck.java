@@ -19,7 +19,10 @@ package org.sonar.java.checks;
 import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -44,8 +47,19 @@ public class RedundantQualifiedThisCheck extends IssuableSubscriptionVisitor {
     }
     Symbol qualifier = memberSelect.expression().symbolType().symbol();
     if (!qualifier.isUnknown() && qualifier.equals(innermostEnclosingClass(memberSelect))) {
-      reportIssue(memberSelect, MESSAGE);
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(memberSelect)
+        .withMessage(MESSAGE)
+        .withQuickFix(() -> removeQualifier(memberSelect))
+        .report();
     }
+  }
+
+  private static JavaQuickFix removeQualifier(MemberSelectExpressionTree memberSelect) {
+    return JavaQuickFix.newQuickFix("Remove the redundant qualifier")
+      .addTextEdit(JavaTextEdit.removeBetweenTree(memberSelect.expression(), memberSelect.operatorToken()))
+      .build();
   }
 
   /**
