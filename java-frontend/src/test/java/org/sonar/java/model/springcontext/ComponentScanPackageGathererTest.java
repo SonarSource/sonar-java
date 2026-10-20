@@ -100,6 +100,14 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
   }
 
   @Test
+  void springBootApplication_in_default_package_collects_empty_package() {
+    scan("src/test/files/springcontext/SpringBootAppInDefaultPackage.java");
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
+      .containsExactly("");
+  }
+
+  @Test
   void springBootApplication_scanBasePackages_are_collected() {
     scan("src/test/files/springcontext/SpringBootAppWithScanBasePackages.java");
 
@@ -116,11 +124,35 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
   }
 
   @Test
+  void springBootApplication_mixed_scan_attributes_and_constants_are_collected() {
+    scan("src/test/files/springcontext/SpringBootAppWithMixedScanAttributes.java");
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
+      .containsExactlyInAnyOrder("com.example.extra", "com.example.controller", "checks.spring.context");
+  }
+
+  @Test
   void componentScan_with_packages_overrides_springBootApplication_default_own_package() {
     scan("src/test/files/springcontext/SpringBootAppWithComponentScanPackages.java");
 
     assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
       .containsExactlyInAnyOrder("com.example.service", "com.example.web");
+  }
+
+  @Test
+  void componentScan_with_packages_overrides_springBootApplication_scanBasePackages() {
+    scan("src/test/files/springcontext/SpringBootAppWithComponentScanAndScanBasePackages.java");
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
+      .containsExactlyInAnyOrder("com.example.service", "com.example.web");
+  }
+
+  @Test
+  void componentScan_on_another_class_does_not_suppress_springBootApplication_own_package() {
+    scan("src/test/files/springcontext/ComponentScanBeforeSpringBootApp.java");
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
+      .containsExactlyInAnyOrder("com.example.service", "checks.spring.context");
   }
 
   // ---- DependencyVersionAware -----------------------------------------------

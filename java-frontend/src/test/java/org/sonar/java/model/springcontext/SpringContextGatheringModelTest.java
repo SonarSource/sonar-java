@@ -116,7 +116,7 @@ class SpringContextGatheringModelTest {
   }
 
   private static BeanDefinitionHolder.InputFileData bean(String name) {
-    return new BeanDefinitionHolder.InputFileData(name, "example.Bean", "example", new TextSpan(1, 0, 1, 4),
+    return new BeanDefinitionHolder.InputFileData(name, "example.Bean", BeanDefinitionKind.STEREOTYPE, "example", new TextSpan(1, 0, 1, 4),
       false, ProfileExpression.UNCONDITIONAL, null, Map.of(), Set.of("example.Bean"));
   }
 }
