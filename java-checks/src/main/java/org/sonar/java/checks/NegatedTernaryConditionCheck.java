@@ -23,6 +23,7 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -74,8 +75,20 @@ public class NegatedTernaryConditionCheck extends IssuableSubscriptionVisitor {
       fix.addTextEdit(JavaTextEdit.replaceTree(((BinaryExpressionTree) stripped).operatorToken(), "=="));
     }
     fix.addTextEdit(JavaTextEdit.replaceTree(ternary.trueExpression(), QuickFixHelper.contentForTree(ternary.falseExpression(), context)));
-    fix.addTextEdit(JavaTextEdit.replaceTree(ternary.falseExpression(), QuickFixHelper.contentForTree(ternary.trueExpression(), context)));
+    fix.addTextEdit(JavaTextEdit.replaceTree(ternary.falseExpression(), falseBranchText(ternary.trueExpression())));
     return fix.build();
+  }
+
+  /**
+   * The third operand of {@code ?:} cannot be an assignment, so an assignment moved out of the true branch
+   * has to be parenthesized or the rewritten expression does not compile.
+   */
+  private String falseBranchText(ExpressionTree formerTrueBranch) {
+    String text = QuickFixHelper.contentForTree(formerTrueBranch, context);
+    if (formerTrueBranch instanceof AssignmentExpressionTree) {
+      return "(" + text + ")";
+    }
+    return text;
   }
 
   private static boolean isNegated(ExpressionTree condition) {

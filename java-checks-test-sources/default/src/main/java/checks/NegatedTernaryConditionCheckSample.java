@@ -85,6 +85,33 @@ public class NegatedTernaryConditionCheckSample {
 //       ^^^^^^^^^^
   }
 
+  int assignmentMovedToFalseBranch(int x, int y) {
+    return !flag ? x = 1 : y; // Noncompliant [[quickfixes=qf6]]
+//         ^^^^^
+    // fix@qf6 {{Invert the condition and swap the branches}}
+    // edit@qf6 [[sc=12;ec=17]] {{flag}}
+    // edit@qf6 [[sc=20;ec=25]] {{y}}
+    // edit@qf6 [[sc=28;ec=29]] {{(x = 1)}}
+  }
+
+  int compoundAssignmentMovedToFalseBranch(int x, int y) {
+    return !flag ? x += 1 : y; // Noncompliant [[quickfixes=qf7]]
+//         ^^^^^
+    // fix@qf7 {{Invert the condition and swap the branches}}
+    // edit@qf7 [[sc=12;ec=17]] {{flag}}
+    // edit@qf7 [[sc=20;ec=26]] {{y}}
+    // edit@qf7 [[sc=29;ec=30]] {{(x += 1)}}
+  }
+
+  int parenthesizedAssignmentStaysAsIs(int x, int y) {
+    return !flag ? (x = 1) : y; // Noncompliant [[quickfixes=qf8]]
+//         ^^^^^
+    // fix@qf8 {{Invert the condition and swap the branches}}
+    // edit@qf8 [[sc=12;ec=17]] {{flag}}
+    // edit@qf8 [[sc=20;ec=27]] {{y}}
+    // edit@qf8 [[sc=30;ec=31]] {{(x = 1)}}
+  }
+
   // Compliant cases
 
   String positiveCondition() {
