@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
+import org.sonar.java.model.springcontext.BeanDefinitionKind;
 import org.sonar.java.model.springcontext.ProfileExpression;
 import org.sonar.java.model.springcontext.SpringContextGatheringModel;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
@@ -40,7 +41,7 @@ class SpringContextGatheringModelTypeAdapterTest {
 
   @Test
   void round_trips_module_and_file_data_without_serializing_input_files() {
-    var bean = new BeanDefinitionHolder.InputFileData("bean", "example.Bean", "example", new TextSpan(1, 0, 1, 4),
+    var bean = new BeanDefinitionHolder.InputFileData("bean", "example.Bean", BeanDefinitionKind.STEREOTYPE, "example", new TextSpan(1, 0, 1, 4),
       false, ProfileExpression.UNCONDITIONAL, null, Map.of(), Set.of("example.Bean"));
     var model = new SpringContextGatheringModel();
     model.collectBeans("module-a", "file-a", INPUT_FILE, List.of(bean));

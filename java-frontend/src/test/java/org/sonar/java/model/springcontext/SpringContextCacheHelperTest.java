@@ -53,6 +53,7 @@ class SpringContextCacheHelperTest {
       var bean = document.getAsJsonArray("beans").get(0).getAsJsonObject();
       assertThat(bean.get("name").getAsString()).isEqualTo("qualifiedFieldDependencies");
       assertThat(bean.get("type").getAsString()).isEqualTo("checks.spring.context.QualifiedFieldDependencies");
+      assertThat(bean.get("kind").getAsString()).isEqualTo("STEREOTYPE");
       assertThat(bean.get("package").getAsString()).isEqualTo("checks.spring.context");
       assertThat(bean.get("primary").getAsBoolean()).isFalse();
       assertThat(bean.get("profiles").getAsString()).isEqualTo("prod");
@@ -89,6 +90,7 @@ class SpringContextCacheHelperTest {
         Arguments.of("bean without profiles nor dependencies", List.of(simpleComponent())),
         Arguments.of("bean with profiles and dependencies", List.of(beanWithDependencies())),
         Arguments.of("primary bean", List.of(primaryBean())),
+        Arguments.of("all bean kinds", List.of(simpleComponent(), simpleConfiguration(), factoryMethod())),
         Arguments.of("bean whose profile expression uses operators", List.of(beanWithExpressionProfile())),
         Arguments.of("bean whose profile expression could not be parsed", List.of(beanWithUnknownProfile())),
         Arguments.of("several beans defined in the same file", List.of(simpleComponent(), primaryBean(), beanWithDependencies())));
@@ -143,7 +145,7 @@ class SpringContextCacheHelperTest {
     }
 
     static Stream<Arguments> corruptedEntries() {
-      String bean = "{\"name\":\"n\",\"type\":\"t\",\"package\":\"p\",\"span\":%s,\"primary\":%s,\"profiles\":null,\"qualifier\":null,"
+      String bean = "{\"name\":\"n\",\"type\":\"t\",\"kind\":\"STEREOTYPE\",\"package\":\"p\",\"span\":%s,\"primary\":%s,\"profiles\":null,\"qualifier\":null,"
         + "\"dependencies\":[],\"typeHierarchy\":[]}";
       String span = "{\"startLine\":1,\"startCharacter\":0,\"endLine\":1,\"endCharacter\":5}";
       return Stream.of(
@@ -192,6 +194,10 @@ class SpringContextCacheHelperTest {
           "{\"version\":1,\"beans\":[" + bean.formatted(span, "false").replace("\"name\":\"n\"", "\"name\":1") + "]}"),
         Arguments.of("span with a line number given as a string",
           "{\"version\":1,\"beans\":[" + bean.formatted(span.replace("\"startLine\":1", "\"startLine\":\"1\""), "false") + "]}"),
+        Arguments.of("unknown kind",
+          "{\"version\":1,\"beans\":[" + bean.formatted(span, "false").replace("\"kind\":\"STEREOTYPE\"", "\"kind\":\"UNKNOWN\"") + "]}"),
+        Arguments.of("missing kind",
+          "{\"version\":1,\"beans\":[" + bean.formatted(span, "false").replace("\"kind\":\"STEREOTYPE\",", "") + "]}"),
         Arguments.of("missing primary",
           "{\"version\":1,\"beans\":[" + bean.formatted(span, "false").replace("\"primary\":false,", "") + "]}"),
         Arguments.of("missing profiles",
@@ -202,7 +208,7 @@ class SpringContextCacheHelperTest {
     void read_ignores_unknown_properties() {
       String content = """
         {"version":1,"beans":[{"name":"simpleComponent","type":"checks.spring.context.SimpleComponent","package":"checks.spring.context",\
-        "span":{"startLine":8,"startCharacter":13,"endLine":8,"endCharacter":28,"unknown":[]},"primary":false,"profiles":null,"qualifier":null,\
+        "span":{"startLine":8,"startCharacter":13,"endLine":8,"endCharacter":28,"unknown":[]},"primary":false,"profiles":null,"qualifier":null,kind:STEREOTYPE,\
         "dependencies":[{"type":"T","injectionPoints":[{"name":"t","span":{"startLine":9,"startCharacter":2,"endLine":9,"endCharacter":5},\
         "multiple":false,"unknown":{}}],"unknown":0}],"typeHierarchy":[],"unknown":"ignored"}],"unknown":true}
         """;
@@ -239,6 +245,7 @@ class SpringContextCacheHelperTest {
     static Stream<Arguments> packagesToRoundTrip() {
       return Stream.of(
         Arguments.of("no package at all", List.of()),
+        Arguments.of("the default package", List.of("")),
         Arguments.of("a single package", List.of("com.example.service")),
         Arguments.of("several packages", List.of("com.example.service", "com.example.web", "checks.spring.context")));
     }
@@ -267,23 +274,37 @@ class SpringContextCacheHelperTest {
   // ---- Bean fixtures --------------------------------------------------------
 
   private static BeanDefinitionHolder.InputFileData simpleComponent() {
-    return beanData("simpleComponent", "checks.spring.context.SimpleComponent", new TextSpan(8, 13, 8, 28), false, ProfileExpression.UNCONDITIONAL,
+    return beanData("simpleComponent", "checks.spring.context.SimpleComponent", BeanDefinitionKind.STEREOTYPE,
+      new TextSpan(8, 13, 8, 28), false, ProfileExpression.UNCONDITIONAL,
       Map.of(), Set.of("checks.spring.context.SimpleComponent"));
   }
 
   private static BeanDefinitionHolder.InputFileData primaryBean() {
-    return beanData("primaryBean", "checks.spring.context.PrimaryBean", new TextSpan(9, 13, 9, 24), true, ProfileExpression.UNCONDITIONAL,
+    return beanData("primaryBean", "checks.spring.context.PrimaryBean", BeanDefinitionKind.STEREOTYPE,
+      new TextSpan(9, 13, 9, 24), true, ProfileExpression.UNCONDITIONAL,
       Map.of(), Set.of("checks.spring.context.PrimaryBean", "java.lang.Object"));
   }
 
+  private static BeanDefinitionHolder.InputFileData simpleConfiguration() {
+    return beanData("simpleConfiguration", "checks.spring.context.SimpleConfiguration", BeanDefinitionKind.CONFIGURATION,
+      new TextSpan(8, 13, 8, 32), false, ProfileExpression.UNCONDITIONAL, Map.of(), Set.of("checks.spring.context.SimpleConfiguration"));
+  }
+
+  private static BeanDefinitionHolder.InputFileData factoryMethod() {
+    return beanData("dataSource", "javax.sql.DataSource", BeanDefinitionKind.FACTORY_METHOD,
+      new TextSpan(12, 2, 12, 12), false, ProfileExpression.UNCONDITIONAL, Map.of(), Set.of("javax.sql.DataSource"));
+  }
+
   private static BeanDefinitionHolder.InputFileData beanWithExpressionProfile() {
-    return beanData("expressionProfiledComponent", "checks.spring.context.ExpressionProfiledComponent", new TextSpan(10, 13, 10, 40), false,
+    return beanData("expressionProfiledComponent", "checks.spring.context.ExpressionProfiledComponent", BeanDefinitionKind.STEREOTYPE,
+      new TextSpan(10, 13, 10, 40), false,
       ProfileExpression.and(List.of(ProfileExpression.profile("dev"), ProfileExpression.not(ProfileExpression.profile("test")))),
       Map.of(), Set.of("checks.spring.context.ExpressionProfiledComponent"));
   }
 
   private static BeanDefinitionHolder.InputFileData beanWithUnknownProfile() {
-    return beanData("malformedProfileComponent", "checks.spring.context.MalformedProfileComponent", new TextSpan(10, 13, 10, 38), false,
+    return beanData("malformedProfileComponent", "checks.spring.context.MalformedProfileComponent", BeanDefinitionKind.STEREOTYPE,
+      new TextSpan(10, 13, 10, 38), false,
       ProfileExpression.UNKNOWN, Map.of(), Set.of("checks.spring.context.MalformedProfileComponent"));
   }
 
@@ -295,14 +316,14 @@ class SpringContextCacheHelperTest {
       Set.of(new InjectionPoint.InputFileData("environment", new TextSpan(19, 2, 19, 38), false)));
     injectionPoints.put("org.springframework.core.io.ResourceLoader",
       Set.of(new InjectionPoint.InputFileData("resourceLoaders", new TextSpan(22, 2, 22, 41), true)));
-    return beanData("qualifiedFieldDependencies", "checks.spring.context.QualifiedFieldDependencies",
+    return beanData("qualifiedFieldDependencies", "checks.spring.context.QualifiedFieldDependencies", BeanDefinitionKind.STEREOTYPE,
       new TextSpan(12, 6, 12, 32), false, ProfileExpression.profile("prod"), injectionPoints,
       Set.of("checks.spring.context.QualifiedFieldDependencies"));
   }
 
-  private static BeanDefinitionHolder.InputFileData beanData(String beanName, String type, TextSpan span, boolean isPrimary,
+  private static BeanDefinitionHolder.InputFileData beanData(String beanName, String type, BeanDefinitionKind kind, TextSpan span, boolean isPrimary,
     ProfileExpression profileExpression, Map<String, Set<InjectionPoint.InputFileData>> injectionPoints, Set<String> typeHierarchy) {
-    return new BeanDefinitionHolder.InputFileData(beanName, type, "checks.spring.context", span, isPrimary, profileExpression, null, injectionPoints, typeHierarchy);
+    return new BeanDefinitionHolder.InputFileData(beanName, type, kind, "checks.spring.context", span, isPrimary, profileExpression, null, injectionPoints, typeHierarchy);
   }
 
   // ---- Serialization plumbing ----------------------------------------------
