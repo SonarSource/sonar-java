@@ -17,12 +17,33 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.java.model.ExpressionUtils;
 
 @Rule(key = "S9437")
 public class GetInstanceReturningNewInstanceCheck extends IssuableSubscriptionVisitor {
+
+  private static final String MESSAGE = "Rename this method, as \"getInstance\" is conventionally reserved for singletons,"
+    + " or make it return a cached instance instead of a new one.";
+  private static final String SECONDARY_MESSAGE = "This name promises a single shared instance.";
+
+  private static final MethodMatchers GET_INSTANCE = MethodMatchers.create()
+    .ofAnyType()
+    .names("getInstance")
+    .addWithoutParametersMatcher()
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -31,6 +52,47 @@ public class GetInstanceReturningNewInstanceCheck extends IssuableSubscriptionVi
 
   @Override
   public void visitNode(Tree tree) {
-    // Implemented in the next step.
+    MethodTree method = (MethodTree) tree;
+    if (!method.symbol().isStatic() || !GET_INSTANCE.matches(method)) {
+      return;
+    }
+    NewClassTree instantiation = onlyStatementInstantiation(method);
+    if (instantiation != null && instantiatesOwnClass(instantiation, method)) {
+      List<JavaFileScannerContext.Location> secondary =
+        List.of(new JavaFileScannerContext.Location(SECONDARY_MESSAGE, method.simpleName()));
+      reportIssue(instantiation, MESSAGE, secondary, null);
+    }
+  }
+
+  /**
+   * Returns the instance creation of a method whose body is nothing but {@code return new Something(…);}, or {@code null}
+   * when the body is anything else. A lazily initialised accessor therefore never matches, because testing and assigning
+   * the cached field takes more than that single statement.
+   */
+  @CheckForNull
+  private static NewClassTree onlyStatementInstantiation(MethodTree method) {
+    BlockTree body = method.block();
+    if (body == null || body.body().size() != 1) {
+      return null;
+    }
+    StatementTree statement = body.body().get(0);
+    if (!statement.is(Tree.Kind.RETURN_STATEMENT)) {
+      return null;
+    }
+    ExpressionTree returned = ((ReturnStatementTree) statement).expression();
+    if (returned == null) {
+      return null;
+    }
+    ExpressionTree expression = ExpressionUtils.skipParentheses(returned);
+    if (!expression.is(Tree.Kind.NEW_CLASS)) {
+      return null;
+    }
+    NewClassTree instantiation = (NewClassTree) expression;
+    return instantiation.classBody() == null ? instantiation : null;
+  }
+
+  private static boolean instantiatesOwnClass(NewClassTree instantiation, MethodTree method) {
+    Type createdType = instantiation.symbolType();
+    return !createdType.isUnknown() && createdType.erasure().equals(method.symbol().owner().type().erasure());
   }
 }
