@@ -1,0 +1,33 @@
+{
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java": [
+50,
+821
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpParserTest.java": [
+374,
+379,
+748
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/UriTemplatePathSpecBadSpecsTest.java": [
+36
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/WriteFlusher.java": [
+50
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java": [
+374
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHttpOutputInterceptor.java": [
+47
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpChannelEventTest.java": [
+111
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestBase.java": [
+598,
+630
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartParserTest.java": [
+477
+]
+}
