@@ -6,6 +6,7 @@
           {
             "name": "previous",
             "type": "example.Bean",
+            "kind": "STEREOTYPE",
             "package": "example",
             "span": { "startLine": 1, "startCharacter": 0, "endLine": 1, "endCharacter": 4 },
             "primary": false,
@@ -24,6 +25,7 @@
           {
             "name": "untouched",
             "type": "example.Bean",
+            "kind": "STEREOTYPE",
             "package": "example",
             "span": { "startLine": 1, "startCharacter": 0, "endLine": 1, "endCharacter": 4 },
             "primary": false,

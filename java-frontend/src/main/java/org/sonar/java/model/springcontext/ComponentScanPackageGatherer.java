@@ -46,6 +46,9 @@ import org.sonarsource.analyzer.commons.collections.SetUtils;
  *   <li>{@code @SpringBootApplication} without explicit attributes — the annotated class's own package</li>
  * </ul>
  *
+ * <p>A {@code @ComponentScan} declared directly on a class shadows the one contributed as a meta-annotation by
+ * {@code @SpringBootApplication}, so when both are present on the same class only the former is taken into account.
+ *
  * <p>Per-file results are cached to speed up incremental analyses.
  */
 public class ComponentScanPackageGatherer extends SpringContextModelGatherer implements FileCachingCheck<Set<String>> {
@@ -110,8 +113,18 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
     }
 
     SymbolMetadata metadata = classTree.symbol().metadata();
-    collectFromComponentScan(metadata);
-    collectFromSpringBootApplication(classTree.symbol(), metadata);
+    List<SymbolMetadata.AnnotationValue> componentScan = metadata.valuesForAnnotation(COMPONENT_SCAN_ANNOTATION);
+    if (componentScan == null) {
+      collectFromSpringBootApplication(classTree.symbol(), metadata);
+      return;
+    }
+    List<SymbolMetadata.AnnotationValue> list = componentScan.stream().filter(v -> COMPONENT_SCAN_BASE_ARGUMENTS.contains(v.name())).toList();
+    // if there is no of COMPONENT_SCAN_BASE_ARGUMENTS attribute is present - we collect the declaring class's package;
+    // otherwise we use its values
+    if (list.isEmpty()) {
+      packagesCollectedAtFileLevel.add(PackageUtils.packageNameOf(classTree.symbol()));
+    }
+    list.forEach(this::addAnnotationValueToCollectedPackages);
   }
 
   @Override
@@ -123,25 +136,14 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
     packagesCollectedAtFileLevel.clear();
   }
 
-  private void collectFromComponentScan(SymbolMetadata metadata) {
-    List<SymbolMetadata.AnnotationValue> componentScanAttributes = metadata.valuesForAnnotation(COMPONENT_SCAN_ANNOTATION);
-    if (componentScanAttributes == null) {
-      return;
-    }
-    componentScanAttributes.stream()
-      .filter(v -> COMPONENT_SCAN_BASE_ARGUMENTS.contains(v.name()))
-      .forEach(this::addAnnotationValueToCollectedPackages);
-  }
-
   private void collectFromSpringBootApplication(Symbol classSymbol, SymbolMetadata metadata) {
     if (!metadata.isAnnotatedWith(SpringUtils.SPRING_BOOT_APP_ANNOTATION)) {
       return;
     }
-    var packages = targetedPackages(PackageUtils.packageNameOf(classSymbol), metadata, packagesCollectedAtFileLevel.isEmpty());
-    packagesCollectedAtFileLevel.addAll(packages);
+    packagesCollectedAtFileLevel.addAll(targetedPackages(PackageUtils.packageNameOf(classSymbol), metadata));
   }
 
-  private static List<String> targetedPackages(String classPackageName, SymbolMetadata metadata, boolean useOwnPackageAsFallback) {
+  private static List<String> targetedPackages(String classPackageName, SymbolMetadata metadata) {
     var scanBaseValues = Objects.requireNonNull(metadata.valuesForAnnotation(SpringUtils.SPRING_BOOT_APP_ANNOTATION)).stream()
       .filter(v -> SCAN_BASE_ANNOTATIONS.contains(v.name()) && v.value() instanceof Object[])
       .toList();
@@ -154,9 +156,7 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
       }
     }
     if (scanBaseValues.isEmpty()) {
-      // Without explicit scan attributes, @SpringBootApplication scans its own package — but only if
-      // no packages were already collected via @ComponentScan on the same class.
-      return (useOwnPackageAsFallback && !classPackageName.isBlank()) ? Collections.singletonList(classPackageName) : List.of();
+      return Collections.singletonList(classPackageName);
     }
     return packages;
   }

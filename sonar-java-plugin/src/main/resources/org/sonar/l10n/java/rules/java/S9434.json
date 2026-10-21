@@ -1,0 +1,23 @@
+{
+  "title": "Qualified \"this\" should not be used when the unqualified form is enough",
+  "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "clumsy"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-9434",
+  "sqKey": "S9434",
+  "scope": "All",
+  "quickfix": "targeted"
+}

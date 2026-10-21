@@ -16,38 +16,22 @@
  */
 package org.sonar.java.checks.spring;
 
-import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
-import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.java.SonarComponents;
-import org.sonar.java.checks.verifier.TestUtils;
-import org.sonar.java.model.JParser;
-import org.sonar.java.model.JParserConfig;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.java.model.springcontext.BeanDefinitionGatherer;
+import org.sonar.java.checks.helpers.SpringContextModelTestUtils;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
-import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.ProfileExpression;
-import org.sonar.java.model.springcontext.SpringContextGatheringModel;
 import org.sonar.java.model.springcontext.SpringContextModel;
-import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.telemetry.NoOpTelemetry;
-import org.sonar.java.test.classpath.TestClasspathUtils;
-import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.checks.helpers.SpringContextModelTestUtils.beanLocation;
+import static org.sonar.java.checks.helpers.SpringContextModelTestUtils.buildModel;
+import static org.sonar.java.checks.helpers.SpringContextModelTestUtils.dummyInputFile;
+import static org.sonar.java.checks.helpers.SpringContextModelTestUtils.indexBeanByType;
 
 class AmbiguousDependencyCheckTest {
 
@@ -57,67 +41,67 @@ class AmbiguousDependencyCheckTest {
 
   @Test
   void ambiguous_dependency_with_no_disambiguation_raises_issue() {
-    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "UnresolvedConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "ComponentOne.java", "ComponentTwo.java", "UnresolvedConsumer.java");
     assertThat(check.execute(model)).hasSize(1);
   }
 
   @Test
   void primary_candidate_resolves_ambiguity() {
-    SpringContextModel model = buildModel("BeanNameComponent.java", "PrimaryComponent.java", "PrimaryConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "BeanNameComponent.java", "PrimaryComponent.java", "PrimaryConsumer.java");
     assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void two_primary_candidates_still_raise_issue() {
-    SpringContextModel model = buildModel("TwoPrimaryComponentA.java", "TwoPrimaryComponentB.java", "TwoPrimaryConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "TwoPrimaryComponentA.java", "TwoPrimaryComponentB.java", "TwoPrimaryConsumer.java");
     assertThat(check.execute(model)).hasSize(1);
   }
 
   @Test
   void field_name_matching_bean_name_resolves_ambiguity() {
-    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "NameMatchConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "ComponentOne.java", "ComponentTwo.java", "NameMatchConsumer.java");
     assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void qualifier_resolves_ambiguity() {
-    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "QualifierConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "ComponentOne.java", "ComponentTwo.java", "QualifierConsumer.java");
     assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void qualifier_on_bean_definition_resolves_ambiguity() {
-    SpringContextModel model = buildModel("QualifiedBeanDefinitionConfig.java", "QualifiedBeanDefinitionConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "QualifiedBeanDefinitionConfig.java", "QualifiedBeanDefinitionConsumer.java");
     assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void single_candidate_does_not_raise_issue() {
-    SpringContextModel model = buildModel("ResourceLoaderComponent.java", "SingleCandidateConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "ResourceLoaderComponent.java", "SingleCandidateConsumer.java");
     assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void collection_and_array_fields_are_never_ambiguous() {
-    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "CollectionInjectionConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "ComponentOne.java", "ComponentTwo.java", "CollectionInjectionConsumer.java");
     assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void collection_and_array_parameters_of_a_bean_method_are_never_ambiguous() {
-    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "CollectionInjectionConfig.java");
+    SpringContextModel model = buildModel(BASE_PATH, "ComponentOne.java", "ComponentTwo.java", "CollectionInjectionConfig.java");
     assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void map_keyed_by_bean_name_is_never_ambiguous() {
-    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "MapInjectionConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "ComponentOne.java", "ComponentTwo.java", "MapInjectionConsumer.java");
     assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void value_annotated_constructor_parameters_are_not_injection_points() {
-    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "ValueConstructorParameterConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "ComponentOne.java", "ComponentTwo.java", "ValueConstructorParameterConsumer.java");
     assertThat(check.execute(model)).isEmpty();
   }
 
@@ -125,43 +109,43 @@ class AmbiguousDependencyCheckTest {
 
   @Test
   void beans_of_the_same_generic_type_with_different_arguments_are_not_ambiguous() {
-    SpringContextModel model = buildModel("GenericDistinctArgumentsConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "GenericDistinctArgumentsConsumer.java");
     assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void beans_of_the_same_generic_type_with_the_same_argument_are_still_ambiguous() {
-    SpringContextModel model = buildModel("GenericSameArgumentConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "GenericSameArgumentConsumer.java");
     assertThat(check.execute(model)).hasSize(1);
   }
 
   @Test
   void a_raw_injection_point_is_still_ambiguous_between_every_implementation() {
-    SpringContextModel model = buildModel("RawGenericConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "RawGenericConsumer.java");
     assertThat(check.execute(model)).hasSize(1);
   }
 
   @Test
   void bean_methods_returning_maps_that_differ_only_by_their_value_type_are_not_ambiguous() {
-    SpringContextModel model = buildModel("GenericMapBeanConfig.java", "GenericMapConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "GenericMapBeanConfig.java", "GenericMapConsumer.java");
     assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void a_qualifier_disambiguates_two_beans_of_the_same_parameterized_type() {
-    SpringContextModel model = buildModel("GenericQualifiedBeanConfig.java", "GenericQualifiedConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "GenericQualifiedBeanConfig.java", "GenericQualifiedConsumer.java");
     assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void two_beans_of_the_same_parameterized_type_are_ambiguous_without_a_qualifier() {
-    SpringContextModel model = buildModel("GenericQualifiedBeanConfig.java", "GenericUnqualifiedConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "GenericQualifiedBeanConfig.java", "GenericUnqualifiedConsumer.java");
     assertThat(check.execute(model)).hasSize(1);
   }
 
   @Test
   void one_resolved_injection_point_does_not_hide_another_ambiguous_one_of_the_same_type() {
-    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "MixedInjectionConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "ComponentOne.java", "ComponentTwo.java", "MixedInjectionConsumer.java");
     assertThat(check.execute(model)).hasSize(1);
   }
 
@@ -170,7 +154,7 @@ class AmbiguousDependencyCheckTest {
   @Test
   void two_primary_candidates_colliding_under_a_profile_raise_issue() {
     SpringContextModel model =
-      buildModel("UnprofiledPrimaryComponent.java", "ProfiledPrimaryComponent.java", "PlainMessageSourceComponent.java", "MessageSourceConsumer.java");
+      buildModel(BASE_PATH, "UnprofiledPrimaryComponent.java", "ProfiledPrimaryComponent.java", "PlainMessageSourceComponent.java", "MessageSourceConsumer.java");
     assertThat(check.execute(model))
       .singleElement()
       .extracting(SpringContextIssue::message)
@@ -181,7 +165,7 @@ class AmbiguousDependencyCheckTest {
   @Test
   void inactive_profiled_candidate_still_leaves_ambiguity_between_the_rest() {
     SpringContextModel model =
-      buildModel("PlainEventPublisherComponentA.java", "PlainEventPublisherComponentB.java", "ProfiledEventPublisherComponent.java", "EventPublisherConsumer.java");
+      buildModel(BASE_PATH, "PlainEventPublisherComponentA.java", "PlainEventPublisherComponentB.java", "ProfiledEventPublisherComponent.java", "EventPublisherConsumer.java");
     assertThat(check.execute(model))
       .singleElement()
       .extracting(SpringContextIssue::message)
@@ -193,7 +177,7 @@ class AmbiguousDependencyCheckTest {
   @Test
   void profiled_primary_does_not_resolve_ambiguity_when_its_profile_is_inactive() {
     SpringContextModel model =
-      buildModel("ProfiledPrimaryClassLoaderComponent.java", "PlainClassLoaderComponentA.java", "PlainClassLoaderComponentB.java", "ClassLoaderConsumer.java");
+      buildModel(BASE_PATH, "ProfiledPrimaryClassLoaderComponent.java", "PlainClassLoaderComponentA.java", "PlainClassLoaderComponentB.java", "ClassLoaderConsumer.java");
     assertThat(check.execute(model))
       .singleElement()
       .extracting(SpringContextIssue::message)
@@ -205,7 +189,7 @@ class AmbiguousDependencyCheckTest {
   @Test
   void candidate_profiled_with_an_operator_expression_is_inactive_when_no_profile_is_active() {
     SpringContextModel model =
-      buildModel("PlainEnvironmentComponentA.java", "PlainEnvironmentComponentB.java", "ExpressionProfiledEnvironmentComponent.java", "EnvironmentConsumer.java");
+      buildModel(BASE_PATH, "PlainEnvironmentComponentA.java", "PlainEnvironmentComponentB.java", "ExpressionProfiledEnvironmentComponent.java", "EnvironmentConsumer.java");
     assertThat(check.execute(model))
       .singleElement()
       .extracting(SpringContextIssue::message)
@@ -217,14 +201,14 @@ class AmbiguousDependencyCheckTest {
   @Test
   void qualifier_towards_profiled_candidate_is_not_flagged_as_ambiguous() {
     SpringContextModel model =
-      buildModel("PlainEventPublisherComponentA.java", "PlainEventPublisherComponentB.java", "ProfiledEventPublisherComponent.java", "EventPublisherQualifierConsumer.java");
+      buildModel(BASE_PATH, "PlainEventPublisherComponentA.java", "PlainEventPublisherComponentB.java", "ProfiledEventPublisherComponent.java", "EventPublisherQualifierConsumer.java");
     assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void two_candidates_sharing_a_profile_raise_issue() {
     SpringContextModel model =
-      buildModel("SameProfileComponentA.java", "SameProfileComponentB.java", "SameProfileConsumer.java");
+      buildModel(BASE_PATH, "SameProfileComponentA.java", "SameProfileComponentB.java", "SameProfileConsumer.java");
     assertThat(check.execute(model))
       .singleElement()
       .extracting(SpringContextIssue::message)
@@ -235,13 +219,13 @@ class AmbiguousDependencyCheckTest {
   @ParameterizedTest(name = "[{index}] {0}")
   @ValueSource(strings = {"DistinctProfileCandidates.java", "NegatedProfileCandidates.java", "CombinedProfilesCandidates.java"})
   void profiled_candidates_without_reportable_ambiguity_are_not_reported(String fileName) {
-    SpringContextModel model = buildModel(fileName);
+    SpringContextModel model = buildModel(BASE_PATH, fileName);
     assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void only_consumer_active_during_candidate_collision_is_flagged() {
-    SpringContextModel model = buildModel("ProfiledConsumersConfig.java");
+    SpringContextModel model = buildModel(BASE_PATH, "ProfiledConsumersConfig.java");
     assertThat(check.execute(model))
       .singleElement()
       .extracting(SpringContextIssue::message)
@@ -251,7 +235,7 @@ class AmbiguousDependencyCheckTest {
 
   @Test
   void profiled_consumer_is_still_flagged_for_a_collision_between_plain_candidates() {
-    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "ProfiledPlainConsumer.java");
+    SpringContextModel model = buildModel(BASE_PATH, "ComponentOne.java", "ComponentTwo.java", "ProfiledPlainConsumer.java");
     assertThat(check.execute(model))
       .singleElement()
       .extracting(SpringContextIssue::message)
@@ -261,7 +245,7 @@ class AmbiguousDependencyCheckTest {
 
   @Test
   void candidate_with_an_unreadable_profile_is_assumed_active() {
-    SpringContextModel model = buildModel("UnreadableProfileCandidates.java");
+    SpringContextModel model = buildModel(BASE_PATH, "UnreadableProfileCandidates.java");
     assertThat(check.execute(model))
       .singleElement()
       .extracting(SpringContextIssue::message)
@@ -345,9 +329,8 @@ class AmbiguousDependencyCheckTest {
 
   private static void registerBean(SpringContextModel model, String beanName, String type, String module, String beanPackage, InputFile file,
     UnaryOperator<BeanDefinitionHolder.Builder> customizer) {
-    var location = new BeanLocation(file, new AnalyzerMessage.TextSpan(1));
-    model.getBeanDefinitionRegistry().addBeanDefinition(beanName, customizer.apply(new BeanDefinitionHolder.Builder(type, module, beanPackage, location)).build());
-    model.getTypeToBeansIndex().addBeanForType(type, beanName, module, beanPackage);
+    SpringContextModelTestUtils.registerBean(model, beanName, type, module, beanPackage, beanLocation(file, 1), customizer);
+    indexBeanByType(model, beanName, type, module, beanPackage);
   }
 
   private static void registerInjectionPoint(SpringContextModel model, String type, String fieldName, String module, InputFile consumerFile) {
@@ -355,65 +338,7 @@ class AmbiguousDependencyCheckTest {
   }
 
   private static void registerInjectionPoint(SpringContextModel model, String type, String fieldName, String module, ProfileExpression consumerProfile, InputFile consumerFile) {
-    model.getTypeToDependenciesIndex()
-      .addDependencyForType(type, fieldName, module, consumerProfile, new BeanLocation(consumerFile, new AnalyzerMessage.TextSpan(5)), false);
-  }
-
-  private static InputFile dummyInputFile(String path) {
-    return new TestInputFileBuilder("", path).setLanguage("java").setType(InputFile.Type.MAIN).build();
-  }
-
-  /**
-   * Runs {@link BeanDefinitionGatherer} over the given files (relative to {@link #BASE_PATH} under
-   * {@code src/main/java}) into a single, freshly built {@link SpringContextModel}, mirroring how
-   * {@code JavaSensor} drives gatherers during a real analysis, without needing java-frontend's test-only
-   * scanning helpers.
-   */
-  private static SpringContextModel buildModel(String... relativeFilePaths) {
-    return buildModel(Arrays.stream(relativeFilePaths)
-      .map(relativeFilePath -> TestUtils.mainCodeSourcesPath(BASE_PATH + relativeFilePath))
-      .toList());
-  }
-
-  private static SpringContextModel buildModel(List<String> filePaths) {
-    List<File> classpath = TestClasspathUtils.DEFAULT_MODULE.getClassPath();
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
-    sonarComponents.setSensorContext(SensorContextTester.create(new File("")));
-    var gatheringModel = new SpringContextGatheringModel();
-    BeanDefinitionGatherer gatherer = new BeanDefinitionGatherer(gatheringModel, new NoOpTelemetry());
-    VisitorsBridge visitorsBridge = new VisitorsBridge(List.of((JavaCheck) gatherer), classpath, sonarComponents);
-    for (String filePath : filePaths) {
-      File file = new File(filePath);
-      CompilationUnitTree compilationUnit = parse(file, classpath);
-      visitorsBridge.setCurrentFile(inputFile(file));
-      visitorsBridge.visitFile(compilationUnit, false);
-    }
-    visitorsBridge.endOfAnalysis();
-    return SpringContextModel.of(gatheringModel);
-  }
-
-  private static InputFile inputFile(File file) {
-    try {
-      return new TestInputFileBuilder("", file.getParentFile(), file)
-        .setContents(Files.readString(file.toPath(), StandardCharsets.UTF_8))
-        .setCharset(StandardCharsets.UTF_8)
-        .setLanguage("java")
-        .setType(InputFile.Type.MAIN)
-        .build();
-    } catch (IOException e) {
-      throw new IllegalStateException("Unable to read file '" + file.getAbsolutePath() + "'", e);
-    }
-  }
-
-  private static CompilationUnitTree parse(File file, List<File> classpath) {
-    String source;
-    try {
-      source = Files.readString(file.toPath(), StandardCharsets.UTF_8);
-    } catch (Exception e) {
-      throw new IllegalStateException("Unable to read file '" + file.getAbsolutePath() + "'", e);
-    }
-    JavaVersion version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version.toString(), file.getName(), source);
+    SpringContextModelTestUtils.registerInjectionPoint(model, type, fieldName, module, consumerProfile, beanLocation(consumerFile, 5));
   }
 
 }

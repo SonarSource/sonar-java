@@ -69,7 +69,7 @@ class SpringContextModelMetricsTest {
   void injection_points_are_summed_over_all_required_types() {
     var model = new SpringContextModel();
     long emptySize = SpringContextModelMetrics.of(model).estimatedSizeInBytes();
-    var holder = new BeanDefinitionHolder.Builder("com.acme.MyBean", "module-a", "com.acme", newLocation())
+    var holder = new BeanDefinitionHolder.Builder("com.acme.MyBean", BeanDefinitionKind.STEREOTYPE, "module-a", "com.acme", newLocation())
       .dependingBeans(Map.of("com.acme.Collaborator", Set.of("collaborator")))
       .profileExpression(ProfileExpression.not(ProfileExpression.profile("test")))
       .build();
@@ -111,7 +111,7 @@ class SpringContextModelMetricsTest {
   @Test
   void depending_beans_are_not_counted_as_component_scan_packages() {
     var model = new SpringContextModel();
-    var holder = new BeanDefinitionHolder.Builder("com.acme.MyBean", "module-a", "com.acme", newLocation())
+    var holder = new BeanDefinitionHolder.Builder("com.acme.MyBean", BeanDefinitionKind.STEREOTYPE, "module-a", "com.acme", newLocation())
       .dependingBeans(Map.of("com.acme.Collaborator", Set.of("collaborator", "otherCollaborator")))
       .build();
     model.getBeanDefinitionRegistry().addBeanDefinition("myBean", holder);
@@ -211,7 +211,7 @@ class SpringContextModelMetricsTest {
   }
 
   private static BeanDefinitionHolder newHolder(String type) {
-    return new BeanDefinitionHolder.Builder(type, "module-a", "com.acme", newLocation()).build();
+    return new BeanDefinitionHolder.Builder(type, BeanDefinitionKind.STEREOTYPE, "module-a", "com.acme", newLocation()).build();
   }
 
   private static BeanLocation newLocation() {
