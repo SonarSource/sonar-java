@@ -35,7 +35,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-  private Deque<IfStatementTree> outerIf = new ArrayDeque<>();
+  private final Deque<IfStatementTree> outerIf = new ArrayDeque<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

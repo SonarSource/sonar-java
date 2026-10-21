@@ -144,7 +144,7 @@ public abstract class AwsBuilderMethodFinder extends IssuableSubscriptionVisitor
 
   private static class CallChainVisitor extends BaseTreeVisitor {
     protected boolean methodIsInvoked;
-    private MethodMatchers target;
+    private final MethodMatchers target;
 
     CallChainVisitor(MethodMatchers matcher) {
       this.target = matcher;

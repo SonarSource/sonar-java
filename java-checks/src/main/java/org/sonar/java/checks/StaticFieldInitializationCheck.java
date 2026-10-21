@@ -36,10 +36,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S2444")
 public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker {
 
-  private Deque<Boolean> classWithSynchronizedMethod = new LinkedList<>();
-  private Deque<Boolean> withinStaticInitializer = new LinkedList<>();
-  private Deque<Boolean> methodUsesLocks = new LinkedList<>();
-  private MethodMatchers locks = MethodMatchers.create()
+  private final Deque<Boolean> classWithSynchronizedMethod = new LinkedList<>();
+  private final Deque<Boolean> withinStaticInitializer = new LinkedList<>();
+  private final Deque<Boolean> methodUsesLocks = new LinkedList<>();
+  private final MethodMatchers locks = MethodMatchers.create()
     .ofTypes("java.util.concurrent.locks.Lock")
     .names("lock", "tryLock")
     .addWithoutParametersMatcher()

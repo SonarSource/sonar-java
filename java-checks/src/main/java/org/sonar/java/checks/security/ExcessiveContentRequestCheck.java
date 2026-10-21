@@ -133,7 +133,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
   private final List<AnalyzerMessage> multipartConstructorIssues = new ArrayList<>();
   private boolean sizeSetSomewhere = false;
 
-  private Set<String> filesCached = new HashSet<>();
+  private final Set<String> filesCached = new HashSet<>();
 
   private boolean currentFileSetsMaximumSize = false;
   private boolean currentFileInstantiates = false;

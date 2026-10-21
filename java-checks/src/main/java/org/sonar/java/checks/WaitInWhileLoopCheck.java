@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S2274")
 public class WaitInWhileLoopCheck extends AbstractMethodDetection {
 
-  private Deque<Boolean> inWhileLoop = new LinkedList<>();
+  private final Deque<Boolean> inWhileLoop = new LinkedList<>();
 
   @Override
   protected void clearState() {

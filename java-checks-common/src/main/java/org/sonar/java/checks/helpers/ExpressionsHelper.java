@@ -157,8 +157,8 @@ public class ExpressionsHelper {
 
   public static class ValueResolution<T> {
     private T value;
-    private List<JavaFileScannerContext.Location> valuePath = new ArrayList<>();
-    private Set<Symbol> evaluatedSymbols = new HashSet<>();
+    private final List<JavaFileScannerContext.Location> valuePath = new ArrayList<>();
+    private final Set<Symbol> evaluatedSymbols = new HashSet<>();
     private final String locationMessage;
 
     public ValueResolution() {

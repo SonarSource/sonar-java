@@ -26,7 +26,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public class StaticInitializerTreeImpl extends BlockTreeImpl implements StaticInitializerTree {
 
-  private SyntaxToken staticKeyword;
+  private final SyntaxToken staticKeyword;
 
   public StaticInitializerTreeImpl(InternalSyntaxToken staticKeyword, InternalSyntaxToken openBraceToken, List<StatementTree> body, InternalSyntaxToken closeBraceToken) {
     super(Tree.Kind.STATIC_INITIALIZER, openBraceToken, body, closeBraceToken);

@@ -33,7 +33,7 @@ import java.util.List;
 public class NestedTryCatchCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-  private Deque<Deque<Tree>> nestingLevel = new ArrayDeque<>();
+  private final Deque<Deque<Tree>> nestingLevel = new ArrayDeque<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

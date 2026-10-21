@@ -52,7 +52,7 @@ public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisi
 
   private class ConstructorBodyVisitor extends BaseTreeVisitor {
 
-    private Symbol.TypeSymbol constructorType;
+    private final Symbol.TypeSymbol constructorType;
 
     public ConstructorBodyVisitor(Symbol.TypeSymbol constructorType) {
       this.constructorType = constructorType;

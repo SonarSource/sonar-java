@@ -47,7 +47,7 @@ public class NewClassTreeImpl extends AssessableExpressionTree implements NewCla
   private SyntaxToken newKeyword;
   @Nullable
   private TypeArguments typeArguments;
-  private TypeTree identifier;
+  private final TypeTree identifier;
   private final Arguments arguments;
   @Nullable
   private final ClassTree classBody;

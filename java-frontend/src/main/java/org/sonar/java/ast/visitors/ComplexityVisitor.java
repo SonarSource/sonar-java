@@ -35,7 +35,7 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 public class ComplexityVisitor extends BaseTreeVisitor {
 
-  private List<Tree> blame = new ArrayList<>();
+  private final List<Tree> blame = new ArrayList<>();
   private Tree root;
   private static final String DEFAULT_KEYWORD = JavaKeyword.DEFAULT.getValue();
 

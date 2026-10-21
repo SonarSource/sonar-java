@@ -113,7 +113,7 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
 
   private class DeprecatedTypeVisitor extends BaseTreeVisitor {
 
-    private Deque<Set<String>> overridingMethodTypes = new ArrayDeque<>();
+    private final Deque<Set<String>> overridingMethodTypes = new ArrayDeque<>();
 
     @Override
     public void visitClass(ClassTree tree) {

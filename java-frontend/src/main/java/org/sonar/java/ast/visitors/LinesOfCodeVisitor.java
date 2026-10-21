@@ -28,7 +28,7 @@ import java.util.Set;
 
 public class LinesOfCodeVisitor extends SubscriptionVisitor{
 
-  private Set<Integer> lines = new HashSet<>();
+  private final Set<Integer> lines = new HashSet<>();
 
   public int linesOfCode(Tree tree) {
     lines.clear();

@@ -42,7 +42,7 @@ import java.util.Objects;
 public class VariableTreeImpl extends JavaTree implements VariableTree {
   private ModifiersTree modifiers;
   private TypeTree type;
-  private IdentifierTree simpleName;
+  private final IdentifierTree simpleName;
   @Nullable
   private SyntaxToken equalToken;
   @Nullable

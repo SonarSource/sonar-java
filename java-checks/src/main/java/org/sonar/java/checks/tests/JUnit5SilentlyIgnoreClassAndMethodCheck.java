@@ -130,7 +130,7 @@ public class JUnit5SilentlyIgnoreClassAndMethodCheck extends IssuableSubscriptio
   }
 
   static final class ReturnStatementVisitor extends BaseTreeVisitor {
-    private List<ReturnStatementTree> returnStatementTrees = new ArrayList<>();
+    private final List<ReturnStatementTree> returnStatementTrees = new ArrayList<>();
 
     ReturnStatementVisitor(MethodTree methodTree) {
       scan(methodTree);

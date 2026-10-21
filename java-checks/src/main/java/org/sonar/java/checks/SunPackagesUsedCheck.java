@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S1191")
 public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private List<Tree> reportedTrees = new ArrayList<>();
+  private final List<Tree> reportedTrees = new ArrayList<>();
 
   private static final String DEFAULT_EXCLUDE = "";
 
