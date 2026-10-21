@@ -309,7 +309,7 @@ class Expectations {
     // more than 1 flow with same lines, let's check messages
     List<String> actualMessages = actual.stream().map(AnalyzerMessage::getMessage).toList();
     Optional<String> foundFlow = expectedFlows.stream().filter(flowId -> hasSameMessages(flowId, actualMessages)).findFirst();
-    foundFlow.ifPresent(flowId -> seenFlowIds.add(flowId));
+    foundFlow.ifPresent(seenFlowIds::add);
     return foundFlow;
   }
 
