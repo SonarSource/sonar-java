@@ -29,9 +29,9 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -107,29 +107,41 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
   }
 
   /**
-   * Count the number of query in the given expression. The method will reconstruct the string, if created in multiples steps.
-   * During the process, we are looking for closest reassignment of a variable. We will look for any reassignment before
-   * the first token of the argument "startingPointForReassignment". It is used to avoid infinite recursion in case the variable
-   * is reassigned and read in the same statement.
+   * Count the number of query parameters in the given expression. The method will reconstruct the string, if created in
+   * multiples steps. During the process, we are looking for closest reassignment of a variable. We will look for any
+   * reassignment before the first token of the argument "startingPointForReassignment". It is used to avoid infinite
+   * recursion in case the variable is reassigned and read in the same statement.
+   * Returns {@code null} as soon as any part of the query can not be resolved: an unresolved fragment may itself hold
+   * parameter placeholders, so the total count is unknown rather than zero.
    */
   @CheckForNull
   private static Integer getNumberQuery(ExpressionTree expression, Tree startingPointForReassignment) {
     ExpressionTree expr = ExpressionUtils.skipParentheses(expression);
+    Integer constantCount = countQuery(expr);
+    if (constantCount != null) {
+      return constantCount;
+    }
     if (expr.is(Tree.Kind.IDENTIFIER)) {
       return handleVariableUsedAsQuery((IdentifierTree) expr, startingPointForReassignment);
-    } else if (expr.is(Tree.Kind.PLUS)) {
+    }
+    if (expr.is(Tree.Kind.PLUS)) {
       return handleStringConcatenation((BinaryExpressionTree) expr, startingPointForReassignment);
     }
-    return countQuery(expr);
+    if (expr.is(Tree.Kind.CONDITIONAL_EXPRESSION)) {
+      return handleConditionalExpression((ConditionalExpressionTree) expr, startingPointForReassignment);
+    }
+    return null;
   }
 
+  @CheckForNull
   private static Integer handleVariableUsedAsQuery(IdentifierTree identifier, Tree startingPointForReassignment) {
     ExpressionTree lastAssignmentExpr = ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(startingPointForReassignment, identifier.symbol());
     if (lastAssignmentExpr != null) {
       Tree lastAssignment = lastAssignmentExpr.parent();
       if (lastAssignment.is(Tree.Kind.PLUS_ASSIGNMENT)) {
-        return zeroIfNull(getNumberQuery(lastAssignmentExpr, lastAssignment))
-          + zeroIfNull(getNumberQuery(((AssignmentExpressionTree) lastAssignment).variable(), lastAssignment));
+        return sumOrNull(
+          getNumberQuery(((AssignmentExpressionTree) lastAssignment).variable(), lastAssignment),
+          getNumberQuery(lastAssignmentExpr, lastAssignment));
       }
       // If the current assignment contains the identifier, we have to update the starting point for reassignment to avoid infinite recursion.
       return getNumberQuery(lastAssignmentExpr, lastAssignment);
@@ -137,18 +149,39 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
     return null;
   }
 
+  @CheckForNull
   private static Integer handleStringConcatenation(BinaryExpressionTree expr, Tree startingPointForReassignment) {
-    Integer left = getNumberQuery(expr.leftOperand(), startingPointForReassignment);
-    Integer right = getNumberQuery(expr.rightOperand(), startingPointForReassignment);
-    return (left == null && right == null) ? null : (zeroIfNull(left) + zeroIfNull(right));
+    return sumOrNull(
+      getNumberQuery(expr.leftOperand(), startingPointForReassignment),
+      getNumberQuery(expr.rightOperand(), startingPointForReassignment));
   }
 
-  private static int zeroIfNull(@Nullable Integer intValue) {
-    return intValue == null ? 0 : intValue;
+  /**
+   * A conditional expression contributes as many placeholders as its most parameterized branch: reporting against the
+   * smaller branch would flag indices which are valid whenever the other branch is taken.
+   */
+  @CheckForNull
+  private static Integer handleConditionalExpression(ConditionalExpressionTree expr, Tree startingPointForReassignment) {
+    Integer trueBranch = getNumberQuery(expr.trueExpression(), startingPointForReassignment);
+    Integer falseBranch = getNumberQuery(expr.falseExpression(), startingPointForReassignment);
+    if (trueBranch == null || falseBranch == null) {
+      return null;
+    }
+    return Math.max(trueBranch, falseBranch);
+  }
+
+  @CheckForNull
+  private static Integer sumOrNull(@Nullable Integer left, @Nullable Integer right) {
+    if (left == null || right == null) {
+      return null;
+    }
+    return left + right;
   }
 
   @CheckForNull
   private static Integer countQuery(ExpressionTree expression) {
-    return expression.is(Tree.Kind.STRING_LITERAL) ? StringUtils.countMatches(((LiteralTree) expression).value(), "?") : null;
+    return expression.asConstant(String.class)
+      .map(query -> StringUtils.countMatches(query, "?"))
+      .orElse(null);
   }
 }
