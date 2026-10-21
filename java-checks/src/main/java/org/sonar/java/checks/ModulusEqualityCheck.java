@@ -39,7 +39,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S2197")
 public class ModulusEqualityCheck extends IssuableSubscriptionVisitor {
 
-  private Set<Symbol> methodParams = new HashSet<>();
+  private final Set<Symbol> methodParams = new HashSet<>();
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {

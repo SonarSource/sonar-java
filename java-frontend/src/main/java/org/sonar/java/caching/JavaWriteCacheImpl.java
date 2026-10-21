@@ -24,7 +24,7 @@ import java.util.Objects;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 
 public class JavaWriteCacheImpl implements JavaWriteCache {
-  private WriteCache writeCache;
+  private final WriteCache writeCache;
 
   public JavaWriteCacheImpl(WriteCache writeCache) {
     this.writeCache = writeCache;

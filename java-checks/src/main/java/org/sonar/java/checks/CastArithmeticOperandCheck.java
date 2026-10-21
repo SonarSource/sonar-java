@@ -156,7 +156,7 @@ public class CastArithmeticOperandCheck extends BaseTreeVisitor implements JavaF
   }
 
   private class ReturnStatementVisitor extends BaseTreeVisitor {
-    private Type returnType;
+    private final Type returnType;
 
     public ReturnStatementVisitor(Type returnType) {
       this.returnType = returnType;

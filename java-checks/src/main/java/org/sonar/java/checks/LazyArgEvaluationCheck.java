@@ -130,7 +130,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
   }
 
   private JavaFileScannerContext context;
-  private Deque<Tree> treeStack = new ArrayDeque<>();
+  private final Deque<Tree> treeStack = new ArrayDeque<>();
   private boolean foundReturnStatementInsideLevelTest = false;
 
   @Override

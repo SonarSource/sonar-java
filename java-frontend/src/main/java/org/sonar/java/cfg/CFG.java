@@ -131,8 +131,8 @@ public class CFG implements ControlFlowGraph {
   }
 
   private String pendingLabel = null;
-  private Map<String, Block> labelsBreakTarget = new HashMap<>();
-  private Map<String, Block> labelsContinueTarget = new HashMap<>();
+  private final Map<String, Block> labelsBreakTarget = new HashMap<>();
+  private final Map<String, Block> labelsContinueTarget = new HashMap<>();
 
   private CFG(List<? extends Tree> trees, @Nullable MethodTree tree) {
     if (tree != null) {

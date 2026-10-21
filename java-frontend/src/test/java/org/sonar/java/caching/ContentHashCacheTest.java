@@ -63,7 +63,7 @@ class ContentHashCacheTest {
   @Test
   void hasSameHashCached_returns_false_when_content_hash_file_is_not_in_read_cache_with_proper_logging() {
     String cacheMissMessage = "Could not find key java:contentHash:MD5:" + inputFile.key() + " in the cache";
-    String[] traceMessages = new String[]{
+    String[] traceMessages = {
       "Reading cache for the file " + inputFile.key(),
       "Writing to the cache for file " + inputFile.key()
     };

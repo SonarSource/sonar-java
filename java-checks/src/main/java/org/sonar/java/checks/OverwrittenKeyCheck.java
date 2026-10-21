@@ -106,7 +106,7 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
     private final Tree keyTree;
     private final Object key;
     private final boolean isArray;
-    private ExpressionTree rhs;
+    private final ExpressionTree rhs;
 
     private CollectionAndKey(Symbol collection, Tree keyTree, Object key, boolean isArray, @Nullable ExpressionTree expression) {
       this.collection = collection;

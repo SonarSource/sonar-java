@@ -33,10 +33,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
 
-  private Set<String> classNames = new HashSet<>();
-  private Deque<String> currentClassKey = new LinkedList<>();
-  private Deque<Tree> parent = new LinkedList<>();
-  private Deque<Integer> anonymousInnerClassCounter = new LinkedList<>();
+  private final Set<String> classNames = new HashSet<>();
+  private final Deque<String> currentClassKey = new LinkedList<>();
+  private final Deque<Tree> parent = new LinkedList<>();
+  private final Deque<Integer> anonymousInnerClassCounter = new LinkedList<>();
   private String currentPackage;
 
   public Set<String> getClassNames() {

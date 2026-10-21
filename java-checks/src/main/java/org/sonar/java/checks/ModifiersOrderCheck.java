@@ -43,7 +43,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @DeprecatedRuleKey(ruleKey = "ModifiersOrderCheck", repositoryKey = "squid")
 @Rule(key = "S1124")
 public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
-  private Set<Tree> alreadyReported = new HashSet<>();
+  private final Set<Tree> alreadyReported = new HashSet<>();
 
   @Override
   public void setContext(JavaFileScannerContext context) {

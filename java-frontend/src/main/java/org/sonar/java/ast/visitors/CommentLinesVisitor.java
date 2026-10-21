@@ -32,9 +32,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public class CommentLinesVisitor extends SubscriptionVisitor {
 
-  private Set<Integer> comments = new HashSet<>();
-  private Set<Integer> noSonarLines = new HashSet<>();
-  private Map<Path, Set<SyntaxTrivia>> syntaxTrivia = new HashMap<>();
+  private final Set<Integer> comments = new HashSet<>();
+  private final Set<Integer> noSonarLines = new HashSet<>();
+  private final Map<Path, Set<SyntaxTrivia>> syntaxTrivia = new HashMap<>();
   private boolean seenFirstToken;
 
   @Override

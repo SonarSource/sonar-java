@@ -28,7 +28,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 
 public class MethodMatchersList implements MethodMatchers {
 
-  private List<? extends MethodMatchers> matchers;
+  private final List<? extends MethodMatchers> matchers;
 
   public MethodMatchersList(List<? extends MethodMatchers> matchers) {
     this.matchers = new ArrayList<>(matchers);

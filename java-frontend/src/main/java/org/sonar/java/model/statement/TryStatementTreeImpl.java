@@ -32,16 +32,16 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
 
-  private InternalSyntaxToken tryToken;
+  private final InternalSyntaxToken tryToken;
 
   @Nullable
   private InternalSyntaxToken openParenToken;
-  private ListTree<Tree> resources;
+  private final ListTree<Tree> resources;
   @Nullable
   private InternalSyntaxToken closeParenToken;
 
-  private BlockTree block;
-  private List<CatchTree> catches;
+  private final BlockTree block;
+  private final List<CatchTree> catches;
 
   @Nullable
   private final InternalSyntaxToken finallyKeyword;

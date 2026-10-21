@@ -43,7 +43,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S2234")
 public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
 
-  private Map<Symbol, ParametersList> parametersByMethod = new HashMap<>();
+  private final Map<Symbol, ParametersList> parametersByMethod = new HashMap<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -124,9 +124,9 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
 
   private static class ParametersList {
 
-    private List<String> parameterNames;
-    private List<Type> parameterTypes;
-    private List<VariableTree> parameters;
+    private final List<String> parameterNames;
+    private final List<Type> parameterTypes;
+    private final List<VariableTree> parameters;
 
     public ParametersList(MethodTree methodTree) {
       parameterNames = new ArrayList<>();

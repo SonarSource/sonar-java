@@ -26,7 +26,7 @@ import java.util.Set;
  */
 public class UnitTestIndex {
 
-  private Map<String, UnitTestClassReport> indexByClassname;
+  private final Map<String, UnitTestClassReport> indexByClassname;
 
   public UnitTestIndex() {
     this.indexByClassname = new HashMap<>();

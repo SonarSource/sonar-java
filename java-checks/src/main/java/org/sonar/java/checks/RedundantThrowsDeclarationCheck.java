@@ -215,7 +215,7 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
   }
 
   private static class ThrownExceptionVisitor extends BaseTreeVisitor {
-    private Set<Type> thrownExceptions = new HashSet<>();
+    private final Set<Type> thrownExceptions = new HashSet<>();
     private boolean visitedUnknown = false;
     private boolean visitedOtherConstructor = false;
     private final MethodTree methodTree;

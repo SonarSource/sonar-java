@@ -80,7 +80,7 @@ public class XxeActiveMQCheck extends AbstractMethodDetection {
     private boolean hasTrustAllPackages = false;
     private boolean callArgumentsOfSetTrustedPackages = false;
 
-    private Symbol variable;
+    private final Symbol variable;
 
     MethodBodyVisitor(@Nullable Symbol variable) {
       this.variable = variable;

@@ -107,7 +107,7 @@ class Expectations {
     FLOWS(multiValueAttribute(Function.identity())),
     QUICK_FIXES(multiValueAttribute(Function.identity()));
 
-    private Function<String, ?> setter;
+    private final Function<String, ?> setter;
     private Function<Object, Object> getter = Function.identity();
 
     IssueAttribute(Function<String, ?> setter) {
@@ -247,7 +247,7 @@ class Expectations {
   private boolean collectQuickFixes = false;
   private final Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes = new HashMap<>();
 
-  private Set<String> seenFlowIds = new HashSet<>();
+  private final Set<String> seenFlowIds = new HashSet<>();
 
   Expectations() {
   }

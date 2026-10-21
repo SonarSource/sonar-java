@@ -78,8 +78,8 @@ public class JavaCheckVerifier implements CheckVerifier {
 
   private List<JavaFileScanner> checks = null;
   private List<File> classpath = null;
-  private List<String> jarsToAdd = new ArrayList<>();
-  private List<String> jarsToRemove = new ArrayList<>();
+  private final List<String> jarsToAdd = new ArrayList<>();
+  private final List<String> jarsToRemove = new ArrayList<>();
   @VisibleForTesting
   List<File> actualClasspath = null;
   private JavaVersion javaVersion = null;

@@ -62,8 +62,8 @@ public class ExpectedExceptionCheck extends AbstractMethodDetection {
 
   private static class AssertionCollector extends BaseTreeVisitor {
 
-    private int collectAfterLine;
-    private List<Location> assertions = new ArrayList<>();
+    private final int collectAfterLine;
+    private final List<Location> assertions = new ArrayList<>();
 
     public AssertionCollector(int collectAfterLine) {
       this.collectAfterLine = collectAfterLine;

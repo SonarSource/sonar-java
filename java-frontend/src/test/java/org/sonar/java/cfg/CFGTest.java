@@ -167,8 +167,8 @@ class CFGTest {
 
   private static class BlockChecker {
 
-    private int[] successorIDs = new int[] {};
-    private int[] exceptionsIDs = new int[] {};
+    private int[] successorIDs = {};
+    private int[] exceptionsIDs = {};
     private final List<ElementChecker> checkers = new ArrayList<>();
     private TerminatorChecker terminatorChecker;
     private int ifTrue = -1;

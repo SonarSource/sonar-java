@@ -33,9 +33,9 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 public class MemberSelectExpressionTreeImpl extends AssessableExpressionTree implements MemberSelectExpressionTree, JavaTree.AnnotatedTypeTree {
 
-  private ExpressionTree expression;
+  private final ExpressionTree expression;
 
-  private InternalSyntaxToken dotToken;
+  private final InternalSyntaxToken dotToken;
   private final IdentifierTree identifier;
   private List<AnnotationTree> annotations;
 

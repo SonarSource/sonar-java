@@ -24,9 +24,9 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 
 public class InternalCacheContext implements CacheContext {
-  private boolean isEnabled;
-  private JavaReadCache readCache;
-  private JavaWriteCache writeCache;
+  private final boolean isEnabled;
+  private final JavaReadCache readCache;
+  private final JavaWriteCache writeCache;
 
   public InternalCacheContext(boolean isEnabled, @Nullable JavaReadCache readCache, @Nullable JavaWriteCache writeCache) {
     this.isEnabled = isEnabled;
