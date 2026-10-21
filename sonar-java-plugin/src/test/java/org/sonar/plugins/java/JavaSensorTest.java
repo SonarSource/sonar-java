@@ -561,7 +561,7 @@ class JavaSensorTest {
     DefaultJavaResourceLocator resourceLocator = createDefaultJavaResourceLocator(context.config(), fs);
 
     CustomFileScannerHook hook = new CustomFileScannerHook();
-    CheckRegistrar[] checkRegistrars = new CheckRegistrar[] {new CustomRegistrar(), hook};
+    CheckRegistrar[] checkRegistrars = {new CustomRegistrar(), hook};
 
     ActiveRulesBuilder activeRulesBuilder = new ActiveRulesBuilder();
     GeneratedCheckList.getChecks().stream()
@@ -620,7 +620,7 @@ class JavaSensorTest {
     ClasspathForMain javaClasspath = new ClasspathForMain(context.config(), fs);
     DefaultJavaResourceLocator resourceLocator = createDefaultJavaResourceLocator(context.config(), fs);
 
-    CheckRegistrar[] checkRegistrars = new CheckRegistrar[] {new CustomRegistrar()};
+    CheckRegistrar[] checkRegistrars = {new CustomRegistrar()};
 
     ActiveRulesBuilder activeRulesBuilder = new ActiveRulesBuilder();
 

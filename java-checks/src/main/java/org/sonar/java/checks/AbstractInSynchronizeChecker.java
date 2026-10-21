@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public abstract class AbstractInSynchronizeChecker extends AbstractMethodDetection {
-  private Deque<Boolean> withinSynchronizedBlock = new LinkedList<>();
+  private final Deque<Boolean> withinSynchronizedBlock = new LinkedList<>();
 
   @Override
   public void setContext(JavaFileScannerContext context) {

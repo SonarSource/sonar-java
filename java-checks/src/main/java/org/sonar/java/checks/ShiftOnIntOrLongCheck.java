@@ -42,7 +42,7 @@ import java.util.List;
 @Rule(key = "S2183")
 public class ShiftOnIntOrLongCheck extends IssuableSubscriptionVisitor {
 
-  private List<Tree> shiftTrees = new ArrayList<>();
+  private final List<Tree> shiftTrees = new ArrayList<>();
 
   @Override
   public List<Kind> nodesToVisit() {

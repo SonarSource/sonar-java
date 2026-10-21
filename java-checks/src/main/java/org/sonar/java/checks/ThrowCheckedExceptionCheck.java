@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 @Rule(key = "S1162")
 public class ThrowCheckedExceptionCheck extends IssuableSubscriptionVisitor {
 
-  private Deque<MethodTree> methods = new LinkedList<>();
+  private final Deque<MethodTree> methods = new LinkedList<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

@@ -42,7 +42,7 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-  private Deque<Tree> loopLevel = new LinkedList<>();
+  private final Deque<Tree> loopLevel = new LinkedList<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

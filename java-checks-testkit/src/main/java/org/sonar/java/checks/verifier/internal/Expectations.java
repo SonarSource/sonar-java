@@ -107,7 +107,7 @@ class Expectations {
     FLOWS(multiValueAttribute(Function.identity())),
     QUICK_FIXES(multiValueAttribute(Function.identity()));
 
-    private Function<String, ?> setter;
+    private final Function<String, ?> setter;
     private Function<Object, Object> getter = Function.identity();
 
     IssueAttribute(Function<String, ?> setter) {
@@ -247,7 +247,7 @@ class Expectations {
   private boolean collectQuickFixes = false;
   private final Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes = new HashMap<>();
 
-  private Set<String> seenFlowIds = new HashSet<>();
+  private final Set<String> seenFlowIds = new HashSet<>();
 
   Expectations() {
   }
@@ -309,7 +309,7 @@ class Expectations {
     // more than 1 flow with same lines, let's check messages
     List<String> actualMessages = actual.stream().map(AnalyzerMessage::getMessage).toList();
     Optional<String> foundFlow = expectedFlows.stream().filter(flowId -> hasSameMessages(flowId, actualMessages)).findFirst();
-    foundFlow.ifPresent(flowId -> seenFlowIds.add(flowId));
+    foundFlow.ifPresent(seenFlowIds::add);
     return foundFlow;
   }
 

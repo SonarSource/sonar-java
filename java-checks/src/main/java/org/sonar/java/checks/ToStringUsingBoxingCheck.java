@@ -37,7 +37,7 @@ import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 @Rule(key = "S1158")
 public class ToStringUsingBoxingCheck extends IssuableSubscriptionVisitor {
 
-  private static final String[] PRIMITIVE_WRAPPERS = new String[]{
+  private static final String[] PRIMITIVE_WRAPPERS = {
     "java.lang.Byte",
     "java.lang.Character",
     "java.lang.Short",

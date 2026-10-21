@@ -32,8 +32,8 @@ import java.util.Collections;
 
 public class MethodReferenceTreeImpl extends AssessableExpressionTree implements MethodReferenceTree {
 
-  private Tree expression;
-  private SyntaxToken doubleColon;
+  private final Tree expression;
+  private final SyntaxToken doubleColon;
   private IdentifierTree method;
   private TypeArguments typeArgument;
 

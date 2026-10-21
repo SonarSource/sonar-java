@@ -38,8 +38,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-  private Deque<Symbol> outerClasses = new LinkedList<>();
-  private Deque<Boolean> atLeastOneReference = new LinkedList<>();
+  private final Deque<Symbol> outerClasses = new LinkedList<>();
+  private final Deque<Boolean> atLeastOneReference = new LinkedList<>();
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {

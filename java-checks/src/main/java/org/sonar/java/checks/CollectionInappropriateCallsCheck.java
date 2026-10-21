@@ -176,7 +176,7 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
     private final String methodOwnerType;
     private final MethodMatchers methodMatcher;
     private final int argumentIndex;
-    private boolean argumentIsACollection;
+    private final boolean argumentIsACollection;
     private final int parametrizedTypeIndex;
 
     private TypeChecker(String methodOwnerType, MethodMatchers methodMatcher, int argumentIndex, boolean argumentIsACollection, int parametrizedTypeIndex) {

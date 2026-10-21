@@ -76,7 +76,7 @@ class FileLinesVisitorTest {
   void executable_lines_should_be_counted() {
     FileLinesContext context = mock(FileLinesContext.class);
     checkLines("ExecutableLines.java", context);
-    int[] expected = new int[] {0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1,
+    int[] expected = {0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1,
       0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0};
     assertThat(expected).hasSize(56);
     for (int i = 0; i < expected.length; i++) {

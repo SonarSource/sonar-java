@@ -37,7 +37,7 @@ public class DoublePrefixOperatorCheck extends IssuableSubscriptionVisitor {
     return Arrays.asList(Tree.Kind.LOGICAL_COMPLEMENT, Tree.Kind.BITWISE_COMPLEMENT, Tree.Kind.UNARY_PLUS, Tree.Kind.UNARY_MINUS);
   }
 
-  private Set<ExpressionTree> prefixSet = new HashSet<>();
+  private final Set<ExpressionTree> prefixSet = new HashSet<>();
 
   @Override
   public void setContext(JavaFileScannerContext context) {

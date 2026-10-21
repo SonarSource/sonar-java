@@ -192,7 +192,7 @@ public class VerifiedServerHostnamesCheck extends IssuableSubscriptionVisitor {
 
   private static class MethodBodyApacheVisitor extends BaseTreeVisitor {
     private boolean isSecured = false;
-    private Symbol variable;
+    private final Symbol variable;
 
     private static final MethodMatchers SET_SSL_CHECK_SERVER_ID = MethodMatchers.create()
       .ofSubTypes(APACHE_EMAIL)
@@ -215,7 +215,7 @@ public class VerifiedServerHostnamesCheck extends IssuableSubscriptionVisitor {
 
   private static class MethodBodyHashtableVisitor extends BaseTreeVisitor {
     private boolean isSecured = false;
-    private Symbol variable;
+    private final Symbol variable;
 
     MethodBodyHashtableVisitor(@Nullable Symbol variable) {
       this.variable = variable;

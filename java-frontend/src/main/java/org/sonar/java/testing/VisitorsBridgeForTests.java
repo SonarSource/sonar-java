@@ -39,7 +39,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 public class VisitorsBridgeForTests extends VisitorsBridge {
 
-  private List<JavaFileScannerContextForTests> testContexts = new ArrayList<>();
+  private final List<JavaFileScannerContextForTests> testContexts = new ArrayList<>();
   private JavaFileScannerContextForTests moduleContext;
   private final boolean enableSemantic;
 

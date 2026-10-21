@@ -73,7 +73,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     Tree.Kind.UNSIGNED_RIGHT_SHIFT
     );
 
-  private static final Tree.Kind[] CONDITIONAL_EXCLUSIONS = new Tree.Kind[]{
+  private static final Tree.Kind[] CONDITIONAL_EXCLUSIONS = {
       Tree.Kind.METHOD_INVOCATION, Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT,
       Tree.Kind.PARENTHESIZED_EXPRESSION, Tree.Kind.TYPE_CAST, Tree.Kind.NEW_CLASS,
       Tree.Kind.ARRAY_ACCESS_EXPRESSION, Tree.Kind.NEW_ARRAY, Tree.Kind.METHOD_REFERENCE
@@ -90,8 +90,8 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   }
 
   private JavaFileScannerContext context;
-  private Deque<Tree.Kind> stack = new LinkedList<>();
-  private Set<Integer> reportedLines = new HashSet<>();
+  private final Deque<Tree.Kind> stack = new LinkedList<>();
+  private final Set<Integer> reportedLines = new HashSet<>();
 
   private static void put(Iterable<Tree.Kind> firstSet, Iterable<Tree.Kind> secondSet) {
     for (Tree.Kind first : firstSet) {
