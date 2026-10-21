@@ -26,6 +26,8 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.semantic.Type.Primitives;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -117,6 +119,9 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
   @CheckForNull
   private static Integer getNumberQuery(ExpressionTree expression, Tree startingPointForReassignment) {
     ExpressionTree expr = ExpressionUtils.skipParentheses(expression);
+    if (cannotHoldPlaceholder(expr)) {
+      return 0;
+    }
     Integer constantCount = countQuery(expr);
     if (constantCount != null) {
       return constantCount;
@@ -168,6 +173,16 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
       return null;
     }
     return Math.max(trueBranch, falseBranch);
+  }
+
+  /**
+   * Numbers and booleans contribute no placeholder whatever their runtime value, so concatenating one keeps the count
+   * of the surrounding query exact. Characters are excluded: '?' is a valid one.
+   */
+  private static boolean cannotHoldPlaceholder(ExpressionTree expression) {
+    Type type = expression.symbolType();
+    Type primitiveType = type.isPrimitiveWrapper() ? type.primitiveType() : type;
+    return primitiveType != null && primitiveType.isPrimitive() && !primitiveType.isPrimitive(Primitives.CHAR);
   }
 
   @CheckForNull

@@ -345,6 +345,25 @@ abstract class PreparedStatementAndResultSetCheckSample {
     }
   }
 
+  void nonConstantNumericFragment(Connection con, int limit, Integer offset) throws SQLException {
+    String sql = "SELECT * FROM t WHERE id = ? LIMIT " + limit + " OFFSET " + offset;
+
+    PreparedStatement ps = con.prepareStatement(sql);
+    ps.setInt(1, 1); // Compliant
+    // A number concatenated into the query can not add a placeholder, so the count stays exact.
+    ps.setInt(2, 2); // Noncompliant
+  }
+
+  void nonConstantNumericFragmentFromMethod(Connection con) throws SQLException {
+    PreparedStatement ps = con.prepareStatement("SELECT * FROM t WHERE id = ? LIMIT " + getIntValue());
+    ps.setInt(2, 2); // Noncompliant
+  }
+
+  void nonConstantCharFragment(Connection con, char separator) throws SQLException {
+    PreparedStatement ps = con.prepareStatement("SELECT * FROM t WHERE id = ? AND flag = " + separator);
+    ps.setInt(2, 2); // Compliant - the character may be '?'
+  }
+
   void constantsFromAnotherClass(Connection con) throws SQLException {
     String sql = SqlConstants.SELECT;
     sql += SqlConstants.AND_CLAUSE;
