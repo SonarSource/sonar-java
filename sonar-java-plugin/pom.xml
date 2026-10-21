@@ -30,7 +30,7 @@
 
   <properties>
     <!-- FIXME use a released version -->
-    <version.sonar-packaging.plugin>2.1.0.3074</version.sonar-packaging.plugin>
+    <version.sonar-packaging.plugin>2.1.0.3075</version.sonar-packaging.plugin>
   </properties>
 
   <dependencies>
@@ -160,6 +160,28 @@
     </resources>
     <plugins>
       <plugin>
+        <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
+        <artifactId>sonar-packaging-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-sonar-plugin</id> <!-- The default goal from the lifecycle -->
+            <configuration>
+              <pluginName>Java Code Quality and Security</pluginName>
+              <skipDependenciesPackaging>true</skipDependenciesPackaging>
+              <pluginClass>org.sonar.plugins.java.JavaPlugin</pluginClass>
+              <requiredForLanguages>java,jsp,kotlin</requiredForLanguages>
+              <sonarLintSupported>true</sonarLintSupported>
+              <jreMinVersion>21</jreMinVersion>
+              <archive>
+                <manifestEntries>
+                  <Implementation-Version>${project.version}</Implementation-Version>
+                </manifestEntries>
+              </archive>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <executions>
@@ -253,19 +275,6 @@
       <plugin>
         <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
         <artifactId>sonar-packaging-maven-plugin</artifactId>
-        <configuration>
-          <pluginName>Java Code Quality and Security</pluginName>
-          <skipDependenciesPackaging>true</skipDependenciesPackaging>
-          <pluginClass>org.sonar.plugins.java.JavaPlugin</pluginClass>
-          <requiredForLanguages>java,jsp,kotlin</requiredForLanguages>
-          <sonarLintSupported>true</sonarLintSupported>
-          <jreMinVersion>21</jreMinVersion>
-          <archive>
-            <manifestEntries>
-              <Implementation-Version>${project.version}</Implementation-Version>
-            </manifestEntries>
-          </archive>
-        </configuration>
         <executions>
           <execution>
             <id>build-zip</id>
