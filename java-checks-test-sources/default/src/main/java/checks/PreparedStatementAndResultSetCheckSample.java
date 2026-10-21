@@ -155,10 +155,10 @@ abstract class PreparedStatementAndResultSetCheckSample {
       updateString = "update " + param + ".COFFEES set SALES = ?";
 
       PreparedStatement testParam = con.prepareStatement(updateString);
-      testParam.setInt(3, 0); // Noncompliant
+      testParam.setInt(3, 0); // Compliant - "param" is unknown and may itself contain placeholders
 
       testParam = con.prepareStatement(param + " update");
-      testParam.setInt(3, 0); // Noncompliant
+      testParam.setInt(3, 0); // Compliant - "param" is unknown and may itself contain placeholders
 
       testParam = con.prepareStatement(param + param);
       testParam.setInt(3, 0); // Compliant
@@ -256,5 +256,121 @@ abstract class PreparedStatementAndResultSetCheckSample {
     PreparedStatement statement = con.prepareStatement(bothParts);
     statement.setString(3, password); // compliant
     statement.setString(4, password); // Noncompliant
+  }
+
+  static class SqlConstants {
+    static final String SELECT = "SELECT * FROM t WHERE a = ?";
+    static final String AND_CLAUSE = " AND b = ?";
+  }
+
+  private static final String COUNT_WRAPPER_BEGIN = "select count(*) from (";
+  private static final String COUNT_WRAPPER_END = ")";
+
+  void unknownMethodCallInConcatenation(Connection con) throws SQLException {
+    String sql = getQuery();
+    sql = COUNT_WRAPPER_BEGIN + sql + COUNT_WRAPPER_END;
+
+    PreparedStatement ps = con.prepareStatement(sql);
+    ps.setInt(1, 1); // Compliant - part of the query is unknown
+  }
+
+  void unknownMethodCallInPlusAssignment(Connection con) throws SQLException {
+    String sql = "select * from t where ";
+    sql += getQuery();
+
+    PreparedStatement ps = con.prepareStatement(sql);
+    ps.setInt(1, 1); // Compliant - part of the query is unknown
+  }
+
+  void ternaryInPlusAssignment(Connection con, boolean isRecall) throws SQLException {
+    String sql = "SELECT * FROM t WHERE ";
+    sql += isRecall ? "LENDER_REF_ID = ? AND SENDER_ID = ?" : "BORROWER_REF_ID = ? AND RECIPIENT_ID = ?";
+
+    PreparedStatement ps = con.prepareStatement(sql);
+    ps.setString(1, "a"); // Compliant
+    ps.setLong(2, 1L); // Compliant
+    ps.setLong(3, 1L); // Noncompliant
+  }
+
+  void ternaryWithDifferentBranches(Connection con, boolean withImage) throws SQLException {
+    String sql = "INSERT INTO Product (a, b" + (withImage ? ", c" : "") + ") VALUES (?, ?" + (withImage ? ", ?" : "") + ")";
+
+    PreparedStatement ps = con.prepareStatement(sql);
+    ps.setString(1, "a"); // Compliant
+    ps.setString(2, "b"); // Compliant
+    ps.setString(3, "c"); // Compliant - the third parameter exists when the condition holds
+    ps.setString(4, "d"); // Noncompliant
+  }
+
+  void conditionalClauseGuardedBySameCondition(Connection con, String status) throws SQLException {
+    String sql = SqlConstants.SELECT
+      + (status != null ? " AND status = ?" : "")
+      + " ORDER BY id";
+
+    PreparedStatement ps = con.prepareStatement(sql);
+    ps.setString(1, "a"); // Compliant
+    if (status != null) {
+      ps.setString(2, status); // Compliant - the clause holding the second placeholder is added under the same condition
+    }
+    ps.setString(3, "c"); // Noncompliant
+  }
+
+  void ternaryWithNonConstantFragment(Connection con, String tenant, int maxTurns) throws SQLException {
+    String sql = "SELECT * FROM m WHERE m.tenant = ? AND m.session_id = ? "
+      + (maxTurns > 0 ? "AND t.id IN (SELECT id FROM t WHERE tenant=? AND session=? LIMIT " + maxTurns + ") " : "")
+      + "ORDER BY m.seq";
+
+    PreparedStatement ps = con.prepareStatement(sql);
+    ps.setString(1, tenant); // Compliant
+    if (maxTurns > 0) {
+      ps.setString(3, tenant); // Compliant - part of the query is unknown
+      ps.setString(4, tenant); // Compliant - part of the query is unknown
+    }
+  }
+
+  void assignedInBothBranches(Connection con, boolean hasPassword) throws SQLException {
+    String sql;
+    if (hasPassword) {
+      sql = "UPDATE Account SET email = ?, name = ?, password = ? WHERE id = ?";
+    } else {
+      sql = "UPDATE Account SET email = ?, name = ? WHERE id = ?";
+    }
+
+    PreparedStatement ps = con.prepareStatement(sql);
+    ps.setString(1, "a"); // Compliant
+    if (hasPassword) {
+      // FALSE POSITIVE: only the closest assignment is resolved, while the branch taken here has 4 parameters.
+      // Can't be fixed without dataflow analysis.
+      ps.setString(4, "b"); // Noncompliant
+    }
+  }
+
+  void nonConstantNumericFragment(Connection con, int limit, Integer offset) throws SQLException {
+    String sql = "SELECT * FROM t WHERE id = ? LIMIT " + limit + " OFFSET " + offset;
+
+    PreparedStatement ps = con.prepareStatement(sql);
+    ps.setInt(1, 1); // Compliant
+    // A number concatenated into the query can not add a placeholder, so the count stays exact.
+    ps.setInt(2, 2); // Noncompliant
+  }
+
+  void nonConstantNumericFragmentFromMethod(Connection con) throws SQLException {
+    PreparedStatement ps = con.prepareStatement("SELECT * FROM t WHERE id = ? LIMIT " + getIntValue());
+    ps.setInt(2, 2); // Noncompliant
+  }
+
+  void nonConstantCharFragment(Connection con, char separator) throws SQLException {
+    PreparedStatement ps = con.prepareStatement("SELECT * FROM t WHERE id = ? AND flag = " + separator);
+    ps.setInt(2, 2); // Compliant - the character may be '?'
+  }
+
+  void constantsFromAnotherClass(Connection con) throws SQLException {
+    String sql = SqlConstants.SELECT;
+    sql += SqlConstants.AND_CLAUSE;
+
+    PreparedStatement ps = con.prepareStatement(sql);
+    ps.setString(1, "a"); // Compliant
+    ps.setString(2, "b"); // Compliant
+    ps.setString(3, "c"); // Noncompliant
   }
 }
