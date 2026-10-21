@@ -87,7 +87,7 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
   };
 
   private JavaFileScannerContext context;
-  private Deque<MethodReference> methodReferences = new LinkedList<>();
+  private final Deque<MethodReference> methodReferences = new LinkedList<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

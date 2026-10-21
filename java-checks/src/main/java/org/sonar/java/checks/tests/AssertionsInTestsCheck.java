@@ -246,7 +246,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   }
 
   private class AssertionVisitor extends AbstractAssertionVisitor {
-    private MethodMatchers customMethodsMatcher;
+    private final MethodMatchers customMethodsMatcher;
 
     private AssertionVisitor(MethodMatchers customMethodsMatcher) {
       this.customMethodsMatcher = customMethodsMatcher;

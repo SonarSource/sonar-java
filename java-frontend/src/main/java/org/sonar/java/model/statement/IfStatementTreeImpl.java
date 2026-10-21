@@ -32,11 +32,11 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
 
-  private InternalSyntaxToken ifKeyword;
-  private InternalSyntaxToken openParenToken;
-  private ExpressionTree condition;
-  private InternalSyntaxToken closeParenToken;
-  private StatementTree thenStatement;
+  private final InternalSyntaxToken ifKeyword;
+  private final InternalSyntaxToken openParenToken;
+  private final ExpressionTree condition;
+  private final InternalSyntaxToken closeParenToken;
+  private final StatementTree thenStatement;
   @Nullable
   private final InternalSyntaxToken elseKeyword;
   @Nullable

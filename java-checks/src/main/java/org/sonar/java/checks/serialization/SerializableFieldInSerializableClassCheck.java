@@ -49,7 +49,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
   private static final String JAVAX_INJECT = "javax.inject.Inject";
   private static final String JAKARTA_INJECT = "jakarta.inject.Inject";
 
-  private static final String[] EXCLUDED_ANNOTATIONS = new String[]{
+  private static final String[] EXCLUDED_ANNOTATIONS = {
     "jakarta.annotation.Resource",
     "javax.annotation.Resource",
     "javax.ejb.EJB",

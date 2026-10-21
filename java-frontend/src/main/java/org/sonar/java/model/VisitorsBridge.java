@@ -392,8 +392,8 @@ public class VisitorsBridge {
   }
 
   private class IssuableSubscriptionVisitorsRunner implements JavaFileScanner, EndOfAnalysis {
-    private EnumMap<Tree.Kind, List<SubscriptionVisitor>> checks;
-    private List<SubscriptionVisitor> subscriptionVisitors;
+    private final EnumMap<Tree.Kind, List<SubscriptionVisitor>> checks;
+    private final List<SubscriptionVisitor> subscriptionVisitors;
 
     IssuableSubscriptionVisitorsRunner() {
       checks = new EnumMap<>(Tree.Kind.class);

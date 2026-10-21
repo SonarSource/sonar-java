@@ -64,7 +64,7 @@ public class IterableIteratorCheck extends IssuableSubscriptionVisitor {
   }
 
   private static class ReturnThis extends BaseTreeVisitor {
-    private List<Tree> issueLocations = new ArrayList<>();
+    private final List<Tree> issueLocations = new ArrayList<>();
 
     @Override
     public void visitClass(ClassTree tree) {

@@ -53,8 +53,8 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.SYNCHRONIZED_STATEMENT;
 @Rule(key = "S2168")
 public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
 
-  private Deque<IfFieldEqNull> ifFieldStack = new LinkedList<>();
-  private Deque<CriticalSection> synchronizedStmtStack = new LinkedList<>();
+  private final Deque<IfFieldEqNull> ifFieldStack = new LinkedList<>();
+  private final Deque<CriticalSection> synchronizedStmtStack = new LinkedList<>();
   private boolean methodIsSynchronized;
 
   @Override
@@ -165,7 +165,7 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
   private static class AssignmentVisitor extends BaseTreeVisitor {
 
     private boolean assignmentToField;
-    private Symbol field;
+    private final Symbol field;
 
     AssignmentVisitor(Symbol field) {
       this.field = field;

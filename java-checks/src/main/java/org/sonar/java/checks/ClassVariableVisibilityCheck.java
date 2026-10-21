@@ -36,7 +36,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @Rule(key = "S1104")
 public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private Deque<Boolean> isClassStack = new ArrayDeque<>();
+  private final Deque<Boolean> isClassStack = new ArrayDeque<>();
 
   private JavaFileScannerContext context;
 

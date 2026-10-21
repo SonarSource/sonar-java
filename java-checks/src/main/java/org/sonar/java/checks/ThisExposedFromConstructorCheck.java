@@ -47,7 +47,7 @@ public class ThisExposedFromConstructorCheck extends IssuableSubscriptionVisitor
   }
 
   private class ConstructorBodyVisitor extends BaseTreeVisitor {
-    private Symbol owner;
+    private final Symbol owner;
 
     public ConstructorBodyVisitor(Symbol owner) {
       this.owner = owner;

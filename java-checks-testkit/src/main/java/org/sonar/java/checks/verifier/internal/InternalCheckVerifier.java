@@ -90,7 +90,7 @@ public class InternalCheckVerifier implements CheckVerifier {
   private Consumer<Set<AnalyzerMessage>> customIssueVerifier = null;
   private boolean collectQuickFixes = false;
 
-  private Expectations expectations = new Expectations();
+  private final Expectations expectations = new Expectations();
   @VisibleForTesting
   CacheContext cacheContext = null;
   private ReadCache readCache;

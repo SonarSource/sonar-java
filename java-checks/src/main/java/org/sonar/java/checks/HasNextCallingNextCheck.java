@@ -34,7 +34,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S1849")
 public class HasNextCallingNextCheck extends IssuableSubscriptionVisitor {
 
-  private HasNextBodyVisitor hasNextBodyVisitor = new HasNextBodyVisitor();
+  private final HasNextBodyVisitor hasNextBodyVisitor = new HasNextBodyVisitor();
 
   @Override
   public List<Kind> nodesToVisit() {

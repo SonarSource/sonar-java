@@ -37,8 +37,8 @@ public class AccessibilityChangeOnRecordsCheck extends AbstractAccessibilityChan
   private static final String MESSAGE = "Remove this private field update which will never succeed";
   private static final String SECONDARY_MESSAGE = "Remove this accessibility bypass which will never succeed";
 
-  private Map<Symbol, MethodInvocationTree> primaryTargets = new HashMap<>();
-  private Map<Symbol, List<MethodInvocationTree>> secondaryTargets = new HashMap<>();
+  private final Map<Symbol, MethodInvocationTree> primaryTargets = new HashMap<>();
+  private final Map<Symbol, List<MethodInvocationTree>> secondaryTargets = new HashMap<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

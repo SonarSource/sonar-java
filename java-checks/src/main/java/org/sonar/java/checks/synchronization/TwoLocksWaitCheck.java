@@ -43,7 +43,7 @@ public class TwoLocksWaitCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatchers WAIT_MATCHER = MethodMatchers.create().ofAnyType().names("wait").addWithoutParametersMatcher().build();
 
-  private Deque<Counter> synchronizedStack = new LinkedList<>();
+  private final Deque<Counter> synchronizedStack = new LinkedList<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -85,7 +85,7 @@ public class TwoLocksWaitCheck extends IssuableSubscriptionVisitor {
   private class MethodInvocationVisitor extends BaseTreeVisitor {
 
     private final MethodMatchers methodMatcher;
-    private Stream.Builder<MethodInvocationTree> matchedMethods = Stream.builder();
+    private final Stream.Builder<MethodInvocationTree> matchedMethods = Stream.builder();
 
     private MethodInvocationVisitor(MethodMatchers methodMatcher) {
       this.methodMatcher = methodMatcher;
@@ -123,7 +123,7 @@ public class TwoLocksWaitCheck extends IssuableSubscriptionVisitor {
 
   private static class SynchronizedKeywordVisitor extends BaseTreeVisitor {
 
-    private Stream.Builder<SyntaxToken> synchronizedKeywords = Stream.builder();
+    private final Stream.Builder<SyntaxToken> synchronizedKeywords = Stream.builder();
 
     @Override
     public void visitSynchronizedStatement(SynchronizedStatementTree tree) {

@@ -50,7 +50,7 @@ public class SpotBugsXmlReportReader {
   private final ExternalRuleLoader defaultRuleLoader;
   private final Map<String, ExternalRuleLoader> otherLoaders;
 
-  private List<String> sourceDirs = new ArrayList<>();
+  private final List<String> sourceDirs = new ArrayList<>();
   private String bugInstanceType = "";
   private String bugInstanceLongMessage = "";
   private String sourceLinePath = "";

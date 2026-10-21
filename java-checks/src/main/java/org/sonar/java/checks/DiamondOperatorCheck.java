@@ -57,7 +57,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class DiamondOperatorCheck extends SubscriptionVisitor implements JavaVersionAwareVisitor {
 
   /** Nodes to check in Java 7. */
-  private static final Tree.Kind[] JAVA_7_KINDS = new Tree.Kind[] {
+  private static final Tree.Kind[] JAVA_7_KINDS = {
     Tree.Kind.VARIABLE,
     Tree.Kind.TYPE_CAST,
     Tree.Kind.RETURN_STATEMENT,

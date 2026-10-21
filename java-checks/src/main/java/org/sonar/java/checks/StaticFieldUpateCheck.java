@@ -40,13 +40,13 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 @Rule(key = "S2696")
 public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
 
-  private static final Kind[] UNARY_EXPRESSIONS = new Kind[]{
+  private static final Kind[] UNARY_EXPRESSIONS = {
     Kind.POSTFIX_DECREMENT,
     Kind.POSTFIX_INCREMENT,
     Kind.PREFIX_DECREMENT,
     Kind.PREFIX_INCREMENT};
 
-  private Deque<Boolean> withinStaticMethod = new LinkedList<>();
+  private final Deque<Boolean> withinStaticMethod = new LinkedList<>();
 
   @Override
   public List<Kind> nodesToVisit() {
