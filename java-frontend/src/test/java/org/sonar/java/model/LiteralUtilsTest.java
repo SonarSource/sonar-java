@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -288,9 +290,10 @@ class LiteralUtilsTest {
     assertThat(LiteralUtils.isFalse(falseTree)).isTrue();
   }
 
-  @Test
-  void isZero_withExpectedValue() {
-    ExpressionTree tree = getReturnExpression("int foo(){ return 0; }");
+  @ParameterizedTest
+  @ValueSource(strings = {"0", "00", "0_0", "0x0", "0X0", "0x00", "0b0", "0B0", "0b0_0"})
+  void isZero_withExpectedValue(String literal) {
+    ExpressionTree tree = getReturnExpression("int foo(){ return " + literal + "; }");
     assertThat(LiteralUtils.isZero(tree)).isTrue();
   }
 
@@ -306,12 +309,11 @@ class LiteralUtilsTest {
     assertThat(LiteralUtils.isNegOne(tree)).isTrue();
   }
 
-  @Test
-  void isZero_withUnexpectedValues() {
-    ExpressionTree intTree = getReturnExpression("int foo(){ return 5; }");
-    assertThat(LiteralUtils.isZero(intTree)).isFalse();
-    ExpressionTree boolTree = getReturnExpression("int foo(){ return true; }");
-    assertThat(LiteralUtils.isZero(boolTree)).isFalse();
+  @ParameterizedTest
+  @ValueSource(strings = {"5", "0x1", "01", "0b1", "true", "0xFFFF_FFFF_FFFF_FFFF_F", "0b1111_1111_1111_1111_1111_1111_1111_1111_1"})
+  void isZero_withUnexpectedValues(String literal) {
+    ExpressionTree tree = getReturnExpression("int foo(){ return " + literal + "; }");
+    assertThat(LiteralUtils.isZero(tree)).isFalse();
   }
 
   @Test

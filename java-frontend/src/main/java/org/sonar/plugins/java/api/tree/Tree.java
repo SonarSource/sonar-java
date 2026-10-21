@@ -818,6 +818,27 @@ public interface Tree {
       OR_ASSIGNMENT
     );
 
+    /**
+     * The {@link Kind}s of all literals: {@link Kind#INT_LITERAL}, {@link Kind#LONG_LITERAL}, {@link Kind#FLOAT_LITERAL},
+     * {@link Kind#DOUBLE_LITERAL}, {@link Kind#BOOLEAN_LITERAL}, {@link Kind#CHAR_LITERAL}, {@link Kind#STRING_LITERAL},
+     * {@link Kind#TEXT_BLOCK} and {@link Kind#NULL_LITERAL}. All of these are backed by {@link LiteralTree}.
+     *
+     * <p>Use this as the single source of truth when a visitor or predicate must handle every literal, instead of
+     * hand-listing the kinds. In particular, it can be returned directly from {@code nodesToVisit()} of a subscription visitor that
+     * needs to visit all literals.</p>
+     */
+    public static final List<Kind> LITERAL_KINDS = List.of(
+      INT_LITERAL,
+      LONG_LITERAL,
+      FLOAT_LITERAL,
+      DOUBLE_LITERAL,
+      BOOLEAN_LITERAL,
+      CHAR_LITERAL,
+      STRING_LITERAL,
+      TEXT_BLOCK,
+      NULL_LITERAL
+    );
+
     final Class<? extends Tree> associatedInterface;
 
     Kind(Class<? extends Tree> associatedInterface) {

@@ -10,9 +10,11 @@
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "10min"
+    "constantCost": "5min"
   },
   "tags": [
+    "cert",
+    "convention",
     "error-handling",
     "pitfall"
   ],
@@ -20,5 +22,10 @@
   "ruleSpecification": "RSPEC-1695",
   "sqKey": "S1695",
   "scope": "Main",
-  "quickfix": "unknown"
+  "quickfix": "unknown",
+  "securityStandards": {
+    "CERT": [
+      "ERR08-J."
+    ]
+  }
 }

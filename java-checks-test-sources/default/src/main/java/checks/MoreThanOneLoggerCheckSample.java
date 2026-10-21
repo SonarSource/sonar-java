@@ -171,8 +171,10 @@ interface InterfaceWithTwoLoggers {
 
 class ConfigurableLoggerProperty {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ConfigurableLoggerProperty.class); // Compliant
-  private Logger contextLogger; // Compliant, not initialized here, it is a configurable property
+  private static final Logger LOG = LoggerFactory.getLogger(ConfigurableLoggerProperty.class);
+//                            ^^^> {{Logger already declared here.}}
+  private Logger contextLogger; // Noncompliant {{Remove this logger and use the one already declared in this class.}}
+//               ^^^^^^^^^^^^^
 
   Logger getContextLogger() {
     return contextLogger;

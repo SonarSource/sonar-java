@@ -12,17 +12,15 @@ copied along with the code that used it, or two logging facades that ended up in
 <p>This rule raises an issue when a class declares more than one logger field, for SLF4J, Log4j, Log4j 2, Commons Logging and
 <code>java.util.logging</code>.</p>
 <h3>Exceptions</h3>
+<p>This rule targets production code only. A test class often declares one logger per class under test, so it can capture the output of each of them.
+Those loggers belong to the classes being exercised, and keeping them does not split the logging of a production class.</p>
 <p>A nested or inner class is a class of its own, so a logger it declares is not counted against the logger of the enclosing class. Only the fields
 declared directly in the same class body are counted together.</p>
 <p>A non-static logger field declared next to a static one still raises an issue, because the class still ends up with two loggers, regardless of the
 modifiers. Rule {rule:java:S1312} covers the modifiers a logger field should have.</p>
-<p>A non-final logger field that is not initialized where it is declared does not count. Such a field is a configurable property, assigned at startup
-or injected from outside, often exposed through a getter and a setter. It is not a second category that the class gives itself, and it usually cannot
-be removed without changing the API of the class. A <code>final</code> field is different: it can only be assigned in an initializer or a constructor
-of the class, so it does count.</p>
 <p>A logger whose name is derived from another logger of the same class, as in <code>LoggerFactory.getLogger(LOG.getName() + ".config")</code>, does
-not count either. That call creates a child category, which inherits the level and the appenders configured for the parent, so the output of the class
-is still governed as one unit and the problem described above does not arise. Reusing the name as it is, as in
+not count. That call creates a child category, which inherits the level and the appenders configured for the parent, so the output of the class is
+still governed as one unit and the problem described above does not arise. Reusing the name as it is, as in
 <code>LoggerFactory.getLogger(LOG.getName())</code>, builds the same category rather than a child one and is still reported.</p>
 <h2>How to fix it</h2>
 <p>Keep one logger and remove the other field, then point the calls that used the removed logger at the remaining one.</p>

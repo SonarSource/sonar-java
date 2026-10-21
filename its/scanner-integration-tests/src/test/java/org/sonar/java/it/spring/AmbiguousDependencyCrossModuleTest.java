@@ -16,19 +16,23 @@
  */
 package org.sonar.java.it.spring;
 
+import com.google.gson.JsonParser;
+import com.sonarsource.scanner.integrationtester.dsl.issue.FileIssue;
 import com.sonarsource.scanner.integrationtester.dsl.issue.TextRange;
 import com.sonarsource.scanner.integrationtester.dsl.issue.TextRangeIssue;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.it.ScannerIntegrationAbstractTest;
-
-import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AmbiguousDependencyCrossModuleTest extends ScannerIntegrationAbstractTest {
 
   @Test
-  void test() {
+  void reports_ambiguous_dependencies_and_persists_spring_context_without_test_beans() throws IOException {
     var issues = analyze(Path.of("ambiguous-dependencies-should-be-resolved"), "S9352");
     assertThat(issues)
       .hasSize(4)
@@ -52,5 +56,27 @@ class AmbiguousDependencyCrossModuleTest extends ScannerIntegrationAbstractTest 
           "java:S9352",
           "Multiple beans match this dependency (defaultAuditLogger, stagingAuditLogger) in profile 'staging'; disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".",
           new TextRange(16, 16, 24, 35)));
+    // Make sure that test beans aren't collected by Spring context gathering.
+    assertThat(issues)
+      .extracting(FileIssue::message)
+      .noneMatch(message -> message.contains("testPaymentGateway"));
+
+    var modelPath = projectBaseDir.resolve(".sonar/spring-context-model.json");
+    assertThat(modelPath).isRegularFile().isNotEmptyFile();
+
+    var model = JsonParser.parseString(Files.readString(modelPath)).getAsJsonObject();
+    var filesData = model.getAsJsonObject("filesData");
+    var expectedBeans = Map.of(
+      "app", "paymentConsumer",
+      "module-a", "creditCardPaymentGateway",
+      "module-b", "digitalWalletPaymentGateway");
+
+    assertThat(filesData.keySet()).containsAll(expectedBeans.keySet());
+    expectedBeans.forEach((moduleKey, beanName) ->
+      assertThat(filesData.getAsJsonObject(moduleKey).asMap().values())
+        .as("Beans persisted for module %s", moduleKey)
+        .flatExtracting(file -> file.getAsJsonObject().getAsJsonArray("beans").asList())
+        .extracting(bean -> bean.getAsJsonObject().get("name").getAsString())
+        .contains(beanName));
   }
 }

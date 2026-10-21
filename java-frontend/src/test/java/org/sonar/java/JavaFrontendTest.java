@@ -241,7 +241,7 @@ class JavaFrontendTest {
   }
 
   @Test
-  void spring_bean_is_registered_once_when_main_and_test_scanners_finish() throws IOException {
+  void spring_bean_is_registered_once_and_only_from_main_scope_when_both_scanners_finish() throws IOException {
     sensorContext = SensorContextTester.create(temp.toFile().getAbsoluteFile());
     sensorContext.setRuntime(SONARQUBE_RUNTIME);
     InputFile mainFile = addFile(temp, "@org.springframework.stereotype.Component class MainBean {}", sensorContext);
@@ -259,6 +259,8 @@ class JavaFrontendTest {
     sonarComponents.setSensorContext(sensorContext);
     var gatheringModel = new SpringContextGatheringModel();
     var telemetry = new NoOpTelemetry();
+    // JavaSensor registers the gatherers for RuleScope.MAIN only. Registering them for both scopes here is
+    // deliberate: it checks that the test-scope exclusion holds on its own, not merely because of that wiring.
     SpringContextModelGatherers.getAllGatherers(gatheringModel, telemetry)
       .forEach(gatherer -> sonarComponents.registerCustomFileScanner(RuleScope.MAIN, gatherer));
     SpringContextModelGatherers.getAllGatherers(gatheringModel, telemetry)
@@ -270,7 +272,9 @@ class JavaFrontendTest {
     var springContextModel = SpringContextModel.of(gatheringModel);
 
     assertThat(springContextModel.getBeanDefinitionRegistry().getByName("mainBean")).hasSize(1);
-    assertThat(springContextModel.getBeanDefinitionRegistry().getByName("helperTest")).hasSize(1);
+    // HelperTest is a test file, so its bean is not registered: Spring Boot's TestTypeExcludeFilter keeps test
+    // classes out of component scanning.
+    assertThat(springContextModel.getBeanDefinitionRegistry().getByName("helperTest")).isEmpty();
   }
 
   @Test
