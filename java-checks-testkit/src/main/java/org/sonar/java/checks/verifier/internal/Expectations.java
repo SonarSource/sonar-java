@@ -170,7 +170,7 @@ class Expectations {
       }
       if (thisOrder == null && otherOrder == null) {
         int compareLines = Integer.compare(line, other.line);
-        return compareLines != 0 ? compareLines : Integer.compare(startColumn, other.startColumn);
+        return compareLines == 0 ? Integer.compare(startColumn, other.startColumn) : compareLines;
       }
       throw new AssertionError("Mixed explicit and implicit order in same flow." + System.lineSeparator() + this + System.lineSeparator() + other);
     }
