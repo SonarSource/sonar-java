@@ -411,8 +411,7 @@ jobs:
           mvn org.codehaus.mojo:license-maven-plugin:aggregate-add-third-party \
             --batch-mode \
             "-Dlicense.missingFile=${PWD}/missing-dep-licenses.properties" \
-            -DuseMissingFile \
-            "-Dlicense.overrideUrl=file://${PWD}/override-dep-licenses.properties"
+            -DuseMissingFile
 
   qa-os-win:
     name: Build and Unit Test on Windows
