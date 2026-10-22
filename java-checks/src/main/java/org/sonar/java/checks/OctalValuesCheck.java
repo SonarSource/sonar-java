@@ -69,9 +69,9 @@ public class OctalValuesCheck extends BaseTreeVisitor implements JavaFileScanner
     StringBuilder sb = new StringBuilder();
     for (char digit : value.substring(1).toCharArray()) {
       int bits = digit - '0';
-      sb.append((bits & 4) != 0 ? 'r' : '-')
-        .append((bits & 2) != 0 ? 'w' : '-')
-        .append((bits & 1) != 0 ? 'x' : '-');
+      sb.append((bits & 4) == 0 ? '-' : 'r')
+        .append((bits & 2) == 0 ? '-' : 'w')
+        .append((bits & 1) == 0 ? '-' : 'x');
     }
     return sb.toString();
   }

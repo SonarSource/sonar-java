@@ -119,7 +119,7 @@ public class SurefireStaxHandler {
     // hardcoded to Locale.ENGLISH see http://jira.codehaus.org/browse/SONAR-602
     try {
       Double time = ParsingUtils.parseNumber(value, Locale.ENGLISH);
-      return !Double.isNaN(time) ? (long) ParsingUtils.scaleValue(time * 1000, 3) : 0L;
+      return Double.isNaN(time) ? 0L : (long) ParsingUtils.scaleValue(time * 1000, 3);
     } catch (ParseException e) {
       throw new XMLStreamException(e);
     }
