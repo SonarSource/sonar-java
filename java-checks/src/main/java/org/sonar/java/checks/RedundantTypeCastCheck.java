@@ -80,6 +80,9 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean isUnnecessaryCast(TypeCastTree typeCastTree) {
+    if (isPotentiallyLossyWideningConversion(typeCastTree)) {
+      return false;
+    }
     if (skipParentheses(typeCastTree.expression()).is(Tree.Kind.NULL_LITERAL)) {
       Tree parentTree = skipParentheses(typeCastTree.parent());
       return !parentTree.is(Tree.Kind.ARGUMENTS);
@@ -90,6 +93,14 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       return false;
     }
     return warnings.stream().anyMatch(warning -> matchesWarning(warning, typeCastTree));
+  }
+
+  private static boolean isPotentiallyLossyWideningConversion(TypeCastTree tree) {
+    Type sourceType = tree.expression().symbolType();
+    Type targetType = tree.type().symbolType();
+    return (sourceType.isPrimitive(Type.Primitives.INT) && targetType.isPrimitive(Type.Primitives.FLOAT))
+      || (sourceType.isPrimitive(Type.Primitives.LONG)
+        && (targetType.isPrimitive(Type.Primitives.FLOAT) || targetType.isPrimitive(Type.Primitives.DOUBLE)));
   }
 
   private static boolean isMethodInvocationReceiverOfGetClass(TypeCastTree typeCastTree) {

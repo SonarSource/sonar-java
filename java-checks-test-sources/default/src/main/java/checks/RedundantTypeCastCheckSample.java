@@ -406,3 +406,57 @@ class CastRawType {
     Outer.Nested r = (Outer.Nested) clazz.getAnnotation(Outer.Nested.class); // Handle cast of raw types
   }
 }
+
+class PrecisionLossCasts {
+  PrecisionLossCasts(float first, float second, double third) {}
+
+  void conversions(int intValue, long longValue) {
+    float fromInt = (float) intValue;
+    float fromLong = (float) longValue;
+    double doubleFromLong = (double) longValue;
+
+    fromInt = (float) intValue;
+    fromLong = (float) longValue;
+    doubleFromLong = (double) longValue;
+
+    fromInt += (float) intValue;
+    fromLong += (float) longValue;
+    doubleFromLong += (double) longValue;
+
+    takeFloat((float) intValue);
+    takeFloat((float) longValue);
+    takeDouble((double) longValue);
+    new PrecisionLossCasts((float) intValue, (float) longValue, (double) longValue);
+
+    takeFloat(((float) (intValue)));
+    takeFloat(((float) (longValue)));
+    takeDouble(((double) (longValue)));
+  }
+
+  float returnInt(int value) {
+    return (float) value;
+  }
+
+  float returnLong(long value) {
+    return (float) value;
+  }
+
+  double returnLongAsDouble(long value) {
+    return (double) value;
+  }
+
+  void redundantCasts(int intValue, long longValue, float floatValue, byte byteValue, short shortValue, char charValue) {
+    int sameInt = (int) intValue; // Noncompliant
+    long sameLong = (long) longValue; // Noncompliant
+    float sameFloat = (float) floatValue; // Noncompliant
+    long widerInteger = (long) intValue; // Noncompliant
+    double fromInt = (double) intValue; // Noncompliant
+    double fromFloat = (double) floatValue; // Noncompliant
+    float fromByte = (float) byteValue; // Noncompliant
+    float fromShort = (float) shortValue; // Noncompliant
+    float fromChar = (float) charValue; // Noncompliant
+  }
+
+  void takeFloat(float value) {}
+  void takeDouble(double value) {}
+}
