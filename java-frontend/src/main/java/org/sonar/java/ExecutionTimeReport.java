@@ -47,7 +47,7 @@ public class ExecutionTimeReport {
 
   private static final Comparator<ExecutionTime> ORDER_BY_ANALYSIS_TIME_DESCENDING_AND_FILE_ASCENDING = (a, b) -> {
     int compare = Long.compare(b.analysisTime, a.analysisTime);
-    return compare != 0 ? compare : a.file.compareTo(b.file);
+    return compare == 0 ? a.file.compareTo(b.file) : compare;
   };
 
   private final LinkedList<ExecutionTime> recordedOrderedExecutionTime = new LinkedList<>();

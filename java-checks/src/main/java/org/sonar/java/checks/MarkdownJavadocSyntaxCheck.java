@@ -141,7 +141,7 @@ public class MarkdownJavadocSyntaxCheck extends IssuableSubscriptionVisitor {
     matcher.region(startPosition, javadoc.length());
     if (matcher.lookingAt()) {
       boolean closingQuotesFound = matcher.find(startPosition + 3);
-      return !closingQuotesFound ? -1 : matcher.end();
+      return closingQuotesFound ? matcher.end() : -1;
     } else {
       int closingQuotePosition = javadoc.indexOf("`", startPosition + 1);
       return closingQuotePosition == -1 ? -1 : (closingQuotePosition + 1);
