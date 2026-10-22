@@ -84,7 +84,7 @@
     <license.title>SonarQube Java</license.title>
 
     <!-- DO NOT MERGE: pins to the PR-built two-module ZIP packaging demo, not a released version. -->
-    <version.sonar-packaging.plugin>2.1.0.3078</version.sonar-packaging.plugin>
+    <version.sonar-packaging.plugin>2.1.0.3083</version.sonar-packaging.plugin>
 
     <jdk.min.version>21</jdk.min.version>
 
