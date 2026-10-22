@@ -1,5 +1,5 @@
 {
-  "title": "\"String.isEmpty()\" should be used to test for emptiness",
+  "title": "\"String.isEmpty()\" and \"String.isBlank()\" should be used to test for emptiness and blankness",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

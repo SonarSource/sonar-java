@@ -1,34 +1,88 @@
-<p>An issue is raised when a literal value (numeric, boolean, or other primitive) is converted to a string by concatenating it with an empty string
-rather than using explicit conversion methods.</p>
+<p>An issue is raised when a primitive literal is converted to a string by concatenating it with an empty string rather than writing the resulting
+string literal directly or using an explicit conversion method.</p>
+<p>This includes compile-time constant contexts when the concatenation can be replaced with an equivalent string literal. Annotation arguments,
+annotation element defaults, constant <code>case</code> labels, and constant field initializers are not exempt.</p>
+<p>When the targeted empty-string/primitive-literal pattern is part of a larger compile-time constant concatenation, simplify and report the enclosing
+constant concatenation. For example, report the whole initializer <code>"a" + ("" + 1)</code> and recommend <code>"a1"</code>. This rule does not
+target arbitrary constant concatenations such as <code>"a" + "b"</code> unless they contain the targeted pattern.</p>
 <h2>Why is this an issue?</h2>
-<p>Converting literals to strings by concatenating them with empty strings is an inefficient and unclear approach.</p>
-<p>When you write an expression that concatenates an empty string with a non-string value, the language runtime must:</p>
-<ul>
-  <li>Create a string building object or buffer</li>
-  <li>Append the empty string</li>
-  <li>Append the value after converting it to a string</li>
-  <li>Call a method to extract the final string result</li>
-</ul>
-<p>This creates unnecessary intermediate objects and performs extra operations. More importantly, the intent is unclear - a developer reading an empty
-string concatenated with a value must infer that this is a type conversion, rather than seeing an explicit conversion call.</p>
-<p>Most languages provide explicit, efficient methods for converting primitives to strings:</p>
+<p>Converting literals to strings by concatenating them with empty strings obscures the intended string value.</p>
+<p>When concatenation is evaluated at runtime, it may involve intermediate objects or additional operations to build the resulting string. The exact
+behavior depends on the language, compiler, and runtime. These costs do not apply when the concatenation is evaluated at compile time.</p>
+<p>The readability concern remains in either case: a developer reading an empty string concatenated with a literal must infer the resulting string,
+rather than seeing it directly.</p>
+<p>Writing the resulting string literal directly makes the value clear. When an explicit conversion is appropriate, most languages also provide
+methods for converting primitives to strings:</p>
 <ul>
   <li>Type-specific conversion functions (e.g., functions that convert integers to strings, booleans to strings)</li>
   <li>Generic conversion functions that accept any value type</li>
 </ul>
-<p>These methods directly convert the value to a string without unnecessary intermediate steps, making both the intent and the operation clearer.</p>
-<p>In Java, these explicit methods include <code>Integer.toString()</code>, <code>Boolean.toString()</code>, and other type-specific methods, or the
-generic <code>String.valueOf()</code> method.</p>
+<p>These methods make the conversion intent explicit, but do not necessarily preserve compile-time constant semantics.</p>
+<p>In Java, concatenations that are constant expressions are evaluated at compile time. For example, <code>"" + 42</code> and <code>"a" + ("" +
+1)</code> do not incur runtime string-building overhead. The reason to simplify these expressions is readability, not runtime performance.</p>
 <h3>What is the potential impact?</h3>
-<p>The performance impact of using string operations as an indirect method for type conversion is typically small in individual cases, but can
-accumulate in large applications or performance-sensitive code paths. More significantly, this pattern reduces code readability and maintainability by
-obscuring the developer’s intent.</p>
+<p>This pattern reduces code readability and maintainability by obscuring the intended string value. Runtime concatenation may also have a performance
+cost, but concatenations evaluated at compile time do not incur runtime string-building overhead.</p>
 <h2>How to fix it</h2>
-<p>Replace empty string concatenation with explicit type conversion methods. For primitive types, use the wrapper class’s static
-<code>toString()</code> method (e.g., <code>Integer.toString()</code>, <code>Long.toString()</code>, <code>Boolean.toString()</code>). Alternatively,
-use <code>String.valueOf()</code> which works for all types.</p>
+<p>For compile-time constant concatenations, replace the enclosing constant concatenation with a string literal containing its evaluated value.
+Preserve the exact string value, including escaping where necessary.</p>
+<p>Use this replacement in annotation arguments and annotation element defaults (including array elements), constant <code>case</code> labels in
+<code>switch</code> statements or expressions, and constant field initializers. This also applies to implicitly <code>static final</code> fields in
+interfaces and annotation types.</p>
+<p>Method calls such as <code>Integer.toString(1)</code> and <code>String.valueOf(1)</code> are not constant expressions. They are unsuitable
+replacements in annotation values, annotation element defaults, and constant <code>case</code> labels because the code would no longer compile. In a
+constant field initializer, they would turn the field into a non-constant, potentially breaking uses in constant contexts and changing constant
+inlining behavior. An equivalent string literal preserves these semantics.</p>
+<p>Outside contexts where compile-time constant semantics must be preserved, an explicit conversion is also an option. For primitive types, use the
+wrapper class’s static <code>toString()</code> method (e.g., <code>Integer.toString()</code>, <code>Long.toString()</code>,
+<code>Boolean.toString()</code>) or <code>String.valueOf()</code>.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+@interface Label {
+  String value() default "" + 1; // Noncompliant
+  String[] aliases() default {"" + 2}; // Noncompliant
+}
+
+@Label(value = "" + 3, aliases = {"" + 4}) // Noncompliant
+class Example {
+  static final String SIMPLE = "" + 42; // Noncompliant
+  static final String NESTED = "a" + ("" + 1); // Noncompliant: replace the whole initializer with "a1"
+
+  boolean matches(String value) {
+    switch (value) {
+      case "" + 5: // Noncompliant
+        return true;
+      default:
+        return false;
+    }
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+@interface Label {
+  String value() default "1";
+  String[] aliases() default {"2"};
+}
+
+@Label(value = "3", aliases = {"4"})
+class Example {
+  static final String SIMPLE = "42";
+  static final String NESTED = "a1";
+
+  boolean matches(String value) {
+    switch (value) {
+      case "5":
+        return true;
+      default:
+        return false;
+    }
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<p>When constant semantics do not need to be preserved, explicit conversion methods are another solution:</p>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 String s = "" + 123;   // Noncompliant
 String b = "" + true;  // Noncompliant
@@ -43,6 +97,9 @@ String f = Float.toString(3.14f);
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html#jls-15.29">Constant Expressions</a></li>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html#jls-15.18.1">String Concatenation
+  Operator</a></li>
   <li>Oracle Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html#valueOf(int)">String
   (Java SE 17 &amp; JDK 17)</a></li>
   <li>Oracle Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html#toString(int)">Integer
