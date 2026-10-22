@@ -307,7 +307,7 @@ public class JParser {
       .filter(IS_UNDEFINED_TYPE_ERROR)
       .map(i -> new JProblem(
         i.getMessage(),
-        (i.getID() & IProblem.PreviewFeatureUsed) != 0 ? JProblem.Type.PREVIEW_FEATURE_USED : JProblem.Type.UNDEFINED_TYPE))
+        (i.getID() & IProblem.PreviewFeatureUsed) == 0 ? JProblem.Type.UNDEFINED_TYPE : JProblem.Type.PREVIEW_FEATURE_USED))
       .collect(Collectors.toSet());
 
     JParser converter = new JParser();
