@@ -1,6 +1,5 @@
-<p>This rule raises an issue when a cryptographic digest/hash object is declared as a class-level variable (either instance-level or shared across all
-instances).</p>
-<p>In Java, this specifically refers to <code>MessageDigest</code> instances.</p>
+<p>This rule raises an issue when a <code>MessageDigest</code> object is declared as a class-level variable (either instance-level or shared across
+all instances).</p>
 <h2>Why is this an issue?</h2>
 <p>Cryptographic hash computation objects are stateful components that calculate hash values by maintaining internal state as data is incrementally
 processed through their methods.</p>
@@ -81,3 +80,4 @@ public class HashCalculator {
   <li>CWE - <a href="https://cwe.mitre.org/data/definitions/567.html">CWE-567: Unsynchronized Access to Shared Data in a Multithreaded
   Context</a></li>
 </ul>
+
