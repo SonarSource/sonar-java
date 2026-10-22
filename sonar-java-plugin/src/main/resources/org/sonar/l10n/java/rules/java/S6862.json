@@ -1,14 +1,12 @@
 {
   "title": "Beans in \"@Configuration\" class should have different names",
   "type": "BUG",
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "tags": [
-    "spring"
-  ],
+  "tags": [],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-6862",
   "sqKey": "S6862",
