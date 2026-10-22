@@ -31,7 +31,7 @@ jobs:
       deployed: ${{ steps.build-maven.outputs.deployed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
         with:
           version: 2026.10.0
       - uses: SonarSource/ci-github-actions/build-maven@v2
@@ -85,7 +85,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
-      - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
         with:
           version: 2026.10.0
       - name: Select Java Version
@@ -221,7 +221,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
-      - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
         with:
           version: 2026.10.0
       - name: Select Java Version
@@ -291,7 +291,7 @@ jobs:
       BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
         with:
           version: 2026.10.0
       - uses: SonarSource/vault-action-wrapper@v3
@@ -338,7 +338,7 @@ jobs:
       BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
         with:
           version: 2026.10.0
       - uses: SonarSource/vault-action-wrapper@v3
@@ -375,7 +375,7 @@ jobs:
       BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
         with:
           version: 2026.10.0
       - uses: SonarSource/vault-action-wrapper@v3
@@ -425,7 +425,7 @@ jobs:
       - name: Config Git
         run: git config --global core.autocrlf input
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
         with:
           version: 2026.10.0
       - uses: ./.github/actions/maven-cache
