@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -226,13 +227,20 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
 
   private static boolean hasDynamicConcatenationOperand(ExpressionTree arg) {
     ExpressionTree expression = ExpressionUtils.skipParentheses(arg);
-    if (expression.asConstant().isPresent() || isSafeClassNameExpression(expression, new HashSet<>())) {
+    if (expression.asConstant().isPresent() || isPrimitiveOrWrapper(expression.symbolType()) || isSafeClassNameExpression(expression, new HashSet<>())) {
       return false;
+    }
+    if (expression instanceof ConditionalExpressionTree conditional) {
+      return hasDynamicConcatenationOperand(conditional.trueExpression()) || hasDynamicConcatenationOperand(conditional.falseExpression());
     }
     if (expression instanceof BinaryExpressionTree binaryExpression && expression.is(Tree.Kind.PLUS)) {
       return hasDynamicConcatenationOperand(binaryExpression.leftOperand()) || hasDynamicConcatenationOperand(binaryExpression.rightOperand());
     }
     return true;
+  }
+
+  private static boolean isPrimitiveOrWrapper(Type type) {
+    return type.isPrimitive() || type.isPrimitiveWrapper();
   }
 
   private static boolean isSafeClassNameExpression(ExpressionTree arg, Set<Symbol> visitedSymbols) {
@@ -266,7 +274,7 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
       // `format` has a variant with Locale as the first argument - we do not need to check that parameter.
       boolean isFirstLocaleArgument = firstArg && type.is("java.util.Locale");
       // Primitives will not lead to SQL injection, so the code is compliant.
-      if (!isFirstLocaleArgument && !type.isUnknown() && !type.isPrimitive() && !type.isPrimitiveWrapper()
+      if (!isFirstLocaleArgument && !type.isUnknown() && !isPrimitiveOrWrapper(type)
         && arg.asConstant().isEmpty() && !isSafeClassNameExpression(arg, new HashSet<>())) {
         return true;
       }

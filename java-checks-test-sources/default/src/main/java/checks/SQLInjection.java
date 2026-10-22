@@ -187,7 +187,7 @@ class SQLInjection {
   PersistenceManager pm;
 
   void jdo(int id, String name) {
-    javax.jdo.Query q = pm.newQuery(Test.class, id + " > query_id "); // Noncompliant
+    javax.jdo.Query q = pm.newQuery(Test.class, id + " > query_id "); // Compliant
     q.setFilter("name == " + name); // Noncompliant
   }
 
@@ -390,5 +390,16 @@ class SQLFormat {
     String query3 = "SELECT ";
     query3 += SQLInjection.class.getName() + input;
     this.stmt.execute(query3); // Noncompliant
+  }
+
+  public void constantTernaryAndPrimitives(boolean asc, int offset, Integer limit, String input, EntityManager em) {
+    em.createNativeQuery("SELECT * FROM entity ORDER BY x " + (asc ? "ASC" : "DESC")); // Compliant
+    em.createNativeQuery("SELECT * FROM entity OFFSET " + offset + " LIMIT " + limit); // Compliant
+    String query = "SELECT * FROM entity OFFSET " + offset;
+    query += " LIMIT " + limit;
+    em.createNativeQuery(query); // Compliant
+    em.createNativeQuery("SELECT * FROM entity ORDER BY " + (asc ? "ASC" : input)); // Noncompliant
+    em.createNativeQuery("SELECT * FROM entity ORDER BY " + (asc ? input : "DESC")); // Noncompliant
+    em.createNativeQuery("SELECT * FROM entity ORDER BY " + (asc ? (offset > 0 ? "A" : "B") : "C")); // Compliant
   }
 }
