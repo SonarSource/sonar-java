@@ -352,6 +352,15 @@
     <pluginManagement>
       <plugins>
         <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <configuration>
+            <licenseMerges combine.children="append">
+              <licenseMerge>bsd|The BSD 2-Clause License</licenseMerge>
+            </licenseMerges>
+          </configuration>
+        </plugin>
+        <plugin>
           <groupId>de.thetaphi</groupId>
           <artifactId>forbiddenapis</artifactId>
           <version>3.11</version>
