@@ -35,6 +35,8 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
+import org.sonar.java.telemetry.DefaultTelemetry;
+import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.scanner.extension.PropertyDefinitions;
 import org.sonar.scanner.plugin.api.impl.config.MapSettings;
@@ -96,6 +98,79 @@ class ClasspathForMainTest {
     verifyNoInteractions(fs);
     assertThat(logTester.logs()).isEmpty();
     assertThat(analysisWarningsLogged).isEmpty();
+  }
+
+  @Test
+  void telemetry_distinguishes_missing_configuration_from_empty_entries() {
+    settings.removeProperty(ClasspathProperties.SONAR_JAVA_BINARIES);
+    settings.removeProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES);
+    var telemetry = new DefaultTelemetry();
+    createJavaClasspath().recordTelemetry(telemetry, TelemetryKey.JAVA_CLASSPATH_MAIN);
+    assertThat(telemetry.toMap())
+      .containsEntry("java.classpath.main.module_count", "1")
+      .containsEntry("java.classpath.main.modules_missing_binaries", "1")
+      .containsEntry("java.classpath.main.modules_without_binary_entries", "1")
+      .containsEntry("java.classpath.main.modules_missing_libraries", "1")
+      .containsEntry("java.classpath.main.modules_without_library_entries", "1")
+      .containsEntry("java.classpath.main.modules_with_invalid_jdk", "0");
+
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_BINARIES, "empty");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "empty");
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_JDK_HOME, "does-not-exist");
+    createJavaClasspath().recordTelemetry(telemetry, TelemetryKey.JAVA_CLASSPATH_MAIN);
+    assertThat(telemetry.toMap())
+      .containsEntry("java.classpath.main.module_count", "2")
+      .containsEntry("java.classpath.main.modules_missing_binaries", "1")
+      .containsEntry("java.classpath.main.modules_without_binary_entries", "1")
+      .containsEntry("java.classpath.main.modules_missing_libraries", "1")
+      .containsEntry("java.classpath.main.modules_without_library_entries", "1")
+      .containsEntry("java.classpath.main.modules_with_invalid_jdk", "1");
+  }
+
+  @Test
+  void telemetry_detects_unmatched_patterns_alongside_valid_entries() {
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES, "empty,does-not-exist/*.jar");
+    var classpath = createJavaClasspath();
+    classpath.getElements();
+    classpath.logClasspathWarnings();
+    var telemetry = new DefaultTelemetry();
+    classpath.recordTelemetry(telemetry, TelemetryKey.JAVA_CLASSPATH_MAIN);
+    assertThat(telemetry.toMap())
+      .containsEntry("java.classpath.main.modules_with_unmatched_entries", "1")
+      .containsEntry("java.classpath.main.modules_without_library_entries", "0")
+      .containsEntry("java.classpath.main.modules_with_invalid_jdk", "0");
+  }
+
+  @Test
+  void telemetry_excludes_jdk_entries_from_dependency_library_count() {
+    settings.removeProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES);
+    settings.setProperty(ClasspathProperties.SONAR_JAVA_JDK_HOME, jdkPath.toString());
+    var telemetry = new DefaultTelemetry();
+    createJavaClasspath().recordTelemetry(telemetry, TelemetryKey.JAVA_CLASSPATH_MAIN);
+    assertThat(telemetry.toMap())
+      .containsEntry("java.classpath.main.modules_without_library_entries", "1")
+      .containsEntry("java.classpath.main.modules_with_invalid_jdk", "0");
+  }
+
+  @Test
+  void telemetry_ignores_scopes_without_java_sources() {
+    fs = new DefaultFileSystem(baseDir);
+    var telemetry = new DefaultTelemetry();
+    createJavaClasspath().recordTelemetry(telemetry, TelemetryKey.JAVA_CLASSPATH_MAIN);
+    assertThat(telemetry.toMap()).isEmpty();
+  }
+
+  @Test
+  void telemetry_records_test_classpath_separately() {
+    fs = new DefaultFileSystem(baseDir);
+    fs.add(TestUtils.emptyInputFile("Test.java", InputFile.Type.TEST));
+    var telemetry = new DefaultTelemetry();
+    new ClasspathForTest(settings.asConfig(), fs).recordTelemetry(telemetry, TelemetryKey.JAVA_CLASSPATH_TEST);
+    assertThat(telemetry.toMap())
+      .containsEntry("java.classpath.test.module_count", "1")
+      .containsEntry("java.classpath.test.modules_missing_binaries", "1")
+      .containsEntry("java.classpath.test.modules_missing_libraries", "1")
+      .doesNotContainKey("java.classpath.main.module_count");
   }
 
   @Test
