@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.semantic.Type.Primitives;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -253,6 +254,9 @@ public final class ExpressionUtils {
     if (expression.is(Tree.Kind.INT_LITERAL)) {
       return LiteralUtils.intLiteralValue(expression);
     }
+    if (expression.is(Tree.Kind.CHAR_LITERAL)) {
+      return LiteralUtils.charLiteralValue((LiteralTree) expression);
+    }
     if (expression.is(Tree.Kind.LONG_LITERAL)) {
       return LiteralUtils.longLiteralValue(expression);
     }
@@ -344,11 +348,18 @@ public final class ExpressionUtils {
     if (left == null || right == null) {
       return null;
     } else if (left instanceof String leftString) {
-      return leftString + right;
+      return leftString + stringConcatenationValue(right, binaryExpression.rightOperand());
     } else if (right instanceof String rightString) {
-      return left + rightString;
+      return stringConcatenationValue(left, binaryExpression.leftOperand()) + rightString;
     }
     return resolveArithmeticOperation(left, right, Long::sum, Integer::sum);
+  }
+
+  private static String stringConcatenationValue(Object value, ExpressionTree expression) {
+    if (value instanceof Integer intValue && (skipParentheses(expression).is(Tree.Kind.CHAR_LITERAL) || expression.symbolType().isPrimitive(Primitives.CHAR))) {
+      return Character.toString(intValue);
+    }
+    return value.toString();
   }
 
   @CheckForNull

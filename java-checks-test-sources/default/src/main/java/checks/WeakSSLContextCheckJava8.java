@@ -5,6 +5,16 @@ import java.security.NoSuchProviderException;
 import javax.net.ssl.SSLContext;
 
 class WeakSSLContextCheckJava8 {
+  private static final char ONE = '1';
+
+  void characterProtocols() throws NoSuchAlgorithmException {
+    SSLContext.getInstance("TLSv" + ONE); // Noncompliant {{Change this code to use a stronger protocol.}}
+//                         ^^^^^^^^^^^^
+    SSLContext.getInstance("SS" + 'L'); // Noncompliant {{Change this code to use a stronger protocol.}}
+//                         ^^^^^^^^^^
+    SSLContext.getInstance("TLSv" + ONE + ".2");
+    SSLContext.getInstance('T' + "LSv1.3");
+  }
 
   void foo(String protocol, String provider) throws NoSuchAlgorithmException, NoSuchProviderException {
     bar(SSLContext.getInstance(protocol));

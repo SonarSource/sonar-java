@@ -18,6 +18,7 @@ package org.sonar.java.model.expression;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
@@ -71,6 +72,18 @@ class AssessableExpressionTreeTest {
   @Test
   void other() {
     assertThat(resolveAsStrings("other")).containsExactly(null, null);
+  }
+
+  @Test
+  void char_constants() {
+    assertThat(expression("'?'").asConstant()).contains(63);
+    assertThat(expression("'?'").asConstant(Integer.class)).contains(63);
+    assertThat(expression("'?'").asConstant(Character.class)).isEmpty();
+    assertThat(expression("'?' + \"a\"").asConstant(String.class)).contains("?a");
+    assertThat(constantValuesInMethod("characters", ExpressionTree::asConstant))
+      .containsExactly(Optional.of(63), Optional.of(63), Optional.of("WHERE id = ?"));
+    assertThat(resolveAsInts("characters")).containsExactly(63, 63, null);
+    assertThat(resolveAsStrings("characters")).containsExactly(null, null, "WHERE id = ?");
   }
 
   @Test

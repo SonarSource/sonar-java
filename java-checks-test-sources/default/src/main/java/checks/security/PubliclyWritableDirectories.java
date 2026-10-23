@@ -16,6 +16,17 @@ import java.util.Set;
 
 public class PubliclyWritableDirectories {
   private static final String PATH_NAME = "/run/lock";
+  private static final char SEPARATOR = '/';
+
+  void characterSeparators(String unknown) {
+    new File("/var" + SEPARATOR + "tmp"); // Noncompliant {{Make sure publicly writable directories are used safely here.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    new File('/' + "tmp"); // Noncompliant {{Make sure publicly writable directories are used safely here.}}
+//  ^^^^^^^^^^^^^^^^^^^^^
+    new File(SEPARATOR + "safe");
+    new File("/safe" + SEPARATOR + "tmp");
+    new File("/var" + SEPARATOR + unknown);
+  }
 
   public String noncompliant() throws IOException {
     
