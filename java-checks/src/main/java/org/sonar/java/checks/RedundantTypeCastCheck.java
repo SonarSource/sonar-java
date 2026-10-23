@@ -18,6 +18,7 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.NumericConversionUtils;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JProblem;
@@ -80,7 +81,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean isUnnecessaryCast(TypeCastTree typeCastTree) {
-    if (isPotentiallyLossyWideningConversion(typeCastTree)) {
+    if (NumericConversionUtils.isPotentiallyLossyWideningConversion(typeCastTree.expression(), typeCastTree.type().symbolType())) {
       return false;
     }
     if (skipParentheses(typeCastTree.expression()).is(Tree.Kind.NULL_LITERAL)) {
@@ -93,14 +94,6 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       return false;
     }
     return warnings.stream().anyMatch(warning -> matchesWarning(warning, typeCastTree));
-  }
-
-  private static boolean isPotentiallyLossyWideningConversion(TypeCastTree tree) {
-    Type sourceType = tree.expression().symbolType();
-    Type targetType = tree.type().symbolType();
-    return (sourceType.isPrimitive(Type.Primitives.INT) && targetType.isPrimitive(Type.Primitives.FLOAT))
-      || (sourceType.isPrimitive(Type.Primitives.LONG)
-        && (targetType.isPrimitive(Type.Primitives.FLOAT) || targetType.isPrimitive(Type.Primitives.DOUBLE)));
   }
 
   private static boolean isMethodInvocationReceiverOfGetClass(TypeCastTree typeCastTree) {

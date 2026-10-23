@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.NumericConversionUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -41,9 +42,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S9395")
 public class S9395Check extends BaseTreeVisitor implements JavaFileScanner {
-
-  private static final long FLOAT_MAX_EXACT_INT = 1L << 24;
-  private static final long DOUBLE_MAX_EXACT_LONG = 1L << 53;
 
   private JavaFileScannerContext context;
   private final Deque<Type> floatingPointReturnTypes = new LinkedList<>();
@@ -133,42 +131,11 @@ public class S9395Check extends BaseTreeVisitor implements JavaFileScanner {
     if (unwrapped.is(Tree.Kind.TYPE_CAST)) {
       return;
     }
-    Type sourceType = unwrapped.symbolType();
-    if (isLossyWideningConversion(sourceType, targetType) && !isSafeConstant(unwrapped, targetType)) {
+    if (NumericConversionUtils.isPotentiallyLossyWideningConversion(unwrapped, targetType)) {
+      Type sourceType = unwrapped.symbolType();
       context.reportIssue(this, unwrapped,
         "Explicitly cast this \"" + sourceType.name() + "\" to \"" + targetType.name() + "\" to document potential precision loss.");
     }
-  }
-
-  private static boolean isLossyWideningConversion(Type sourceType, Type targetType) {
-    if (sourceType.isUnknown() || targetType.isUnknown()) {
-      return false;
-    }
-    if (sourceType.isPrimitive(Type.Primitives.INT) && targetType.isPrimitive(Type.Primitives.FLOAT)) {
-      return true;
-    }
-    if (sourceType.isPrimitive(Type.Primitives.LONG) && targetType.isPrimitive(Type.Primitives.FLOAT)) {
-      return true;
-    }
-    return sourceType.isPrimitive(Type.Primitives.LONG) && targetType.isPrimitive(Type.Primitives.DOUBLE);
-  }
-
-  private static boolean isSafeConstant(ExpressionTree expr, Type targetType) {
-    Object constant = ExpressionUtils.resolveAsConstant(expr);
-    if (constant instanceof Integer intVal) {
-      long absValue = Math.abs((long) intVal);
-      return !targetType.isPrimitive(Type.Primitives.FLOAT) || absValue <= FLOAT_MAX_EXACT_INT;
-    }
-    if (constant instanceof Long longVal) {
-      long absValue = Math.abs(longVal);
-      if (targetType.isPrimitive(Type.Primitives.FLOAT)) {
-        return absValue <= FLOAT_MAX_EXACT_INT;
-      }
-      if (targetType.isPrimitive(Type.Primitives.DOUBLE)) {
-        return absValue <= DOUBLE_MAX_EXACT_LONG;
-      }
-    }
-    return false;
   }
 
   private static boolean isFloatingPoint(Type type) {

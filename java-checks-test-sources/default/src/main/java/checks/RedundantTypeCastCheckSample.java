@@ -408,6 +408,9 @@ class CastRawType {
 }
 
 class PrecisionLossCasts {
+  static final int SMALL_INT = 42;
+  static final long SMALL_LONG = 42L;
+
   PrecisionLossCasts(float first, float second, double third) {}
 
   void conversions(int intValue, long longValue) {
@@ -443,6 +446,39 @@ class PrecisionLossCasts {
 
   double returnLongAsDouble(long value) {
     return (double) value;
+  }
+
+  void safeConstants() {
+    float zero = (float) 0; // Noncompliant
+    float fromInt = (float) 1; // Noncompliant
+    float fromLong = (float) 1L; // Noncompliant
+    double doubleFromLong = (double) 1L; // Noncompliant
+
+    float namedInt = (float) SMALL_INT; // Noncompliant
+    float namedLong = (float) SMALL_LONG; // Noncompliant
+    double namedDouble = (double) SMALL_LONG; // Noncompliant
+    float folded = (float) (20 + 22); // Noncompliant
+
+    float intUpperBound = (float) 16_777_216; // Noncompliant
+    float intLowerBound = (float) -16_777_216; // Noncompliant
+    float longUpperBound = (float) 16_777_216L; // Noncompliant
+    float longLowerBound = (float) -16_777_216L; // Noncompliant
+    double doubleUpperBound = (double) 9_007_199_254_740_992L; // Noncompliant
+    double doubleLowerBound = (double) -9_007_199_254_740_992L; // Noncompliant
+
+    takeFloat(((float) (1))); // Noncompliant
+    takeFloat((float) 1L); // Noncompliant
+    takeDouble((double) 1L); // Noncompliant
+    new PrecisionLossCasts((float) 1, (float) 1L, (double) 1L); // Noncompliant 3
+  }
+
+  void lossyConstants() {
+    float fromInt = (float) 16_777_217;
+    float negativeInt = (float) -16_777_217;
+    float fromLong = (float) 16_777_217L;
+    float negativeLong = (float) -16_777_217L;
+    double doubleFromLong = (double) 9_007_199_254_740_993L;
+    double negativeDouble = (double) -9_007_199_254_740_993L;
   }
 
   void redundantCasts(int intValue, long longValue, float floatValue, byte byteValue, short shortValue, char charValue) {
