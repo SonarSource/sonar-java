@@ -49,6 +49,8 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
 import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.telemetry.Telemetry;
+import org.sonar.java.telemetry.TelemetryKey.ClasspathKeys;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 @ScannerSide
@@ -70,6 +72,9 @@ public abstract class AbstractClasspath {
   protected List<File> elements;
   protected boolean validateLibraries;
   protected boolean initialized;
+  private int libraryEntryCount;
+  private boolean invalidJdkHome;
+  private boolean unmatchedClasspathEntries;
   private boolean inAndroidContext = false;
   private final Set<String> classpathWarnings;
   protected final AnalysisWarningsWrapper analysisWarnings;
@@ -96,6 +101,7 @@ public abstract class AbstractClasspath {
       binaries.addAll(getFilesFromProperty(binariesProperty));
       Set<File> libraries = new LinkedHashSet<>(getJdkJars());
       Set<File> extraLibraries = getFilesFromProperty(librariesProperty);
+      libraryEntryCount = extraLibraries.size();
       libraries.addAll(extraLibraries);
       logResolvedFiles(binariesProperty, binaries);
       logResolvedFiles(librariesProperty, libraries);
@@ -145,6 +151,7 @@ public abstract class AbstractClasspath {
     LOG.debug("Property '{}' set with: {}", ClasspathProperties.SONAR_JAVA_JDK_HOME, path);
     File file = new File(path);
     if (!file.exists() || !file.isDirectory()) {
+      invalidJdkHome = true;
       classpathWarnings.add("Invalid value '" + file.getAbsolutePath() + "' for '" + ClasspathProperties.SONAR_JAVA_JDK_HOME + "' property, defaulting to runtime JDK.");
       return Optional.empty();
     }
@@ -171,6 +178,7 @@ public abstract class AbstractClasspath {
       for (String pathPattern : fileNames) {
         Set<File> libraryFilesForPattern = getFilesForPattern(baseDir.toPath(), pathPattern, isLibraryProperty);
         if (validateLibraries && libraryFilesForPattern.isEmpty() && hasJavaFiles) {
+          unmatchedClasspathEntries = true;
           classpathWarnings.add("Invalid value for '" + property + "', no files nor directories matching '" + pathPattern + "'.");
         }
         validateLibraries = validateLibs;
@@ -369,6 +377,20 @@ public abstract class AbstractClasspath {
       filePath = baseDir.resolve(fileName);
     }
     return filePath.normalize();
+  }
+
+  public void recordTelemetry(Telemetry telemetry, ClasspathKeys keys) {
+    if (!hasJavaFiles()) {
+      return;
+    }
+    init();
+    telemetry.aggregateAsCounter(keys.moduleCount(), 1);
+    telemetry.aggregateAsCounter(keys.modulesMissingBinaries(), settings.hasKey(binariesProperty) ? 0 : 1);
+    telemetry.aggregateAsCounter(keys.modulesWithoutBinaryEntries(), binaries.isEmpty() ? 1 : 0);
+    telemetry.aggregateAsCounter(keys.modulesMissingLibraries(), settings.hasKey(librariesProperty) ? 0 : 1);
+    telemetry.aggregateAsCounter(keys.modulesWithoutLibraryEntries(), libraryEntryCount == 0 ? 1 : 0);
+    telemetry.aggregateAsCounter(keys.modulesWithInvalidJdk(), invalidJdkHome ? 1 : 0);
+    telemetry.aggregateAsCounter(keys.modulesWithUnmatchedEntries(), unmatchedClasspathEntries ? 1 : 0);
   }
 
   public List<File> getElements() {

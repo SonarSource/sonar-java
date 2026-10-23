@@ -62,6 +62,8 @@ public class JavaAstScanner {
   private final Telemetry telemetry;
   private final JavaAnalysisKeys javaAnalysisKeys;
   private VisitorsBridge visitor;
+  private boolean semanticModelEvaluated;
+  private boolean resolutionErrorsDetected;
   private boolean reportedMisconfiguredVersion = false;
 
   public JavaAstScanner(@Nullable SonarComponents sonarComponents, Telemetry telemetry, JavaAnalysisKeys javaAnalysisKeys) {
@@ -82,9 +84,10 @@ public class JavaAstScanner {
    * under the {@code false} key, files that need to be parsed for further analysis.
    */
   public Map<Boolean, List<InputFile>> scanWithoutParsing(Iterable<? extends InputFile> inputFiles) {
-    return StreamSupport.stream(inputFiles.spliterator(), false)
-      // Split files between successfully scanned without parsing and failed to scan without parsing
+    Map<Boolean, List<InputFile>> files = StreamSupport.stream(inputFiles.spliterator(), false)
       .collect(Collectors.partitioningBy(visitor::scanWithoutParsing));
+    telemetry.aggregateAsCounter(javaAnalysisKeys.cachedFileCountKey(), files.get(true).size());
+    return files;
   }
 
   public void scan(Iterable<? extends InputFile> inputFiles) {
@@ -163,6 +166,7 @@ public class JavaAstScanner {
     var telemetryAnalysisKeys = javaAnalysisKeys.exceptions();
     try {
       JavaTree.CompilationUnitTreeImpl ast = result.get();
+      recordSemanticTelemetry(ast.sema.undefinedTypes());
       modifyCompilationUnit.accept(ast);
       visitor.visitFile(ast, sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile));
       String path = inputFile.toString();
@@ -189,8 +193,26 @@ public class JavaAstScanner {
         throw error;
       }
     } finally {
+      telemetry.aggregateAsCounter(telemetryAnalysisKeys.fileCountKey(), 1);
       telemetry.aggregateAsCounter(telemetryAnalysisKeys.sizeCharsKey(), InputFileUtils.charCount(inputFile, 0));
       telemetry.aggregateAsCounter(telemetryAnalysisKeys.timeMsKey(), currentTimeMillis() - startTime);
+    }
+  }
+
+  private void recordSemanticTelemetry(Set<JProblem> problems) {
+    var keys = javaAnalysisKeys.semantic();
+    long resolutionErrors = problems.stream().filter(problem -> problem.type() == JProblem.Type.UNDEFINED_TYPE).count();
+    telemetry.aggregateAsCounter(keys.filesEvaluated(), 1);
+    telemetry.aggregateAsCounter(keys.filesWithResolutionErrors(), resolutionErrors > 0 ? 1 : 0);
+    telemetry.aggregateAsCounter(keys.resolutionErrorCount(), resolutionErrors);
+    if (!semanticModelEvaluated) {
+      telemetry.aggregateAsCounter(keys.modulesEvaluated(), 1);
+      telemetry.aggregateAsCounter(keys.modulesWithResolutionErrors(), 0);
+      semanticModelEvaluated = true;
+    }
+    if (resolutionErrors > 0 && !resolutionErrorsDetected) {
+      telemetry.aggregateAsCounter(keys.modulesWithResolutionErrors(), 1);
+      resolutionErrorsDetected = true;
     }
   }
 

@@ -36,6 +36,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.AnalysisException;
@@ -55,6 +56,7 @@ import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
+import org.sonar.java.telemetry.DefaultTelemetry;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.java.testing.ThreadLocalLogTester;
@@ -71,6 +73,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -385,10 +388,11 @@ class JavaAstScannerTest {
   }
 
   @Test
-  void skippableVisitors_are_not_used_when_file_is_unchanged() throws ApiMismatchException {
+  void skippableVisitors_are_not_used_when_file_is_unchanged() throws Exception {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
     doReturn(true).when(sonarComponents).fileCanBeSkipped(any());
+    when(sonarComponents.symbolizableFor(any())).thenReturn(mock(NewSymbolTable.class, RETURNS_DEEP_STUBS));
     JavaAstScanner jas = new JavaAstScanner(sonarComponents, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
 
     VisitorThatCanBeSkipped skippable = spy(new VisitorThatCanBeSkipped());
@@ -401,7 +405,9 @@ class JavaAstScannerTest {
     jas.setVisitorBridge(visitorsBridge);
 
     InputFile inputFile = new TestInputFileBuilder("class A {}", "file.java").build();
-    jas.simpleScan(inputFile, mock(JParserConfig.Result.class), ignored -> {});
+    var result = mock(JParserConfig.Result.class);
+    when(result.get()).thenReturn((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("class A {}"));
+    jas.simpleScan(inputFile, result, ignored -> {});
 
     verify(skippable, never()).visitNode(any());
     verify(unskippable, times(1)).visitNode(any());
@@ -439,13 +445,15 @@ class JavaAstScannerTest {
     doReturn(true).when(visitorsBridge).scanWithoutParsing(any());
     doReturn(false).when(visitorsBridge).scanWithoutParsing(unsuccessful);
 
-    JavaAstScanner javaAstScanner = new JavaAstScanner(mock(SonarComponents.class), new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
+    var telemetry = new DefaultTelemetry();
+    JavaAstScanner javaAstScanner = new JavaAstScanner(mock(SonarComponents.class), telemetry, TelemetryKey.JAVA_ANALYSIS_MAIN);
     javaAstScanner.setVisitorBridge(visitorsBridge);
 
     Map<Boolean, List<InputFile>> actual = javaAstScanner.scanWithoutParsing(files);
     assertThat(actual).hasSize(2);
     assertThat(actual.get(false)).containsExactly(unsuccessful);
     assertThat(actual.get(true)).containsExactly(successful, successful);
+    assertThat(telemetry.toMap()).containsExactlyEntriesOf(Map.of("java.analysis.main.cached_file_count", "2"));
   }
 
   @Test

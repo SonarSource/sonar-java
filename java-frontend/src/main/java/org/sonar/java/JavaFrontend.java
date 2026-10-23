@@ -107,6 +107,7 @@ public class JavaFrontend {
     testCodeVisitors.addAll(sonarComponents.testChecks());
     List<JavaCheck> jspCodeVisitors = sonarComponents.jspChecks();
     boolean inAndroidContext = sonarComponents.inAndroidContext();
+    sonarComponents.recordClasspathTelemetry(telemetry);
 
     globalClasspath = Stream.of(classpath, testClasspath, jspClasspath)
       .flatMap(Collection::stream).distinct().toList();

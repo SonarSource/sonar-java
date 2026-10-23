@@ -199,6 +199,19 @@ class JavaSensorTest {
       "java.analysis.main.success.size_chars",
       "java.analysis.main.success.time_ms",
       "java.analysis.main.success.type_error_count",
+      "java.analysis.main.success.file_count",
+      "java.analysis.main.semantic.files_evaluated",
+      "java.analysis.main.semantic.files_with_resolution_errors",
+      "java.analysis.main.semantic.resolution_error_count",
+      "java.analysis.main.semantic.modules_evaluated",
+      "java.analysis.main.semantic.modules_with_resolution_errors",
+      "java.classpath.main.module_count",
+      "java.classpath.main.modules_missing_binaries",
+      "java.classpath.main.modules_without_binary_entries",
+      "java.classpath.main.modules_missing_libraries",
+      "java.classpath.main.modules_without_library_entries",
+      "java.classpath.main.modules_with_invalid_jdk",
+      "java.classpath.main.modules_with_unmatched_entries",
       "java.dependency.lombok",
       "java.dependency.spring-boot",
       "java.dependency.spring-web",
@@ -209,6 +222,13 @@ class JavaSensorTest {
     assertThat(telemetryMap.get("java.analysis.main.success.size_chars")).matches("\\d+");
     assertThat(telemetryMap.get("java.analysis.main.success.time_ms")).matches("\\d+");
     assertThat(telemetryMap).containsEntry("java.analysis.main.success.type_error_count", EXPECTED_TYPE_ERROR_COUNT);
+    assertThat(telemetryMap)
+      .containsEntry("java.analysis.main.success.file_count", "3")
+      .containsEntry("java.analysis.main.semantic.files_evaluated", "3")
+      .containsEntry("java.analysis.main.semantic.files_with_resolution_errors", "3")
+      .containsEntry("java.analysis.main.semantic.modules_evaluated", "3")
+      .containsEntry("java.analysis.main.semantic.modules_with_resolution_errors", "3")
+      .containsEntry("java.classpath.main.module_count", "3");
   }
 
   @Test
@@ -221,6 +241,19 @@ class JavaSensorTest {
       "java.analysis.test.success.size_chars",
       "java.analysis.test.success.time_ms",
       "java.analysis.test.success.type_error_count",
+      "java.analysis.test.success.file_count",
+      "java.analysis.test.semantic.files_evaluated",
+      "java.analysis.test.semantic.files_with_resolution_errors",
+      "java.analysis.test.semantic.resolution_error_count",
+      "java.analysis.test.semantic.modules_evaluated",
+      "java.analysis.test.semantic.modules_with_resolution_errors",
+      "java.classpath.test.module_count",
+      "java.classpath.test.modules_missing_binaries",
+      "java.classpath.test.modules_without_binary_entries",
+      "java.classpath.test.modules_missing_libraries",
+      "java.classpath.test.modules_without_library_entries",
+      "java.classpath.test.modules_with_invalid_jdk",
+      "java.classpath.test.modules_with_unmatched_entries",
       "java.dependency.lombok",
       "java.dependency.spring-boot",
       "java.dependency.spring-web",
@@ -231,6 +264,13 @@ class JavaSensorTest {
     assertThat(telemetryMap.get("java.analysis.test.success.size_chars")).matches("\\d+");
     assertThat(telemetryMap.get("java.analysis.test.success.time_ms")).matches("\\d+");
     assertThat(telemetryMap).containsEntry("java.analysis.test.success.type_error_count", EXPECTED_TYPE_ERROR_COUNT);
+    assertThat(telemetryMap)
+      .containsEntry("java.analysis.test.success.file_count", "3")
+      .containsEntry("java.analysis.test.semantic.files_evaluated", "3")
+      .containsEntry("java.analysis.test.semantic.files_with_resolution_errors", "3")
+      .containsEntry("java.analysis.test.semantic.modules_evaluated", "3")
+      .containsEntry("java.analysis.test.semantic.modules_with_resolution_errors", "3")
+      .containsEntry("java.classpath.test.module_count", "3");
   }
 
   private static int lineNumberOfTheMethodWithNoSonar(FileSystem fs) throws IOException {
