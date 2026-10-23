@@ -362,6 +362,8 @@ abstract class PreparedStatementAndResultSetCheckSample {
   void nonConstantCharFragment(Connection con, char separator) throws SQLException {
     PreparedStatement ps = con.prepareStatement("SELECT * FROM t WHERE id = ? AND flag = " + separator);
     ps.setInt(2, 2); // Compliant - the character may be '?'
+    // A character adds at most one placeholder, so anything past that is still reportable.
+    ps.setInt(3, 2); // Noncompliant {{This "PreparedStatement" only has 2 parameters.}}
   }
 
   void constantsFromAnotherClass(Connection con) throws SQLException {

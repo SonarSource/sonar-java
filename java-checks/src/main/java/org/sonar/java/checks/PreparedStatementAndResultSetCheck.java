@@ -119,8 +119,9 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
   @CheckForNull
   private static Integer getNumberQuery(ExpressionTree expression, Tree startingPointForReassignment) {
     ExpressionTree expr = ExpressionUtils.skipParentheses(expression);
-    if (cannotHoldPlaceholder(expr)) {
-      return 0;
+    Integer unresolvedBound = unresolvedPlaceholderBound(expr);
+    if (unresolvedBound != null) {
+      return unresolvedBound;
     }
     Integer constantCount = countQuery(expr);
     if (constantCount != null) {
@@ -176,13 +177,18 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
   }
 
   /**
-   * Numbers and booleans contribute no placeholder whatever their runtime value, so concatenating one keeps the count
-   * of the surrounding query exact. Characters are excluded: '?' is a valid one.
+   * Upper bound on the placeholders an operand can contribute when its value is unknown: none for a number or a
+   * boolean, whatever their runtime value, and at most one for a character, since '?' is a valid one. Returns
+   * {@code null} for anything that can hold an arbitrary number of them.
    */
-  private static boolean cannotHoldPlaceholder(ExpressionTree expression) {
+  @CheckForNull
+  private static Integer unresolvedPlaceholderBound(ExpressionTree expression) {
     Type type = expression.symbolType();
     Type primitiveType = type.isPrimitiveWrapper() ? type.primitiveType() : type;
-    return primitiveType != null && primitiveType.isPrimitive() && !primitiveType.isPrimitive(Primitives.CHAR);
+    if (primitiveType == null || !primitiveType.isPrimitive()) {
+      return null;
+    }
+    return primitiveType.isPrimitive(Primitives.CHAR) ? 1 : 0;
   }
 
   @CheckForNull
