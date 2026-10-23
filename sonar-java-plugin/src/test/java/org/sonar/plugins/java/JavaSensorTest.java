@@ -221,8 +221,8 @@ class JavaSensorTest {
       "java.scanner_app");
     assertThat(telemetryMap.get("java.analysis.main.success.size_chars")).matches("\\d+");
     assertThat(telemetryMap.get("java.analysis.main.success.time_ms")).matches("\\d+");
-    assertThat(telemetryMap).containsEntry("java.analysis.main.success.type_error_count", EXPECTED_TYPE_ERROR_COUNT);
     assertThat(telemetryMap)
+      .containsEntry("java.analysis.main.success.type_error_count", EXPECTED_TYPE_ERROR_COUNT)
       .containsEntry("java.analysis.main.success.file_count", "3")
       .containsEntry("java.analysis.main.semantic.files_evaluated", "3")
       .containsEntry("java.analysis.main.semantic.files_with_resolution_errors", "3")
@@ -263,8 +263,8 @@ class JavaSensorTest {
       "java.scanner_app");
     assertThat(telemetryMap.get("java.analysis.test.success.size_chars")).matches("\\d+");
     assertThat(telemetryMap.get("java.analysis.test.success.time_ms")).matches("\\d+");
-    assertThat(telemetryMap).containsEntry("java.analysis.test.success.type_error_count", EXPECTED_TYPE_ERROR_COUNT);
     assertThat(telemetryMap)
+      .containsEntry("java.analysis.test.success.type_error_count", EXPECTED_TYPE_ERROR_COUNT)
       .containsEntry("java.analysis.test.success.file_count", "3")
       .containsEntry("java.analysis.test.semantic.files_evaluated", "3")
       .containsEntry("java.analysis.test.semantic.files_with_resolution_errors", "3")

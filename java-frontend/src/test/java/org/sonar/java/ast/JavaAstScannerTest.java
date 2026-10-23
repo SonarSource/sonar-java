@@ -392,7 +392,8 @@ class JavaAstScannerTest {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
     doReturn(true).when(sonarComponents).fileCanBeSkipped(any());
-    when(sonarComponents.symbolizableFor(any())).thenReturn(mock(NewSymbolTable.class, RETURNS_DEEP_STUBS));
+    var symbolTable = mock(NewSymbolTable.class, RETURNS_DEEP_STUBS);
+    when(sonarComponents.symbolizableFor(any())).thenReturn(symbolTable);
     JavaAstScanner jas = new JavaAstScanner(sonarComponents, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
 
     VisitorThatCanBeSkipped skippable = spy(new VisitorThatCanBeSkipped());

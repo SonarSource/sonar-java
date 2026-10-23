@@ -20,7 +20,7 @@ The affected-file ratio is `files_with_resolution_errors / files_evaluated`. An 
 
 ## Analysis coverage
 
-Under `java.analysis.<scope>.`, the counters `success.file_count`, `parse_errors.file_count`, and `exceptions.file_count` count file processing outcomes, alongside the existing size and time measurements. `cached_file_count` counts files successfully processed without parsing through server-side caching; it is emitted when that optimization is attempted. Cached files have no new semantic observation. A parse failure has no semantic observation either. An exception may occur before or after semantic observation, so these counters must not be added to `files_evaluated` as disjoint populations.
+Under `java.analysis.<scope>.`, the counters `success.file_count`, `parse_errors.file_count`, and `exceptions.file_count` count file processing outcomes, alongside the existing size and time measurements. `cached_file_count` applies only to `main` and `test`: it counts files successfully processed without parsing through server-side caching and is emitted when that optimization is attempted. Generated sources always go through parsing and do not emit this counter. Cached files have no new semantic observation. A parse failure has no semantic observation either. An exception may occur before or after semantic observation, so these counters must not be added to `files_evaluated` as disjoint populations.
 
 ## Configuration signals
 
