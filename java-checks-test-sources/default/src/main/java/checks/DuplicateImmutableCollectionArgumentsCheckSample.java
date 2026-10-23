@@ -16,6 +16,11 @@ class DuplicateImmutableCollectionArgumentsCheckSample {
   private static final int INT_B = 2;
   private static final int INT_A_ALIAS = 1;
 
+  private static final char CHAR_A = 'a';
+  private static final char CHAR_A_ALIAS = CHAR_A;
+  private static final char CHAR_FROM_INT = 97;
+  private static final int INT_FROM_CHAR = 'a';
+
   enum Color {
     RED, GREEN, BLUE
   }
@@ -162,6 +167,77 @@ class DuplicateImmutableCollectionArgumentsCheckSample {
       "x",
       "x", // Noncompliant {{Remove or replace this duplicate element; "Set.of" throws an "IllegalArgumentException" at runtime when elements are duplicated.}} [[secondary=-1]]
       "x"  // Noncompliant {{Remove or replace this duplicate element; "Set.of" throws an "IllegalArgumentException" at runtime when elements are duplicated.}} [[secondary=-2]]
+    );
+  }
+
+  void testCharAndIntAreDistinct() {
+    Set.of('a', 97);
+    Set.of(97, 'a');
+    Set.of((CHAR_A), (97));
+    Set.of(97, CHAR_A_ALIAS);
+    Set.of(CHAR_FROM_INT, 97);
+    Set.of('a', INT_FROM_CHAR);
+    Map.of('a', "first", 97, "second");
+    Map.of(97, "first", 'a', "second");
+    Map.of(CHAR_A, "first", 97, "second");
+    Map.of(97, "first", CHAR_A_ALIAS, "second");
+    Map.ofEntries(entry('a', "first"), entry(97, "second"));
+    Map.ofEntries(entry(97, "first"), entry('a', "second"));
+    Map.ofEntries(entry(CHAR_A, "first"), entry(97, "second"));
+    Map.ofEntries(entry(97, "first"), entry(CHAR_A_ALIAS, "second"));
+  }
+
+  void testDuplicateChars() {
+    Set.of(
+      'a',
+//    ^^^>
+      'a' // Noncompliant {{Remove or replace this duplicate element; "Set.of" throws an "IllegalArgumentException" at runtime when elements are duplicated.}}
+//    ^^^
+    );
+    Set.of(
+      CHAR_A_ALIAS,
+//    ^^^^^^^^^^^^>
+      'a' // Noncompliant
+//    ^^^
+    );
+    Set.of(
+      CHAR_FROM_INT,
+//    ^^^^^^^^^^^^^>
+      'a' // Noncompliant
+//    ^^^
+    );
+    Map.of(
+      'a', "first",
+//    ^^^>
+      CHAR_A, "second" // Noncompliant {{Remove or rename this duplicate key; "Map.of" throws an "IllegalArgumentException" at runtime when keys are duplicated.}}
+//    ^^^^^^
+    );
+    Map.ofEntries(
+      entry(CHAR_A, "first"),
+//          ^^^^^^>
+      entry('a', "second") // Noncompliant {{Remove or rename this duplicate key; "Map.ofEntries" throws an "IllegalArgumentException" at runtime when keys are duplicated.}}
+//          ^^^
+    );
+  }
+
+  void testPromotedChars() {
+    Set.of(
+      +'a',
+//    ^^^^>
+      97 // Noncompliant
+//    ^^
+    );
+    Set.of(
+      INT_FROM_CHAR,
+//    ^^^^^^^^^^^^^>
+      97 // Noncompliant
+//    ^^
+    );
+    Set.of(
+      CHAR_A + 0,
+//    ^^^^^^^^^^>
+      97 // Noncompliant
+//    ^^
     );
   }
 

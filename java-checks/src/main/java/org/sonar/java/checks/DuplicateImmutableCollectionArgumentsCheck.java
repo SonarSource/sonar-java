@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -150,7 +151,9 @@ public class DuplicateImmutableCollectionArgumentsCheck extends IssuableSubscrip
     Optional<Object> const1 = e1.asConstant();
     Optional<Object> const2 = e2.asConstant();
     if (const1.isPresent() && const2.isPresent()) {
-      return const1.get().equals(const2.get());
+      boolean char1 = expr1.symbolType().isPrimitive(Type.Primitives.CHAR);
+      boolean char2 = expr2.symbolType().isPrimitive(Type.Primitives.CHAR);
+      return char1 == char2 && const1.get().equals(const2.get());
     }
 
     String str1 = ExpressionsHelper.getConstantValueAsString(e1).value();
