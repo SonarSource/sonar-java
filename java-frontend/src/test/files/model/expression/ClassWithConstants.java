@@ -27,6 +27,13 @@ public class ClassWithConstants {
   public static final long LONG_CONSTANT1 = 99L;
   public static final Object OBJECT_CONSTANT = new Object();
   public static final boolean BOOLEAN_CONSTANT = false;
+  public static final char QUESTION_MARK = '?';
+
+  public void characters() {
+    System.out.println(QUESTION_MARK);
+    System.out.println(ClassWithConstants.QUESTION_MARK);
+    System.out.println("WHERE id = " + QUESTION_MARK);
+  }
 
   public void literals(String param) {
     System.out.println("hello");

@@ -20,8 +20,12 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -32,6 +36,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -40,8 +45,6 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StaticInitializerTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
@@ -365,6 +368,80 @@ class ExpressionUtilsTest {
     assertResolveAsConstant("(\"abc\")", ("abc"));
   }
 
+  @ParameterizedTest
+  @MethodSource("charConstantExpressions")
+  void resolve_as_char_constant(String code, @Nullable Object expected) {
+    assertResolveAsConstant(code, expected, """
+      static final char SEP = '/';
+      static final char QUESTION_MARK = '?';
+      static final int NUMBER = 47;
+      static final byte BYTE = 47;
+      static final short SHORT = 47;
+      static final Character BOXED = '?';
+      char unknown;
+      """);
+  }
+
+  private static Stream<Arguments> charConstantExpressions() {
+    return Stream.of(
+      Arguments.of("'?'", 63),
+      Arguments.of("('a')", 97),
+      Arguments.of("'\\n'", 10),
+      Arguments.of("'\\t'", 9),
+      Arguments.of("'\\b'", 8),
+      Arguments.of("'\\f'", 12),
+      Arguments.of("'\\r'", 13),
+      Arguments.of("'\\s'", 32),
+      Arguments.of("'\\''", 39),
+      Arguments.of("'\\\"'", 34),
+      Arguments.of("'\\\\'", 92),
+      Arguments.of("'\\0'", 0),
+      Arguments.of("'\\77'", 63),
+      Arguments.of("'\\377'", 255),
+      Arguments.of("'\\u003f'", 63),
+      Arguments.of("'\\uu003f'", 63),
+      Arguments.of("'\\u005cn'", 10),
+      Arguments.of("'\\u005c\\u006e'", 10),
+      Arguments.of("\\u0027?\\u0027", 63),
+      Arguments.of("'\\uD800'", 0xD800),
+      Arguments.of("'\\uffff'", 0xFFFF),
+      Arguments.of("\"a\" + '\\n'", "a\n"),
+      Arguments.of("'\\\\' + \"a\"", "\\a"),
+      Arguments.of("\"a\" + '\\u003f'", "a?"),
+      Arguments.of("SEP", 47),
+      Arguments.of("A.SEP", 47),
+      Arguments.of("\"WHERE id = \" + QUESTION_MARK", "WHERE id = ?"),
+      Arguments.of("QUESTION_MARK + \" = id\"", "? = id"),
+      Arguments.of("\"/var\" + (A.SEP) + \"name\"", "/var/name"),
+      Arguments.of("\"a\" + '?'", "a?"),
+      Arguments.of("'?' + \"a\"", "?a"),
+      Arguments.of("\"\" + 'a' + 'b'", "ab"),
+      Arguments.of("'a' + ('b' + \"\")", "ab"),
+      Arguments.of("'a' + 'b' + \"\"", "195"),
+      Arguments.of("\"\" + ('a' + 1)", "98"),
+      Arguments.of("\"\" + (+QUESTION_MARK)", "63"),
+      Arguments.of("'a' + 'b'", 195),
+      Arguments.of("'a' + 1", 98),
+      Arguments.of("1 + 'a'", 98),
+      Arguments.of("'a' + 1L", 98L),
+      Arguments.of("1L + 'a'", 98L),
+      Arguments.of("'a' - 1", 96),
+      Arguments.of("'a' * 2", 194),
+      Arguments.of("'b' / 2", 49),
+      Arguments.of("'b' % 2", 0),
+      Arguments.of("'a' / 0", null),
+      Arguments.of("+'a'", 97),
+      Arguments.of("-'a'", -97),
+      Arguments.of("~'a'", -98),
+      Arguments.of("'a' | 2", 99),
+      Arguments.of("\"\" + NUMBER + BYTE + SHORT", "474747"),
+      Arguments.of("\"a\" + unknown", null),
+      Arguments.of("unknown + \"a\"", null),
+      Arguments.of("\"/var\" + SEP + name", null),
+      Arguments.of("BOXED", null),
+      Arguments.of("\"a\" + BOXED", null));
+  }
+
   @Test
   void resolve_as_constant_not_yet_supported() {
     assertResolveAsConstant("true || true", null);
@@ -408,7 +485,11 @@ class ExpressionUtilsTest {
   }
 
   private void assertResolveAsConstant(String code, @Nullable Object expected) {
-    CompilationUnitTree unit = JParserTestUtils.parse("class A { Object f = " + code + "; }");
+    assertResolveAsConstant(code, expected, "");
+  }
+
+  private void assertResolveAsConstant(String code, @Nullable Object expected, String declarations) {
+    CompilationUnitTree unit = JParserTestUtils.parse("class A { Object f = " + code + "; " + declarations + " }");
     ExpressionTree expression = ((VariableTree) ((ClassTree) unit.types().get(0)).members().get(0)).initializer();
     Object actual = ExpressionUtils.resolveAsConstant(expression);
     if (expected == null) {
