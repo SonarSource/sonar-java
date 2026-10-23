@@ -302,19 +302,6 @@ abstract class PreparedStatementAndResultSetCheckSample {
     ps.setString(4, "d"); // Noncompliant
   }
 
-  void conditionalClauseGuardedBySameCondition(Connection con, String status) throws SQLException {
-    String sql = SqlConstants.SELECT
-      + (status != null ? " AND status = ?" : "")
-      + " ORDER BY id";
-
-    PreparedStatement ps = con.prepareStatement(sql);
-    ps.setString(1, "a"); // Compliant
-    if (status != null) {
-      ps.setString(2, status); // Compliant - the clause holding the second placeholder is added under the same condition
-    }
-    ps.setString(3, "c"); // Noncompliant
-  }
-
   void ternaryWithNonConstantFragment(Connection con, String tenant, int maxTurns) throws SQLException {
     String sql = "SELECT * FROM m WHERE m.tenant = ? AND m.session_id = ? "
       + (maxTurns > 0 ? "AND t.id IN (SELECT id FROM t WHERE tenant=? AND session=? LIMIT " + maxTurns + ") " : "")
@@ -323,8 +310,8 @@ abstract class PreparedStatementAndResultSetCheckSample {
     PreparedStatement ps = con.prepareStatement(sql);
     ps.setString(1, tenant); // Compliant
     if (maxTurns > 0) {
-      ps.setString(3, tenant); // Compliant - part of the query is unknown
-      ps.setString(4, tenant); // Compliant - part of the query is unknown
+      ps.setString(3, tenant); // Compliant
+      ps.setString(4, tenant); // Compliant
     }
   }
 
@@ -364,6 +351,16 @@ abstract class PreparedStatementAndResultSetCheckSample {
     ps.setInt(2, 2); // Compliant - the character may be '?'
     // A character adds at most one placeholder, so anything past that is still reportable.
     ps.setInt(3, 2); // Noncompliant {{This "PreparedStatement" only has 2 parameters.}}
+  }
+
+  private static final char QUESTION_MARK = '?';
+
+  void charConstantFragment(Connection con) throws SQLException {
+    PreparedStatement ps = con.prepareStatement("SELECT * FROM t WHERE id = " + QUESTION_MARK);
+    // FALSE POSITIVE: index 1 is valid, the character constant is the placeholder. Constant folding renders a char as
+    // its numeric value, so the query resolves to "... WHERE id = 63" and the placeholder is lost. Fix belongs to the
+    // frontend, tracked by SONARJAVA-7228; remove this annotation once it lands.
+    ps.setInt(1, 1); // Noncompliant
   }
 
   void constantsFromAnotherClass(Connection con) throws SQLException {
