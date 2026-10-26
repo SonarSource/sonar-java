@@ -160,7 +160,7 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
    * a different overload resolution.
    */
   private static boolean areInterchangeableOperands(ExpressionTree left, ExpressionTree right) {
-    return isSimpleOperand(left) && isSimpleOperand(right) && sameType(left.symbolType(), right.symbolType());
+    return isSimpleOperand(left) && isSimpleOperand(right) && sameTypeOrUnknown(left.symbolType(), right.symbolType());
   }
 
   private static boolean isSimpleOperand(ExpressionTree tree) {
@@ -177,7 +177,7 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
     return false;
   }
 
-  private static boolean sameType(Type left, Type right) {
+  private static boolean sameTypeOrUnknown(Type left, Type right) {
     if (left.isUnknown() || right.isUnknown()) {
       return true;
     }
