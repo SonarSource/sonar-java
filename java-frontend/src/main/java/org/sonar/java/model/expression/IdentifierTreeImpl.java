@@ -36,7 +36,6 @@ public class IdentifierTreeImpl extends AssessableExpressionTree implements Iden
   private final boolean isUnnamedVariable;
   private List<AnnotationTree> annotations;
 
-  private Symbol symbol = Symbol.UNKNOWN_SYMBOL;
   public JLabelSymbol labelSymbol;
 
   public IdentifierTreeImpl(InternalSyntaxToken nameToken) {
@@ -80,9 +79,6 @@ public class IdentifierTreeImpl extends AssessableExpressionTree implements Iden
 
   @Override
   public Symbol symbol() {
-    if (!isUnnamedVariable && symbol != Symbol.UNKNOWN_SYMBOL) {
-      return symbol;
-    }
     if (labelSymbol != null) {
       return labelSymbol;
     }

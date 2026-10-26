@@ -16,10 +16,6 @@
  */
 package org.sonar.java.model.declaration;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import javax.annotation.Nullable;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -67,7 +63,6 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Nullable
   private SyntaxToken permitsKeyword;
   private ListTree<TypeTree> permittedTypes;
-  private Symbol.TypeSymbol symbol = Symbol.TypeSymbol.UNKNOWN_TYPE;
 
   public ClassTreeImpl(Kind kind, @Nullable SyntaxToken openBraceToken, List<Tree> members, @Nullable SyntaxToken closeBraceToken) {
     this.kind = kind;
@@ -220,7 +215,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   @Override
   public Symbol.TypeSymbol symbol() {
-    return symbol;
+    return Symbol.TypeSymbol.UNKNOWN_TYPE;
   }
 
   @Nullable

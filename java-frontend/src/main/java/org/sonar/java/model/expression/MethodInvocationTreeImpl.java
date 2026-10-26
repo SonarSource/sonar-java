@@ -19,8 +19,6 @@ package org.sonar.java.model.expression;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import javax.annotation.Nullable;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -39,8 +37,6 @@ public class MethodInvocationTreeImpl extends AssessableExpressionTree implement
   private final Arguments arguments;
   @Nullable
   private TypeArguments typeArguments;
-
-  private Symbol.MethodSymbol methodSymbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
 
   public MethodInvocationTreeImpl(ExpressionTree methodSelect, @Nullable TypeArguments typeArguments, ArgumentListTreeImpl arguments) {
     this.methodSelect = Objects.requireNonNull(methodSelect);
@@ -92,7 +88,7 @@ public class MethodInvocationTreeImpl extends AssessableExpressionTree implement
 
   @Override
   public Symbol.MethodSymbol methodSymbol() {
-    return methodSymbol;
+    return Symbol.MethodSymbol.UNKNOWN_METHOD;
   }
 
   @Override

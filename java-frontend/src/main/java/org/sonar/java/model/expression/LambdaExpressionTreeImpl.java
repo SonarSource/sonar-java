@@ -17,10 +17,6 @@
 package org.sonar.java.model.expression;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import javax.annotation.Nullable;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
@@ -43,8 +39,6 @@ public class LambdaExpressionTreeImpl extends AssessableExpressionTree implement
   private final InternalSyntaxToken arrowToken;
   private final Tree body;
   private CFG cfg;
-
-  private Symbol.MethodSymbol symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
 
   public LambdaExpressionTreeImpl(@Nullable InternalSyntaxToken openParenToken, List<VariableTree> parameters, @Nullable InternalSyntaxToken closeParenToken,
     InternalSyntaxToken arrowToken, Tree body) {
@@ -93,7 +87,7 @@ public class LambdaExpressionTreeImpl extends AssessableExpressionTree implement
 
   @Override
   public Symbol.MethodSymbol symbol() {
-    return symbol;
+    return Symbol.MethodSymbol.UNKNOWN_METHOD;
   }
 
   @Override

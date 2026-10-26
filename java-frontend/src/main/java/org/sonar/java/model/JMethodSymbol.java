@@ -16,202 +16,87 @@
  */
 package org.sonar.java.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.ASTUtils;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.Modifier;
-import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
 
-  /**
-   * Cache for {@link #parameterTypes()}.
-   */
-  private List<Type> parameterTypes;
-
-  private List<Symbol> parameters;
-
-  /**
-   * Cache for {@link #returnType()}.
-   */
-  private TypeSymbol returnType;
-
-  /**
-   * Cache for {@link #thrownTypes()}.
-   */
-  private List<Type> thrownTypes;
-
-  /**
-   * Cache for {@link #overriddenSymbols()}.
-   */
-  private List<MethodSymbol> overriddenSymbols;
-
-  private final String signature;
-
-  JMethodSymbol(JSema sema, IMethodBinding methodBinding) {
-    super(sema, methodBinding);
-    this.signature = methodBinding().getDeclaringClass().getBinaryName()
-      + "#" + name()
-      + ASTUtils.signature(methodBinding().getMethodDeclaration());
-  }
-
-  IMethodBinding methodBinding() {
-    return (IMethodBinding) binding;
+  JMethodSymbol(JSema sema) {
+    super(sema, Kind.METHOD);
   }
 
   public boolean isLambda() {
-    return methodBinding().getDeclaringMember() != null;
+    return false;
   }
 
   @Override
   public List<Type> parameterTypes() {
-    if (parameterTypes == null) {
-      parameterTypes = sema.types(methodBinding().getParameterTypes());
-    }
-    return parameterTypes;
+    return Collections.emptyList();
   }
 
   @Override
   public List<Symbol> declarationParameters() {
-    if (parameters == null) {
-      MethodTree declaration = declaration();
-      if (declaration != null && !isCompactConstructor(declaration)) {
-        parameters = declaration.parameters().stream().map(VariableTree::symbol).toList();
-      } else {
-        parameters = new ArrayList<>();
-        IMethodBinding methodBinding = methodBinding();
-        ITypeBinding[] parameterTypeBindings = methodBinding.getParameterTypes();
-        for (int i = 0; i < parameterTypeBindings.length; i++) {
-          parameters.add(new JVariableSymbol.ParameterPlaceholderSymbol(i, sema, methodBinding.getMethodDeclaration(), parameterTypeBindings[i]));
-        }
-      }
-    }
-    return parameters;
+    return Collections.emptyList();
   }
 
-  private static boolean isCompactConstructor(MethodTree methodTree) {
-    return methodTree.closeParenToken() == null;
-  }
-
-  /**
-   * @since 6.0 returns void type for constructors instead of {@code null}
-   */
   @Override
   public TypeSymbol returnType() {
-    if (returnType == null) {
-      ITypeBinding methodBindingReturnType = methodBinding().getReturnType();
-      // In rare circumstances, when the semantic information is incomplete, methodBindingReturnType can be null.
-      if (methodBindingReturnType == null) {
-        return TypeSymbol.UNKNOWN_TYPE;
-      }
-      this.returnType = sema.typeSymbol(methodBindingReturnType);
-    }
-    return returnType;
+    return TypeSymbol.UNKNOWN_TYPE;
   }
 
   @Override
   public List<Type> thrownTypes() {
-    if (thrownTypes == null) {
-      thrownTypes = sema.types(methodBinding().getExceptionTypes());
-    }
-    return thrownTypes;
+    return Collections.emptyList();
   }
 
   @Override
   public List<MethodSymbol> overriddenSymbols() {
-    if (overriddenSymbols == null) {
-      overriddenSymbols = findOverriddenSymbols();
-    }
-    return overriddenSymbols;
-  }
-
-  private List<MethodSymbol> findOverriddenSymbols() {
-    Set<MethodSymbol> results = new LinkedHashSet<>();
-    IMethodBinding methodBinding = methodBinding();
-    findOverridesInParentTypes(results, methodBinding::overrides, methodBinding.getDeclaringClass());
-    return new ArrayList<>(results);
-  }
-
-  @VisibleForTesting
-  void findOverridesInParentTypes(Collection<MethodSymbol> accumulator, Predicate<IMethodBinding> overridesCondition, ITypeBinding type) {
-    if (type.isInterface()) {
-      // check Object for interfaces forcing overrides from Object
-      findOverridesInTypes(accumulator, overridesCondition, sema.resolveType("java.lang.Object"));
-    } else if (!"java.lang.Object".equals(type.getQualifiedName())) {
-      findOverridesInTypes(accumulator, overridesCondition, type.getSuperclass());
-    }
-    findOverridesInTypes(accumulator, overridesCondition, type.getInterfaces());
-  }
-
-  private void findOverridesInTypes(Collection<MethodSymbol> accumulator, Predicate<IMethodBinding> overridesCondition, ITypeBinding... types) {
-    for (ITypeBinding type : types) {
-      if (type != null) {
-        for (IMethodBinding declaredMethod : type.getDeclaredMethods()) {
-          if (overridesCondition.test(declaredMethod)) {
-            accumulator.add(sema.methodSymbol(declaredMethod));
-            break;
-          }
-        }
-        findOverridesInParentTypes(accumulator, overridesCondition, type);
-      }
-    }
+    return Collections.emptyList();
   }
 
   @Override
   public String signature() {
-    return signature;
+    return "";
   }
 
   @Override
   public boolean isOverridable() {
-    return !isUnknown() && !(isPrivate() || isStatic() || isFinal() || owner().isFinal());
+    return false;
   }
 
   @Override
   public boolean isParametrizedMethod() {
-    return !isUnknown() && (methodBinding().isParameterizedMethod() || methodBinding().isGenericMethod());
+    return false;
   }
 
   @Override
   public boolean isDefaultMethod() {
-    return !isUnknown() && Modifier.isDefault(binding.getModifiers());
+    return false;
   }
 
   @Override
   public boolean isSynchronizedMethod() {
-    return !isUnknown() && Modifier.isSynchronized(binding.getModifiers());
+    return false;
   }
 
   @Override
   public boolean isVarArgsMethod() {
-    return !isUnknown() && methodBinding().isVarargs();
+    return false;
   }
 
   @Nullable
   @Override
   public MethodTree declaration() {
-    return (MethodTree) super.declaration();
+    return null;
   }
 
   @Override
   public boolean isNativeMethod() {
-    return !isUnknown() && Modifier.isNative(binding.getModifiers());
+    return false;
   }
 
-  /** This is for debugging and doesn't follow a guaranteed format. */
-  @Override
-  public String toString() {
-    return binding.getKey();
-  }
 }

@@ -22,14 +22,18 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 final class KeywordSuper extends IdentifierTreeImpl {
 
-  KeywordSuper(InternalSyntaxToken token, Symbol symbol) {
+  KeywordSuper(InternalSyntaxToken token) {
     super(token);
-    setSymbol(symbol);
   }
 
   @Override
   public Type symbolType() {
-    return symbol().type();
+    return Type.UNKNOWN;
+  }
+
+  @Override
+  public Symbol symbol() {
+    return Symbol.UNKNOWN_SYMBOL;
   }
 
 }
