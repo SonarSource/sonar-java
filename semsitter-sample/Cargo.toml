@@ -6,9 +6,13 @@ publish = false
 description = "PoC crate: one tree-sitter grammar rule linked against semsitter udg-model"
 
 [dependencies]
+serde_json = "1"
 tree-sitter = "0.27"
 tree-sitter-language = "0.1"
 udg-model = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "d606e04b766dc4f506c20c3c37f26d1511b5f065" }
+
+[dev-dependencies]
+serde_json = "1"
 
 [build-dependencies]
 cc = "1"

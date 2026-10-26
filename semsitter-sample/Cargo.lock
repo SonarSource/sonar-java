@@ -338,6 +338,7 @@ name = "semsitter-sample"
 version = "0.1.0"
 dependencies = [
  "cc",
+ "serde_json",
  "tree-sitter",
  "tree-sitter-language",
  "udg-model",
