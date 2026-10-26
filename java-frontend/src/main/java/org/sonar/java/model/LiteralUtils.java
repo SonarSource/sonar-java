@@ -17,6 +17,8 @@
 package org.sonar.java.model;
 
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -28,6 +30,8 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 public class LiteralUtils {
+
+  private static final Pattern UNICODE_ESCAPE = Pattern.compile("\\\\u+([0-9a-fA-F]{4})");
 
   private LiteralUtils() {
     // This class only contains static methods
@@ -53,6 +57,16 @@ public class LiteralUtils {
       return Integer.parseUnsignedInt(literalValue.substring(2), 2);
     }
     return Long.decode(literalValue).intValue();
+  }
+
+  /**
+   * Decodes a character literal using Java's Unicode translation followed by escape processing,
+   * returning its promoted integer value.
+   */
+  public static int charLiteralValue(LiteralTree literal) {
+    String translated = UNICODE_ESCAPE.matcher(literal.value())
+      .replaceAll(match -> Matcher.quoteReplacement(String.valueOf((char) Integer.parseInt(match.group(1), 16))));
+    return trimQuotes(translated).translateEscapes().charAt(0);
   }
 
   @CheckForNull

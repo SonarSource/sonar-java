@@ -9,6 +9,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 class FilePermissionsCheckSample {
+  private static final char READ = 'r';
+
+  void characterPermissions(Path filePath) throws Exception {
+    Files.setPosixFilePermissions(filePath, PosixFilePermissions.fromString("rwxrwx" + READ + "--")); // Noncompliant {{Make sure this permission is safe.}}
+//                                                                          ^^^^^^^^^^^^^^^^^^^^^^
+    Files.setPosixFilePermissions(filePath, PosixFilePermissions.fromString("rwxrwx--" + 'x')); // Noncompliant {{Make sure this permission is safe.}}
+//                                                                          ^^^^^^^^^^^^^^^^
+    Files.setPosixFilePermissions(filePath, PosixFilePermissions.fromString("rwxrwx--" + '-'));
+  }
 
   // using PosixFilePermission to set file permissions 757
   public void setPermissions(Path filePath) throws Exception {
