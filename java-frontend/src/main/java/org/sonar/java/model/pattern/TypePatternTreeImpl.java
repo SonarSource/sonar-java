@@ -18,7 +18,6 @@ package org.sonar.java.model.pattern;
 
 import java.util.Collections;
 import java.util.List;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypePatternTree;
@@ -31,8 +30,8 @@ public class TypePatternTreeImpl extends AbstractPatternTree implements TypePatt
 
   private final VariableTree patternVariable;
 
-  public TypePatternTreeImpl(VariableTree patternVariable, Type type) {
-    super(Tree.Kind.TYPE_PATTERN, type);
+  public TypePatternTreeImpl(VariableTree patternVariable) {
+    super(Tree.Kind.TYPE_PATTERN);
     this.patternVariable = patternVariable;
   }
 

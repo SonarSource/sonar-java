@@ -1,0 +1,124 @@
+/*
+ * SonarQube Java
+ * Copyright (C) SonarSource Sàrl
+ * mailto:info AT sonarsource DOT com
+ *
+ * You can redistribute and/or modify this program under the terms of
+ * the Sonar Source-Available License Version 1, as published by SonarSource Sàrl.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the Sonar Source-Available License for more details.
+ *
+ * You should have received a copy of the Sonar Source-Available License
+ * along with this program; if not, see https://sonarsource.com/license/ssal/
+ */
+package org.sonar.java.model;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Stream;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
+
+public class JProblem {
+
+  private static final String USE_ENABLE_PREVIEW = " Use --enable-preview to enable";
+
+  private final String message;
+  private final Type type;
+
+  JProblem(String message, Type type) {
+    this.message = message;
+    this.type = type;
+  }
+
+  public Type type() {
+    return type;
+  }
+
+  public String message() {
+    return message;
+  }
+
+  @Override
+  public String toString() {
+    if (type == JProblem.Type.PREVIEW_FEATURE_USED) {
+      return cleanMessage(message);
+    }
+    return message;
+  }
+
+  private static String cleanMessage(String message) {
+    if (message.endsWith(USE_ENABLE_PREVIEW)) {
+      // Using --enable-preview is irrelevant in this context.
+      return message.substring(0, message.length() - USE_ENABLE_PREVIEW.length());
+    }
+    return message;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof JProblem)) {
+      return false;
+    }
+    JProblem that = (JProblem) o;
+    return type == that.type && message.equals(that.message);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(type, message);
+  }
+
+  public enum Type {
+    UNDEFINED_TYPE(16777218),
+    PREVIEW_FEATURE_USED(4195408),
+    UNUSED_IMPORT(268435844, "org.eclipse.jdt.core.compiler.problem.unusedImport", Tree.Kind.IMPORT),
+    REDUNDANT_CAST(553648309, "org.eclipse.jdt.core.compiler.problem.unnecessaryTypeCheck", Tree.Kind.TYPE_CAST, Tree.Kind.PARENTHESIZED_EXPRESSION),
+    ASSIGNMENT_HAS_NO_EFFECT(536871090, "org.eclipse.jdt.core.compiler.problem.noEffectAssignment", Tree.Kind.ASSIGNMENT),
+    MASKED_CATCH(16777381, "org.eclipse.jdt.core.compiler.problem.hiddenCatchBlock", Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT);
+
+    private final int warningID;
+    private final String compilerOptionKey;
+    private final Set<Tree.Kind> kinds;
+
+    private static final Set<String> COMPILER_OPTIONS = new HashSet<>();
+
+    Type(int warningID) {
+      this.warningID = warningID;
+      this.compilerOptionKey = null;
+      this.kinds = Collections.emptySet();
+    }
+
+    Type(int warningID, String compilerOptionKey, Tree.Kind... kinds) {
+      this.warningID = warningID;
+      this.compilerOptionKey = compilerOptionKey;
+      this.kinds = SetUtils.immutableSetOf(kinds);
+    }
+
+    boolean matches(int problemId) {
+      return problemId == warningID;
+    }
+
+    public static Set<String> compilerOptions() {
+      if (COMPILER_OPTIONS.isEmpty()) {
+        Stream.of(Type.values())
+          .map(t -> t.compilerOptionKey)
+          .forEach(COMPILER_OPTIONS::add);
+      }
+      return Collections.unmodifiableSet(COMPILER_OPTIONS);
+    }
+
+    public Set<Tree.Kind> getKinds() {
+      return kinds;
+    }
+  }
+
+}

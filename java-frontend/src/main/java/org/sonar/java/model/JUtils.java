@@ -30,31 +30,34 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 
 public final class JUtils {
 
   private JUtils() {
   }
 
-  public static final Map<String, String> WRAPPER_TO_PRIMITIVE = Map.of(
-    "java.lang.Byte", "byte",
-    "java.lang.Character", "char",
-    "java.lang.Short", "short",
-    "java.lang.Integer", "int",
-    "java.lang.Long", "long",
-    "java.lang.Float", "float",
-    "java.lang.Double", "double",
-    "java.lang.Boolean", "boolean");
+  static final Map<String, String> WRAPPER_TO_PRIMITIVE = MapBuilder.<String, String>newMap()
+    .put("java.lang.Byte", "byte")
+    .put("java.lang.Character", "char")
+    .put("java.lang.Short", "short")
+    .put("java.lang.Integer", "int")
+    .put("java.lang.Long", "long")
+    .put("java.lang.Float", "float")
+    .put("java.lang.Double", "double")
+    .put("java.lang.Boolean", "boolean")
+    .build();
 
-  public static final Map<String, String> PRIMITIVE_TO_WRAPPER = Map.of(
-    "byte", "java.lang.Byte",
-    "char", "java.lang.Character",
-    "short", "java.lang.Short",
-    "int", "java.lang.Integer",
-    "long", "java.lang.Long",
-    "float", "java.lang.Float",
-    "double", "java.lang.Double",
-    "boolean", "java.lang.Boolean");
+  static final Map<String, String> PRIMITIVE_TO_WRAPPER = MapBuilder.<String, String>newMap()
+    .put("byte", "java.lang.Byte")
+    .put("char", "java.lang.Character")
+    .put("short", "java.lang.Short")
+    .put("int", "java.lang.Integer")
+    .put("long","java.lang.Long")
+    .put("float", "java.lang.Float")
+    .put("double", "java.lang.Double")
+    .put("boolean", "java.lang.Boolean")
+    .build();
 
   public static Type wrapTypeIfPrimitive(Type type) {
     Type wrapped = type.primitiveWrapperType();
@@ -62,7 +65,7 @@ public final class JUtils {
   }
 
   public static boolean isIntersectionType(Type type) {
-    return !type.isUnknown() && type.isIntersectionType();
+    return type.isIntersectionType();
   }
 
   public static Symbol getPackage(Symbol symbol) {
@@ -74,10 +77,7 @@ public final class JUtils {
 
   @Nullable
   public static Object defaultValue(Symbol.MethodSymbol method) {
-    if (method.isUnknown()) {
-      return null;
-    }
-    return method.annotationElementDefaultValue();
+    return null;
   }
 
   /**
@@ -86,7 +86,7 @@ public final class JUtils {
    *
    * <p>Recording both means a lookup by erased name still finds every type it finds today, while a lookup by
    * parameterized key only finds the types actually declared with that parameterization.
-   * <p>
+   *
    * {@code java.lang.Object} and unknown/unresolved types are excluded. Recursion is guarded by erased name, so
    * a common ancestor reached through several interfaces is walked once, and a self-referential generic such as
    * {@code interface A<T> extends B<A<T>>} still terminates.
@@ -146,11 +146,13 @@ public final class JUtils {
     }
     Set<Type> result = new HashSet<>();
     Symbol.TypeSymbol symbol = type.symbol();
-    Type superclass = (symbol.isInterface() || type.isArray()) ? null : symbol.superClass();
-    if (superclass != null) {
-      result.add(superclass);
+    Type superClass = symbol.superClass();
+    if (superClass != null && !superClass.isUnknown()) {
+      result.add(superClass);
     }
-    result.addAll(symbol.interfaces());
+    symbol.interfaces().stream()
+      .filter(iface -> !iface.isUnknown())
+      .forEach(result::add);
     return result;
   }
 
@@ -203,10 +205,10 @@ public final class JUtils {
   }
 
   /**
-   * @param typeSymbol   to lookup recursively for unknown symbol on itself, its interfaces and its super classes hierarchy.
+   * @param typeSymbol to lookup recursively for unknown symbol on itself, its interfaces and its super classes hierarchy.
    * @param methodSymbol a method having at least one unknown parameter type that prevent the overriding resolution
-   *                     to find any exact match. This methodSymbol will be used to find a potential match, just by
-   *                     comparing the name and parameter count.
+   *                    to find any exact match. This methodSymbol will be used to find a potential match, just by
+   *                    comparing the name and parameter count.
    * @return true if the given typeSymbol and its inheritance hierarchy is 100% known and no method in the inheritance
    * cloud match (name and parameter count) the given methodSymbol. In this case, we are sure the methodSymbol does not
    * override any another methods.

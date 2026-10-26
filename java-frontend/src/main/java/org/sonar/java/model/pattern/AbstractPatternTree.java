@@ -30,16 +30,13 @@ public abstract class AbstractPatternTree extends JavaTree implements PatternTre
 
   private final Tree.Kind kind;
 
-  private final Type type;
-
-  AbstractPatternTree(Tree.Kind kind, Type type) {
+  AbstractPatternTree(Tree.Kind kind) {
     this.kind = kind;
-    this.type = Objects.requireNonNull(type);
   }
 
   @Override
   public Type symbolType() {
-    return type;
+    return Type.UNKNOWN;
   }
 
   @Override

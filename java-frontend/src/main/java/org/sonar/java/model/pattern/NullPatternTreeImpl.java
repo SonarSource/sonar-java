@@ -33,7 +33,7 @@ public class NullPatternTreeImpl extends AbstractPatternTree implements NullPatt
   private final LiteralTree nullLiteral;
 
   public NullPatternTreeImpl(LiteralTree nullLiteral) {
-    super(Tree.Kind.NULL_PATTERN, Type.UNKNOWN);
+    super(Tree.Kind.NULL_PATTERN);
     this.nullLiteral = nullLiteral;
   }
 

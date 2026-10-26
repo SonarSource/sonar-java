@@ -16,32 +16,32 @@
  */
 package org.sonar.java.model;
 
-import java.io.File;
-import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.BooleanSupplier;
-import org.sonar.api.batch.fs.InputFile;
-import org.sonar.java.AnalysisProgress;
-import org.sonar.java.jdt.JDTParser;
-import org.sonar.plugins.java.api.JavaVersion;
+import java.util.Collections;
+import java.util.Objects;
 
-public interface JParser {
+public final class JParser {
 
-  JavaVersion MAXIMUM_SUPPORTED_JAVA_VERSION = new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED, true);
-
-  enum Mode {
-    BATCH,
-    FILE_BY_FILE;
-
-    public JParser create(JavaVersion javaVersion, List<File> classpath) {
-      return create(javaVersion, classpath, false);
-    }
-
-    public JParser create(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
-      return JDTParser.create(this, javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
-    }
+  private JParser() {
   }
 
-  void parse(Iterable<InputFile> inputFiles, BooleanSupplier isCanceled, AnalysisProgress analysisProgress, BiConsumer<InputFile, JParseResult> action);
+  public static JavaTree.CompilationUnitTreeImpl parse(String version, String unitName, String source) {
+    Objects.requireNonNull(version);
+    Objects.requireNonNull(unitName);
+    Objects.requireNonNull(source);
+    int line = 1;
+    int column = 0;
+    for (int i = 0; i < source.length(); i++) {
+      if (source.charAt(i) == '\n') {
+        line++;
+        column = 0;
+      } else {
+        column++;
+      }
+    }
+    InternalSyntaxToken eof = new InternalSyntaxToken(line, column, "", Collections.emptyList(), true);
+    JavaTree.CompilationUnitTreeImpl unit = new JavaTree.CompilationUnitTreeImpl(null, Collections.emptyList(), Collections.emptyList(), null, eof);
+    unit.sema = new JSema();
+    return unit;
+  }
 
 }

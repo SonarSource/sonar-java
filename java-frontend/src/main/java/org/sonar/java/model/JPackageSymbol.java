@@ -14,16 +14,12 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.eclipse.jdt.core.dom;
+package org.sonar.java.model;
 
-import org.junit.jupiter.api.Test;
+final class JPackageSymbol extends JSymbol {
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-
-class ASTUtilsTest {
-
-  @Test
-  void type_resolution_should_recover() {
-    assertNull(ASTUtils.resolveType(/* causes NPE */null, "Unknown"));
+  JPackageSymbol(JSema sema) {
+    super(sema, Kind.PACKAGE);
   }
+
 }
