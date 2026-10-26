@@ -58,7 +58,9 @@ public class StaticMethodHidingCheck extends IssuableSubscriptionVisitor {
     for (Symbol symbol : superClass.symbol().lookupSymbols(methodSymbol.name())) {
       if (symbol.isMethodSymbol() && symbol.isStatic() && !symbol.isPrivate()
         && hasSameParameterTypes(methodSymbol, (Symbol.MethodSymbol) symbol)) {
-        reportHidingIssue(methodTree, methodSymbol, (Symbol.MethodSymbol) symbol);
+        if (!isRequiredByDesign(methodSymbol, (Symbol.MethodSymbol) symbol)) {
+          reportHidingIssue(methodTree, methodSymbol, (Symbol.MethodSymbol) symbol);
+        }
         return true;
       }
     }
@@ -86,6 +88,26 @@ public class StaticMethodHidingCheck extends IssuableSubscriptionVisitor {
       || methodSymbol.metadata().isAnnotatedWith("com.google.errorprone.annotations.InlineMe")
       || methodSymbol.metadata().isAnnotatedWith("org.jetbrains.annotations.ApiStatus$Obsolete")
       || methodSymbol.metadata().isAnnotatedWith("org.jetbrains.annotations.ApiStatus$ScheduledForRemoval");
+  }
+
+  /**
+   * Some hierarchies are designed so that subclasses have to redeclare static methods of their parent:
+   * <ul>
+   *   <li>static factories returning a more specific type than the hidden one (e.g. Guava's {@code ImmutableBiMap.of()} hiding {@code ImmutableMap.of()})</li>
+   *   <li>JUnit 3 {@code public static Test suite()} methods, looked up by the test runner on each test class</li>
+   * </ul>
+   */
+  private static boolean isRequiredByDesign(Symbol.MethodSymbol methodSymbol, Symbol.MethodSymbol hiddenMethod) {
+    Type returnType = methodSymbol.returnType().type().erasure();
+    Type hiddenReturnType = hiddenMethod.returnType().type().erasure();
+    boolean isCovariantFactory = !returnType.equals(hiddenReturnType) && returnType.isSubtypeOf(hiddenReturnType);
+    return isCovariantFactory || isJUnit3Suite(methodSymbol);
+  }
+
+  private static boolean isJUnit3Suite(Symbol.MethodSymbol methodSymbol) {
+    return "suite".equals(methodSymbol.name())
+      && methodSymbol.parameterTypes().isEmpty()
+      && methodSymbol.returnType().type().is("junit.framework.Test");
   }
 
   private static boolean hasSameParameterTypes(Symbol.MethodSymbol method, Symbol.MethodSymbol candidate) {
