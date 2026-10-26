@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class InnerClassInInterfaceCheckTest {
 
@@ -37,6 +38,14 @@ class InnerClassInInterfaceCheckTest {
       .onFile(mainCodeSourcesPath("checks/InnerClassInInterfaceCheckSample.java"))
       .withCheck(new InnerClassInInterfaceCheck())
       .withoutSemantic()
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/InnerClassInInterfaceCheckSample.java"))
+      .withCheck(new InnerClassInInterfaceCheck())
       .verifyIssues();
   }
 

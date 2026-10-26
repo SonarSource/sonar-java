@@ -103,6 +103,19 @@ interface WithHelperTypes {
   void named(String ParameterName);
 }
 
+interface WithNameCollisionsInSignatures {
+
+  java.util.Optional<String> qualifiedForeignType();
+
+  <Element> Element typeParameter();
+
+  class Optional {} // Noncompliant
+//      ^^^^^^^^
+
+  class Element {} // Noncompliant
+//      ^^^^^^^
+}
+
 interface WithImplementationsUsedInSignatures {
 
   WithImplementationsUsedInSignatures copy(Nested other);
