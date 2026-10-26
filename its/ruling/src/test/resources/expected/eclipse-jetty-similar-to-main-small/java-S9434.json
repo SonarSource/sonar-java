@@ -1,0 +1,20 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
+371,
+380
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java": [
+370
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java": [
+410,
+411,
+412
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslSelectionDump.java": [
+46
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ScheduledExecutorScheduler.java": [
+99
+]
+}
