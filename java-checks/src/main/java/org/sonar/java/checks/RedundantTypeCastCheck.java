@@ -81,7 +81,9 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean isUnnecessaryCast(TypeCastTree typeCastTree) {
-    if (NumericConversionUtils.isPotentiallyLossyWideningConversion(typeCastTree.expression(), typeCastTree.type().symbolType())) {
+    ExpressionTree castOperand = ExpressionUtils.skipParentheses(typeCastTree.expression());
+    if (!castOperand.is(Tree.Kind.PLUS, Tree.Kind.MINUS, Tree.Kind.MULTIPLY, Tree.Kind.DIVIDE)
+      && NumericConversionUtils.isPotentiallyLossyWideningConversion(castOperand, typeCastTree.type().symbolType())) {
       return false;
     }
     if (skipParentheses(typeCastTree.expression()).is(Tree.Kind.NULL_LITERAL)) {

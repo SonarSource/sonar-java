@@ -31,34 +31,42 @@ integer, breaking assumptions in your logic.</p>
 <p>Silent precision loss is hard to detect and diagnose. The code compiles without warnings, and the loss may only manifest under specific input
 values, making bugs intermittent and difficult to reproduce.</p>
 <h2>How to fix it</h2>
-<p>When converting <code>int</code> to <code>float</code>, use an explicit cast to document awareness of potential precision loss for large values
-(beyond ±16,777,216).</p>
+<p>The right fix depends on whether the precision loss is acceptable:</p>
+<ul>
+  <li>If the exact value matters, keep it in an integer type, or use a floating-point type able to represent it exactly (for example
+  <code>double</code> instead of <code>float</code> for <code>int</code> values). For arbitrary precision, use <code>BigDecimal</code>.</li>
+  <li>If the precision loss is acceptable, add an explicit cast to document that it is intentional.</li>
+</ul>
+<p>Simply adding a cast may hide a bug, which is why no automatic fix is proposed.</p>
+<p>For integer arithmetic expressions such as <code>a / b</code> converted to a floating-point type, casting the result would not fix the
+integer division or overflow. Instead, one of the operands should be cast before the operation, as described by rule {rule:java:S2184}. Such
+expressions are not reported by this rule when {rule:java:S2184} already reports them.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 public class DataProcessor {
-    public void processValue(int id) {
+    public void processId(int id) {
         float floatId = id; // Noncompliant - implicit conversion may lose precision
         System.out.println(floatId);
     }
 
-    public float calculateRatio(int numerator, int denominator) {
-        float ratio = numerator / denominator; // Noncompliant - implicit conversion
-        return ratio;
+    public void processTimestamp(long timestamp) {
+        double value = timestamp; // Noncompliant - implicit conversion may lose precision
+        System.out.println(value);
     }
 }
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
 public class DataProcessor {
-    public void processValue(int id) {
-        float floatId = (float) id; // Explicit cast shows intent
-        System.out.println(floatId);
+    public void processId(int id) {
+        double doubleId = id; // A double can represent every int exactly
+        System.out.println(doubleId);
     }
 
-    public float calculateRatio(int numerator, int denominator) {
-        float ratio = (float) (numerator / denominator); // Clear conversion
-        return ratio;
+    public void processTimestamp(long timestamp) {
+        double value = (double) timestamp; // Explicit cast documents that the precision loss is acceptable
+        System.out.println(value);
     }
 }
 </pre>
