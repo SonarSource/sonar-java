@@ -414,4 +414,145 @@ public class TransactionalMethodCheckedExceptionCheckSample {
       Runnable r = () -> deleteEntity(null);
     }
   }
+
+  static class Repository {
+    void save(Object o) {
+    }
+
+    void saveChecked(Object o) throws IOException {
+    }
+  }
+
+  static class Validator {
+    static void validate(Object o) throws IOException {
+    }
+
+    Validator() throws SQLException {
+    }
+  }
+
+  @Transactional
+  static class ThrowsBeforeWrites {
+    private final Repository repository = new Repository();
+
+    public void saveAfterThrow(Object o) throws IOException { // Compliant - all checked exceptions are thrown before any write
+      if (o == null) {
+        throw new IOException("null");
+      }
+      repository.save(o);
+    }
+
+    public void saveAfterValidation(Object o) throws IOException { // Compliant - validation throwing checked exception happens before any write
+      Validator.validate(o);
+      repository.save(o);
+    }
+
+    public void saveAfterConstructor(Object o) throws SQLException { // Compliant - constructor throwing checked exception happens before any write
+      new Validator();
+      repository.save(o);
+    }
+
+    public void saveAfterThrowInLoop(java.util.List<Object> list) throws IOException { // Compliant
+      for (Object o : list) {
+        if (o == null) {
+          throw new IOException("null");
+        }
+      }
+      list.forEach(repository::save);
+      list.forEach(o -> repository.save(o));
+    }
+
+    public void saveBeforeThrow(Object o) throws IOException { // Noncompliant
+//              ^^^^^^^^^^^^^^^
+      repository.save(o);
+      if (o == null) {
+        throw new IOException("null");
+      }
+    }
+
+    public void saveBeforeValidation(Object o) throws IOException { // Noncompliant
+//              ^^^^^^^^^^^^^^^^^^^^
+      repository.save(o);
+      Validator.validate(o);
+    }
+
+    public void saveBeforeConstructor(Object o) throws SQLException { // Noncompliant
+//              ^^^^^^^^^^^^^^^^^^^^^
+      repository.save(o);
+      new Validator();
+    }
+
+    public void saveThrowingChecked(Object o) throws IOException { // Noncompliant
+//              ^^^^^^^^^^^^^^^^^^^
+      repository.saveChecked(o);
+    }
+
+    public void saveInLoopWithThrow(java.util.List<Object> list) throws IOException { // Noncompliant
+//              ^^^^^^^^^^^^^^^^^^^
+      for (Object o : list) {
+        if (o == null) {
+          throw new IOException("null");
+        }
+        repository.save(o);
+      }
+    }
+
+    public void saveInLambdaBeforeThrow(java.util.List<Object> list) throws IOException { // Noncompliant
+//              ^^^^^^^^^^^^^^^^^^^^^^^
+      list.forEach(o -> repository.save(o));
+      Validator.validate(list);
+    }
+
+    public void saveInTryThenThrowInCatch(Object o) throws IOException { // Noncompliant
+//              ^^^^^^^^^^^^^^^^^^^^^^^^^
+      try {
+        repository.save(o);
+      } catch (RuntimeException e) {
+        throw new IOException(e);
+      }
+    }
+
+    public void saveThenRethrowUnknownType(Object o, Exception e) throws Exception { // Noncompliant
+//              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+      repository.save(o);
+      throw e;
+    }
+
+    public void saveAfterUncheckedThrow(Object o) throws IOException { // Noncompliant
+//              ^^^^^^^^^^^^^^^^^^^^^^^
+      if (o == null) {
+        throw new IllegalArgumentException();
+      }
+      repository.save(o);
+      throw new IllegalStateException();
+    }
+  }
+
+  private final Repository repository = new Repository();
+
+  @Transactional
+  public void methodLevelThrowBeforeWrite(Object o) throws IOException { // Compliant - all checked exceptions are thrown before any write
+    if (o == null) {
+      throw new IOException("null");
+    }
+    repository.save(o);
+  }
+
+  @Transactional
+  public void methodLevelThrowWithoutWrite(Object o) throws IOException { // Noncompliant
+//            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    if (o == null) {
+      throw new IOException("null");
+    }
+    o.toString();
+  }
+
+  @Transactional
+  public void methodLevelWriteBeforeThrow(Object o) throws IOException { // Noncompliant
+//            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    repository.save(o);
+    if (o == null) {
+      throw new IOException("null");
+    }
+  }
 }

@@ -16,11 +16,15 @@
  */
 package org.sonar.java.checks.spring;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
@@ -34,6 +38,8 @@ import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.Version;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -50,6 +56,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
@@ -110,6 +117,10 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
     boolean isClassLevel = isClassLevelAnnotation(method, transactionalAnnotation);
 
     if (isClassLevel && !looksTransactional(method)) {
+      return;
+    }
+
+    if (allCheckedExceptionsThrownBeforeWrites(method)) {
       return;
     }
 
@@ -294,6 +305,93 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
     var visitor = new MethodInvocationVisitor();
     method.accept(visitor);
     return visitor.foundTransactionalCall;
+  }
+
+  /**
+   * Uses the control flow graph of the method to determine whether every point that may throw a checked exception
+   * is executed before any write operation. In that case, no write can have happened when a checked exception is
+   * thrown, so the rollback behavior is irrelevant.
+   * Returns false when the method has no body, no write operation or no point throwing a checked exception.
+   */
+  private static boolean allCheckedExceptionsThrownBeforeWrites(MethodTree method) {
+    ControlFlowGraph cfg = method.cfg();
+    if (cfg == null) {
+      return false;
+    }
+    boolean hasWrite = false;
+    boolean hasThrowPoint = false;
+    for (ControlFlowGraph.Block block : cfg.blocks()) {
+      List<Tree> items = blockItems(block);
+      for (int i = 0; i < items.size(); i++) {
+        hasThrowPoint |= isCheckedThrowPoint(items.get(i));
+        if (isWriteOperation(items.get(i))) {
+          hasWrite = true;
+          if (items.subList(i, items.size()).stream().anyMatch(TransactionalMethodCheckedExceptionCheck::isCheckedThrowPoint)
+            || hasReachableThrowPoint(block)) {
+            return false;
+          }
+        }
+      }
+    }
+    return hasWrite && hasThrowPoint;
+  }
+
+  private static List<Tree> blockItems(ControlFlowGraph.Block block) {
+    Tree terminator = block.terminator();
+    if (terminator == null) {
+      return block.elements();
+    }
+    List<Tree> items = new ArrayList<>(block.elements());
+    items.add(terminator);
+    return items;
+  }
+
+  private static boolean hasReachableThrowPoint(ControlFlowGraph.Block start) {
+    Set<ControlFlowGraph.Block> visited = new HashSet<>();
+    Deque<ControlFlowGraph.Block> toVisit = new ArrayDeque<>();
+    addSuccessors(start, toVisit);
+    while (!toVisit.isEmpty()) {
+      ControlFlowGraph.Block block = toVisit.pop();
+      if (visited.add(block)) {
+        if (blockItems(block).stream().anyMatch(TransactionalMethodCheckedExceptionCheck::isCheckedThrowPoint)) {
+          return true;
+        }
+        addSuccessors(block, toVisit);
+      }
+    }
+    return false;
+  }
+
+  private static void addSuccessors(ControlFlowGraph.Block block, Deque<ControlFlowGraph.Block> toVisit) {
+    toVisit.addAll(block.successors());
+    toVisit.addAll(block.exceptions());
+  }
+
+  private static boolean isWriteOperation(Tree tree) {
+    if (!(tree instanceof MethodInvocationTree) && !(tree instanceof NewClassTree)) {
+      return false;
+    }
+    var visitor = new MethodInvocationVisitor();
+    tree.accept(visitor);
+    return visitor.foundTransactionalCall;
+  }
+
+  private static boolean isCheckedThrowPoint(Tree tree) {
+    if (tree instanceof ThrowStatementTree throwStatement) {
+      Type type = throwStatement.expression().symbolType();
+      return type.isUnknown() || isCheckedException(type);
+    }
+    if (tree instanceof MethodInvocationTree mit) {
+      return mayThrowCheckedException(mit.methodSymbol());
+    }
+    if (tree instanceof NewClassTree newClass) {
+      return mayThrowCheckedException(newClass.methodSymbol());
+    }
+    return false;
+  }
+
+  private static boolean mayThrowCheckedException(Symbol.MethodSymbol symbol) {
+    return symbol.isUnknown() || symbol.thrownTypes().stream().anyMatch(type -> type.isUnknown() || isCheckedException(type));
   }
 
   private static boolean hasTransactionalPrefix(String name) {
