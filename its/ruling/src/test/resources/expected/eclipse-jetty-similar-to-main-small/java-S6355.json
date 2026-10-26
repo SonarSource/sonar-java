@@ -1,0 +1,54 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java": [
+82,
+147,
+153,
+159,
+1298
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java": [
+397
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/OptionalSslConnectionFactory.java": [
+36
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java": [
+914
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnectionStatistics.java": [
+23
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/AbstractHandler.java": [
+78,
+137
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java": [
+186
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/InetAccessHandler.java": [
+173,
+185,
+197,
+209
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCache.java": [
+499
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java": [
+131
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java": [
+335,
+402,
+420,
+430,
+462,
+473
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/log/Logger.java": [
+26
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/log/Slf4jLogger.java": [
+23
+]
+}

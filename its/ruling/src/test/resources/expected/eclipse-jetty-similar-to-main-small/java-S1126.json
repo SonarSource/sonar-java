@@ -1,0 +1,24 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
+1426
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/InetAccessSet.java": [
+123
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java": [
+566
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java": [
+45,
+124,
+159,
+177
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/LeakDetector.java": [
+80,
+101
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java": [
+658
+]
+}

@@ -1,0 +1,66 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnectionFactory.java": [
+100
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java": [
+466
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/BufferedResponseHandler.java": [
+270
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java": [
+368
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java": [
+765
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java": [
+240
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java": [
+177
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestFixture.java": [
+112
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/HttpWriterTest.java": [
+243
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/StressTest.java": [
+352
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/handler/NcsaRequestLogTest.java": [
+622
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLCloseTest.java": [
+93
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLSelectChannelConnectorLoadTest.java": [
+334
+],
+"eclipse-jetty-similar-to-main-small:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONObjectConvertor.java": [
+100
+],
+"eclipse-jetty-similar-to-main-small:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java": [
+181
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/Loader.java": [
+86
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
+289
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/test/java/org/eclipse/jetty/util/PathWatcherTest.java": [
+295
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/test/java/org/eclipse/jetty/util/TestIntrospectionUtil.java": [
+71,
+90
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/test/java/org/eclipse/jetty/util/statistic/SampleStatisticTest.java": [
+69
+],
+"eclipse-jetty-similar-to-main-small:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java": [
+271
+]
+}

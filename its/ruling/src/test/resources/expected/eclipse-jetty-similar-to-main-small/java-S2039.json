@@ -1,0 +1,302 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/BadMessageException.java": [
+29,
+30
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/DateGenerator.java": [
+39,
+41
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java": [
+38,
+67
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/HostPortHttpField.java": [
+30
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCookie.java": [
+551
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java": [
+419,
+933,
+1339,
+1340,
+1429,
+1520
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java": [
+831,
+832,
+833
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/HttpTokens.java": [
+28,
+29,
+30,
+31,
+32,
+33
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/ResourceHttpContent.java": [
+40,
+41,
+42,
+43,
+44
+],
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java": [
+47,
+48,
+49
+],
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferOutputStream.java": [
+33
+],
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/SocketChannelEndPoint.java": [
+58
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncContextState.java": [
+35
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/ClassLoaderDump.java": [
+29
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/DebugListener.java": [
+198,
+239,
+293
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/EncodingHttpWriter.java": [
+31
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java": [
+571,
+572,
+574,
+575,
+576,
+577,
+578
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelListeners.java": [
+35
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java": [
+1496,
+1524,
+1566
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/HttpWriter.java": [
+34,
+35,
+36
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
+783,
+784
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
+61
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/Utf8HttpWriter.java": [
+34
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/BufferedResponseHandler.java": [
+65,
+177,
+178,
+179,
+180,
+181
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DefaultHandler.java": [
+57,
+58,
+59,
+60
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java": [
+68,
+69,
+70,
+71,
+72
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ManagedAttributeListener.java": [
+38,
+39
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/MovedContextHandler.java": [
+39,
+40,
+41,
+42,
+43,
+44
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ResourceHandler.java": [
+55,
+56,
+57,
+58,
+60,
+61
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ThreadLimitHandler.java": [
+405
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/jmx/AbstractConnectorMBean.java": [
+29
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCacheFactory.java": [
+29,
+30,
+31,
+32,
+33,
+34
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStoreFactory.java": [
+27,
+28
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/session/DatabaseAdaptor.java": [
+50,
+52,
+53,
+54
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStoreFactory.java": [
+28,
+29
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStoreFactory.java": [
+30,
+35
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java": [
+140
+],
+"eclipse-jetty-similar-to-main-small:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/StdErrAppender.java": [
+34,
+35,
+36,
+37
+],
+"eclipse-jetty-similar-to-main-small:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java": [
+85
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/AbstractTrie.java": [
+34
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java": [
+99,
+100,
+101,
+102
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/DateCache.java": [
+58,
+59
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java": [
+60,
+61,
+62,
+63
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java": [
+95,
+112,
+113,
+193,
+194,
+195,
+196,
+238,
+239
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/IteratingNestedCallback.java": [
+41
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/MultiReleaseJarFile.java": [
+156,
+157,
+158,
+159,
+160
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java": [
+537,
+538,
+539,
+718
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java": [
+53,
+54,
+55,
+56
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java": [
+119,
+120,
+160,
+161,
+162
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java": [
+53
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/Utf8StringBuffer.java": [
+35
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/Utf8StringBuilder.java": [
+35
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/component/FileDestroyable.java": [
+35
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/component/Graceful.java": [
+69,
+70
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
+64
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/resource/URLResource.java": [
+48
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslSelectionDump.java": [
+57,
+58,
+59
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ThreadPoolBudget.java": [
+37
+],
+"eclipse-jetty-similar-to-main-small:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
+342,
+343,
+1464,
+1465,
+1466,
+1467
+],
+"eclipse-jetty-similar-to-main-small:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java": [
+304,
+305,
+330,
+331,
+506,
+780,
+781
+],
+"eclipse-jetty-similar-to-main-small:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java": [
+294,
+295,
+296,
+297
+]
+}

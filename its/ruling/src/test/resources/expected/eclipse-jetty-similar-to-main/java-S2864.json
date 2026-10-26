@@ -1,0 +1,14 @@
+{
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/MultiMap.java": [
+365
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java": [
+696
+],
+"eclipse-jetty-similar-to-main:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlAppendable.java": [
+154
+],
+"eclipse-jetty-similar-to-main:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
+1793
+]
+}

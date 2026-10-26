@@ -1,0 +1,88 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCookie.java": [
+322
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java": [
+710,
+876
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/HttpMethod.java": [
+65,
+67,
+75,
+79,
+84,
+89,
+94,
+99
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/HttpTokens.java": [
+68
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/HttpVersion.java": [
+58
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java": [
+514
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java": [
+122
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/Syntax.java": [
+72
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/UriTemplatePathSpec.java": [
+261
+],
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java": [
+427
+],
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
+457
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelOverHttp.java": [
+271
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/InclusiveByteRange.java": [
+84
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/BufferedResponseHandler.java": [
+209
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHttpOutputInterceptor.java": [
+141
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCache.java": [
+715
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java": [
+238
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/JavaVersion.java": [
+56
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/MultiReleaseJarFile.java": [
+83
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/QuotedStringTokenizer.java": [
+284,
+588
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/StringUtil.java": [
+172,
+658
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/URIUtil.java": [
+1095
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java": [
+883
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java": [
+52,
+237
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java": [
+2183
+]
+}

@@ -1,0 +1,74 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/CookieCutter.java": [
+35
+],
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java": [
+92
+],
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java": [
+47
+],
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/SelectorManager.java": [
+61
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java": [
+144
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/Cookies.java": [
+41
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
+275
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelListeners.java": [
+35
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java": [
+179
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartParser.java": [
+42
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/Slf4jRequestLogWriter.java": [
+34
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/BufferedResponseHandler.java": [
+65
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+207
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHttpOutputInterceptor.java": [
+46
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/session/DatabaseAdaptor.java": [
+50
+],
+"eclipse-jetty-similar-to-main-small:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/StacklessLogging.java": [
+101
+],
+"eclipse-jetty-similar-to-main-small:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java": [
+85
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java": [
+718
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java": [
+53
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/Utf8Appendable.java": [
+52
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/log/Slf4jLogger.java": [
+26
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/AbstractLeakPreventer.java": [
+38
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java": [
+119
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ThreadPoolBudget.java": [
+37
+]
+}

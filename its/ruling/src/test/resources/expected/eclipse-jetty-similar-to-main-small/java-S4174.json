@@ -1,0 +1,14 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/MappedResource.java": [
+90
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/MemoryUtils.java": [
+33
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java": [
+678
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java": [
+470
+]
+}

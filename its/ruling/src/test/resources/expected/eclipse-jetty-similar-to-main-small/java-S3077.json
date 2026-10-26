@@ -1,0 +1,49 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java": [
+38
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncContextEvent.java": [
+40
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncContextState.java": [
+35
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnection.java": [
+70
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java": [
+196
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java": [
+102,
+103
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/NetworkTrafficServerConnector.java": [
+40
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
+93
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java": [
+80
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HotSwapHandler.java": [
+36
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/StatisticsHandler.java": [
+51
+],
+"eclipse-jetty-similar-to-main-small:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/Timestamp.java": [
+43
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/DateCache.java": [
+54
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
+64
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ScheduledExecutorScheduler.java": [
+48,
+49
+]
+}

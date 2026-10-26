@@ -1,18 +1,33 @@
 {
-"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/WriterOutputStream.java": [
+"eclipse-jetty-similar-to-main:jetty-io/src/main/java/org/eclipse/jetty/io/WriterOutputStream.java": [
 68,
 78
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DebugListener.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/DebugListener.java": [
 80
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/RequestLogWriter.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/RequestLogWriter.java": [
 206
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
 339
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DebugHandler.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DebugHandler.java": [
 123
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java": [
+318
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/StringUtil.java": [
+712
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java": [
+402
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/component/FileNoticeLifeCycleListener.java": [
+44
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/security/Password.java": [
+228
 ]
 }

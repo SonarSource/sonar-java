@@ -1,17 +1,23 @@
 {
-"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java": [
+"eclipse-jetty-similar-to-main:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java": [
 90
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConfiguration.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConfiguration.java": [
 50
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java": [
 144
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
 116
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java": [
 74
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java": [
+104
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java": [
+48
 ]
 }

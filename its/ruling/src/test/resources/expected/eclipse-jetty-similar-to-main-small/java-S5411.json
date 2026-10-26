@@ -1,0 +1,8 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferPool.java": [
+141
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
+568
+]
+}

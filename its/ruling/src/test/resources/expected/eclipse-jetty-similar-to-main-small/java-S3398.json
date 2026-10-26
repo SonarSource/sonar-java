@@ -1,0 +1,26 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
+309
+],
+"eclipse-jetty-similar-to-main-small:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
+279,
+284,
+289,
+295,
+322,
+420,
+438
+],
+"eclipse-jetty-similar-to-main-small:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java": [
+252
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/SecureRequestCustomizer.java": [
+286
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
+234
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHttpOutputInterceptor.java": [
+122
+]
+}

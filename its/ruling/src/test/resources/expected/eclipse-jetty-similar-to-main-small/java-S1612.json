@@ -1,0 +1,37 @@
+{
+"eclipse-jetty-similar-to-main-small:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/PathMappings.java": [
+213
+],
+"eclipse-jetty-similar-to-main-small:jetty-io/src/test/java/org/eclipse/jetty/io/SocketChannelEndPointTest.java": [
+264
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java": [
+845
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/main/java/org/eclipse/jetty/server/resource/HttpContentRangeWriter.java": [
+81
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/CustomResourcesMonitorTest.java": [
+115,
+122
+],
+"eclipse-jetty-similar-to-main-small:jetty-server/src/test/java/org/eclipse/jetty/server/LowResourcesMonitorTest.java": [
+224,
+231
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java": [
+680
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslSelectionDump.java": [
+71,
+74
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/test/java/org/eclipse/jetty/util/FutureCallbackTest.java": [
+109,
+156
+],
+"eclipse-jetty-similar-to-main-small:jetty-util/src/test/java/org/eclipse/jetty/util/thread/strategy/ExecutionStrategyTest.java": [
+125,
+171
+]
+}

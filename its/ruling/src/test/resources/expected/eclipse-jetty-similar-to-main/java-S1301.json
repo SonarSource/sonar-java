@@ -1,14 +1,14 @@
 {
-"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java": [
+"eclipse-jetty-similar-to-main:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java": [
 1761
 ],
-"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpVersion.java": [
+"eclipse-jetty-similar-to-main:jetty-http/src/main/java/org/eclipse/jetty/http/HttpVersion.java": [
 75
 ],
-"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java": [
+"eclipse-jetty-similar-to-main:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java": [
 275
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java": [
 282,
 298,
 331,
@@ -17,8 +17,14 @@
 1329,
 1362
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+"eclipse-jetty-similar-to-main:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
 941,
 980
+],
+"eclipse-jetty-similar-to-main:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/AsyncJSON.java": [
+960
+],
+"eclipse-jetty-similar-to-main:jetty-util/src/main/java/org/eclipse/jetty/util/URIUtil.java": [
+365
 ]
 }
