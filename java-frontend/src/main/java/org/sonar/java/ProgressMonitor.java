@@ -19,12 +19,11 @@ package org.sonar.java;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.annotations.VisibleForTesting;
 
-public class ProgressMonitor implements IProgressMonitor, Runnable {
+public class ProgressMonitor implements Runnable {
 
   private final Logger logger;
   private final long period;
@@ -84,7 +83,6 @@ public class ProgressMonitor implements IProgressMonitor, Runnable {
     }
   }
 
-  @Override
   public void beginTask(String name, int totalWork) {
     if (totalWork <= 0) {
       unknownTotalWork = true;
@@ -96,7 +94,6 @@ public class ProgressMonitor implements IProgressMonitor, Runnable {
     thread.start();
   }
 
-  @Override
   public void done() {
     if (success && analysisProgress.isLastBatch()) {
       log("100% analyzed");
@@ -107,7 +104,6 @@ public class ProgressMonitor implements IProgressMonitor, Runnable {
     join();
   }
 
-  @Override
   public boolean isCanceled() {
     if (isCanceled.getAsBoolean()) {
       log("Batch processing: Cancelled!");
@@ -116,7 +112,6 @@ public class ProgressMonitor implements IProgressMonitor, Runnable {
     return false;
   }
 
-  @Override
   public void setCanceled(boolean value) {
     // do nothing
   }
@@ -129,7 +124,6 @@ public class ProgressMonitor implements IProgressMonitor, Runnable {
     }
   }
 
-  @Override
   public void worked(int work) {
     processedWork += work;
     if (processedWork == totalWork) {
@@ -137,17 +131,14 @@ public class ProgressMonitor implements IProgressMonitor, Runnable {
     }
   }
 
-  @Override
   public void internalWorked(double work) {
     // do nothing
   }
 
-  @Override
   public void setTaskName(String name) {
     // do nothing
   }
 
-  @Override
   public void subTask(String name) {
     // do nothing
   }

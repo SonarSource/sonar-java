@@ -19,9 +19,8 @@ package org.sonar.java.model.declaration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
@@ -47,8 +46,6 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   private ExpressionTree initializer;
   @Nullable
   private SyntaxToken endToken;
-
-  private Symbol symbol = Symbol.UNKNOWN_SYMBOL;
 
   public VariableTreeImpl(
     ModifiersTree modifiers,
@@ -133,7 +130,7 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
 
   @Override
   public Symbol symbol() {
-    return symbol;
+    return Symbol.UNKNOWN_SYMBOL;
   }
 
   @Override
