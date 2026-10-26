@@ -313,6 +313,13 @@ abstract class PreparedStatementAndResultSetCheckSample {
       ps.setString(3, tenant); // Compliant
       ps.setString(4, tenant); // Compliant
     }
+    // The whole query resolves: the int fragment contributes no placeholder and the branch taken contributes two.
+    ps.setString(5, tenant); // Noncompliant {{This "PreparedStatement" only has 4 parameters.}}
+  }
+
+  void ternaryWithUnresolvableBranch(Connection con, boolean cond) throws SQLException {
+    PreparedStatement ps = con.prepareStatement("SELECT * FROM t WHERE a = ? " + (cond ? getQuery() : ""));
+    ps.setString(5, "x"); // Compliant - one branch of the conditional is unknown, so the count is too
   }
 
   void assignedInBothBranches(Connection con, boolean hasPassword) throws SQLException {
@@ -346,6 +353,12 @@ abstract class PreparedStatementAndResultSetCheckSample {
     ps.setInt(2, 2); // Noncompliant
   }
 
+  void boxedCharFragment(Connection con, Character separator) throws SQLException {
+    PreparedStatement ps = con.prepareStatement("SELECT * FROM t WHERE id = ? AND flag = " + separator);
+    ps.setInt(2, 2); // Compliant - the character may be '?'
+    ps.setInt(3, 2); // Noncompliant {{This "PreparedStatement" only has 2 parameters.}}
+  }
+
   void nonConstantCharFragment(Connection con, char separator) throws SQLException {
     PreparedStatement ps = con.prepareStatement("SELECT * FROM t WHERE id = ? AND flag = " + separator);
     ps.setInt(2, 2); // Compliant - the character may be '?'
@@ -361,6 +374,26 @@ abstract class PreparedStatementAndResultSetCheckSample {
     // its numeric value, so the query resolves to "... WHERE id = 63" and the placeholder is lost. Fix belongs to the
     // frontend, tracked by SONARJAVA-7228; remove this annotation once it lands.
     ps.setInt(1, 1); // Noncompliant
+  }
+
+  void charLiteralIsThePlaceholder(Connection con) throws SQLException {
+    PreparedStatement ps = con.prepareStatement("SELECT * FROM t WHERE id = " + '?');
+    ps.setInt(1, 1); // Compliant
+    ps.setInt(2, 2); // Noncompliant {{This "PreparedStatement" only has 1 parameters.}}
+  }
+
+  void charLiteralIsNotAPlaceholder(Connection con) throws SQLException {
+    PreparedStatement ps = con.prepareStatement("SELECT * FROM t WHERE id = ? AND flag = " + 'y');
+    ps.setInt(1, 1); // Compliant
+    ps.setInt(2, 2); // Noncompliant {{This "PreparedStatement" only has 1 parameters.}}
+  }
+
+  void charLocalVariableFragment(Connection con) throws SQLException {
+    // the char-typed fragment is bounded at one placeholder
+    final char questionMark = '?';
+    PreparedStatement ps = con.prepareStatement("SELECT * FROM t WHERE id = " + questionMark);
+    ps.setInt(1, 1); // Compliant
+    ps.setInt(2, 2); // Noncompliant {{This "PreparedStatement" only has 1 parameters.}}
   }
 
   void constantsFromAnotherClass(Connection con) throws SQLException {

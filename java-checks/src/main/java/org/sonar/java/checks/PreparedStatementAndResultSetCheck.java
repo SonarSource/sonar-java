@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -183,12 +184,17 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
    */
   @CheckForNull
   private static Integer unresolvedPlaceholderBound(ExpressionTree expression) {
-    Type type = expression.symbolType();
-    Type primitiveType = type.isPrimitiveWrapper() ? type.primitiveType() : type;
-    if (primitiveType == null || !primitiveType.isPrimitive()) {
-      return null;
+    if (expression.is(Tree.Kind.CHAR_LITERAL)) {
+      return "'?'".equals(((LiteralTree) expression).value()) ? 1 : 0;
     }
-    return primitiveType.isPrimitive(Primitives.CHAR) ? 1 : 0;
+    Type type = expression.symbolType();
+    if (type.isPrimitive(Primitives.CHAR) || type.is("java.lang.Character")) {
+      return 1;
+    }
+    if (type.isPrimitive() || type.isPrimitiveWrapper()) {
+      return 0;
+    }
+    return null;
   }
 
   @CheckForNull
