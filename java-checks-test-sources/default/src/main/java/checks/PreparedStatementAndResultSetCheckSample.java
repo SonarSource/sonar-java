@@ -370,10 +370,7 @@ abstract class PreparedStatementAndResultSetCheckSample {
 
   void charConstantFragment(Connection con) throws SQLException {
     PreparedStatement ps = con.prepareStatement("SELECT * FROM t WHERE id = " + QUESTION_MARK);
-    // FALSE POSITIVE: index 1 is valid, the character constant is the placeholder. Constant folding renders a char as
-    // its numeric value, so the query resolves to "... WHERE id = 63" and the placeholder is lost. Fix belongs to the
-    // frontend, tracked by SONARJAVA-7228; remove this annotation once it lands.
-    ps.setInt(1, 1); // Noncompliant
+    ps.setInt(1, 1); // Compliant
   }
 
   void charLiteralIsThePlaceholder(Connection con) throws SQLException {
