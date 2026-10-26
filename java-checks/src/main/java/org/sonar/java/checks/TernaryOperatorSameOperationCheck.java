@@ -22,14 +22,17 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 @Rule(key = "S9358")
 public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisitor {
@@ -130,7 +133,12 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
     }
     int differences = 0;
     for (int i = 0; i < leftArgs.size(); i++) {
-      if (!sameTree(leftArgs.get(i), rightArgs.get(i))) {
+      ExpressionTree leftArg = leftArgs.get(i);
+      ExpressionTree rightArg = rightArgs.get(i);
+      if (!sameTree(leftArg, rightArg)) {
+        if (!areInterchangeableOperands(leftArg, rightArg)) {
+          return false;
+        }
         differences++;
       }
     }
@@ -138,8 +146,42 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
   }
 
   private static boolean sameArrayAccess(ArrayAccessExpressionTree left, ArrayAccessExpressionTree right) {
+    ExpressionTree leftIndex = left.dimension().expression();
+    ExpressionTree rightIndex = right.dimension().expression();
     return sameTree(left.expression(), right.expression())
-      && !sameTree(left.dimension().expression(), right.dimension().expression());
+      && !sameTree(leftIndex, rightIndex)
+      && areInterchangeableOperands(leftIndex, rightIndex);
+  }
+
+  /**
+   * The differing operands can be moved into a conditional expression only when doing so keeps the code readable
+   * and does not alter semantics: both operands must be simple (identifiers, literals or field accesses)
+   * and have the same type, so that the resulting conditional expression does not involve boxing, unboxing or
+   * a different overload resolution.
+   */
+  private static boolean areInterchangeableOperands(ExpressionTree left, ExpressionTree right) {
+    return isSimpleOperand(left) && isSimpleOperand(right) && sameTypeOrUnknown(left.symbolType(), right.symbolType());
+  }
+
+  private static boolean isSimpleOperand(ExpressionTree tree) {
+    ExpressionTree expression = ExpressionUtils.skipParentheses(tree);
+    if (expression instanceof LiteralTree || expression.is(Tree.Kind.IDENTIFIER)) {
+      return true;
+    }
+    if (expression.is(Tree.Kind.UNARY_MINUS)) {
+      return ((UnaryExpressionTree) expression).expression() instanceof LiteralTree;
+    }
+    if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+      return isSimpleOperand(((MemberSelectExpressionTree) expression).expression());
+    }
+    return false;
+  }
+
+  private static boolean sameTypeOrUnknown(Type left, Type right) {
+    if (left.isUnknown() || right.isUnknown()) {
+      return true;
+    }
+    return left.equals(right);
   }
 
   private static boolean sameTree(Tree left, Tree right) {
