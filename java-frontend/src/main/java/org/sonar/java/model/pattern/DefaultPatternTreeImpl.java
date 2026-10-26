@@ -18,8 +18,6 @@ package org.sonar.java.model.pattern;
 
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.plugins.java.api.tree.DefaultPatternTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -32,8 +30,8 @@ public class DefaultPatternTreeImpl extends AbstractPatternTree implements Defau
 
   private final SyntaxToken defaultToken;
 
-  public DefaultPatternTreeImpl(SyntaxToken defaultToken, @Nullable ITypeBinding typeBinding) {
-    super(Tree.Kind.DEFAULT_PATTERN, typeBinding);
+  public DefaultPatternTreeImpl(SyntaxToken defaultToken) {
+    super(Tree.Kind.DEFAULT_PATTERN);
     this.defaultToken = defaultToken;
   }
 
