@@ -1,5 +1,9 @@
 package checks;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 interface InnerClassInInterfaceCheckSample {
 
   void doSomething();
@@ -49,6 +53,143 @@ interface ExtendedInterface extends Comparable<ExtendedInterface> {
 //      ^^^^^
   class Second {} // Noncompliant
 //      ^^^^^^
+}
+
+interface WithHelperTypes {
+
+  Result compute(Request request) throws ComputationException;
+
+  Optional<Wrapped> wrapped();
+
+  void consume(List<Map<String, Element>> elements);
+
+  void consumeQualified(WithHelperTypes.Qualified qualified);
+
+  default Defaulted defaulted() {
+    return new Defaulted();
+  }
+
+  static Created create() {
+    return new Created();
+  }
+
+  class Result {} // Compliant - return type of an interface method
+
+  class Request {} // Compliant - parameter type of an interface method
+
+  class ComputationException extends Exception {} // Compliant - exception thrown by an interface method
+
+  class Wrapped {} // Compliant - type argument of a return type
+
+  class Element {} // Compliant - nested type argument of a parameter type
+
+  class Qualified {} // Compliant - qualified parameter type
+
+  class Defaulted {} // Compliant - return type of a default method
+
+  class Created {} // Compliant - return type of a static method
+
+  class Unused {} // Noncompliant
+//      ^^^^^^
+
+  class UsedInBodyOnly {} // Noncompliant
+//      ^^^^^^^^^^^^^^
+  default void useInBody() {
+    UsedInBodyOnly local = new UsedInBodyOnly();
+  }
+
+  class ParameterName {} // Noncompliant
+//      ^^^^^^^^^^^^^
+  void named(String ParameterName);
+}
+
+interface WithImplementationsUsedInSignatures {
+
+  WithImplementationsUsedInSignatures copy(Nested other);
+
+  Generic<String> generic();
+
+  Qualified qualified();
+
+  class Nested implements WithImplementationsUsedInSignatures { // Noncompliant
+//      ^^^^^^
+    @Override
+    public WithImplementationsUsedInSignatures copy(Nested other) {
+      return this;
+    }
+    @Override
+    public Generic<String> generic() {
+      return null;
+    }
+    @Override
+    public Qualified qualified() {
+      return null;
+    }
+  }
+
+  class Generic<T> implements WithImplementationsUsedInSignatures, Comparable<Generic<T>> { // Noncompliant
+//      ^^^^^^^
+    @Override
+    public WithImplementationsUsedInSignatures copy(Nested other) {
+      return this;
+    }
+    @Override
+    public Generic<String> generic() {
+      return null;
+    }
+    @Override
+    public Qualified qualified() {
+      return null;
+    }
+    @Override
+    public int compareTo(Generic<T> o) {
+      return 0;
+    }
+  }
+
+  class Qualified implements checks.WithImplementationsUsedInSignatures { // Noncompliant
+//      ^^^^^^^^^
+    @Override
+    public WithImplementationsUsedInSignatures copy(Nested other) {
+      return this;
+    }
+    @Override
+    public Generic<String> generic() {
+      return null;
+    }
+    @Override
+    public Qualified qualified() {
+      return null;
+    }
+  }
+}
+
+interface ComparableUser {
+
+  Helper helper();
+
+  class Helper implements Comparable<ComparableUser> { // Compliant - helper type, does not implement the enclosing interface
+    @Override
+    public int compareTo(ComparableUser o) {
+      return 0;
+    }
+  }
+}
+
+interface WithBuilder {
+
+  String name();
+
+  class Builder { // Compliant - builder pattern
+    private String name;
+
+    public Builder name(String name) {
+      this.name = name;
+      return this;
+    }
+  }
+
+  class WithBuilderBuilder {} // Compliant - builder pattern
 }
 
 class TopLevelClass { // Compliant - not inside an interface
