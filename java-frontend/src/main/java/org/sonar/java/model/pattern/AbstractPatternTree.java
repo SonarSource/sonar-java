@@ -17,9 +17,10 @@
 package org.sonar.java.model.pattern;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.SemanticValues;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -31,19 +32,16 @@ public abstract class AbstractPatternTree extends JavaTree implements PatternTre
 
   private final Tree.Kind kind;
 
-  @Nullable
-  public ITypeBinding typeBinding;
+  public Supplier<Type> type;
 
-  AbstractPatternTree(Tree.Kind kind, @Nullable ITypeBinding typeBinding) {
+  AbstractPatternTree(Tree.Kind kind, @Nullable Supplier<Type> type) {
     this.kind = kind;
-    this.typeBinding = typeBinding;
+    this.type = type != null ? type : SemanticValues.UNKNOWN_TYPE;
   }
 
   @Override
   public Type symbolType() {
-    return typeBinding != null
-      ? root.sema.type(typeBinding)
-      : Type.UNKNOWN;
+    return type.get();
   }
 
   @Override
