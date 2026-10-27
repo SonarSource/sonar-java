@@ -1,0 +1,2072 @@
+{
+"eclipse-jetty:jetty-http/src/main/java/module-info.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/BadMessageException.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/ComplianceViolation.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/CompressedContentFormat.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/CookieCompliance.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/CookieCutter.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/DateGenerator.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/GZIPContentDecoder.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HostPortHttpField.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/Http1FieldPreEncoder.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCompliance.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpContent.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCookie.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpField.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFieldPreEncoder.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpHeader.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpHeaderValue.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpMethod.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpScheme.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpStatus.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpTokens.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpURI.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpVersion.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/MetaData.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/PreEncodedHttpField.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/PrecompressedHttpContent.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedCSV.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedCSVParser.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/ResourceHttpContent.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/Syntax.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/AbstractPathSpec.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/MappedResource.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/PathMappings.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/PathSpec.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/PathSpecGroup.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/PathSpecSet.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/RegexPathSpec.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/ServletPathSpec.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/UriTemplatePathSpec.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/CookieCutterLenientTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/CookieCutterTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/DateParserTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/GZIPContentDecoderTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpCookieTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpFieldTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpFieldsTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpGeneratorClientTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpGeneratorServerHTTPTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpGeneratorServerTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpParserTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpSchemeTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpStatusCodeTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpURIParseTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpURITest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/MimeTypesTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/QuotedCSVTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/QuotedQualityCSVTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/SyntaxTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/PathMappingsTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/PathSpecAssert.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/RegexPathSpecTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/ServletPathSpecMatchListTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/ServletPathSpecOrderTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/ServletPathSpecTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/UriTemplatePathSpecBadSpecsTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/UriTemplatePathSpecTest.java": [
+0
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/WebSocketUriMappingTest.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/module-info.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractByteBufferPool.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractConnection.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ArrayByteBufferPool.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferOutputStream.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferPool.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnectionFactory.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnector.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ConnectionStatistics.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/CyclicTimeout.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/EndPoint.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/EofException.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/FillInterest.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/IdleTimeout.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/IncludeExcludeConnectionStatistics.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/LeakTrackingByteBufferPool.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/MappedByteBufferPool.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/NegotiatingClientConnection.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/NegotiatingClientConnectionFactory.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/NetworkTrafficListener.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/NetworkTrafficSocketChannelEndPoint.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/QuietException.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/RetainableByteBuffer.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/RuntimeIOException.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SelectorManager.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SocketChannelEndPoint.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/WriteFlusher.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/WriterOutputStream.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/ALPNProcessor.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslClientConnectionFactory.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslHandshakeListener.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/ArrayByteBufferPoolTest.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/ByteArrayEndPointTest.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/CyclicTimeoutTest.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/IOTest.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/IdleTimeoutTest.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/MappedByteBufferPoolTest.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/NIOTest.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/SelectorManagerTest.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/SocketChannelEndPointInterestsTest.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/SocketChannelEndPointOpenCloseTest.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/SocketChannelEndPointTest.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/SslConnectionTest.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/SslEngineBehaviorTest.java": [
+0
+],
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/WriteFlusherTest.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/main/java/module-info.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/ConnectorServer.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MBeanContainer.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/ObjectMBean.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/test/java/com/acme/Base.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/test/java/com/acme/Derived.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/test/java/com/acme/DerivedExtended.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/test/java/com/acme/DerivedManaged.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/test/java/com/acme/Managed.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/test/java/com/acme/Signature.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/test/java/com/acme/SuperManaged.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/test/java/com/acme/jmx/DerivedMBean.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/test/java/com/acme/jmx/ManagedMBean.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/ConnectorServerTest.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/MBeanContainerLifeCycleTest.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/MBeanContainerTest.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/ObjectMBeanTest.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/ObjectMBeanUtilTest.java": [
+0
+],
+"eclipse-jetty:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/PojoTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/module-info.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnectionFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractNetworkConnector.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AcceptRateLimit.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncAttributes.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncContextEvent.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncContextState.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncRequestLogWriter.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CachedContentFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ClassLoaderDump.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ConnectionFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ConnectionLimit.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Connector.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Cookies.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DebugListener.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DetectorConnectionFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Dispatcher.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/EncodingHttpWriter.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Handler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HandlerContainer.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HomeBaseWarning.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HostHeaderCustomizer.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelListeners.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelOverHttp.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConfiguration.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnection.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnectionFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpInputOverHTTP.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpTransport.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpWriter.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/InclusiveByteRange.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Iso88591HttpWriter.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/LocalConnector.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/LowResourceMonitor.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartParser.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/NegotiatingServerConnection.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/NegotiatingServerConnectionFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/NetworkConnector.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/NetworkTrafficServerConnector.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/OptionalSslConnectionFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyCustomizer.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/PushBuilderImpl.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/QuietServletException.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/RequestLog.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/RequestLogCollection.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/RequestLogWriter.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceContentFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResponseWriter.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SameFileAliasChecker.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SecureRequestCustomizer.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnectionStatistics.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServletAttributes.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServletPathMapping.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServletRequestHttpWrapper.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServletResponseHttpWrapper.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SessionIdManager.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Slf4jRequestLogWriter.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SocketCustomizationListener.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SslConnectionFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/UserIdentity.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Utf8HttpWriter.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/AbstractHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/AbstractHandlerContainer.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/AllowSymLinkAliasChecker.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/AsyncDelayHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/BufferedResponseHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandlerCollection.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DebugHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DefaultHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HandlerCollection.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HandlerList.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HandlerWrapper.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HotSwapHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/IdleTimeoutHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/InetAccessHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/InetAccessSet.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ManagedAttributeListener.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/MovedContextHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/RequestLogHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ResourceHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ScopedHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/SecuredRedirectHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ShutdownHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/StatisticsHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ThreadLimitHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHttpInputInterceptor.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHttpOutputInterceptor.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/jmx/AbstractHandlerMBean.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/jmx/ContextHandlerMBean.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/jmx/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/jmx/AbstractConnectorMBean.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/jmx/ServerMBean.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/jmx/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/resource/ByteBufferRangeWriter.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/resource/HttpContentRangeWriter.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/resource/InputStreamRangeWriter.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/resource/RangeWriter.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/resource/SeekableByteChannelRangeWriter.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCache.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCacheFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStore.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStoreFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/CachingSessionDataStore.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/CachingSessionDataStoreFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DatabaseAdaptor.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DefaultSessionCache.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DefaultSessionCacheFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DefaultSessionIdManager.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStoreFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/HouseKeeper.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStoreFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/NullSessionCache.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/NullSessionCacheFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/NullSessionDataStore.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/NullSessionDataStoreFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/Session.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCacheFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionContext.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataMap.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataMapFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataStore.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataStoreFactory.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/UnreadableSessionDataException.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/UnwriteableSessionDataException.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/AbstractHttpTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncCompletionTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncRequestReadTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncStressTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/CharEncodingContextHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/CheckReverseProxyHeadersTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ClassLoaderDumpTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectionOpenCloseTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectorCloseTestBase.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectorTimeoutTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/CookiesTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/CustomResourcesMonitorTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/DelayedServerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/DetectorConnectionTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/DumpHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ErrorHandlerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ExtendedServerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ForwardedRequestCustomizerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HalfCloseTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HostHeaderCustomizerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpChannelEventTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpConnectionTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpInputAsyncStateTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpInputTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpManyWaysToAsyncCommitTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpManyWaysToCommitTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpOutputTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestBase.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestFixture.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpWriterTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/InclusiveByteRangeTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/InsufficientThreadsDetectionTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/LargeHeaderTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/LocalAsyncContextTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/LocalConnectorTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/LowResourcesMonitorTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/MockConnector.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartCaptureTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartFormInputStreamTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartParserTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/NotAcceptingTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/OptionalSslConnectionTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyConnectionTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyCustomizerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyProtocolTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ResourceCacheTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ResponseTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ServerConnectorAsyncContextTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ServerConnectorCloseTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ServerConnectorHttpServerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ServerConnectorTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ServerConnectorTimeoutTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ServletRequestWrapperTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ServletWriterTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ShutdownMonitorTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/SlowClientWithPipelinedRequestTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/StopTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/StressTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/SuspendHandler.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ThreadStarvationTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/AllowAllVerifier.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/AllowSymLinkAliasCheckerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/BufferedResponseHandlerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerCollectionTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerGetResourceTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/DebugHandlerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/DefaultHandlerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/HandlerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/InetAccessHandlerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/NcsaRequestLogTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ResourceHandlerRangeTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ResourceHandlerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ScopedHandlerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/SecuredRedirectHandlerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ShutdownHandlerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/StatisticsHandlerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ThreadLimitHandlerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/resource/RangeWriterTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/session/HouseKeeperTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/session/SessionCookieTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/session/SessionHandlerTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLCloseTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLEngineTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLReadEOFAfterResponseTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLSelectChannelConnectorLoadTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SelectChannelServerSslTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SlowClientsTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SniSslConnectionFactoryTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SslConnectionFactoryTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SslContextFactoryReloadTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SslSelectChannelTimeoutTest.java": [
+0
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SslUploadTest.java": [
+0
+],
+"eclipse-jetty:jetty-slf4j-impl/src/main/java/module-info.java": [
+0
+],
+"eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyAppender.java": [
+0
+],
+"eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLevel.java": [
+0
+],
+"eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLogger.java": [
+0
+],
+"eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLoggerConfiguration.java": [
+0
+],
+"eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLoggerFactory.java": [
+0
+],
+"eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLoggerFactoryMBean.java": [
+0
+],
+"eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLoggingServiceProvider.java": [
+0
+],
+"eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/StacklessLogging.java": [
+0
+],
+"eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/StdErrAppender.java": [
+0
+],
+"eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/Timestamp.java": [
+0
+],
+"eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/CapturedStream.java": [
+0
+],
+"eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/JMXTest.java": [
+0
+],
+"eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/JettyLoggerConfigurationTest.java": [
+0
+],
+"eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/JettyLoggerTest.java": [
+0
+],
+"eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/Slf4jEffort.java": [
+0
+],
+"eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/StdErrAppenderTest.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/main/java/module-info.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/AsyncJSON.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONCollectionConvertor.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONDateConvertor.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONEnumConvertor.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONObjectConvertor.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertorFactory.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/AsyncJSONTest.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/Bar.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/Baz.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/Color.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/Foo.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONCollectionConvertorTest.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONPojoConvertorFactoryTest.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONPojoConvertorTest.java": [
+0
+],
+"eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/module-info.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/AbstractTrie.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTernaryTrie.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTrie.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayUtil.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/AtomicBiInteger.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Atomics.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Attachable.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Attributes.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/AttributesMap.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BlockingArrayQueue.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ByteArrayISO8859Writer.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ByteArrayOutputStream2.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Callback.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ClassLoadingObjectInputStream.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ClassVisibilityChecker.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ConstantThrowable.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/CountingCallback.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/DateCache.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/DecoratedObjectFactory.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Decorator.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/DeprecationWarning.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Fields.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/FutureCallback.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/FuturePromise.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/HostMap.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/HostPort.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/HttpCookieStore.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IncludeExclude.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IncludeExcludeSet.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressSet.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IteratingCallback.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IteratingNestedCallback.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/JavaVersion.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Jetty.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/LazyList.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/LeakDetector.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Loader.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ManifestUtils.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MathUtils.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MemoryUtils.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiException.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiMap.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiPartOutputStream.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiPartWriter.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiReleaseJarFile.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PatternMatcher.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Pool.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ProcessorUtils.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Promise.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/QuotedStringTokenizer.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RegexSet.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Retainable.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SearchPattern.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ServiceLoaderSpliterator.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SharedBlockingCallback.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SocketAddressResolver.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/StringUtil.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TopologicalSort.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TreeTrie.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/URIUtil.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Uptime.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Utf8Appendable.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Utf8LineParser.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Utf8StringBuffer.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Utf8StringBuilder.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/annotation/ManagedAttribute.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/annotation/ManagedObject.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/annotation/ManagedOperation.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/annotation/Name.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/annotation/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/AbstractLifeCycle.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/AttributeContainerMap.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/Container.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/ContainerLifeCycle.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/Destroyable.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/Dumpable.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/DumpableCollection.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/FileDestroyable.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/FileNoticeLifeCycleListener.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/Graceful.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/LifeCycle.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/StopLifeCycle.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/compression/CompressionPool.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/compression/DeflaterPool.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/compression/InflaterPool.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/log/Log.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/log/Logger.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/log/Slf4jLogger.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/AWTLeakPreventer.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/AbstractLeakPreventer.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/AppContextLeakPreventer.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/DOMLeakPreventer.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/DriverManagerLeakPreventer.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/GCThreadLeakPreventer.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/Java2DLeakPreventer.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/LDAPLeakPreventer.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/LoginConfigurationLeakPreventer.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/SecurityProviderLeakPreventer.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/BadResource.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/EmptyResource.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/JarFileResource.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/JarResource.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceCollators.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceCollection.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceFactory.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/URLResource.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateUtils.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Credential.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CredentialProvider.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Password.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/UnixCrypt.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/AliasedX509ExtendedKeyManager.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/KeyStoreScanner.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SniX509ExtendedKeyManager.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslSelectionDump.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/X509.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/statistic/CounterStatistic.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/statistic/RateStatistic.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/statistic/SampleStatistic.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/statistic/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/AutoLock.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ExecutionStrategy.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ExecutorThreadPool.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/Invocable.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/MonitoredQueuedThreadPool.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ReservedThreadExecutor.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ScheduledExecutorScheduler.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/Scheduler.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/SerializedExecutor.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ShutdownThread.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/Sweeper.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ThreadClassLoaderScope.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ThreadPool.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ThreadPoolBudget.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/TimerScheduler.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/TryExecutor.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/strategy/EatWhatYouKill.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/strategy/ExecuteProduceConsume.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/strategy/ProduceConsume.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/strategy/ProduceExecuteConsume.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ArrayUtilTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/AtomicBiIntegerTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/BlockingArrayQueueTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/DateCacheTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/FutureCallbackTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/HostPortTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/IncludeExcludeSetTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/IncludeExcludeTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/InetAddressSetTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/IntrospectionUtilTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/IteratingCallbackTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/JavaVersionTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LeakDetectorTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LoaderTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/MultiExceptionTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/MultiMapTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/MultiReleaseJarFileTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/PathWatcherDemo.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/PathWatcherTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/PoolTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ProcessorUtilsTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/QueueBenchmarkTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/QuotedStringTokenizerTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/RegexSetTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/RolloverFileOutputStreamTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/SearchPatternTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/SharedBlockingCallbackTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/StringUtilTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/TestIntrospectionUtil.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/TopologicalSortTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/TrieTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/TypeUtilTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/URIUtilCanonicalPathTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/URIUtilTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/URLEncodedTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/UptimeTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/UrlEncodedUtf8Test.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/Utf8AppendableTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/Utf8LineParserTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/component/ContainerLifeCycleTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/component/DumpableTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/component/LifeCycleListenerNestedTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/component/LifeCycleListenerTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/ClassPathResourceTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/FileSystemResourceTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/JarResourceTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/JrtResourceTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/PathResourceTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/ResourceAliasTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/ResourceCollectionTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/ResourceTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/security/CredentialTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/security/PasswordTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ssl/SslContextFactoryTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ssl/X509CertificateAdapter.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ssl/X509Test.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/statistic/CounterStatisticTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/statistic/RateStatisticTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/statistic/SampleStatisticTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/AbstractThreadPoolTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/AutoLockTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/EatWhatYouKillTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/ExecutorThreadPoolTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/QueuedThreadPoolTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/ReservedThreadExecutorTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/SchedulerTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/SerializedExecutorTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/SweeperTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/ThreadClassLoaderScopeTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/ThreadFactoryTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/strategy/ExecuteProduceConsumeTest.java": [
+0
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/strategy/ExecutionStrategyTest.java": [
+0
+],
+"eclipse-jetty:jetty-xml/src/main/java/module-info.java": [
+0
+],
+"eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/ConfigurationProcessor.java": [
+0
+],
+"eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/ConfigurationProcessorFactory.java": [
+0
+],
+"eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlAppendable.java": [
+0
+],
+"eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
+0
+],
+"eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java": [
+0
+],
+"eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/package-info.java": [
+0
+],
+"eclipse-jetty:jetty-xml/src/test/java/org/eclipse/jetty/xml/AnnotatedTestConfiguration.java": [
+0
+],
+"eclipse-jetty:jetty-xml/src/test/java/org/eclipse/jetty/xml/ConstructorArgTestClass.java": [
+0
+],
+"eclipse-jetty:jetty-xml/src/test/java/org/eclipse/jetty/xml/DefaultTestConfiguration.java": [
+0
+],
+"eclipse-jetty:jetty-xml/src/test/java/org/eclipse/jetty/xml/TestConfiguration.java": [
+0
+],
+"eclipse-jetty:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlAppendableTest.java": [
+0
+],
+"eclipse-jetty:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlConfigurationTest.java": [
+0
+],
+"eclipse-jetty:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlParserTest.java": [
+0
+],
+"eclipse-jetty:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java": [
+0
+],
+"eclipse-jetty:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/matchers/HttpFieldsContainsHeaderKey.java": [
+0
+],
+"eclipse-jetty:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/matchers/HttpFieldsContainsHeaderValue.java": [
+0
+],
+"eclipse-jetty:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/matchers/HttpFieldsMatchers.java": [
+0
+],
+"eclipse-jetty:tests/jetty-http-tools/src/test/java/org/eclipse/jetty/http/tools/HttpTesterTest.java": [
+0
+],
+"eclipse-jetty:tests/jetty-http-tools/src/test/java/org/eclipse/jetty/http/tools/matchers/HttpFieldsMatchersTest.java": [
+0
+]
+}

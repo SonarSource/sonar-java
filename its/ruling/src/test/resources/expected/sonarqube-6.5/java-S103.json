@@ -847,6 +847,7 @@
 157
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/NewCoverageMeasuresStep.java": [
+45,
 127,
 164,
 182,
@@ -1871,6 +1872,7 @@
 125
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/CreateTemplateAction.java": [
+47,
 61,
 129
 ],
@@ -1933,6 +1935,7 @@
 147
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/UpdateTemplateAction.java": [
+47,
 61,
 114,
 126,
