@@ -27,7 +27,7 @@ final class KeywordThis extends IdentifierTreeImpl {
 
   @Override
   public Symbol symbol() {
-    return Symbol.UNKNOWN_SYMBOL;
+    return symbol != null ? symbol : Symbol.UNKNOWN_SYMBOL;
   }
 
 }

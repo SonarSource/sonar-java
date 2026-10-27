@@ -208,6 +208,7 @@ fn jdk_type_info(ty: &JdkType) -> Value {
         "final": m.is_final,
         "abstract": m.is_abstract,
         "vis": format!("{:?}", m.visibility).to_lowercase(),
+        "retParam": m.return_type_class_param_index,
       })
     })
     .collect();

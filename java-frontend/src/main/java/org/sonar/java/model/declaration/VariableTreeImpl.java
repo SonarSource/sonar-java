@@ -46,6 +46,8 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   private ExpressionTree initializer;
   @Nullable
   private SyntaxToken endToken;
+  @Nullable
+  public Symbol.VariableSymbol variableSymbol;
 
   public VariableTreeImpl(
     ModifiersTree modifiers,
@@ -130,7 +132,7 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
 
   @Override
   public Symbol symbol() {
-    return Symbol.UNKNOWN_SYMBOL;
+    return variableSymbol != null ? variableSymbol : Symbol.UNKNOWN_SYMBOL;
   }
 
   @Override

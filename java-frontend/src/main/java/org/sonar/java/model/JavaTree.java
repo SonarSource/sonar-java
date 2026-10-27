@@ -347,6 +347,9 @@ public abstract class JavaTree implements Tree {
     @Nullable
     private final SyntaxToken moduleToken;
 
+    @Nullable
+    public Symbol symbol;
+
     public ImportTreeImpl(InternalSyntaxToken importToken, @Nullable InternalSyntaxToken staticToken,
                           @Nullable InternalSyntaxToken moduleToken,
                           Tree qualifiedIdentifier, InternalSyntaxToken semiColonToken) {
@@ -361,7 +364,7 @@ public abstract class JavaTree implements Tree {
 
     @Nullable
     public Symbol symbol() {
-      return null;
+      return symbol;
     }
 
     @Override
