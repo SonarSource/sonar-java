@@ -20,6 +20,8 @@ import com.google.gson.JsonObject;
 import com.sonar.sslr.api.RecognitionException;
 import java.nio.file.Path;
 import java.util.Objects;
+import org.sonar.java.semsitter.BridgeExtractor;
+import org.sonar.java.semsitter.PlatformDetection;
 import org.sonar.java.semsitter.SemsitterBridge;
 
 public final class JParser {
@@ -52,10 +54,15 @@ public final class JParser {
     if (configured == null || configured.isBlank()) {
       configured = System.getenv("SEMSITTER_BRIDGE");
     }
-    if (configured == null || configured.isBlank()) {
-      throw new RecognitionException(1, "SemSitter bridge is not configured. Set sonar.java.semsitter.bridge or SEMSITTER_BRIDGE.");
+    if (configured != null && !configured.isBlank()) {
+      return Path.of(configured);
     }
-    return Path.of(configured);
+    try {
+      Path target = Path.of(System.getProperty("java.io.tmpdir"), "sonar-java", "semsitter-bridge");
+      return BridgeExtractor.extract(target, new PlatformDetection().getPlatform());
+    } catch (Exception failure) {
+      throw new RecognitionException(1, "SemSitter bridge is unavailable", failure);
+    }
   }
 
 }
