@@ -43,6 +43,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S9395")
 public class S9395Check extends BaseTreeVisitor implements JavaFileScanner {
 
+  private static final Tree.Kind[] ARITHMETIC_KINDS = {Tree.Kind.PLUS, Tree.Kind.MINUS, Tree.Kind.MULTIPLY, Tree.Kind.DIVIDE};
+
   private JavaFileScannerContext context;
   private final Deque<Type> floatingPointReturnTypes = new LinkedList<>();
 
@@ -57,7 +59,7 @@ public class S9395Check extends BaseTreeVisitor implements JavaFileScanner {
 
   @Override
   public void visitVariable(VariableTree tree) {
-    checkExpression(tree.type().symbolType(), tree.initializer());
+    checkExpression(tree.type().symbolType(), tree.initializer(), true);
     super.visitVariable(tree);
   }
 
@@ -65,7 +67,7 @@ public class S9395Check extends BaseTreeVisitor implements JavaFileScanner {
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
     Type targetType = tree.variable().symbolType();
     ExpressionTree rhs = tree.expression();
-    checkExpression(targetType, rhs);
+    checkExpression(targetType, rhs, tree.is(Tree.Kind.ASSIGNMENT));
     super.visitAssignmentExpression(tree);
   }
 
@@ -85,7 +87,7 @@ public class S9395Check extends BaseTreeVisitor implements JavaFileScanner {
   public void visitReturnStatement(ReturnStatementTree tree) {
     Type returnType = floatingPointReturnTypes.peek();
     if (returnType != null) {
-      checkExpression(returnType, tree.expression());
+      checkExpression(returnType, tree.expression(), true);
     }
     super.visitReturnStatement(tree);
   }
@@ -117,25 +119,51 @@ public class S9395Check extends BaseTreeVisitor implements JavaFileScanner {
       } else {
         return;
       }
+      boolean checkedByS2184 = arguments.size() == parameterTypes.size();
       for (int i = 0; i < fixedCount && i < arguments.size(); i++) {
-        checkExpression(parameterTypes.get(i), arguments.get(i));
+        checkExpression(parameterTypes.get(i), arguments.get(i), checkedByS2184);
       }
     }
   }
 
-  private void checkExpression(Type targetType, @Nullable ExpressionTree expr) {
+  /**
+   * Reports implicit lossy conversions of {@code expr} to {@code targetType}.
+   * Arithmetic expressions already reported by S2184 are skipped: S2184 checks non-parenthesized arithmetic when
+   * {@code checkedByS2184} is true, and integer divisions nested in a floating-point expression in any context.
+   */
+  private void checkExpression(Type targetType, @Nullable ExpressionTree expr, boolean checkedByS2184) {
     if (expr == null) {
       return;
     }
     ExpressionTree unwrapped = ExpressionUtils.skipParentheses(expr);
-    if (unwrapped.is(Tree.Kind.TYPE_CAST)) {
+    if (unwrapped.is(Tree.Kind.TYPE_CAST) || isReportedByS2184(expr, unwrapped, checkedByS2184)
+      || !NumericConversionUtils.isPotentiallyLossyWideningConversion(unwrapped, targetType)) {
       return;
     }
-    if (NumericConversionUtils.isPotentiallyLossyWideningConversion(unwrapped, targetType)) {
-      Type sourceType = unwrapped.symbolType();
+    String sourceType = unwrapped.symbolType().name();
+    if (unwrapped.is(ARITHMETIC_KINDS)) {
       context.reportIssue(this, unwrapped,
-        "Explicitly cast this \"" + sourceType.name() + "\" to \"" + targetType.name() + "\" to document potential precision loss.");
+        "Cast one of the operands of this \"" + sourceType + "\" operation to \"" + targetType.name() + "\" to document potential precision loss.");
+    } else {
+      context.reportIssue(this, unwrapped,
+        "Explicitly cast this \"" + sourceType + "\" to \"" + targetType.name() + "\" to document potential precision loss.");
     }
+  }
+
+  private static boolean isReportedByS2184(ExpressionTree expr, ExpressionTree unwrapped, boolean checkedByS2184) {
+    return (checkedByS2184 && expr.is(ARITHMETIC_KINDS))
+      || (unwrapped.is(Tree.Kind.DIVIDE) && hasFloatingPointParentExpression(unwrapped));
+  }
+
+  private static boolean hasFloatingPointParentExpression(ExpressionTree expr) {
+    Tree parent = expr.parent();
+    while (parent instanceof ExpressionTree parentExpression) {
+      if (isFloatingPoint(parentExpression.symbolType())) {
+        return true;
+      }
+      parent = parentExpression.parent();
+    }
+    return false;
   }
 
   private static boolean isFloatingPoint(Type type) {

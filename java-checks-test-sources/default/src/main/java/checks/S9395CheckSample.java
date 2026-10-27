@@ -161,9 +161,51 @@ class S9395CheckSample {
     };
   }
 
-  void intArithmeticToFloat(int a, int b) {
-    float f = a + b; // Noncompliant
-//            ^^^^^
+  void intArithmeticToFloat(int a, int b, long c) {
+    float f1 = a + b; // compliant: reported by S2184, the fix is to cast an operand
+    float f2 = a / b; // compliant: reported by S2184, casting the result would not fix the integer division
+    float f3 = a * b; // compliant: reported by S2184
+    double d1 = c - a; // compliant: reported by S2184
+    float f4 = (a / b); // Noncompliant {{Cast one of the operands of this "int" operation to "float" to document potential precision loss.}}
+//              ^^^^^
+    float f5 = a % b; // Noncompliant
+//             ^^^^^
+    float f6 = (float) a / b; // compliant
+  }
+
+  float field;
+
+  void intArithmeticNotReportedByS2184(int a, int b, long c, float fv, double dv) {
+    float f1 = (a * b); // Noncompliant {{Cast one of the operands of this "int" operation to "float" to document potential precision loss.}}
+//              ^^^^^
+    float f2 = ((a + b)); // Noncompliant
+//               ^^^^^
+    fv = (a - b); // Noncompliant
+//        ^^^^^
+    fv += a * b; // Noncompliant
+//        ^^^^^
+    dv -= c + a; // Noncompliant {{Cast one of the operands of this "long" operation to "double" to document potential precision loss.}}
+//        ^^^^^
+    fv += a / b; // compliant: reported by S2184
+    fv *= (a / b); // compliant: reported by S2184
+    field = a / b; // compliant: reported by S2184
+    takeFloatVarargs(a * b, "x", "y"); // Noncompliant
+//                   ^^^^^
+    takeFloatVarargs(a / b); // Noncompliant
+//                   ^^^^^
+    takeFloatVarargs(a * b, "x"); // compliant: reported by S2184
+    takeFloat((a * b)); // Noncompliant
+//             ^^^^^
+    takeFloat(a * b); // compliant: reported by S2184
+  }
+
+  float returnParenthesizedArithmetic(int a, int b) {
+    return (a * b); // Noncompliant
+//          ^^^^^
+  }
+
+  float returnArithmetic(int a, int b) {
+    return a * b; // compliant: reported by S2184
   }
 
   void hexAndBinaryLiterals() {

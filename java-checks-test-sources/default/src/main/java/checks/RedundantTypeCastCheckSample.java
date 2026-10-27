@@ -55,6 +55,20 @@ class Outer {
     return null;
   }
 
+  void lossyWideningCasts(int intVar, long longVar) {
+    float f1 = (float) intVar; // Compliant: documents potential precision loss, required by S9395
+    float f2 = (float) longVar; // Compliant
+    double d1 = (double) longVar; // Compliant
+    float f3 = (float) (intVar); // Compliant
+    double d2 = (double) intVar; // Noncompliant {{Remove this unnecessary cast to "double".}}
+    float f4 = (float) 42; // Noncompliant {{Remove this unnecessary cast to "float".}}
+    double d3 = (double) 42L; // Noncompliant {{Remove this unnecessary cast to "double".}}
+    float f5 = (float) (intVar * intVar); // Noncompliant {{Remove this unnecessary cast to "float".}}
+    float f6 = (float) (intVar + intVar); // Noncompliant
+    double d4 = (double) (longVar / longVar); // Noncompliant
+    float f7 = (float) intVar * intVar; // Compliant
+  }
+
   private static int charConversion(char c) {
     return (char) ((c | 0x20) - 'a'); // Compliant
   }
