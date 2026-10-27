@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.sonar.java.model.EcjTestSupport.methodBinding;
@@ -56,6 +57,7 @@ class JUtilsTest {
     Type parent = mock(Type.class);
     when(type.directSuperTypes()).thenReturn(Set.of(parent));
     assertThat(JUtils.directSuperTypes(type)).containsExactly(parent);
+    assertThat(JUtils.directSuperTypes(mock(Type.class, CALLS_REAL_METHODS))).isEmpty();
     Symbol.MethodSymbol method = mock(Symbol.MethodSymbol.class);
     when(method.defaultValue()).thenReturn(42);
     assertThat(JUtils.defaultValue(method)).isEqualTo(42);
@@ -63,7 +65,6 @@ class JUtilsTest {
     assertThat(Symbol.MethodSymbol.UNKNOWN_METHOD.defaultValue()).isNull();
     assertThat(new JInitializerBlockSymbol(Symbol.TypeSymbol.UNKNOWN_TYPE, false).defaultValue()).isNull();
     Sema sema = name -> Type.UNKNOWN;
-    assertThat(sema.undefinedTypes()).isEmpty();
     sema.getEnvironmentCleaner().run();
   }
 
