@@ -16,6 +16,7 @@
  */
 package org.sonar.java.model;
 
+import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Type;
 
 /**
@@ -23,8 +24,11 @@ import org.sonar.plugins.java.api.semantic.Type;
  */
 public abstract class AbstractTypedTree extends JavaTree {
 
+  @Nullable
+  public Type type;
+
   public Type symbolType() {
-    return Type.UNKNOWN;
+    return type != null ? type : Type.UNKNOWN;
   }
 
 }

@@ -44,6 +44,9 @@ public class LambdaExpressionTreeImpl extends AssessableExpressionTree implement
   private final Tree body;
   private CFG cfg;
 
+  @Nullable
+  public Symbol.MethodSymbol methodSymbol;
+
   public LambdaExpressionTreeImpl(@Nullable InternalSyntaxToken openParenToken, List<VariableTree> parameters, @Nullable InternalSyntaxToken closeParenToken,
     InternalSyntaxToken arrowToken, Tree body) {
     this.openParenToken = openParenToken;
@@ -87,7 +90,7 @@ public class LambdaExpressionTreeImpl extends AssessableExpressionTree implement
 
   @Override
   public Symbol.MethodSymbol symbol() {
-    return Symbol.MethodSymbol.UNKNOWN_METHOD;
+    return methodSymbol != null ? methodSymbol : Symbol.MethodSymbol.UNKNOWN_METHOD;
   }
 
   @Override

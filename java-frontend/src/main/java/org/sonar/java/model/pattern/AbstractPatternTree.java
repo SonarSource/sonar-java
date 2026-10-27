@@ -17,6 +17,7 @@
 package org.sonar.java.model.pattern;
 
 import java.util.Optional;
+import javax.annotation.Nullable;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.PatternTree;
@@ -29,13 +30,16 @@ public abstract class AbstractPatternTree extends JavaTree implements PatternTre
 
   private final Tree.Kind kind;
 
+  @Nullable
+  public Type type;
+
   AbstractPatternTree(Tree.Kind kind) {
     this.kind = kind;
   }
 
   @Override
   public Type symbolType() {
-    return Type.UNKNOWN;
+    return type != null ? type : Type.UNKNOWN;
   }
 
   @Override

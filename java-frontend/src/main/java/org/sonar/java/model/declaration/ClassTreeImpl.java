@@ -67,6 +67,8 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Nullable
   private SyntaxToken permitsKeyword;
   private ListTree<TypeTree> permittedTypes;
+  @Nullable
+  public Symbol.TypeSymbol typeSymbol;
 
   public ClassTreeImpl(Kind kind, @Nullable SyntaxToken openBraceToken, List<Tree> members, @Nullable SyntaxToken closeBraceToken) {
     this.kind = kind;
@@ -215,7 +217,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   @Override
   public Symbol.TypeSymbol symbol() {
-    return Symbol.TypeSymbol.UNKNOWN_TYPE;
+    return typeSymbol != null ? typeSymbol : Symbol.TypeSymbol.UNKNOWN_TYPE;
   }
 
   @Nullable

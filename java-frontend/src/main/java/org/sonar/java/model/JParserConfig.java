@@ -16,12 +16,15 @@
  */
 package org.sonar.java.model;
 
+import com.google.gson.JsonObject;
 import java.io.File;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import org.sonar.java.semsitter.SemsitterBridge;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
@@ -41,6 +44,7 @@ public abstract class JParserConfig {
   final JavaVersion javaVersion;
   final List<File> classpath;
   final boolean shouldIgnoreUnnamedModuleForSplitPackage;
+  private SemsitterBridge bridge;
 
   private JParserConfig(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
     this.javaVersion = javaVersion;
@@ -107,8 +111,11 @@ public abstract class JParserConfig {
       AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action) {
       ExecutionTimeReport executionTimeReport = new ExecutionTimeReport();
       PerformanceMeasure.Duration batchPerformance = PerformanceMeasure.start("ParseAsBatch");
+      List<InputFile> files = new ArrayList<>();
+      inputFiles.forEach(files::add);
       try {
-        for (InputFile inputFile : inputFiles) {
+        openBridge(files);
+        for (InputFile inputFile : files) {
           if (isCanceled.getAsBoolean()) {
             break;
           }
@@ -117,6 +124,7 @@ public abstract class JParserConfig {
           executionTimeReport.end();
         }
       } finally {
+        closeBridge();
         batchPerformance.stop();
         executionTimeReport.reportAsBatch();
       }
@@ -138,12 +146,13 @@ public abstract class JParserConfig {
 
       ExecutionTimeReport executionTimeReport = new ExecutionTimeReport();
       ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
-      List<String> filesNames = StreamSupport.stream(inputFiles.spliterator(), false)
-        .map(InputFile::toString)
-        .toList();
+      List<InputFile> files = new ArrayList<>();
+      inputFiles.forEach(files::add);
+      List<String> filesNames = files.stream().map(InputFile::toString).toList();
       progressReport.start(filesNames);
       try {
-        for (InputFile inputFile : inputFiles) {
+        openBridge(files);
+        for (InputFile inputFile : files) {
           if (isCanceled.getAsBoolean()) {
             cancelled = true;
             break;
@@ -155,6 +164,7 @@ public abstract class JParserConfig {
         }
         successfullyCompleted = !cancelled;
       } finally {
+        closeBridge();
         if (successfullyCompleted) {
           progressReport.stop();
         } else {
@@ -168,11 +178,41 @@ public abstract class JParserConfig {
   final Result parseFile(InputFile inputFile) {
     PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
     try {
-      return new Result(JParser.parse(javaVersion.effectiveJavaVersionAsString(), inputFile.filename(), inputFile.contents()));
+      if (bridge == null) {
+        return new Result(JParser.parse(javaVersion.effectiveJavaVersionAsString(), inputFile.filename(), inputFile.contents()));
+      }
+      JsonObject document = bridge.cst(inputFile.path().toAbsolutePath().toString());
+      JSema sema = new JSema();
+      sema.ingestDocument(document);
+      sema.ingestTypes(bridge.types(sema.referencedTypeNames()));
+      return new Result(SemsitterTranslator.translate(sema, document));
     } catch (Exception e) {
       return new Result(e);
     } finally {
       parseDuration.stop();
+    }
+  }
+
+  void openBridge(List<? extends InputFile> files) {
+    try {
+      bridge = SemsitterBridge.start(JParser.bridgePath());
+      if (!files.isEmpty()) {
+        Path root = files.get(0).path().toAbsolutePath().getParent();
+        bridge.analyze(
+          root == null ? Path.of(".") : root,
+          files.stream().map(file -> file.path().toAbsolutePath()).toList(),
+          classpath.stream().map(File::getAbsolutePath).toList());
+      }
+    } catch (Exception failure) {
+      closeBridge();
+      LOG.warn("SemSitter bridge did not start ({})", failure.toString());
+    }
+  }
+
+  void closeBridge() {
+    if (bridge != null) {
+      bridge.close();
+      bridge = null;
     }
   }
 
