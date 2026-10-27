@@ -28,9 +28,6 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.CheckForNull;
-import org.eclipse.jdt.core.compiler.IProblem;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.location.InternalPosition;
@@ -97,30 +94,12 @@ public final class JWarning extends JProblem {
 
     private final PriorityQueue<JWarning> warnings = new PriorityQueue<>(Comparator.comparing(JWarning::start).thenComparing(JWarning::end));
 
-    private Mapper(CompilationUnit ast, LineColumnConverter lineColumnConverter) {
-      Stream.of(ast.getProblems())
-        .map(problem -> convert(problem, ast, lineColumnConverter))
-        .filter(Objects::nonNull)
-        .forEach(warnings::add);
+    private Mapper(List<JWarning> diagnostics) {
+      warnings.addAll(diagnostics);
     }
 
-    @CheckForNull
-    private static JWarning convert(IProblem problem, CompilationUnit root, LineColumnConverter lineColumnConverter) {
-      for (Type type : Type.values()) {
-        if (type.matches(problem)) {
-          LineColumnConverter.Pos start = lineColumnConverter.toPos(problem.getSourceStart());
-          LineColumnConverter.Pos end = lineColumnConverter.toPos(problem.getSourceStart());
-          return new JWarning(problem.getMessage(),
-            type,
-            start.line(), start.columnOffset(),
-            end.line(), end.columnOffset());
-        }
-      }
-      return null;
-    }
-
-    public static Mapper warningsFor(CompilationUnit ast, LineColumnConverter lineColumnConverter) {
-      return new Mapper(ast, lineColumnConverter);
+    public static Mapper warningsFor(List<JWarning> diagnostics) {
+      return new Mapper(diagnostics);
     }
 
     public void mappedInto(JavaTree.CompilationUnitTreeImpl cut) {
