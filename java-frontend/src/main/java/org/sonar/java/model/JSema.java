@@ -19,10 +19,8 @@ package org.sonar.java.model;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.AST;
@@ -42,7 +40,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 public final class JSema implements Sema {
 
   private final AST ast;
-  final Set<JProblem> undefinedTypes = new HashSet<>();
   final Map<IBinding, Tree> declarations = new HashMap<>();
   final Map<IBinding, List<IdentifierTree>> usages = new HashMap<>();
   private final Map<ITypeBinding, JType> types = new HashMap<>();
@@ -211,8 +208,4 @@ public final class JSema implements Sema {
     return ASTUtils.getEnvironmentCleaner(ast);
   }
 
-  @Override
-  public Set<JProblem> undefinedTypes() {
-    return Collections.unmodifiableSet(undefinedTypes);
-  }
 }

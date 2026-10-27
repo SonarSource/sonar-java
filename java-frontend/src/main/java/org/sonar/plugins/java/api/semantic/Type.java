@@ -35,7 +35,9 @@ public interface Type {
    * Returns the immediate superclass and interfaces, preserving generic substitutions. Unknown types have
    * no direct supertypes. Interfaces do not acquire an implicit {@code java.lang.Object} superclass.
    */
-  Set<Type> directSuperTypes();
+  default Set<Type> directSuperTypes() {
+    return java.util.Collections.emptySet();
+  }
 
   /**
    * Primitive java types.
