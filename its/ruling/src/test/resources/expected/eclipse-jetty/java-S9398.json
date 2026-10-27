@@ -14,9 +14,6 @@
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java": [
 161
 ],
-"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslHandshakeListener.java": [
-57
-],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java": [
 37
 ],
