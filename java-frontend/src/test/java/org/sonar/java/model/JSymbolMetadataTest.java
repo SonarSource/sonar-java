@@ -32,6 +32,7 @@ import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityType;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -44,6 +45,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.CLASS;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.METHOD;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
@@ -54,6 +56,21 @@ import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityType
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityType.WEAK_NULLABLE;
 
 class JSymbolMetadataTest {
+
+  @Test
+  void flattened_annotations_are_independent_of_exposed_metadata_collections() {
+    Symbol owner = mock(Symbol.class);
+    AnnotationInstance outerAnnotation = mock(AnnotationInstance.class);
+    AnnotationInstance argumentAnnotation = mock(AnnotationInstance.class);
+    JSymbolMetadata argument = new JSymbolMetadata(owner, () -> new ArrayList<>(List.of(argumentAnnotation)), new JSymbolMetadata[0], true);
+    JSymbolMetadata[] parameters = {argument};
+    JSymbolMetadata outer = new JSymbolMetadata(owner, () -> new ArrayList<>(List.of(outerAnnotation)), parameters, false);
+    argument.annotations().clear();
+    argument.symbolAnnotations().clear();
+    outer.symbolAnnotations().clear();
+    parameters[0] = new JSymbolMetadata(owner, List.of());
+    assertThat(outer.annotations()).containsExactly(outerAnnotation, argumentAnnotation);
+  }
 
   private static final Path NULLABILITY_SOURCE_DIR = JParserTestUtils.CHECKS_TEST_DIR
     .resolve(Paths.get("src", "main", "java", "annotations", "nullability"));
@@ -68,7 +85,7 @@ class JSymbolMetadataTest {
   void should_convert_annotation_values() {
     JavaTree.CompilationUnitTreeImpl cu = test("import java.lang.annotation.*; @Target({ElementType.TYPE, ElementType.METHOD}) @interface A { }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
-    Object[] value = (Object[]) cu.sema.typeSymbol(c.typeBinding).metadata().annotations().get(0).values().get(0).value();
+    Object[] value = (Object[]) c.symbol().metadata().annotations().get(0).values().get(0).value();
     assertThat(value).hasSize(2);
     assertThat(((JVariableSymbol) value[0]).isEnum()).isTrue();
     assertThat(((JVariableSymbol) value[1]).isEnum()).isTrue();

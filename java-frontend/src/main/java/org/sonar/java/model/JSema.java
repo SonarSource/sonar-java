@@ -48,7 +48,7 @@ public final class JSema implements Sema {
   private final Map<IBinding, JSymbol> symbols = new HashMap<>();
   private final Map<Symbol.TypeSymbol, JInitializerBlockSymbol> initializerBlockSymbols = new HashMap<>();
   private final Map<Symbol.TypeSymbol, JInitializerBlockSymbol> staticInitializerBlockSymbols = new HashMap<>();
-  private final Map<IAnnotationBinding, JSymbolMetadata.JAnnotationInstance> annotations = new HashMap<>();
+  private final Map<IAnnotationBinding, EcjSymbolMetadata.JAnnotationInstance> annotations = new HashMap<>();
   private final Map<String, Type> nameToTypeCache = new HashMap<>();
 
   JSema(AST ast) {
@@ -126,12 +126,12 @@ public final class JSema implements Sema {
     return (JVariableSymbol) symbols.computeIfAbsent(variableBinding, k -> new JVariableSymbol(this, (IVariableBinding) k));
   }
 
-  JSymbolMetadata.JAnnotationInstance annotation(IAnnotationBinding annotationBinding) {
-    JSymbolMetadata.JAnnotationInstance cached = annotations.get(annotationBinding);
+  EcjSymbolMetadata.JAnnotationInstance annotation(IAnnotationBinding annotationBinding) {
+    EcjSymbolMetadata.JAnnotationInstance cached = annotations.get(annotationBinding);
     if (cached != null) {
       return cached;
     }
-    return annotations.computeIfAbsent(annotationBinding, k -> new JSymbolMetadata.JAnnotationInstance(this, k));
+    return annotations.computeIfAbsent(annotationBinding, k -> new EcjSymbolMetadata.JAnnotationInstance(this, k));
   }
 
   static IBinding declarationBinding(IBinding binding) {
