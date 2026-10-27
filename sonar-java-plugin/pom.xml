@@ -152,6 +152,13 @@
       <resource>
         <directory>${project.build.directory}/generated-resources/profiles</directory>
       </resource>
+      <resource>
+        <directory>${maven.multiModuleProjectDirectory}/semsitter-sample/target/release</directory>
+        <includes>
+          <include>bridge-*.xz</include>
+        </includes>
+        <targetPath>bridge</targetPath>
+      </resource>
     </resources>
     <plugins>
       <plugin>
@@ -184,7 +191,7 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>13000000</maxsize>
+                  <maxsize>16000000</maxsize>
                   <minsize>10000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
@@ -229,6 +236,24 @@
                 </filter>
                 <filter>
                   <artifact>org.sonarsource.java:java-frontend</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <filter>
+                  <artifact>commons-io:commons-io</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <filter>
+                  <artifact>org.apache.commons:commons-compress</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <filter>
+                  <artifact>org.tukaani:xz</artifact>
                   <includes>
                     <include>**</include>
                   </includes>
@@ -282,6 +307,7 @@
           <version>2.7.1</version>
           <configuration>
             <errorRemedy>xmlOutput</errorRemedy>
+            <licensesConfigFile>${project.basedir}/src/license/licenses.xml</licensesConfigFile>
             <writeVersions>false</writeVersions>
             <socketTimeout>20000</socketTimeout>
             <licensesOutputDirectory>${project.build.directory}/temp-licenses/THIRD_PARTY_LICENSES</licensesOutputDirectory>
@@ -300,6 +326,10 @@
                 <licenseUrlReplacement>
                     <regexp>http://www.opensource.org/licenses/bsd-license.php</regexp>
                     <replacement>${project.baseUri}/license-resources/bsd.txt</replacement>
+                </licenseUrlReplacement>
+                <licenseUrlReplacement>
+                    <regexp>https://opensource.org/license/0bsd</regexp>
+                    <replacement>${project.baseUri}/license-resources/0bsd.txt</replacement>
                 </licenseUrlReplacement>
             </licenseUrlReplacements>
             <licenseUrlFileNameSanitizers>
@@ -330,6 +360,19 @@
           <artifactId>exec-maven-plugin</artifactId>
           <version>3.6.4</version>
           <executions>
+            <execution>
+              <id>archive-semsitter-bridge</id>
+              <phase>generate-resources</phase>
+              <goals>
+                <goal>exec</goal>
+              </goals>
+              <configuration>
+                <executable>bash</executable>
+                <arguments>
+                  <argument>${maven.multiModuleProjectDirectory}/semsitter-sample/archive-bridge.sh</argument>
+                </arguments>
+              </configuration>
+            </execution>
             <execution>
               <id>generate-built-in-profiles</id>
               <phase>generate-resources</phase>

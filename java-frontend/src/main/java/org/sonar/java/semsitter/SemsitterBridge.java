@@ -26,8 +26,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
+import org.sonar.java.semsitter.PlatformDetection.Platform;
 
 /**
  * JSONL stdin/stdout client for the {@code semsitter-bridge} executable.
@@ -36,10 +38,12 @@ import java.util.concurrent.TimeUnit;
  * {@code {"id":1,"op":"parse","source":"hello"}} and the reply is one line
  * containing {@code id}, {@code ok}, {@code hasError} and {@code tree}.
  * Tree positions are tree-sitter's 0-based rows and columns.
- * The executable is supplied by the caller. This class does not embed a binary
- * or choose one for the current operating system.
+ * {@link #start()} extracts {@code bridge/bridge-<os>-<arch>.xz} from the classpath,
+ * the same layout SonarDRE uses, and runs the {@code bridge} binary inside it.
  */
 public final class SemsitterBridge implements AutoCloseable {
+
+  private static volatile Path extractedExecutable;
 
   private static final int STDERR_LIMIT = 8192;
 
@@ -59,9 +63,28 @@ public final class SemsitterBridge implements AutoCloseable {
     drain.start();
   }
 
+  public static SemsitterBridge start() throws IOException {
+    return start(extractedExecutable());
+  }
+
   public static SemsitterBridge start(Path executable) throws IOException {
     Process process = new ProcessBuilder(executable.toAbsolutePath().toString()).start();
     return new SemsitterBridge(process);
+  }
+
+  private static Path extractedExecutable() throws IOException {
+    Path current = extractedExecutable;
+    if (current != null && Files.isExecutable(current)) {
+      return current;
+    }
+    synchronized (SemsitterBridge.class) {
+      if (extractedExecutable == null || !Files.isExecutable(extractedExecutable)) {
+        Platform platform = new PlatformDetection().getPlatform();
+        Path directory = Files.createTempDirectory("bridge");
+        extractedExecutable = BridgeExtractor.extract(directory, platform);
+      }
+      return extractedExecutable;
+    }
   }
 
   /**
