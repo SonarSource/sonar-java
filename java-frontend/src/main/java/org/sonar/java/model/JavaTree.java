@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -164,6 +165,8 @@ public abstract class JavaTree implements Tree {
     private final SyntaxToken eofToken;
     public Sema sema;
 
+    final Set<JProblem> undefinedTypes = new HashSet<>();
+
     private final Map<JProblem.Type, Set<JWarning>> warnings = new EnumMap<>(JProblem.Type.class);
 
     public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports, List<Tree> types,
@@ -194,6 +197,10 @@ public abstract class JavaTree implements Tree {
     @Beta
     public List<JWarning> warnings(JProblem.Type type) {
       return Collections.unmodifiableList(new ArrayList<>(warnings.getOrDefault(type, Collections.emptySet())));
+    }
+
+    public Set<JProblem> undefinedTypes() {
+      return Collections.unmodifiableSet(undefinedTypes);
     }
 
     @Override

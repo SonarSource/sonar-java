@@ -337,13 +337,13 @@ public class JParser {
 
     JParser converter = new JParser();
     converter.sema = new JSema(astNode.getAST());
-    converter.sema.undefinedTypes.addAll(undefinedTypes);
     converter.compilationUnit = astNode;
     converter.tokenManager = createTokenManager(version, unitName, source);
     converter.lineColumnConverter = lineColumnConverter;
 
     JavaTree.CompilationUnitTreeImpl tree = converter.convertCompilationUnit(astNode);
     tree.sema = converter.sema;
+    tree.undefinedTypes.addAll(undefinedTypes);
     JWarning.Mapper.warningsFor(EcjDiagnosticProvider.warnings(astNode, converter.lineColumnConverter)).mappedInto(tree);
 
     ASTUtils.mayTolerateMissingType(astNode.getAST());
