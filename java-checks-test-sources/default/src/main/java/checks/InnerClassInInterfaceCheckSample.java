@@ -236,3 +236,19 @@ interface WithNestedClassHierarchy {
     class Inner {} // Compliant - parent is a class, not an interface
   }
 }
+
+interface WithGenericHelperTypes {
+
+  GenericResult<String> compute(GenericRequest<Integer> request);
+
+  void consume(List<GenericElement<String>> elements);
+
+  class GenericResult<T> {} // Compliant - generic return type of an interface method
+
+  class GenericRequest<T> {} // Compliant - generic parameter type of an interface method
+
+  class GenericElement<T> {} // Compliant - generic type argument of a parameter type
+
+  class GenericUnused<T> {} // Noncompliant
+//      ^^^^^^^^^^^^^
+}

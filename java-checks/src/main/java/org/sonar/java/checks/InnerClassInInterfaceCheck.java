@@ -89,7 +89,7 @@ public class InnerClassInInterfaceCheck extends IssuableSubscriptionVisitor {
     public void visitIdentifier(IdentifierTree tree) {
       Symbol symbol = tree.symbol();
       if (symbol.isTypeSymbol()) {
-        symbols.add(symbol);
+        symbols.add(symbol.type().erasure().symbol());
       }
     }
   }
