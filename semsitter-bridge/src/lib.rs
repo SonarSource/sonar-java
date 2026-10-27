@@ -23,6 +23,7 @@
 //! [`Analysis::cst`] then parses a file with tree-sitter-java and attaches, by exact byte span,
 //! the symbols declared at a name (`decls`) and the resolved occurrences (`refs`).
 
+pub mod server;
 pub mod types;
 
 use std::collections::{BTreeMap, BTreeSet, HashMap};
