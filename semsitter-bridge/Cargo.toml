@@ -5,6 +5,10 @@ edition = "2024"
 publish = false
 description = "Java CST with SemSitter semantics, served over JSONL to the SonarJava frontend."
 
+[[bin]]
+name = "semsitter-bridge"
+path = "src/main.rs"
+
 [dependencies]
 anyhow = "1"
 serde_json = "1"
