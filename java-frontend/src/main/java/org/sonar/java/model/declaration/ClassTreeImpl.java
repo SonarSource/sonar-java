@@ -16,9 +16,9 @@
  */
 package org.sonar.java.model.declaration;
 
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
+import org.sonar.java.model.SemanticValues;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class ClassTreeImpl extends JavaTree implements ClassTree {
 
@@ -68,8 +69,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Nullable
   private SyntaxToken permitsKeyword;
   private ListTree<TypeTree> permittedTypes;
-  @Nullable
-  public ITypeBinding typeBinding;
+  public Supplier<Symbol.TypeSymbol> typeSymbol = SemanticValues.UNKNOWN_TYPE_SYMBOL;
 
   public ClassTreeImpl(Kind kind, @Nullable SyntaxToken openBraceToken, List<Tree> members, @Nullable SyntaxToken closeBraceToken) {
     this.kind = kind;
@@ -218,9 +218,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   @Override
   public Symbol.TypeSymbol symbol() {
-    return typeBinding != null
-      ? root.sema.typeSymbol(typeBinding)
-      : Symbol.TypeSymbol.UNKNOWN_TYPE;
+    return typeSymbol.get();
   }
 
   @Nullable

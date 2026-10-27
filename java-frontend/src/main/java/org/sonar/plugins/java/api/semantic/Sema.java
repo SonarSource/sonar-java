@@ -16,8 +16,26 @@
  */
 package org.sonar.plugins.java.api.semantic;
 
+import java.util.Set;
+import org.sonar.java.model.JProblem;
+
 public interface Sema {
 
   Type getClassType(String fullyQualifiedName);
+
+  /**
+   * Returns undefined-type and preview-feature diagnostics associated with this semantic model.
+   */
+  default Set<JProblem> undefinedTypes() {
+    return Set.of();
+  }
+
+  /**
+   * Returns an operation that releases owned semantic resources. Run it only after all lazy
+   * queries have finished. The default implementation owns no resources.
+   */
+  default Runnable getEnvironmentCleaner() {
+    return () -> {};
+  }
 
 }

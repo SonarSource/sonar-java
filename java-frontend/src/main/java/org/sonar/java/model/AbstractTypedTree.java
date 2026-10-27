@@ -16,23 +16,18 @@
  */
 package org.sonar.java.model;
 
-import org.eclipse.jdt.core.dom.ITypeBinding;
+import java.util.function.Supplier;
 import org.sonar.plugins.java.api.semantic.Type;
-
-import javax.annotation.Nullable;
 
 /**
  * This class is intended for internal use during semantic analysis and should not be used in checks.
  */
 public abstract class AbstractTypedTree extends JavaTree {
 
-  @Nullable
-  public ITypeBinding typeBinding;
+  public Supplier<Type> type = SemanticValues.UNKNOWN_TYPE;
 
   public Type symbolType() {
-    return typeBinding != null
-      ? root.sema.type(typeBinding)
-      : Type.UNKNOWN;
+    return type.get();
   }
 
 }

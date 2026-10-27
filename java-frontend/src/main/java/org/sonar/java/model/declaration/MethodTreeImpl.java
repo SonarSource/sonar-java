@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.sonar.java.Preconditions;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
@@ -31,6 +31,7 @@ import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.model.SemanticValues;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -73,8 +74,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   @Nullable
   private CFG cfg;
 
-  @Nullable
-  public IMethodBinding methodBinding;
+  public Supplier<Symbol.MethodSymbol> methodSymbol = SemanticValues.UNKNOWN_METHOD;
 
   /**
    * Cache for {@link #isOverriding()}.
@@ -218,9 +218,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   @Override
   public Symbol.MethodSymbol symbol() {
-    return methodBinding != null
-      ? root.sema.methodSymbol(methodBinding)
-      : Symbol.MethodSymbol.UNKNOWN_METHOD;
+    return methodSymbol.get();
   }
 
   @Override
