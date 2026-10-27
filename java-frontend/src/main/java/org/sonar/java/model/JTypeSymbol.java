@@ -162,10 +162,22 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
         superTypes = Collections.emptySet();
       } else {
         superTypes = new HashSet<>();
-        JUtils.collectSuperTypes(superTypes, sema, typeBinding());
+        collectSuperTypes(superTypes, sema, typeBinding());
       }
     }
     return superTypes;
+  }
+
+  private void collectSuperTypes(Set<Type> result, JSema sema, ITypeBinding typeBinding) {
+    ITypeBinding s = typeBinding.getSuperclass();
+    if (s != null) {
+      result.add(sema.type(s));
+      collectSuperTypes(result, sema, s);
+    }
+    Arrays.stream(typeBinding.getInterfaces()).forEach(i -> {
+      result.add(sema.type(i));
+      collectSuperTypes(result, sema, i);
+    });
   }
 
   @Override

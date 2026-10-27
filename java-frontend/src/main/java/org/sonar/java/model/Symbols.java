@@ -349,6 +349,11 @@ public class Symbols {
 
   public static final class UnknownType implements Type {
     @Override
+    public Set<Type> directSuperTypes() {
+      return Collections.emptySet();
+    }
+
+    @Override
     public boolean is(String fullyQualifiedName) {
       return false;
     }
