@@ -22,7 +22,7 @@ runs:
   using: composite
   steps:
     - name: Prepare Ruling Artifact
-      uses: SonarSource/core-languages-tooling-public/prepare-ruling-artifact@master
+      uses: SonarSource/core-languages-tooling-public/prepare-ruling-artifact@792fbfa7eb7fcf1b5890807b567213b3a744fb5d
       with:
         artifact-name: actual_${{ inputs.name }}
 
