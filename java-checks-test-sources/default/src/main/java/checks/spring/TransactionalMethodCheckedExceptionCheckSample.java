@@ -518,6 +518,39 @@ public class TransactionalMethodCheckedExceptionCheckSample {
       throw e;
     }
 
+    public void saveInTryWithResources(java.nio.file.Path path, Object o) throws IOException { // Noncompliant
+//              ^^^^^^^^^^^^^^^^^^^^^^
+      try (java.io.BufferedReader reader = java.nio.file.Files.newBufferedReader(path)) {
+        repository.save(o);
+      }
+    }
+
+    public void saveInTryWithResourcesNotThrowingOnClose(java.nio.file.Path path, java.util.List<Object> list) throws IOException { // Compliant - close() of Stream does not throw checked exceptions
+      try (java.util.stream.Stream<String> lines = java.nio.file.Files.lines(path)) {
+        repository.save(lines);
+      }
+    }
+
+    public void executeUpdateBeforeValidation(jakarta.persistence.EntityManager em, Object o) throws IOException { // Noncompliant
+//              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      em.createQuery("UPDATE Order o SET o.status = 'DONE'").executeUpdate();
+      Validator.validate(o);
+      repository.save(o);
+    }
+
+    public void batchUpdateBeforeValidation(org.springframework.jdbc.core.JdbcTemplate jdbcTemplate, Object o) throws IOException { // Noncompliant
+//              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      jdbcTemplate.batchUpdate("UPDATE orders SET status = 'DONE'");
+      Validator.validate(o);
+      repository.save(o);
+    }
+
+    public void readBeforeValidation(org.springframework.jdbc.core.JdbcTemplate jdbcTemplate, Object o) throws IOException { // Compliant - only reads before the checked exception
+      jdbcTemplate.queryForList("SELECT * FROM orders");
+      Validator.validate(o);
+      jdbcTemplate.execute("UPDATE orders SET status = 'DONE'");
+    }
+
     public void saveAfterUncheckedThrow(Object o) throws IOException { // Noncompliant
 //              ^^^^^^^^^^^^^^^^^^^^^^^
       if (o == null) {

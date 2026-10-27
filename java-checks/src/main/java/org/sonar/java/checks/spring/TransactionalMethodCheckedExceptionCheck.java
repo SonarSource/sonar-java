@@ -26,7 +26,10 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
@@ -58,13 +61,29 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S8989")
 public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscriptionVisitor implements DependencyVersionAware {
 
   private static final List<String> TRANSACTIONAL_PREFIXES = List.of(
     "save", "delete", "update", "persist", "merge", "flush", "insert");
+
+  private static final List<String> READ_PREFIXES = List.of(
+    "get", "find", "read", "exists", "count", "is", "has", "query", "select", "load", "create", "contains");
+
+  private static final List<String> PERSISTENCE_TYPES = List.of(
+    "javax.persistence.EntityManager",
+    "jakarta.persistence.EntityManager",
+    "javax.persistence.Query",
+    "jakarta.persistence.Query",
+    "org.hibernate.SharedSessionContract",
+    "org.springframework.jdbc.core.JdbcOperations",
+    "org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations",
+    "org.springframework.data.repository.Repository",
+    "java.sql.Statement");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -302,7 +321,7 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
     if (hasTransactionalPrefix(method.simpleName().name())) {
       return true;
     }
-    var visitor = new MethodInvocationVisitor();
+    var visitor = new MethodInvocationVisitor(TransactionalMethodCheckedExceptionCheck::hasTransactionalName);
     method.accept(visitor);
     return visitor.foundTransactionalCall;
   }
@@ -327,7 +346,8 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
         if (isWriteOperation(items.get(i))) {
           hasWrite = true;
           if (items.subList(i, items.size()).stream().anyMatch(TransactionalMethodCheckedExceptionCheck::isCheckedThrowPoint)
-            || hasReachableThrowPoint(block)) {
+            || hasReachableThrowPoint(block)
+            || isInTryWithResourcesClosingWithCheckedException(items.get(i))) {
             return false;
           }
         }
@@ -371,9 +391,72 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
     if (!(tree instanceof MethodInvocationTree) && !(tree instanceof NewClassTree)) {
       return false;
     }
-    var visitor = new MethodInvocationVisitor();
+    var visitor = new MethodInvocationVisitor(TransactionalMethodCheckedExceptionCheck::isPotentialWrite);
     tree.accept(visitor);
     return visitor.foundTransactionalCall;
+  }
+
+  private static boolean hasTransactionalName(MethodInvocationTree mit) {
+    return hasTransactionalPrefix(ExpressionUtils.methodName(mit).name());
+  }
+
+  /**
+   * A method invocation is considered as a potential write when its name starts with a transactional prefix,
+   * or when it is invoked on a persistence API (EntityManager, JdbcTemplate, repository, ...) and its name
+   * does not look like a read operation.
+   */
+  private static boolean isPotentialWrite(MethodInvocationTree mit) {
+    if (hasTransactionalName(mit)) {
+      return true;
+    }
+    Symbol.MethodSymbol symbol = mit.methodSymbol();
+    if (symbol.isUnknown()) {
+      return false;
+    }
+    Type ownerType = symbol.owner().type();
+    return ownerType != null
+      && PERSISTENCE_TYPES.stream().anyMatch(ownerType::isSubtypeOf)
+      && !hasPrefix(ExpressionUtils.methodName(mit).name(), READ_PREFIXES);
+  }
+
+  /**
+   * The control flow graph does not model the implicit close() calls of try-with-resources, which are executed
+   * after the body and may throw checked exceptions.
+   */
+  private static boolean isInTryWithResourcesClosingWithCheckedException(Tree tree) {
+    Tree parent = tree.parent();
+    while (parent != null && !(parent instanceof MethodTree)) {
+      if (parent instanceof TryStatementTree tryStatement
+        && tryStatement.resourceList().stream().anyMatch(TransactionalMethodCheckedExceptionCheck::closeMayThrowCheckedException)) {
+        return true;
+      }
+      parent = parent.parent();
+    }
+    return false;
+  }
+
+  private static boolean closeMayThrowCheckedException(Tree resource) {
+    Type type = resource instanceof VariableTree variable ? variable.symbol().type() : ((ExpressionTree) resource).symbolType();
+    return findCloseMethod(type).map(TransactionalMethodCheckedExceptionCheck::mayThrowCheckedException).orElse(true);
+  }
+
+  private static Optional<Symbol.MethodSymbol> findCloseMethod(@Nullable Type type) {
+    if (type == null || type.isUnknown()) {
+      return Optional.empty();
+    }
+    Symbol.TypeSymbol typeSymbol = type.symbol();
+    Optional<Symbol.MethodSymbol> close = typeSymbol.lookupSymbols("close").stream()
+      .filter(Symbol::isMethodSymbol)
+      .map(Symbol.MethodSymbol.class::cast)
+      .filter(m -> m.parameterTypes().isEmpty())
+      .findFirst();
+    if (close.isPresent()) {
+      return close;
+    }
+    return Stream.concat(Stream.of(typeSymbol.superClass()), typeSymbol.interfaces().stream())
+      .map(TransactionalMethodCheckedExceptionCheck::findCloseMethod)
+      .flatMap(Optional::stream)
+      .findFirst();
   }
 
   private static boolean isCheckedThrowPoint(Tree tree) {
@@ -395,8 +478,12 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
   }
 
   private static boolean hasTransactionalPrefix(String name) {
+    return hasPrefix(name, TRANSACTIONAL_PREFIXES);
+  }
+
+  private static boolean hasPrefix(String name, List<String> prefixes) {
     String lowerName = name.toLowerCase(Locale.ROOT);
-    return TRANSACTIONAL_PREFIXES.stream().anyMatch(prefix -> {
+    return prefixes.stream().anyMatch(prefix -> {
       if (!lowerName.startsWith(prefix)) {
         return false;
       }
@@ -409,16 +496,18 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
   }
 
   private static class MethodInvocationVisitor extends BaseTreeVisitor {
+    private final Predicate<MethodInvocationTree> isTransactionalCall;
     boolean foundTransactionalCall = false;
+
+    MethodInvocationVisitor(Predicate<MethodInvocationTree> isTransactionalCall) {
+      this.isTransactionalCall = isTransactionalCall;
+    }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (!foundTransactionalCall) {
-        String calledMethodName = ExpressionUtils.methodName(tree).name();
-        if (hasTransactionalPrefix(calledMethodName)) {
-          foundTransactionalCall = true;
-          return;
-        }
+      if (!foundTransactionalCall && isTransactionalCall.test(tree)) {
+        foundTransactionalCall = true;
+        return;
       }
       super.visitMethodInvocation(tree);
     }
