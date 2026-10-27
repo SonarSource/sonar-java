@@ -125,7 +125,7 @@ public abstract class JParserConfig {
       options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
     }
     // enabling all supported compiler warnings
-    JProblem.Type.compilerOptions()
+    EcjDiagnosticProvider.compilerOptions()
       .forEach(option -> options.put(option, "warning"));
 
     astParser.setCompilerOptions(options);
