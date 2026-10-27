@@ -378,11 +378,11 @@ abstract class JSymbol implements Symbol {
   private SymbolMetadata convertMetadata() {
     switch (binding.getKind()) {
       case IBinding.PACKAGE:
-        return new JSymbolMetadata(sema, this, sema.resolvePackageAnnotations(binding.getName()));
+        return EcjSymbolMetadata.declaration(sema, this, sema.resolvePackageAnnotations(binding.getName()));
       case IBinding.VARIABLE:
         ITypeBinding type = ((IVariableBinding) binding).getType();
         if (type == null) {
-          return new JSymbolMetadata(sema, this, binding.getAnnotations());
+          return EcjSymbolMetadata.declaration(sema, this, binding.getAnnotations());
         }
         return convertMetadata(type);
       case IBinding.METHOD:
@@ -393,12 +393,12 @@ abstract class JSymbol implements Symbol {
         }
         return convertMetadata(returnType);
       default:
-        return new JSymbolMetadata(sema, this, binding.getAnnotations());
+        return EcjSymbolMetadata.declaration(sema, this, binding.getAnnotations());
     }
   }
 
   private SymbolMetadata convertMetadata(ITypeBinding type) {
-    return JSymbolMetadata.of(sema, this, type, binding.getAnnotations());
+    return EcjSymbolMetadata.of(sema, this, type, binding.getAnnotations());
   }
 
   /**

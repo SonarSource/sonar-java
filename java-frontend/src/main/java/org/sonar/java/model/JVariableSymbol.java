@@ -93,7 +93,7 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
       this.name = "arg" + index;
       this.owner = sema.methodSymbol(owner);
       this.type = sema.type(typeBinding);
-      this.metadata = JSymbolMetadata.of(sema, this, typeBinding, owner.getParameterAnnotations(index));
+      this.metadata = EcjSymbolMetadata.of(sema, this, typeBinding, owner.getParameterAnnotations(index));
     }
 
     @Override

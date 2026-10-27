@@ -17,7 +17,6 @@
 package org.sonar.java.model;
 
 import java.io.File;
-import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -104,7 +103,7 @@ class SymbolsTest {
     Tree unsupportedDeclaration = mock(Tree.class);
     Symbol symbol = spy(Symbol.UNKNOWN_SYMBOL);
     when(symbol.declaration()).thenReturn(unsupportedDeclaration);
-    SymbolMetadata metadata = new JSymbolMetadata(JUtilsTest.SEMA, symbol, new IAnnotationBinding[0]);
+    SymbolMetadata metadata = new JSymbolMetadata(symbol, java.util.List.of());
     assertThat(metadata.findAnnotationTree(mock(AnnotationInstance.class))).isNull();
     assertThat(metadata.nullabilityData().type()).isEqualTo(NullabilityType.UNKNOWN);
     assertThat(metadata.nullabilityData(NullabilityTarget.METHOD).type()).isEqualTo(NullabilityType.UNKNOWN);
