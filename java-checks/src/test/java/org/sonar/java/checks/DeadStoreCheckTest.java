@@ -19,6 +19,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
+import org.sonar.java.model.SemanticValues;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -64,7 +65,7 @@ class DeadStoreCheckTest {
     @Override
     public void visitVariable(VariableTree tree) {
       if (tree instanceof VariableTreeImpl varImpl) {
-        varImpl.variableBinding = null;
+        varImpl.variableSymbol = SemanticValues.UNKNOWN_SYMBOL;
       }
       super.visitVariable(tree);
     }

@@ -168,7 +168,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     return superTypes;
   }
 
-  private void collectSuperTypes(Set<Type> result, JSema sema, ITypeBinding typeBinding) {
+  private static void collectSuperTypes(Set<Type> result, JSema sema, ITypeBinding typeBinding) {
     ITypeBinding s = typeBinding.getSuperclass();
     if (s != null) {
       result.add(sema.type(s));

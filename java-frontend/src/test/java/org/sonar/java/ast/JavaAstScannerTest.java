@@ -80,6 +80,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.sonar.java.model.EcjTestSupport.clearSymbol;
 
 class JavaAstScannerTest {
 
@@ -469,7 +470,7 @@ class JavaAstScannerTest {
       assertThat(clazz.simpleName().name()).isEqualTo("C");
       assertThat(clazz.simpleName().symbol().isUnknown()).isFalse();
       IdentifierTreeImpl identifierTree = (IdentifierTreeImpl) clazz.simpleName();
-      identifierTree.binding = null;
+      clearSymbol(identifierTree);
     });
 
   }

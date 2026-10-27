@@ -42,6 +42,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.sonar.java.model.EcjTestSupport.sema;
+import static org.sonar.java.model.EcjTestSupport.typeBinding;
 import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 
 class JTypeTest {
@@ -95,7 +97,7 @@ class JTypeTest {
     ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
 
-    assertThat(cu.sema.type(e.typeBinding).isParameterized())
+    assertThat(sema(cu).type(typeBinding(e)).isParameterized())
       .isEqualTo(e.symbolType().isParameterized())
       .isTrue();
   }
@@ -108,11 +110,11 @@ class JTypeTest {
     ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
 
-    assertThat(cu.sema.type(e.typeBinding).typeArguments())
+    assertThat(sema(cu).type(typeBinding(e)).typeArguments())
       .hasToString(e.symbolType().typeArguments().toString())
       .hasToString("[Integer, String]");
 
-    assertThat(cu.sema.type(c.typeBinding).typeArguments())
+    assertThat(sema(cu).type(typeBinding(c)).typeArguments())
       .isEqualTo(c.symbol().type().typeArguments())
       .isEmpty();
   }
@@ -235,11 +237,11 @@ class JTypeTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) m.returnType());
-    JType parameterizedType = cu.sema.type(Objects.requireNonNull(e.typeBinding));
+    JType parameterizedType = sema(cu).type(Objects.requireNonNull(typeBinding(e)));
 
     assertThat(parameterizedType)
       .hasSameNameAs(e.symbolType())
-      .hasSameNameAs(cu.sema.typeSymbol(e.typeBinding).type())
+      .hasSameNameAs(sema(cu).typeSymbol(typeBinding(e)).type())
       .is("java.util.List")
       .hasName("List");
   }
@@ -250,10 +252,10 @@ class JTypeTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) m.returnType());
-    JType typeVariable = cu.sema.type(Objects.requireNonNull(e.typeBinding));
+    JType typeVariable = sema(cu).type(Objects.requireNonNull(typeBinding(e)));
     assertThat(typeVariable)
       .hasSameNameAs(e.symbolType())
-      .hasSameNameAs(cu.sema.typeSymbol(e.typeBinding).type())
+      .hasSameNameAs(sema(cu).typeSymbol(typeBinding(e)).type())
       .hasName("T")
       .is(e.symbolType().fullyQualifiedName())
       .is("T");
@@ -308,10 +310,10 @@ class JTypeTest {
     AbstractTypedTree primitive = (AbstractTypedTree) m.parameters().get(0).type();
     AbstractTypedTree array = (AbstractTypedTree) m.parameters().get(1).type();
 
-    JType nullType = cu.sema.type(Objects.requireNonNull(e.typeBinding));
-    JType classType = cu.sema.type(Objects.requireNonNull(c.typeBinding));
-    JType primitiveType = cu.sema.type(Objects.requireNonNull(primitive.typeBinding));
-    JType arrayType = cu.sema.type(Objects.requireNonNull(array.typeBinding));
+    JType nullType = sema(cu).type(Objects.requireNonNull(typeBinding(e)));
+    JType classType = sema(cu).type(Objects.requireNonNull(typeBinding(c)));
+    JType primitiveType = sema(cu).type(Objects.requireNonNull(typeBinding(primitive)));
+    JType arrayType = sema(cu).type(Objects.requireNonNull(typeBinding(array)));
 
     assertThat(nullType)
       .hasSameNameAs(e.symbolType())
@@ -348,9 +350,9 @@ class JTypeTest {
     JavaTree.WildcardTreeImpl w1 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(0);
     JavaTree.WildcardTreeImpl w2 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(1);
     JavaTree.WildcardTreeImpl w3 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(2);
-    JType wildcardType1 = cu.sema.type(Objects.requireNonNull(w1.typeBinding));
-    JType wildcardType2 = cu.sema.type(Objects.requireNonNull(w2.typeBinding));
-    JType wildcardType3 = cu.sema.type(Objects.requireNonNull(w3.typeBinding));
+    JType wildcardType1 = sema(cu).type(Objects.requireNonNull(typeBinding(w1)));
+    JType wildcardType2 = sema(cu).type(Objects.requireNonNull(typeBinding(w2)));
+    JType wildcardType3 = sema(cu).type(Objects.requireNonNull(typeBinding(w3)));
 
     assertThat(wildcardType1)
       .isEqualTo(wildcardType2)

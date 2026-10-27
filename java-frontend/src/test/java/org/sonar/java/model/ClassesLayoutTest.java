@@ -25,7 +25,12 @@ import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,6 +42,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  * but it was removed due to licensing.
  */
 class ClassesLayoutTest {
+
+  @Test
+  void shared_model_and_contracts_have_no_compiler_imports() throws Exception {
+    Path model = Path.of("src/main/java/org/sonar/java/model");
+    Set<String> sharedFiles = Set.of("AbstractTypedTree.java", "JavaTree.java", "KeywordThis.java", "KeywordSuper.java",
+      "TypeParameterTreeImpl.java", "JUtils.java", "JSymbolMetadata.java", "JSymbolMetadataNullabilityHelper.java",
+      "JProblem.java", "JWarning.java", "SemanticValues.java");
+    try (Stream<Path> files = Files.walk(model)) {
+      for (Path file : files.filter(path -> path.toString().endsWith(".java")).toList()) {
+        if (sharedFiles.contains(file.getFileName().toString()) || List.of("declaration", "expression", "pattern").contains(file.getParent().getFileName().toString())) {
+          assertThat(Files.readAllLines(file).stream().filter(line -> line.startsWith("import "))).as(file.toString())
+            .noneMatch(line -> line.contains("org.eclipse.jdt"));
+        }
+      }
+    }
+  }
 
   @Test
   void token() {

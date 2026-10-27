@@ -23,6 +23,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.model.EcjTestSupport.clearSymbol;
+import static org.sonar.java.model.EcjTestSupport.clearType;
 
 class KeywordSuperTest {
 
@@ -43,8 +45,8 @@ class KeywordSuperTest {
     assertThat(keywordSuper.symbolType().name()).isEqualTo("Object");
 
     // simulate a binding problem
-    keywordSuper.binding = null;
-    keywordSuper.typeBinding = null;
+    clearSymbol(keywordSuper);
+    clearType(keywordSuper);
 
     assertThat(keywordSuper.symbol().isUnknown()).isTrue();
     assertThat(keywordSuper.symbolType().isUnknown()).isTrue();
