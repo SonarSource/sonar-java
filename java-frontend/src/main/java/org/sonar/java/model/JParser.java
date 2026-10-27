@@ -16,32 +16,46 @@
  */
 package org.sonar.java.model;
 
-import java.util.Collections;
+import com.google.gson.JsonObject;
+import com.sonar.sslr.api.RecognitionException;
+import java.nio.file.Path;
 import java.util.Objects;
+import org.sonar.java.semsitter.SemsitterBridge;
 
 public final class JParser {
 
   private JParser() {
   }
 
+  /**
+   * Parses one compilation unit without project-wide symbols. Batch analysis goes through
+   * {@link JParserConfig}, which scans every file before translating so references resolve.
+   */
   public static JavaTree.CompilationUnitTreeImpl parse(String version, String unitName, String source) {
     Objects.requireNonNull(version);
     Objects.requireNonNull(unitName);
     Objects.requireNonNull(source);
-    int line = 1;
-    int column = 0;
-    for (int i = 0; i < source.length(); i++) {
-      if (source.charAt(i) == '\n') {
-        line++;
-        column = 0;
-      } else {
-        column++;
-      }
+    try (SemsitterBridge bridge = SemsitterBridge.start(bridgePath())) {
+      JsonObject document = bridge.parse(source);
+      JSema sema = new JSema();
+      sema.ingestDocument(document);
+      return SemsitterTranslator.translate(sema, document);
+    } catch (RecognitionException syntaxError) {
+      throw syntaxError;
+    } catch (Exception failure) {
+      throw new RecognitionException(1, "SemSitter: unable to parse " + unitName, failure);
     }
-    InternalSyntaxToken eof = new InternalSyntaxToken(line, column, "", Collections.emptyList(), true);
-    JavaTree.CompilationUnitTreeImpl unit = new JavaTree.CompilationUnitTreeImpl(null, Collections.emptyList(), Collections.emptyList(), null, eof);
-    unit.sema = new JSema();
-    return unit;
+  }
+
+  static Path bridgePath() {
+    String configured = System.getProperty("sonar.java.semsitter.bridge");
+    if (configured == null || configured.isBlank()) {
+      configured = System.getenv("SEMSITTER_BRIDGE");
+    }
+    if (configured == null || configured.isBlank()) {
+      throw new RecognitionException(1, "SemSitter bridge is not configured. Set sonar.java.semsitter.bridge or SEMSITTER_BRIDGE.");
+    }
+    return Path.of(configured);
   }
 
 }

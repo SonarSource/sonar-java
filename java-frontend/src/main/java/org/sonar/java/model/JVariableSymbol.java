@@ -28,41 +28,63 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
-  JVariableSymbol(JSema sema) {
-    super(sema, Kind.VARIABLE);
+  private final boolean parameter;
+  private final boolean local;
+  private boolean effectivelyFinal;
+  private Optional<Object> constant = Optional.empty();
+
+  JVariableSymbol(JSema sema, @Nullable String id, String name, String dumpKind) {
+    super(sema, Kind.VARIABLE, id, name);
+    this.parameter = "param".equals(dumpKind);
+    this.local = "local".equals(dumpKind);
+    this.effectivelyFinal = "constant".equals(dumpKind) || "enum_member".equals(dumpKind);
+    enumSymbol("enum_member".equals(dumpKind));
+  }
+
+  void effectivelyFinal(boolean effectivelyFinal) {
+    this.effectivelyFinal = effectivelyFinal;
+  }
+
+  void constantValue(@Nullable Object value) {
+    this.constant = Optional.ofNullable(value);
   }
 
   @Nullable
   @Override
   public VariableTree declaration() {
-    return null;
+    return (VariableTree) super.declaration();
   }
 
   @Override
   public boolean isEffectivelyFinal() {
-    return false;
+    return isFinal() || effectivelyFinal;
   }
 
   @Override
   public Optional<Object> constantValue() {
-    return Optional.empty();
+    return constant;
   }
 
   @Override
   public boolean isLocalVariable() {
-    return false;
+    return local || (owner().isMethodSymbol() && !parameter);
   }
 
   @Override
   public boolean isParameter() {
-    return false;
+    return parameter;
   }
 
   static class ParameterPlaceholderSymbol extends Symbols.DefaultSymbol implements Symbol.VariableSymbol {
-    private final String name;
 
-    ParameterPlaceholderSymbol(int index) {
+    private final String name;
+    private final Symbol owner;
+    private final Type type;
+
+    ParameterPlaceholderSymbol(int index, Symbol owner, Type type) {
       this.name = "arg" + index;
+      this.owner = owner;
+      this.type = type == null ? Type.UNKNOWN : type;
     }
 
     @Override
@@ -72,22 +94,22 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
     @Override
     public Symbol owner() {
-      return Symbol.UNKNOWN_SYMBOL;
+      return owner;
     }
 
     @Override
     public Type type() {
-      return Type.UNKNOWN;
+      return type;
     }
 
     @Override
     public boolean isUnknown() {
-      return true;
+      return false;
     }
 
     @Override
     public TypeSymbol enclosingClass() {
-      return TypeSymbol.UNKNOWN_TYPE;
+      return owner.enclosingClass();
     }
 
     @Override
@@ -103,7 +125,7 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
     @Override
     public boolean isEffectivelyFinal() {
-      return false;
+      return true;
     }
 
     @Override
@@ -136,5 +158,4 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
       return false;
     }
   }
-
 }

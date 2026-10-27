@@ -18,8 +18,12 @@ package org.sonar.java.model;
 
 final class JPackageSymbol extends JSymbol {
 
-  JPackageSymbol(JSema sema) {
-    super(sema, Kind.PACKAGE);
+  JPackageSymbol(JSema sema, String name) {
+    super(sema, Kind.PACKAGE, name, name);
   }
 
+  @Override
+  public boolean isUnknown() {
+    return false;
+  }
 }

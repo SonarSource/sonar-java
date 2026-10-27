@@ -38,6 +38,9 @@ public class MethodInvocationTreeImpl extends AssessableExpressionTree implement
   @Nullable
   private TypeArguments typeArguments;
 
+  @Nullable
+  public Symbol.MethodSymbol methodSymbol;
+
   public MethodInvocationTreeImpl(ExpressionTree methodSelect, @Nullable TypeArguments typeArguments, ArgumentListTreeImpl arguments) {
     this.methodSelect = Objects.requireNonNull(methodSelect);
     this.typeArguments = typeArguments;
@@ -88,7 +91,7 @@ public class MethodInvocationTreeImpl extends AssessableExpressionTree implement
 
   @Override
   public Symbol.MethodSymbol methodSymbol() {
-    return Symbol.MethodSymbol.UNKNOWN_METHOD;
+    return methodSymbol != null ? methodSymbol : Symbol.MethodSymbol.UNKNOWN_METHOD;
   }
 
   @Override
