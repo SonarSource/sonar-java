@@ -43,6 +43,7 @@ class SymbolsTest {
     Type unknownType = Type.UNKNOWN;
 
     assertThat(unknownType.isUnknown()).isTrue();
+    assertThat(unknownType.directSuperTypes()).isEmpty();
     assertThat(unknownType).isEqualTo(Type.UNKNOWN);
 
     assertThat(unknownType.is("!Unknown!")).isFalse();
