@@ -28,12 +28,12 @@ final class KeywordSuper extends IdentifierTreeImpl {
 
   @Override
   public Type symbolType() {
-    return Type.UNKNOWN;
+    return symbol().type();
   }
 
   @Override
   public Symbol symbol() {
-    return Symbol.UNKNOWN_SYMBOL;
+    return symbol != null ? symbol : Symbol.UNKNOWN_SYMBOL;
   }
 
 }
