@@ -1,0 +1,233 @@
+/*
+ * SonarQube Java
+ * Copyright (C) SonarSource Sàrl
+ * mailto:info AT sonarsource DOT com
+ *
+ * You can redistribute and/or modify this program under the terms of
+ * the Sonar Source-Available License Version 1, as published by SonarSource Sàrl.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the Sonar Source-Available License for more details.
+ *
+ * You should have received a copy of the Sonar Source-Available License
+ * along with this program; if not, see https://sonarsource.com/license/ssal/
+ */
+
+//! Type declarations by erased binary name (`java.util.Map$Entry`), from the first source that
+//! knows the type: the scanned project graph, the classpath index (declarations only), then the
+//! JDK table SemSitter embeds.
+
+use std::collections::{BTreeSet, HashMap, VecDeque};
+
+use serde_json::{Map, Value, json};
+use udg_family_jvm::external::classpath::{ClasspathIndex, ClasspathType};
+use udg_family_jvm::external::jdk_table::{JdkMemberKind, JdkType, jdk_type};
+
+const ACC_STATIC: u16 = 0x0008;
+const ACC_FINAL: u16 = 0x0010;
+const ACC_PUBLIC: u16 = 0x0001;
+const ACC_PRIVATE: u16 = 0x0002;
+const ACC_PROTECTED: u16 = 0x0004;
+
+/// Strips the generic arity suffix of a graph id segment: ``java.util.List`1`` is `java.util.List`.
+pub fn erase(id: &str) -> String {
+  let mut out = String::with_capacity(id.len());
+  let mut chars = id.chars().peekable();
+  while let Some(c) = chars.next() {
+    if c == '`' {
+      while chars.peek().is_some_and(char::is_ascii_digit) {
+        chars.next();
+      }
+    } else {
+      out.push(c);
+    }
+  }
+  out
+}
+
+/// Project types of the graph: erased name to graph id, and graph id to member ids.
+#[derive(Default)]
+pub struct ProjectTypes {
+  pub keys: HashMap<String, String>,
+  pub members: HashMap<String, Vec<String>>,
+}
+
+impl ProjectTypes {
+  pub fn new(facts: &HashMap<String, Value>) -> Self {
+    let mut types = ProjectTypes::default();
+    for (id, fact) in facts {
+      if fact.get("tier").and_then(Value::as_str) != Some("IN_PROJECT") {
+        continue;
+      }
+      if let Some(parent) = fact.get("parent").and_then(Value::as_str) {
+        types.members.entry(parent.to_string()).or_default().push(id.clone());
+      }
+      if !id.contains('#') && is_type_kind(fact.get("kind").and_then(Value::as_str).unwrap_or_default()) {
+        types.keys.insert(erase(id), id.clone());
+      }
+    }
+    for members in types.members.values_mut() {
+      members.sort();
+    }
+    types
+  }
+}
+
+fn is_type_kind(kind: &str) -> bool {
+  matches!(kind, "class" | "interface" | "enum" | "record" | "annotation" | "exception")
+}
+
+/// Declarations of `names` and of all their supertypes.
+pub fn lookup(
+  names: &[String],
+  project: &ProjectTypes,
+  facts: &HashMap<String, Value>,
+  classpath: &ClasspathIndex,
+) -> Map<String, Value> {
+  let mut found = Map::new();
+  let mut queue: VecDeque<String> = names.iter().map(|n| erase(n)).collect();
+  let mut seen: BTreeSet<String> = BTreeSet::new();
+  while let Some(name) = queue.pop_front() {
+    if !seen.insert(name.clone()) {
+      continue;
+    }
+    let info = project_type(&name, project, facts)
+      .or_else(|| classpath.get(&name).map(classpath_type))
+      .or_else(|| jdk_type(&name).map(jdk_type_info));
+    let Some(info) = info else {
+      continue;
+    };
+    for key in ["super", "interfaces"] {
+      for supertype in strings(&info, key) {
+        queue.push_back(erase(&supertype));
+      }
+    }
+    found.insert(name, info);
+  }
+  found
+}
+
+fn strings(value: &Value, key: &str) -> Vec<String> {
+  match value.get(key) {
+    Some(Value::String(s)) => vec![s.clone()],
+    Some(Value::Array(items)) => items.iter().filter_map(|i| i.as_str().map(str::to_string)).collect(),
+    _ => Vec::new(),
+  }
+}
+
+fn project_type(name: &str, project: &ProjectTypes, facts: &HashMap<String, Value>) -> Option<Value> {
+  let id = project.keys.get(name)?;
+  let fact = facts.get(id)?;
+  let kind = fact.get("kind").and_then(Value::as_str).unwrap_or("class");
+  let extends = strings(fact, "extends");
+  let implements = strings(fact, "implements");
+  let (superclass, interfaces) = if kind == "interface" || kind == "annotation" {
+    (None, extends)
+  } else {
+    (extends.into_iter().next(), implements)
+  };
+  let members: Vec<Value> = project
+    .members
+    .get(id)
+    .into_iter()
+    .flatten()
+    .filter_map(|member| facts.get(member).map(|f| json!({"id": member, "facts": f})))
+    .collect();
+  Some(json!({
+    "origin": "project",
+    "id": id,
+    "kind": kind,
+    "super": superclass,
+    "interfaces": interfaces,
+    "modifiers": fact.pointer("/props/modifiers").cloned().unwrap_or_else(|| json!([])),
+    "members": members,
+  }))
+}
+
+fn classpath_type(ty: &ClasspathType) -> Value {
+  let mut members: Vec<Value> = ty
+    .methods
+    .iter()
+    .map(|m| {
+      json!({
+        "k": "m",
+        "name": m.name,
+        "desc": m.descriptor,
+        "static": m.is_static,
+        "abstract": m.is_abstract,
+        "varargs": m.is_varargs,
+        "vis": "public",
+      })
+    })
+    .collect();
+  members.extend(ty.fields.iter().filter_map(|f| {
+    let desc = f.declared_type.as_ref()?;
+    Some(json!({
+      "k": "f",
+      "name": f.name,
+      "desc": desc,
+      "static": f.access_flags & ACC_STATIC != 0,
+      "final": f.access_flags & ACC_FINAL != 0,
+      "vis": access_visibility(f.access_flags),
+      "constant": f.constant_string,
+    }))
+  }));
+  json!({
+    "origin": "classpath",
+    "kind": serde_json::to_value(ty.kind).unwrap_or(Value::Null),
+    "super": ty.super_class,
+    "interfaces": ty.interfaces,
+    "members": members,
+  })
+}
+
+fn access_visibility(flags: u16) -> &'static str {
+  if flags & ACC_PUBLIC != 0 {
+    "public"
+  } else if flags & ACC_PROTECTED != 0 {
+    "protected"
+  } else if flags & ACC_PRIVATE != 0 {
+    "private"
+  } else {
+    "package"
+  }
+}
+
+fn jdk_type_info(ty: &JdkType) -> Value {
+  let members: Vec<Value> = ty
+    .members
+    .iter()
+    .map(|m| {
+      json!({
+        "k": if m.kind == JdkMemberKind::Method { "m" } else { "f" },
+        "name": m.name,
+        "desc": m.descriptor,
+        "static": m.is_static,
+        "final": m.is_final,
+        "abstract": m.is_abstract,
+        "vis": format!("{:?}", m.visibility).to_lowercase(),
+      })
+    })
+    .collect();
+  let mut modifiers = Vec::new();
+  if ty.is_public {
+    modifiers.push("public");
+  }
+  if ty.is_abstract {
+    modifiers.push("abstract");
+  }
+  if ty.is_sealed {
+    modifiers.push("sealed");
+  }
+  json!({
+    "origin": "jdk",
+    "kind": serde_json::to_value(ty.kind).unwrap_or(Value::Null),
+    "super": ty.super_type,
+    "interfaces": ty.interfaces,
+    "modifiers": modifiers,
+    "typeParameters": ty.type_parameters,
+    "members": members,
+  })
+}
