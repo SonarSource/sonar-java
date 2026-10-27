@@ -177,7 +177,37 @@ class TernaryOperatorSameOperationCheckSample {
     Object nir1 = condition ? getObj().foo(a) : getObj().foo(b); // Noncompliant
   }
 
+  void testComplexArguments(String value, StringBuilder buffer, int index) {
+    String c12 = condition ? foo(value.substring(1)) : foo(value); // Compliant - method invocation as differing argument
+    String c13 = condition ? foo(value.substring(1)) : foo(value.substring(2)); // Compliant - nested invocations
+    Object c14 = condition ? new Thread(() -> {}) : new Thread(this::run); // Compliant - lambda and method reference
+    Object c15 = condition ? new Foo((String) obj.toString()) : new Foo(value); // Compliant - cast
+    Object c16 = condition ? new Foo(value + "x") : new Foo(value); // Compliant - binary expression
+    String c17 = condition ? foo(new String("a")) : foo(value); // Compliant - object creation
+    String[] arr = {value};
+    String c18 = condition ? arr[index + 1] : arr[index]; // Compliant - complex index
+
+    String s1 = condition ? foo("abc") : foo("def"); // Noncompliant
+    String s2 = condition ? foo(this.field) : foo(value); // Noncompliant
+    String s3 = condition ? foo(obj.field) : foo(obj2.field); // Noncompliant
+    String s4 = condition ? foo((value)) : foo(field); // Noncompliant
+    Object s5 = condition ? overloaded(-1) : overloaded(index); // Noncompliant
+    String s6 = condition ? arr[0] : arr[index]; // Noncompliant
+  }
+
+  void testDifferentArgumentTypes(int primitive, Integer boxed, long longValue, Object object, String string) {
+    Object t1 = condition ? takesLong(primitive) : takesLong(longValue); // Compliant - different argument types
+    Object t2 = condition ? takesObject(boxed) : takesObject(primitive); // Compliant - unboxing would occur
+    Object t3 = condition ? takesObject(string) : takesObject(object); // Compliant - different argument types
+    Object t4 = condition ? foo(string) : foo(null); // Compliant - null literal
+    Object t5 = condition ? takesLong(longValue) : takesLong(1L); // Noncompliant
+  }
+
   // Private methods used in ternary
+  String field;
+  private void run() { }
+  private Object takesLong(long l) { return l; }
+  private Object takesObject(Object o) { return o; }
   private String foo(String s) { return s; }
   private String foo(String s, String t) { return s + t; }
   private String bar(String s) { return s; }

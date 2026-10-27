@@ -8,6 +8,9 @@ strings, and for variable names that match any of the patterns from the provided
   <li><a href="https://www.cve.org/CVERecord?id=CVE-2019-13466">CVE-2019-13466</a></li>
   <li><a href="https://www.cve.org/CVERecord?id=CVE-2018-15389">CVE-2018-15389</a></li>
 </ul>
+<p>This rule also examines the credential value itself: a value that is recognizable as something other than a real credential is not reported, even
+when the variable name or the connection string parameter matches one of the configured words. Placeholders, references to an environment variable or
+to a secrets manager, encrypted values, and obvious example or test values are therefore not flagged.</p>
 <h2>How to fix it</h2>
 <p>Credentials should be stored in a configuration file that is not committed to the code repository, in a database, or managed by your cloud
 provider’s secrets management service. If a password is exposed in the source code, it must be changed immediately.</p>
@@ -15,7 +18,7 @@ provider’s secrets management service. If a password is exposed in the source 
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 String username = "steve";
-String password = "blue";
+String password = "Xk9mP2vL8qR4";
 Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/test?" +
                   "user=" + username + "&amp;password=" + password); // Noncompliant
 </pre>
@@ -30,7 +33,7 @@ Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/test?" +
 <ul>
   <li>OWASP - <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">Top 10 2021 Category A7 - Identification and
   Authentication Failures</a></li>
-  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication">Top 10 2017 Category A2 - Broken
+  <li>OWASP - <a href="https://github.com/OWASP/Top10/blob/master/2017/en/0xa2-broken-authentication.md">Top 10 2017 Category A2 - Broken
   Authentication</a></li>
   <li>CWE - <a href="https://cwe.mitre.org/data/definitions/798">CWE-798 - Use of Hard-coded Credentials</a></li>
   <li>CWE - <a href="https://cwe.mitre.org/data/definitions/259">CWE-259 - Use of Hard-coded Password</a></li>

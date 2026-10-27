@@ -7,16 +7,13 @@
     },
     "attribute": "CONVENTIONAL"
   },
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Linear",
     "linearDesc": "2min by injected field",
     "linearFactor": "2min"
   },
-  "tags": [
-    "spring",
-    "design"
-  ],
+  "tags": [],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-4288",
   "sqKey": "S4288",

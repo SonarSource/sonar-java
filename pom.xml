@@ -10,7 +10,7 @@
 
   <groupId>org.sonarsource.java</groupId>
   <artifactId>java</artifactId>
-  <version>8.45.0-SNAPSHOT</version>
+  <version>8.46.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>SonarJava</name>
   <description>Code Analyzer for Java :: Parent POM</description>
@@ -91,12 +91,12 @@
     <sonar.organization>sonarsource</sonar.organization>
     <!-- Compile and test against the latest plugin API. Runtime compatibility is validated independently. -->
     <sonar.plugin.api.version>14.2.0.5584</sonar.plugin.api.version>
-    <sonar.scanner.version>13.16.0.6705</sonar.scanner.version>
-    <sonarlint.plugin.api.version>12.1.1.87771</sonarlint.plugin.api.version>
+    <sonar.scanner.version>13.17.0.6738</sonar.scanner.version>
+    <sonarlint.plugin.api.version>12.2.0.87867</sonarlint.plugin.api.version>
     <sonar.sca.exclusions>its/**,java-checks-test-sources/**</sonar.sca.exclusions>
-    <analyzer.commons.version>2.33.0.5369</analyzer.commons.version>
+    <analyzer.commons.version>2.35.0.15509</analyzer.commons.version>
     <orchestrator.version>6.4.4.4797</orchestrator.version>
-    <sonar.integration.tester.version>1.4.0.1402</sonar.integration.tester.version>
+    <sonar.integration.tester.version>1.5.0.1412</sonar.integration.tester.version>
     <sslr.version>1.26.0.4194</sslr.version>
     <argLine>-Xmx512m</argLine>
     <gitRepositoryName>sonar-java</gitRepositoryName>
@@ -351,6 +351,15 @@
   <build>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <configuration>
+            <licenseMerges combine.children="append">
+              <licenseMerge>bsd|The BSD 2-Clause License</licenseMerge>
+            </licenseMerges>
+          </configuration>
+        </plugin>
         <plugin>
           <groupId>de.thetaphi</groupId>
           <artifactId>forbiddenapis</artifactId>

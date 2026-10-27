@@ -374,6 +374,18 @@ class LiteralUtilsTest {
     assertThat(LiteralUtils.getAsStringValue(textBlockWithQuotesOnNewLine)).isEqualTo("   ABC\n   ABC\n");
   }
 
+  @ParameterizedTest
+  @ValueSource(strings = {"'?'", "'\\77'", "'\\077'", "'\\u003f'", "'\\uu003f'", "\\u0027?\\u0027"})
+  void char_literal_value(String literal) {
+    assertThat(LiteralUtils.charLiteralValue(getLiteral(literal))).isEqualTo('?');
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"'\\n'", "'\\u005cn'", "'\\u005c\\u006e'"})
+  void char_literal_value_unicode_before_escapes(String literal) {
+    assertThat(LiteralUtils.charLiteralValue(getLiteral(literal))).isEqualTo('\n');
+  }
+
   @Test
   void indentationOfTextBlock() {
     String[] noIndentation = {"\"\"\"", "abc", "\"\"\""};

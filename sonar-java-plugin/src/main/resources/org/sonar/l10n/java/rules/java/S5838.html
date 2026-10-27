@@ -1,9 +1,22 @@
 <h2>Why is this an issue?</h2>
-<p>AssertJ contains many assertions methods specific to common types. Both versions will test the same things, but the dedicated one will provide a
-better error message, simplifying the debugging process.</p>
-<p>This rule reports an issue when an assertion can be simplified to a dedicated one.</p>
-<p>The array below gives a non-exhaustive list of assertion reported by the rule. Code behaving similarly, or with a negation will also be
-reported.</p>
+<p>A dedicated AssertJ assertion receives the value under test, so its failure message can show that value. For example, when
+<code>assertThat(names).contains("Ada")</code> fails, it shows the collection and the missing element.
+<code>assertThat(names.contains("Ada")).isTrue()</code> only reports that <code>false</code> was not <code>true</code>.</p>
+<h3>Noncompliant code example</h3>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+assertThat(names.contains("Ada")).isTrue(); // Noncompliant
+</pre>
+<h3>Compliant solution</h3>
+<pre data-diff-id="1" data-diff-type="compliant">
+assertThat(names).contains("Ada");
+</pre>
+<h3>Dedicated assertions by type</h3>
+<p>The following catalog is not exhaustive. Similar assertions and negated forms may also be reported. Choose a matcher that expresses the intended
+test, and check the AssertJ version used by the project.</p>
+<p>The object-identity mapping for <code>x == y</code> applies to reference values. Check null and edge-case behavior when replacing a derived
+expression: for example, <code>map.get(key)</code> can return <code>null</code> for a missing key, whereas <code>containsEntry(key, null)</code>
+requires the key to exist. For floating-point values, check NaN and signed-zero behavior rather than assuming a relational-expression rewrite is
+equivalent.</p>
 <table>
   <colgroup>
     <col style="width: 50%;">
@@ -212,14 +225,6 @@ reported.</p>
     </tr>
     <tr>
       <td>
-        <p><code>assertThat(getString().trim()).isEmpty()</code></p>
-      </td>
-      <td>
-        <p><code>assertThat(getString()).isBlank()</code></p>
-      </td>
-    </tr>
-    <tr>
-      <td>
         <p><code>assertThat(getString().length()).isEqualTo(length)</code></p>
       </td>
       <td>
@@ -228,7 +233,7 @@ reported.</p>
     </tr>
     <tr>
       <td>
-        <p><code>assertThat(getString().length()).hasSize(expected.length())</code></p>
+        <p><code>assertThat(getString().length()).isEqualTo(expected.length())</code></p>
       </td>
       <td>
         <p><code>assertThat(getString()).hasSameSizeAs(expected)</code></p>
@@ -376,10 +381,10 @@ reported.</p>
     </tr>
     <tr>
       <td>
-        <p><code>assertThat(getPath().getParent()).isEqualTo(name)</code></p>
+        <p><code>assertThat(getPath().getParent()).isEqualTo(path)</code></p>
       </td>
       <td>
-        <p><code>assertThat(getPath()).hasParentRaw(name)</code></p>
+        <p><code>assertThat(getPath()).hasParentRaw(path)</code></p>
       </td>
     </tr>
     <tr>
@@ -514,7 +519,7 @@ reported.</p>
     </tr>
     <tr>
       <td>
-        <p><code>assertThat(getMap().size()).isEqualTo(otherMap().size()</code></p>
+        <p><code>assertThat(getMap().size()).isEqualTo(otherMap().size())</code></p>
       </td>
       <td>
         <p><code>assertThat(getMap()).hasSameSizeAs(otherMap())</code></p>
@@ -538,10 +543,10 @@ reported.</p>
     </tr>
     <tr>
       <td>
-        <p><code>assertThat(getMap().keySet()).containsOnlyKey(key)</code></p>
+        <p><code>assertThat(getMap().keySet()).containsOnly(key)</code></p>
       </td>
       <td>
-        <p><code>assertThat(getMap()).containsOnlyKey(key)</code></p>
+        <p><code>assertThat(getMap()).containsOnlyKeys(key)</code></p>
       </td>
     </tr>
     <tr>
@@ -600,22 +605,4 @@ reported.</p>
     </tr>
   </tbody>
 </table>
-<h3>Noncompliant code example</h3>
-<pre>
-assertThat(getObject()).isEqualTo(null); // Noncompliant
-assertThat(getObject()).isNotEqualTo(null); // Noncompliant - not listed above but also supported
-
-assertThat(getString().trim()).isEmpty();
-assertThat(getFile().canRead()).isTrue();
-assertThat(getPath().getParent()).isNull();
-</pre>
-<h3>Compliant solution</h3>
-<pre>
-assertThat(getObject()).isNull();
-assertThat(getObject()).isNotNull();
-
-assertThat(getString()).isBlank();
-assertThat(getFile()).canRead();
-assertThat(getPath()).hasNoParentRaw();
-</pre>
 
