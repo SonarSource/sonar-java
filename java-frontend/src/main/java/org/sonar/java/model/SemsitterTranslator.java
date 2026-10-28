@@ -60,6 +60,10 @@ import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
 import org.sonar.java.model.expression.VarTypeTreeImpl;
+import org.sonar.java.model.pattern.DefaultPatternTreeImpl;
+import org.sonar.java.model.pattern.GuardedPatternTreeImpl;
+import org.sonar.java.model.pattern.NullPatternTreeImpl;
+import org.sonar.java.model.pattern.RecordPatternTreeImpl;
 import org.sonar.java.model.pattern.TypePatternTreeImpl;
 import org.sonar.java.model.statement.AssertStatementTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
@@ -91,8 +95,10 @@ import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierTree;
+import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -768,7 +774,9 @@ final class SemsitterTranslator {
     List<CaseGroupTreeImpl> groups = new ArrayList<>();
     List<CaseLabelTreeImpl> labels = new ArrayList<>();
     StatementListTreeImpl statements = StatementListTreeImpl.emptyList();
-    for (Node child : body.children()) {
+    List<Node> children = body.children();
+    for (int i = 0; i < children.size(); i++) {
+      Node child = children.get(i);
       if ("{".equals(child.text()) || "}".equals(child.text())) {
         continue;
       }
@@ -779,7 +787,12 @@ final class SemsitterTranslator {
             labels = new ArrayList<>();
             statements = StatementListTreeImpl.emptyList();
           }
-          labels.add(caseLabel(child));
+          Node next = i + 1 < children.size() ? children.get(i + 1) : null;
+          boolean separator = next != null && ":".equals(next.text());
+          labels.add(caseLabel(child, separator ? token(next) : null));
+          if (separator) {
+            i++;
+          }
         } else {
           groups.add(switchArm(child, expression));
         }
@@ -796,12 +809,19 @@ final class SemsitterTranslator {
   private CaseGroupTreeImpl switchArm(Node node, boolean expression) {
     List<CaseLabelTreeImpl> labels = new ArrayList<>();
     StatementListTreeImpl body = StatementListTreeImpl.emptyList();
-    Node label = childKind(node, "switch_label");
-    if (label != null) {
-      labels.add(caseLabel(label));
-    }
-    for (Node child : node.children()) {
-      if (same(child, label) || "->".equals(child.text()) || ":".equals(child.text())) {
+    List<Node> children = node.children();
+    for (int i = 0; i < children.size(); i++) {
+      Node child = children.get(i);
+      if ("switch_label".equals(child.k())) {
+        Node next = i + 1 < children.size() ? children.get(i + 1) : null;
+        boolean separator = next != null && (":".equals(next.text()) || "->".equals(next.text()));
+        labels.add(caseLabel(child, separator ? token(next) : null));
+        if (separator) {
+          i++;
+        }
+        continue;
+      }
+      if ("->".equals(child.text()) || ":".equals(child.text())) {
         continue;
       }
       if (expression && !isStatementKind(child.k())) {
@@ -814,18 +834,29 @@ final class SemsitterTranslator {
     return new CaseGroupTreeImpl(labels, body);
   }
 
-  private CaseLabelTreeImpl caseLabel(Node node) {
+  private CaseLabelTreeImpl caseLabel(Node node, @Nullable InternalSyntaxToken separator) {
     InternalSyntaxToken keyword = keyword(node, "case") != null ? token(keyword(node, "case")) : token(required(node, "default"));
     List<ExpressionTree> expressions = new ArrayList<>();
-    InternalSyntaxToken end = null;
+    InternalSyntaxToken end = separator;
+    boolean caseLabel = keyword(node, "case") != null;
     for (Node child : node.children()) {
-      if ("case".equals(child.text()) || "default".equals(child.text())) {
+      if ("case".equals(child.text())) {
         continue;
       }
-      if (":".equals(child.text()) || "->".equals(child.text())) {
+      if ("default".equals(child.text())) {
+        if (caseLabel) {
+          expressions.add(new DefaultPatternTreeImpl(token(child)));
+        }
+      } else if (":".equals(child.text()) || "->".equals(child.text())) {
         end = token(child);
       } else if (",".equals(child.text())) {
         continue;
+      } else if ("pattern".equals(child.k()) || "record_pattern".equals(child.k()) || "type_pattern".equals(child.k())) {
+        expressions.add(pattern(child));
+      } else if ("guard".equals(child.k()) && !expressions.isEmpty() && expressions.get(expressions.size() - 1) instanceof PatternTree guarded) {
+        expressions.set(expressions.size() - 1, new GuardedPatternTreeImpl(guarded, token(required(child, "when")), expression(firstNamed(child))));
+      } else if ("null_literal".equals(child.k())) {
+        expressions.add(new NullPatternTreeImpl((LiteralTreeImpl) expression(child)));
       } else {
         expressions.add(expression(child));
       }
@@ -1139,8 +1170,11 @@ final class SemsitterTranslator {
     ExpressionTree left = expression(requiredField(node, "left", firstNamed(node)));
     Node name = field(node, "name");
     Node right = field(node, "right");
+    Node patternNode = field(node, "pattern");
     InstanceOfTreeImpl tree;
-    if (name != null && right != null) {
+    if (patternNode != null) {
+      tree = new InstanceOfTreeImpl(left, token(required(node, "instanceof")), pattern(patternNode));
+    } else if (name != null && right != null) {
       VariableTreeImpl variable = new VariableTreeImpl(modifiers(node), type(right), identifier(name));
       bindDeclaration(variable, name, identifier(name));
       tree = new InstanceOfTreeImpl(left, token(required(node, "instanceof")), new TypePatternTreeImpl(variable));
@@ -1149,6 +1183,37 @@ final class SemsitterTranslator {
     }
     ascribe(tree, sema.getClassType("boolean"));
     return tree;
+  }
+
+  private PatternTree pattern(Node node) {
+    if ("record_pattern".equals(node.k())) {
+      return recordPattern(node);
+    }
+    Node nested = firstOf(node, "record_pattern", "type_pattern", "pattern", "underscore_pattern");
+    if (nested != null && !"type_pattern".equals(node.k())) {
+      return pattern(nested);
+    }
+    if ("underscore_pattern".equals(node.k())) {
+      return new TypePatternTreeImpl(new VariableTreeImpl(new IdentifierTreeImpl(token(node), true)));
+    }
+    Node name = lastOf(node, "identifier");
+    VariableTreeImpl variable = new VariableTreeImpl(modifiers(node), type(firstType(node)), identifier(name == null ? node : name));
+    bindDeclaration(variable, name, (IdentifierTreeImpl) variable.simpleName());
+    if (variable.symbol().type() != null && !variable.symbol().type().isUnknown()) {
+      ascribe(variable.type(), variable.symbol().type());
+    }
+    return new TypePatternTreeImpl(variable);
+  }
+
+  private RecordPatternTreeImpl recordPattern(Node node) {
+    Node body = required(node, "record_pattern_body");
+    List<PatternTree> patterns = new ArrayList<>();
+    for (Node child : body.children()) {
+      if ("record_pattern_component".equals(child.k()) || "record_pattern".equals(child.k())) {
+        patterns.add(pattern(child));
+      }
+    }
+    return new RecordPatternTreeImpl(type(firstType(node)), token(required(body, "(")), patterns, token(required(body, ")")));
   }
 
   private LambdaExpressionTreeImpl lambda(Node node) {
