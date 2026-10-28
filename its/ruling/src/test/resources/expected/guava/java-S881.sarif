@@ -1,0 +1,1950 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/CaseFormat.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 149,
+            "startColumn" : 41,
+            "endLine" : 149,
+            "endColumn" : 44,
+            "charOffset" : 4094,
+            "charLength" : 3,
+            "byteOffset" : 4094,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Preconditions.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 422,
+            "startColumn" : 27,
+            "endLine" : 422,
+            "endColumn" : 30,
+            "charOffset" : 19003,
+            "charLength" : 3,
+            "byteOffset" : 19003,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Preconditions.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 430,
+            "startColumn" : 27,
+            "endLine" : 430,
+            "endColumn" : 30,
+            "charOffset" : 19274,
+            "charLength" : 3,
+            "byteOffset" : 19274,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Preconditions.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 433,
+            "startColumn" : 29,
+            "endLine" : 433,
+            "endColumn" : 32,
+            "charOffset" : 19371,
+            "charLength" : 3,
+            "byteOffset" : 19371,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Utf8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 152,
+            "startColumn" : 31,
+            "endLine" : 152,
+            "endColumn" : 38,
+            "charOffset" : 5472,
+            "charLength" : 7,
+            "byteOffset" : 5473,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Utf8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 161,
+            "startColumn" : 42,
+            "endLine" : 161,
+            "endColumn" : 49,
+            "charOffset" : 5767,
+            "charLength" : 7,
+            "byteOffset" : 5768,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Utf8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 169,
+            "startColumn" : 27,
+            "endLine" : 169,
+            "endColumn" : 34,
+            "charOffset" : 5987,
+            "charLength" : 7,
+            "byteOffset" : 5988,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Utf8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 176,
+            "startColumn" : 22,
+            "endLine" : 176,
+            "endColumn" : 29,
+            "charOffset" : 6345,
+            "charLength" : 7,
+            "byteOffset" : 6346,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Utf8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 184,
+            "startColumn" : 27,
+            "endLine" : 184,
+            "endColumn" : 34,
+            "charOffset" : 6539,
+            "charLength" : 7,
+            "byteOffset" : 6540,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Utf8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 192,
+            "startColumn" : 22,
+            "endLine" : 192,
+            "endColumn" : 29,
+            "charOffset" : 6957,
+            "charLength" : 7,
+            "byteOffset" : 6958,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Utf8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 194,
+            "startColumn" : 22,
+            "endLine" : 194,
+            "endColumn" : 29,
+            "charOffset" : 7047,
+            "charLength" : 7,
+            "byteOffset" : 7048,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2491,
+            "startColumn" : 13,
+            "endLine" : 2491,
+            "endColumn" : 16,
+            "charOffset" : 75313,
+            "charLength" : 3,
+            "byteOffset" : 75313,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2505,
+            "startColumn" : 13,
+            "endLine" : 2505,
+            "endColumn" : 16,
+            "charOffset" : 75713,
+            "charLength" : 3,
+            "byteOffset" : 75713,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 4291,
+            "startColumn" : 35,
+            "endLine" : 4291,
+            "endColumn" : 53,
+            "charOffset" : 129983,
+            "charLength" : 18,
+            "byteOffset" : 129983,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 4321,
+            "startColumn" : 43,
+            "endLine" : 4321,
+            "endColumn" : 59,
+            "charOffset" : 130823,
+            "charLength" : 16,
+            "byteOffset" : 130823,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/AbstractIndexedListIterator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 83,
+            "startColumn" : 16,
+            "endLine" : 83,
+            "endColumn" : 26,
+            "charOffset" : 2740,
+            "charLength" : 10,
+            "byteOffset" : 2740,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/AbstractIndexedListIterator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 101,
+            "startColumn" : 16,
+            "endLine" : 101,
+            "endColumn" : 26,
+            "charOffset" : 3041,
+            "charLength" : 10,
+            "byteOffset" : 3041,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableCollection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 310,
+            "startColumn" : 11,
+            "endLine" : 310,
+            "endColumn" : 19,
+            "charOffset" : 11389,
+            "charLength" : 8,
+            "byteOffset" : 11389,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableCollection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 451,
+            "startColumn" : 16,
+            "endLine" : 451,
+            "endColumn" : 22,
+            "charOffset" : 15730,
+            "charLength" : 6,
+            "byteOffset" : 15730,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 198,
+            "startColumn" : 15,
+            "endLine" : 198,
+            "endColumn" : 21,
+            "charOffset" : 6873,
+            "charLength" : 6,
+            "byteOffset" : 6873,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 158,
+            "startColumn" : 20,
+            "endLine" : 158,
+            "endColumn" : 29,
+            "charOffset" : 6039,
+            "charLength" : 9,
+            "byteOffset" : 6039,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableSortedSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 382,
+            "startColumn" : 18,
+            "endLine" : 382,
+            "endColumn" : 27,
+            "charOffset" : 16236,
+            "charLength" : 9,
+            "byteOffset" : 16236,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/LinkedListMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 330,
+            "startColumn" : 16,
+            "endLine" : 330,
+            "endColumn" : 23,
+            "charOffset" : 11447,
+            "charLength" : 7,
+            "byteOffset" : 11447,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/LinkedListMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 335,
+            "startColumn" : 16,
+            "endLine" : 335,
+            "endColumn" : 23,
+            "charOffset" : 11548,
+            "charLength" : 7,
+            "byteOffset" : 11548,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/LinkedListMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 479,
+            "startColumn" : 16,
+            "endLine" : 479,
+            "endColumn" : 23,
+            "charOffset" : 15727,
+            "charLength" : 7,
+            "byteOffset" : 15727,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/LinkedListMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 484,
+            "startColumn" : 16,
+            "endLine" : 484,
+            "endColumn" : 23,
+            "charOffset" : 15863,
+            "charLength" : 7,
+            "byteOffset" : 15863,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MapMakerInternalMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2204,
+            "startColumn" : 13,
+            "endLine" : 2204,
+            "endColumn" : 16,
+            "charOffset" : 64763,
+            "charLength" : 3,
+            "byteOffset" : 64763,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MapMakerInternalMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2218,
+            "startColumn" : 13,
+            "endLine" : 2218,
+            "endColumn" : 16,
+            "charOffset" : 65163,
+            "charLength" : 3,
+            "byteOffset" : 65163,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MapMakerInternalMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3623,
+            "startColumn" : 35,
+            "endLine" : 3623,
+            "endColumn" : 53,
+            "charOffset" : 108413,
+            "charLength" : 18,
+            "byteOffset" : 108413,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MapMakerInternalMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3653,
+            "startColumn" : 43,
+            "endLine" : 3653,
+            "endColumn" : 59,
+            "charOffset" : 109269,
+            "charLength" : 16,
+            "byteOffset" : 109269,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 4080,
+            "startColumn" : 22,
+            "endLine" : 4080,
+            "endColumn" : 25,
+            "charOffset" : 140837,
+            "charLength" : 3,
+            "byteOffset" : 140837,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MinMaxPriorityQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 288,
+            "startColumn" : 23,
+            "endLine" : 288,
+            "endColumn" : 29,
+            "charOffset" : 10771,
+            "charLength" : 6,
+            "byteOffset" : 10771,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ObjectArrays.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 211,
+            "startColumn" : 13,
+            "endLine" : 211,
+            "endColumn" : 16,
+            "charOffset" : 7946,
+            "charLength" : 3,
+            "byteOffset" : 7946,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Ordering.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 731,
+            "startColumn" : 14,
+            "endLine" : 731,
+            "endColumn" : 26,
+            "charOffset" : 28046,
+            "charLength" : 12,
+            "byteOffset" : 28046,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Ordering.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 741,
+            "startColumn" : 14,
+            "endLine" : 741,
+            "endColumn" : 26,
+            "charOffset" : 28251,
+            "charLength" : 12,
+            "byteOffset" : 28251,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/RegularImmutableMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 20,
+            "endLine" : 84,
+            "endColumn" : 27,
+            "charOffset" : 3246,
+            "charLength" : 7,
+            "byteOffset" : 3246,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/escape/UnicodeEscaper.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 268,
+            "startColumn" : 28,
+            "endLine" : 268,
+            "endColumn" : 35,
+            "charOffset" : 11690,
+            "charLength" : 7,
+            "byteOffset" : 11690,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/BaseEncoding.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 664,
+            "startColumn" : 61,
+            "endLine" : 664,
+            "endColumn" : 77,
+            "charOffset" : 23422,
+            "charLength" : 16,
+            "byteOffset" : 23422,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/BaseEncoding.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 669,
+            "startColumn" : 18,
+            "endLine" : 669,
+            "endColumn" : 32,
+            "charOffset" : 23675,
+            "charLength" : 14,
+            "byteOffset" : 23675,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/BaseEncoding.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 829,
+            "startColumn" : 16,
+            "endLine" : 829,
+            "endColumn" : 30,
+            "charOffset" : 28915,
+            "charLength" : 14,
+            "byteOffset" : 28915,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/BaseEncoding.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 856,
+            "startColumn" : 28,
+            "endLine" : 856,
+            "endColumn" : 31,
+            "charOffset" : 29855,
+            "charLength" : 3,
+            "byteOffset" : 29855,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/BaseEncoding.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 856,
+            "startColumn" : 56,
+            "endLine" : 856,
+            "endColumn" : 59,
+            "charOffset" : 29883,
+            "charLength" : 3,
+            "byteOffset" : 29883,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/BaseEncoding.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 856,
+            "startColumn" : 82,
+            "endLine" : 856,
+            "endColumn" : 85,
+            "charOffset" : 29909,
+            "charLength" : 3,
+            "byteOffset" : 29909,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/BaseEncoding.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 876,
+            "startColumn" : 50,
+            "endLine" : 876,
+            "endColumn" : 53,
+            "charOffset" : 30707,
+            "charLength" : 3,
+            "byteOffset" : 30707,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/BaseEncoding.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 877,
+            "startColumn" : 47,
+            "endLine" : 877,
+            "endColumn" : 50,
+            "charOffset" : 30766,
+            "charLength" : 3,
+            "byteOffset" : 30766,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/BaseEncoding.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 878,
+            "startColumn" : 16,
+            "endLine" : 878,
+            "endColumn" : 30,
+            "charOffset" : 30794,
+            "charLength" : 14,
+            "byteOffset" : 30794,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/BaseEncoding.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 880,
+            "startColumn" : 49,
+            "endLine" : 880,
+            "endColumn" : 52,
+            "charOffset" : 30917,
+            "charLength" : 3,
+            "byteOffset" : 30917,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/BaseEncoding.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 881,
+            "startColumn" : 18,
+            "endLine" : 881,
+            "endColumn" : 32,
+            "charOffset" : 30946,
+            "charLength" : 14,
+            "byteOffset" : 30946,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/BaseEncoding.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 883,
+            "startColumn" : 51,
+            "endLine" : 883,
+            "endColumn" : 54,
+            "charOffset" : 31081,
+            "charLength" : 3,
+            "byteOffset" : 31081,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/BaseEncoding.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 884,
+            "startColumn" : 20,
+            "endLine" : 884,
+            "endColumn" : 34,
+            "charOffset" : 31107,
+            "charLength" : 14,
+            "byteOffset" : 31107,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/CharSequenceReader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 29,
+            "endLine" : 70,
+            "endColumn" : 34,
+            "charOffset" : 2027,
+            "charLength" : 5,
+            "byteOffset" : 2027,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/CharSequenceReader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 40,
+            "endLine" : 78,
+            "endColumn" : 45,
+            "charOffset" : 2193,
+            "charLength" : 5,
+            "byteOffset" : 2193,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/CharSequenceReader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 34,
+            "endLine" : 90,
+            "endColumn" : 39,
+            "charOffset" : 2555,
+            "charLength" : 5,
+            "byteOffset" : 2555,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/LongMath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 668,
+            "startColumn" : 25,
+            "endLine" : 668,
+            "endColumn" : 28,
+            "charOffset" : 23001,
+            "charLength" : 3,
+            "byteOffset" : 23001,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/LongMath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 678,
+            "startColumn" : 28,
+            "endLine" : 678,
+            "endColumn" : 31,
+            "charOffset" : 23273,
+            "charLength" : 3,
+            "byteOffset" : 23273,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/LongMath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 935,
+            "startColumn" : 13,
+            "endLine" : 935,
+            "endColumn" : 16,
+            "charOffset" : 32453,
+            "charLength" : 3,
+            "byteOffset" : 32453,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/net/InetAddresses.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 247,
+            "startColumn" : 37,
+            "endLine" : 247,
+            "endColumn" : 46,
+            "charOffset" : 9252,
+            "charLength" : 9,
+            "byteOffset" : 9252,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/net/InetAddresses.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 250,
+            "startColumn" : 52,
+            "endLine" : 250,
+            "endColumn" : 61,
+            "charOffset" : 9370,
+            "charLength" : 9,
+            "byteOffset" : 9370,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Ints.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 731,
+            "startColumn" : 37,
+            "endLine" : 731,
+            "endColumn" : 44,
+            "charOffset" : 23923,
+            "charLength" : 7,
+            "byteOffset" : 23923,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Ints.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 740,
+            "startColumn" : 35,
+            "endLine" : 740,
+            "endColumn" : 42,
+            "charOffset" : 24137,
+            "charLength" : 7,
+            "byteOffset" : 24137,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Longs.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 349,
+            "startColumn" : 31,
+            "endLine" : 349,
+            "endColumn" : 38,
+            "charOffset" : 11715,
+            "charLength" : 7,
+            "byteOffset" : 11715,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Longs.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 355,
+            "startColumn" : 29,
+            "endLine" : 355,
+            "endColumn" : 36,
+            "charOffset" : 11881,
+            "charLength" : 7,
+            "byteOffset" : 11881,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/UnsignedLongs.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 383,
+            "startColumn" : 13,
+            "endLine" : 383,
+            "endColumn" : 16,
+            "charOffset" : 13820,
+            "charLength" : 3,
+            "byteOffset" : 13820,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/UnsignedLongs.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 388,
+            "startColumn" : 13,
+            "endLine" : 388,
+            "endColumn" : 16,
+            "charOffset" : 13970,
+            "charLength" : 3,
+            "byteOffset" : 13970,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AggregateFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 137,
+            "startColumn" : 29,
+            "endLine" : 137,
+            "endColumn" : 32,
+            "charOffset" : 5295,
+            "charLength" : 3,
+            "byteOffset" : 5295,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AggregateFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 246,
+            "startColumn" : 30,
+            "endLine" : 246,
+            "endColumn" : 33,
+            "charOffset" : 9721,
+            "charLength" : 3,
+            "byteOffset" : 9721,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Monitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1041,
+            "startColumn" : 19,
+            "endLine" : 1041,
+            "endColumn" : 38,
+            "charOffset" : 36624,
+            "charLength" : 19,
+            "byteOffset" : 36624,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Monitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1054,
+            "startColumn" : 19,
+            "endLine" : 1054,
+            "endColumn" : 38,
+            "charOffset" : 36956,
+            "charLength" : 19,
+            "byteOffset" : 36956,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S881",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this increment or decrement operator into a dedicated statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/MoreExecutors.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 387,
+            "startColumn" : 26,
+            "endLine" : 387,
+            "endColumn" : 40,
+            "charOffset" : 14787,
+            "charLength" : 14,
+            "byteOffset" : 14787,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}
