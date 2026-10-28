@@ -91,7 +91,7 @@ class SpringContextModelSensorTest {
 
     sensor.execute(context);
 
-    assertThat(modelPath.getParent()).doesNotExist();
+    assertThat(modelPath).doesNotExist();
     assertThat(context.allIssues()).isEmpty();
     assertThat(telemetry.toMap()).isEmpty();
     Files.createDirectories(modelPath.getParent());
@@ -115,7 +115,7 @@ class SpringContextModelSensorTest {
 
     new SpringContextModelSensor(telemetry, gatheringModel).execute(context);
 
-    assertThat(tempDir.resolve(".sonar")).doesNotExist();
+    assertThat(tempDir.resolve(DEFAULT_MODEL_PATH)).doesNotExist();
     assertThat(context.allIssues()).isEmpty();
     assertThat(telemetry.toMap()).isEmpty();
   }
