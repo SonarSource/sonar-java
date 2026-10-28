@@ -18,6 +18,7 @@ package org.sonar.java.it.spring;
 
 import com.sonarsource.scanner.integrationtester.dsl.ScannerOutputReader;
 import java.nio.file.Path;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.it.ScannerIntegrationAbstractTest;
 
@@ -92,6 +93,9 @@ class SpringTelemetryTest extends ScannerIntegrationAbstractTest {
     var project = analyzeProject(Path.of("ambiguous-dependencies-should-be-resolved"), "S9352").getProject();
 
     assertThat(projectBaseDir.resolve(".sonar/spring-context-model.json")).exists();
+    for (String module : List.of("module-common", "module-a", "module-b", "app")) {
+      assertThat(projectBaseDir.resolve(module).resolve(".sonar/spring-context-model.json")).doesNotExist();
+    }
 
     assertThat(telemetryValue(project, "java.spring.bean_count"))
       .isEqualTo(Integer.toString(EXPECTED_BEAN_COUNT));

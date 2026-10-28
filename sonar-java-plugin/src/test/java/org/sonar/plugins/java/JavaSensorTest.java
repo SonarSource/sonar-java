@@ -181,11 +181,9 @@ class JavaSensorTest {
     Path modelPath = tmp.resolve(SPRING_CONTEXT_MODEL_PATH);
     String previousContent = Files.readString(modelPath);
     SensorContextTester context = springSensorContext();
-    if (sonarLint) {
-      context.setRuntime(TestSonarRuntime.forSonarLint(Version.create(6, 7)));
-    }
     SonarComponents components = createSonarComponentsMock(context);
     if (sonarLint) {
+      context.setRuntime(TestSonarRuntime.forSonarLint(Version.create(6, 7)));
       when(components.getJavaClasspath()).thenReturn(TestClasspathUtils.DEFAULT_MODULE.getClassPath());
     }
     var gatheringModel = new SpringContextGatheringModel();
