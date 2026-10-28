@@ -1,0 +1,242 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1185",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this method to simply inherit it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 508,
+            "startColumn" : 29,
+            "endLine" : 508,
+            "endColumn" : 44,
+            "charOffset" : 17378,
+            "charLength" : 15,
+            "byteOffset" : 17378,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1185",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this method to simply inherit it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AcceptRateLimit.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 269,
+            "startColumn" : 24,
+            "endLine" : 269,
+            "endColumn" : 27,
+            "charOffset" : 8038,
+            "charLength" : 3,
+            "byteOffset" : 8038,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1185",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this method to simply inherit it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HotSwapHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 85,
+            "startColumn" : 20,
+            "endLine" : 85,
+            "endColumn" : 27,
+            "charOffset" : 2240,
+            "charLength" : 7,
+            "byteOffset" : 2240,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1185",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this method to simply inherit it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HotSwapHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 91,
+            "startColumn" : 20,
+            "endLine" : 91,
+            "endColumn" : 26,
+            "charOffset" : 2338,
+            "charLength" : 6,
+            "byteOffset" : 2338,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1185",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this method to simply inherit it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/CachingSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 142,
+            "startColumn" : 20,
+            "endLine" : 142,
+            "endColumn" : 27,
+            "charOffset" : 4301,
+            "charLength" : 7,
+            "byteOffset" : 4301,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1185",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this method to simply inherit it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/CachingSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 148,
+            "startColumn" : 20,
+            "endLine" : 148,
+            "endColumn" : 26,
+            "charOffset" : 4399,
+            "charLength" : 6,
+            "byteOffset" : 4399,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1185",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this method to simply inherit it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/HostMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 17,
+            "endLine" : 51,
+            "endColumn" : 20,
+            "charOffset" : 1295,
+            "charLength" : 3,
+            "byteOffset" : 1295,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1185",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this method to simply inherit it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/HostMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 17,
+            "endLine" : 58,
+            "endColumn" : 20,
+            "charOffset" : 1448,
+            "charLength" : 3,
+            "byteOffset" : 1448,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

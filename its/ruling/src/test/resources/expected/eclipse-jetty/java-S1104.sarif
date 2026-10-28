@@ -1,0 +1,270 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1104",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make MOST_SPECIFIC_MIME_ORDERING a static final constant or non-public and provide accessors if needed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 41,
+            "endLine" : 50,
+            "endColumn" : 68,
+            "charOffset" : 1769,
+            "charLength" : 27,
+            "byteOffset" : 1769,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1104",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make NOOP_LISTENER a static final constant or non-public and provide accessors if needed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 69,
+            "startColumn" : 28,
+            "endLine" : 69,
+            "endColumn" : 41,
+            "charOffset" : 2931,
+            "charLength" : 13,
+            "byteOffset" : 2931,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1104",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make NOOP a static final constant or non-public and provide accessors if needed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelListeners.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 40,
+            "endLine" : 36,
+            "endColumn" : 44,
+            "charOffset" : 1286,
+            "charLength" : 4,
+            "byteOffset" : 1286,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1104",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make LOG a static final constant or non-public and provide accessors if needed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHttpOutputInterceptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 26,
+            "endLine" : 46,
+            "endColumn" : 29,
+            "charOffset" : 1749,
+            "charLength" : 3,
+            "byteOffset" : 1749,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1104",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make _sessionTrackingModes a static final constant or non-public and provide accessors if needed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 188,
+            "startColumn" : 37,
+            "endLine" : 188,
+            "endColumn" : 58,
+            "charOffset" : 7806,
+            "charLength" : 21,
+            "byteOffset" : 7806,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1104",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make REQUESTED_API_VERSION a static final constant or non-public and provide accessors if needed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLoggingServiceProvider.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 26,
+            "endLine" : 35,
+            "endColumn" : 47,
+            "charOffset" : 1374,
+            "charLength" : 21,
+            "byteOffset" : 1374,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1104",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make mxBean a static final constant or non-public and provide accessors if needed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Uptime.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 23,
+            "endLine" : 38,
+            "endColumn" : 29,
+            "charOffset" : 1214,
+            "charLength" : 6,
+            "byteOffset" : 1214,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1104",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make uptimeMethod a static final constant or non-public and provide accessors if needed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Uptime.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 23,
+            "endLine" : 39,
+            "endColumn" : 35,
+            "charOffset" : 1244,
+            "charLength" : 12,
+            "byteOffset" : 1244,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1104",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make __defaultUseCaches a static final constant or non-public and provide accessors if needed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 27,
+            "endLine" : 63,
+            "endColumn" : 45,
+            "charOffset" : 2067,
+            "charLength" : 18,
+            "byteOffset" : 2067,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,466 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S3366",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the use of \"this\" doesn't expose partially-constructed instances of this class in multi-threaded environments."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 94,
+            "startColumn" : 13,
+            "endLine" : 94,
+            "endColumn" : 25,
+            "charOffset" : 3463,
+            "charLength" : 12,
+            "byteOffset" : 3463,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3366",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the use of \"this\" doesn't expose partially-constructed instances of this class in multi-threaded environments."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 116,
+            "startColumn" : 13,
+            "endLine" : 116,
+            "endColumn" : 25,
+            "charOffset" : 4202,
+            "charLength" : 12,
+            "byteOffset" : 4202,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3366",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the use of \"this\" doesn't expose partially-constructed instances of this class in multi-threaded environments."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 223,
+            "startColumn" : 73,
+            "endLine" : 223,
+            "endColumn" : 77,
+            "charOffset" : 12600,
+            "charLength" : 4,
+            "byteOffset" : 12600,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3366",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the use of \"this\" doesn't expose partially-constructed instances of this class in multi-threaded environments."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 111,
+            "startColumn" : 17,
+            "endLine" : 111,
+            "endColumn" : 21,
+            "charOffset" : 4621,
+            "charLength" : 4,
+            "byteOffset" : 4621,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3366",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the use of \"this\" doesn't expose partially-constructed instances of this class in multi-threaded environments."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 112,
+            "startColumn" : 49,
+            "endLine" : 112,
+            "endColumn" : 53,
+            "charOffset" : 4894,
+            "charLength" : 4,
+            "byteOffset" : 4894,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3366",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the use of \"this\" doesn't expose partially-constructed instances of this class in multi-threaded environments."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 137,
+            "startColumn" : 19,
+            "endLine" : 137,
+            "endColumn" : 23,
+            "charOffset" : 5185,
+            "charLength" : 4,
+            "byteOffset" : 5185,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3366",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the use of \"this\" doesn't expose partially-constructed instances of this class in multi-threaded environments."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/BufferedResponseHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 39,
+            "endLine" : 84,
+            "endColumn" : 43,
+            "charOffset" : 3388,
+            "charLength" : 4,
+            "byteOffset" : 3388,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3366",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the use of \"this\" doesn't expose partially-constructed instances of this class in multi-threaded environments."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 268,
+            "startColumn" : 49,
+            "endLine" : 268,
+            "endColumn" : 53,
+            "charOffset" : 10974,
+            "charLength" : 4,
+            "byteOffset" : 10974,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3366",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the use of \"this\" doesn't expose partially-constructed instances of this class in multi-threaded environments."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 270,
+            "startColumn" : 52,
+            "endLine" : 270,
+            "endColumn" : 56,
+            "charOffset" : 11086,
+            "charLength" : 4,
+            "byteOffset" : 11086,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3366",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the use of \"this\" doesn't expose partially-constructed instances of this class in multi-threaded environments."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 199,
+            "startColumn" : 43,
+            "endLine" : 199,
+            "endColumn" : 47,
+            "charOffset" : 8806,
+            "charLength" : 4,
+            "byteOffset" : 8806,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3366",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the use of \"this\" doesn't expose partially-constructed instances of this class in multi-threaded environments."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/StopLifeCycle.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 26,
+            "endLine" : 36,
+            "endColumn" : 30,
+            "charOffset" : 1250,
+            "charLength" : 4,
+            "byteOffset" : 1250,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3366",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the use of \"this\" doesn't expose partially-constructed instances of this class in multi-threaded environments."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/KeyStoreScanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 85,
+            "startColumn" : 30,
+            "endLine" : 85,
+            "endColumn" : 34,
+            "charOffset" : 3624,
+            "charLength" : 4,
+            "byteOffset" : 3624,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3366",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the use of \"this\" doesn't expose partially-constructed instances of this class in multi-threaded environments."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/X509.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 82,
+            "startColumn" : 86,
+            "endLine" : 82,
+            "endColumn" : 90,
+            "charOffset" : 2841,
+            "charLength" : 4,
+            "byteOffset" : 2841,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3366",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the use of \"this\" doesn't expose partially-constructed instances of this class in multi-threaded environments."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/X509.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 96,
+            "startColumn" : 81,
+            "endLine" : 96,
+            "endColumn" : 85,
+            "charOffset" : 3381,
+            "charLength" : 4,
+            "byteOffset" : 3381,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3366",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the use of \"this\" doesn't expose partially-constructed instances of this class in multi-threaded environments."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ReservedThreadExecutor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 85,
+            "startColumn" : 29,
+            "endLine" : 85,
+            "endColumn" : 33,
+            "charOffset" : 3370,
+            "charLength" : 4,
+            "byteOffset" : 3370,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3366",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the use of \"this\" doesn't expose partially-constructed instances of this class in multi-threaded environments."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/strategy/EatWhatYouKill.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 95,
+            "startColumn" : 37,
+            "endLine" : 95,
+            "endColumn" : 41,
+            "charOffset" : 4042,
+            "charLength" : 4,
+            "byteOffset" : 4042,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

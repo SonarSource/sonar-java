@@ -1,0 +1,522 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 514,
+            "startColumn" : 11,
+            "endLine" : 514,
+            "endColumn" : 18,
+            "charOffset" : 14202,
+            "charLength" : 7,
+            "byteOffset" : 14202,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1427,
+            "startColumn" : 11,
+            "endLine" : 1427,
+            "endColumn" : 20,
+            "charOffset" : 43304,
+            "charLength" : 9,
+            "byteOffset" : 43304,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpURI.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 151,
+            "startColumn" : 11,
+            "endLine" : 151,
+            "endColumn" : 20,
+            "charOffset" : 3970,
+            "charLength" : 9,
+            "byteOffset" : 3970,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpURI.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 359,
+            "startColumn" : 11,
+            "endLine" : 359,
+            "endColumn" : 18,
+            "charOffset" : 8908,
+            "charLength" : 7,
+            "byteOffset" : 8908,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 25,
+            "endLine" : 84,
+            "endColumn" : 30,
+            "charOffset" : 2954,
+            "charLength" : 5,
+            "byteOffset" : 2954,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 154,
+            "startColumn" : 25,
+            "endLine" : 154,
+            "endColumn" : 31,
+            "charOffset" : 4765,
+            "charLength" : 6,
+            "byteOffset" : 4765,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 161,
+            "startColumn" : 29,
+            "endLine" : 161,
+            "endColumn" : 36,
+            "charOffset" : 6062,
+            "charLength" : 7,
+            "byteOffset" : 6062,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 25,
+            "endLine" : 37,
+            "endColumn" : 31,
+            "charOffset" : 1339,
+            "charLength" : 6,
+            "byteOffset" : 1339,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/RequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 11,
+            "endLine" : 52,
+            "endColumn" : 21,
+            "charOffset" : 1827,
+            "charLength" : 10,
+            "byteOffset" : 1827,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Callback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 272,
+            "startColumn" : 11,
+            "endLine" : 272,
+            "endColumn" : 21,
+            "charOffset" : 7785,
+            "charLength" : 10,
+            "byteOffset" : 7785,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Callback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 11,
+            "endLine" : 295,
+            "endColumn" : 17,
+            "charOffset" : 8200,
+            "charLength" : 6,
+            "byteOffset" : 8200,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Callback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 402,
+            "startColumn" : 11,
+            "endLine" : 402,
+            "endColumn" : 22,
+            "charOffset" : 10495,
+            "charLength" : 11,
+            "byteOffset" : 10495,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Promise.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 11,
+            "endLine" : 58,
+            "endColumn" : 18,
+            "charOffset" : 1630,
+            "charLength" : 7,
+            "byteOffset" : 1630,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Promise.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 130,
+            "startColumn" : 11,
+            "endLine" : 130,
+            "endColumn" : 22,
+            "charOffset" : 3799,
+            "charLength" : 11,
+            "byteOffset" : 3799,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Promise.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 145,
+            "startColumn" : 11,
+            "endLine" : 145,
+            "endColumn" : 18,
+            "charOffset" : 4113,
+            "charLength" : 7,
+            "byteOffset" : 4113,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SocketAddressResolver.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 25,
+            "endLine" : 57,
+            "endColumn" : 29,
+            "charOffset" : 2134,
+            "charLength" : 4,
+            "byteOffset" : 2134,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SocketAddressResolver.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 108,
+            "startColumn" : 25,
+            "endLine" : 108,
+            "endColumn" : 30,
+            "charOffset" : 4016,
+            "charLength" : 5,
+            "byteOffset" : 4016,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9398",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this class out of this interface."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/TryExecutor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 25,
+            "endLine" : 51,
+            "endColumn" : 38,
+            "charOffset" : 1705,
+            "charLength" : 13,
+            "byteOffset" : 1705,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

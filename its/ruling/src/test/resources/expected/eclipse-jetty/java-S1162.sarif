@@ -1,0 +1,2846 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'ZipException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/GZIPContentDecoder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 215,
+            "startColumn" : 39,
+            "endLine" : 215,
+            "endColumn" : 71,
+            "charOffset" : 7484,
+            "charLength" : 32,
+            "byteOffset" : 7484,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'ZipException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/GZIPContentDecoder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 272,
+            "startColumn" : 39,
+            "endLine" : 272,
+            "endColumn" : 77,
+            "charOffset" : 9921,
+            "charLength" : 38,
+            "byteOffset" : 9921,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'ZipException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/GZIPContentDecoder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 280,
+            "startColumn" : 35,
+            "endLine" : 280,
+            "endColumn" : 86,
+            "charOffset" : 10227,
+            "charLength" : 51,
+            "byteOffset" : 10227,
+            "byteLength" : 51
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'ZipException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/GZIPContentDecoder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 387,
+            "startColumn" : 39,
+            "endLine" : 387,
+            "endColumn" : 77,
+            "charOffset" : 14271,
+            "charLength" : 38,
+            "byteOffset" : 14271,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'ZipException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/GZIPContentDecoder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 396,
+            "startColumn" : 31,
+            "endLine" : 396,
+            "endColumn" : 49,
+            "charOffset" : 14647,
+            "charLength" : 18,
+            "byteOffset" : 14647,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 292,
+            "startColumn" : 23,
+            "endLine" : 292,
+            "endColumn" : 52,
+            "charOffset" : 8355,
+            "charLength" : 29,
+            "byteOffset" : 8355,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 306,
+            "startColumn" : 23,
+            "endLine" : 306,
+            "endColumn" : 52,
+            "charOffset" : 8660,
+            "charLength" : 29,
+            "byteOffset" : 8660,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'SocketTimeoutException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 327,
+            "startColumn" : 27,
+            "endLine" : 327,
+            "endColumn" : 83,
+            "charOffset" : 10578,
+            "charLength" : 56,
+            "byteOffset" : 10578,
+            "byteLength" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'ConnectException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 332,
+            "startColumn" : 23,
+            "endLine" : 332,
+            "endColumn" : 45,
+            "charOffset" : 10721,
+            "charLength" : 22,
+            "byteOffset" : 10721,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'SSLException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 947,
+            "startColumn" : 27,
+            "endLine" : 947,
+            "endColumn" : 28,
+            "charOffset" : 37022,
+            "charLength" : 1,
+            "byteOffset" : 37022,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1198,
+            "startColumn" : 47,
+            "endLine" : 1198,
+            "endColumn" : 77,
+            "charOffset" : 49022,
+            "charLength" : 30,
+            "byteOffset" : 49022,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'SSLException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1393,
+            "startColumn" : 27,
+            "endLine" : 1393,
+            "endColumn" : 28,
+            "charOffset" : 55474,
+            "charLength" : 1,
+            "byteOffset" : 55474,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1485,
+            "startColumn" : 23,
+            "endLine" : 1485,
+            "endColumn" : 37,
+            "charOffset" : 58395,
+            "charLength" : 14,
+            "byteOffset" : 58395,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1486,
+            "startColumn" : 19,
+            "endLine" : 1486,
+            "endColumn" : 37,
+            "charOffset" : 58429,
+            "charLength" : 18,
+            "byteOffset" : 58429,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'AttributeNotFoundException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 118,
+            "startColumn" : 19,
+            "endLine" : 118,
+            "endColumn" : 55,
+            "charOffset" : 4296,
+            "charLength" : 36,
+            "byteOffset" : 4296,
+            "byteLength" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'AttributeNotFoundException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 129,
+            "startColumn" : 19,
+            "endLine" : 129,
+            "endColumn" : 55,
+            "charOffset" : 4709,
+            "charLength" : 36,
+            "byteOffset" : 4709,
+            "byteLength" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'ReflectionException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 165,
+            "startColumn" : 19,
+            "endLine" : 165,
+            "endColumn" : 80,
+            "charOffset" : 5705,
+            "charLength" : 61,
+            "byteOffset" : 5705,
+            "byteLength" : 61
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'MBeanException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 398,
+            "startColumn" : 23,
+            "endLine" : 398,
+            "endColumn" : 42,
+            "charOffset" : 14652,
+            "charLength" : 19,
+            "byteOffset" : 14652,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'ReflectionException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 402,
+            "startColumn" : 23,
+            "endLine" : 402,
+            "endColumn" : 49,
+            "charOffset" : 14755,
+            "charLength" : 26,
+            "byteOffset" : 14755,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'MBeanException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 438,
+            "startColumn" : 23,
+            "endLine" : 438,
+            "endColumn" : 42,
+            "charOffset" : 16137,
+            "charLength" : 19,
+            "byteOffset" : 16137,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'ReflectionException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 442,
+            "startColumn" : 23,
+            "endLine" : 442,
+            "endColumn" : 49,
+            "charOffset" : 16240,
+            "charLength" : 26,
+            "byteOffset" : 16240,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'MBeanException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 547,
+            "startColumn" : 23,
+            "endLine" : 547,
+            "endColumn" : 42,
+            "charOffset" : 20362,
+            "charLength" : 19,
+            "byteOffset" : 20362,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'ReflectionException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 551,
+            "startColumn" : 23,
+            "endLine" : 551,
+            "endColumn" : 49,
+            "charOffset" : 20465,
+            "charLength" : 26,
+            "byteOffset" : 20465,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'EofException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 716,
+            "startColumn" : 23,
+            "endLine" : 716,
+            "endColumn" : 49,
+            "charOffset" : 24775,
+            "charLength" : 26,
+            "byteOffset" : 24775,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'EofException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 722,
+            "startColumn" : 23,
+            "endLine" : 722,
+            "endColumn" : 49,
+            "charOffset" : 24911,
+            "charLength" : 26,
+            "byteOffset" : 24911,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'EofException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 729,
+            "startColumn" : 19,
+            "endLine" : 729,
+            "endColumn" : 45,
+            "charOffset" : 25043,
+            "charLength" : 26,
+            "byteOffset" : 25043,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1025,
+            "startColumn" : 19,
+            "endLine" : 1025,
+            "endColumn" : 44,
+            "charOffset" : 34078,
+            "charLength" : 25,
+            "byteOffset" : 34078,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1347,
+            "startColumn" : 19,
+            "endLine" : 1347,
+            "endColumn" : 22,
+            "charOffset" : 44348,
+            "charLength" : 3,
+            "byteOffset" : 44348,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 508,
+            "startColumn" : 23,
+            "endLine" : 508,
+            "endColumn" : 40,
+            "charOffset" : 16192,
+            "charLength" : 17,
+            "byteOffset" : 16192,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 703,
+            "startColumn" : 27,
+            "endLine" : 703,
+            "endColumn" : 73,
+            "charOffset" : 22530,
+            "charLength" : 46,
+            "byteOffset" : 22530,
+            "byteLength" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 723,
+            "startColumn" : 27,
+            "endLine" : 723,
+            "endColumn" : 64,
+            "charOffset" : 23373,
+            "charLength" : 37,
+            "byteOffset" : 23373,
+            "byteLength" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 731,
+            "startColumn" : 27,
+            "endLine" : 731,
+            "endColumn" : 61,
+            "charOffset" : 23886,
+            "charLength" : 34,
+            "byteOffset" : 23886,
+            "byteLength" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 282,
+            "startColumn" : 35,
+            "endLine" : 282,
+            "endColumn" : 90,
+            "charOffset" : 11024,
+            "charLength" : 55,
+            "byteOffset" : 11024,
+            "byteLength" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 299,
+            "startColumn" : 31,
+            "endLine" : 299,
+            "endColumn" : 81,
+            "charOffset" : 11646,
+            "charLength" : 50,
+            "byteOffset" : 11646,
+            "byteLength" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 687,
+            "startColumn" : 31,
+            "endLine" : 687,
+            "endColumn" : 78,
+            "charOffset" : 27463,
+            "charLength" : 47,
+            "byteOffset" : 27463,
+            "byteLength" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 692,
+            "startColumn" : 27,
+            "endLine" : 692,
+            "endColumn" : 72,
+            "charOffset" : 27675,
+            "charLength" : 45,
+            "byteOffset" : 27675,
+            "byteLength" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 711,
+            "startColumn" : 31,
+            "endLine" : 711,
+            "endColumn" : 75,
+            "charOffset" : 28399,
+            "charLength" : 44,
+            "byteOffset" : 28399,
+            "byteLength" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 727,
+            "startColumn" : 31,
+            "endLine" : 727,
+            "endColumn" : 75,
+            "charOffset" : 28966,
+            "charLength" : 44,
+            "byteOffset" : 28966,
+            "byteLength" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 733,
+            "startColumn" : 27,
+            "endLine" : 733,
+            "endColumn" : 141,
+            "charOffset" : 29221,
+            "charLength" : 114,
+            "byteOffset" : 29221,
+            "byteLength" : 114
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 736,
+            "startColumn" : 27,
+            "endLine" : 736,
+            "endColumn" : 155,
+            "charOffset" : 29415,
+            "charLength" : 128,
+            "byteOffset" : 29415,
+            "byteLength" : 128
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'FileNotFoundException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 245,
+            "startColumn" : 27,
+            "endLine" : 245,
+            "endColumn" : 73,
+            "charOffset" : 7811,
+            "charLength" : 46,
+            "byteOffset" : 7811,
+            "byteLength" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResponseWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 132,
+            "startColumn" : 19,
+            "endLine" : 132,
+            "endColumn" : 31,
+            "charOffset" : 4103,
+            "charLength" : 12,
+            "byteOffset" : 4103,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResponseWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 137,
+            "startColumn" : 19,
+            "endLine" : 137,
+            "endColumn" : 31,
+            "charOffset" : 4231,
+            "charLength" : 12,
+            "byteOffset" : 4231,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 299,
+            "startColumn" : 19,
+            "endLine" : 299,
+            "endColumn" : 62,
+            "charOffset" : 13634,
+            "charLength" : 43,
+            "byteOffset" : 13634,
+            "byteLength" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 346,
+            "startColumn" : 23,
+            "endLine" : 346,
+            "endColumn" : 77,
+            "charOffset" : 15381,
+            "charLength" : 54,
+            "byteOffset" : 15381,
+            "byteLength" : 54
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'MalformedURLException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1902,
+            "startColumn" : 19,
+            "endLine" : 1902,
+            "endColumn" : 50,
+            "charOffset" : 65663,
+            "charLength" : 31,
+            "byteOffset" : 65663,
+            "byteLength" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'ServletException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2844,
+            "startColumn" : 23,
+            "endLine" : 2844,
+            "endColumn" : 46,
+            "charOffset" : 94367,
+            "charLength" : 23,
+            "byteOffset" : 94367,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'Exception'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HandlerCollection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 150,
+            "startColumn" : 27,
+            "endLine" : 150,
+            "endColumn" : 28,
+            "charOffset" : 4817,
+            "charLength" : 1,
+            "byteOffset" : 4817,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/resource/SeekableByteChannelRangeWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 154,
+            "startColumn" : 27,
+            "endLine" : 154,
+            "endColumn" : 101,
+            "charOffset" : 4864,
+            "charLength" : 74,
+            "byteOffset" : 4864,
+            "byteLength" : 74
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/resource/SeekableByteChannelRangeWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 160,
+            "startColumn" : 23,
+            "endLine" : 160,
+            "endColumn" : 119,
+            "charOffset" : 5051,
+            "charLength" : 96,
+            "byteOffset" : 5051,
+            "byteLength" : 96
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'Exception'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 371,
+            "startColumn" : 19,
+            "endLine" : 371,
+            "endColumn" : 21,
+            "charOffset" : 11634,
+            "charLength" : 2,
+            "byteOffset" : 11634,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'UnreadableSessionDataException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 424,
+            "startColumn" : 19,
+            "endLine" : 424,
+            "endColumn" : 20,
+            "charOffset" : 13146,
+            "charLength" : 1,
+            "byteOffset" : 13146,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'Exception'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 23,
+            "endLine" : 70,
+            "endColumn" : 33,
+            "charOffset" : 2419,
+            "charLength" : 10,
+            "byteOffset" : 2419,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'UnreadableSessionDataException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 638,
+            "startColumn" : 19,
+            "endLine" : 638,
+            "endColumn" : 78,
+            "charOffset" : 21521,
+            "charLength" : 59,
+            "byteOffset" : 21521,
+            "byteLength" : 59
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'SQLException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 548,
+            "startColumn" : 35,
+            "endLine" : 548,
+            "endColumn" : 40,
+            "charOffset" : 21443,
+            "charLength" : 5,
+            "byteOffset" : 21443,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'SQLException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 562,
+            "startColumn" : 43,
+            "endLine" : 562,
+            "endColumn" : 48,
+            "charOffset" : 22182,
+            "charLength" : 5,
+            "byteOffset" : 22182,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 138,
+            "startColumn" : 23,
+            "endLine" : 138,
+            "endColumn" : 75,
+            "charOffset" : 5843,
+            "charLength" : 52,
+            "byteOffset" : 5843,
+            "byteLength" : 52
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ByteArrayISO8859Writer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 238,
+            "startColumn" : 23,
+            "endLine" : 238,
+            "endColumn" : 73,
+            "charOffset" : 5530,
+            "charLength" : 50,
+            "byteOffset" : 5530,
+            "byteLength" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'InterruptedIOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/FutureCallback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 160,
+            "startColumn" : 19,
+            "endLine" : 160,
+            "endColumn" : 28,
+            "charOffset" : 4482,
+            "charLength" : 9,
+            "byteOffset" : 4482,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/FutureCallback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 168,
+            "startColumn" : 23,
+            "endLine" : 168,
+            "endColumn" : 45,
+            "charOffset" : 4735,
+            "charLength" : 22,
+            "byteOffset" : 4735,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/FutureCallback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 172,
+            "startColumn" : 19,
+            "endLine" : 172,
+            "endColumn" : 37,
+            "charOffset" : 4832,
+            "charLength" : 18,
+            "byteOffset" : 4832,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/FutureCallback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 180,
+            "startColumn" : 19,
+            "endLine" : 180,
+            "endColumn" : 37,
+            "charOffset" : 5047,
+            "charLength" : 18,
+            "byteOffset" : 5047,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/FuturePromise.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 146,
+            "startColumn" : 19,
+            "endLine" : 146,
+            "endColumn" : 37,
+            "charOffset" : 4131,
+            "charLength" : 18,
+            "byteOffset" : 4131,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NoSuchMethodException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 19,
+            "endLine" : 55,
+            "endColumn" : 56,
+            "charOffset" : 1640,
+            "charLength" : 37,
+            "byteOffset" : 1640,
+            "byteLength" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NoSuchMethodException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 19,
+            "endLine" : 57,
+            "endColumn" : 62,
+            "charOffset" : 1761,
+            "charLength" : 43,
+            "byteOffset" : 1761,
+            "byteLength" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NoSuchMethodException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 75,
+            "startColumn" : 19,
+            "endLine" : 75,
+            "endColumn" : 109,
+            "charOffset" : 2453,
+            "charLength" : 90,
+            "byteOffset" : 2453,
+            "byteLength" : 90
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NoSuchFieldException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 82,
+            "startColumn" : 19,
+            "endLine" : 82,
+            "endColumn" : 55,
+            "charOffset" : 2775,
+            "charLength" : 36,
+            "byteOffset" : 2775,
+            "byteLength" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NoSuchFieldException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 19,
+            "endLine" : 84,
+            "endColumn" : 60,
+            "charOffset" : 2863,
+            "charLength" : 41,
+            "byteOffset" : 2863,
+            "byteLength" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NoSuchFieldException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 23,
+            "endLine" : 104,
+            "endColumn" : 143,
+            "charOffset" : 3505,
+            "charLength" : 120,
+            "byteOffset" : 3505,
+            "byteLength" : 120
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NoSuchMethodException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 237,
+            "startColumn" : 19,
+            "endLine" : 237,
+            "endColumn" : 56,
+            "charOffset" : 7483,
+            "charLength" : 37,
+            "byteOffset" : 7483,
+            "byteLength" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NoSuchMethodException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 239,
+            "startColumn" : 19,
+            "endLine" : 239,
+            "endColumn" : 62,
+            "charOffset" : 7572,
+            "charLength" : 43,
+            "byteOffset" : 7572,
+            "byteLength" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NoSuchFieldException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 262,
+            "startColumn" : 19,
+            "endLine" : 262,
+            "endColumn" : 55,
+            "charOffset" : 8445,
+            "charLength" : 36,
+            "byteOffset" : 8445,
+            "byteLength" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NoSuchFieldException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 264,
+            "startColumn" : 19,
+            "endLine" : 264,
+            "endColumn" : 60,
+            "charOffset" : 8532,
+            "charLength" : 41,
+            "byteOffset" : 8532,
+            "byteLength" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'Exception'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiException.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 119,
+            "startColumn" : 27,
+            "endLine" : 119,
+            "endColumn" : 40,
+            "charOffset" : 3322,
+            "charLength" : 13,
+            "byteOffset" : 3322,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'MultiException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiException.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 120,
+            "startColumn" : 23,
+            "endLine" : 120,
+            "endColumn" : 49,
+            "charOffset" : 3359,
+            "charLength" : 26,
+            "byteOffset" : 3359,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'MultiException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiException.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 122,
+            "startColumn" : 23,
+            "endLine" : 122,
+            "endColumn" : 49,
+            "charOffset" : 3430,
+            "charLength" : 26,
+            "byteOffset" : 3430,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'MultiException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiException.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 175,
+            "startColumn" : 19,
+            "endLine" : 175,
+            "endColumn" : 45,
+            "charOffset" : 5095,
+            "charLength" : 26,
+            "byteOffset" : 5095,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'Exception'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiException.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 205,
+            "startColumn" : 15,
+            "endLine" : 205,
+            "endColumn" : 28,
+            "charOffset" : 6104,
+            "charLength" : 13,
+            "byteOffset" : 6104,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1028,
+            "startColumn" : 19,
+            "endLine" : 1028,
+            "endColumn" : 20,
+            "charOffset" : 30548,
+            "charLength" : 1,
+            "byteOffset" : 30548,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1032,
+            "startColumn" : 19,
+            "endLine" : 1032,
+            "endColumn" : 38,
+            "charOffset" : 30618,
+            "charLength" : 19,
+            "byteOffset" : 30618,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 243,
+            "startColumn" : 23,
+            "endLine" : 243,
+            "endColumn" : 75,
+            "charOffset" : 9143,
+            "charLength" : 52,
+            "byteOffset" : 9143,
+            "byteLength" : 52
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 257,
+            "startColumn" : 23,
+            "endLine" : 257,
+            "endColumn" : 71,
+            "charOffset" : 9773,
+            "charLength" : 48,
+            "byteOffset" : 9773,
+            "byteLength" : 48
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'InterruptedIOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SharedBlockingCallback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 76,
+            "startColumn" : 19,
+            "endLine" : 76,
+            "endColumn" : 47,
+            "charOffset" : 2441,
+            "charLength" : 28,
+            "byteOffset" : 2441,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SharedBlockingCallback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 196,
+            "startColumn" : 27,
+            "endLine" : 196,
+            "endColumn" : 46,
+            "charOffset" : 6065,
+            "charLength" : 19,
+            "byteOffset" : 6065,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SharedBlockingCallback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 203,
+            "startColumn" : 23,
+            "endLine" : 203,
+            "endColumn" : 46,
+            "charOffset" : 6420,
+            "charLength" : 23,
+            "byteOffset" : 6420,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'InterruptedIOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SharedBlockingCallback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 208,
+            "startColumn" : 23,
+            "endLine" : 208,
+            "endColumn" : 51,
+            "charOffset" : 6572,
+            "charLength" : 28,
+            "byteOffset" : 6572,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 303,
+            "startColumn" : 19,
+            "endLine" : 303,
+            "endColumn" : 74,
+            "charOffset" : 9243,
+            "charLength" : 55,
+            "byteOffset" : 9243,
+            "byteLength" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'MalformedURLException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 186,
+            "startColumn" : 23,
+            "endLine" : 186,
+            "endColumn" : 24,
+            "charOffset" : 5601,
+            "charLength" : 1,
+            "byteOffset" : 5601,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'IOException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/URLResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 225,
+            "startColumn" : 23,
+            "endLine" : 225,
+            "endColumn" : 58,
+            "charOffset" : 5889,
+            "charLength" : 35,
+            "byteOffset" : 5889,
+            "byteLength" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'CertificateException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 118,
+            "startColumn" : 19,
+            "endLine" : 118,
+            "endColumn" : 92,
+            "charOffset" : 3996,
+            "charLength" : 73,
+            "byteOffset" : 3996,
+            "byteLength" : 73
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'CertificateException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 143,
+            "startColumn" : 23,
+            "endLine" : 144,
+            "endColumn" : 79,
+            "charOffset" : 4847,
+            "charLength" : 138,
+            "byteOffset" : 4847,
+            "byteLength" : 138
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'CertificateException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 191,
+            "startColumn" : 23,
+            "endLine" : 192,
+            "endColumn" : 112,
+            "charOffset" : 6585,
+            "charLength" : 171,
+            "byteOffset" : 6585,
+            "byteLength" : 171
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'CertificateException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 261,
+            "startColumn" : 19,
+            "endLine" : 261,
+            "endColumn" : 103,
+            "charOffset" : 9236,
+            "charLength" : 84,
+            "byteOffset" : 9236,
+            "byteLength" : 84
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'Exception'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 487,
+            "startColumn" : 27,
+            "endLine" : 487,
+            "endColumn" : 28,
+            "charOffset" : 18835,
+            "charLength" : 1,
+            "byteOffset" : 18835,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NoSuchMethodException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 704,
+            "startColumn" : 19,
+            "endLine" : 704,
+            "endColumn" : 26,
+            "charOffset" : 27267,
+            "charLength" : 7,
+            "byteOffset" : 27267,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NoSuchMethodException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 841,
+            "startColumn" : 27,
+            "endLine" : 841,
+            "endColumn" : 31,
+            "charOffset" : 32744,
+            "charLength" : 4,
+            "byteOffset" : 32744,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NoSuchMethodException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 929,
+            "startColumn" : 19,
+            "endLine" : 929,
+            "endColumn" : 56,
+            "charOffset" : 36134,
+            "charLength" : 37,
+            "byteOffset" : 36134,
+            "byteLength" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NoSuchMethodException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 988,
+            "startColumn" : 19,
+            "endLine" : 988,
+            "endColumn" : 54,
+            "charOffset" : 38336,
+            "charLength" : 35,
+            "byteOffset" : 38336,
+            "byteLength" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'InvocationTargetException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1392,
+            "startColumn" : 27,
+            "endLine" : 1392,
+            "endColumn" : 59,
+            "charOffset" : 52860,
+            "charLength" : 32,
+            "byteOffset" : 52860,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'InvocationTargetException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1406,
+            "startColumn" : 27,
+            "endLine" : 1406,
+            "endColumn" : 59,
+            "charOffset" : 53302,
+            "charLength" : 32,
+            "byteOffset" : 53302,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'SAXParseException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 209,
+            "startColumn" : 23,
+            "endLine" : 209,
+            "endColumn" : 37,
+            "charOffset" : 6863,
+            "charLength" : 14,
+            "byteOffset" : 6863,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

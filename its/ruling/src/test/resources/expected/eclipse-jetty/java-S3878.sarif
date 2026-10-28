@@ -1,0 +1,102 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S3878",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this array creation and simply pass the elements."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 65,
+            "endLine" : 47,
+            "endColumn" : 87,
+            "charOffset" : 1750,
+            "charLength" : 22,
+            "byteOffset" : 1750,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3878",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this array creation and simply pass the elements."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ResourceHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 77,
+            "startColumn" : 88,
+            "endLine" : 77,
+            "endColumn" : 109,
+            "charOffset" : 2829,
+            "charLength" : 21,
+            "byteOffset" : 2829,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3878",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this array creation and simply pass the elements."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/GCThreadLeakPreventer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 71,
+            "endLine" : 47,
+            "endColumn" : 94,
+            "charOffset" : 1816,
+            "charLength" : 23,
+            "byteOffset" : 1816,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

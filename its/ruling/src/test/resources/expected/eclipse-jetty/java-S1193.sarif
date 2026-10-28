@@ -1,0 +1,46 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1193",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace the usage of the \"instanceof\" operator by a catch block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONCollectionConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 19,
+            "endLine" : 50,
+            "endColumn" : 29,
+            "charOffset" : 1676,
+            "charLength" : 10,
+            "byteOffset" : 1676,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

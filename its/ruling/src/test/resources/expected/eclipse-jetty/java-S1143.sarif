@@ -1,0 +1,74 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1143",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this throw statement from this finally block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 88,
+            "startColumn" : 33,
+            "endLine" : 88,
+            "endColumn" : 38,
+            "charOffset" : 3001,
+            "charLength" : 5,
+            "byteOffset" : 3001,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1143",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this throw statement from this finally block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 145,
+            "startColumn" : 33,
+            "endLine" : 145,
+            "endColumn" : 38,
+            "charOffset" : 4880,
+            "charLength" : 5,
+            "byteOffset" : 4880,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

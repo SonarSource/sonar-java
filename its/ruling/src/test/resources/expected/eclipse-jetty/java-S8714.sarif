@@ -1,0 +1,522 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertThrows() instead of try/catch and fail() in the try block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/SyntaxTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 17,
+            "endLine" : 72,
+            "endColumn" : 117,
+            "charOffset" : 1985,
+            "charLength" : 100,
+            "byteOffset" : 1985,
+            "byteLength" : 100
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertThrows() instead of try/catch and fail() in the try block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/SyntaxTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 126,
+            "startColumn" : 17,
+            "endLine" : 126,
+            "endColumn" : 124,
+            "charOffset" : 3354,
+            "charLength" : 107,
+            "byteOffset" : 3354,
+            "byteLength" : 107
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertThrows() instead of try/catch and fail() in the try block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/ByteArrayEndPointTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 13,
+            "endLine" : 90,
+            "endColumn" : 41,
+            "charOffset" : 2808,
+            "charLength" : 28,
+            "byteOffset" : 2808,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertThrows() instead of try/catch and fail() in the try block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/ByteArrayEndPointTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 206,
+            "startColumn" : 13,
+            "endLine" : 206,
+            "endColumn" : 48,
+            "charOffset" : 6700,
+            "charLength" : 35,
+            "byteOffset" : 6700,
+            "byteLength" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertThrows() instead of try/catch and fail() in the try block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/ByteArrayEndPointTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 297,
+            "startColumn" : 13,
+            "endLine" : 297,
+            "endColumn" : 48,
+            "charOffset" : 9489,
+            "charLength" : 35,
+            "byteOffset" : 9489,
+            "byteLength" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertThrows() instead of try/catch and fail() in the try block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/NotAcceptingTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 134,
+            "startColumn" : 25,
+            "endLine" : 134,
+            "endColumn" : 56,
+            "charOffset" : 5281,
+            "charLength" : 31,
+            "byteOffset" : 5281,
+            "byteLength" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertThrows() instead of try/catch and fail() in the try block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/NotAcceptingTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 251,
+            "startColumn" : 21,
+            "endLine" : 251,
+            "endColumn" : 30,
+            "charOffset" : 10484,
+            "charLength" : 9,
+            "byteOffset" : 10484,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertDoesNotThrow() instead of try/catch and fail() in the catch block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 102,
+            "startColumn" : 13,
+            "endLine" : 102,
+            "endColumn" : 19,
+            "charOffset" : 3506,
+            "charLength" : 6,
+            "byteOffset" : 3506,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertDoesNotThrow() instead of try/catch and fail() in the catch block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 692,
+            "startColumn" : 13,
+            "endLine" : 692,
+            "endColumn" : 33,
+            "charOffset" : 27438,
+            "charLength" : 20,
+            "byteOffset" : 27438,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertThrows() instead of try/catch and fail() in the try block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1255,
+            "startColumn" : 21,
+            "endLine" : 1255,
+            "endColumn" : 83,
+            "charOffset" : 46811,
+            "charLength" : 62,
+            "byteOffset" : 46813,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertDoesNotThrow() instead of try/catch and fail() in the catch block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1263,
+            "startColumn" : 21,
+            "endLine" : 1263,
+            "endColumn" : 102,
+            "charOffset" : 47082,
+            "charLength" : 81,
+            "byteOffset" : 47084,
+            "byteLength" : 81
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertThrows() instead of try/catch and fail() in the try block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/StopTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 497,
+            "startColumn" : 13,
+            "endLine" : 497,
+            "endColumn" : 19,
+            "charOffset" : 16370,
+            "charLength" : 6,
+            "byteOffset" : 16370,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertDoesNotThrow() instead of try/catch and fail() in the catch block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/BlockingArrayQueueTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 192,
+            "startColumn" : 21,
+            "endLine" : 192,
+            "endColumn" : 50,
+            "charOffset" : 5725,
+            "charLength" : 29,
+            "byteOffset" : 5725,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertThrows() instead of try/catch and fail() in the try block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/SharedBlockingCallbackTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 116,
+            "startColumn" : 13,
+            "endLine" : 116,
+            "endColumn" : 51,
+            "charOffset" : 3815,
+            "charLength" : 38,
+            "byteOffset" : 3815,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertThrows() instead of try/catch and fail() in the try block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/SharedBlockingCallbackTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 161,
+            "startColumn" : 13,
+            "endLine" : 161,
+            "endColumn" : 51,
+            "charOffset" : 5224,
+            "charLength" : 38,
+            "byteOffset" : 5224,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertThrows() instead of try/catch and fail() in the try block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/SharedBlockingCallbackTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 235,
+            "startColumn" : 17,
+            "endLine" : 235,
+            "endColumn" : 23,
+            "charOffset" : 7502,
+            "charLength" : 6,
+            "byteOffset" : 7502,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertThrows() instead of try/catch and fail() in the try block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/AbstractThreadPoolTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 13,
+            "endLine" : 59,
+            "endColumn" : 19,
+            "charOffset" : 1826,
+            "charLength" : 6,
+            "byteOffset" : 1826,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8714",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertThrows() instead of try/catch and fail() in the try block."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/AbstractThreadPoolTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 81,
+            "startColumn" : 13,
+            "endLine" : 81,
+            "endColumn" : 19,
+            "charOffset" : 2324,
+            "charLength" : 6,
+            "byteOffset" : 2324,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

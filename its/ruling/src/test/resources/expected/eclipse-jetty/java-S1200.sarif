@@ -1,0 +1,1054 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 24 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 14,
+            "endLine" : 90,
+            "endColumn" : 24,
+            "charOffset" : 4155,
+            "charLength" : 10,
+            "byteOffset" : 4155,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 30 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 14,
+            "endLine" : 64,
+            "endColumn" : 29,
+            "charOffset" : 2505,
+            "charLength" : 15,
+            "byteOffset" : 2505,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 26 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SelectorManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 23,
+            "endLine" : 58,
+            "endColumn" : 38,
+            "charOffset" : 2270,
+            "charLength" : 15,
+            "byteOffset" : 2270,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 25 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 81,
+            "startColumn" : 14,
+            "endLine" : 81,
+            "endColumn" : 27,
+            "charOffset" : 4493,
+            "charLength" : 13,
+            "byteOffset" : 4493,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 26 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 459,
+            "startColumn" : 18,
+            "endLine" : 459,
+            "endColumn" : 35,
+            "charOffset" : 16128,
+            "charLength" : 17,
+            "byteOffset" : 16128,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 24 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MBeanContainer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 14,
+            "endLine" : 57,
+            "endColumn" : 28,
+            "charOffset" : 2108,
+            "charLength" : 14,
+            "byteOffset" : 2108,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 27 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 7,
+            "endLine" : 53,
+            "endColumn" : 15,
+            "charOffset" : 1980,
+            "charLength" : 8,
+            "byteOffset" : 1980,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 32 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 142,
+            "startColumn" : 23,
+            "endLine" : 142,
+            "endColumn" : 40,
+            "charOffset" : 8617,
+            "charLength" : 17,
+            "byteOffset" : 8617,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 30 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 273,
+            "startColumn" : 14,
+            "endLine" : 273,
+            "endColumn" : 30,
+            "charOffset" : 8985,
+            "charLength" : 16,
+            "byteOffset" : 8985,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 25 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DebugListener.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 14,
+            "endLine" : 56,
+            "endColumn" : 27,
+            "charOffset" : 2295,
+            "charLength" : 13,
+            "byteOffset" : 2295,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 50 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 14,
+            "endLine" : 67,
+            "endColumn" : 25,
+            "charOffset" : 2846,
+            "charLength" : 11,
+            "byteOffset" : 2846,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 29 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelOverHttp.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 14,
+            "endLine" : 49,
+            "endColumn" : 33,
+            "charOffset" : 1794,
+            "charLength" : 19,
+            "byteOffset" : 1794,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 26 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 14,
+            "endLine" : 50,
+            "endColumn" : 30,
+            "charOffset" : 2005,
+            "charLength" : 16,
+            "byteOffset" : 2005,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 36 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 14,
+            "endLine" : 56,
+            "endColumn" : 28,
+            "charOffset" : 2159,
+            "charLength" : 14,
+            "byteOffset" : 2159,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 28 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 14,
+            "endLine" : 61,
+            "endColumn" : 24,
+            "charOffset" : 2437,
+            "charLength" : 10,
+            "byteOffset" : 2437,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 87 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 144,
+            "startColumn" : 14,
+            "endLine" : 144,
+            "endColumn" : 21,
+            "charOffset" : 7081,
+            "charLength" : 7,
+            "byteOffset" : 7081,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 36 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 14,
+            "endLine" : 68,
+            "endColumn" : 29,
+            "charOffset" : 2574,
+            "charLength" : 15,
+            "byteOffset" : 2574,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 41 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 69,
+            "startColumn" : 14,
+            "endLine" : 69,
+            "endColumn" : 22,
+            "charOffset" : 2679,
+            "charLength" : 8,
+            "byteOffset" : 2679,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 39 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 14,
+            "endLine" : 78,
+            "endColumn" : 20,
+            "charOffset" : 3166,
+            "charLength" : 6,
+            "byteOffset" : 3166,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 61 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 116,
+            "startColumn" : 14,
+            "endLine" : 116,
+            "endColumn" : 28,
+            "charOffset" : 4840,
+            "charLength" : 14,
+            "byteOffset" : 4840,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 27 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2082,
+            "startColumn" : 18,
+            "endLine" : 2082,
+            "endColumn" : 25,
+            "charOffset" : 70713,
+            "charLength" : 7,
+            "byteOffset" : 70713,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 25 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2569,
+            "startColumn" : 25,
+            "endLine" : 2569,
+            "endColumn" : 38,
+            "charOffset" : 86559,
+            "charLength" : 13,
+            "byteOffset" : 86559,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 24 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 14,
+            "endLine" : 61,
+            "endColumn" : 26,
+            "charOffset" : 2424,
+            "charLength" : 12,
+            "byteOffset" : 2424,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 21 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/StatisticsHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 14,
+            "endLine" : 47,
+            "endColumn" : 31,
+            "charOffset" : 1897,
+            "charLength" : 17,
+            "byteOffset" : 1897,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 23 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 149,
+            "startColumn" : 14,
+            "endLine" : 149,
+            "endColumn" : 25,
+            "charOffset" : 6336,
+            "charLength" : 11,
+            "byteOffset" : 6336,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 22 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/Session.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 14,
+            "endLine" : 56,
+            "endColumn" : 21,
+            "charOffset" : 2128,
+            "charLength" : 7,
+            "byteOffset" : 2128,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 42 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 74,
+            "startColumn" : 14,
+            "endLine" : 74,
+            "endColumn" : 28,
+            "charOffset" : 2800,
+            "charLength" : 14,
+            "byteOffset" : 2800,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 22 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 83,
+            "startColumn" : 14,
+            "endLine" : 83,
+            "endColumn" : 18,
+            "charOffset" : 3124,
+            "charLength" : 4,
+            "byteOffset" : 3124,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 29 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 14,
+            "endLine" : 68,
+            "endColumn" : 25,
+            "charOffset" : 2347,
+            "charLength" : 11,
+            "byteOffset" : 2347,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 26 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 14,
+            "endLine" : 56,
+            "endColumn" : 21,
+            "charOffset" : 1800,
+            "charLength" : 7,
+            "byteOffset" : 1800,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 32 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 14,
+            "endLine" : 63,
+            "endColumn" : 22,
+            "charOffset" : 2054,
+            "charLength" : 8,
+            "byteOffset" : 2054,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 22 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/ContainerLifeCycle.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 83,
+            "startColumn" : 14,
+            "endLine" : 83,
+            "endColumn" : 32,
+            "charOffset" : 4121,
+            "charLength" : 18,
+            "byteOffset" : 4121,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 22 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 60,
+            "startColumn" : 23,
+            "endLine" : 60,
+            "endColumn" : 31,
+            "charOffset" : 1913,
+            "charLength" : 8,
+            "byteOffset" : 1913,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 50 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 23,
+            "endLine" : 104,
+            "endColumn" : 40,
+            "charOffset" : 3932,
+            "charLength" : 17,
+            "byteOffset" : 3932,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 24 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 14,
+            "endLine" : 48,
+            "endColumn" : 30,
+            "charOffset" : 1900,
+            "charLength" : 16,
+            "byteOffset" : 1900,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 23 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 87,
+            "startColumn" : 14,
+            "endLine" : 87,
+            "endColumn" : 30,
+            "charOffset" : 3431,
+            "charLength" : 16,
+            "byteOffset" : 3431,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1200",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 21 to the maximum authorized 20 or less."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 340,
+            "startColumn" : 26,
+            "endLine" : 340,
+            "endColumn" : 47,
+            "charOffset" : 12729,
+            "charLength" : 21,
+            "byteOffset" : 12729,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

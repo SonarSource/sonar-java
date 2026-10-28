@@ -1,0 +1,3350 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/BadMessageException.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 2,
+            "endLine" : 26,
+            "endColumn" : 18,
+            "charOffset" : 984,
+            "charLength" : 16,
+            "byteOffset" : 984,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1967,
+            "startColumn" : 6,
+            "endLine" : 1967,
+            "endColumn" : 22,
+            "charOffset" : 75348,
+            "charLength" : 16,
+            "byteOffset" : 75348,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/PathMappings.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 261,
+            "startColumn" : 6,
+            "endLine" : 261,
+            "endColumn" : 22,
+            "charOffset" : 8835,
+            "charLength" : 16,
+            "byteOffset" : 8835,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 504,
+            "startColumn" : 10,
+            "endLine" : 504,
+            "endColumn" : 26,
+            "charOffset" : 13047,
+            "charLength" : 16,
+            "byteOffset" : 13047,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 333,
+            "startColumn" : 14,
+            "endLine" : 333,
+            "endColumn" : 30,
+            "charOffset" : 11201,
+            "charLength" : 16,
+            "byteOffset" : 11201,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 343,
+            "startColumn" : 14,
+            "endLine" : 343,
+            "endColumn" : 30,
+            "charOffset" : 11675,
+            "charLength" : 16,
+            "byteOffset" : 11675,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 345,
+            "startColumn" : 14,
+            "endLine" : 345,
+            "endColumn" : 30,
+            "charOffset" : 11793,
+            "charLength" : 16,
+            "byteOffset" : 11793,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 354,
+            "startColumn" : 14,
+            "endLine" : 354,
+            "endColumn" : 30,
+            "charOffset" : 12171,
+            "charLength" : 16,
+            "byteOffset" : 12171,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/IncludeExcludeConnectionStatistics.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 10,
+            "endLine" : 59,
+            "endColumn" : 26,
+            "charOffset" : 1977,
+            "charLength" : 16,
+            "byteOffset" : 1977,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 565,
+            "startColumn" : 6,
+            "endLine" : 565,
+            "endColumn" : 22,
+            "charOffset" : 18157,
+            "charLength" : 16,
+            "byteOffset" : 18157,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 928,
+            "startColumn" : 6,
+            "endLine" : 928,
+            "endColumn" : 22,
+            "charOffset" : 30964,
+            "charLength" : 16,
+            "byteOffset" : 30964,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 933,
+            "startColumn" : 6,
+            "endLine" : 933,
+            "endColumn" : 22,
+            "charOffset" : 31097,
+            "charLength" : 16,
+            "byteOffset" : 31097,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 939,
+            "startColumn" : 6,
+            "endLine" : 939,
+            "endColumn" : 22,
+            "charOffset" : 31277,
+            "charLength" : 16,
+            "byteOffset" : 31277,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 945,
+            "startColumn" : 6,
+            "endLine" : 945,
+            "endColumn" : 22,
+            "charOffset" : 31457,
+            "charLength" : 16,
+            "byteOffset" : 31457,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 951,
+            "startColumn" : 6,
+            "endLine" : 951,
+            "endColumn" : 22,
+            "charOffset" : 31699,
+            "charLength" : 16,
+            "byteOffset" : 31699,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 957,
+            "startColumn" : 6,
+            "endLine" : 957,
+            "endColumn" : 22,
+            "charOffset" : 31943,
+            "charLength" : 16,
+            "byteOffset" : 31943,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 963,
+            "startColumn" : 6,
+            "endLine" : 963,
+            "endColumn" : 22,
+            "charOffset" : 32122,
+            "charLength" : 16,
+            "byteOffset" : 32122,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 969,
+            "startColumn" : 6,
+            "endLine" : 969,
+            "endColumn" : 22,
+            "charOffset" : 32301,
+            "charLength" : 16,
+            "byteOffset" : 32301,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 975,
+            "startColumn" : 6,
+            "endLine" : 975,
+            "endColumn" : 22,
+            "charOffset" : 32522,
+            "charLength" : 16,
+            "byteOffset" : 32522,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 981,
+            "startColumn" : 6,
+            "endLine" : 981,
+            "endColumn" : 22,
+            "charOffset" : 32745,
+            "charLength" : 16,
+            "byteOffset" : 32745,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 988,
+            "startColumn" : 6,
+            "endLine" : 988,
+            "endColumn" : 22,
+            "charOffset" : 32978,
+            "charLength" : 16,
+            "byteOffset" : 32978,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 998,
+            "startColumn" : 6,
+            "endLine" : 998,
+            "endColumn" : 22,
+            "charOffset" : 33284,
+            "charLength" : 16,
+            "byteOffset" : 33284,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1004,
+            "startColumn" : 6,
+            "endLine" : 1004,
+            "endColumn" : 22,
+            "charOffset" : 33482,
+            "charLength" : 16,
+            "byteOffset" : 33482,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1014,
+            "startColumn" : 6,
+            "endLine" : 1014,
+            "endColumn" : 22,
+            "charOffset" : 33776,
+            "charLength" : 16,
+            "byteOffset" : 33776,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1020,
+            "startColumn" : 6,
+            "endLine" : 1020,
+            "endColumn" : 22,
+            "charOffset" : 33978,
+            "charLength" : 16,
+            "byteOffset" : 33978,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1030,
+            "startColumn" : 6,
+            "endLine" : 1030,
+            "endColumn" : 22,
+            "charOffset" : 34288,
+            "charLength" : 16,
+            "byteOffset" : 34288,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1036,
+            "startColumn" : 6,
+            "endLine" : 1036,
+            "endColumn" : 22,
+            "charOffset" : 34533,
+            "charLength" : 16,
+            "byteOffset" : 34533,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1046,
+            "startColumn" : 6,
+            "endLine" : 1046,
+            "endColumn" : 22,
+            "charOffset" : 34895,
+            "charLength" : 16,
+            "byteOffset" : 34895,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1065,
+            "startColumn" : 6,
+            "endLine" : 1065,
+            "endColumn" : 22,
+            "charOffset" : 35386,
+            "charLength" : 16,
+            "byteOffset" : 35386,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1084,
+            "startColumn" : 6,
+            "endLine" : 1084,
+            "endColumn" : 22,
+            "charOffset" : 35959,
+            "charLength" : 16,
+            "byteOffset" : 35959,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1090,
+            "startColumn" : 6,
+            "endLine" : 1090,
+            "endColumn" : 22,
+            "charOffset" : 36150,
+            "charLength" : 16,
+            "byteOffset" : 36150,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1105,
+            "startColumn" : 6,
+            "endLine" : 1105,
+            "endColumn" : 22,
+            "charOffset" : 36798,
+            "charLength" : 16,
+            "byteOffset" : 36798,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1111,
+            "startColumn" : 6,
+            "endLine" : 1111,
+            "endColumn" : 22,
+            "charOffset" : 36981,
+            "charLength" : 16,
+            "byteOffset" : 36981,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1117,
+            "startColumn" : 6,
+            "endLine" : 1117,
+            "endColumn" : 22,
+            "charOffset" : 37175,
+            "charLength" : 16,
+            "byteOffset" : 37175,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1127,
+            "startColumn" : 6,
+            "endLine" : 1127,
+            "endColumn" : 22,
+            "charOffset" : 37499,
+            "charLength" : 16,
+            "byteOffset" : 37499,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1133,
+            "startColumn" : 6,
+            "endLine" : 1133,
+            "endColumn" : 22,
+            "charOffset" : 37678,
+            "charLength" : 16,
+            "byteOffset" : 37678,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1139,
+            "startColumn" : 6,
+            "endLine" : 1139,
+            "endColumn" : 22,
+            "charOffset" : 37874,
+            "charLength" : 16,
+            "byteOffset" : 37874,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1145,
+            "startColumn" : 6,
+            "endLine" : 1145,
+            "endColumn" : 22,
+            "charOffset" : 38062,
+            "charLength" : 16,
+            "byteOffset" : 38062,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1155,
+            "startColumn" : 6,
+            "endLine" : 1155,
+            "endColumn" : 22,
+            "charOffset" : 38377,
+            "charLength" : 16,
+            "byteOffset" : 38377,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1161,
+            "startColumn" : 6,
+            "endLine" : 1161,
+            "endColumn" : 22,
+            "charOffset" : 38562,
+            "charLength" : 16,
+            "byteOffset" : 38562,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1167,
+            "startColumn" : 6,
+            "endLine" : 1167,
+            "endColumn" : 22,
+            "charOffset" : 38765,
+            "charLength" : 16,
+            "byteOffset" : 38765,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1175,
+            "startColumn" : 6,
+            "endLine" : 1175,
+            "endColumn" : 22,
+            "charOffset" : 39030,
+            "charLength" : 16,
+            "byteOffset" : 39030,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1187,
+            "startColumn" : 6,
+            "endLine" : 1187,
+            "endColumn" : 22,
+            "charOffset" : 39432,
+            "charLength" : 16,
+            "byteOffset" : 39432,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1194,
+            "startColumn" : 6,
+            "endLine" : 1194,
+            "endColumn" : 22,
+            "charOffset" : 39680,
+            "charLength" : 16,
+            "byteOffset" : 39680,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1201,
+            "startColumn" : 6,
+            "endLine" : 1201,
+            "endColumn" : 22,
+            "charOffset" : 39956,
+            "charLength" : 16,
+            "byteOffset" : 39956,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1207,
+            "startColumn" : 6,
+            "endLine" : 1207,
+            "endColumn" : 22,
+            "charOffset" : 40157,
+            "charLength" : 16,
+            "byteOffset" : 40157,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1213,
+            "startColumn" : 6,
+            "endLine" : 1213,
+            "endColumn" : 22,
+            "charOffset" : 40369,
+            "charLength" : 16,
+            "byteOffset" : 40369,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1219,
+            "startColumn" : 6,
+            "endLine" : 1219,
+            "endColumn" : 22,
+            "charOffset" : 40553,
+            "charLength" : 16,
+            "byteOffset" : 40553,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1225,
+            "startColumn" : 6,
+            "endLine" : 1225,
+            "endColumn" : 22,
+            "charOffset" : 40823,
+            "charLength" : 16,
+            "byteOffset" : 40823,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1235,
+            "startColumn" : 6,
+            "endLine" : 1235,
+            "endColumn" : 22,
+            "charOffset" : 41149,
+            "charLength" : 16,
+            "byteOffset" : 41149,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 589,
+            "startColumn" : 10,
+            "endLine" : 589,
+            "endColumn" : 26,
+            "charOffset" : 19935,
+            "charLength" : 16,
+            "byteOffset" : 19935,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 597,
+            "startColumn" : 10,
+            "endLine" : 597,
+            "endColumn" : 26,
+            "charOffset" : 20213,
+            "charLength" : 16,
+            "byteOffset" : 20213,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 605,
+            "startColumn" : 10,
+            "endLine" : 605,
+            "endColumn" : 26,
+            "charOffset" : 20494,
+            "charLength" : 16,
+            "byteOffset" : 20494,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 621,
+            "startColumn" : 10,
+            "endLine" : 621,
+            "endColumn" : 26,
+            "charOffset" : 21152,
+            "charLength" : 16,
+            "byteOffset" : 21152,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 629,
+            "startColumn" : 10,
+            "endLine" : 629,
+            "endColumn" : 26,
+            "charOffset" : 21375,
+            "charLength" : 16,
+            "byteOffset" : 21375,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 636,
+            "startColumn" : 10,
+            "endLine" : 636,
+            "endColumn" : 26,
+            "charOffset" : 21569,
+            "charLength" : 16,
+            "byteOffset" : 21569,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 653,
+            "startColumn" : 10,
+            "endLine" : 653,
+            "endColumn" : 26,
+            "charOffset" : 22222,
+            "charLength" : 16,
+            "byteOffset" : 22222,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 673,
+            "startColumn" : 10,
+            "endLine" : 673,
+            "endColumn" : 26,
+            "charOffset" : 23108,
+            "charLength" : 16,
+            "byteOffset" : 23108,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 680,
+            "startColumn" : 10,
+            "endLine" : 680,
+            "endColumn" : 26,
+            "charOffset" : 23390,
+            "charLength" : 16,
+            "byteOffset" : 23390,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelOverHttp.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 483,
+            "startColumn" : 10,
+            "endLine" : 483,
+            "endColumn" : 26,
+            "charOffset" : 16182,
+            "charLength" : 16,
+            "byteOffset" : 16182,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 681,
+            "startColumn" : 10,
+            "endLine" : 681,
+            "endColumn" : 26,
+            "charOffset" : 21624,
+            "charLength" : 16,
+            "byteOffset" : 21624,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 691,
+            "startColumn" : 10,
+            "endLine" : 691,
+            "endColumn" : 26,
+            "charOffset" : 21829,
+            "charLength" : 16,
+            "byteOffset" : 21829,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 707,
+            "startColumn" : 6,
+            "endLine" : 707,
+            "endColumn" : 22,
+            "charOffset" : 22119,
+            "charLength" : 16,
+            "byteOffset" : 22119,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 165,
+            "startColumn" : 10,
+            "endLine" : 165,
+            "endColumn" : 26,
+            "charOffset" : 8016,
+            "charLength" : 16,
+            "byteOffset" : 8016,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/AbstractHandlerContainer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 6,
+            "endLine" : 59,
+            "endColumn" : 22,
+            "charOffset" : 1871,
+            "charLength" : 16,
+            "byteOffset" : 1871,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/AbstractHandlerContainer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 102,
+            "startColumn" : 18,
+            "endLine" : 102,
+            "endColumn" : 34,
+            "charOffset" : 3344,
+            "charLength" : 16,
+            "byteOffset" : 3344,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2425,
+            "startColumn" : 18,
+            "endLine" : 2425,
+            "endColumn" : 34,
+            "charOffset" : 81849,
+            "charLength" : 16,
+            "byteOffset" : 81849,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2686,
+            "startColumn" : 10,
+            "endLine" : 2686,
+            "endColumn" : 26,
+            "charOffset" : 89264,
+            "charLength" : 16,
+            "byteOffset" : 89264,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ShutdownHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 128,
+            "startColumn" : 6,
+            "endLine" : 128,
+            "endColumn" : 22,
+            "charOffset" : 4728,
+            "charLength" : 16,
+            "byteOffset" : 4728,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 130,
+            "startColumn" : 6,
+            "endLine" : 130,
+            "endColumn" : 22,
+            "charOffset" : 5416,
+            "charLength" : 16,
+            "byteOffset" : 5416,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 151,
+            "startColumn" : 10,
+            "endLine" : 151,
+            "endColumn" : 26,
+            "charOffset" : 6091,
+            "charLength" : 16,
+            "byteOffset" : 6091,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLogger.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 674,
+            "startColumn" : 6,
+            "endLine" : 674,
+            "endColumn" : 22,
+            "charOffset" : 16648,
+            "charLength" : 16,
+            "byteOffset" : 16648,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLoggerFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 6,
+            "endLine" : 50,
+            "endColumn" : 22,
+            "charOffset" : 1821,
+            "charLength" : 16,
+            "byteOffset" : 1821,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/AsyncJSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 926,
+            "startColumn" : 22,
+            "endLine" : 926,
+            "endColumn" : 38,
+            "charOffset" : 29582,
+            "charLength" : 16,
+            "byteOffset" : 29582,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/AsyncJSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1066,
+            "startColumn" : 10,
+            "endLine" : 1066,
+            "endColumn" : 26,
+            "charOffset" : 33975,
+            "charLength" : 16,
+            "byteOffset" : 33975,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/AsyncJSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1199,
+            "startColumn" : 22,
+            "endLine" : 1199,
+            "endColumn" : 38,
+            "charOffset" : 37533,
+            "charLength" : 16,
+            "byteOffset" : 37533,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONCollectionConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 14,
+            "endLine" : 43,
+            "endColumn" : 30,
+            "charOffset" : 1387,
+            "charLength" : 16,
+            "byteOffset" : 1387,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONEnumConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 14,
+            "endLine" : 58,
+            "endColumn" : 30,
+            "charOffset" : 1792,
+            "charLength" : 16,
+            "byteOffset" : 1792,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 318,
+            "startColumn" : 22,
+            "endLine" : 318,
+            "endColumn" : 38,
+            "charOffset" : 9843,
+            "charLength" : 16,
+            "byteOffset" : 9843,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 320,
+            "startColumn" : 22,
+            "endLine" : 320,
+            "endColumn" : 38,
+            "charOffset" : 9991,
+            "charLength" : 16,
+            "byteOffset" : 9991,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTrie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 128,
+            "startColumn" : 6,
+            "endLine" : 128,
+            "endColumn" : 22,
+            "charOffset" : 4918,
+            "charLength" : 16,
+            "byteOffset" : 4918,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 18,
+            "endLine" : 43,
+            "endColumn" : 34,
+            "charOffset" : 1413,
+            "charLength" : 16,
+            "byteOffset" : 1413,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 14,
+            "endLine" : 90,
+            "endColumn" : 30,
+            "charOffset" : 2977,
+            "charLength" : 16,
+            "byteOffset" : 2977,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 118,
+            "startColumn" : 14,
+            "endLine" : 118,
+            "endColumn" : 30,
+            "charOffset" : 3812,
+            "charLength" : 16,
+            "byteOffset" : 3812,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 126,
+            "startColumn" : 14,
+            "endLine" : 126,
+            "endColumn" : 30,
+            "charOffset" : 4053,
+            "charLength" : 16,
+            "byteOffset" : 4053,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BlockingArrayQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 179,
+            "startColumn" : 6,
+            "endLine" : 179,
+            "endColumn" : 22,
+            "charOffset" : 5506,
+            "charLength" : 16,
+            "byteOffset" : 5506,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BlockingArrayQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 208,
+            "startColumn" : 6,
+            "endLine" : 208,
+            "endColumn" : 22,
+            "charOffset" : 6188,
+            "charLength" : 16,
+            "byteOffset" : 6188,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BlockingArrayQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 248,
+            "startColumn" : 6,
+            "endLine" : 248,
+            "endColumn" : 22,
+            "charOffset" : 7214,
+            "charLength" : 16,
+            "byteOffset" : 7214,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BlockingArrayQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 279,
+            "startColumn" : 6,
+            "endLine" : 279,
+            "endColumn" : 22,
+            "charOffset" : 7789,
+            "charLength" : 16,
+            "byteOffset" : 7789,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BlockingArrayQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 539,
+            "startColumn" : 6,
+            "endLine" : 539,
+            "endColumn" : 22,
+            "charOffset" : 14651,
+            "charLength" : 16,
+            "byteOffset" : 14651,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BlockingArrayQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 657,
+            "startColumn" : 6,
+            "endLine" : 657,
+            "endColumn" : 22,
+            "charOffset" : 17310,
+            "charLength" : 16,
+            "byteOffset" : 17310,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BlockingArrayQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 687,
+            "startColumn" : 6,
+            "endLine" : 687,
+            "endColumn" : 22,
+            "charOffset" : 18056,
+            "charLength" : 16,
+            "byteOffset" : 18056,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BlockingArrayQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 855,
+            "startColumn" : 10,
+            "endLine" : 855,
+            "endColumn" : 26,
+            "charOffset" : 22273,
+            "charLength" : 16,
+            "byteOffset" : 22273,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BlockingArrayQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 868,
+            "startColumn" : 10,
+            "endLine" : 868,
+            "endColumn" : 26,
+            "charOffset" : 22527,
+            "charLength" : 16,
+            "byteOffset" : 22527,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 299,
+            "startColumn" : 10,
+            "endLine" : 299,
+            "endColumn" : 26,
+            "charOffset" : 10212,
+            "charLength" : 16,
+            "byteOffset" : 10212,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Fields.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 259,
+            "startColumn" : 10,
+            "endLine" : 259,
+            "endColumn" : 26,
+            "charOffset" : 7289,
+            "charLength" : 16,
+            "byteOffset" : 7289,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/HostMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 2,
+            "endLine" : 28,
+            "endColumn" : 18,
+            "charOffset" : 911,
+            "charLength" : 16,
+            "byteOffset" : 911,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/LazyList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 2,
+            "endLine" : 62,
+            "endColumn" : 18,
+            "charOffset" : 2084,
+            "charLength" : 16,
+            "byteOffset" : 2084,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/LazyList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 6,
+            "endLine" : 79,
+            "endColumn" : 22,
+            "charOffset" : 2496,
+            "charLength" : 16,
+            "byteOffset" : 2496,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/LazyList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 6,
+            "endLine" : 114,
+            "endColumn" : 22,
+            "charOffset" : 3359,
+            "charLength" : 16,
+            "byteOffset" : 3359,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/LazyList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 259,
+            "startColumn" : 6,
+            "endLine" : 259,
+            "endColumn" : 22,
+            "charOffset" : 7276,
+            "charLength" : 16,
+            "byteOffset" : 7276,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/LazyList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 380,
+            "startColumn" : 6,
+            "endLine" : 380,
+            "endColumn" : 22,
+            "charOffset" : 10530,
+            "charLength" : 16,
+            "byteOffset" : 10530,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/LazyList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 424,
+            "startColumn" : 6,
+            "endLine" : 424,
+            "endColumn" : 22,
+            "charOffset" : 11562,
+            "charLength" : 16,
+            "byteOffset" : 11562,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/LazyList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 440,
+            "startColumn" : 6,
+            "endLine" : 440,
+            "endColumn" : 22,
+            "charOffset" : 11967,
+            "charLength" : 16,
+            "byteOffset" : 11967,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/LeakDetector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 145,
+            "startColumn" : 18,
+            "endLine" : 145,
+            "endColumn" : 34,
+            "charOffset" : 5634,
+            "charLength" : 16,
+            "byteOffset" : 5634,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Loader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 6,
+            "endLine" : 59,
+            "endColumn" : 22,
+            "charOffset" : 1822,
+            "charLength" : 16,
+            "byteOffset" : 1822,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Loader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 77,
+            "startColumn" : 6,
+            "endLine" : 77,
+            "endColumn" : 22,
+            "charOffset" : 2539,
+            "charLength" : 16,
+            "byteOffset" : 2539,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiException.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 2,
+            "endLine" : 33,
+            "endColumn" : 18,
+            "charOffset" : 1110,
+            "charLength" : 16,
+            "byteOffset" : 1110,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 2,
+            "endLine" : 33,
+            "endColumn" : 18,
+            "charOffset" : 1029,
+            "charLength" : 16,
+            "byteOffset" : 1029,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 720,
+            "startColumn" : 6,
+            "endLine" : 720,
+            "endColumn" : 22,
+            "charOffset" : 21108,
+            "charLength" : 16,
+            "byteOffset" : 21108,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ServiceLoaderSpliterator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 96,
+            "startColumn" : 10,
+            "endLine" : 96,
+            "endColumn" : 26,
+            "charOffset" : 2636,
+            "charLength" : 16,
+            "byteOffset" : 2636,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/URIUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 297,
+            "startColumn" : 6,
+            "endLine" : 297,
+            "endColumn" : 22,
+            "charOffset" : 9208,
+            "charLength" : 16,
+            "byteOffset" : 9208,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/URIUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 341,
+            "startColumn" : 6,
+            "endLine" : 341,
+            "endColumn" : 22,
+            "charOffset" : 10699,
+            "charLength" : 16,
+            "byteOffset" : 10699,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 2,
+            "endLine" : 50,
+            "endColumn" : 18,
+            "charOffset" : 1592,
+            "charLength" : 16,
+            "byteOffset" : 1592,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Utf8Appendable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 268,
+            "startColumn" : 6,
+            "endLine" : 268,
+            "endColumn" : 22,
+            "charOffset" : 9048,
+            "charLength" : 16,
+            "byteOffset" : 9048,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 443,
+            "startColumn" : 6,
+            "endLine" : 443,
+            "endColumn" : 22,
+            "charOffset" : 13627,
+            "charLength" : 16,
+            "byteOffset" : 13627,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 450,
+            "startColumn" : 6,
+            "endLine" : 450,
+            "endColumn" : 22,
+            "charOffset" : 13774,
+            "charLength" : 16,
+            "byteOffset" : 13774,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Credential.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 102,
+            "startColumn" : 10,
+            "endLine" : 102,
+            "endColumn" : 26,
+            "charOffset" : 4237,
+            "charLength" : 16,
+            "byteOffset" : 4237,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 781,
+            "startColumn" : 14,
+            "endLine" : 781,
+            "endColumn" : 30,
+            "charOffset" : 30456,
+            "charLength" : 16,
+            "byteOffset" : 30456,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

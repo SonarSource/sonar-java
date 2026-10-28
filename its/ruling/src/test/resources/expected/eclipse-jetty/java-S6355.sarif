@@ -1,0 +1,746 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 82,
+            "startColumn" : 5,
+            "endLine" : 82,
+            "endColumn" : 16,
+            "charOffset" : 3499,
+            "charLength" : 11,
+            "byteOffset" : 3499,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 147,
+            "startColumn" : 5,
+            "endLine" : 147,
+            "endColumn" : 16,
+            "charOffset" : 5555,
+            "charLength" : 11,
+            "byteOffset" : 5555,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 153,
+            "startColumn" : 5,
+            "endLine" : 153,
+            "endColumn" : 16,
+            "charOffset" : 5684,
+            "charLength" : 11,
+            "byteOffset" : 5684,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 159,
+            "startColumn" : 5,
+            "endLine" : 159,
+            "endColumn" : 16,
+            "charOffset" : 5819,
+            "charLength" : 11,
+            "byteOffset" : 5819,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1298,
+            "startColumn" : 5,
+            "endLine" : 1298,
+            "endColumn" : 16,
+            "charOffset" : 42365,
+            "charLength" : 11,
+            "byteOffset" : 42365,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 397,
+            "startColumn" : 5,
+            "endLine" : 397,
+            "endColumn" : 16,
+            "charOffset" : 13533,
+            "charLength" : 11,
+            "byteOffset" : 13533,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/OptionalSslConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 1,
+            "endLine" : 36,
+            "endColumn" : 12,
+            "charOffset" : 1289,
+            "charLength" : 11,
+            "byteOffset" : 1289,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 914,
+            "startColumn" : 5,
+            "endLine" : 914,
+            "endColumn" : 16,
+            "charOffset" : 28772,
+            "charLength" : 11,
+            "byteOffset" : 28772,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnectionStatistics.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 1,
+            "endLine" : 23,
+            "endColumn" : 12,
+            "charOffset" : 846,
+            "charLength" : 11,
+            "byteOffset" : 846,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/AbstractHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 5,
+            "endLine" : 78,
+            "endColumn" : 16,
+            "charOffset" : 3356,
+            "charLength" : 11,
+            "byteOffset" : 3356,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/AbstractHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 137,
+            "startColumn" : 5,
+            "endLine" : 137,
+            "endColumn" : 16,
+            "charOffset" : 5323,
+            "charLength" : 11,
+            "byteOffset" : 5323,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 186,
+            "startColumn" : 5,
+            "endLine" : 186,
+            "endColumn" : 16,
+            "charOffset" : 7673,
+            "charLength" : 11,
+            "byteOffset" : 7673,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/InetAccessHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 173,
+            "startColumn" : 5,
+            "endLine" : 173,
+            "endColumn" : 16,
+            "charOffset" : 5856,
+            "charLength" : 11,
+            "byteOffset" : 5856,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/InetAccessHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 185,
+            "startColumn" : 5,
+            "endLine" : 185,
+            "endColumn" : 16,
+            "charOffset" : 6175,
+            "charLength" : 11,
+            "byteOffset" : 6175,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/InetAccessHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 197,
+            "startColumn" : 5,
+            "endLine" : 197,
+            "endColumn" : 16,
+            "charOffset" : 6502,
+            "charLength" : 11,
+            "byteOffset" : 6502,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/InetAccessHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 209,
+            "startColumn" : 5,
+            "endLine" : 209,
+            "endColumn" : 16,
+            "charOffset" : 6827,
+            "charLength" : 11,
+            "byteOffset" : 6827,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 499,
+            "startColumn" : 5,
+            "endLine" : 499,
+            "endColumn" : 16,
+            "charOffset" : 15775,
+            "charLength" : 11,
+            "byteOffset" : 15775,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 131,
+            "startColumn" : 5,
+            "endLine" : 131,
+            "endColumn" : 16,
+            "charOffset" : 4820,
+            "charLength" : 11,
+            "byteOffset" : 4820,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 335,
+            "startColumn" : 5,
+            "endLine" : 335,
+            "endColumn" : 16,
+            "charOffset" : 10169,
+            "charLength" : 11,
+            "byteOffset" : 10169,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 402,
+            "startColumn" : 5,
+            "endLine" : 402,
+            "endColumn" : 16,
+            "charOffset" : 12204,
+            "charLength" : 11,
+            "byteOffset" : 12204,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 420,
+            "startColumn" : 5,
+            "endLine" : 420,
+            "endColumn" : 16,
+            "charOffset" : 12643,
+            "charLength" : 11,
+            "byteOffset" : 12643,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 430,
+            "startColumn" : 5,
+            "endLine" : 430,
+            "endColumn" : 16,
+            "charOffset" : 12865,
+            "charLength" : 11,
+            "byteOffset" : 12865,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 462,
+            "startColumn" : 5,
+            "endLine" : 462,
+            "endColumn" : 16,
+            "charOffset" : 13502,
+            "charLength" : 11,
+            "byteOffset" : 13502,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 473,
+            "startColumn" : 5,
+            "endLine" : 473,
+            "endColumn" : 16,
+            "charOffset" : 13728,
+            "charLength" : 11,
+            "byteOffset" : 13728,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/log/Logger.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 1,
+            "endLine" : 26,
+            "endColumn" : 12,
+            "charOffset" : 853,
+            "charLength" : 11,
+            "byteOffset" : 853,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6355",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add 'since' and/or 'forRemoval' arguments to the @Deprecated annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/log/Slf4jLogger.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 1,
+            "endLine" : 23,
+            "endColumn" : 12,
+            "charOffset" : 830,
+            "charLength" : 11,
+            "byteOffset" : 830,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

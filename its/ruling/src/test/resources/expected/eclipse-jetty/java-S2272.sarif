@@ -1,0 +1,102 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S2272",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a \"NoSuchElementException\" for iteration beyond the end of the collection."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 942,
+            "startColumn" : 34,
+            "endLine" : 942,
+            "endColumn" : 38,
+            "charOffset" : 28535,
+            "charLength" : 4,
+            "byteOffset" : 28535,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2272",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a \"NoSuchElementException\" for iteration beyond the end of the collection."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1529,
+            "startColumn" : 34,
+            "endLine" : 1529,
+            "endColumn" : 38,
+            "charOffset" : 45876,
+            "charLength" : 4,
+            "byteOffset" : 45876,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2272",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a \"NoSuchElementException\" for iteration beyond the end of the collection."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BlockingArrayQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 857,
+            "startColumn" : 18,
+            "endLine" : 857,
+            "endColumn" : 22,
+            "charOffset" : 22338,
+            "charLength" : 4,
+            "byteOffset" : 22338,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

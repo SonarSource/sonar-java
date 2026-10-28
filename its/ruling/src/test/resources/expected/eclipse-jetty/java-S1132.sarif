@@ -1,0 +1,858 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/ServletPathSpec.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 280,
+            "startColumn" : 65,
+            "endLine" : 280,
+            "endColumn" : 67,
+            "charOffset" : 8735,
+            "charLength" : 2,
+            "byteOffset" : 8735,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"clf\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 664,
+            "startColumn" : 47,
+            "endLine" : 664,
+            "endColumn" : 52,
+            "charOffset" : 21628,
+            "charLength" : 5,
+            "byteOffset" : 21628,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"clf\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 678,
+            "startColumn" : 47,
+            "endLine" : 678,
+            "endColumn" : 52,
+            "charOffset" : 22127,
+            "charLength" : 5,
+            "byteOffset" : 22127,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"clf\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 692,
+            "startColumn" : 47,
+            "endLine" : 692,
+            "endColumn" : 52,
+            "charOffset" : 22629,
+            "charLength" : 5,
+            "byteOffset" : 22629,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"content-disposition\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 679,
+            "startColumn" : 38,
+            "endLine" : 679,
+            "endColumn" : 59,
+            "charOffset" : 21806,
+            "charLength" : 21,
+            "byteOffset" : 21806,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"content-type\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 681,
+            "startColumn" : 43,
+            "endLine" : 681,
+            "endColumn" : 57,
+            "charOffset" : 21916,
+            "charLength" : 14,
+            "byteOffset" : 21916,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"SSL\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 743,
+            "startColumn" : 64,
+            "endLine" : 743,
+            "endColumn" : 69,
+            "charOffset" : 24663,
+            "charLength" : 5,
+            "byteOffset" : 24663,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"/favicon.ico\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DefaultHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 96,
+            "startColumn" : 90,
+            "endLine" : 96,
+            "endColumn" : 104,
+            "charOffset" : 3264,
+            "charLength" : 14,
+            "byteOffset" : 3264,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"/\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DefaultHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 112,
+            "startColumn" : 93,
+            "endLine" : 112,
+            "endColumn" : 96,
+            "charOffset" : 4065,
+            "charLength" : 3,
+            "byteOffset" : 4065,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"/shutdown\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ShutdownHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 158,
+            "startColumn" : 28,
+            "endLine" : 158,
+            "endColumn" : 39,
+            "charOffset" : 5561,
+            "charLength" : 11,
+            "byteOffset" : 5561,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"POST\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ShutdownHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 164,
+            "startColumn" : 41,
+            "endLine" : 164,
+            "endColumn" : 47,
+            "charOffset" : 5722,
+            "charLength" : 6,
+            "byteOffset" : 5722,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"gzip\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 625,
+            "startColumn" : 67,
+            "endLine" : 625,
+            "endColumn" : 73,
+            "charOffset" : 22957,
+            "charLength" : 6,
+            "byteOffset" : 22957,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 60,
+            "endLine" : 56,
+            "endColumn" : 62,
+            "charOffset" : 1738,
+            "charLength" : 2,
+            "byteOffset" : 1738,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/JarResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 183,
+            "startColumn" : 47,
+            "endLine" : 183,
+            "endColumn" : 49,
+            "charOffset" : 5780,
+            "charLength" : 2,
+            "byteOffset" : 5780,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"META-INF/MANIFEST.MF\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/JarResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 249,
+            "startColumn" : 98,
+            "endLine" : 249,
+            "endColumn" : 120,
+            "charOffset" : 8096,
+            "charLength" : 22,
+            "byteOffset" : 8096,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"file\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 286,
+            "startColumn" : 47,
+            "endLine" : 286,
+            "endColumn" : 53,
+            "charOffset" : 8882,
+            "charLength" : 6,
+            "byteOffset" : 8882,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"A\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 506,
+            "startColumn" : 35,
+            "endLine" : 506,
+            "endColumn" : 38,
+            "charOffset" : 15339,
+            "charLength" : 3,
+            "byteOffset" : 15339,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"D\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 510,
+            "startColumn" : 40,
+            "endLine" : 510,
+            "endColumn" : 43,
+            "charOffset" : 15467,
+            "charLength" : 3,
+            "byteOffset" : 15467,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"N\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 517,
+            "startColumn" : 35,
+            "endLine" : 517,
+            "endColumn" : 38,
+            "charOffset" : 15666,
+            "charLength" : 3,
+            "byteOffset" : 15666,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"M\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 517,
+            "startColumn" : 57,
+            "endLine" : 517,
+            "endColumn" : 60,
+            "charOffset" : 15688,
+            "charLength" : 3,
+            "byteOffset" : 15688,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"S\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 517,
+            "startColumn" : 79,
+            "endLine" : 517,
+            "endColumn" : 82,
+            "charOffset" : 15710,
+            "charLength" : 3,
+            "byteOffset" : 15710,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"M\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 533,
+            "startColumn" : 31,
+            "endLine" : 533,
+            "endColumn" : 34,
+            "charOffset" : 16077,
+            "charLength" : 3,
+            "byteOffset" : 16077,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"S\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 537,
+            "startColumn" : 36,
+            "endLine" : 537,
+            "endColumn" : 39,
+            "charOffset" : 16216,
+            "charLength" : 3,
+            "byteOffset" : 16216,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"N\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 577,
+            "startColumn" : 31,
+            "endLine" : 577,
+            "endColumn" : 34,
+            "charOffset" : 17442,
+            "charLength" : 3,
+            "byteOffset" : 17442,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"M\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 597,
+            "startColumn" : 31,
+            "endLine" : 597,
+            "endColumn" : 34,
+            "charOffset" : 17945,
+            "charLength" : 3,
+            "byteOffset" : 17945,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"S\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 617,
+            "startColumn" : 31,
+            "endLine" : 617,
+            "endColumn" : 34,
+            "charOffset" : 18461,
+            "charLength" : 3,
+            "byteOffset" : 18461,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"CN\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/X509.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 92,
+            "startColumn" : 48,
+            "endLine" : 92,
+            "endColumn" : 52,
+            "charOffset" : 3183,
+            "charLength" : 4,
+            "byteOffset" : 3183,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"Entry\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1084,
+            "startColumn" : 44,
+            "endLine" : 1084,
+            "endColumn" : 51,
+            "charOffset" : 41890,
+            "charLength" : 7,
+            "byteOffset" : 41890,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"Item\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1095,
+            "startColumn" : 47,
+            "endLine" : 1095,
+            "endColumn" : 53,
+            "charOffset" : 42317,
+            "charLength" : 6,
+            "byteOffset" : 42317,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1132",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the \"\" string literal on the left side of this string comparison."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 524,
+            "startColumn" : 53,
+            "endLine" : 524,
+            "endColumn" : 55,
+            "charOffset" : 16175,
+            "charLength" : 2,
+            "byteOffset" : 16175,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

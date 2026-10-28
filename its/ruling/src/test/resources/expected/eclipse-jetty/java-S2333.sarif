@@ -1,0 +1,5506 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpContent.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 80,
+            "startColumn" : 5,
+            "endLine" : 80,
+            "endColumn" : 11,
+            "charOffset" : 2203,
+            "charLength" : 6,
+            "byteOffset" : 2203,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"private\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpStatus.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 179,
+            "startColumn" : 9,
+            "endLine" : 179,
+            "endColumn" : 16,
+            "charOffset" : 8646,
+            "charLength" : 7,
+            "byteOffset" : 8646,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 5,
+            "endLine" : 49,
+            "endColumn" : 11,
+            "charOffset" : 1774,
+            "charLength" : 6,
+            "byteOffset" : 1774,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 5,
+            "endLine" : 58,
+            "endColumn" : 11,
+            "charOffset" : 2104,
+            "charLength" : 6,
+            "byteOffset" : 2104,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 5,
+            "endLine" : 84,
+            "endColumn" : 11,
+            "charOffset" : 2934,
+            "charLength" : 6,
+            "byteOffset" : 2934,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 12,
+            "endLine" : 84,
+            "endColumn" : 18,
+            "charOffset" : 2941,
+            "charLength" : 6,
+            "byteOffset" : 2941,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 154,
+            "startColumn" : 5,
+            "endLine" : 154,
+            "endColumn" : 11,
+            "charOffset" : 4745,
+            "charLength" : 6,
+            "byteOffset" : 4745,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 154,
+            "startColumn" : 12,
+            "endLine" : 154,
+            "endColumn" : 18,
+            "charOffset" : 4752,
+            "charLength" : 6,
+            "byteOffset" : 4752,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 5,
+            "endLine" : 33,
+            "endColumn" : 11,
+            "charOffset" : 1070,
+            "charLength" : 6,
+            "byteOffset" : 1070,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 12,
+            "endLine" : 33,
+            "endColumn" : 18,
+            "charOffset" : 1077,
+            "charLength" : 6,
+            "byteOffset" : 1077,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"final\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 19,
+            "endLine" : 33,
+            "endColumn" : 24,
+            "charOffset" : 1084,
+            "charLength" : 5,
+            "byteOffset" : 1084,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 5,
+            "endLine" : 41,
+            "endColumn" : 11,
+            "charOffset" : 1439,
+            "charLength" : 6,
+            "byteOffset" : 1439,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 5,
+            "endLine" : 43,
+            "endColumn" : 11,
+            "charOffset" : 1544,
+            "charLength" : 6,
+            "byteOffset" : 1544,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 73,
+            "startColumn" : 5,
+            "endLine" : 73,
+            "endColumn" : 11,
+            "charOffset" : 2748,
+            "charLength" : 6,
+            "byteOffset" : 2748,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 73,
+            "startColumn" : 21,
+            "endLine" : 73,
+            "endColumn" : 27,
+            "charOffset" : 2764,
+            "charLength" : 6,
+            "byteOffset" : 2764,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 5,
+            "endLine" : 42,
+            "endColumn" : 11,
+            "charOffset" : 1611,
+            "charLength" : 6,
+            "byteOffset" : 1611,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 5,
+            "endLine" : 49,
+            "endColumn" : 11,
+            "charOffset" : 1794,
+            "charLength" : 6,
+            "byteOffset" : 1794,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 5,
+            "endLine" : 55,
+            "endColumn" : 11,
+            "charOffset" : 2039,
+            "charLength" : 6,
+            "byteOffset" : 2039,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 5,
+            "endLine" : 63,
+            "endColumn" : 11,
+            "charOffset" : 2326,
+            "charLength" : 6,
+            "byteOffset" : 2326,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 5,
+            "endLine" : 68,
+            "endColumn" : 11,
+            "charOffset" : 2454,
+            "charLength" : 6,
+            "byteOffset" : 2454,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 77,
+            "startColumn" : 5,
+            "endLine" : 77,
+            "endColumn" : 11,
+            "charOffset" : 2824,
+            "charLength" : 6,
+            "byteOffset" : 2824,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 5,
+            "endLine" : 90,
+            "endColumn" : 11,
+            "charOffset" : 3462,
+            "charLength" : 6,
+            "byteOffset" : 3462,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 92,
+            "startColumn" : 5,
+            "endLine" : 92,
+            "endColumn" : 11,
+            "charOffset" : 3499,
+            "charLength" : 6,
+            "byteOffset" : 3499,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 94,
+            "startColumn" : 5,
+            "endLine" : 94,
+            "endColumn" : 11,
+            "charOffset" : 3533,
+            "charLength" : 6,
+            "byteOffset" : 3533,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 96,
+            "startColumn" : 5,
+            "endLine" : 96,
+            "endColumn" : 11,
+            "charOffset" : 3568,
+            "charLength" : 6,
+            "byteOffset" : 3568,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 98,
+            "startColumn" : 5,
+            "endLine" : 98,
+            "endColumn" : 11,
+            "charOffset" : 3599,
+            "charLength" : 6,
+            "byteOffset" : 3599,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 100,
+            "startColumn" : 5,
+            "endLine" : 100,
+            "endColumn" : 11,
+            "charOffset" : 3631,
+            "charLength" : 6,
+            "byteOffset" : 3631,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 110,
+            "startColumn" : 5,
+            "endLine" : 110,
+            "endColumn" : 11,
+            "charOffset" : 3958,
+            "charLength" : 6,
+            "byteOffset" : 3958,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 123,
+            "startColumn" : 9,
+            "endLine" : 123,
+            "endColumn" : 15,
+            "charOffset" : 4572,
+            "charLength" : 6,
+            "byteOffset" : 4572,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 131,
+            "startColumn" : 5,
+            "endLine" : 131,
+            "endColumn" : 11,
+            "charOffset" : 4832,
+            "charLength" : 6,
+            "byteOffset" : 4832,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 144,
+            "startColumn" : 9,
+            "endLine" : 144,
+            "endColumn" : 15,
+            "charOffset" : 5400,
+            "charLength" : 6,
+            "byteOffset" : 5400,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 155,
+            "startColumn" : 5,
+            "endLine" : 155,
+            "endColumn" : 11,
+            "charOffset" : 5872,
+            "charLength" : 6,
+            "byteOffset" : 5872,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 157,
+            "startColumn" : 9,
+            "endLine" : 157,
+            "endColumn" : 15,
+            "charOffset" : 5934,
+            "charLength" : 6,
+            "byteOffset" : 5934,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 159,
+            "startColumn" : 9,
+            "endLine" : 159,
+            "endColumn" : 15,
+            "charOffset" : 5988,
+            "charLength" : 6,
+            "byteOffset" : 5988,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 161,
+            "startColumn" : 9,
+            "endLine" : 161,
+            "endColumn" : 15,
+            "charOffset" : 6042,
+            "charLength" : 6,
+            "byteOffset" : 6042,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/Connection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 161,
+            "startColumn" : 16,
+            "endLine" : 161,
+            "endColumn" : 22,
+            "charOffset" : 6049,
+            "charLength" : 6,
+            "byteOffset" : 6049,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/EndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 99,
+            "startColumn" : 5,
+            "endLine" : 99,
+            "endColumn" : 11,
+            "charOffset" : 3322,
+            "charLength" : 6,
+            "byteOffset" : 3322,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/EndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 300,
+            "startColumn" : 5,
+            "endLine" : 300,
+            "endColumn" : 11,
+            "charOffset" : 11089,
+            "charLength" : 6,
+            "byteOffset" : 11089,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/ALPNProcessor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 5,
+            "endLine" : 32,
+            "endColumn" : 11,
+            "charOffset" : 1073,
+            "charLength" : 6,
+            "byteOffset" : 1073,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/ALPNProcessor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 5,
+            "endLine" : 42,
+            "endColumn" : 11,
+            "charOffset" : 1332,
+            "charLength" : 6,
+            "byteOffset" : 1332,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/ALPNProcessor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 5,
+            "endLine" : 54,
+            "endColumn" : 11,
+            "charOffset" : 1696,
+            "charLength" : 6,
+            "byteOffset" : 1696,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/ALPNProcessor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 5,
+            "endLine" : 61,
+            "endColumn" : 11,
+            "charOffset" : 1855,
+            "charLength" : 6,
+            "byteOffset" : 1855,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/ALPNProcessor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 5,
+            "endLine" : 68,
+            "endColumn" : 11,
+            "charOffset" : 1986,
+            "charLength" : 6,
+            "byteOffset" : 1986,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslHandshakeListener.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 5,
+            "endLine" : 57,
+            "endColumn" : 11,
+            "charOffset" : 2052,
+            "charLength" : 6,
+            "byteOffset" : 2052,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslHandshakeListener.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 12,
+            "endLine" : 57,
+            "endColumn" : 18,
+            "charOffset" : 2059,
+            "charLength" : 6,
+            "byteOffset" : 2059,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 5,
+            "endLine" : 37,
+            "endColumn" : 11,
+            "charOffset" : 1319,
+            "charLength" : 6,
+            "byteOffset" : 1319,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 12,
+            "endLine" : 37,
+            "endColumn" : 18,
+            "charOffset" : 1326,
+            "charLength" : 6,
+            "byteOffset" : 1326,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 5,
+            "endLine" : 48,
+            "endColumn" : 11,
+            "charOffset" : 1553,
+            "charLength" : 6,
+            "byteOffset" : 1553,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 5,
+            "endLine" : 61,
+            "endColumn" : 11,
+            "charOffset" : 1896,
+            "charLength" : 6,
+            "byteOffset" : 1896,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 5,
+            "endLine" : 72,
+            "endColumn" : 11,
+            "charOffset" : 2178,
+            "charLength" : 6,
+            "byteOffset" : 2178,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 5,
+            "endLine" : 90,
+            "endColumn" : 11,
+            "charOffset" : 2702,
+            "charLength" : 6,
+            "byteOffset" : 2702,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 107,
+            "startColumn" : 5,
+            "endLine" : 107,
+            "endColumn" : 11,
+            "charOffset" : 3238,
+            "charLength" : 6,
+            "byteOffset" : 3238,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 138,
+            "startColumn" : 5,
+            "endLine" : 138,
+            "endColumn" : 11,
+            "charOffset" : 4346,
+            "charLength" : 6,
+            "byteOffset" : 4346,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 145,
+            "startColumn" : 5,
+            "endLine" : 145,
+            "endColumn" : 11,
+            "charOffset" : 4482,
+            "charLength" : 6,
+            "byteOffset" : 4482,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 152,
+            "startColumn" : 5,
+            "endLine" : 152,
+            "endColumn" : 11,
+            "charOffset" : 4611,
+            "charLength" : 6,
+            "byteOffset" : 4611,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 156,
+            "startColumn" : 5,
+            "endLine" : 156,
+            "endColumn" : 11,
+            "charOffset" : 4674,
+            "charLength" : 6,
+            "byteOffset" : 4674,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 164,
+            "startColumn" : 5,
+            "endLine" : 164,
+            "endColumn" : 11,
+            "charOffset" : 4880,
+            "charLength" : 6,
+            "byteOffset" : 4880,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 174,
+            "startColumn" : 5,
+            "endLine" : 174,
+            "endColumn" : 11,
+            "charOffset" : 5170,
+            "charLength" : 6,
+            "byteOffset" : 5170,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 174,
+            "startColumn" : 12,
+            "endLine" : 174,
+            "endColumn" : 18,
+            "charOffset" : 5177,
+            "charLength" : 6,
+            "byteOffset" : 5177,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"final\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 174,
+            "startColumn" : 19,
+            "endLine" : 174,
+            "endColumn" : 24,
+            "charOffset" : 5184,
+            "charLength" : 5,
+            "byteOffset" : 5184,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 190,
+            "startColumn" : 5,
+            "endLine" : 190,
+            "endColumn" : 11,
+            "charOffset" : 5591,
+            "charLength" : 6,
+            "byteOffset" : 5591,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 190,
+            "startColumn" : 12,
+            "endLine" : 190,
+            "endColumn" : 18,
+            "charOffset" : 5598,
+            "charLength" : 6,
+            "byteOffset" : 5598,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"final\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 190,
+            "startColumn" : 19,
+            "endLine" : 190,
+            "endColumn" : 24,
+            "charOffset" : 5605,
+            "charLength" : 5,
+            "byteOffset" : 5605,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 204,
+            "startColumn" : 5,
+            "endLine" : 204,
+            "endColumn" : 11,
+            "charOffset" : 5937,
+            "charLength" : 6,
+            "byteOffset" : 5937,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 204,
+            "startColumn" : 12,
+            "endLine" : 204,
+            "endColumn" : 18,
+            "charOffset" : 5944,
+            "charLength" : 6,
+            "byteOffset" : 5944,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"final\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 204,
+            "startColumn" : 19,
+            "endLine" : 204,
+            "endColumn" : 24,
+            "charOffset" : 5951,
+            "charLength" : 5,
+            "byteOffset" : 5951,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 218,
+            "startColumn" : 5,
+            "endLine" : 218,
+            "endColumn" : 11,
+            "charOffset" : 6289,
+            "charLength" : 6,
+            "byteOffset" : 6289,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 218,
+            "startColumn" : 12,
+            "endLine" : 218,
+            "endColumn" : 18,
+            "charOffset" : 6296,
+            "charLength" : 6,
+            "byteOffset" : 6296,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"final\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 218,
+            "startColumn" : 19,
+            "endLine" : 218,
+            "endColumn" : 24,
+            "charOffset" : 6303,
+            "charLength" : 5,
+            "byteOffset" : 6303,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 226,
+            "startColumn" : 5,
+            "endLine" : 226,
+            "endColumn" : 11,
+            "charOffset" : 6486,
+            "charLength" : 6,
+            "byteOffset" : 6486,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 226,
+            "startColumn" : 12,
+            "endLine" : 226,
+            "endColumn" : 18,
+            "charOffset" : 6493,
+            "charLength" : 6,
+            "byteOffset" : 6493,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"final\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Authentication.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 226,
+            "startColumn" : 19,
+            "endLine" : 226,
+            "endColumn" : 24,
+            "charOffset" : 6500,
+            "charLength" : 5,
+            "byteOffset" : 6500,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 5,
+            "endLine" : 54,
+            "endColumn" : 11,
+            "charOffset" : 2192,
+            "charLength" : 6,
+            "byteOffset" : 2192,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 5,
+            "endLine" : 59,
+            "endColumn" : 11,
+            "charOffset" : 2335,
+            "charLength" : 6,
+            "byteOffset" : 2335,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 5,
+            "endLine" : 68,
+            "endColumn" : 11,
+            "charOffset" : 2658,
+            "charLength" : 6,
+            "byteOffset" : 2658,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 5,
+            "endLine" : 70,
+            "endColumn" : 11,
+            "charOffset" : 2736,
+            "charLength" : 6,
+            "byteOffset" : 2736,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 87,
+            "startColumn" : 9,
+            "endLine" : 87,
+            "endColumn" : 15,
+            "charOffset" : 3785,
+            "charLength" : 6,
+            "byteOffset" : 3785,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Connector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 5,
+            "endLine" : 46,
+            "endColumn" : 11,
+            "charOffset" : 1750,
+            "charLength" : 6,
+            "byteOffset" : 1750,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Connector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 5,
+            "endLine" : 51,
+            "endColumn" : 11,
+            "charOffset" : 1855,
+            "charLength" : 6,
+            "byteOffset" : 1855,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Connector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 5,
+            "endLine" : 56,
+            "endColumn" : 11,
+            "charOffset" : 1967,
+            "charLength" : 6,
+            "byteOffset" : 1967,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Connector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 5,
+            "endLine" : 61,
+            "endColumn" : 11,
+            "charOffset" : 2110,
+            "charLength" : 6,
+            "byteOffset" : 2110,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Connector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 5,
+            "endLine" : 67,
+            "endColumn" : 11,
+            "charOffset" : 2298,
+            "charLength" : 6,
+            "byteOffset" : 2298,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Connector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 69,
+            "startColumn" : 5,
+            "endLine" : 69,
+            "endColumn" : 11,
+            "charOffset" : 2371,
+            "charLength" : 6,
+            "byteOffset" : 2371,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Connector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 74,
+            "startColumn" : 5,
+            "endLine" : 74,
+            "endColumn" : 11,
+            "charOffset" : 2544,
+            "charLength" : 6,
+            "byteOffset" : 2544,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Connector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 76,
+            "startColumn" : 5,
+            "endLine" : 76,
+            "endColumn" : 11,
+            "charOffset" : 2605,
+            "charLength" : 6,
+            "byteOffset" : 2605,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Connector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 5,
+            "endLine" : 78,
+            "endColumn" : 11,
+            "charOffset" : 2673,
+            "charLength" : 6,
+            "byteOffset" : 2673,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Connector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 5,
+            "endLine" : 84,
+            "endColumn" : 11,
+            "charOffset" : 2889,
+            "charLength" : 6,
+            "byteOffset" : 2889,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Connector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 5,
+            "endLine" : 89,
+            "endColumn" : 11,
+            "charOffset" : 3018,
+            "charLength" : 6,
+            "byteOffset" : 3018,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Connector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 94,
+            "startColumn" : 5,
+            "endLine" : 94,
+            "endColumn" : 11,
+            "charOffset" : 3128,
+            "charLength" : 6,
+            "byteOffset" : 3128,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Connector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 5,
+            "endLine" : 104,
+            "endColumn" : 11,
+            "charOffset" : 3460,
+            "charLength" : 6,
+            "byteOffset" : 3460,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Handler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 69,
+            "startColumn" : 5,
+            "endLine" : 69,
+            "endColumn" : 11,
+            "charOffset" : 3173,
+            "charLength" : 6,
+            "byteOffset" : 3173,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Handler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 5,
+            "endLine" : 72,
+            "endColumn" : 11,
+            "charOffset" : 3337,
+            "charLength" : 6,
+            "byteOffset" : 3337,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Handler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 75,
+            "startColumn" : 5,
+            "endLine" : 75,
+            "endColumn" : 11,
+            "charOffset" : 3464,
+            "charLength" : 6,
+            "byteOffset" : 3464,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Handler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 5,
+            "endLine" : 79,
+            "endColumn" : 11,
+            "charOffset" : 3591,
+            "charLength" : 6,
+            "byteOffset" : 3591,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HandlerContainer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 5,
+            "endLine" : 39,
+            "endColumn" : 11,
+            "charOffset" : 1501,
+            "charLength" : 6,
+            "byteOffset" : 1501,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HandlerContainer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 5,
+            "endLine" : 45,
+            "endColumn" : 11,
+            "charOffset" : 1683,
+            "charLength" : 6,
+            "byteOffset" : 1683,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HandlerContainer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 5,
+            "endLine" : 51,
+            "endColumn" : 11,
+            "charOffset" : 1895,
+            "charLength" : 6,
+            "byteOffset" : 1895,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HandlerContainer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 5,
+            "endLine" : 58,
+            "endColumn" : 11,
+            "charOffset" : 2176,
+            "charLength" : 6,
+            "byteOffset" : 2176,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 98,
+            "startColumn" : 9,
+            "endLine" : 98,
+            "endColumn" : 15,
+            "charOffset" : 4411,
+            "charLength" : 6,
+            "byteOffset" : 4411,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SessionIdManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 5,
+            "endLine" : 40,
+            "endColumn" : 11,
+            "charOffset" : 1323,
+            "charLength" : 6,
+            "byteOffset" : 1323,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SessionIdManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 5,
+            "endLine" : 47,
+            "endColumn" : 11,
+            "charOffset" : 1522,
+            "charLength" : 6,
+            "byteOffset" : 1522,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SessionIdManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 5,
+            "endLine" : 54,
+            "endColumn" : 11,
+            "charOffset" : 1687,
+            "charLength" : 6,
+            "byteOffset" : 1687,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SessionIdManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 5,
+            "endLine" : 63,
+            "endColumn" : 11,
+            "charOffset" : 1938,
+            "charLength" : 6,
+            "byteOffset" : 1938,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SessionIdManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 5,
+            "endLine" : 68,
+            "endColumn" : 11,
+            "charOffset" : 2084,
+            "charLength" : 6,
+            "byteOffset" : 2084,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SessionIdManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 5,
+            "endLine" : 79,
+            "endColumn" : 11,
+            "charOffset" : 2395,
+            "charLength" : 6,
+            "byteOffset" : 2395,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SessionIdManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 5,
+            "endLine" : 89,
+            "endColumn" : 11,
+            "charOffset" : 2729,
+            "charLength" : 6,
+            "byteOffset" : 2729,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SessionIdManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 99,
+            "startColumn" : 5,
+            "endLine" : 99,
+            "endColumn" : 11,
+            "charOffset" : 3055,
+            "charLength" : 6,
+            "byteOffset" : 3055,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SessionIdManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 106,
+            "startColumn" : 5,
+            "endLine" : 106,
+            "endColumn" : 11,
+            "charOffset" : 3277,
+            "charLength" : 6,
+            "byteOffset" : 3277,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SessionIdManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 111,
+            "startColumn" : 5,
+            "endLine" : 111,
+            "endColumn" : 11,
+            "charOffset" : 3410,
+            "charLength" : 6,
+            "byteOffset" : 3410,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SessionIdManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 116,
+            "startColumn" : 5,
+            "endLine" : 116,
+            "endColumn" : 11,
+            "charOffset" : 3543,
+            "charLength" : 6,
+            "byteOffset" : 3543,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/UserIdentity.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 5,
+            "endLine" : 89,
+            "endColumn" : 11,
+            "charOffset" : 2654,
+            "charLength" : 6,
+            "byteOffset" : 2654,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/UserIdentity.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 93,
+            "startColumn" : 5,
+            "endLine" : 93,
+            "endColumn" : 11,
+            "charOffset" : 2737,
+            "charLength" : 6,
+            "byteOffset" : 2737,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/UserIdentity.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 93,
+            "startColumn" : 12,
+            "endLine" : 93,
+            "endColumn" : 18,
+            "charOffset" : 2744,
+            "charLength" : 6,
+            "byteOffset" : 2744,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"final\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/UserIdentity.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 93,
+            "startColumn" : 19,
+            "endLine" : 93,
+            "endColumn" : 24,
+            "charOffset" : 2751,
+            "charLength" : 5,
+            "byteOffset" : 2751,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3025,
+            "startColumn" : 12,
+            "endLine" : 3025,
+            "endColumn" : 18,
+            "charOffset" : 99209,
+            "charLength" : 6,
+            "byteOffset" : 99209,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 5,
+            "endLine" : 56,
+            "endColumn" : 11,
+            "charOffset" : 2278,
+            "charLength" : 6,
+            "byteOffset" : 2278,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 12,
+            "endLine" : 56,
+            "endColumn" : 18,
+            "charOffset" : 2285,
+            "charLength" : 6,
+            "byteOffset" : 2285,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"final\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 19,
+            "endLine" : 56,
+            "endColumn" : 24,
+            "charOffset" : 2292,
+            "charLength" : 5,
+            "byteOffset" : 2292,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 5,
+            "endLine" : 57,
+            "endColumn" : 11,
+            "charOffset" : 2324,
+            "charLength" : 6,
+            "byteOffset" : 2324,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 12,
+            "endLine" : 57,
+            "endColumn" : 18,
+            "charOffset" : 2331,
+            "charLength" : 6,
+            "byteOffset" : 2331,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"final\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 19,
+            "endLine" : 57,
+            "endColumn" : 24,
+            "charOffset" : 2338,
+            "charLength" : 5,
+            "byteOffset" : 2338,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 5,
+            "endLine" : 58,
+            "endColumn" : 11,
+            "charOffset" : 2379,
+            "charLength" : 6,
+            "byteOffset" : 2379,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 12,
+            "endLine" : 58,
+            "endColumn" : 18,
+            "charOffset" : 2386,
+            "charLength" : 6,
+            "byteOffset" : 2386,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"final\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 19,
+            "endLine" : 58,
+            "endColumn" : 24,
+            "charOffset" : 2393,
+            "charLength" : 5,
+            "byteOffset" : 2393,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 5,
+            "endLine" : 47,
+            "endColumn" : 11,
+            "charOffset" : 1519,
+            "charLength" : 6,
+            "byteOffset" : 1519,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 5,
+            "endLine" : 56,
+            "endColumn" : 11,
+            "charOffset" : 1778,
+            "charLength" : 6,
+            "byteOffset" : 1778,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 5,
+            "endLine" : 65,
+            "endColumn" : 11,
+            "charOffset" : 2050,
+            "charLength" : 6,
+            "byteOffset" : 2050,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 5,
+            "endLine" : 42,
+            "endColumn" : 11,
+            "charOffset" : 1363,
+            "charLength" : 6,
+            "byteOffset" : 1363,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 5,
+            "endLine" : 54,
+            "endColumn" : 11,
+            "charOffset" : 1864,
+            "charLength" : 6,
+            "byteOffset" : 1864,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 5,
+            "endLine" : 61,
+            "endColumn" : 11,
+            "charOffset" : 2090,
+            "charLength" : 6,
+            "byteOffset" : 2090,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 5,
+            "endLine" : 70,
+            "endColumn" : 11,
+            "charOffset" : 2407,
+            "charLength" : 6,
+            "byteOffset" : 2407,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1351,
+            "startColumn" : 9,
+            "endLine" : 1351,
+            "endColumn" : 15,
+            "charOffset" : 47094,
+            "charLength" : 6,
+            "byteOffset" : 47094,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/AsyncJSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1171,
+            "startColumn" : 9,
+            "endLine" : 1171,
+            "endColumn" : 15,
+            "charOffset" : 36804,
+            "charLength" : 6,
+            "byteOffset" : 36804,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1526,
+            "startColumn" : 9,
+            "endLine" : 1526,
+            "endColumn" : 15,
+            "charOffset" : 44541,
+            "charLength" : 6,
+            "byteOffset" : 44541,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1528,
+            "startColumn" : 9,
+            "endLine" : 1528,
+            "endColumn" : 15,
+            "charOffset" : 44584,
+            "charLength" : 6,
+            "byteOffset" : 44584,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1530,
+            "startColumn" : 9,
+            "endLine" : 1530,
+            "endColumn" : 15,
+            "charOffset" : 44622,
+            "charLength" : 6,
+            "byteOffset" : 44622,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1532,
+            "startColumn" : 9,
+            "endLine" : 1532,
+            "endColumn" : 15,
+            "charOffset" : 44675,
+            "charLength" : 6,
+            "byteOffset" : 44675,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1534,
+            "startColumn" : 9,
+            "endLine" : 1534,
+            "endColumn" : 15,
+            "charOffset" : 44728,
+            "charLength" : 6,
+            "byteOffset" : 44728,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1536,
+            "startColumn" : 9,
+            "endLine" : 1536,
+            "endColumn" : 15,
+            "charOffset" : 44779,
+            "charLength" : 6,
+            "byteOffset" : 44779,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1552,
+            "startColumn" : 9,
+            "endLine" : 1552,
+            "endColumn" : 15,
+            "charOffset" : 45435,
+            "charLength" : 6,
+            "byteOffset" : 45435,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1554,
+            "startColumn" : 9,
+            "endLine" : 1554,
+            "endColumn" : 15,
+            "charOffset" : 45476,
+            "charLength" : 6,
+            "byteOffset" : 45476,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1568,
+            "startColumn" : 9,
+            "endLine" : 1568,
+            "endColumn" : 15,
+            "charOffset" : 46012,
+            "charLength" : 6,
+            "byteOffset" : 46012,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1570,
+            "startColumn" : 9,
+            "endLine" : 1570,
+            "endColumn" : 15,
+            "charOffset" : 46065,
+            "charLength" : 6,
+            "byteOffset" : 46065,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1583,
+            "startColumn" : 9,
+            "endLine" : 1583,
+            "endColumn" : 15,
+            "charOffset" : 46504,
+            "charLength" : 6,
+            "byteOffset" : 46504,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 380,
+            "startColumn" : 9,
+            "endLine" : 380,
+            "endColumn" : 15,
+            "charOffset" : 12211,
+            "charLength" : 6,
+            "byteOffset" : 12211,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Callback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 5,
+            "endLine" : 38,
+            "endColumn" : 11,
+            "charOffset" : 1411,
+            "charLength" : 6,
+            "byteOffset" : 1411,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 512,
+            "startColumn" : 12,
+            "endLine" : 512,
+            "endColumn" : 18,
+            "charOffset" : 15898,
+            "charLength" : 6,
+            "byteOffset" : 15898,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 522,
+            "startColumn" : 12,
+            "endLine" : 522,
+            "endColumn" : 18,
+            "charOffset" : 16131,
+            "charLength" : 6,
+            "byteOffset" : 16131,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Retainable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 5,
+            "endLine" : 23,
+            "endColumn" : 11,
+            "charOffset" : 827,
+            "charLength" : 6,
+            "byteOffset" : 827,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 262,
+            "startColumn" : 9,
+            "endLine" : 262,
+            "endColumn" : 15,
+            "charOffset" : 8601,
+            "charLength" : 6,
+            "byteOffset" : 8601,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 267,
+            "startColumn" : 9,
+            "endLine" : 267,
+            "endColumn" : 15,
+            "charOffset" : 8697,
+            "charLength" : 6,
+            "byteOffset" : 8697,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 269,
+            "startColumn" : 9,
+            "endLine" : 269,
+            "endColumn" : 15,
+            "charOffset" : 8765,
+            "charLength" : 6,
+            "byteOffset" : 8765,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 271,
+            "startColumn" : 9,
+            "endLine" : 271,
+            "endColumn" : 15,
+            "charOffset" : 8831,
+            "charLength" : 6,
+            "byteOffset" : 8831,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 276,
+            "startColumn" : 9,
+            "endLine" : 276,
+            "endColumn" : 15,
+            "charOffset" : 8962,
+            "charLength" : 6,
+            "byteOffset" : 8962,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 284,
+            "startColumn" : 9,
+            "endLine" : 284,
+            "endColumn" : 15,
+            "charOffset" : 9199,
+            "charLength" : 6,
+            "byteOffset" : 9199,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 286,
+            "startColumn" : 9,
+            "endLine" : 286,
+            "endColumn" : 15,
+            "charOffset" : 9261,
+            "charLength" : 6,
+            "byteOffset" : 9261,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SocketAddressResolver.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 5,
+            "endLine" : 51,
+            "endColumn" : 11,
+            "charOffset" : 1862,
+            "charLength" : 6,
+            "byteOffset" : 1862,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SocketAddressResolver.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 5,
+            "endLine" : 57,
+            "endColumn" : 11,
+            "charOffset" : 2114,
+            "charLength" : 6,
+            "byteOffset" : 2114,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SocketAddressResolver.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 12,
+            "endLine" : 57,
+            "endColumn" : 18,
+            "charOffset" : 2121,
+            "charLength" : 6,
+            "byteOffset" : 2121,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SocketAddressResolver.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 108,
+            "startColumn" : 5,
+            "endLine" : 108,
+            "endColumn" : 11,
+            "charOffset" : 3996,
+            "charLength" : 6,
+            "byteOffset" : 3996,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SocketAddressResolver.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 108,
+            "startColumn" : 12,
+            "endLine" : 108,
+            "endColumn" : 18,
+            "charOffset" : 4003,
+            "charLength" : 6,
+            "byteOffset" : 4003,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 5,
+            "endLine" : 39,
+            "endColumn" : 11,
+            "charOffset" : 1158,
+            "charLength" : 6,
+            "byteOffset" : 1158,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 5,
+            "endLine" : 47,
+            "endColumn" : 11,
+            "charOffset" : 1364,
+            "charLength" : 6,
+            "byteOffset" : 1364,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 5,
+            "endLine" : 49,
+            "endColumn" : 11,
+            "charOffset" : 1394,
+            "charLength" : 6,
+            "byteOffset" : 1394,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 5,
+            "endLine" : 57,
+            "endColumn" : 11,
+            "charOffset" : 1561,
+            "charLength" : 6,
+            "byteOffset" : 1561,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 5,
+            "endLine" : 67,
+            "endColumn" : 11,
+            "charOffset" : 1840,
+            "charLength" : 6,
+            "byteOffset" : 1840,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 75,
+            "startColumn" : 5,
+            "endLine" : 75,
+            "endColumn" : 11,
+            "charOffset" : 2050,
+            "charLength" : 6,
+            "byteOffset" : 2050,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 85,
+            "startColumn" : 5,
+            "endLine" : 85,
+            "endColumn" : 11,
+            "charOffset" : 2344,
+            "charLength" : 6,
+            "byteOffset" : 2344,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 93,
+            "startColumn" : 5,
+            "endLine" : 93,
+            "endColumn" : 11,
+            "charOffset" : 2542,
+            "charLength" : 6,
+            "byteOffset" : 2542,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 103,
+            "startColumn" : 5,
+            "endLine" : 103,
+            "endColumn" : 11,
+            "charOffset" : 2820,
+            "charLength" : 6,
+            "byteOffset" : 2820,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 5,
+            "endLine" : 114,
+            "endColumn" : 11,
+            "charOffset" : 3177,
+            "charLength" : 6,
+            "byteOffset" : 3177,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 125,
+            "startColumn" : 5,
+            "endLine" : 125,
+            "endColumn" : 11,
+            "charOffset" : 3536,
+            "charLength" : 6,
+            "byteOffset" : 3536,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 127,
+            "startColumn" : 5,
+            "endLine" : 127,
+            "endColumn" : 11,
+            "charOffset" : 3594,
+            "charLength" : 6,
+            "byteOffset" : 3594,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 129,
+            "startColumn" : 5,
+            "endLine" : 129,
+            "endColumn" : 11,
+            "charOffset" : 3628,
+            "charLength" : 6,
+            "byteOffset" : 3628,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 131,
+            "startColumn" : 5,
+            "endLine" : 131,
+            "endColumn" : 11,
+            "charOffset" : 3658,
+            "charLength" : 6,
+            "byteOffset" : 3658,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Trie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 133,
+            "startColumn" : 5,
+            "endLine" : 133,
+            "endColumn" : 11,
+            "charOffset" : 3699,
+            "charLength" : 6,
+            "byteOffset" : 3699,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Uptime.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 12,
+            "endLine" : 31,
+            "endColumn" : 18,
+            "charOffset" : 1066,
+            "charLength" : 6,
+            "byteOffset" : 1066,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Uptime.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 9,
+            "endLine" : 33,
+            "endColumn" : 15,
+            "charOffset" : 1102,
+            "charLength" : 6,
+            "byteOffset" : 1102,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/Dumpable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 282,
+            "startColumn" : 5,
+            "endLine" : 282,
+            "endColumn" : 11,
+            "charOffset" : 10202,
+            "charLength" : 6,
+            "byteOffset" : 10202,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SniX509ExtendedKeyManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 251,
+            "startColumn" : 9,
+            "endLine" : 251,
+            "endColumn" : 15,
+            "charOffset" : 10679,
+            "charLength" : 6,
+            "byteOffset" : 10679,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ExecutionStrategy.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 5,
+            "endLine" : 39,
+            "endColumn" : 11,
+            "charOffset" : 1561,
+            "charLength" : 6,
+            "byteOffset" : 1561,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ExecutionStrategy.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 5,
+            "endLine" : 48,
+            "endColumn" : 11,
+            "charOffset" : 1805,
+            "charLength" : 6,
+            "byteOffset" : 1805,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ExecutionStrategy.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 5,
+            "endLine" : 58,
+            "endColumn" : 11,
+            "charOffset" : 2287,
+            "charLength" : 6,
+            "byteOffset" : 2287,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/Invocable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 5,
+            "endLine" : 44,
+            "endColumn" : 11,
+            "charOffset" : 1497,
+            "charLength" : 6,
+            "byteOffset" : 1497,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/Invocable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 5,
+            "endLine" : 52,
+            "endColumn" : 11,
+            "charOffset" : 1763,
+            "charLength" : 6,
+            "byteOffset" : 1763,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/Invocable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 5,
+            "endLine" : 63,
+            "endColumn" : 11,
+            "charOffset" : 2043,
+            "charLength" : 6,
+            "byteOffset" : 2043,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/Invocable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 98,
+            "startColumn" : 5,
+            "endLine" : 98,
+            "endColumn" : 11,
+            "charOffset" : 3034,
+            "charLength" : 6,
+            "byteOffset" : 3034,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/Sweeper.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 192,
+            "startColumn" : 9,
+            "endLine" : 192,
+            "endColumn" : 15,
+            "charOffset" : 5622,
+            "charLength" : 6,
+            "byteOffset" : 5622,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ThreadPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 5,
+            "endLine" : 40,
+            "endColumn" : 11,
+            "charOffset" : 1493,
+            "charLength" : 6,
+            "byteOffset" : 1493,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ThreadPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 5,
+            "endLine" : 46,
+            "endColumn" : 11,
+            "charOffset" : 1678,
+            "charLength" : 6,
+            "byteOffset" : 1678,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ThreadPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 5,
+            "endLine" : 52,
+            "endColumn" : 11,
+            "charOffset" : 1834,
+            "charLength" : 6,
+            "byteOffset" : 1834,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ThreadPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 5,
+            "endLine" : 58,
+            "endColumn" : 11,
+            "charOffset" : 2006,
+            "charLength" : 6,
+            "byteOffset" : 2006,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ThreadPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 5,
+            "endLine" : 64,
+            "endColumn" : 11,
+            "charOffset" : 2199,
+            "charLength" : 6,
+            "byteOffset" : 2199,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/TryExecutor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 5,
+            "endLine" : 44,
+            "endColumn" : 11,
+            "charOffset" : 1478,
+            "charLength" : 6,
+            "byteOffset" : 1478,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/TryExecutor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 5,
+            "endLine" : 51,
+            "endColumn" : 11,
+            "charOffset" : 1685,
+            "charLength" : 6,
+            "byteOffset" : 1685,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"static\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/TryExecutor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 12,
+            "endLine" : 51,
+            "endColumn" : 18,
+            "charOffset" : 1692,
+            "charLength" : 6,
+            "byteOffset" : 1692,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

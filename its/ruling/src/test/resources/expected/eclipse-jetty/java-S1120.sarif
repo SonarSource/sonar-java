@@ -1,0 +1,158 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 16 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/AbstractHandlerContainer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 132,
+            "startColumn" : 1,
+            "endLine" : 132,
+            "endColumn" : 37,
+            "charOffset" : 4173,
+            "charLength" : 36,
+            "byteOffset" : 4173,
+            "byteLength" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 16 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1306,
+            "startColumn" : 1,
+            "endLine" : 1306,
+            "endColumn" : 49,
+            "charOffset" : 48299,
+            "charLength" : 48,
+            "byteOffset" : 48299,
+            "byteLength" : 48
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 16 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HandlerCollection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 220,
+            "startColumn" : 1,
+            "endLine" : 220,
+            "endColumn" : 49,
+            "charOffset" : 6986,
+            "charLength" : 48,
+            "byteOffset" : 6986,
+            "byteLength" : 48
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 16 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 345,
+            "startColumn" : 1,
+            "endLine" : 345,
+            "endColumn" : 31,
+            "charOffset" : 11393,
+            "charLength" : 30,
+            "byteOffset" : 11393,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 16 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 176,
+            "startColumn" : 1,
+            "endLine" : 176,
+            "endColumn" : 44,
+            "charOffset" : 4340,
+            "charLength" : 43,
+            "byteOffset" : 4340,
+            "byteLength" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

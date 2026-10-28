@@ -1,0 +1,2874 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/CookieCutter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 208,
+            "startColumn" : 40,
+            "endLine" : 208,
+            "endColumn" : 49,
+            "charOffset" : 8856,
+            "charLength" : 9,
+            "byteOffset" : 8856,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 20,
+            "endLine" : 84,
+            "endColumn" : 39,
+            "charOffset" : 2796,
+            "charLength" : 19,
+            "byteOffset" : 2796,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 100,
+            "startColumn" : 24,
+            "endLine" : 100,
+            "endColumn" : 43,
+            "charOffset" : 3246,
+            "charLength" : 19,
+            "byteOffset" : 3246,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HostPortHttpField.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 16,
+            "endLine" : 44,
+            "endColumn" : 25,
+            "charOffset" : 1355,
+            "charLength" : 9,
+            "byteOffset" : 1355,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCookie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 487,
+            "startColumn" : 16,
+            "endLine" : 487,
+            "endColumn" : 25,
+            "charOffset" : 15141,
+            "charLength" : 9,
+            "byteOffset" : 15141,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 252,
+            "startColumn" : 24,
+            "endLine" : 252,
+            "endColumn" : 33,
+            "charOffset" : 8127,
+            "charLength" : 9,
+            "byteOffset" : 8127,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 432,
+            "startColumn" : 24,
+            "endLine" : 432,
+            "endColumn" : 33,
+            "charOffset" : 14161,
+            "charLength" : 9,
+            "byteOffset" : 14161,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 133,
+            "startColumn" : 20,
+            "endLine" : 133,
+            "endColumn" : 29,
+            "charOffset" : 4236,
+            "charLength" : 9,
+            "byteOffset" : 4236,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 96,
+            "startColumn" : 20,
+            "endLine" : 96,
+            "endColumn" : 29,
+            "charOffset" : 3082,
+            "charLength" : 9,
+            "byteOffset" : 3082,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/ConnectorServer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 209,
+            "startColumn" : 20,
+            "endLine" : 209,
+            "endColumn" : 29,
+            "charOffset" : 8297,
+            "charLength" : 9,
+            "byteOffset" : 8297,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 400,
+            "startColumn" : 20,
+            "endLine" : 400,
+            "endColumn" : 29,
+            "charOffset" : 14706,
+            "charLength" : 9,
+            "byteOffset" : 14706,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 440,
+            "startColumn" : 20,
+            "endLine" : 440,
+            "endColumn" : 29,
+            "charOffset" : 16191,
+            "charLength" : 9,
+            "byteOffset" : 16191,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 549,
+            "startColumn" : 20,
+            "endLine" : 549,
+            "endColumn" : 29,
+            "charOffset" : 20416,
+            "charLength" : 9,
+            "byteOffset" : 20416,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncContextState.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 85,
+            "startColumn" : 16,
+            "endLine" : 85,
+            "endColumn" : 25,
+            "charOffset" : 2595,
+            "charLength" : 9,
+            "byteOffset" : 2595,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Cookies.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 138,
+            "startColumn" : 16,
+            "endLine" : 138,
+            "endColumn" : 25,
+            "charOffset" : 3999,
+            "charLength" : 9,
+            "byteOffset" : 3999,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DebugListener.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 141,
+            "startColumn" : 24,
+            "endLine" : 141,
+            "endColumn" : 33,
+            "charOffset" : 4999,
+            "charLength" : 9,
+            "byteOffset" : 4999,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DetectorConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 263,
+            "startColumn" : 28,
+            "endLine" : 263,
+            "endColumn" : 37,
+            "charOffset" : 11888,
+            "charLength" : 9,
+            "byteOffset" : 11888,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelListeners.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 124,
+            "startColumn" : 16,
+            "endLine" : 124,
+            "endColumn" : 25,
+            "charOffset" : 6982,
+            "charLength" : 9,
+            "byteOffset" : 6982,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelOverHttp.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 16,
+            "endLine" : 90,
+            "endColumn" : 25,
+            "charOffset" : 3473,
+            "charLength" : 9,
+            "byteOffset" : 3473,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/InclusiveByteRange.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 244,
+            "startColumn" : 20,
+            "endLine" : 244,
+            "endColumn" : 29,
+            "charOffset" : 7524,
+            "charLength" : 9,
+            "byteOffset" : 7524,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/LocalConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 279,
+            "startColumn" : 24,
+            "endLine" : 279,
+            "endColumn" : 33,
+            "charOffset" : 9835,
+            "charLength" : 9,
+            "byteOffset" : 9835,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/LocalConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 305,
+            "startColumn" : 24,
+            "endLine" : 305,
+            "endColumn" : 33,
+            "charOffset" : 10682,
+            "charLength" : 9,
+            "byteOffset" : 10682,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 453,
+            "startColumn" : 24,
+            "endLine" : 453,
+            "endColumn" : 33,
+            "charOffset" : 14761,
+            "charLength" : 9,
+            "byteOffset" : 14761,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 749,
+            "startColumn" : 20,
+            "endLine" : 749,
+            "endColumn" : 29,
+            "charOffset" : 24413,
+            "charLength" : 9,
+            "byteOffset" : 24413,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 483,
+            "startColumn" : 24,
+            "endLine" : 483,
+            "endColumn" : 33,
+            "charOffset" : 18629,
+            "charLength" : 9,
+            "byteOffset" : 18629,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1766,
+            "startColumn" : 20,
+            "endLine" : 1766,
+            "endColumn" : 29,
+            "charOffset" : 56547,
+            "charLength" : 9,
+            "byteOffset" : 56547,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SecureRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 342,
+            "startColumn" : 20,
+            "endLine" : 342,
+            "endColumn" : 29,
+            "charOffset" : 12774,
+            "charLength" : 9,
+            "byteOffset" : 12774,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 757,
+            "startColumn" : 16,
+            "endLine" : 757,
+            "endColumn" : 25,
+            "charOffset" : 25267,
+            "charLength" : 9,
+            "byteOffset" : 25267,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/AllowSymLinkAliasChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 16,
+            "endLine" : 65,
+            "endColumn" : 25,
+            "charOffset" : 2434,
+            "charLength" : 9,
+            "byteOffset" : 2434,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 996,
+            "startColumn" : 32,
+            "endLine" : 996,
+            "endColumn" : 41,
+            "charOffset" : 38248,
+            "charLength" : 9,
+            "byteOffset" : 38248,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1700,
+            "startColumn" : 16,
+            "endLine" : 1700,
+            "endColumn" : 25,
+            "charOffset" : 59898,
+            "charLength" : 9,
+            "byteOffset" : 59898,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1916,
+            "startColumn" : 16,
+            "endLine" : 1916,
+            "endColumn" : 25,
+            "charOffset" : 66017,
+            "charLength" : 9,
+            "byteOffset" : 66017,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2013,
+            "startColumn" : 16,
+            "endLine" : 2013,
+            "endColumn" : 25,
+            "charOffset" : 69099,
+            "charLength" : 9,
+            "byteOffset" : 69099,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2216,
+            "startColumn" : 20,
+            "endLine" : 2216,
+            "endColumn" : 29,
+            "charOffset" : 75704,
+            "charLength" : 9,
+            "byteOffset" : 75704,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2243,
+            "startColumn" : 20,
+            "endLine" : 2243,
+            "endColumn" : 29,
+            "charOffset" : 76478,
+            "charLength" : 9,
+            "byteOffset" : 76478,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2274,
+            "startColumn" : 20,
+            "endLine" : 2274,
+            "endColumn" : 29,
+            "charOffset" : 77403,
+            "charLength" : 9,
+            "byteOffset" : 77403,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2842,
+            "startColumn" : 20,
+            "endLine" : 2842,
+            "endColumn" : 29,
+            "charOffset" : 94318,
+            "charLength" : 9,
+            "byteOffset" : 94318,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DefaultHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 75,
+            "startColumn" : 16,
+            "endLine" : 75,
+            "endColumn" : 25,
+            "charOffset" : 2605,
+            "charLength" : 9,
+            "byteOffset" : 2605,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 207,
+            "startColumn" : 20,
+            "endLine" : 207,
+            "endColumn" : 29,
+            "charOffset" : 8505,
+            "charLength" : 9,
+            "byteOffset" : 8505,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 255,
+            "startColumn" : 24,
+            "endLine" : 255,
+            "endColumn" : 33,
+            "charOffset" : 10455,
+            "charLength" : 9,
+            "byteOffset" : 10455,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HandlerCollection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 152,
+            "startColumn" : 24,
+            "endLine" : 152,
+            "endColumn" : 33,
+            "charOffset" : 4861,
+            "charLength" : 9,
+            "byteOffset" : 4861,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HotSwapHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 16,
+            "endLine" : 78,
+            "endColumn" : 25,
+            "charOffset" : 2124,
+            "charLength" : 9,
+            "byteOffset" : 2124,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ResourceHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 175,
+            "startColumn" : 16,
+            "endLine" : 175,
+            "endColumn" : 25,
+            "charOffset" : 5646,
+            "charLength" : 9,
+            "byteOffset" : 5646,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ResourceHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 395,
+            "startColumn" : 16,
+            "endLine" : 395,
+            "endColumn" : 25,
+            "charOffset" : 11587,
+            "charLength" : 9,
+            "byteOffset" : 11587,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ResourceHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 416,
+            "startColumn" : 16,
+            "endLine" : 416,
+            "endColumn" : 25,
+            "charOffset" : 12206,
+            "charLength" : 9,
+            "byteOffset" : 12206,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ThreadLimitHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 140,
+            "startColumn" : 20,
+            "endLine" : 140,
+            "endColumn" : 29,
+            "charOffset" : 5185,
+            "charLength" : 9,
+            "byteOffset" : 5185,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DefaultSessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 152,
+            "startColumn" : 28,
+            "endLine" : 152,
+            "endColumn" : 37,
+            "charOffset" : 4338,
+            "charLength" : 9,
+            "byteOffset" : 4338,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DefaultSessionIdManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 366,
+            "startColumn" : 20,
+            "endLine" : 366,
+            "endColumn" : 29,
+            "charOffset" : 10836,
+            "charLength" : 9,
+            "byteOffset" : 10836,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 172,
+            "startColumn" : 24,
+            "endLine" : 172,
+            "endColumn" : 33,
+            "charOffset" : 5173,
+            "charLength" : 9,
+            "byteOffset" : 5173,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 197,
+            "startColumn" : 20,
+            "endLine" : 197,
+            "endColumn" : 29,
+            "charOffset" : 5877,
+            "charLength" : 9,
+            "byteOffset" : 5877,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 636,
+            "startColumn" : 16,
+            "endLine" : 636,
+            "endColumn" : 25,
+            "charOffset" : 21480,
+            "charLength" : 9,
+            "byteOffset" : 21480,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/HouseKeeper.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 253,
+            "startColumn" : 24,
+            "endLine" : 253,
+            "endColumn" : 33,
+            "charOffset" : 7883,
+            "charLength" : 9,
+            "byteOffset" : 7883,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/Session.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 885,
+            "startColumn" : 16,
+            "endLine" : 885,
+            "endColumn" : 25,
+            "charOffset" : 28325,
+            "charLength" : 9,
+            "byteOffset" : 28325,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 904,
+            "startColumn" : 28,
+            "endLine" : 904,
+            "endColumn" : 37,
+            "charOffset" : 32571,
+            "charLength" : 9,
+            "byteOffset" : 32571,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 924,
+            "startColumn" : 20,
+            "endLine" : 924,
+            "endColumn" : 29,
+            "charOffset" : 33226,
+            "charLength" : 9,
+            "byteOffset" : 33226,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1199,
+            "startColumn" : 32,
+            "endLine" : 1199,
+            "endColumn" : 41,
+            "charOffset" : 41696,
+            "charLength" : 9,
+            "byteOffset" : 41696,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1249,
+            "startColumn" : 24,
+            "endLine" : 1249,
+            "endColumn" : 33,
+            "charOffset" : 43535,
+            "charLength" : 9,
+            "byteOffset" : 43535,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1255,
+            "startColumn" : 16,
+            "endLine" : 1255,
+            "endColumn" : 25,
+            "charOffset" : 43691,
+            "charLength" : 9,
+            "byteOffset" : 43691,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 510,
+            "startColumn" : 20,
+            "endLine" : 510,
+            "endColumn" : 29,
+            "charOffset" : 15393,
+            "charLength" : 9,
+            "byteOffset" : 15393,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONCollectionConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 16,
+            "endLine" : 48,
+            "endColumn" : 25,
+            "charOffset" : 1635,
+            "charLength" : 9,
+            "byteOffset" : 1635,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONDateConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 87,
+            "startColumn" : 16,
+            "endLine" : 87,
+            "endColumn" : 25,
+            "charOffset" : 2850,
+            "charLength" : 9,
+            "byteOffset" : 2850,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONEnumConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 16,
+            "endLine" : 62,
+            "endColumn" : 25,
+            "charOffset" : 1996,
+            "charLength" : 9,
+            "byteOffset" : 1996,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 195,
+            "startColumn" : 16,
+            "endLine" : 195,
+            "endColumn" : 25,
+            "charOffset" : 6488,
+            "charLength" : 9,
+            "byteOffset" : 6488,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 238,
+            "startColumn" : 20,
+            "endLine" : 238,
+            "endColumn" : 29,
+            "charOffset" : 7756,
+            "charLength" : 9,
+            "byteOffset" : 7756,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 344,
+            "startColumn" : 28,
+            "endLine" : 344,
+            "endColumn" : 37,
+            "charOffset" : 11040,
+            "charLength" : 9,
+            "byteOffset" : 11040,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 363,
+            "startColumn" : 28,
+            "endLine" : 363,
+            "endColumn" : 37,
+            "charOffset" : 11808,
+            "charLength" : 9,
+            "byteOffset" : 11808,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/HostPort.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 96,
+            "startColumn" : 16,
+            "endLine" : 96,
+            "endColumn" : 25,
+            "charOffset" : 3113,
+            "charLength" : 9,
+            "byteOffset" : 3113,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IncludeExcludeSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 16,
+            "endLine" : 114,
+            "endColumn" : 25,
+            "charOffset" : 3655,
+            "charLength" : 9,
+            "byteOffset" : 3655,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 16,
+            "endLine" : 67,
+            "endColumn" : 25,
+            "charOffset" : 2692,
+            "charLength" : 9,
+            "byteOffset" : 2692,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 74,
+            "startColumn" : 20,
+            "endLine" : 74,
+            "endColumn" : 29,
+            "charOffset" : 2885,
+            "charLength" : 9,
+            "byteOffset" : 2885,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Jetty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 16,
+            "endLine" : 53,
+            "endColumn" : 25,
+            "charOffset" : 1702,
+            "charLength" : 9,
+            "byteOffset" : 1702,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MemoryUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 16,
+            "endLine" : 46,
+            "endColumn" : 25,
+            "charOffset" : 1511,
+            "charLength" : 9,
+            "byteOffset" : 1511,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 454,
+            "startColumn" : 20,
+            "endLine" : 454,
+            "endColumn" : 29,
+            "charOffset" : 14372,
+            "charLength" : 9,
+            "byteOffset" : 14372,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/StringUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 710,
+            "startColumn" : 16,
+            "endLine" : 710,
+            "endColumn" : 25,
+            "charOffset" : 20927,
+            "charLength" : 9,
+            "byteOffset" : 20927,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 183,
+            "startColumn" : 16,
+            "endLine" : 183,
+            "endColumn" : 25,
+            "charOffset" : 7843,
+            "charLength" : 9,
+            "byteOffset" : 7843,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 206,
+            "startColumn" : 16,
+            "endLine" : 206,
+            "endColumn" : 25,
+            "charOffset" : 8705,
+            "charLength" : 9,
+            "byteOffset" : 8705,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/URIUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 537,
+            "startColumn" : 16,
+            "endLine" : 537,
+            "endColumn" : 25,
+            "charOffset" : 17178,
+            "charLength" : 9,
+            "byteOffset" : 17178,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 74,
+            "startColumn" : 16,
+            "endLine" : 74,
+            "endColumn" : 25,
+            "charOffset" : 2242,
+            "charLength" : 9,
+            "byteOffset" : 2242,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/DOMLeakPreventer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 16,
+            "endLine" : 45,
+            "endColumn" : 25,
+            "charOffset" : 1565,
+            "charLength" : 9,
+            "byteOffset" : 1565,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/GCThreadLeakPreventer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 16,
+            "endLine" : 54,
+            "endColumn" : 25,
+            "charOffset" : 2034,
+            "charLength" : 9,
+            "byteOffset" : 2034,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/JarFileResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 149,
+            "startColumn" : 20,
+            "endLine" : 149,
+            "endColumn" : 29,
+            "charOffset" : 4272,
+            "charLength" : 9,
+            "byteOffset" : 4272,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/JarFileResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 183,
+            "startColumn" : 24,
+            "endLine" : 183,
+            "endColumn" : 33,
+            "charOffset" : 5290,
+            "charLength" : 9,
+            "byteOffset" : 5290,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/JarFileResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 277,
+            "startColumn" : 24,
+            "endLine" : 277,
+            "endColumn" : 33,
+            "charOffset" : 7877,
+            "charLength" : 9,
+            "byteOffset" : 7877,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/JarFileResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 317,
+            "startColumn" : 20,
+            "endLine" : 317,
+            "endColumn" : 29,
+            "charOffset" : 9464,
+            "charLength" : 9,
+            "byteOffset" : 9464,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 115,
+            "startColumn" : 16,
+            "endLine" : 115,
+            "endColumn" : 25,
+            "charOffset" : 3705,
+            "charLength" : 9,
+            "byteOffset" : 3705,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 300,
+            "startColumn" : 16,
+            "endLine" : 300,
+            "endColumn" : 25,
+            "charOffset" : 9165,
+            "charLength" : 9,
+            "byteOffset" : 9165,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 125,
+            "startColumn" : 20,
+            "endLine" : 125,
+            "endColumn" : 29,
+            "charOffset" : 3707,
+            "charLength" : 9,
+            "byteOffset" : 3707,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 435,
+            "startColumn" : 16,
+            "endLine" : 435,
+            "endColumn" : 25,
+            "charOffset" : 13468,
+            "charLength" : 9,
+            "byteOffset" : 13468,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 909,
+            "startColumn" : 16,
+            "endLine" : 909,
+            "endColumn" : 25,
+            "charOffset" : 26770,
+            "charLength" : 9,
+            "byteOffset" : 26770,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceCollection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 124,
+            "startColumn" : 16,
+            "endLine" : 124,
+            "endColumn" : 25,
+            "charOffset" : 3606,
+            "charLength" : 9,
+            "byteOffset" : 3606,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceCollection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 231,
+            "startColumn" : 16,
+            "endLine" : 231,
+            "endColumn" : 25,
+            "charOffset" : 6541,
+            "charLength" : 9,
+            "byteOffset" : 6541,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Credential.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 241,
+            "startColumn" : 20,
+            "endLine" : 241,
+            "endColumn" : 29,
+            "charOffset" : 9056,
+            "charLength" : 9,
+            "byteOffset" : 9056,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Credential.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 269,
+            "startColumn" : 32,
+            "endLine" : 269,
+            "endColumn" : 41,
+            "charOffset" : 9833,
+            "charLength" : 9,
+            "byteOffset" : 9833,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Credential.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 283,
+            "startColumn" : 20,
+            "endLine" : 283,
+            "endColumn" : 29,
+            "charOffset" : 10316,
+            "charLength" : 9,
+            "byteOffset" : 10316,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 636,
+            "startColumn" : 16,
+            "endLine" : 636,
+            "endColumn" : 25,
+            "charOffset" : 22527,
+            "charLength" : 9,
+            "byteOffset" : 22527,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 714,
+            "startColumn" : 16,
+            "endLine" : 714,
+            "endColumn" : 25,
+            "charOffset" : 24454,
+            "charLength" : 9,
+            "byteOffset" : 24454,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1952,
+            "startColumn" : 16,
+            "endLine" : 1952,
+            "endColumn" : 25,
+            "charOffset" : 64572,
+            "charLength" : 9,
+            "byteOffset" : 64572,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 190,
+            "startColumn" : 16,
+            "endLine" : 190,
+            "endColumn" : 25,
+            "charOffset" : 7919,
+            "charLength" : 9,
+            "byteOffset" : 7919,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 597,
+            "startColumn" : 40,
+            "endLine" : 597,
+            "endColumn" : 49,
+            "charOffset" : 23042,
+            "charLength" : 9,
+            "byteOffset" : 23042,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 20,
+            "endLine" : 104,
+            "endColumn" : 29,
+            "charOffset" : 3554,
+            "charLength" : 9,
+            "byteOffset" : 3554,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 120,
+            "startColumn" : 20,
+            "endLine" : 120,
+            "endColumn" : 29,
+            "charOffset" : 4299,
+            "charLength" : 9,
+            "byteOffset" : 4299,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 125,
+            "startColumn" : 16,
+            "endLine" : 125,
+            "endColumn" : 25,
+            "charOffset" : 4407,
+            "charLength" : 9,
+            "byteOffset" : 4407,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

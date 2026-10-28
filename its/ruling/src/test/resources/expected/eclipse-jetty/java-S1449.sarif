@@ -1,0 +1,158 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1449",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define the locale to be used in this String operation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/LocalConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 155,
+            "startColumn" : 59,
+            "endLine" : 155,
+            "endColumn" : 70,
+            "charOffset" : 5393,
+            "charLength" : 11,
+            "byteOffset" : 5393,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1449",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define the locale to be used in this String operation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/LocalConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 203,
+            "startColumn" : 35,
+            "endLine" : 203,
+            "endColumn" : 46,
+            "charOffset" : 7274,
+            "charLength" : 11,
+            "byteOffset" : 7274,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1449",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define the locale to be used in this String operation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 264,
+            "startColumn" : 42,
+            "endLine" : 264,
+            "endColumn" : 53,
+            "charOffset" : 11446,
+            "charLength" : 11,
+            "byteOffset" : 11446,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1449",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define the locale to be used in this String operation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 690,
+            "startColumn" : 35,
+            "endLine" : 690,
+            "endColumn" : 41,
+            "charOffset" : 20706,
+            "charLength" : 6,
+            "byteOffset" : 20706,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1449",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define the locale to be used in this String operation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/statistic/SampleStatistic.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 127,
+            "startColumn" : 23,
+            "endLine" : 127,
+            "endColumn" : 29,
+            "charOffset" : 3942,
+            "charLength" : 6,
+            "byteOffset" : 3942,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

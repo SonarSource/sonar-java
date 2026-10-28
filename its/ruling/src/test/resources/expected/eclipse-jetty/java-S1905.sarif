@@ -1,0 +1,690 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"Context\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 279,
+            "startColumn" : 67,
+            "endLine" : 279,
+            "endColumn" : 76,
+            "charOffset" : 11464,
+            "charLength" : 9,
+            "byteOffset" : 11464,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"long\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/Session.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 498,
+            "startColumn" : 43,
+            "endLine" : 498,
+            "endColumn" : 49,
+            "charOffset" : 15426,
+            "charLength" : 6,
+            "byteOffset" : 15426,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"Object\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTernaryTrie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 305,
+            "startColumn" : 16,
+            "endLine" : 305,
+            "endColumn" : 19,
+            "charOffset" : 9189,
+            "charLength" : 3,
+            "byteOffset" : 9189,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"Object\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTernaryTrie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 360,
+            "startColumn" : 16,
+            "endLine" : 360,
+            "endColumn" : 19,
+            "charOffset" : 10607,
+            "charLength" : 3,
+            "byteOffset" : 10607,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"Object\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTernaryTrie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 411,
+            "startColumn" : 16,
+            "endLine" : 411,
+            "endColumn" : 19,
+            "charOffset" : 12040,
+            "charLength" : 3,
+            "byteOffset" : 12040,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"Object\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTernaryTrie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 454,
+            "startColumn" : 16,
+            "endLine" : 454,
+            "endColumn" : 19,
+            "charOffset" : 13246,
+            "charLength" : 3,
+            "byteOffset" : 13246,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"Object\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTrie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 253,
+            "startColumn" : 16,
+            "endLine" : 253,
+            "endColumn" : 19,
+            "charOffset" : 8255,
+            "charLength" : 3,
+            "byteOffset" : 8255,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"Object\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTrie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 309,
+            "startColumn" : 24,
+            "endLine" : 309,
+            "endColumn" : 27,
+            "charOffset" : 9812,
+            "charLength" : 3,
+            "byteOffset" : 9812,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"Object\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTrie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 312,
+            "startColumn" : 16,
+            "endLine" : 312,
+            "endColumn" : 19,
+            "charOffset" : 9865,
+            "charLength" : 3,
+            "byteOffset" : 9865,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"Object\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTrie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 350,
+            "startColumn" : 16,
+            "endLine" : 350,
+            "endColumn" : 19,
+            "charOffset" : 10949,
+            "charLength" : 3,
+            "byteOffset" : 10949,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"Object\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTrie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 389,
+            "startColumn" : 16,
+            "endLine" : 389,
+            "endColumn" : 19,
+            "charOffset" : 12077,
+            "charLength" : 3,
+            "byteOffset" : 12077,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"long\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/AtomicBiInteger.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 268,
+            "startColumn" : 19,
+            "endLine" : 268,
+            "endColumn" : 25,
+            "charOffset" : 7537,
+            "charLength" : 6,
+            "byteOffset" : 7537,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"long\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/AtomicBiInteger.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 269,
+            "startColumn" : 19,
+            "endLine" : 269,
+            "endColumn" : 25,
+            "charOffset" : 7581,
+            "charLength" : 6,
+            "byteOffset" : 7581,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"long\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/AtomicBiInteger.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 282,
+            "startColumn" : 19,
+            "endLine" : 282,
+            "endColumn" : 25,
+            "charOffset" : 7907,
+            "charLength" : 6,
+            "byteOffset" : 7907,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"long\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/AtomicBiInteger.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 297,
+            "startColumn" : 19,
+            "endLine" : 297,
+            "endColumn" : 25,
+            "charOffset" : 8323,
+            "charLength" : 6,
+            "byteOffset" : 8323,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"X509Certificate\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 175,
+            "startColumn" : 58,
+            "endLine" : 175,
+            "endColumn" : 75,
+            "charOffset" : 5900,
+            "charLength" : 17,
+            "byteOffset" : 5900,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"URL\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 269,
+            "startColumn" : 22,
+            "endLine" : 269,
+            "endColumn" : 27,
+            "charOffset" : 8592,
+            "charLength" : 5,
+            "byteOffset" : 8592,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"URL\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 271,
+            "startColumn" : 22,
+            "endLine" : 271,
+            "endColumn" : 27,
+            "charOffset" : 8669,
+            "charLength" : 5,
+            "byteOffset" : 8669,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"URL\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 280,
+            "startColumn" : 22,
+            "endLine" : 280,
+            "endColumn" : 27,
+            "charOffset" : 9018,
+            "charLength" : 5,
+            "byteOffset" : 9018,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"ContentHandler\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 389,
+            "startColumn" : 28,
+            "endLine" : 389,
+            "endColumn" : 44,
+            "charOffset" : 12041,
+            "charLength" : 16,
+            "byteOffset" : 12041,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"ContentHandler\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 395,
+            "startColumn" : 22,
+            "endLine" : 395,
+            "endColumn" : 38,
+            "charOffset" : 12259,
+            "charLength" : 16,
+            "byteOffset" : 12259,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"ContentHandler\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 406,
+            "startColumn" : 22,
+            "endLine" : 406,
+            "endColumn" : 38,
+            "charOffset" : 12665,
+            "charLength" : 16,
+            "byteOffset" : 12665,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"ContentHandler\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 417,
+            "startColumn" : 22,
+            "endLine" : 417,
+            "endColumn" : 38,
+            "charOffset" : 13049,
+            "charLength" : 16,
+            "byteOffset" : 13049,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1905",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary cast to \"ContentHandler\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 428,
+            "startColumn" : 22,
+            "endLine" : 428,
+            "endColumn" : 38,
+            "charOffset" : 13454,
+            "charLength" : 16,
+            "byteOffset" : 13454,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

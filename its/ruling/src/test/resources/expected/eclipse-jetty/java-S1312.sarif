@@ -1,0 +1,690 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/CookieCutter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 35,
+            "endLine" : 35,
+            "endColumn" : 38,
+            "charOffset" : 1184,
+            "charLength" : 3,
+            "byteOffset" : 1184,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 92,
+            "startColumn" : 32,
+            "endLine" : 92,
+            "endColumn" : 35,
+            "charOffset" : 4199,
+            "charLength" : 3,
+            "byteOffset" : 4199,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 25,
+            "endLine" : 47,
+            "endColumn" : 28,
+            "charOffset" : 1576,
+            "charLength" : 3,
+            "byteOffset" : 1576,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SelectorManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 35,
+            "endLine" : 61,
+            "endColumn" : 38,
+            "charOffset" : 2430,
+            "charLength" : 3,
+            "byteOffset" : 2430,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 144,
+            "startColumn" : 35,
+            "endLine" : 144,
+            "endColumn" : 38,
+            "charOffset" : 8729,
+            "charLength" : 3,
+            "byteOffset" : 8729,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Cookies.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 35,
+            "endLine" : 41,
+            "endColumn" : 38,
+            "charOffset" : 1480,
+            "charLength" : 3,
+            "byteOffset" : 1480,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 275,
+            "startColumn" : 35,
+            "endLine" : 275,
+            "endColumn" : 38,
+            "charOffset" : 9087,
+            "charLength" : 3,
+            "byteOffset" : 9087,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelListeners.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 25,
+            "endLine" : 35,
+            "endColumn" : 28,
+            "charOffset" : 1197,
+            "charLength" : 3,
+            "byteOffset" : 1197,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 179,
+            "startColumn" : 27,
+            "endLine" : 179,
+            "endColumn" : 30,
+            "charOffset" : 7876,
+            "charLength" : 3,
+            "byteOffset" : 7876,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 32,
+            "endLine" : 42,
+            "endColumn" : 35,
+            "charOffset" : 1561,
+            "charLength" : 3,
+            "byteOffset" : 1561,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"logger\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Slf4jRequestLogWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 30,
+            "endLine" : 34,
+            "endColumn" : 36,
+            "charOffset" : 1248,
+            "charLength" : 6,
+            "byteOffset" : 1248,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/BufferedResponseHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 25,
+            "endLine" : 65,
+            "endColumn" : 28,
+            "charOffset" : 2596,
+            "charLength" : 3,
+            "byteOffset" : 2596,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"_logger\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 207,
+            "startColumn" : 20,
+            "endLine" : 207,
+            "endColumn" : 27,
+            "charOffset" : 8176,
+            "charLength" : 7,
+            "byteOffset" : 8176,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHttpOutputInterceptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 26,
+            "endLine" : 46,
+            "endColumn" : 29,
+            "charOffset" : 1749,
+            "charLength" : 3,
+            "byteOffset" : 1749,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DatabaseAdaptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 25,
+            "endLine" : 50,
+            "endColumn" : 28,
+            "charOffset" : 1631,
+            "charLength" : 3,
+            "byteOffset" : 1631,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/StacklessLogging.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 101,
+            "startColumn" : 21,
+            "endLine" : 101,
+            "endColumn" : 24,
+            "charOffset" : 3295,
+            "charLength" : 3,
+            "byteOffset" : 3295,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 85,
+            "startColumn" : 25,
+            "endLine" : 85,
+            "endColumn" : 28,
+            "charOffset" : 3155,
+            "charLength" : 3,
+            "byteOffset" : 3155,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 718,
+            "startColumn" : 25,
+            "endLine" : 718,
+            "endColumn" : 28,
+            "charOffset" : 21052,
+            "charLength" : 3,
+            "byteOffset" : 21052,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 25,
+            "endLine" : 53,
+            "endColumn" : 28,
+            "charOffset" : 1669,
+            "charLength" : 3,
+            "byteOffset" : 1669,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Utf8Appendable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 35,
+            "endLine" : 52,
+            "endColumn" : 38,
+            "charOffset" : 2686,
+            "charLength" : 3,
+            "byteOffset" : 2686,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"logger\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/log/Slf4jLogger.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 36,
+            "endLine" : 26,
+            "endColumn" : 42,
+            "charOffset" : 942,
+            "charLength" : 6,
+            "byteOffset" : 942,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/AbstractLeakPreventer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 35,
+            "endLine" : 38,
+            "endColumn" : 38,
+            "charOffset" : 1567,
+            "charLength" : 3,
+            "byteOffset" : 1567,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename the \"LOG_CONFIG\" logger to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 119,
+            "startColumn" : 33,
+            "endLine" : 119,
+            "endColumn" : 43,
+            "charOffset" : 4770,
+            "charLength" : 10,
+            "byteOffset" : 4770,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"LOG\" logger private static final."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ThreadPoolBudget.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 25,
+            "endLine" : 37,
+            "endColumn" : 28,
+            "charOffset" : 1272,
+            "charLength" : 3,
+            "byteOffset" : 1272,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}
