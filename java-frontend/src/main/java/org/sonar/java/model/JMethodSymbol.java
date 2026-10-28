@@ -24,7 +24,9 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
 
@@ -240,7 +242,21 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
 
   @Override
   public boolean isVarArgsMethod() {
-    return !isUnknown() && varArgs;
+    if (isUnknown()) {
+      return false;
+    }
+    if (varArgs) {
+      return true;
+    }
+    if (declaration() instanceof MethodTree method) {
+      List<VariableTree> parameters = method.parameters();
+      if (parameters.isEmpty()) {
+        return false;
+      }
+      return parameters.get(parameters.size() - 1).type() instanceof ArrayTypeTree arrayType
+        && arrayType.ellipsisToken() != null;
+    }
+    return !parameterTypes.isEmpty() && parameterTypes.get(parameterTypes.size() - 1).isArray();
   }
 
   @Nullable
