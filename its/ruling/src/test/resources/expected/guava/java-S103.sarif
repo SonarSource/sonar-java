@@ -11,35 +11,7 @@
       }
     },
     "language" : "en-US",
-    "results" : [ {
-      "ruleId" : "java:S103",
-      "ruleIndex" : -1,
-      "kind" : "fail",
-      "level" : "warning",
-      "message" : {
-        "text" : "Split this 48,941 characters long line (which is greater than 120 authorized)."
-      },
-      "locations" : [ {
-        "id" : -1,
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "guava:src/com/google/thirdparty/publicsuffix/PublicSuffixPatterns.java",
-            "index" : -1
-          },
-          "region" : {
-            "startLine" : 45,
-            "startColumn" : 1,
-            "endLine" : 45,
-            "endColumn" : 48942,
-            "charOffset" : 1558,
-            "charLength" : 48941,
-            "byteOffset" : 1558,
-            "byteLength" : 50040
-          }
-        }
-      } ],
-      "rank" : -1.0
-    }, {
+    "results" : [{
       "ruleId" : "java:S103",
       "ruleIndex" : -1,
       "kind" : "fail",
