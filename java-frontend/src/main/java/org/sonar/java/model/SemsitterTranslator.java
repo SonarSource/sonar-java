@@ -19,6 +19,7 @@ package org.sonar.java.model;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.sonar.sslr.api.RecognitionException;
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -119,6 +120,7 @@ final class SemsitterTranslator {
   private final Deque<Symbol.TypeSymbol> types = new ArrayDeque<>();
   private InternalSyntaxToken eof = new InternalSyntaxToken(1, 0, "", List.of(), true);
   private boolean switchExpression;
+  private String implicitClassName = "";
 
   private SemsitterTranslator(JSema sema) {
     this.sema = sema;
@@ -129,6 +131,10 @@ final class SemsitterTranslator {
       throw new RecognitionException(1, "SemSitter: syntax error");
     }
     SemsitterTranslator translator = new SemsitterTranslator(sema);
+    if (document.has("path") && document.get("path").isJsonPrimitive()) {
+      String fileName = Path.of(document.get("path").getAsString()).getFileName().toString();
+      translator.implicitClassName = fileName.endsWith(".java") ? fileName.substring(0, fileName.length() - 5) : fileName;
+    }
     Node root = new Node(document.getAsJsonObject("tree"));
     translator.indexTokens(root);
     JavaTree.CompilationUnitTreeImpl unit = translator.compilationUnit(root);
@@ -210,7 +216,9 @@ final class SemsitterTranslator {
       }
     }
     if (compact) {
-      types.add(new ClassTreeImpl(Tree.Kind.IMPLICIT_CLASS, null, compactMembers, null));
+      ClassTreeImpl implicitClass = new ClassTreeImpl(Tree.Kind.IMPLICIT_CLASS, null, compactMembers, null);
+      bindImplicitClass(implicitClass, compactMembers);
+      types.add(implicitClass);
     }
     return new JavaTree.CompilationUnitTreeImpl(packageDeclaration, imports, types, null, eof);
   }
@@ -1600,6 +1608,29 @@ final class SemsitterTranslator {
       method.methodSymbol = methodSymbol;
     } else if (tree instanceof VariableTreeImpl variable && symbol instanceof Symbol.VariableSymbol variableSymbol) {
       variable.variableSymbol = variableSymbol;
+    }
+  }
+
+  private void bindImplicitClass(ClassTreeImpl tree, List<Tree> members) {
+    JTypeSymbol implicitClass = null;
+    for (Tree member : members) {
+      if (member instanceof MethodTree method && method.symbol().owner() instanceof JTypeSymbol owner && !owner.isUnknown()) {
+        implicitClass = owner;
+        break;
+      }
+    }
+    if (implicitClass == null && !implicitClassName.isEmpty() && sema.resolve(implicitClassName) instanceof JTypeSymbol named) {
+      implicitClass = named;
+    }
+    if (implicitClass == null) {
+      return;
+    }
+    tree.typeSymbol = implicitClass;
+    sema.declare(implicitClass.id, tree);
+    for (Tree member : members) {
+      if (member instanceof MethodTree method && method.symbol() instanceof JMethodSymbol symbol && (symbol.owner() == null || symbol.owner().isUnknown())) {
+        symbol.owner(implicitClass);
+      }
     }
   }
 
