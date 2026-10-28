@@ -92,10 +92,25 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     if ("java.lang.Object".equals(erased)) {
       return null;
     }
-    if (superName == null || superName.isEmpty()) {
+    if (superName == null || superName.isEmpty() || inheritsFrom(erased)) {
       return sema.getClassType("java.lang.Object");
     }
     return sema.getClassType(JSema.erase(superName));
+  }
+
+  private boolean inheritsFrom(String erasedSelf) {
+    Set<String> visited = new HashSet<>();
+    String current = JSema.erase(superName);
+    while (visited.add(current)) {
+      if (current.equals(erasedSelf)) {
+        return true;
+      }
+      if (!(sema.getClassType(current).symbol() instanceof JTypeSymbol parent) || parent.superName == null || parent.superName.isEmpty()) {
+        return false;
+      }
+      current = JSema.erase(parent.superName);
+    }
+    return false;
   }
 
   @Override

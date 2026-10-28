@@ -327,6 +327,10 @@ final class SemsitterTranslator {
       tree.completePermittedTypes(token(required(permits, "permits")), separatedTypes(permits));
     }
     bindDeclaration(tree, nameNode(node), name);
+    if (tree.superClass() != null && tree.symbol() instanceof JTypeSymbol declared
+      && tree.superClass().symbolType().symbol() instanceof JTypeSymbol parent && parent.id != null && !parent.equals(declared)) {
+      declared.superName(parent.id);
+    }
     return tree;
   }
 
