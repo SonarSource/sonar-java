@@ -78,11 +78,7 @@ public abstract class SpringContextModelGatherer extends IssuableSubscriptionVis
 
   @Override
   public boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder) {
-    return dependencyFinder.apply("spring-context")
-      .or(() -> dependencyFinder.apply("spring-beans"))
-      .or(() -> dependencyFinder.apply("spring-boot-starter"))
-      .or(() -> dependencyFinder.apply("spring-boot-starter-web"))
-      .isPresent();
+    return SpringContextModelGatherers.hasSpringDependency(dependencyFinder);
   }
 
   @Override

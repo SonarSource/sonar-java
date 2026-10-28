@@ -39,6 +39,9 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
  * <p>The structure is serialized to JSON and saved to a file at the end of the analysis, so it can be restored and
  * reused in later analyses when {@code sonar.java.springContext.model.path} is explicitly set. Restored data for
  * unvisited files is retained to provide whole-project context during partial analyses.</p>
+ *
+ * <p>Collection is enabled when Spring dependencies are detected in any analyzed module outside SonarLint.
+ * This state belongs to the current analysis and is neither persisted nor restored.</p>
  */
 @ScannerSide
 @SonarLintSide
@@ -76,6 +79,15 @@ public class SpringContextGatheringModel {
    */
   private final Map<String, Map<String, InputFileData>> filesData = new HashMap<>();
   private boolean restored;
+  private boolean enabled;
+
+  public boolean isEnabled() {
+    return enabled;
+  }
+
+  public void enable() {
+    enabled = true;
+  }
 
   /**
    * Returns the file data indexed by module key and file key.

@@ -18,6 +18,8 @@ package org.sonar.plugins.java;
 
 import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -29,6 +31,8 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.bootstrap.ProjectDefinition;
 import org.sonar.api.batch.fs.InputFile;
@@ -74,10 +78,65 @@ class SpringContextModelSensorTest {
   @RegisterExtension
   public LogTesterJUnit5 logTester = new LogTesterJUnit5();
 
+  @ParameterizedTest
+  @ValueSource(strings = {"", "state/context.json"})
+  void skips_finalization_without_spring_dependencies(String configuredPath) throws IOException {
+    SensorContextTester context = javaSensorContext(tempDir, configuredPath);
+    context.setActiveRules(activeRulesWith(S4605_RULE_KEY));
+    Path modelPath = tempDir.resolve(configuredPath.isEmpty() ? DEFAULT_MODEL_PATH : configuredPath);
+    var gatheringModel = new SpringContextGatheringModel();
+    registerBean(gatheringModel, "example.Service", "service", fakeInputFile(context, "Service.java"));
+    var telemetry = new DefaultTelemetry();
+    var sensor = new SpringContextModelSensor(telemetry, gatheringModel);
+
+    sensor.execute(context);
+
+    assertThat(modelPath).doesNotExist();
+    assertThat(context.allIssues()).isEmpty();
+    assertThat(telemetry.toMap()).isEmpty();
+    Files.createDirectories(modelPath.getParent());
+    Files.writeString(modelPath, "previous model");
+
+    sensor.execute(context);
+
+    assertThat(Files.readString(modelPath)).isEqualTo("previous model");
+    assertThat(logTester.logs(Level.DEBUG)).noneMatch(message -> message.contains("Saving Spring Context model"));
+  }
+
+  @Test
+  void skips_finalization_in_sonarlint() {
+    SensorContextTester context = javaSensorContext(tempDir);
+    context.setRuntime(TestSonarRuntime.forSonarLint(org.sonar.api.utils.Version.create(6, 7)));
+    context.setActiveRules(activeRulesWith(S4605_RULE_KEY));
+    var gatheringModel = new SpringContextGatheringModel();
+    gatheringModel.enable();
+    registerBean(gatheringModel, "example.Service", "service", fakeInputFile(context, "Service.java"));
+    var telemetry = new DefaultTelemetry();
+
+    new SpringContextModelSensor(telemetry, gatheringModel).execute(context);
+
+    assertThat(tempDir.resolve(DEFAULT_MODEL_PATH)).doesNotExist();
+    assertThat(context.allIssues()).isEmpty();
+    assertThat(telemetry.toMap()).isEmpty();
+  }
+
+  @Test
+  void finalizes_an_empty_context_when_spring_dependencies_were_detected() {
+    SensorContextTester context = javaSensorContext(tempDir);
+    var gatheringModel = new SpringContextGatheringModel();
+    gatheringModel.enable();
+    var telemetry = new DefaultTelemetry();
+
+    new SpringContextModelSensor(telemetry, gatheringModel).execute(context);
+
+    assertThat(tempDir.resolve(DEFAULT_MODEL_PATH)).exists();
+    assertThat(telemetry.toMap()).containsEntry("java.spring.bean_count", "0");
+  }
+
   @Test
   void test_toString() {
     DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
-    SpringContextModelSensor sensor = sensor(new SpringContextGatheringModel(), new NoOpTelemetry());
+    SpringContextModelSensor sensor = enabledSensor(new SpringContextGatheringModel(), new NoOpTelemetry());
     sensor.describe(descriptor);
     assertThat(descriptor.name()).isEqualTo("Java SpringContextModelSensor");
     assertThat(descriptor.languages()).containsExactly("java", "jsp");
@@ -96,7 +155,7 @@ class SpringContextModelSensorTest {
     registerDependency(gatheringModel, type, "contextAware", inputFile);
 
     var telemetry = new DefaultTelemetry();
-    sensor(gatheringModel, telemetry).execute(context);
+    enabledSensor(gatheringModel, telemetry).execute(context);
 
     assertThat(context.allIssues()).hasSize(1);
     Issue issue = context.allIssues().iterator().next();
@@ -117,7 +176,7 @@ class SpringContextModelSensorTest {
 
     registerBean(gatheringModel, "example.MyComponent", "myComponent", inputFile);
 
-    sensor(gatheringModel, new NoOpTelemetry()).execute(context);
+    enabledSensor(gatheringModel, new NoOpTelemetry()).execute(context);
 
     assertThat(context.allIssues()).hasSize(1);
     Issue issue = context.allIssues().iterator().next();
@@ -141,7 +200,7 @@ class SpringContextModelSensorTest {
     registerDependency(gatheringModel, type, "contextAware", inputFile);
 
     var telemetry = new DefaultTelemetry();
-    sensor(gatheringModel, telemetry).execute(context);
+    enabledSensor(gatheringModel, telemetry).execute(context);
 
     assertThat(context.allIssues()).isEmpty();
     assertThat(telemetry.toMap().get("java.spring.context_checks_time_ms")).matches("\\d+");
@@ -160,7 +219,7 @@ class SpringContextModelSensorTest {
     var dependency = Map.of(type, Set.of(new InjectionPoint.InputFileData("contextAware", new TextSpan(13, 13, 13, 25), false)));
     gatheringModel.collectBeans(MODULE_KEY, analyzedFile.key(), analyzedFile, List.of(gatheredBean("consumer", "example.Consumer", dependency)));
 
-    sensor(gatheringModel, new NoOpTelemetry()).execute(context);
+    enabledSensor(gatheringModel, new NoOpTelemetry()).execute(context);
 
     assertThat(context.allIssues()).hasSize(1);
     assertThat(context.allIssues().iterator().next().primaryLocation().inputComponent()).isEqualTo(analyzedFile);
@@ -179,7 +238,7 @@ class SpringContextModelSensorTest {
     var gatheringModel = restoredModel("ambiguous-restored-beans.json");
     gatheringModel.collectPackages(MODULE_KEY, "restored-consumer", skippedFile, Set.of());
 
-    sensor(gatheringModel, new NoOpTelemetry()).execute(context);
+    enabledSensor(gatheringModel, new NoOpTelemetry()).execute(context);
 
     assertThat(context.allIssues()).hasSize(1);
     Issue issue = context.allIssues().iterator().next();
@@ -200,7 +259,7 @@ class SpringContextModelSensorTest {
     registerBean(gatheringModel, type, "componentTwo", inputFile);
     registerDependency(gatheringModel, type, "contextAware", inputFile);
 
-    sensor(gatheringModel, new NoOpTelemetry()).execute(context);
+    enabledSensor(gatheringModel, new NoOpTelemetry()).execute(context);
 
     assertThat(context.allIssues()).hasSize(1);
     assertThat(logTester.logs(Level.WARN)).anyMatch(message -> message.contains("Unable to save Spring context model to "));
@@ -224,7 +283,7 @@ class SpringContextModelSensorTest {
     gatheringModel.collectPackages(MODULE_KEY, "componentOne", inputFile, Set.of("example"));
 
     var telemetry = new DefaultTelemetry();
-    sensor(gatheringModel, telemetry).execute(context);
+    enabledSensor(gatheringModel, telemetry).execute(context);
 
     assertThat(telemetry.toMap())
       .containsEntry("java.spring.bean_count", "3")
@@ -249,6 +308,7 @@ class SpringContextModelSensorTest {
     var gatheringModel = new SpringContextGatheringModel();
     JavaSensor sensor = javaSensor(gatheringModel);
     sensor.execute(javaSensorContext(moduleA, MODEL_PATH));
+    assertThat(gatheringModel.isEnabled()).isTrue();
     assertThat(gatheringModel.filesData()).containsOnlyKeys("module-a", "module-b");
 
     var updatedBean = bean("updated");
@@ -265,7 +325,7 @@ class SpringContextModelSensorTest {
     assertThat(projectModel.getBeanDefinitionRegistry().getByName("untouched")).hasSize(1);
     assertThat(projectModel.getProjectPackageScan().getPackagesForModule("module-b")).containsExactly("untouched.package");
 
-    sensor(gatheringModel, new NoOpTelemetry()).execute(javaSensorContext(tempDir, MODEL_PATH));
+    enabledSensor(gatheringModel, new NoOpTelemetry()).execute(javaSensorContext(tempDir, MODEL_PATH));
 
     SpringContextGatheringModel saved = SpringContextModelPersistence.load(modelPath);
     assertThat(saved.filesData()).containsOnlyKeys("module-a", "module-b");
@@ -292,7 +352,7 @@ class SpringContextModelSensorTest {
       assertThat(gatheringModel.filesData()).isEmpty();
       registerBean(gatheringModel, "example.Service", "currentService", fakeInputFile(analysisContext, "Service.java"));
 
-      sensor(gatheringModel, new NoOpTelemetry()).execute(analysisContext);
+      enabledSensor(gatheringModel, new NoOpTelemetry()).execute(analysisContext);
 
       var savedModel = SpringContextModelPersistence.load(defaultPath);
       assertThat(savedModel.filesData()).containsOnlyKeys(MODULE_KEY);
@@ -322,7 +382,7 @@ class SpringContextModelSensorTest {
       var gatheringModel = new SpringContextGatheringModel();
       registerBean(gatheringModel, "example.Service", beanName, fakeInputFile(analysisContext, "Component.java"));
 
-      sensor(gatheringModel, new NoOpTelemetry()).execute(analysisContext);
+      enabledSensor(gatheringModel, new NoOpTelemetry()).execute(analysisContext);
 
       assertThat(defaultPath).exists();
       assertThat(SpringContextModelPersistence.load(defaultPath).filesData().get(MODULE_KEY)).containsOnlyKeys(beanName);
@@ -378,7 +438,8 @@ class SpringContextModelSensorTest {
     assertThat(SpringContextModelPersistence.load(modelPath).filesData()).isEmpty();
   }
 
-  private SpringContextModelSensor sensor(SpringContextGatheringModel gatheringModel, Telemetry telemetry) {
+  private SpringContextModelSensor enabledSensor(SpringContextGatheringModel gatheringModel, Telemetry telemetry) {
+    gatheringModel.enable();
     return new SpringContextModelSensor(telemetry, gatheringModel);
   }
 
@@ -408,7 +469,7 @@ class SpringContextModelSensorTest {
     when(components.mainChecks()).thenReturn(List.of());
     when(components.testChecks()).thenReturn(List.of());
     when(components.jspChecks()).thenReturn(List.of());
-    when(components.getJavaClasspath()).thenReturn(List.of());
+    when(components.getJavaClasspath()).thenReturn(List.of(new File("spring-context-6.0.0.jar")));
     when(components.getJavaTestClasspath()).thenReturn(List.of());
     when(components.getJspClasspath()).thenReturn(List.of());
     return new JavaSensor(components, mock(JavaResourceLocator.class), mock(NoSonarFilter.class), null, new NoOpTelemetry(), gatheringModel);

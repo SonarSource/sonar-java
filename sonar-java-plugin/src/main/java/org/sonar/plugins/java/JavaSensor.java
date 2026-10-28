@@ -17,6 +17,7 @@
 package org.sonar.plugins.java;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -34,11 +35,11 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.rule.RuleScope;
 import org.sonar.java.GeneratedCheckList;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.classpath.DependencyVersionInference;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
@@ -91,11 +92,6 @@ public class JavaSensor implements Sensor {
     this.springContextGatheringModel = springContextGatheringModel;
     this.sonarComponents.registerMainChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaChecks());
     this.sonarComponents.registerTestChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaTestChecks());
-    // Main scope only: the Spring context model describes the application context, which never contains the beans
-    // declared by test code. Gatherers registered for RuleScope.TEST would be handed exactly the files
-    // JavaFileTypeClassifier already excludes, and collect nothing.
-    SpringContextModelGatherers.getAllGatherers(springContextGatheringModel, telemetry)
-      .forEach(gatherer -> this.sonarComponents.registerCustomFileScanner(RuleScope.MAIN, gatherer));
   }
 
   @Override
@@ -108,13 +104,20 @@ public class JavaSensor implements Sensor {
     PerformanceMeasure.Duration sensorDuration = createPerformanceMeasureReport(context);
 
     sonarComponents.setSensorContext(context);
-    // Restore the Spring context gathering model from the previous analysis, if it hasn't been restored already
-    // (i.e. the model is only restored the first time the sensor is run on a module and is reused between modules).
-    if (context.config().hasKey(SPRING_CONTEXT_MODEL_PATH_PROPERTY) && !springContextGatheringModel.isRestored()) {
-      var path = SpringContextModelPersistence.modelPath(context, sonarComponents.projectLevelBaseDir());
-      springContextGatheringModel.restoreFrom(SpringContextModelPersistence.load(path));
-    }
     sonarComponents.setCheckFilter(createCheckFilter(sonarComponents.isAutoScanCheckFiltering()));
+    List<JavaCheck> mainChecks = new ArrayList<>(sonarComponents.mainChecks());
+    if (!sonarComponents.isSonarLintContext()) {
+      List<File> classpath = sonarComponents.getJavaClasspath();
+      var dependencyService = new DependencyVersionInference();
+      if (SpringContextModelGatherers.hasSpringDependency(artifactId -> dependencyService.infer(artifactId, classpath))) {
+        springContextGatheringModel.enable();
+        if (context.config().hasKey(SPRING_CONTEXT_MODEL_PATH_PROPERTY) && !springContextGatheringModel.isRestored()) {
+          var path = SpringContextModelPersistence.modelPath(context, sonarComponents.projectLevelBaseDir());
+          springContextGatheringModel.restoreFrom(SpringContextModelPersistence.load(path));
+        }
+        mainChecks.addAll(SpringContextModelGatherers.getAllGatherers(springContextGatheringModel, telemetry));
+      }
+    }
 
     Measurer measurer = new Measurer(context, noSonarFilter);
 
@@ -131,7 +134,7 @@ public class JavaSensor implements Sensor {
       telemetry,
       javaResourceLocator,
       postAnalysisIssueFilter,
-      sonarComponents.mainChecks().toArray(new JavaCheck[0]));
+      mainChecks.toArray(new JavaCheck[0]));
     frontend.scan(getSourceFiles(context.fileSystem()), getTestFiles(context.fileSystem()), runJasper(context));
 
     sensorDuration.stop();

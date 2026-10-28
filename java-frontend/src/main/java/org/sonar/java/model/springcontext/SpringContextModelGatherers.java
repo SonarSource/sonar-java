@@ -17,7 +17,10 @@
 package org.sonar.java.model.springcontext;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 import org.sonar.java.telemetry.Telemetry;
+import org.sonar.plugins.java.api.Version;
 
 /**
  * Registry of all {@link SpringContextModelGatherer} visitors that collect data for the {@link SpringContextModel}
@@ -30,6 +33,14 @@ public class SpringContextModelGatherers {
 
   private SpringContextModelGatherers() {
     // utility class, should not be instantiated
+  }
+
+  public static boolean hasSpringDependency(Function<String, Optional<Version>> dependencyFinder) {
+    return dependencyFinder.apply("spring-context")
+      .or(() -> dependencyFinder.apply("spring-beans"))
+      .or(() -> dependencyFinder.apply("spring-boot-starter"))
+      .or(() -> dependencyFinder.apply("spring-boot-starter-web"))
+      .isPresent();
   }
 
   /**

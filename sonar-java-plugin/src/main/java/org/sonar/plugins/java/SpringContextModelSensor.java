@@ -17,6 +17,7 @@
 package org.sonar.plugins.java;
 
 import java.util.concurrent.TimeUnit;
+import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.Phase;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -72,6 +73,9 @@ public class SpringContextModelSensor implements ProjectSensor {
    */
   @Override
   public void execute(SensorContext context) {
+    if (context.runtime().getProduct() == SonarProduct.SONARLINT || !gatheringModel.isEnabled()) {
+      return;
+    }
     long buildingStartTime = System.nanoTime();
     SpringContextModel springContextModel = SpringContextModel.of(gatheringModel);
     telemetry.aggregateAsCounter(
