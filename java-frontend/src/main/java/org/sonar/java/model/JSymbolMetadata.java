@@ -153,9 +153,6 @@ final class JSymbolMetadata implements SymbolMetadata {
 
   @Override
   public SymbolMetadata[] parametersMetadata() {
-    if (symbol.isMethodSymbol() && symbol.declaration() instanceof MethodTree method) {
-      return method.parameters().stream().map(parameter -> parameter.symbol().metadata()).toArray(SymbolMetadata[]::new);
-    }
     return new SymbolMetadata[0];
   }
 
