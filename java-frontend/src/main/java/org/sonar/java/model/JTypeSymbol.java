@@ -139,7 +139,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
   @Nullable
   @Override
   public ClassTree declaration() {
-    return (ClassTree) super.declaration();
+    return super.declaration() instanceof ClassTree classTree ? classTree : null;
   }
 
   @Override
