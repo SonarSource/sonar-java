@@ -879,7 +879,10 @@ final class SemsitterTranslator {
       case "method_invocation" -> invocation(node);
       case "object_creation_expression" -> creation(node);
       case "array_creation_expression" -> arrayCreation(node);
-      case "array_initializer" -> arrayInitializer(node);
+      case "array_initializer", "element_value_array_initializer" -> arrayInitializer(node);
+      case "element_value_pair" -> elementValuePair(node);
+      case "class_literal" -> classLiteral(node);
+      case "annotation", "marker_annotation" -> annotation(node);
       case "array_access" -> arrayAccess(node);
       case "assignment_expression" -> assignment(node);
       case "binary_expression" -> binary(node);
@@ -1065,6 +1068,23 @@ final class SemsitterTranslator {
 
   private NewArrayTreeImpl arrayInitializer(Node node) {
     NewArrayTreeImpl tree = new NewArrayTreeImpl(List.of(), initializers(node)).completeWithCurlyBraces(token(required(node, "{")), token(required(node, "}")));
+    return tree;
+  }
+
+  private AssignmentExpressionTreeImpl elementValuePair(Node node) {
+    Node key = requiredField(node, "key", firstNamed(node));
+    IdentifierTreeImpl name = identifier(key);
+    bindUse(name, key);
+    ExpressionTree value = expression(requiredField(node, "value", lastNamed(node)));
+    AssignmentExpressionTreeImpl tree = new AssignmentExpressionTreeImpl(Tree.Kind.ASSIGNMENT, name, token(required(node, "=")), value);
+    ascribe(tree, value.symbolType());
+    return tree;
+  }
+
+  private MemberSelectExpressionTreeImpl classLiteral(Node node) {
+    ExpressionTree type = (ExpressionTree) type(firstNamed(node));
+    MemberSelectExpressionTreeImpl tree = new MemberSelectExpressionTreeImpl(type, token(required(node, ".")), new IdentifierTreeImpl(token(required(node, "class"))));
+    ascribe(tree, sema.getClassType("java.lang.Class"));
     return tree;
   }
 
@@ -1273,11 +1293,27 @@ final class SemsitterTranslator {
       case "array_type" -> arrayType(type(requiredField(node, "element", firstType(node))), field(node, "dimensions"));
       case "scoped_identifier", "scoped_type_identifier", "field_access" -> memberSelect(node);
       case "wildcard" -> wildcard(node);
+      case "annotated_type" -> annotatedType(node);
+      case "type_identifier" -> "var".equals(node.text()) ? new VarTypeTreeImpl(token(node)) : (TypeTree) primary(node);
       default -> {
         ExpressionTree expression = "identifier".equals(node.k()) || "type_identifier".equals(node.k()) ? primary(node) : expression(node);
         yield expression instanceof TypeTree typeTree ? typeTree : new VarTypeTreeImpl(synthetic("var"));
       }
     };
+  }
+
+  private TypeTree annotatedType(Node node) {
+    TypeTree type = type(firstType(node));
+    List<AnnotationTree> annotations = new ArrayList<>();
+    for (Node child : node.children()) {
+      if ("annotation".equals(child.k()) || "marker_annotation".equals(child.k())) {
+        annotations.add(annotation(child));
+      }
+    }
+    if (type instanceof JavaTree.AnnotatedTypeTree annotated) {
+      annotated.complete(annotations);
+    }
+    return type;
   }
 
   private JavaTree.PrimitiveTypeTreeImpl primitive(Node node) {
@@ -1701,7 +1737,7 @@ final class SemsitterTranslator {
 
   private static boolean isTypeKind(String kind) {
     return switch (kind) {
-      case "type_identifier", "identifier", "scoped_identifier", "scoped_type_identifier", "generic_type", "array_type", "integral_type", "floating_point_type", "boolean_type", "void_type", "wildcard" -> true;
+      case "type_identifier", "identifier", "scoped_identifier", "scoped_type_identifier", "generic_type", "array_type", "integral_type", "floating_point_type", "boolean_type", "void_type", "wildcard", "annotated_type" -> true;
       default -> false;
     };
   }
