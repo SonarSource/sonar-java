@@ -2,7 +2,12 @@ package checks;
 
 import com.google.errorprone.annotations.DoNotCall;
 import com.google.errorprone.annotations.InlineMe;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 import org.jetbrains.annotations.ApiStatus;
 
 class StaticMethodHidingCheckSample {
@@ -329,6 +334,104 @@ class StaticMethodHidingCheckSample {
 
   static class PlainChild extends PlainParent {
     static void compute() { // Noncompliant {{Rename this method; it hides "compute" in "PlainParent".}}
+    }
+  }
+
+  // --- Compliant: static factory returning a more specific type ---
+
+  static class ImmutableCollectionLike {
+    static ImmutableCollectionLike of() {
+      return new ImmutableCollectionLike();
+    }
+
+    static Collection<String> copyOf(Collection<String> elements) {
+      return elements;
+    }
+
+    static Object create() {
+      return new Object();
+    }
+
+    static Object helper() {
+      return new Object();
+    }
+
+    static Builder builder() {
+      return new Builder();
+    }
+
+    static class Builder {
+    }
+  }
+
+  static class ImmutableSetLike extends ImmutableCollectionLike {
+    static ImmutableSetLike of() { // Compliant - covariant static factory
+      return new ImmutableSetLike();
+    }
+
+    static List<String> copyOf(Collection<String> elements) { // Noncompliant {{Rename this method; it hides "copyOf" in "ImmutableCollectionLike".}}
+      return new ArrayList<>(elements);
+    }
+
+    static Object create() { // Noncompliant {{Rename this method; it hides "create" in "ImmutableCollectionLike".}}
+      return new Object();
+    }
+
+    static String helper() { // Noncompliant {{Rename this method; it hides "helper" in "ImmutableCollectionLike".}}
+      return "";
+    }
+
+    static Builder builder() { // Compliant - covariant static factory returning a nested type
+      return new Builder();
+    }
+
+    static class Builder extends ImmutableCollectionLike.Builder {
+    }
+  }
+
+  static class SameReturnParent {
+    static Integer value() {
+      return 1;
+    }
+  }
+
+  static class SameReturnChild extends SameReturnParent {
+    static Integer value() { // Noncompliant {{Rename this method; it hides "value" in "SameReturnParent".}}
+      return 2;
+    }
+  }
+
+  // --- Compliant: JUnit 3 suite() methods have to be redeclared in each test class ---
+
+  public static class ParentTestCase extends TestCase {
+    public static Test suite() {
+      return new TestSuite(ParentTestCase.class);
+    }
+
+    public static Test other() {
+      return new TestSuite(ParentTestCase.class);
+    }
+  }
+
+  public static class ChildTestCase extends ParentTestCase {
+    public static Test suite() { // Compliant - JUnit 3 suite
+      return new TestSuite(ChildTestCase.class);
+    }
+
+    public static Test other() { // Noncompliant {{Rename this method; it hides "other" in "ParentTestCase".}}
+      return new TestSuite(ChildTestCase.class);
+    }
+  }
+
+  public static class ParentTestSuiteCase extends TestCase {
+    public static TestSuite suite() {
+      return new TestSuite(ParentTestSuiteCase.class);
+    }
+  }
+
+  public static class ChildTestSuiteCase extends ParentTestSuiteCase {
+    public static TestSuite suite() { // Compliant - JUnit 3 suite
+      return new TestSuite(ChildTestSuiteCase.class);
     }
   }
 }

@@ -58,7 +58,9 @@ public class StaticMethodHidingCheck extends IssuableSubscriptionVisitor {
     for (Symbol symbol : superClass.symbol().lookupSymbols(methodSymbol.name())) {
       if (symbol.isMethodSymbol() && symbol.isStatic() && !symbol.isPrivate()
         && hasSameParameterTypes(methodSymbol, (Symbol.MethodSymbol) symbol)) {
-        reportHidingIssue(methodTree, methodSymbol, (Symbol.MethodSymbol) symbol);
+        if (!isRequiredByDesign(methodSymbol, (Symbol.MethodSymbol) symbol)) {
+          reportHidingIssue(methodTree, methodSymbol, (Symbol.MethodSymbol) symbol);
+        }
         return true;
       }
     }
@@ -86,6 +88,45 @@ public class StaticMethodHidingCheck extends IssuableSubscriptionVisitor {
       || methodSymbol.metadata().isAnnotatedWith("com.google.errorprone.annotations.InlineMe")
       || methodSymbol.metadata().isAnnotatedWith("org.jetbrains.annotations.ApiStatus$Obsolete")
       || methodSymbol.metadata().isAnnotatedWith("org.jetbrains.annotations.ApiStatus$ScheduledForRemoval");
+  }
+
+  /**
+   * Some hierarchies are designed so that subclasses have to redeclare static methods of their parent:
+   * <ul>
+   *   <li>static factories returning a more specific type than the hidden one, this type being the declaring class, a subtype of it or a type nested in it
+   *   (e.g. Guava's {@code ImmutableBiMap.of()} hiding {@code ImmutableMap.of()}, or {@code ImmutableBiMap.builder()} hiding {@code ImmutableMap.builder()})</li>
+   *   <li>JUnit 3 {@code suite()} methods returning a {@code Test}, looked up by the test runner on each test class</li>
+   * </ul>
+   */
+  private static boolean isRequiredByDesign(Symbol.MethodSymbol methodSymbol, Symbol.MethodSymbol hiddenMethod) {
+    return isCovariantFactory(methodSymbol, hiddenMethod) || isJUnit3Suite(methodSymbol);
+  }
+
+  private static boolean isCovariantFactory(Symbol.MethodSymbol methodSymbol, Symbol.MethodSymbol hiddenMethod) {
+    Type returnType = methodSymbol.returnType().type().erasure();
+    Type hiddenReturnType = hiddenMethod.returnType().type().erasure();
+    if (returnType.equals(hiddenReturnType) || !returnType.isSubtypeOf(hiddenReturnType)) {
+      return false;
+    }
+    Symbol owner = methodSymbol.owner();
+    return returnType.isSubtypeOf(owner.type().erasure()) || isNestedIn(returnType.symbol(), owner);
+  }
+
+  private static boolean isNestedIn(Symbol symbol, Symbol enclosingType) {
+    Symbol current = symbol.owner();
+    while (current != null && current.isTypeSymbol()) {
+      if (current.equals(enclosingType)) {
+        return true;
+      }
+      current = current.owner();
+    }
+    return false;
+  }
+
+  private static boolean isJUnit3Suite(Symbol.MethodSymbol methodSymbol) {
+    return "suite".equals(methodSymbol.name())
+      && methodSymbol.parameterTypes().isEmpty()
+      && methodSymbol.returnType().type().isSubtypeOf("junit.framework.Test");
   }
 
   private static boolean hasSameParameterTypes(Symbol.MethodSymbol method, Symbol.MethodSymbol candidate) {

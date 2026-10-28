@@ -27,4 +27,18 @@ class StaticMethodHidingCheckSample {
     }
   }
 
+  // --- Noncompliant: unknown return types are not considered covariant ---
+
+  static class ParentWithUnknownReturn {
+    static Unknown create() {
+      return null;
+    }
+  }
+
+  static class ChildWithUnknownReturn extends ParentWithUnknownReturn {
+    static Unknown create() { // Noncompliant {{Rename this method; it hides "create" in "ParentWithUnknownReturn".}}
+      return null;
+    }
+  }
+
 }
