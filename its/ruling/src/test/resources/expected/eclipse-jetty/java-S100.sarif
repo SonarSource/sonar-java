@@ -111,34 +111,6 @@
             "index" : -1
           },
           "region" : {
-            "startLine" : 415,
-            "startColumn" : 25,
-            "endLine" : 415,
-            "endColumn" : 35,
-            "charOffset" : 13435,
-            "charLength" : 10,
-            "byteOffset" : 13435,
-            "byteLength" : 10
-          }
-        }
-      } ],
-      "rank" : -1.0
-    }, {
-      "ruleId" : "java:S100",
-      "ruleIndex" : -1,
-      "kind" : "fail",
-      "level" : "warning",
-      "message" : {
-        "text" : "Rename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
-      },
-      "locations" : [ {
-        "id" : -1,
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/UnixCrypt.java",
-            "index" : -1
-          },
-          "region" : {
             "startLine" : 470,
             "startColumn" : 25,
             "endLine" : 470,
