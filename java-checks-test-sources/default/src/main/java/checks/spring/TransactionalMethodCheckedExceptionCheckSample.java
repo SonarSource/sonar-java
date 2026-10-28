@@ -503,6 +503,13 @@ public class TransactionalMethodCheckedExceptionCheckSample {
       Validator.validate(list);
     }
 
+    public void saveInMethodReferenceBeforeThrow(java.util.List<Object> list) throws IOException { // Noncompliant
+//              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      list.forEach(repository::save);
+      Validator.validate(list);
+      repository.save(list);
+    }
+
     public void saveInTryThenThrowInCatch(Object o) throws IOException { // Noncompliant
 //              ^^^^^^^^^^^^^^^^^^^^^^^^^
       try {
@@ -529,6 +536,24 @@ public class TransactionalMethodCheckedExceptionCheckSample {
       try (java.util.stream.Stream<String> lines = java.nio.file.Files.lines(path)) {
         repository.save(lines);
       }
+    }
+
+    public void saveBeforeTryWithResources(Object o) throws IOException { // Noncompliant
+//              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+      if (o == null) {
+        throw new IOException();
+      }
+      repository.save(o);
+      try (java.io.ByteArrayInputStream in = new java.io.ByteArrayInputStream(new byte[0])) {
+        in.available();
+      }
+    }
+
+    public void saveAfterTryWithResources(Object o) throws IOException { // Compliant - the resource is closed before the write
+      try (java.io.ByteArrayInputStream in = new java.io.ByteArrayInputStream(new byte[0])) {
+        in.available();
+      }
+      repository.save(o);
     }
 
     public void executeUpdateBeforeValidation(jakarta.persistence.EntityManager em, Object o) throws IOException { // Noncompliant

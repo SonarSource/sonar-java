@@ -55,6 +55,7 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -321,7 +322,7 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
     if (hasTransactionalPrefix(method.simpleName().name())) {
       return true;
     }
-    var visitor = new MethodInvocationVisitor(TransactionalMethodCheckedExceptionCheck::hasTransactionalName);
+    var visitor = new MethodInvocationVisitor(TransactionalMethodCheckedExceptionCheck::hasTransactionalName, ref -> false);
     method.accept(visitor);
     return visitor.foundTransactionalCall;
   }
@@ -391,7 +392,9 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
     if (!(tree instanceof MethodInvocationTree) && !(tree instanceof NewClassTree)) {
       return false;
     }
-    var visitor = new MethodInvocationVisitor(TransactionalMethodCheckedExceptionCheck::isPotentialWrite);
+    var visitor = new MethodInvocationVisitor(
+      mit -> isPotentialWrite(mit.methodSymbol(), ExpressionUtils.methodName(mit).name()),
+      ref -> isPotentialWrite(ref.method().symbol(), ref.method().name()));
     tree.accept(visitor);
     return visitor.foundTransactionalCall;
   }
@@ -405,18 +408,17 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
    * or when it is invoked on a persistence API (EntityManager, JdbcTemplate, repository, ...) and its name
    * does not look like a read operation.
    */
-  private static boolean isPotentialWrite(MethodInvocationTree mit) {
-    if (hasTransactionalName(mit)) {
+  private static boolean isPotentialWrite(Symbol symbol, String name) {
+    if (hasTransactionalPrefix(name)) {
       return true;
     }
-    Symbol.MethodSymbol symbol = mit.methodSymbol();
     if (symbol.isUnknown()) {
       return false;
     }
     Type ownerType = symbol.owner().type();
     return ownerType != null
       && PERSISTENCE_TYPES.stream().anyMatch(ownerType::isSubtypeOf)
-      && !hasPrefix(ExpressionUtils.methodName(mit).name(), READ_PREFIXES);
+      && !hasPrefix(name, READ_PREFIXES);
   }
 
   /**
@@ -433,6 +435,18 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
       parent = parent.parent();
     }
     return false;
+  }
+
+  /**
+   * A resource of a try-with-resources is closed after the body of the try. Considering it as a throw point covers
+   * writes executed before the try statement.
+   */
+  private static boolean isResourceClosingWithCheckedException(Tree tree) {
+    Tree parent = tree.parent();
+    return parent != null
+      && parent.parent() instanceof TryStatementTree tryStatement
+      && tryStatement.resourceList() == parent
+      && closeMayThrowCheckedException(tree);
   }
 
   private static boolean closeMayThrowCheckedException(Tree resource) {
@@ -460,6 +474,9 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
   }
 
   private static boolean isCheckedThrowPoint(Tree tree) {
+    if (isResourceClosingWithCheckedException(tree)) {
+      return true;
+    }
     if (tree instanceof ThrowStatementTree throwStatement) {
       Type type = throwStatement.expression().symbolType();
       return type.isUnknown() || isCheckedException(type);
@@ -497,10 +514,21 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
 
   private static class MethodInvocationVisitor extends BaseTreeVisitor {
     private final Predicate<MethodInvocationTree> isTransactionalCall;
+    private final Predicate<MethodReferenceTree> isTransactionalReference;
     boolean foundTransactionalCall = false;
 
-    MethodInvocationVisitor(Predicate<MethodInvocationTree> isTransactionalCall) {
+    MethodInvocationVisitor(Predicate<MethodInvocationTree> isTransactionalCall, Predicate<MethodReferenceTree> isTransactionalReference) {
       this.isTransactionalCall = isTransactionalCall;
+      this.isTransactionalReference = isTransactionalReference;
+    }
+
+    @Override
+    public void visitMethodReference(MethodReferenceTree tree) {
+      if (!foundTransactionalCall && isTransactionalReference.test(tree)) {
+        foundTransactionalCall = true;
+        return;
+      }
+      super.visitMethodReference(tree);
     }
 
     @Override
