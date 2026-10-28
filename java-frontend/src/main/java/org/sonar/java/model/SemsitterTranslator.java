@@ -400,6 +400,8 @@ final class SemsitterTranslator {
     TypeTree type;
     if (typeNode != null) {
       type = type(typeNode);
+    } else if ("spread_parameter".equals(declaration.k())) {
+      type = spreadType(declaration);
     } else {
       Node catchTypeNode = childKind(declaration, "catch_type");
       type = catchTypeNode == null ? new VarTypeTreeImpl(synthetic("var")) : catchType(catchTypeNode);
@@ -418,6 +420,13 @@ final class SemsitterTranslator {
       trees.add(declarator(declaration, modifiers, type));
     }
     return trees;
+  }
+
+  private TypeTree spreadType(Node node) {
+    TypeTree element = type(firstType(node));
+    JavaTree.ArrayTypeTreeImpl array = new JavaTree.ArrayTypeTreeImpl(element, List.of(), token(required(node, "...")));
+    ascribe(array, JType.array(sema, element.symbolType() instanceof JType elementType ? elementType : JType.unknown(sema)));
+    return array;
   }
 
   private VariableTreeImpl variable(Node parameter, boolean sharedModifiers) {
@@ -512,7 +521,7 @@ final class SemsitterTranslator {
       case "switch_statement", "switch_expression" -> switchStatement(node);
       case "local_variable_declaration" -> variables(node).get(0);
       case "class_declaration", "interface_declaration", "enum_declaration", "record_declaration" -> typeDeclaration(node);
-      default -> new EmptyStatementTreeImpl(optionalToken(node, ";") == null ? synthetic(";") : token(required(node, ";")));
+      default -> new EmptyStatementTreeImpl(";".equals(node.text()) ? token(node) : token(required(node, ";")));
     };
   }
 
@@ -569,7 +578,10 @@ final class SemsitterTranslator {
     ExpressionTree condition = null;
     int semicolons = 0;
     for (Node child : node.children()) {
-      if ("for".equals(child.text()) || "(".equals(child.text()) || ")".equals(child.text())) {
+      if (")".equals(child.text())) {
+        break;
+      }
+      if ("for".equals(child.text()) || "(".equals(child.text())) {
         continue;
       }
       if (";".equals(child.text())) {
@@ -1151,6 +1163,9 @@ final class SemsitterTranslator {
   private ExpressionTree update(Node node) {
     Node operator = field(node, "operator");
     List<Node> children = node.children();
+    if (operator == null) {
+      operator = children.stream().filter(child -> "++".equals(child.text()) || "--".equals(child.text())).findFirst().orElse(null);
+    }
     boolean prefix = !children.isEmpty() && ("++".equals(children.get(0).text()) || "--".equals(children.get(0).text()));
     ExpressionTree operand = expression(firstNamed(node));
     String text = operator == null ? "++" : operator.text();
