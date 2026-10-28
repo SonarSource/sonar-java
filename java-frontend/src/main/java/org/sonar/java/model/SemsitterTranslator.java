@@ -832,7 +832,7 @@ final class SemsitterTranslator {
       case "string_literal", "string_fragment" -> literal(Tree.Kind.STRING_LITERAL, token(node), sema.getClassType("java.lang.String"));
       case "character_literal" -> literal(Tree.Kind.CHAR_LITERAL, token(node), sema.getClassType("char"));
       case "text_block" -> literal(Tree.Kind.TEXT_BLOCK, token(node), sema.getClassType("java.lang.String"));
-      case "scoped_identifier", "field_access" -> memberSelect(node);
+      case "scoped_identifier", "scoped_type_identifier", "field_access" -> memberSelect(node);
       case "method_invocation" -> invocation(node);
       case "object_creation_expression" -> creation(node);
       case "array_creation_expression" -> arrayCreation(node);
@@ -918,12 +918,20 @@ final class SemsitterTranslator {
     if (name == null) {
       name = field(node, "field");
     }
-    ExpressionTree qualifier = object == null ? primary(firstNamed(node)) : expression(object);
+    Node scope = object == null ? firstNamed(node) : object;
+    ExpressionTree qualifier = object == null && compoundName(scope) ? typeExpression(scope) : (object == null ? primary(scope) : expression(object));
     IdentifierTreeImpl identifier = identifier(name == null ? lastNamed(node) : name);
     bindUse(identifier, name == null ? node : name);
     MemberSelectExpressionTreeImpl tree = new MemberSelectExpressionTreeImpl(qualifier, token(required(node, ".")), identifier);
     ascribe(tree, identifier.symbolType());
     return tree;
+  }
+
+  private static boolean compoundName(Node node) {
+    return switch (node.k()) {
+      case "scoped_type_identifier", "scoped_identifier", "generic_type", "field_access" -> true;
+      default -> false;
+    };
   }
 
   private MethodInvocationTreeImpl invocation(Node node) {
@@ -1186,7 +1194,7 @@ final class SemsitterTranslator {
       case "integral_type", "floating_point_type", "boolean_type", "void_type" -> primitive(node);
       case "generic_type" -> generic(node);
       case "array_type" -> arrayType(type(requiredField(node, "element", firstType(node))), field(node, "dimensions"));
-      case "scoped_identifier", "field_access" -> memberSelect(node);
+      case "scoped_identifier", "scoped_type_identifier", "field_access" -> memberSelect(node);
       case "wildcard" -> wildcard(node);
       default -> {
         ExpressionTree expression = "identifier".equals(node.k()) || "type_identifier".equals(node.k()) ? primary(node) : expression(node);
@@ -1599,7 +1607,7 @@ final class SemsitterTranslator {
 
   private static boolean isTypeKind(String kind) {
     return switch (kind) {
-      case "type_identifier", "identifier", "scoped_identifier", "generic_type", "array_type", "integral_type", "floating_point_type", "boolean_type", "void_type", "wildcard" -> true;
+      case "type_identifier", "identifier", "scoped_identifier", "scoped_type_identifier", "generic_type", "array_type", "integral_type", "floating_point_type", "boolean_type", "void_type", "wildcard" -> true;
       default -> false;
     };
   }
