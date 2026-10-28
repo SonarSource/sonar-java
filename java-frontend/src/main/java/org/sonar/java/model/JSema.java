@@ -374,13 +374,16 @@ public final class JSema implements Sema {
     if (symbol == null || dump == null) {
       return;
     }
+    JsonObject fact = facts.get(id);
     String ownerId = text(dump, "owner");
+    if (ownerId == null && symbol instanceof JMethodSymbol) {
+      ownerId = text(fact, "parent");
+    }
     if (ownerId != null) {
       symbol.owner(resolve(ownerId));
     } else if (symbol instanceof JTypeSymbol typeSymbol && !typeSymbol.isTypeParameter()) {
       symbol.owner(packageSymbol(packageName(erase(id))));
     }
-    JsonObject fact = facts.get(id);
     if (fact != null) {
       applyFact(symbol, fact);
     }
