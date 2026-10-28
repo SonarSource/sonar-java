@@ -351,6 +351,17 @@ class StaticMethodHidingCheckSample {
     static Object create() {
       return new Object();
     }
+
+    static Object helper() {
+      return new Object();
+    }
+
+    static Builder builder() {
+      return new Builder();
+    }
+
+    static class Builder {
+    }
   }
 
   static class ImmutableSetLike extends ImmutableCollectionLike {
@@ -358,23 +369,34 @@ class StaticMethodHidingCheckSample {
       return new ImmutableSetLike();
     }
 
-    static List<String> copyOf(Collection<String> elements) { // Compliant - covariant static factory
+    static List<String> copyOf(Collection<String> elements) { // Noncompliant {{Rename this method; it hides "copyOf" in "ImmutableCollectionLike".}}
       return new ArrayList<>(elements);
     }
 
     static Object create() { // Noncompliant {{Rename this method; it hides "create" in "ImmutableCollectionLike".}}
       return new Object();
     }
+
+    static String helper() { // Noncompliant {{Rename this method; it hides "helper" in "ImmutableCollectionLike".}}
+      return "";
+    }
+
+    static Builder builder() { // Compliant - covariant static factory returning a nested type
+      return new Builder();
+    }
+
+    static class Builder extends ImmutableCollectionLike.Builder {
+    }
   }
 
-  static class UnrelatedReturnParent {
+  static class SameReturnParent {
     static Integer value() {
       return 1;
     }
   }
 
-  static class UnrelatedReturnChild extends UnrelatedReturnParent {
-    static Integer value() { // Noncompliant {{Rename this method; it hides "value" in "UnrelatedReturnParent".}}
+  static class SameReturnChild extends SameReturnParent {
+    static Integer value() { // Noncompliant {{Rename this method; it hides "value" in "SameReturnParent".}}
       return 2;
     }
   }
@@ -398,6 +420,18 @@ class StaticMethodHidingCheckSample {
 
     public static Test other() { // Noncompliant {{Rename this method; it hides "other" in "ParentTestCase".}}
       return new TestSuite(ChildTestCase.class);
+    }
+  }
+
+  public static class ParentTestSuiteCase extends TestCase {
+    public static TestSuite suite() {
+      return new TestSuite(ParentTestSuiteCase.class);
+    }
+  }
+
+  public static class ChildTestSuiteCase extends ParentTestSuiteCase {
+    public static TestSuite suite() { // Compliant - JUnit 3 suite
+      return new TestSuite(ChildTestSuiteCase.class);
     }
   }
 }
