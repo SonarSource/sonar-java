@@ -435,9 +435,15 @@ public final class JSema implements Sema {
     }
     String ownerName = erase(parsed.owner);
     JTypeSymbol owner = typeSymbol(ownerName);
-    JsonObject member = findMember(ownerName, parsed, new HashSet<>(), false);
+    JsonObject member = null;
+    if (parsed.params != null && !parsed.arityOnly) {
+      member = findMember(ownerName, parsed, new HashSet<>(), Match.TYPED);
+    }
+    if (member == null) {
+      member = findMember(ownerName, parsed, new HashSet<>(), Match.ARITY);
+    }
     if (member == null && parsed.params != null) {
-      member = findMember(ownerName, parsed, new HashSet<>(), true);
+      member = findMember(ownerName, parsed, new HashSet<>(), Match.VARARGS);
     }
     String memberId = member == null ? null : text(member, "id");
     if (member != null && (memberId == null || !creating.contains(memberId))) {
@@ -462,7 +468,8 @@ public final class JSema implements Sema {
       return field;
     }
     JMethodSymbol method = new JMethodSymbol(this, id, parsed.name);
-    method.owner(owner);
+    method.owner(parsed.arityOnly ? Symbol.TypeSymbol.UNKNOWN_TYPE : owner);
+    method.unknown(parsed.arityOnly);
     fillMethod(method, facts.get(id), id);
     if (method.parameterTypes().isEmpty() && !parsed.arityOnly && parsed.params != null && !parsed.params.isEmpty()) {
       List<Type> types = new ArrayList<>();
@@ -476,28 +483,28 @@ public final class JSema implements Sema {
   }
 
   @Nullable
-  private JsonObject findMember(String ownerFqn, MemberId parsed, Set<String> seen, boolean allowVarargs) {
+  private JsonObject findMember(String ownerFqn, MemberId parsed, Set<String> seen, Match match) {
     if (!seen.add(ownerFqn)) {
       return null;
     }
     JsonObject info = typeInfos.get(ownerFqn);
-    JsonObject found = matchMembers(info == null ? null : info.getAsJsonArray("members"), parsed, allowVarargs);
+    JsonObject found = matchMembers(info == null ? null : info.getAsJsonArray("members"), parsed, match);
     if (found != null) {
       return found;
     }
     JTypeSymbol type = typesByName.get(ownerFqn);
     if (type != null) {
       for (JsonObject member : type.memberFacts()) {
-        if (matches(member, parsed, allowVarargs)) {
+        if (matches(member, parsed, match)) {
           return member;
         }
       }
     }
-    if (info == null) {
+    if (info == null || "<init>".equals(parsed.name)) {
       return null;
     }
     for (String parent : parents(info)) {
-      found = findMember(erase(parent), parsed, seen, allowVarargs);
+      found = findMember(erase(parent), parsed, seen, match);
       if (found != null) {
         return found;
       }
@@ -506,20 +513,20 @@ public final class JSema implements Sema {
   }
 
   @Nullable
-  private JsonObject matchMembers(@Nullable JsonArray members, MemberId parsed, boolean allowVarargs) {
+  private JsonObject matchMembers(@Nullable JsonArray members, MemberId parsed, Match match) {
     if (members == null) {
       return null;
     }
     for (JsonElement element : members) {
       JsonObject member = element.getAsJsonObject();
-      if (matches(member, parsed, allowVarargs)) {
+      if (matches(member, parsed, match)) {
         return member;
       }
     }
     return null;
   }
 
-  private boolean matches(JsonObject member, MemberId parsed, boolean allowVarargs) {
+  private boolean matches(JsonObject member, MemberId parsed, Match match) {
     if (member.has("id")) {
       MemberId other = parseMember(member.get("id").getAsString());
       return other != null && parsed.name.equals(other.name) && parsed.arity == other.arity
@@ -541,11 +548,40 @@ public final class JSema implements Sema {
     }
     List<Type> declaredParams = parameterTypesOf(descriptor);
     int declaredCount = declaredParams.size();
-    if (declaredCount == parsed.arity) {
-      return true;
+    return switch (match) {
+      case TYPED -> declaredCount == parsed.arity && sameErasures(declaredParams, splitParams(parsed.params));
+      case ARITY -> declaredCount == parsed.arity;
+      case VARARGS -> declaredCount > 0 && parsed.arity >= declaredCount - 1 && declaredParams.get(declaredCount - 1).isArray();
+    };
+  }
+
+  private static boolean sameErasures(List<Type> declared, List<String> names) {
+    for (int i = 0; i < declared.size(); i++) {
+      String expected = declared.get(i).erasure().fullyQualifiedName().replace('$', '.');
+      if (!expected.equals(erasedName(names.get(i)))) {
+        return false;
+      }
     }
-    return allowVarargs && declaredCount > 0 && parsed.arity >= declaredCount - 1
-      && declaredParams.get(declaredCount - 1).isArray();
+    return true;
+  }
+
+  private static String erasedName(String name) {
+    StringBuilder out = new StringBuilder(name.length());
+    int depth = 0;
+    for (char current : erase(name).toCharArray()) {
+      if (current == '<') {
+        depth++;
+      } else if (current == '>') {
+        depth--;
+      } else if (depth == 0) {
+        out.append(current == '$' ? '.' : current);
+      }
+    }
+    return out.toString().replace("...", "[]").trim();
+  }
+
+  private enum Match {
+    TYPED, ARITY, VARARGS
   }
 
   private void fillMethod(JMethodSymbol method, @Nullable JsonObject fact, String id) {
@@ -556,9 +592,10 @@ public final class JSema implements Sema {
         method.returnTypeSymbol(typeFromName(returns.get(0)).symbol());
       }
     }
-    if (fact != null && fact.has("params")) {
+    List<String> factParams = fact == null ? List.of() : flat(fact, "params");
+    if (!factParams.isEmpty() && (parsed == null || parsed.arityOnly || factParams.size() == parsed.arity)) {
       List<Type> types = new ArrayList<>();
-      for (String param : flat(fact, "params")) {
+      for (String param : factParams) {
         types.add(typeFromName(param));
       }
       method.parameterTypes(types);
@@ -800,7 +837,22 @@ public final class JSema implements Sema {
     if (params.isEmpty()) {
       return List.of();
     }
-    return List.of(params.split(","));
+    List<String> result = new ArrayList<>();
+    int depth = 0;
+    int start = 0;
+    for (int i = 0; i < params.length(); i++) {
+      char current = params.charAt(i);
+      if (current == '<') {
+        depth++;
+      } else if (current == '>') {
+        depth--;
+      } else if (current == ',' && depth == 0) {
+        result.add(params.substring(start, i));
+        start = i + 1;
+      }
+    }
+    result.add(params.substring(start));
+    return result;
   }
 
   static String erase(String id) {
