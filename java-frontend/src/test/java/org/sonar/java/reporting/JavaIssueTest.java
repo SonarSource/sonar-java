@@ -77,8 +77,8 @@ class JavaIssueTest {
     assertThat(newIssueOnFile.ruleKey()).isEqualTo(ruleKey);
     IssueLocation location = newIssueOnFile.primaryLocation();
     assertThat(location.inputComponent()).isEqualTo(inputFile);
-    assertThat(location.textRange()).isNull();
     assertThat(location.message()).isEqualTo("file message");
+    assertLocation(location, inputFile, "file message", 1, 0, 1, 9);
 
     // issue on entire line
     javaIssue = JavaIssue.create(sensorContext, ruleKey, null);
