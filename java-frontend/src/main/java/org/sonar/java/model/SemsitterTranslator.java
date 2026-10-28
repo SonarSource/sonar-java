@@ -323,11 +323,6 @@ final class SemsitterTranslator {
     if (separator == null) {
       separator = optionalToken(node, ";");
     }
-    String constructor = nameNode(node) == null ? null : nameNode(node).valueTarget();
-    if (constructor != null) {
-      name.symbol = sema.resolve(constructor);
-      sema.use(constructor, name);
-    }
     EnumConstantTreeImpl tree = new EnumConstantTreeImpl(modifiers(node), name, new NewClassTreeImpl(name, args, classBody), separator);
     bindDeclaration(tree, nameNode(node), name);
     return tree;
@@ -973,15 +968,27 @@ final class SemsitterTranslator {
     if (typeArguments != null) {
       tree.completeWithTypeArguments(typeArguments(typeArguments));
     }
-    if (type instanceof IdentifierTreeImpl identifier) {
-      String constructor = typeNode == null ? null : typeNode.valueTarget();
-      if (constructor != null) {
-        identifier.symbol = sema.resolve(constructor);
-        sema.use(constructor, identifier);
-      }
-    }
+    bindConstructor(tree.getConstructorIdentifier(), typeNode);
     ascribe(tree, type.symbolType());
     return tree;
+  }
+
+  private void bindConstructor(IdentifierTree constructorName, @Nullable Node typeNode) {
+    if (!(constructorName instanceof IdentifierTreeImpl identifier)) {
+      return;
+    }
+    String constructor = typeNode == null ? null : typeNode.valueTarget();
+    if (constructor != null) {
+      Symbol resolved = sema.resolve(constructor);
+      if (resolved instanceof Symbol.MethodSymbol) {
+        identifier.symbol = resolved;
+        sema.use(constructor, identifier);
+        return;
+      }
+    }
+    if (!(identifier.symbol() instanceof Symbol.MethodSymbol)) {
+      identifier.symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
+    }
   }
 
   private NewArrayTreeImpl arrayCreation(Node node) {
