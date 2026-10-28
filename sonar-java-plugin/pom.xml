@@ -153,7 +153,7 @@
         <directory>${project.build.directory}/generated-resources/profiles</directory>
       </resource>
       <resource>
-        <directory>${maven.multiModuleProjectDirectory}/semsitter-bridge/target/release</directory>
+        <directory>${maven.multiModuleProjectDirectory}/semsitter-bridge/prebuilt</directory>
         <includes>
           <include>bridge-*.xz</include>
         </includes>
@@ -191,7 +191,7 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>21500000</maxsize>
+                  <maxsize>30000000</maxsize>
                   <minsize>10000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
@@ -354,19 +354,6 @@
           <artifactId>exec-maven-plugin</artifactId>
           <version>3.6.4</version>
           <executions>
-            <execution>
-              <id>archive-semsitter-bridge</id>
-              <phase>generate-resources</phase>
-              <goals>
-                <goal>exec</goal>
-              </goals>
-              <configuration>
-                <executable>bash</executable>
-                <arguments>
-                  <argument>${maven.multiModuleProjectDirectory}/semsitter-bridge/archive-bridge.sh</argument>
-                </arguments>
-              </configuration>
-            </execution>
             <execution>
               <id>generate-built-in-profiles</id>
               <phase>generate-resources</phase>
