@@ -16,9 +16,12 @@
  */
 package org.sonar.java.checks;
 
+import java.io.File;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class AnonymousClassOnFunctionalInterfaceCheckTest {
@@ -40,5 +43,35 @@ class AnonymousClassOnFunctionalInterfaceCheckTest {
       .withJavaVersion(8)
       .withoutSemantic()
       .verifyIssues();
+  }
+
+  @Test
+  void test_gwt_supporting_lambdas() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/AnonymousClassOnFunctionalInterfaceCheckGwtSample.java"))
+      .withCheck(new AnonymousClassOnFunctionalInterfaceCheck())
+      .withJavaVersion(8)
+      .withClassPath(List.of(new File("gwt-user-2.8.0.jar")))
+      .verifyIssues();
+  }
+
+  @Test
+  void test_gwt_not_supporting_lambdas() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/AnonymousClassOnFunctionalInterfaceCheckGwtSample.java"))
+      .withCheck(new AnonymousClassOnFunctionalInterfaceCheck())
+      .withJavaVersion(8)
+      .withClassPath(List.of(new File("gwt-user-2.7.0.jar")))
+      .verifyNoIssues();
+  }
+
+  @Test
+  void test_gwt_dev_not_supporting_lambdas() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/AnonymousClassOnFunctionalInterfaceCheckGwtSample.java"))
+      .withCheck(new AnonymousClassOnFunctionalInterfaceCheck())
+      .withJavaVersion(8)
+      .withClassPath(List.of(new File("gwt-user-2.8.0.jar"), new File("gwt-dev-2.6.1.jar")))
+      .verifyNoIssues();
   }
 }

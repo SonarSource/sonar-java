@@ -8,7 +8,7 @@ interfaces</strong>. Common examples include <code>Runnable</code>, <code>Callab
 <p>Before Java 8 introduced lambda expressions, the only way to implement a functional interface inline was through verbose anonymous inner classes.
 This approach requires significant boilerplate code that obscures the actual logic:</p>
 <pre>
-taskVariable = new InterfaceImplementation() {
+InterfaceImplementation taskVariable = new InterfaceImplementation() {
     @Override
     public void methodName() {
         processData();
@@ -18,7 +18,7 @@ taskVariable = new InterfaceImplementation() {
 <p>Java 8 introduced lambda expressions specifically to simplify this pattern. A lambda expression is a concise way to represent a functional
 interface using an expression. The same functionality can be written as:</p>
 <pre>
-taskVariable = () -&gt; processData();
+InterfaceImplementation taskVariable = () -&gt; processData();
 </pre>
 <p>Using lambda expressions instead of anonymous inner classes offers several benefits:</p>
 <ul>
@@ -45,6 +45,7 @@ abstract method.</p>
   carry extra members.</li>
   <li>The anonymous class has serialization requirements (e.g., implements <code>Serializable</code> explicitly), because lambda serialization has
   different semantics and caveats.</li>
+  <li>The project depends on a GWT version older than 2.8, because the GWT compiler does not support lambda expressions before that version.</li>
 </ul>
 <p>In Java, these single-method interfaces are called <strong>functional interfaces</strong>. Common examples include <code>Runnable</code>,
 <code>Callable</code>, <code>Comparator</code>, and the many interfaces in the <code>java.util.function</code> package. Lambda expressions were

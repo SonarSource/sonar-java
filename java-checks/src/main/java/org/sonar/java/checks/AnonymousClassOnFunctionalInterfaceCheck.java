@@ -16,19 +16,35 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.AnonymousClassToLambdaUtils;
+import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
+import org.sonar.plugins.java.api.Version;
 
 @Rule(key = "S9357")
-public class AnonymousClassOnFunctionalInterfaceCheck implements JavaFileScanner, JavaVersionAwareVisitor {
+public class AnonymousClassOnFunctionalInterfaceCheck implements JavaFileScanner, JavaVersionAwareVisitor, DependencyVersionAware {
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
     return version.isJava8Compatible();
+  }
+
+  /**
+   * GWT supports lambda expressions only since version 2.8: the rule is disabled for projects depending on an older GWT version.
+   */
+  @Override
+  public boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder) {
+    return Stream.of("gwt-user", "gwt-dev", "gwt-servlet")
+      .map(dependencyFinder)
+      .flatMap(Optional::stream)
+      .allMatch(version -> version.isGreaterThanOrEqualTo("2.8"));
   }
 
   @Override
