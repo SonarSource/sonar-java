@@ -20,12 +20,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -145,7 +147,9 @@ public final class SemsitterBridge implements AutoCloseable {
     }
     JsonElement parsed;
     try {
-      parsed = JsonParser.parseString(responseLine);
+      JsonReader reader = new JsonReader(new StringReader(responseLine));
+      reader.setNestingLimit(Integer.MAX_VALUE);
+      parsed = JsonParser.parseReader(reader);
     } catch (RuntimeException invalid) {
       throw new IOException("semsitter bridge returned invalid JSON" + stderrSuffix(), invalid);
     }
