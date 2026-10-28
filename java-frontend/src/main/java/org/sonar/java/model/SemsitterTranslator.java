@@ -391,7 +391,13 @@ final class SemsitterTranslator {
   private List<VariableTreeImpl> variables(Node declaration) {
     ModifiersTreeImpl modifiers = modifiers(declaration);
     Node typeNode = field(declaration, "type");
-    TypeTree type = typeNode == null ? new VarTypeTreeImpl(synthetic("var")) : type(typeNode);
+    TypeTree type;
+    if (typeNode != null) {
+      type = type(typeNode);
+    } else {
+      Node catchTypeNode = childKind(declaration, "catch_type");
+      type = catchTypeNode == null ? new VarTypeTreeImpl(synthetic("var")) : catchType(catchTypeNode);
+    }
     List<VariableTreeImpl> trees = new ArrayList<>();
     VariableTreeImpl previous = null;
     for (Node child : declaration.children()) {
@@ -1317,11 +1323,28 @@ final class SemsitterTranslator {
     if (name.symbol instanceof Symbol.TypeSymbol typeSymbol) {
       tree.typeSymbol = typeSymbol;
     }
-    String id = firstOf(node, "type_identifier", "identifier").decl();
-    if (id != null) {
-      sema.declare(id, tree);
-    }
     return tree;
+  }
+
+  private TypeTree catchType(Node node) {
+    int alternatives = 0;
+    for (Node child : node.children()) {
+      if (isTypeKind(child.k())) {
+        alternatives++;
+      }
+    }
+    if (alternatives <= 1) {
+      return type(firstType(node));
+    }
+    QualifiedIdentifierListTreeImpl list = QualifiedIdentifierListTreeImpl.emptyList();
+    for (Node child : node.children()) {
+      if (isTypeKind(child.k())) {
+        list.add(type(child));
+      } else if ("|".equals(child.text())) {
+        list.separators().add(token(child));
+      }
+    }
+    return new JavaTree.UnionTypeTreeImpl(list);
   }
 
   private QualifiedIdentifierListTreeImpl separatedTypes(Node node) {
