@@ -432,7 +432,10 @@ public final class JSema implements Sema {
     }
     String ownerName = erase(parsed.owner);
     JTypeSymbol owner = typeSymbol(ownerName);
-    JsonObject member = findMember(ownerName, parsed, new HashSet<>());
+    JsonObject member = findMember(ownerName, parsed, new HashSet<>(), false);
+    if (member == null && parsed.params != null) {
+      member = findMember(ownerName, parsed, new HashSet<>(), true);
+    }
     String memberId = member == null ? null : text(member, "id");
     if (member != null && (memberId == null || !creating.contains(memberId))) {
       Symbol resolved = memberFromTypeInfo(owner, member);
@@ -470,19 +473,19 @@ public final class JSema implements Sema {
   }
 
   @Nullable
-  private JsonObject findMember(String ownerFqn, MemberId parsed, Set<String> seen) {
+  private JsonObject findMember(String ownerFqn, MemberId parsed, Set<String> seen, boolean allowVarargs) {
     if (!seen.add(ownerFqn)) {
       return null;
     }
     JsonObject info = typeInfos.get(ownerFqn);
-    JsonObject found = matchMembers(info == null ? null : info.getAsJsonArray("members"), parsed);
+    JsonObject found = matchMembers(info == null ? null : info.getAsJsonArray("members"), parsed, allowVarargs);
     if (found != null) {
       return found;
     }
     JTypeSymbol type = typesByName.get(ownerFqn);
     if (type != null) {
       for (JsonObject member : type.memberFacts()) {
-        if (matches(member, parsed)) {
+        if (matches(member, parsed, allowVarargs)) {
           return member;
         }
       }
@@ -491,7 +494,7 @@ public final class JSema implements Sema {
       return null;
     }
     for (String parent : parents(info)) {
-      found = findMember(erase(parent), parsed, seen);
+      found = findMember(erase(parent), parsed, seen, allowVarargs);
       if (found != null) {
         return found;
       }
@@ -500,20 +503,20 @@ public final class JSema implements Sema {
   }
 
   @Nullable
-  private JsonObject matchMembers(@Nullable JsonArray members, MemberId parsed) {
+  private JsonObject matchMembers(@Nullable JsonArray members, MemberId parsed, boolean allowVarargs) {
     if (members == null) {
       return null;
     }
     for (JsonElement element : members) {
       JsonObject member = element.getAsJsonObject();
-      if (matches(member, parsed)) {
+      if (matches(member, parsed, allowVarargs)) {
         return member;
       }
     }
     return null;
   }
 
-  private boolean matches(JsonObject member, MemberId parsed) {
+  private boolean matches(JsonObject member, MemberId parsed, boolean allowVarargs) {
     if (member.has("id")) {
       MemberId other = parseMember(member.get("id").getAsString());
       return other != null && parsed.name.equals(other.name) && parsed.arity == other.arity
@@ -530,7 +533,16 @@ public final class JSema implements Sema {
       return true;
     }
     String descriptor = text(member, "desc");
-    return descriptor != null && parameterTypesOf(descriptor).size() == parsed.arity;
+    if (descriptor == null) {
+      return false;
+    }
+    List<Type> declaredParams = parameterTypesOf(descriptor);
+    int declaredCount = declaredParams.size();
+    if (declaredCount == parsed.arity) {
+      return true;
+    }
+    return allowVarargs && declaredCount > 0 && parsed.arity >= declaredCount - 1
+      && declaredParams.get(declaredCount - 1).isArray();
   }
 
   private void fillMethod(JMethodSymbol method, @Nullable JsonObject fact, String id) {
