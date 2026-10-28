@@ -1789,6 +1789,9 @@ final class SemsitterTranslator {
 
   private static SyntaxTrivia trivia(Node node) {
     String text = node.text();
+    if (text.startsWith("//") && text.endsWith("\r")) {
+      text = text.substring(0, text.length() - 1);
+    }
     SyntaxTrivia.CommentKind kind;
     if (text.startsWith("///")) {
       kind = SyntaxTrivia.CommentKind.MARKDOWN;
