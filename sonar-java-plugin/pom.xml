@@ -184,8 +184,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>21500000</maxsize>
-                  <minsize>19000000</minsize>
+                  <maxsize>41000000</maxsize>
+                  <minsize>38000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>
@@ -248,6 +248,19 @@
                 <!-- this is needed because org.apache.el.ExpressionFactoryImpl is instantiated with reflection -->
                 <filter>
                   <artifact>org.apache.tomcat.embed:tomcat-embed-el</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <!-- IntelliJ PSI services and extensions are instantiated with reflection from XML descriptors -->
+                <filter>
+                  <artifact>com.jetbrains.intellij.java:*</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:*</artifact>
                   <includes>
                     <include>**</include>
                   </includes>

@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -348,30 +347,13 @@ public class JParser {
 
     ASTUtils.mayTolerateMissingType(astNode.getAST());
 
-    setParents(tree);
+    JavaTreeFinalizer.setParents(tree);
     return tree;
   }
 
   @VisibleForTesting
   static TokenManager createTokenManager(String version, String unitName, String source) {
     return new TokenManager(lex(version, unitName, source.toCharArray()), source, new DefaultCodeFormatterOptions(new HashMap<>()));
-  }
-
-  private static void setParents(Tree node) {
-    Iterator<Tree> childrenIterator = iteratorFor(node);
-    while (childrenIterator.hasNext()) {
-      Tree child = childrenIterator.next();
-      ((JavaTree) child).setParent(node);
-      setParents(child);
-    }
-  }
-
-  private static Iterator<Tree> iteratorFor(Tree node) {
-    if (node.kind() == Tree.Kind.INFERED_TYPE || node.kind() == Tree.Kind.TOKEN) {
-      // getChildren throws exception in this case
-      return Collections.emptyIterator();
-    }
-    return ((JavaTree) node).getChildren().iterator();
   }
 
   @VisibleForTesting

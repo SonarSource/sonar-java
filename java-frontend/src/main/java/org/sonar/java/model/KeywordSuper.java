@@ -19,9 +19,9 @@ package org.sonar.java.model;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.semantic.Type;
 
-final class KeywordSuper extends IdentifierTreeImpl {
+public final class KeywordSuper extends IdentifierTreeImpl {
 
-  KeywordSuper(InternalSyntaxToken token) {
+  public KeywordSuper(InternalSyntaxToken token) {
     super(token);
   }
 
