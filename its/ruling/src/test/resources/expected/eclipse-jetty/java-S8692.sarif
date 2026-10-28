@@ -1,0 +1,214 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S8692",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Do not use the system clock in tests."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/DateCacheTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 43,
+            "endLine" : 79,
+            "endColumn" : 53,
+            "charOffset" : 2473,
+            "charLength" : 10,
+            "byteOffset" : 2473,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8692",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Do not use the system clock in tests."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/DateCacheTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 80,
+            "startColumn" : 43,
+            "endLine" : 80,
+            "endColumn" : 56,
+            "charOffset" : 2539,
+            "charLength" : 13,
+            "byteOffset" : 2539,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8692",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Do not use the system clock in tests."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/DateCacheTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 82,
+            "startColumn" : 40,
+            "endLine" : 82,
+            "endColumn" : 50,
+            "charOffset" : 2611,
+            "charLength" : 10,
+            "byteOffset" : 2611,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8692",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Do not use the system clock in tests."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/DateCacheTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 86,
+            "startColumn" : 40,
+            "endLine" : 86,
+            "endColumn" : 50,
+            "charOffset" : 2813,
+            "charLength" : 10,
+            "byteOffset" : 2813,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8692",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Do not use the system clock in tests."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/DateCacheTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 87,
+            "startColumn" : 40,
+            "endLine" : 87,
+            "endColumn" : 53,
+            "charOffset" : 2876,
+            "charLength" : 13,
+            "byteOffset" : 2876,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8692",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Do not use the system clock in tests."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/DateCacheTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 44,
+            "endLine" : 90,
+            "endColumn" : 54,
+            "charOffset" : 3025,
+            "charLength" : 10,
+            "byteOffset" : 3025,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S8692",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Do not use the system clock in tests."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/DateCacheTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 91,
+            "startColumn" : 44,
+            "endLine" : 91,
+            "endColumn" : 57,
+            "charOffset" : 3092,
+            "charLength" : 13,
+            "byteOffset" : 3092,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

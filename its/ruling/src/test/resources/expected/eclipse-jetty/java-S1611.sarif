@@ -1,0 +1,970 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"s\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 80,
+            "startColumn" : 14,
+            "endLine" : 80,
+            "endColumn" : 15,
+            "charOffset" : 2572,
+            "charLength" : 1,
+            "byteOffset" : 2572,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"customizer\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ForwardedRequestCustomizerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 377,
+            "startColumn" : 42,
+            "endLine" : 377,
+            "endColumn" : 43,
+            "charOffset" : 17131,
+            "charLength" : 1,
+            "byteOffset" : 17131,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"customizer\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ForwardedRequestCustomizerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 532,
+            "startColumn" : 42,
+            "endLine" : 532,
+            "endColumn" : 43,
+            "charOffset" : 24784,
+            "charLength" : 1,
+            "byteOffset" : 24784,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"customizer\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ForwardedRequestCustomizerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 545,
+            "startColumn" : 42,
+            "endLine" : 545,
+            "endColumn" : 43,
+            "charOffset" : 25404,
+            "charLength" : 1,
+            "byteOffset" : 25404,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"customizer\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ForwardedRequestCustomizerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 558,
+            "startColumn" : 42,
+            "endLine" : 558,
+            "endColumn" : 43,
+            "charOffset" : 26050,
+            "charLength" : 1,
+            "byteOffset" : 26050,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"customizer\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ForwardedRequestCustomizerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 571,
+            "startColumn" : 42,
+            "endLine" : 571,
+            "endColumn" : 43,
+            "charOffset" : 26680,
+            "charLength" : 1,
+            "byteOffset" : 26680,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"header\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ForwardedRequestCustomizerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 593,
+            "startColumn" : 51,
+            "endLine" : 593,
+            "endColumn" : 52,
+            "charOffset" : 27518,
+            "charLength" : 1,
+            "byteOffset" : 27518,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"header\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ForwardedRequestCustomizerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 609,
+            "startColumn" : 51,
+            "endLine" : 609,
+            "endColumn" : 52,
+            "charOffset" : 28088,
+            "charLength" : 1,
+            "byteOffset" : 28088,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"header\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ForwardedRequestCustomizerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 635,
+            "startColumn" : 51,
+            "endLine" : 635,
+            "endColumn" : 52,
+            "charOffset" : 29047,
+            "charLength" : 1,
+            "byteOffset" : 29047,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"token\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpConnectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 375,
+            "startColumn" : 24,
+            "endLine" : 375,
+            "endColumn" : 25,
+            "charOffset" : 14160,
+            "charLength" : 1,
+            "byteOffset" : 14160,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"token\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpConnectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 429,
+            "startColumn" : 24,
+            "endLine" : 429,
+            "endColumn" : 25,
+            "charOffset" : 17055,
+            "charLength" : 1,
+            "byteOffset" : 17055,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"connector\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyConnectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 281,
+            "startColumn" : 21,
+            "endLine" : 281,
+            "endColumn" : 22,
+            "charOffset" : 10403,
+            "charLength" : 1,
+            "byteOffset" : 10403,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"logger\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLogger.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 132,
+            "startColumn" : 53,
+            "endLine" : 132,
+            "endColumn" : 54,
+            "charOffset" : 4008,
+            "charLength" : 1,
+            "byteOffset" : 4008,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"logger\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLogger.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 151,
+            "startColumn" : 53,
+            "endLine" : 151,
+            "endColumn" : 54,
+            "charOffset" : 4397,
+            "charLength" : 1,
+            "byteOffset" : 4397,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"logger\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/JettyLoggerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 610,
+            "startColumn" : 53,
+            "endLine" : 610,
+            "endColumn" : 54,
+            "charOffset" : 24074,
+            "charLength" : 1,
+            "byteOffset" : 24074,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"path\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/Slf4jEffort.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 52,
+            "endLine" : 59,
+            "endColumn" : 53,
+            "charOffset" : 1878,
+            "charLength" : 1,
+            "byteOffset" : 1878,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"pom\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/Slf4jEffort.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 75,
+            "startColumn" : 22,
+            "endLine" : 75,
+            "endColumn" : 23,
+            "charOffset" : 2524,
+            "charLength" : 1,
+            "byteOffset" : 2524,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"line\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/Slf4jEffort.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 171,
+            "startColumn" : 49,
+            "endLine" : 171,
+            "endColumn" : 50,
+            "charOffset" : 6342,
+            "charLength" : 1,
+            "byteOffset" : 6342,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"path\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/Slf4jEffort.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 239,
+            "startColumn" : 21,
+            "endLine" : 239,
+            "endColumn" : 22,
+            "charOffset" : 8474,
+            "charLength" : 1,
+            "byteOffset" : 8474,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"path\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/Slf4jEffort.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 247,
+            "startColumn" : 21,
+            "endLine" : 247,
+            "endColumn" : 22,
+            "charOffset" : 8756,
+            "charLength" : 1,
+            "byteOffset" : 8756,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"entry\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslSelectionDump.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 71,
+            "startColumn" : 18,
+            "endLine" : 71,
+            "endColumn" : 19,
+            "charOffset" : 2402,
+            "charLength" : 1,
+            "byteOffset" : 2402,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"entry\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslSelectionDump.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 74,
+            "startColumn" : 18,
+            "endLine" : 74,
+            "endColumn" : 19,
+            "charOffset" : 2570,
+            "charLength" : 1,
+            "byteOffset" : 2570,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"entry\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslSelectionDump.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 22,
+            "endLine" : 79,
+            "endColumn" : 23,
+            "charOffset" : 2755,
+            "charLength" : 1,
+            "byteOffset" : 2755,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"path\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/URIUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 685,
+            "startColumn" : 37,
+            "endLine" : 685,
+            "endColumn" : 38,
+            "charOffset" : 26404,
+            "charLength" : 1,
+            "byteOffset" : 26408,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"path\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/JarResourceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 163,
+            "startColumn" : 69,
+            "endLine" : 163,
+            "endColumn" : 70,
+            "charOffset" : 5777,
+            "charLength" : 1,
+            "byteOffset" : 5777,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"path\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/JarResourceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 169,
+            "startColumn" : 74,
+            "endLine" : 169,
+            "endColumn" : 75,
+            "charOffset" : 6090,
+            "charLength" : 1,
+            "byteOffset" : 6090,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"path\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/JarResourceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 175,
+            "startColumn" : 79,
+            "endLine" : 175,
+            "endColumn" : 80,
+            "charOffset" : 6426,
+            "charLength" : 1,
+            "byteOffset" : 6426,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"dump\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ssl/SslContextFactoryTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 98,
+            "startColumn" : 21,
+            "endLine" : 98,
+            "endColumn" : 22,
+            "charOffset" : 3828,
+            "charLength" : 1,
+            "byteOffset" : 3828,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"suite\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ssl/SslContextFactoryTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 122,
+            "startColumn" : 21,
+            "endLine" : 122,
+            "endColumn" : 22,
+            "charOffset" : 4625,
+            "charLength" : 1,
+            "byteOffset" : 4625,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"dump\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ssl/SslContextFactoryTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 127,
+            "startColumn" : 21,
+            "endLine" : 127,
+            "endColumn" : 22,
+            "charOffset" : 4866,
+            "charLength" : 1,
+            "byteOffset" : 4866,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"scheduler\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/SchedulerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 28,
+            "endLine" : 65,
+            "endColumn" : 29,
+            "charOffset" : 2230,
+            "charLength" : 1,
+            "byteOffset" : 2230,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"strategy\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/strategy/ExecutionStrategyTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 77,
+            "startColumn" : 28,
+            "endLine" : 77,
+            "endColumn" : 29,
+            "charOffset" : 2802,
+            "charLength" : 1,
+            "byteOffset" : 2802,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"node\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 369,
+            "startColumn" : 26,
+            "endLine" : 369,
+            "endColumn" : 27,
+            "charOffset" : 14093,
+            "charLength" : 1,
+            "byteOffset" : 14093,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1611",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the parentheses around the \"node\" parameter"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 403,
+            "startColumn" : 30,
+            "endLine" : 403,
+            "endColumn" : 31,
+            "charOffset" : 15566,
+            "charLength" : 1,
+            "byteOffset" : 15566,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

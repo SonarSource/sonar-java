@@ -1,0 +1,130 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S9412",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"Collections.sort()\" with \"List.sort()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyCustomizerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 97,
+            "startColumn" : 29,
+            "endLine" : 97,
+            "endColumn" : 33,
+            "charOffset" : 3681,
+            "charLength" : 4,
+            "byteOffset" : 3681,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9412",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"Collections.sort()\" with \"List.sort()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 792,
+            "startColumn" : 21,
+            "endLine" : 792,
+            "endColumn" : 25,
+            "charOffset" : 30922,
+            "charLength" : 4,
+            "byteOffset" : 30922,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9412",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"Collections.sort()\" with \"List.sort()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 840,
+            "startColumn" : 21,
+            "endLine" : 840,
+            "endColumn" : 25,
+            "charOffset" : 24713,
+            "charLength" : 4,
+            "byteOffset" : 24713,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9412",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"Collections.sort()\" with \"List.sort()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlConfigurationTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 693,
+            "startColumn" : 21,
+            "endLine" : 693,
+            "endColumn" : 25,
+            "charOffset" : 31970,
+            "charLength" : 4,
+            "byteOffset" : 31970,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,270 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S2198",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this comparison; it will always return false."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 876,
+            "startColumn" : 17,
+            "endLine" : 876,
+            "endColumn" : 22,
+            "charOffset" : 30766,
+            "charLength" : 5,
+            "byteOffset" : 30766,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2198",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this comparison; it will always return false."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 890,
+            "startColumn" : 17,
+            "endLine" : 890,
+            "endColumn" : 22,
+            "charOffset" : 31144,
+            "charLength" : 5,
+            "byteOffset" : 31144,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2198",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this comparison; it will always return true."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ByteArrayISO8859Writer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 107,
+            "startColumn" : 13,
+            "endLine" : 107,
+            "endColumn" : 19,
+            "charOffset" : 2521,
+            "charLength" : 6,
+            "byteOffset" : 2521,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2198",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this comparison; it will always return true."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ByteArrayISO8859Writer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 124,
+            "startColumn" : 17,
+            "endLine" : 124,
+            "endColumn" : 23,
+            "charOffset" : 2902,
+            "charLength" : 6,
+            "byteOffset" : 2902,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2198",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this comparison; it will always return true."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ByteArrayISO8859Writer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 142,
+            "startColumn" : 17,
+            "endLine" : 142,
+            "endColumn" : 23,
+            "charOffset" : 3346,
+            "charLength" : 6,
+            "byteOffset" : 3346,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2198",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this comparison; it will always return true."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ByteArrayISO8859Writer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 167,
+            "startColumn" : 17,
+            "endLine" : 167,
+            "endColumn" : 25,
+            "charOffset" : 3898,
+            "charLength" : 8,
+            "byteOffset" : 3898,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2198",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this comparison; it will always return true."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ByteArrayISO8859Writer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 185,
+            "startColumn" : 17,
+            "endLine" : 185,
+            "endColumn" : 23,
+            "charOffset" : 4359,
+            "charLength" : 6,
+            "byteOffset" : 4359,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2198",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this comparison; it will always return true."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TreeTrie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 98,
+            "startColumn" : 25,
+            "endLine" : 98,
+            "endColumn" : 31,
+            "charOffset" : 3308,
+            "charLength" : 6,
+            "byteOffset" : 3308,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2198",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this comparison; it will always return true."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TreeTrie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 135,
+            "startColumn" : 25,
+            "endLine" : 135,
+            "endColumn" : 31,
+            "charOffset" : 4361,
+            "charLength" : 6,
+            "byteOffset" : 4361,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

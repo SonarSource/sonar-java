@@ -1,0 +1,2650 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpField.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 24,
+            "endLine" : 38,
+            "endColumn" : 25,
+            "charOffset" : 1252,
+            "charLength" : 1,
+            "byteOffset" : 1252,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 933,
+            "startColumn" : 30,
+            "endLine" : 933,
+            "endColumn" : 31,
+            "charOffset" : 28325,
+            "charLength" : 1,
+            "byteOffset" : 28325,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1520,
+            "startColumn" : 30,
+            "endLine" : 1520,
+            "endColumn" : 31,
+            "charOffset" : 45657,
+            "charLength" : 1,
+            "byteOffset" : 45657,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 86,
+            "startColumn" : 37,
+            "endLine" : 86,
+            "endColumn" : 38,
+            "charOffset" : 3502,
+            "charLength" : 1,
+            "byteOffset" : 3502,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 87,
+            "startColumn" : 42,
+            "endLine" : 87,
+            "endColumn" : 47,
+            "charOffset" : 3546,
+            "charLength" : 5,
+            "byteOffset" : 3546,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"null\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 88,
+            "startColumn" : 35,
+            "endLine" : 88,
+            "endColumn" : 39,
+            "charOffset" : 3587,
+            "charLength" : 4,
+            "byteOffset" : 3587,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 109,
+            "startColumn" : 33,
+            "endLine" : 109,
+            "endColumn" : 38,
+            "charOffset" : 4435,
+            "charLength" : 5,
+            "byteOffset" : 4435,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 31,
+            "endLine" : 62,
+            "endColumn" : 36,
+            "charOffset" : 2084,
+            "charLength" : 5,
+            "byteOffset" : 2084,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"null\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MBeanContainer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 30,
+            "endLine" : 68,
+            "endColumn" : 34,
+            "charOffset" : 2848,
+            "charLength" : 4,
+            "byteOffset" : 2848,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractNetworkConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 34,
+            "endLine" : 40,
+            "endColumn" : 35,
+            "charOffset" : 1474,
+            "charLength" : 1,
+            "byteOffset" : 1474,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ConnectionLimit.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 73,
+            "startColumn" : 33,
+            "endLine" : 73,
+            "endColumn" : 38,
+            "charOffset" : 2729,
+            "charLength" : 5,
+            "byteOffset" : 2729,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Cookies.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 31,
+            "endLine" : 45,
+            "endColumn" : 36,
+            "charOffset" : 1717,
+            "charLength" : 5,
+            "byteOffset" : 1717,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Cookies.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 28,
+            "endLine" : 47,
+            "endColumn" : 33,
+            "charOffset" : 1782,
+            "charLength" : 5,
+            "byteOffset" : 1782,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 41,
+            "endLine" : 67,
+            "endColumn" : 46,
+            "charOffset" : 2657,
+            "charLength" : 5,
+            "byteOffset" : 2657,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"null\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelOverHttp.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 34,
+            "endLine" : 57,
+            "endColumn" : 38,
+            "charOffset" : 2324,
+            "charLength" : 4,
+            "byteOffset" : 2324,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelOverHttp.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 43,
+            "endLine" : 59,
+            "endColumn" : 48,
+            "charOffset" : 2412,
+            "charLength" : 5,
+            "byteOffset" : 2412,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelOverHttp.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 60,
+            "startColumn" : 42,
+            "endLine" : 60,
+            "endColumn" : 47,
+            "charOffset" : 2460,
+            "charLength" : 5,
+            "byteOffset" : 2460,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelOverHttp.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 44,
+            "endLine" : 61,
+            "endColumn" : 49,
+            "charOffset" : 2510,
+            "charLength" : 5,
+            "byteOffset" : 2510,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 60,
+            "startColumn" : 49,
+            "endLine" : 60,
+            "endColumn" : 54,
+            "charOffset" : 2542,
+            "charLength" : 5,
+            "byteOffset" : 2542,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 39,
+            "endLine" : 65,
+            "endColumn" : 44,
+            "charOffset" : 2763,
+            "charLength" : 5,
+            "byteOffset" : 2763,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"null\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 50,
+            "endLine" : 70,
+            "endColumn" : 54,
+            "charOffset" : 3050,
+            "charLength" : 4,
+            "byteOffset" : 3050,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 187,
+            "startColumn" : 34,
+            "endLine" : 187,
+            "endColumn" : 39,
+            "charOffset" : 8281,
+            "charLength" : 5,
+            "byteOffset" : 8281,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/LowResourceMonitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 40,
+            "endLine" : 63,
+            "endColumn" : 41,
+            "charOffset" : 2594,
+            "charLength" : 1,
+            "byteOffset" : 2594,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 118,
+            "startColumn" : 32,
+            "endLine" : 118,
+            "endColumn" : 33,
+            "charOffset" : 4697,
+            "charLength" : 1,
+            "byteOffset" : 4697,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"null\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 663,
+            "startColumn" : 35,
+            "endLine" : 663,
+            "endColumn" : 39,
+            "charOffset" : 21285,
+            "charLength" : 4,
+            "byteOffset" : 21285,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"null\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 664,
+            "startColumn" : 45,
+            "endLine" : 664,
+            "endColumn" : 49,
+            "charOffset" : 21335,
+            "charLength" : 4,
+            "byteOffset" : 21335,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"null\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 665,
+            "startColumn" : 38,
+            "endLine" : 665,
+            "endColumn" : 42,
+            "charOffset" : 21378,
+            "charLength" : 4,
+            "byteOffset" : 21378,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"null\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 208,
+            "startColumn" : 47,
+            "endLine" : 208,
+            "endColumn" : 51,
+            "charOffset" : 9499,
+            "charLength" : 4,
+            "byteOffset" : 9499,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 210,
+            "startColumn" : 41,
+            "endLine" : 210,
+            "endColumn" : 46,
+            "charOffset" : 9578,
+            "charLength" : 5,
+            "byteOffset" : 9578,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 211,
+            "startColumn" : 32,
+            "endLine" : 211,
+            "endColumn" : 37,
+            "charOffset" : 9616,
+            "charLength" : 5,
+            "byteOffset" : 9616,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 213,
+            "startColumn" : 53,
+            "endLine" : 213,
+            "endColumn" : 58,
+            "charOffset" : 9720,
+            "charLength" : 5,
+            "byteOffset" : 9720,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"null\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/RequestLogWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 42,
+            "endLine" : 49,
+            "endColumn" : 46,
+            "charOffset" : 1871,
+            "charLength" : 4,
+            "byteOffset" : 1871,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 40,
+            "endLine" : 78,
+            "endColumn" : 45,
+            "charOffset" : 3022,
+            "charLength" : 5,
+            "byteOffset" : 3022,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 83,
+            "startColumn" : 37,
+            "endLine" : 83,
+            "endColumn" : 42,
+            "charOffset" : 3365,
+            "charLength" : 5,
+            "byteOffset" : 3365,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 30,
+            "endLine" : 84,
+            "endColumn" : 35,
+            "charOffset" : 3401,
+            "charLength" : 5,
+            "byteOffset" : 3401,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResponseWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 33,
+            "endLine" : 55,
+            "endColumn" : 38,
+            "charOffset" : 2360,
+            "charLength" : 5,
+            "byteOffset" : 2360,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 81,
+            "startColumn" : 48,
+            "endLine" : 81,
+            "endColumn" : 53,
+            "charOffset" : 3658,
+            "charLength" : 5,
+            "byteOffset" : 3658,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 83,
+            "startColumn" : 45,
+            "endLine" : 83,
+            "endColumn" : 46,
+            "charOffset" : 3751,
+            "charLength" : 1,
+            "byteOffset" : 3751,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SslConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 51,
+            "endLine" : 43,
+            "endColumn" : 56,
+            "charOffset" : 1786,
+            "charLength" : 5,
+            "byteOffset" : 1786,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SslConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 51,
+            "endLine" : 44,
+            "endColumn" : 56,
+            "charOffset" : 1843,
+            "charLength" : 5,
+            "byteOffset" : 1843,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Utf8HttpWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 22,
+            "endLine" : 34,
+            "endColumn" : 23,
+            "charOffset" : 1162,
+            "charLength" : 1,
+            "byteOffset" : 1162,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 211,
+            "startColumn" : 36,
+            "endLine" : 211,
+            "endColumn" : 41,
+            "charOffset" : 8469,
+            "charLength" : 5,
+            "byteOffset" : 8469,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2085,
+            "startColumn" : 52,
+            "endLine" : 2085,
+            "endColumn" : 57,
+            "charOffset" : 70900,
+            "charLength" : 5,
+            "byteOffset" : 70900,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 30,
+            "endLine" : 70,
+            "endColumn" : 35,
+            "charOffset" : 2893,
+            "charLength" : 5,
+            "byteOffset" : 2893,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/IdleTimeoutHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 37,
+            "endLine" : 47,
+            "endColumn" : 42,
+            "charOffset" : 1734,
+            "charLength" : 5,
+            "byteOffset" : 1734,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ShutdownHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 81,
+            "startColumn" : 32,
+            "endLine" : 81,
+            "endColumn" : 37,
+            "charOffset" : 3050,
+            "charLength" : 5,
+            "byteOffset" : 3050,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"null\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 162,
+            "startColumn" : 42,
+            "endLine" : 162,
+            "endColumn" : 46,
+            "charOffset" : 7199,
+            "charLength" : 4,
+            "byteOffset" : 7199,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 165,
+            "startColumn" : 34,
+            "endLine" : 165,
+            "endColumn" : 39,
+            "charOffset" : 7293,
+            "charLength" : 5,
+            "byteOffset" : 7293,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/resource/ByteBufferRangeWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 30,
+            "endLine" : 33,
+            "endColumn" : 35,
+            "charOffset" : 1099,
+            "charLength" : 5,
+            "byteOffset" : 1099,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/resource/InputStreamRangeWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 30,
+            "endLine" : 41,
+            "endColumn" : 35,
+            "charOffset" : 1286,
+            "charLength" : 5,
+            "byteOffset" : 1286,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 83,
+            "startColumn" : 39,
+            "endLine" : 83,
+            "endColumn" : 44,
+            "charOffset" : 3128,
+            "charLength" : 5,
+            "byteOffset" : 3128,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 43,
+            "endLine" : 41,
+            "endColumn" : 44,
+            "charOffset" : 1568,
+            "charLength" : 1,
+            "byteOffset" : 1568,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 43,
+            "endLine" : 42,
+            "endColumn" : 44,
+            "charOffset" : 1658,
+            "charLength" : 1,
+            "byteOffset" : 1658,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 36,
+            "endLine" : 43,
+            "endColumn" : 37,
+            "charOffset" : 1748,
+            "charLength" : 1,
+            "byteOffset" : 1748,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 50,
+            "endLine" : 57,
+            "endColumn" : 55,
+            "charOffset" : 1973,
+            "charLength" : 5,
+            "byteOffset" : 1973,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0L\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 60,
+            "startColumn" : 37,
+            "endLine" : 60,
+            "endColumn" : 39,
+            "charOffset" : 2132,
+            "charLength" : 2,
+            "byteOffset" : 2132,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/HouseKeeper.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 39,
+            "endLine" : 49,
+            "endColumn" : 44,
+            "charOffset" : 1849,
+            "charLength" : 5,
+            "byteOffset" : 1849,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 38,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1874,
+            "charLength" : 5,
+            "byteOffset" : 1874,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"null\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 40,
+            "endLine" : 72,
+            "endColumn" : 44,
+            "charOffset" : 2407,
+            "charLength" : 4,
+            "byteOffset" : 2407,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"null\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 73,
+            "startColumn" : 41,
+            "endLine" : 73,
+            "endColumn" : 45,
+            "charOffset" : 2453,
+            "charLength" : 4,
+            "byteOffset" : 2453,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/Session.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 98,
+            "startColumn" : 35,
+            "endLine" : 98,
+            "endColumn" : 40,
+            "charOffset" : 3201,
+            "charLength" : 5,
+            "byteOffset" : 3201,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 163,
+            "startColumn" : 35,
+            "endLine" : 163,
+            "endColumn" : 40,
+            "charOffset" : 6441,
+            "charLength" : 5,
+            "byteOffset" : 6441,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 165,
+            "startColumn" : 40,
+            "endLine" : 165,
+            "endColumn" : 45,
+            "charOffset" : 6537,
+            "charLength" : 5,
+            "byteOffset" : 6537,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 196,
+            "startColumn" : 39,
+            "endLine" : 196,
+            "endColumn" : 44,
+            "charOffset" : 8073,
+            "charLength" : 5,
+            "byteOffset" : 8073,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"null\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ByteArrayISO8859Writer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 44,
+            "endLine" : 39,
+            "endColumn" : 48,
+            "charOffset" : 1419,
+            "charLength" : 4,
+            "byteOffset" : 1419,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"null\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ByteArrayISO8859Writer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 42,
+            "endLine" : 40,
+            "endColumn" : 46,
+            "charOffset" : 1466,
+            "charLength" : 4,
+            "byteOffset" : 1466,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ByteArrayISO8859Writer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 30,
+            "endLine" : 41,
+            "endColumn" : 35,
+            "charOffset" : 1501,
+            "charLength" : 5,
+            "byteOffset" : 1501,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiPartOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 30,
+            "endLine" : 41,
+            "endColumn" : 35,
+            "charOffset" : 1409,
+            "charLength" : 5,
+            "byteOffset" : 1409,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiPartWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 30,
+            "endLine" : 39,
+            "endColumn" : 35,
+            "charOffset" : 1329,
+            "charLength" : 5,
+            "byteOffset" : 1329,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 38,
+            "endLine" : 89,
+            "endColumn" : 39,
+            "charOffset" : 2977,
+            "charLength" : 1,
+            "byteOffset" : 2977,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 43,
+            "endLine" : 90,
+            "endColumn" : 48,
+            "charOffset" : 3064,
+            "charLength" : 5,
+            "byteOffset" : 3064,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/QuotedStringTokenizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 37,
+            "endLine" : 43,
+            "endColumn" : 42,
+            "charOffset" : 1488,
+            "charLength" : 5,
+            "byteOffset" : 1488,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/QuotedStringTokenizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 41,
+            "endLine" : 44,
+            "endColumn" : 46,
+            "charOffset" : 1535,
+            "charLength" : 5,
+            "byteOffset" : 1535,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/QuotedStringTokenizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 33,
+            "endLine" : 46,
+            "endColumn" : 38,
+            "charOffset" : 1607,
+            "charLength" : 5,
+            "byteOffset" : 1607,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/QuotedStringTokenizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 22,
+            "endLine" : 47,
+            "endColumn" : 23,
+            "charOffset" : 1635,
+            "charLength" : 1,
+            "byteOffset" : 1635,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/QuotedStringTokenizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 30,
+            "endLine" : 48,
+            "endColumn" : 31,
+            "charOffset" : 1667,
+            "charLength" : 1,
+            "byteOffset" : 1667,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 38,
+            "endLine" : 68,
+            "endColumn" : 39,
+            "charOffset" : 2286,
+            "charLength" : 1,
+            "byteOffset" : 2286,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 30,
+            "endLine" : 72,
+            "endColumn" : 31,
+            "charOffset" : 2401,
+            "charLength" : 1,
+            "byteOffset" : 2401,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 41,
+            "endLine" : 78,
+            "endColumn" : 46,
+            "charOffset" : 2785,
+            "charLength" : 5,
+            "byteOffset" : 2785,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"null\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/BadResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 31,
+            "endLine" : 36,
+            "endColumn" : 35,
+            "charOffset" : 1163,
+            "charLength" : 4,
+            "byteOffset" : 1163,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"null\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/URLResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 33,
+            "endLine" : 47,
+            "endColumn" : 37,
+            "charOffset" : 1571,
+            "charLength" : 4,
+            "byteOffset" : 1571,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 36,
+            "endLine" : 70,
+            "endColumn" : 41,
+            "charOffset" : 2670,
+            "charLength" : 5,
+            "byteOffset" : 2670,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 74,
+            "startColumn" : 35,
+            "endLine" : 74,
+            "endColumn" : 40,
+            "charOffset" : 2785,
+            "charLength" : 5,
+            "byteOffset" : 2785,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 80,
+            "startColumn" : 32,
+            "endLine" : 80,
+            "endColumn" : 37,
+            "charOffset" : 2493,
+            "charLength" : 5,
+            "byteOffset" : 2493,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 82,
+            "startColumn" : 32,
+            "endLine" : 82,
+            "endColumn" : 37,
+            "charOffset" : 2532,
+            "charLength" : 5,
+            "byteOffset" : 2532,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 37,
+            "endLine" : 84,
+            "endColumn" : 42,
+            "charOffset" : 2576,
+            "charLength" : 5,
+            "byteOffset" : 2576,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 172,
+            "startColumn" : 36,
+            "endLine" : 172,
+            "endColumn" : 41,
+            "charOffset" : 7238,
+            "charLength" : 5,
+            "byteOffset" : 7238,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 173,
+            "startColumn" : 35,
+            "endLine" : 173,
+            "endColumn" : 40,
+            "charOffset" : 7279,
+            "charLength" : 5,
+            "byteOffset" : 7279,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 31,
+            "endLine" : 78,
+            "endColumn" : 36,
+            "charOffset" : 3302,
+            "charLength" : 5,
+            "byteOffset" : 3302,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 37,
+            "endLine" : 79,
+            "endColumn" : 42,
+            "charOffset" : 3345,
+            "charLength" : 5,
+            "byteOffset" : 3345,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 510,
+            "startColumn" : 39,
+            "endLine" : 510,
+            "endColumn" : 44,
+            "charOffset" : 15725,
+            "charLength" : 5,
+            "byteOffset" : 15725,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"0\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 780,
+            "startColumn" : 25,
+            "endLine" : 780,
+            "endColumn" : 26,
+            "charOffset" : 22956,
+            "charLength" : 1,
+            "byteOffset" : 22956,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 74,
+            "startColumn" : 34,
+            "endLine" : 74,
+            "endColumn" : 39,
+            "charOffset" : 2923,
+            "charLength" : 5,
+            "byteOffset" : 2923,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 29,
+            "endLine" : 295,
+            "endColumn" : 34,
+            "charOffset" : 8539,
+            "charLength" : 5,
+            "byteOffset" : 8539,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,3658 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/CookieCutter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 284,
+            "startColumn" : 33,
+            "endLine" : 284,
+            "endColumn" : 40,
+            "charOffset" : 12001,
+            "charLength" : 7,
+            "byteOffset" : 12001,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/GZIPContentDecoder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 242,
+            "startColumn" : 29,
+            "endLine" : 242,
+            "endColumn" : 36,
+            "charOffset" : 8851,
+            "charLength" : 7,
+            "byteOffset" : 8851,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCookie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 330,
+            "startColumn" : 9,
+            "endLine" : 330,
+            "endColumn" : 16,
+            "charOffset" : 10110,
+            "charLength" : 7,
+            "byteOffset" : 10110,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpField.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 215,
+            "startColumn" : 33,
+            "endLine" : 215,
+            "endColumn" : 40,
+            "charOffset" : 6940,
+            "charLength" : 7,
+            "byteOffset" : 6940,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpField.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 299,
+            "startColumn" : 33,
+            "endLine" : 299,
+            "endColumn" : 40,
+            "charOffset" : 10111,
+            "charLength" : 7,
+            "byteOffset" : 10111,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 883,
+            "startColumn" : 13,
+            "endLine" : 883,
+            "endColumn" : 20,
+            "charOffset" : 26943,
+            "charLength" : 7,
+            "byteOffset" : 26943,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 406,
+            "startColumn" : 21,
+            "endLine" : 406,
+            "endColumn" : 28,
+            "charOffset" : 13178,
+            "charLength" : 7,
+            "byteOffset" : 13178,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 612,
+            "startColumn" : 29,
+            "endLine" : 612,
+            "endColumn" : 36,
+            "charOffset" : 19873,
+            "charLength" : 7,
+            "byteOffset" : 19873,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 695,
+            "startColumn" : 17,
+            "endLine" : 695,
+            "endColumn" : 24,
+            "charOffset" : 23585,
+            "charLength" : 7,
+            "byteOffset" : 23585,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 485,
+            "startColumn" : 9,
+            "endLine" : 485,
+            "endColumn" : 16,
+            "charOffset" : 17233,
+            "charLength" : 7,
+            "byteOffset" : 17233,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 818,
+            "startColumn" : 41,
+            "endLine" : 818,
+            "endColumn" : 48,
+            "charOffset" : 30320,
+            "charLength" : 7,
+            "byteOffset" : 30320,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 998,
+            "startColumn" : 33,
+            "endLine" : 998,
+            "endColumn" : 40,
+            "charOffset" : 38234,
+            "charLength" : 7,
+            "byteOffset" : 38234,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1169,
+            "startColumn" : 29,
+            "endLine" : 1169,
+            "endColumn" : 36,
+            "charOffset" : 45645,
+            "charLength" : 7,
+            "byteOffset" : 45645,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1536,
+            "startColumn" : 13,
+            "endLine" : 1536,
+            "endColumn" : 20,
+            "charOffset" : 61150,
+            "charLength" : 7,
+            "byteOffset" : 61150,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpURI.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 997,
+            "startColumn" : 25,
+            "endLine" : 997,
+            "endColumn" : 32,
+            "charOffset" : 27030,
+            "charLength" : 7,
+            "byteOffset" : 27030,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 214,
+            "startColumn" : 21,
+            "endLine" : 214,
+            "endColumn" : 28,
+            "charOffset" : 7056,
+            "charLength" : 7,
+            "byteOffset" : 7056,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 262,
+            "startColumn" : 21,
+            "endLine" : 262,
+            "endColumn" : 28,
+            "charOffset" : 9141,
+            "charLength" : 7,
+            "byteOffset" : 9141,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 455,
+            "startColumn" : 21,
+            "endLine" : 455,
+            "endColumn" : 28,
+            "charOffset" : 14269,
+            "charLength" : 7,
+            "byteOffset" : 14269,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 497,
+            "startColumn" : 21,
+            "endLine" : 497,
+            "endColumn" : 28,
+            "charOffset" : 15543,
+            "charLength" : 7,
+            "byteOffset" : 15543,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 617,
+            "startColumn" : 21,
+            "endLine" : 617,
+            "endColumn" : 28,
+            "charOffset" : 19041,
+            "charLength" : 7,
+            "byteOffset" : 19041,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 624,
+            "startColumn" : 21,
+            "endLine" : 624,
+            "endColumn" : 28,
+            "charOffset" : 19236,
+            "charLength" : 7,
+            "byteOffset" : 19236,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 666,
+            "startColumn" : 21,
+            "endLine" : 666,
+            "endColumn" : 28,
+            "charOffset" : 20510,
+            "charLength" : 7,
+            "byteOffset" : 20510,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedCSVParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 163,
+            "startColumn" : 21,
+            "endLine" : 163,
+            "endColumn" : 28,
+            "charOffset" : 4664,
+            "charLength" : 7,
+            "byteOffset" : 4664,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 122,
+            "startColumn" : 9,
+            "endLine" : 122,
+            "endColumn" : 16,
+            "charOffset" : 3729,
+            "charLength" : 7,
+            "byteOffset" : 3729,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/MappedResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 9,
+            "endLine" : 68,
+            "endColumn" : 16,
+            "charOffset" : 1931,
+            "charLength" : 7,
+            "byteOffset" : 1931,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/ServletPathSpec.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 81,
+            "startColumn" : 9,
+            "endLine" : 81,
+            "endColumn" : 16,
+            "charOffset" : 2661,
+            "charLength" : 7,
+            "byteOffset" : 2661,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/ServletPathSpec.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 121,
+            "startColumn" : 9,
+            "endLine" : 121,
+            "endColumn" : 16,
+            "charOffset" : 3870,
+            "charLength" : 7,
+            "byteOffset" : 3870,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 395,
+            "startColumn" : 9,
+            "endLine" : 395,
+            "endColumn" : 16,
+            "charOffset" : 10308,
+            "charLength" : 7,
+            "byteOffset" : 10308,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 982,
+            "startColumn" : 25,
+            "endLine" : 982,
+            "endColumn" : 32,
+            "charOffset" : 31303,
+            "charLength" : 7,
+            "byteOffset" : 31303,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/RetainableByteBuffer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 9,
+            "endLine" : 79,
+            "endColumn" : 16,
+            "charOffset" : 2362,
+            "charLength" : 7,
+            "byteOffset" : 2362,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SocketChannelEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 245,
+            "startColumn" : 13,
+            "endLine" : 245,
+            "endColumn" : 20,
+            "charOffset" : 6722,
+            "charLength" : 7,
+            "byteOffset" : 6722,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 882,
+            "startColumn" : 17,
+            "endLine" : 882,
+            "endColumn" : 24,
+            "charOffset" : 34711,
+            "charLength" : 7,
+            "byteOffset" : 34711,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 904,
+            "startColumn" : 13,
+            "endLine" : 904,
+            "endColumn" : 20,
+            "charOffset" : 35595,
+            "charLength" : 7,
+            "byteOffset" : 35595,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1227,
+            "startColumn" : 17,
+            "endLine" : 1227,
+            "endColumn" : 24,
+            "charOffset" : 50372,
+            "charLength" : 7,
+            "byteOffset" : 50372,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1468,
+            "startColumn" : 17,
+            "endLine" : 1468,
+            "endColumn" : 24,
+            "charOffset" : 57808,
+            "charLength" : 7,
+            "byteOffset" : 57808,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1517,
+            "startColumn" : 17,
+            "endLine" : 1517,
+            "endColumn" : 24,
+            "charOffset" : 59455,
+            "charLength" : 7,
+            "byteOffset" : 59455,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 227,
+            "startColumn" : 9,
+            "endLine" : 227,
+            "endColumn" : 16,
+            "charOffset" : 7922,
+            "charLength" : 7,
+            "byteOffset" : 7922,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 513,
+            "startColumn" : 13,
+            "endLine" : 513,
+            "endColumn" : 20,
+            "charOffset" : 18786,
+            "charLength" : 7,
+            "byteOffset" : 18786,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 288,
+            "startColumn" : 9,
+            "endLine" : 288,
+            "endColumn" : 16,
+            "charOffset" : 14643,
+            "charLength" : 7,
+            "byteOffset" : 14643,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncContextEvent.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 161,
+            "startColumn" : 9,
+            "endLine" : 161,
+            "endColumn" : 16,
+            "charOffset" : 4305,
+            "charLength" : 7,
+            "byteOffset" : 4305,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CachedContentFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 599,
+            "startColumn" : 17,
+            "endLine" : 599,
+            "endColumn" : 24,
+            "charOffset" : 21358,
+            "charLength" : 7,
+            "byteOffset" : 21358,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ClassLoaderDump.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 88,
+            "startColumn" : 13,
+            "endLine" : 88,
+            "endColumn" : 20,
+            "charOffset" : 3491,
+            "charLength" : 7,
+            "byteOffset" : 3491,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 421,
+            "startColumn" : 13,
+            "endLine" : 421,
+            "endColumn" : 20,
+            "charOffset" : 14649,
+            "charLength" : 7,
+            "byteOffset" : 14649,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 612,
+            "startColumn" : 17,
+            "endLine" : 612,
+            "endColumn" : 24,
+            "charOffset" : 20828,
+            "charLength" : 7,
+            "byteOffset" : 20828,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 615,
+            "startColumn" : 13,
+            "endLine" : 615,
+            "endColumn" : 20,
+            "charOffset" : 21011,
+            "charLength" : 7,
+            "byteOffset" : 21011,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 644,
+            "startColumn" : 17,
+            "endLine" : 644,
+            "endColumn" : 24,
+            "charOffset" : 21943,
+            "charLength" : 7,
+            "byteOffset" : 21943,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 647,
+            "startColumn" : 13,
+            "endLine" : 647,
+            "endColumn" : 20,
+            "charOffset" : 22103,
+            "charLength" : 7,
+            "byteOffset" : 22103,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 661,
+            "startColumn" : 17,
+            "endLine" : 661,
+            "endColumn" : 24,
+            "charOffset" : 22573,
+            "charLength" : 7,
+            "byteOffset" : 22573,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 668,
+            "startColumn" : 17,
+            "endLine" : 668,
+            "endColumn" : 24,
+            "charOffset" : 22910,
+            "charLength" : 7,
+            "byteOffset" : 22910,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelOverHttp.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 151,
+            "startColumn" : 9,
+            "endLine" : 151,
+            "endColumn" : 16,
+            "charOffset" : 5341,
+            "charLength" : 7,
+            "byteOffset" : 5341,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 838,
+            "startColumn" : 13,
+            "endLine" : 838,
+            "endColumn" : 20,
+            "charOffset" : 25680,
+            "charLength" : 7,
+            "byteOffset" : 25680,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 275,
+            "startColumn" : 17,
+            "endLine" : 275,
+            "endColumn" : 24,
+            "charOffset" : 9172,
+            "charLength" : 7,
+            "byteOffset" : 9172,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 302,
+            "startColumn" : 17,
+            "endLine" : 302,
+            "endColumn" : 24,
+            "charOffset" : 10242,
+            "charLength" : 7,
+            "byteOffset" : 10242,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 434,
+            "startColumn" : 9,
+            "endLine" : 434,
+            "endColumn" : 16,
+            "charOffset" : 14234,
+            "charLength" : 7,
+            "byteOffset" : 14234,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 505,
+            "startColumn" : 13,
+            "endLine" : 505,
+            "endColumn" : 20,
+            "charOffset" : 16875,
+            "charLength" : 7,
+            "byteOffset" : 16875,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 326,
+            "startColumn" : 13,
+            "endLine" : 326,
+            "endColumn" : 20,
+            "charOffset" : 12479,
+            "charLength" : 7,
+            "byteOffset" : 12479,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 852,
+            "startColumn" : 13,
+            "endLine" : 852,
+            "endColumn" : 20,
+            "charOffset" : 29360,
+            "charLength" : 7,
+            "byteOffset" : 29360,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 929,
+            "startColumn" : 17,
+            "endLine" : 929,
+            "endColumn" : 24,
+            "charOffset" : 31591,
+            "charLength" : 7,
+            "byteOffset" : 31591,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/InclusiveByteRange.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 199,
+            "startColumn" : 29,
+            "endLine" : 199,
+            "endColumn" : 36,
+            "charOffset" : 5773,
+            "charLength" : 7,
+            "byteOffset" : 5773,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 600,
+            "startColumn" : 17,
+            "endLine" : 600,
+            "endColumn" : 24,
+            "charOffset" : 19521,
+            "charLength" : 7,
+            "byteOffset" : 19521,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 681,
+            "startColumn" : 13,
+            "endLine" : 681,
+            "endColumn" : 20,
+            "charOffset" : 21886,
+            "charLength" : 7,
+            "byteOffset" : 21886,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 717,
+            "startColumn" : 21,
+            "endLine" : 717,
+            "endColumn" : 28,
+            "charOffset" : 23170,
+            "charLength" : 7,
+            "byteOffset" : 23170,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 467,
+            "startColumn" : 9,
+            "endLine" : 467,
+            "endColumn" : 16,
+            "charOffset" : 18080,
+            "charLength" : 7,
+            "byteOffset" : 18080,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 522,
+            "startColumn" : 17,
+            "endLine" : 522,
+            "endColumn" : 24,
+            "charOffset" : 20287,
+            "charLength" : 7,
+            "byteOffset" : 20287,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 587,
+            "startColumn" : 9,
+            "endLine" : 587,
+            "endColumn" : 16,
+            "charOffset" : 22991,
+            "charLength" : 7,
+            "byteOffset" : 22991,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1858,
+            "startColumn" : 9,
+            "endLine" : 1858,
+            "endColumn" : 16,
+            "charOffset" : 59584,
+            "charLength" : 7,
+            "byteOffset" : 59584,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 291,
+            "startColumn" : 17,
+            "endLine" : 291,
+            "endColumn" : 24,
+            "charOffset" : 9986,
+            "charLength" : 7,
+            "byteOffset" : 9986,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 299,
+            "startColumn" : 17,
+            "endLine" : 299,
+            "endColumn" : 24,
+            "charOffset" : 10272,
+            "charLength" : 7,
+            "byteOffset" : 10272,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 978,
+            "startColumn" : 21,
+            "endLine" : 978,
+            "endColumn" : 28,
+            "charOffset" : 30617,
+            "charLength" : 7,
+            "byteOffset" : 30617,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 999,
+            "startColumn" : 17,
+            "endLine" : 999,
+            "endColumn" : 24,
+            "charOffset" : 31638,
+            "charLength" : 7,
+            "byteOffset" : 31638,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1349,
+            "startColumn" : 9,
+            "endLine" : 1349,
+            "endColumn" : 16,
+            "charOffset" : 42647,
+            "charLength" : 7,
+            "byteOffset" : 42647,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResponseWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 491,
+            "startColumn" : 17,
+            "endLine" : 491,
+            "endColumn" : 24,
+            "charOffset" : 11249,
+            "charLength" : 7,
+            "byteOffset" : 11249,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SecureRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 215,
+            "startColumn" : 9,
+            "endLine" : 215,
+            "endColumn" : 16,
+            "charOffset" : 7907,
+            "charLength" : 7,
+            "byteOffset" : 7907,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SecureRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 261,
+            "startColumn" : 13,
+            "endLine" : 261,
+            "endColumn" : 20,
+            "charOffset" : 9984,
+            "charLength" : 7,
+            "byteOffset" : 9984,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 402,
+            "startColumn" : 25,
+            "endLine" : 402,
+            "endColumn" : 32,
+            "charOffset" : 12172,
+            "charLength" : 7,
+            "byteOffset" : 12172,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/AbstractHandlerContainer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 9,
+            "endLine" : 84,
+            "endColumn" : 16,
+            "charOffset" : 2655,
+            "charLength" : 7,
+            "byteOffset" : 2655,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 269,
+            "startColumn" : 9,
+            "endLine" : 269,
+            "endColumn" : 16,
+            "charOffset" : 10989,
+            "charLength" : 7,
+            "byteOffset" : 10989,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1151,
+            "startColumn" : 17,
+            "endLine" : 1151,
+            "endColumn" : 24,
+            "charOffset" : 42896,
+            "charLength" : 7,
+            "byteOffset" : 42896,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1618,
+            "startColumn" : 9,
+            "endLine" : 1618,
+            "endColumn" : 16,
+            "charOffset" : 57422,
+            "charLength" : 7,
+            "byteOffset" : 57422,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2230,
+            "startColumn" : 13,
+            "endLine" : 2230,
+            "endColumn" : 20,
+            "charOffset" : 76042,
+            "charLength" : 7,
+            "byteOffset" : 76042,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ResourceHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 167,
+            "startColumn" : 13,
+            "endLine" : 167,
+            "endColumn" : 20,
+            "charOffset" : 5406,
+            "charLength" : 7,
+            "byteOffset" : 5406,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ScopedHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 227,
+            "startColumn" : 9,
+            "endLine" : 227,
+            "endColumn" : 16,
+            "charOffset" : 10270,
+            "charLength" : 7,
+            "byteOffset" : 10270,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 185,
+            "startColumn" : 13,
+            "endLine" : 185,
+            "endColumn" : 20,
+            "charOffset" : 8197,
+            "charLength" : 7,
+            "byteOffset" : 8197,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 627,
+            "startColumn" : 29,
+            "endLine" : 627,
+            "endColumn" : 36,
+            "charOffset" : 23052,
+            "charLength" : 7,
+            "byteOffset" : 23052,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/jmx/AbstractHandlerMBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 13,
+            "endLine" : 55,
+            "endColumn" : 20,
+            "charOffset" : 1918,
+            "charLength" : 7,
+            "byteOffset" : 1918,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 383,
+            "startColumn" : 17,
+            "endLine" : 383,
+            "endColumn" : 24,
+            "charOffset" : 12046,
+            "charLength" : 7,
+            "byteOffset" : 12046,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/HouseKeeper.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 124,
+            "startColumn" : 17,
+            "endLine" : 124,
+            "endColumn" : 24,
+            "charOffset" : 4072,
+            "charLength" : 7,
+            "byteOffset" : 4072,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 585,
+            "startColumn" : 25,
+            "endLine" : 585,
+            "endColumn" : 32,
+            "charOffset" : 23147,
+            "charLength" : 7,
+            "byteOffset" : 23147,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 683,
+            "startColumn" : 13,
+            "endLine" : 683,
+            "endColumn" : 20,
+            "charOffset" : 26885,
+            "charLength" : 7,
+            "byteOffset" : 26885,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1604,
+            "startColumn" : 9,
+            "endLine" : 1604,
+            "endColumn" : 16,
+            "charOffset" : 56158,
+            "charLength" : 7,
+            "byteOffset" : 56158,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 703,
+            "startColumn" : 21,
+            "endLine" : 703,
+            "endColumn" : 28,
+            "charOffset" : 21317,
+            "charLength" : 7,
+            "byteOffset" : 21317,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 845,
+            "startColumn" : 25,
+            "endLine" : 845,
+            "endColumn" : 32,
+            "charOffset" : 25702,
+            "charLength" : 7,
+            "byteOffset" : 25702,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1272,
+            "startColumn" : 17,
+            "endLine" : 1272,
+            "endColumn" : 24,
+            "charOffset" : 38707,
+            "charLength" : 7,
+            "byteOffset" : 38707,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/HttpCookieStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 100,
+            "startColumn" : 17,
+            "endLine" : 100,
+            "endColumn" : 24,
+            "charOffset" : 2754,
+            "charLength" : 7,
+            "byteOffset" : 2754,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 654,
+            "startColumn" : 13,
+            "endLine" : 654,
+            "endColumn" : 20,
+            "charOffset" : 19663,
+            "charLength" : 7,
+            "byteOffset" : 19663,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1195,
+            "startColumn" : 13,
+            "endLine" : 1195,
+            "endColumn" : 20,
+            "charOffset" : 35854,
+            "charLength" : 7,
+            "byteOffset" : 35854,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 224,
+            "startColumn" : 17,
+            "endLine" : 224,
+            "endColumn" : 24,
+            "charOffset" : 7506,
+            "charLength" : 7,
+            "byteOffset" : 7506,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 743,
+            "startColumn" : 17,
+            "endLine" : 743,
+            "endColumn" : 24,
+            "charOffset" : 20808,
+            "charLength" : 7,
+            "byteOffset" : 20808,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 779,
+            "startColumn" : 17,
+            "endLine" : 779,
+            "endColumn" : 24,
+            "charOffset" : 22331,
+            "charLength" : 7,
+            "byteOffset" : 22331,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SearchPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 181,
+            "startColumn" : 9,
+            "endLine" : 181,
+            "endColumn" : 16,
+            "charOffset" : 6400,
+            "charLength" : 7,
+            "byteOffset" : 6404,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TopologicalSort.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 175,
+            "startColumn" : 9,
+            "endLine" : 175,
+            "endColumn" : 16,
+            "charOffset" : 5996,
+            "charLength" : 7,
+            "byteOffset" : 5996,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/URIUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1283,
+            "startColumn" : 9,
+            "endLine" : 1283,
+            "endColumn" : 16,
+            "charOffset" : 38091,
+            "charLength" : 7,
+            "byteOffset" : 38091,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/URIUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1299,
+            "startColumn" : 9,
+            "endLine" : 1299,
+            "endColumn" : 16,
+            "charOffset" : 38660,
+            "charLength" : 7,
+            "byteOffset" : 38660,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 136,
+            "startColumn" : 25,
+            "endLine" : 136,
+            "endColumn" : 32,
+            "charOffset" : 4202,
+            "charLength" : 7,
+            "byteOffset" : 4202,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 139,
+            "startColumn" : 21,
+            "endLine" : 139,
+            "endColumn" : 28,
+            "charOffset" : 4321,
+            "charLength" : 7,
+            "byteOffset" : 4321,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 208,
+            "startColumn" : 21,
+            "endLine" : 208,
+            "endColumn" : 28,
+            "charOffset" : 6543,
+            "charLength" : 7,
+            "byteOffset" : 6543,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 237,
+            "startColumn" : 9,
+            "endLine" : 237,
+            "endColumn" : 16,
+            "charOffset" : 7567,
+            "charLength" : 7,
+            "byteOffset" : 7567,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 282,
+            "startColumn" : 21,
+            "endLine" : 282,
+            "endColumn" : 28,
+            "charOffset" : 9008,
+            "charLength" : 7,
+            "byteOffset" : 9008,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 328,
+            "startColumn" : 9,
+            "endLine" : 328,
+            "endColumn" : 16,
+            "charOffset" : 10339,
+            "charLength" : 7,
+            "byteOffset" : 10339,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 365,
+            "startColumn" : 21,
+            "endLine" : 365,
+            "endColumn" : 28,
+            "charOffset" : 11505,
+            "charLength" : 7,
+            "byteOffset" : 11505,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 406,
+            "startColumn" : 9,
+            "endLine" : 406,
+            "endColumn" : 16,
+            "charOffset" : 12689,
+            "charLength" : 7,
+            "byteOffset" : 12689,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 443,
+            "startColumn" : 21,
+            "endLine" : 443,
+            "endColumn" : 28,
+            "charOffset" : 13823,
+            "charLength" : 7,
+            "byteOffset" : 13823,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 484,
+            "startColumn" : 9,
+            "endLine" : 484,
+            "endColumn" : 16,
+            "charOffset" : 15022,
+            "charLength" : 7,
+            "byteOffset" : 15022,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 588,
+            "startColumn" : 25,
+            "endLine" : 588,
+            "endColumn" : 32,
+            "charOffset" : 18687,
+            "charLength" : 7,
+            "byteOffset" : 18687,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 627,
+            "startColumn" : 13,
+            "endLine" : 627,
+            "endColumn" : 20,
+            "charOffset" : 20110,
+            "charLength" : 7,
+            "byteOffset" : 20110,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 722,
+            "startColumn" : 17,
+            "endLine" : 722,
+            "endColumn" : 24,
+            "charOffset" : 23471,
+            "charLength" : 7,
+            "byteOffset" : 23471,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 808,
+            "startColumn" : 17,
+            "endLine" : 808,
+            "endColumn" : 24,
+            "charOffset" : 26327,
+            "charLength" : 7,
+            "byteOffset" : 26327,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/Dumpable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 164,
+            "startColumn" : 9,
+            "endLine" : 164,
+            "endColumn" : 16,
+            "charOffset" : 5900,
+            "charLength" : 7,
+            "byteOffset" : 5900,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/compression/CompressionPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 13,
+            "endLine" : 70,
+            "endColumn" : 20,
+            "charOffset" : 2276,
+            "charLength" : 7,
+            "byteOffset" : 2276,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 409,
+            "startColumn" : 9,
+            "endLine" : 409,
+            "endColumn" : 16,
+            "charOffset" : 12008,
+            "charLength" : 7,
+            "byteOffset" : 12008,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 138,
+            "startColumn" : 9,
+            "endLine" : 138,
+            "endColumn" : 16,
+            "charOffset" : 4154,
+            "charLength" : 7,
+            "byteOffset" : 4154,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 510,
+            "startColumn" : 17,
+            "endLine" : 510,
+            "endColumn" : 24,
+            "charOffset" : 15444,
+            "charLength" : 7,
+            "byteOffset" : 15444,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/UnixCrypt.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 265,
+            "startColumn" : 17,
+            "endLine" : 265,
+            "endColumn" : 24,
+            "charOffset" : 9311,
+            "charLength" : 7,
+            "byteOffset" : 9311,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ExecutorThreadPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 351,
+            "startColumn" : 21,
+            "endLine" : 351,
+            "endColumn" : 28,
+            "charOffset" : 10580,
+            "charLength" : 7,
+            "byteOffset" : 10580,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 273,
+            "startColumn" : 13,
+            "endLine" : 273,
+            "endColumn" : 20,
+            "charOffset" : 10118,
+            "charLength" : 7,
+            "byteOffset" : 10118,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 873,
+            "startColumn" : 21,
+            "endLine" : 873,
+            "endColumn" : 28,
+            "charOffset" : 27717,
+            "charLength" : 7,
+            "byteOffset" : 27717,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 752,
+            "startColumn" : 17,
+            "endLine" : 752,
+            "endColumn" : 24,
+            "charOffset" : 29356,
+            "charLength" : 7,
+            "byteOffset" : 29356,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1776,
+            "startColumn" : 21,
+            "endLine" : 1776,
+            "endColumn" : 28,
+            "charOffset" : 67360,
+            "charLength" : 7,
+            "byteOffset" : 67360,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 766,
+            "startColumn" : 13,
+            "endLine" : 766,
+            "endColumn" : 20,
+            "charOffset" : 22556,
+            "charLength" : 7,
+            "byteOffset" : 22556,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S126",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"if ... else if\" constructs should end with \"else\" clauses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 232,
+            "startColumn" : 13,
+            "endLine" : 232,
+            "endColumn" : 20,
+            "charOffset" : 6918,
+            "charLength" : 7,
+            "byteOffset" : 6918,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

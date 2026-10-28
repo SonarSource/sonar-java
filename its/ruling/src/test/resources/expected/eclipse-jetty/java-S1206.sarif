@@ -1,0 +1,102 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"equals()\" and should therefore also override \"hashCode()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/CompressedContentFormat.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 20,
+            "endLine" : 43,
+            "endColumn" : 26,
+            "charOffset" : 1647,
+            "charLength" : 6,
+            "byteOffset" : 1647,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"equals()\" and should therefore also override \"hashCode()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Credential.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 168,
+            "startColumn" : 24,
+            "endLine" : 168,
+            "endColumn" : 30,
+            "charOffset" : 6567,
+            "charLength" : 6,
+            "byteOffset" : 6567,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"equals()\" and should therefore also override \"hashCode()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Credential.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 249,
+            "startColumn" : 24,
+            "endLine" : 249,
+            "endColumn" : 30,
+            "charOffset" : 9233,
+            "charLength" : 6,
+            "byteOffset" : 9233,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

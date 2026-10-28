@@ -1,0 +1,5002 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_code\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/BadMessageException.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 15,
+            "endLine" : 29,
+            "endColumn" : 20,
+            "charOffset" : 1085,
+            "charLength" : 5,
+            "byteOffset" : 1085,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_reason\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/BadMessageException.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 18,
+            "endLine" : 30,
+            "endColumn" : 25,
+            "charOffset" : 1109,
+            "charLength" : 7,
+            "byteOffset" : 1109,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"DAYS\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/DateGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 27,
+            "endLine" : 39,
+            "endColumn" : 31,
+            "charOffset" : 1167,
+            "charLength" : 4,
+            "byteOffset" : 1167,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"MONTHS\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/DateGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 27,
+            "endLine" : 41,
+            "endColumn" : 33,
+            "charOffset" : 1266,
+            "charLength" : 6,
+            "byteOffset" : 1266,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"DATE_RECEIVE_FMT\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 27,
+            "endLine" : 38,
+            "endColumn" : 43,
+            "charOffset" : 1133,
+            "charLength" : 16,
+            "byteOffset" : 1133,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_dateReceive\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 30,
+            "endLine" : 67,
+            "endColumn" : 42,
+            "charOffset" : 2236,
+            "charLength" : 12,
+            "byteOffset" : 2236,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_hostPort\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HostPortHttpField.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 20,
+            "endLine" : 30,
+            "endColumn" : 29,
+            "charOffset" : 989,
+            "charLength" : 9,
+            "byteOffset" : 989,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_cookie\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCookie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 551,
+            "startColumn" : 26,
+            "endLine" : 551,
+            "endColumn" : 33,
+            "charOffset" : 17175,
+            "charLength" : 7,
+            "byteOffset" : 17175,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_field\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 419,
+            "startColumn" : 23,
+            "endLine" : 419,
+            "endColumn" : 29,
+            "charOffset" : 11742,
+            "charLength" : 6,
+            "byteOffset" : 11742,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_index\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 933,
+            "startColumn" : 21,
+            "endLine" : 933,
+            "endColumn" : 27,
+            "charOffset" : 28316,
+            "charLength" : 6,
+            "byteOffset" : 28316,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_cursor\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1339,
+            "startColumn" : 17,
+            "endLine" : 1339,
+            "endColumn" : 24,
+            "charOffset" : 40842,
+            "charLength" : 7,
+            "byteOffset" : 40842,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_current\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1340,
+            "startColumn" : 17,
+            "endLine" : 1340,
+            "endColumn" : 25,
+            "charOffset" : 40908,
+            "charLength" : 8,
+            "byteOffset" : 40908,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_fields\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1429,
+            "startColumn" : 27,
+            "endLine" : 1429,
+            "endColumn" : 34,
+            "charOffset" : 43368,
+            "charLength" : 7,
+            "byteOffset" : 43368,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_index\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1520,
+            "startColumn" : 21,
+            "endLine" : 1520,
+            "endColumn" : 27,
+            "charOffset" : 45648,
+            "charLength" : 6,
+            "byteOffset" : 45648,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_reason\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 831,
+            "startColumn" : 16,
+            "endLine" : 831,
+            "endColumn" : 23,
+            "charOffset" : 29012,
+            "charLength" : 7,
+            "byteOffset" : 29012,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_schemeCode\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 832,
+            "startColumn" : 16,
+            "endLine" : 832,
+            "endColumn" : 27,
+            "charOffset" : 29036,
+            "charLength" : 11,
+            "byteOffset" : 29036,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_responseLine\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 833,
+            "startColumn" : 16,
+            "endLine" : 833,
+            "endColumn" : 29,
+            "charOffset" : 29064,
+            "charLength" : 13,
+            "byteOffset" : 29064,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"COLON\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpTokens.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 23,
+            "endLine" : 28,
+            "endColumn" : 28,
+            "charOffset" : 908,
+            "charLength" : 5,
+            "byteOffset" : 908,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"TAB\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpTokens.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 23,
+            "endLine" : 29,
+            "endColumn" : 26,
+            "charOffset" : 949,
+            "charLength" : 3,
+            "byteOffset" : 949,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"LINE_FEED\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpTokens.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 23,
+            "endLine" : 30,
+            "endColumn" : 32,
+            "charOffset" : 983,
+            "charLength" : 9,
+            "byteOffset" : 983,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"CARRIAGE_RETURN\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpTokens.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 23,
+            "endLine" : 31,
+            "endColumn" : 38,
+            "charOffset" : 1023,
+            "charLength" : 15,
+            "byteOffset" : 1023,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"SPACE\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpTokens.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 23,
+            "endLine" : 32,
+            "endColumn" : 28,
+            "charOffset" : 1069,
+            "charLength" : 5,
+            "byteOffset" : 1069,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"CRLF\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpTokens.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 25,
+            "endLine" : 33,
+            "endColumn" : 29,
+            "charOffset" : 1107,
+            "charLength" : 4,
+            "byteOffset" : 1107,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_resource\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/ResourceHttpContent.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 20,
+            "endLine" : 40,
+            "endColumn" : 29,
+            "charOffset" : 1401,
+            "charLength" : 9,
+            "byteOffset" : 1401,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_contentType\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/ResourceHttpContent.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 18,
+            "endLine" : 41,
+            "endColumn" : 30,
+            "charOffset" : 1429,
+            "charLength" : 12,
+            "byteOffset" : 1429,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_maxBuffer\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/ResourceHttpContent.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 15,
+            "endLine" : 42,
+            "endColumn" : 25,
+            "charOffset" : 1457,
+            "charLength" : 10,
+            "byteOffset" : 1457,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_precompressedContents\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/ResourceHttpContent.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 47,
+            "endLine" : 43,
+            "endColumn" : 69,
+            "charOffset" : 1515,
+            "charLength" : 22,
+            "byteOffset" : 1515,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_etag\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/ResourceHttpContent.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 12,
+            "endLine" : 44,
+            "endColumn" : 17,
+            "charOffset" : 1550,
+            "charLength" : 5,
+            "byteOffset" : 1550,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"LOG\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 25,
+            "endLine" : 47,
+            "endColumn" : 28,
+            "charOffset" : 1576,
+            "charLength" : 3,
+            "byteOffset" : 1576,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"NOIP\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 30,
+            "endLine" : 48,
+            "endColumn" : 34,
+            "charOffset" : 1661,
+            "charLength" : 4,
+            "byteOffset" : 1661,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"NOIPPORT\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 36,
+            "endLine" : 49,
+            "endColumn" : 44,
+            "charOffset" : 1702,
+            "charLength" : 8,
+            "byteOffset" : 1702,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_buffer\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteBufferOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 22,
+            "endLine" : 33,
+            "endColumn" : 29,
+            "charOffset" : 1171,
+            "charLength" : 7,
+            "byteOffset" : 1171,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_operation\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SocketChannelEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 22,
+            "endLine" : 58,
+            "endColumn" : 32,
+            "charOffset" : 2079,
+            "charLength" : 10,
+            "byteOffset" : 2079,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_state\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncContextState.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 31,
+            "endLine" : 35,
+            "endColumn" : 37,
+            "charOffset" : 1263,
+            "charLength" : 6,
+            "byteOffset" : 1263,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_loader\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ClassLoaderDump.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 23,
+            "endLine" : 29,
+            "endColumn" : 30,
+            "charOffset" : 1040,
+            "charLength" : 7,
+            "byteOffset" : 1040,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_asyncListener\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DebugListener.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 198,
+            "startColumn" : 25,
+            "endLine" : 198,
+            "endColumn" : 39,
+            "charOffset" : 6575,
+            "charLength" : 14,
+            "byteOffset" : 6575,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_servletRequestListener\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DebugListener.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 239,
+            "startColumn" : 34,
+            "endLine" : 239,
+            "endColumn" : 57,
+            "charOffset" : 8537,
+            "charLength" : 23,
+            "byteOffset" : 8537,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_contextScopeListener\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DebugListener.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 293,
+            "startColumn" : 47,
+            "endLine" : 293,
+            "endColumn" : 68,
+            "charOffset" : 10738,
+            "charLength" : 21,
+            "byteOffset" : 10738,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_converter\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/EncodingHttpWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 18,
+            "endLine" : 31,
+            "endColumn" : 28,
+            "charOffset" : 1008,
+            "charLength" : 10,
+            "byteOffset" : 1008,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_config\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 571,
+            "startColumn" : 27,
+            "endLine" : 571,
+            "endColumn" : 34,
+            "charOffset" : 19499,
+            "charLength" : 7,
+            "byteOffset" : 19499,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_request\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 572,
+            "startColumn" : 17,
+            "endLine" : 572,
+            "endColumn" : 25,
+            "charOffset" : 19524,
+            "charLength" : 8,
+            "byteOffset" : 19524,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_protoRfc7239\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 574,
+            "startColumn" : 17,
+            "endLine" : 574,
+            "endColumn" : 30,
+            "charOffset" : 19551,
+            "charLength" : 13,
+            "byteOffset" : 19551,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_proto\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 575,
+            "startColumn" : 16,
+            "endLine" : 575,
+            "endColumn" : 22,
+            "charOffset" : 19581,
+            "charLength" : 6,
+            "byteOffset" : 19581,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_for\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 576,
+            "startColumn" : 18,
+            "endLine" : 576,
+            "endColumn" : 22,
+            "charOffset" : 19606,
+            "charLength" : 4,
+            "byteOffset" : 19606,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_host\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 577,
+            "startColumn" : 18,
+            "endLine" : 577,
+            "endColumn" : 23,
+            "charOffset" : 19629,
+            "charLength" : 5,
+            "byteOffset" : 19629,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_server\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 578,
+            "startColumn" : 16,
+            "endLine" : 578,
+            "endColumn" : 23,
+            "charOffset" : 19651,
+            "charLength" : 7,
+            "byteOffset" : 19651,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"LOG\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelListeners.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 25,
+            "endLine" : 35,
+            "endColumn" : 28,
+            "charOffset" : 1197,
+            "charLength" : 3,
+            "byteOffset" : 1197,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_last\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1496,
+            "startColumn" : 23,
+            "endLine" : 1496,
+            "endColumn" : 28,
+            "charOffset" : 48233,
+            "charLength" : 5,
+            "byteOffset" : 48233,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_callback\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1524,
+            "startColumn" : 24,
+            "endLine" : 1524,
+            "endColumn" : 33,
+            "charOffset" : 48821,
+            "charLength" : 9,
+            "byteOffset" : 48821,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_flushed\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1566,
+            "startColumn" : 26,
+            "endLine" : 1566,
+            "endColumn" : 34,
+            "charOffset" : 49711,
+            "charLength" : 8,
+            "byteOffset" : 49711,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_out\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 22,
+            "endLine" : 34,
+            "endColumn" : 26,
+            "charOffset" : 1133,
+            "charLength" : 4,
+            "byteOffset" : 1133,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_bytes\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 34,
+            "endLine" : 35,
+            "endColumn" : 40,
+            "charOffset" : 1172,
+            "charLength" : 6,
+            "byteOffset" : 1172,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_chars\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 18,
+            "endLine" : 36,
+            "endColumn" : 24,
+            "charOffset" : 1197,
+            "charLength" : 6,
+            "byteOffset" : 1197,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_seconds\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 783,
+            "startColumn" : 20,
+            "endLine" : 783,
+            "endColumn" : 28,
+            "charOffset" : 25903,
+            "charLength" : 8,
+            "byteOffset" : 25903,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_dateField\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 784,
+            "startColumn" : 25,
+            "endLine" : 784,
+            "endColumn" : 35,
+            "charOffset" : 25937,
+            "charLength" : 10,
+            "byteOffset" : 25937,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"instance\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 32,
+            "endLine" : 61,
+            "endColumn" : 40,
+            "charOffset" : 2153,
+            "charLength" : 8,
+            "byteOffset" : 2153,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_surrogate\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Utf8HttpWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 9,
+            "endLine" : 34,
+            "endColumn" : 19,
+            "charOffset" : 1149,
+            "charLength" : 10,
+            "byteOffset" : 1149,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"LOG\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/BufferedResponseHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 25,
+            "endLine" : 65,
+            "endColumn" : 28,
+            "charOffset" : 2596,
+            "charLength" : 3,
+            "byteOffset" : 2596,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_next\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/BufferedResponseHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 177,
+            "startColumn" : 27,
+            "endLine" : 177,
+            "endColumn" : 32,
+            "charOffset" : 6609,
+            "charLength" : 5,
+            "byteOffset" : 6609,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_channel\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/BufferedResponseHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 178,
+            "startColumn" : 27,
+            "endLine" : 178,
+            "endColumn" : 35,
+            "charOffset" : 6642,
+            "charLength" : 8,
+            "byteOffset" : 6642,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_buffers\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/BufferedResponseHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 179,
+            "startColumn" : 33,
+            "endLine" : 179,
+            "endColumn" : 41,
+            "charOffset" : 6684,
+            "charLength" : 8,
+            "byteOffset" : 6684,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_aggregating\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/BufferedResponseHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 180,
+            "startColumn" : 17,
+            "endLine" : 180,
+            "endColumn" : 29,
+            "charOffset" : 6742,
+            "charLength" : 12,
+            "byteOffset" : 6742,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_aggregate\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/BufferedResponseHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 181,
+            "startColumn" : 20,
+            "endLine" : 181,
+            "endColumn" : 30,
+            "charOffset" : 6775,
+            "charLength" : 10,
+            "byteOffset" : 6775,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_faviconModified\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DefaultHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 16,
+            "endLine" : 57,
+            "endColumn" : 32,
+            "charOffset" : 2041,
+            "charLength" : 16,
+            "byteOffset" : 2041,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_favicon\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DefaultHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 18,
+            "endLine" : 58,
+            "endColumn" : 26,
+            "charOffset" : 2122,
+            "charLength" : 8,
+            "byteOffset" : 2122,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_serveIcon\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DefaultHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 13,
+            "endLine" : 59,
+            "endColumn" : 23,
+            "charOffset" : 2144,
+            "charLength" : 10,
+            "byteOffset" : 2144,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_showContexts\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DefaultHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 60,
+            "startColumn" : 13,
+            "endLine" : 60,
+            "endColumn" : 26,
+            "charOffset" : 2175,
+            "charLength" : 13,
+            "byteOffset" : 2175,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_showServlet\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 13,
+            "endLine" : 68,
+            "endColumn" : 25,
+            "charOffset" : 2811,
+            "charLength" : 12,
+            "byteOffset" : 2811,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_showStacks\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 69,
+            "startColumn" : 13,
+            "endLine" : 69,
+            "endColumn" : 24,
+            "charOffset" : 2844,
+            "charLength" : 11,
+            "byteOffset" : 2844,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_disableStacks\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 13,
+            "endLine" : 70,
+            "endColumn" : 27,
+            "charOffset" : 2876,
+            "charLength" : 14,
+            "byteOffset" : 2876,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_showMessageInTitle\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 71,
+            "startColumn" : 13,
+            "endLine" : 71,
+            "endColumn" : 32,
+            "charOffset" : 2912,
+            "charLength" : 19,
+            "byteOffset" : 2912,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_cacheControl\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 12,
+            "endLine" : 72,
+            "endColumn" : 25,
+            "charOffset" : 2951,
+            "charLength" : 13,
+            "byteOffset" : 2951,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_managedAttributes\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ManagedAttributeListener.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 23,
+            "endLine" : 38,
+            "endColumn" : 41,
+            "charOffset" : 1390,
+            "charLength" : 18,
+            "byteOffset" : 1390,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_context\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ManagedAttributeListener.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 26,
+            "endLine" : 39,
+            "endColumn" : 34,
+            "charOffset" : 1453,
+            "charLength" : 8,
+            "byteOffset" : 1453,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_redirector\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/MovedContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 22,
+            "endLine" : 39,
+            "endColumn" : 33,
+            "charOffset" : 1406,
+            "charLength" : 11,
+            "byteOffset" : 1406,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_newContextURL\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/MovedContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 12,
+            "endLine" : 40,
+            "endColumn" : 26,
+            "charOffset" : 1430,
+            "charLength" : 14,
+            "byteOffset" : 1430,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_discardPathInfo\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/MovedContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 13,
+            "endLine" : 41,
+            "endColumn" : 29,
+            "charOffset" : 1458,
+            "charLength" : 16,
+            "byteOffset" : 1458,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_discardQuery\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/MovedContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 13,
+            "endLine" : 42,
+            "endColumn" : 26,
+            "charOffset" : 1488,
+            "charLength" : 13,
+            "byteOffset" : 1488,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_permanent\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/MovedContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 13,
+            "endLine" : 43,
+            "endColumn" : 23,
+            "charOffset" : 1515,
+            "charLength" : 10,
+            "byteOffset" : 1515,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_expires\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/MovedContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 12,
+            "endLine" : 44,
+            "endColumn" : 20,
+            "charOffset" : 1538,
+            "charLength" : 8,
+            "byteOffset" : 1538,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_baseResource\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ResourceHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 14,
+            "endLine" : 55,
+            "endColumn" : 27,
+            "charOffset" : 2147,
+            "charLength" : 13,
+            "byteOffset" : 2147,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_context\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ResourceHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 20,
+            "endLine" : 56,
+            "endColumn" : 28,
+            "charOffset" : 2181,
+            "charLength" : 8,
+            "byteOffset" : 2181,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_defaultStylesheet\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ResourceHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 14,
+            "endLine" : 57,
+            "endColumn" : 32,
+            "charOffset" : 2204,
+            "charLength" : 18,
+            "byteOffset" : 2204,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_mimeTypes\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ResourceHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 15,
+            "endLine" : 58,
+            "endColumn" : 25,
+            "charOffset" : 2238,
+            "charLength" : 10,
+            "byteOffset" : 2238,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_stylesheet\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ResourceHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 60,
+            "startColumn" : 14,
+            "endLine" : 60,
+            "endColumn" : 25,
+            "charOffset" : 2315,
+            "charLength" : 11,
+            "byteOffset" : 2315,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_welcomes\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ResourceHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 14,
+            "endLine" : 61,
+            "endColumn" : 23,
+            "charOffset" : 2341,
+            "charLength" : 9,
+            "byteOffset" : 2341,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_for\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ThreadLimitHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 405,
+            "startColumn" : 16,
+            "endLine" : 405,
+            "endColumn" : 20,
+            "charOffset" : 14222,
+            "charLength" : 4,
+            "byteOffset" : 14222,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_connector\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/jmx/AbstractConnectorMBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 29,
+            "endLine" : 29,
+            "endColumn" : 39,
+            "charOffset" : 1133,
+            "charLength" : 10,
+            "byteOffset" : 1133,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_evictionPolicy\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCacheFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 9,
+            "endLine" : 29,
+            "endColumn" : 24,
+            "charOffset" : 981,
+            "charLength" : 15,
+            "byteOffset" : 981,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_saveOnInactiveEvict\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCacheFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 13,
+            "endLine" : 30,
+            "endColumn" : 33,
+            "charOffset" : 1010,
+            "charLength" : 20,
+            "byteOffset" : 1010,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_saveOnCreate\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCacheFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 13,
+            "endLine" : 31,
+            "endColumn" : 26,
+            "charOffset" : 1044,
+            "charLength" : 13,
+            "byteOffset" : 1044,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_removeUnloadableSessions\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCacheFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 13,
+            "endLine" : 32,
+            "endColumn" : 38,
+            "charOffset" : 1071,
+            "charLength" : 25,
+            "byteOffset" : 1071,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_flushOnResponseCommit\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCacheFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 13,
+            "endLine" : 33,
+            "endColumn" : 35,
+            "charOffset" : 1110,
+            "charLength" : 22,
+            "byteOffset" : 1110,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_invalidateOnShutdown\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCacheFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 13,
+            "endLine" : 34,
+            "endColumn" : 34,
+            "charOffset" : 1146,
+            "charLength" : 21,
+            "byteOffset" : 1146,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_gracePeriodSec\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStoreFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 9,
+            "endLine" : 27,
+            "endColumn" : 24,
+            "charOffset" : 946,
+            "charLength" : 15,
+            "byteOffset" : 946,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_savePeriodSec\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStoreFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 9,
+            "endLine" : 28,
+            "endColumn" : 23,
+            "charOffset" : 971,
+            "charLength" : 14,
+            "byteOffset" : 971,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"LOG\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DatabaseAdaptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 25,
+            "endLine" : 50,
+            "endColumn" : 28,
+            "charOffset" : 1631,
+            "charLength" : 3,
+            "byteOffset" : 1631,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_dbName\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DatabaseAdaptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 12,
+            "endLine" : 52,
+            "endColumn" : 19,
+            "charOffset" : 1697,
+            "charLength" : 7,
+            "byteOffset" : 1697,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_isLower\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DatabaseAdaptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 13,
+            "endLine" : 53,
+            "endColumn" : 21,
+            "charOffset" : 1718,
+            "charLength" : 8,
+            "byteOffset" : 1718,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_isUpper\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DatabaseAdaptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 13,
+            "endLine" : 54,
+            "endColumn" : 21,
+            "charOffset" : 1740,
+            "charLength" : 8,
+            "byteOffset" : 1740,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_deleteUnrestorableFiles\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStoreFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 13,
+            "endLine" : 28,
+            "endColumn" : 37,
+            "charOffset" : 959,
+            "charLength" : 24,
+            "byteOffset" : 959,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_storeDir\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStoreFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 10,
+            "endLine" : 29,
+            "endColumn" : 19,
+            "charOffset" : 994,
+            "charLength" : 9,
+            "byteOffset" : 994,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_adaptor\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStoreFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 21,
+            "endLine" : 30,
+            "endColumn" : 29,
+            "charOffset" : 969,
+            "charLength" : 8,
+            "byteOffset" : 969,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_schema\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStoreFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 45,
+            "endLine" : 35,
+            "endColumn" : 52,
+            "charOffset" : 1047,
+            "charLength" : 7,
+            "byteOffset" : 1047,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"__nullSessionContext\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 140,
+            "startColumn" : 37,
+            "endLine" : 140,
+            "endColumn" : 57,
+            "charOffset" : 5796,
+            "charLength" : 20,
+            "byteOffset" : 5796,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"NAME_CONDENSE_KEY\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/StdErrAppender.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 25,
+            "endLine" : 34,
+            "endColumn" : 42,
+            "charOffset" : 1146,
+            "charLength" : 17,
+            "byteOffset" : 1146,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"MESSAGE_ALIGN_KEY\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/StdErrAppender.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 25,
+            "endLine" : 35,
+            "endColumn" : 42,
+            "charOffset" : 1242,
+            "charLength" : 17,
+            "byteOffset" : 1242,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"MESSAGE_ESCAPE_KEY\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/StdErrAppender.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 25,
+            "endLine" : 36,
+            "endColumn" : 43,
+            "charOffset" : 1338,
+            "charLength" : 18,
+            "byteOffset" : 1338,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"ZONEID_KEY\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/StdErrAppender.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 25,
+            "endLine" : 37,
+            "endColumn" : 35,
+            "charOffset" : 1436,
+            "charLength" : 10,
+            "byteOffset" : 1436,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"LOG\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 85,
+            "startColumn" : 25,
+            "endLine" : 85,
+            "endColumn" : 28,
+            "charOffset" : 3155,
+            "charLength" : 3,
+            "byteOffset" : 3155,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_caseInsensitive\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/AbstractTrie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 19,
+            "endLine" : 34,
+            "endColumn" : 35,
+            "charOffset" : 1204,
+            "charLength" : 16,
+            "byteOffset" : 1204,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"TEMP_BUFFER_SIZE\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 99,
+            "startColumn" : 22,
+            "endLine" : 99,
+            "endColumn" : 38,
+            "charOffset" : 3967,
+            "charLength" : 16,
+            "byteOffset" : 3967,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"SPACE\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 100,
+            "startColumn" : 23,
+            "endLine" : 100,
+            "endColumn" : 28,
+            "charOffset" : 4014,
+            "charLength" : 5,
+            "byteOffset" : 4014,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"MINUS\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 101,
+            "startColumn" : 23,
+            "endLine" : 101,
+            "endColumn" : 28,
+            "charOffset" : 4050,
+            "charLength" : 5,
+            "byteOffset" : 4050,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"DIGIT\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 102,
+            "startColumn" : 25,
+            "endLine" : 102,
+            "endColumn" : 30,
+            "charOffset" : 4087,
+            "charLength" : 5,
+            "byteOffset" : 4087,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_seconds\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/DateCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 20,
+            "endLine" : 58,
+            "endColumn" : 28,
+            "charOffset" : 1903,
+            "charLength" : 8,
+            "byteOffset" : 1903,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_string\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/DateCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 22,
+            "endLine" : 59,
+            "endColumn" : 29,
+            "charOffset" : 1934,
+            "charLength" : 7,
+            "byteOffset" : 1934,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"in\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 60,
+            "startColumn" : 21,
+            "endLine" : 60,
+            "endColumn" : 23,
+            "charOffset" : 1811,
+            "charLength" : 2,
+            "byteOffset" : 1811,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"out\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 22,
+            "endLine" : 61,
+            "endColumn" : 25,
+            "charOffset" : 1836,
+            "charLength" : 3,
+            "byteOffset" : 1836,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"read\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 16,
+            "endLine" : 62,
+            "endColumn" : 20,
+            "charOffset" : 1856,
+            "charLength" : 4,
+            "byteOffset" : 1856,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"write\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 16,
+            "endLine" : 63,
+            "endColumn" : 21,
+            "charOffset" : 1877,
+            "charLength" : 5,
+            "byteOffset" : 1877,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_address\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 95,
+            "startColumn" : 27,
+            "endLine" : 95,
+            "endColumn" : 35,
+            "charOffset" : 3331,
+            "charLength" : 8,
+            "byteOffset" : 3331,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_min\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 112,
+            "startColumn" : 21,
+            "endLine" : 112,
+            "endColumn" : 25,
+            "charOffset" : 3733,
+            "charLength" : 4,
+            "byteOffset" : 3733,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_max\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 113,
+            "startColumn" : 21,
+            "endLine" : 113,
+            "endColumn" : 25,
+            "charOffset" : 3759,
+            "charLength" : 4,
+            "byteOffset" : 3759,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_raw\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 193,
+            "startColumn" : 22,
+            "endLine" : 193,
+            "endColumn" : 26,
+            "charOffset" : 6132,
+            "charLength" : 4,
+            "byteOffset" : 6132,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_octets\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 194,
+            "startColumn" : 19,
+            "endLine" : 194,
+            "endColumn" : 26,
+            "charOffset" : 6156,
+            "charLength" : 7,
+            "byteOffset" : 6156,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_mask\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 195,
+            "startColumn" : 19,
+            "endLine" : 195,
+            "endColumn" : 24,
+            "charOffset" : 6183,
+            "charLength" : 5,
+            "byteOffset" : 6183,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_masked\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 196,
+            "startColumn" : 19,
+            "endLine" : 196,
+            "endColumn" : 26,
+            "charOffset" : 6208,
+            "charLength" : 7,
+            "byteOffset" : 6208,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_min\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 238,
+            "startColumn" : 15,
+            "endLine" : 238,
+            "endColumn" : 19,
+            "charOffset" : 7565,
+            "charLength" : 4,
+            "byteOffset" : 7565,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_max\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 239,
+            "startColumn" : 15,
+            "endLine" : 239,
+            "endColumn" : 19,
+            "charOffset" : 7598,
+            "charLength" : 4,
+            "byteOffset" : 7598,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_callback\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IteratingNestedCallback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 20,
+            "endLine" : 41,
+            "endColumn" : 29,
+            "charOffset" : 1889,
+            "charLength" : 9,
+            "byteOffset" : 1889,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"entry\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiReleaseJarFile.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 156,
+            "startColumn" : 24,
+            "endLine" : 156,
+            "endColumn" : 29,
+            "charOffset" : 4931,
+            "charLength" : 5,
+            "byteOffset" : 4931,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"name\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiReleaseJarFile.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 157,
+            "startColumn" : 22,
+            "endLine" : 157,
+            "endColumn" : 26,
+            "charOffset" : 4959,
+            "charLength" : 4,
+            "byteOffset" : 4959,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"version\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiReleaseJarFile.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 158,
+            "startColumn" : 19,
+            "endLine" : 158,
+            "endColumn" : 26,
+            "charOffset" : 4983,
+            "charLength" : 7,
+            "byteOffset" : 4983,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"inner\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiReleaseJarFile.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 159,
+            "startColumn" : 23,
+            "endLine" : 159,
+            "endColumn" : 28,
+            "charOffset" : 5014,
+            "charLength" : 5,
+            "byteOffset" : 5014,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"outer\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiReleaseJarFile.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 160,
+            "startColumn" : 22,
+            "endLine" : 160,
+            "endColumn" : 27,
+            "charOffset" : 5042,
+            "charLength" : 5,
+            "byteOffset" : 5042,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"checked\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 537,
+            "startColumn" : 14,
+            "endLine" : 537,
+            "endColumn" : 21,
+            "charOffset" : 16541,
+            "charLength" : 7,
+            "byteOffset" : 16541,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"modified\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 538,
+            "startColumn" : 14,
+            "endLine" : 538,
+            "endColumn" : 22,
+            "charOffset" : 16563,
+            "charLength" : 8,
+            "byteOffset" : 16563,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"length\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 539,
+            "startColumn" : 14,
+            "endLine" : 539,
+            "endColumn" : 20,
+            "charOffset" : 16586,
+            "charLength" : 6,
+            "byteOffset" : 16586,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"LOG\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 718,
+            "startColumn" : 25,
+            "endLine" : 718,
+            "endColumn" : 28,
+            "charOffset" : 21052,
+            "charLength" : 3,
+            "byteOffset" : 21052,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"YYYY_MM_DD\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 25,
+            "endLine" : 53,
+            "endColumn" : 35,
+            "charOffset" : 1779,
+            "charLength" : 10,
+            "byteOffset" : 1779,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"ROLLOVER_FILE_DATE_FORMAT\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 25,
+            "endLine" : 54,
+            "endColumn" : 50,
+            "charOffset" : 1830,
+            "charLength" : 25,
+            "byteOffset" : 1830,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"ROLLOVER_FILE_BACKUP_FORMAT\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 25,
+            "endLine" : 55,
+            "endColumn" : 52,
+            "charOffset" : 1896,
+            "charLength" : 27,
+            "byteOffset" : 1896,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"ROLLOVER_FILE_RETAIN_DAYS\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 22,
+            "endLine" : 56,
+            "endColumn" : 47,
+            "charOffset" : 1960,
+            "charLength" : 25,
+            "byteOffset" : 1960,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_lastModified\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 119,
+            "startColumn" : 20,
+            "endLine" : 119,
+            "endColumn" : 33,
+            "charOffset" : 3789,
+            "charLength" : 13,
+            "byteOffset" : 3789,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_size\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 120,
+            "startColumn" : 20,
+            "endLine" : 120,
+            "endColumn" : 25,
+            "charOffset" : 3823,
+            "charLength" : 5,
+            "byteOffset" : 3823,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"scanInfoMap\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 160,
+            "startColumn" : 32,
+            "endLine" : 160,
+            "endColumn" : 43,
+            "charOffset" : 4800,
+            "charLength" : 11,
+            "byteOffset" : 4800,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"rootIncludesExcludes\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 161,
+            "startColumn" : 45,
+            "endLine" : 161,
+            "endColumn" : 65,
+            "charOffset" : 4857,
+            "charLength" : 20,
+            "byteOffset" : 4857,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"root\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 162,
+            "startColumn" : 14,
+            "endLine" : 162,
+            "endColumn" : 18,
+            "charOffset" : 4892,
+            "charLength" : 4,
+            "byteOffset" : 4892,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"LOG\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 25,
+            "endLine" : 53,
+            "endColumn" : 28,
+            "charOffset" : 1669,
+            "charLength" : 3,
+            "byteOffset" : 1669,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_buffer\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Utf8StringBuffer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 24,
+            "endLine" : 35,
+            "endColumn" : 31,
+            "charOffset" : 1380,
+            "charLength" : 7,
+            "byteOffset" : 1380,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_buffer\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Utf8StringBuilder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 25,
+            "endLine" : 35,
+            "endColumn" : 32,
+            "charOffset" : 1384,
+            "charLength" : 7,
+            "byteOffset" : 1384,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_files\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/FileDestroyable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 22,
+            "endLine" : 35,
+            "endColumn" : 28,
+            "charOffset" : 1235,
+            "charLength" : 6,
+            "byteOffset" : 1235,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_component\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/Graceful.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 69,
+            "startColumn" : 22,
+            "endLine" : 69,
+            "endColumn" : 32,
+            "charOffset" : 2953,
+            "charLength" : 10,
+            "byteOffset" : 2953,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_done\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/Graceful.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 56,
+            "endLine" : 70,
+            "endColumn" : 61,
+            "charOffset" : 3020,
+            "charLength" : 5,
+            "byteOffset" : 3020,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_associate\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 21,
+            "endLine" : 64,
+            "endColumn" : 31,
+            "charOffset" : 2114,
+            "charLength" : 10,
+            "byteOffset" : 2114,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_useCaches\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/URLResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 23,
+            "endLine" : 48,
+            "endColumn" : 33,
+            "charOffset" : 1599,
+            "charLength" : 10,
+            "byteOffset" : 1599,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"type\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslSelectionDump.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 18,
+            "endLine" : 57,
+            "endColumn" : 22,
+            "charOffset" : 1756,
+            "charLength" : 4,
+            "byteOffset" : 1756,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"enabled\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslSelectionDump.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 42,
+            "endLine" : 58,
+            "endColumn" : 49,
+            "charOffset" : 1803,
+            "charLength" : 7,
+            "byteOffset" : 1803,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"disabled\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslSelectionDump.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 42,
+            "endLine" : 59,
+            "endColumn" : 50,
+            "charOffset" : 1901,
+            "charLength" : 8,
+            "byteOffset" : 1901,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"LOG\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ThreadPoolBudget.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 25,
+            "endLine" : 37,
+            "endColumn" : 28,
+            "charOffset" : 1272,
+            "charLength" : 3,
+            "byteOffset" : 1272,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_root\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 342,
+            "startColumn" : 24,
+            "endLine" : 342,
+            "endColumn" : 29,
+            "charOffset" : 12814,
+            "charLength" : 5,
+            "byteOffset" : 12814,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_configuration\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 343,
+            "startColumn" : 26,
+            "endLine" : 343,
+            "endColumn" : 40,
+            "charOffset" : 12846,
+            "charLength" : 14,
+            "byteOffset" : 12846,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_obj\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1464,
+            "startColumn" : 26,
+            "endLine" : 1464,
+            "endColumn" : 30,
+            "charOffset" : 55338,
+            "charLength" : 4,
+            "byteOffset" : 55338,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_node\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1465,
+            "startColumn" : 34,
+            "endLine" : 1465,
+            "endColumn" : 39,
+            "charOffset" : 55377,
+            "charLength" : 5,
+            "byteOffset" : 55377,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_elements\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1466,
+            "startColumn" : 31,
+            "endLine" : 1466,
+            "endColumn" : 40,
+            "charOffset" : 55414,
+            "charLength" : 9,
+            "byteOffset" : 55414,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_next\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1467,
+            "startColumn" : 23,
+            "endLine" : 1467,
+            "endColumn" : 28,
+            "charOffset" : 55465,
+            "charLength" : 5,
+            "byteOffset" : 55465,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_next\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 304,
+            "startColumn" : 17,
+            "endLine" : 304,
+            "endColumn" : 22,
+            "charOffset" : 9646,
+            "charLength" : 5,
+            "byteOffset" : 9646,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_depth\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 305,
+            "startColumn" : 13,
+            "endLine" : 305,
+            "endColumn" : 19,
+            "charOffset" : 9665,
+            "charLength" : 6,
+            "byteOffset" : 9665,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_top\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 330,
+            "startColumn" : 14,
+            "endLine" : 330,
+            "endColumn" : 18,
+            "charOffset" : 10281,
+            "charLength" : 4,
+            "byteOffset" : 10281,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_error\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 331,
+            "startColumn" : 27,
+            "endLine" : 331,
+            "endColumn" : 33,
+            "charOffset" : 10342,
+            "charLength" : 6,
+            "byteOffset" : 10342,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_parent\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 506,
+            "startColumn" : 14,
+            "endLine" : 506,
+            "endColumn" : 21,
+            "charOffset" : 15572,
+            "charLength" : 7,
+            "byteOffset" : 15572,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"c\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 780,
+            "startColumn" : 21,
+            "endLine" : 780,
+            "endColumn" : 22,
+            "charOffset" : 22952,
+            "charLength" : 1,
+            "byteOffset" : 22952,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_node\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 781,
+            "startColumn" : 22,
+            "endLine" : 781,
+            "endColumn" : 27,
+            "charOffset" : 22980,
+            "charLength" : 5,
+            "byteOffset" : 22980,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_earlyEOF\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 294,
+            "startColumn" : 17,
+            "endLine" : 294,
+            "endColumn" : 26,
+            "charOffset" : 8500,
+            "charLength" : 9,
+            "byteOffset" : 8500,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_complete\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 17,
+            "endLine" : 295,
+            "endColumn" : 26,
+            "charOffset" : 8527,
+            "charLength" : 9,
+            "byteOffset" : 8527,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_content\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 296,
+            "startColumn" : 31,
+            "endLine" : 296,
+            "endColumn" : 39,
+            "charOffset" : 8576,
+            "charLength" : 8,
+            "byteOffset" : 8576,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2039",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Explicitly declare the visibility for \"_version\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 297,
+            "startColumn" : 21,
+            "endLine" : 297,
+            "endColumn" : 29,
+            "charOffset" : 8606,
+            "charLength" : 8,
+            "byteOffset" : 8606,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

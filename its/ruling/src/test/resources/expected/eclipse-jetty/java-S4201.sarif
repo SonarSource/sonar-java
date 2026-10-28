@@ -1,0 +1,158 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S4201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary null check; \"instanceof\" returns false for nulls."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 700,
+            "startColumn" : 29,
+            "endLine" : 700,
+            "endColumn" : 42,
+            "charOffset" : 24207,
+            "charLength" : 13,
+            "byteOffset" : 24207,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary null check; \"instanceof\" returns false for nulls."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 706,
+            "startColumn" : 29,
+            "endLine" : 706,
+            "endColumn" : 41,
+            "charOffset" : 24529,
+            "charLength" : 12,
+            "byteOffset" : 24529,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary null check; \"instanceof\" returns false for nulls."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 712,
+            "startColumn" : 29,
+            "endLine" : 712,
+            "endColumn" : 42,
+            "charOffset" : 24849,
+            "charLength" : 13,
+            "byteOffset" : 24849,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary null check; \"instanceof\" returns false for nulls."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 539,
+            "startColumn" : 13,
+            "endLine" : 539,
+            "endColumn" : 33,
+            "charOffset" : 23455,
+            "charLength" : 20,
+            "byteOffset" : 23455,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unnecessary null check; \"instanceof\" returns false for nulls."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 163,
+            "startColumn" : 13,
+            "endLine" : 163,
+            "endColumn" : 25,
+            "charOffset" : 5504,
+            "charLength" : 12,
+            "byteOffset" : 5504,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

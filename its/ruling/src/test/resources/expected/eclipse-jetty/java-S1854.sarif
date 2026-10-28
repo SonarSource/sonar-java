@@ -1,0 +1,1922 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"valueLength\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedCSVParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 193,
+            "startColumn" : 45,
+            "endLine" : 193,
+            "endColumn" : 62,
+            "charOffset" : 5887,
+            "charLength" : 17,
+            "byteOffset" : 5887,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"cookie\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpCookieTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 74,
+            "startColumn" : 27,
+            "endLine" : 74,
+            "endColumn" : 157,
+            "charOffset" : 2965,
+            "charLength" : 130,
+            "byteOffset" : 2965,
+            "byteLength" : 130
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"setCookie\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpCookieTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 103,
+            "startColumn" : 19,
+            "endLine" : 103,
+            "endColumn" : 53,
+            "charOffset" : 4879,
+            "charLength" : 34,
+            "byteOffset" : 4879,
+            "byteLength" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"matches\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/WebSocketUriMappingTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 91,
+            "startColumn" : 46,
+            "endLine" : 91,
+            "endColumn" : 74,
+            "charOffset" : 3025,
+            "charLength" : 28,
+            "byteOffset" : 3025,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"fill\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpOutputTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 861,
+            "startColumn" : 38,
+            "endLine" : 861,
+            "endColumn" : 44,
+            "charOffset" : 34139,
+            "charLength" : 6,
+            "byteOffset" : 34139,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"data\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/LowResourcesMonitorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 183,
+            "startColumn" : 14,
+            "endLine" : 183,
+            "endColumn" : 20,
+            "charOffset" : 6077,
+            "charLength" : 6,
+            "byteOffset" : 6077,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 184,
+            "startColumn" : 16,
+            "endLine" : 184,
+            "endColumn" : 76,
+            "charOffset" : 6184,
+            "charLength" : 60,
+            "byteOffset" : 6184,
+            "byteLength" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 188,
+            "startColumn" : 16,
+            "endLine" : 188,
+            "endColumn" : 80,
+            "charOffset" : 6404,
+            "charLength" : 64,
+            "byteOffset" : 6404,
+            "byteLength" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 191,
+            "startColumn" : 16,
+            "endLine" : 191,
+            "endColumn" : 74,
+            "charOffset" : 6544,
+            "charLength" : 58,
+            "byteOffset" : 6544,
+            "byteLength" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 230,
+            "startColumn" : 16,
+            "endLine" : 230,
+            "endColumn" : 77,
+            "charOffset" : 7796,
+            "charLength" : 61,
+            "byteOffset" : 7796,
+            "byteLength" : 61
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 235,
+            "startColumn" : 16,
+            "endLine" : 235,
+            "endColumn" : 80,
+            "charOffset" : 8088,
+            "charLength" : 64,
+            "byteOffset" : 8088,
+            "byteLength" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 239,
+            "startColumn" : 16,
+            "endLine" : 239,
+            "endColumn" : 74,
+            "charOffset" : 8299,
+            "charLength" : 58,
+            "byteOffset" : 8299,
+            "byteLength" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 268,
+            "startColumn" : 16,
+            "endLine" : 268,
+            "endColumn" : 77,
+            "charOffset" : 9233,
+            "charLength" : 61,
+            "byteOffset" : 9233,
+            "byteLength" : 61
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 271,
+            "startColumn" : 16,
+            "endLine" : 271,
+            "endColumn" : 79,
+            "charOffset" : 9370,
+            "charLength" : 63,
+            "byteOffset" : 9370,
+            "byteLength" : 63
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 314,
+            "startColumn" : 16,
+            "endLine" : 314,
+            "endColumn" : 75,
+            "charOffset" : 11153,
+            "charLength" : 59,
+            "byteOffset" : 11153,
+            "byteLength" : 59
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 319,
+            "startColumn" : 16,
+            "endLine" : 319,
+            "endColumn" : 75,
+            "charOffset" : 11378,
+            "charLength" : 59,
+            "byteOffset" : 11378,
+            "byteLength" : 59
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 348,
+            "startColumn" : 16,
+            "endLine" : 348,
+            "endColumn" : 86,
+            "charOffset" : 12410,
+            "charLength" : 70,
+            "byteOffset" : 12410,
+            "byteLength" : 70
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 349,
+            "startColumn" : 16,
+            "endLine" : 349,
+            "endColumn" : 19,
+            "charOffset" : 12497,
+            "charLength" : 3,
+            "byteOffset" : 12497,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 420,
+            "startColumn" : 16,
+            "endLine" : 420,
+            "endColumn" : 95,
+            "charOffset" : 15146,
+            "charLength" : 79,
+            "byteOffset" : 15146,
+            "byteLength" : 79
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 431,
+            "startColumn" : 16,
+            "endLine" : 431,
+            "endColumn" : 90,
+            "charOffset" : 15661,
+            "charLength" : 74,
+            "byteOffset" : 15661,
+            "byteLength" : 74
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 438,
+            "startColumn" : 16,
+            "endLine" : 438,
+            "endColumn" : 90,
+            "charOffset" : 16093,
+            "charLength" : 74,
+            "byteOffset" : 16093,
+            "byteLength" : 74
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 449,
+            "startColumn" : 16,
+            "endLine" : 449,
+            "endColumn" : 99,
+            "charOffset" : 16618,
+            "charLength" : 83,
+            "byteOffset" : 16618,
+            "byteLength" : 83
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 456,
+            "startColumn" : 16,
+            "endLine" : 456,
+            "endColumn" : 99,
+            "charOffset" : 17094,
+            "charLength" : 83,
+            "byteOffset" : 17094,
+            "byteLength" : 83
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 461,
+            "startColumn" : 16,
+            "endLine" : 461,
+            "endColumn" : 83,
+            "charOffset" : 17315,
+            "charLength" : 67,
+            "byteOffset" : 17315,
+            "byteLength" : 67
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 479,
+            "startColumn" : 16,
+            "endLine" : 479,
+            "endColumn" : 77,
+            "charOffset" : 18226,
+            "charLength" : 61,
+            "byteOffset" : 18226,
+            "byteLength" : 61
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 484,
+            "startColumn" : 16,
+            "endLine" : 484,
+            "endColumn" : 77,
+            "charOffset" : 18556,
+            "charLength" : 61,
+            "byteOffset" : 18556,
+            "byteLength" : 61
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 486,
+            "startColumn" : 16,
+            "endLine" : 486,
+            "endColumn" : 19,
+            "charOffset" : 18635,
+            "charLength" : 3,
+            "byteOffset" : 18635,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 503,
+            "startColumn" : 16,
+            "endLine" : 503,
+            "endColumn" : 93,
+            "charOffset" : 19125,
+            "charLength" : 77,
+            "byteOffset" : 19125,
+            "byteLength" : 77
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 521,
+            "startColumn" : 16,
+            "endLine" : 521,
+            "endColumn" : 98,
+            "charOffset" : 19840,
+            "charLength" : 82,
+            "byteOffset" : 19840,
+            "byteLength" : 82
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 543,
+            "startColumn" : 16,
+            "endLine" : 543,
+            "endColumn" : 83,
+            "charOffset" : 20773,
+            "charLength" : 67,
+            "byteOffset" : 20773,
+            "byteLength" : 67
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 559,
+            "startColumn" : 16,
+            "endLine" : 559,
+            "endColumn" : 94,
+            "charOffset" : 21402,
+            "charLength" : 78,
+            "byteOffset" : 21402,
+            "byteLength" : 78
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 571,
+            "startColumn" : 16,
+            "endLine" : 571,
+            "endColumn" : 76,
+            "charOffset" : 21749,
+            "charLength" : 60,
+            "byteOffset" : 21749,
+            "byteLength" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 578,
+            "startColumn" : 16,
+            "endLine" : 578,
+            "endColumn" : 76,
+            "charOffset" : 21998,
+            "charLength" : 60,
+            "byteOffset" : 21998,
+            "byteLength" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 649,
+            "startColumn" : 20,
+            "endLine" : 649,
+            "endColumn" : 87,
+            "charOffset" : 25009,
+            "charLength" : 67,
+            "byteOffset" : 25009,
+            "byteLength" : 67
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 654,
+            "startColumn" : 20,
+            "endLine" : 654,
+            "endColumn" : 91,
+            "charOffset" : 25270,
+            "charLength" : 71,
+            "byteOffset" : 25270,
+            "byteLength" : 71
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 656,
+            "startColumn" : 20,
+            "endLine" : 656,
+            "endColumn" : 23,
+            "charOffset" : 25363,
+            "charLength" : 3,
+            "byteOffset" : 25363,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 660,
+            "startColumn" : 20,
+            "endLine" : 660,
+            "endColumn" : 23,
+            "charOffset" : 25495,
+            "charLength" : 3,
+            "byteOffset" : 25495,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 672,
+            "startColumn" : 20,
+            "endLine" : 672,
+            "endColumn" : 94,
+            "charOffset" : 26408,
+            "charLength" : 74,
+            "byteOffset" : 26408,
+            "byteLength" : 74
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 679,
+            "startColumn" : 20,
+            "endLine" : 679,
+            "endColumn" : 94,
+            "charOffset" : 26873,
+            "charLength" : 74,
+            "byteOffset" : 26873,
+            "byteLength" : 74
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 684,
+            "startColumn" : 20,
+            "endLine" : 684,
+            "endColumn" : 91,
+            "charOffset" : 27141,
+            "charLength" : 71,
+            "byteOffset" : 27141,
+            "byteLength" : 71
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"offset\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 685,
+            "startColumn" : 20,
+            "endLine" : 685,
+            "endColumn" : 23,
+            "charOffset" : 27233,
+            "charLength" : 3,
+            "byteOffset" : 27233,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"i\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 757,
+            "startColumn" : 44,
+            "endLine" : 757,
+            "endColumn" : 47,
+            "charOffset" : 27945,
+            "charLength" : 3,
+            "byteOffset" : 27945,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"i\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 788,
+            "startColumn" : 40,
+            "endLine" : 788,
+            "endColumn" : 43,
+            "charOffset" : 29046,
+            "charLength" : 3,
+            "byteOffset" : 29046,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"i\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 801,
+            "startColumn" : 42,
+            "endLine" : 801,
+            "endColumn" : 45,
+            "charOffset" : 29534,
+            "charLength" : 3,
+            "byteOffset" : 29534,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"i\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 812,
+            "startColumn" : 42,
+            "endLine" : 812,
+            "endColumn" : 45,
+            "charOffset" : 29960,
+            "charLength" : 3,
+            "byteOffset" : 29960,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"i\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 825,
+            "startColumn" : 42,
+            "endLine" : 825,
+            "endColumn" : 45,
+            "charOffset" : 30464,
+            "charLength" : 3,
+            "byteOffset" : 30464,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"i\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 839,
+            "startColumn" : 40,
+            "endLine" : 839,
+            "endColumn" : 43,
+            "charOffset" : 30944,
+            "charLength" : 3,
+            "byteOffset" : 30944,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"i\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 852,
+            "startColumn" : 42,
+            "endLine" : 852,
+            "endColumn" : 45,
+            "charOffset" : 31435,
+            "charLength" : 3,
+            "byteOffset" : 31435,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"i\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 865,
+            "startColumn" : 40,
+            "endLine" : 865,
+            "endColumn" : 43,
+            "charOffset" : 31908,
+            "charLength" : 3,
+            "byteOffset" : 31908,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"i\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 878,
+            "startColumn" : 42,
+            "endLine" : 878,
+            "endColumn" : 45,
+            "charOffset" : 32393,
+            "charLength" : 3,
+            "byteOffset" : 32393,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"i\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 893,
+            "startColumn" : 41,
+            "endLine" : 893,
+            "endColumn" : 44,
+            "charOffset" : 32960,
+            "charLength" : 3,
+            "byteOffset" : 32960,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"i\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 908,
+            "startColumn" : 42,
+            "endLine" : 908,
+            "endColumn" : 45,
+            "charOffset" : 33538,
+            "charLength" : 3,
+            "byteOffset" : 33538,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"pw\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ResponseTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 526,
+            "startColumn" : 24,
+            "endLine" : 526,
+            "endColumn" : 46,
+            "charOffset" : 20344,
+            "charLength" : 22,
+            "byteOffset" : 20344,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"response\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerCollectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 235,
+            "startColumn" : 29,
+            "endLine" : 235,
+            "endColumn" : 117,
+            "charOffset" : 9417,
+            "charLength" : 88,
+            "byteOffset" : 9417,
+            "byteLength" : 88
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"expectedUrl\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerGetResourceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 307,
+            "startColumn" : 25,
+            "endLine" : 307,
+            "endColumn" : 51,
+            "charOffset" : 11597,
+            "charLength" : 26,
+            "byteOffset" : 11597,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"start\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLSelectChannelConnectorLoadTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 123,
+            "startColumn" : 20,
+            "endLine" : 123,
+            "endColumn" : 70,
+            "charOffset" : 4465,
+            "charLength" : 50,
+            "byteOffset" : 4465,
+            "byteLength" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"end\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLSelectChannelConnectorLoadTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 136,
+            "startColumn" : 18,
+            "endLine" : 136,
+            "endColumn" : 68,
+            "charOffset" : 4900,
+            "charLength" : 50,
+            "byteOffset" : 4900,
+            "byteLength" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"start\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLSelectChannelConnectorLoadTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 175,
+            "startColumn" : 20,
+            "endLine" : 175,
+            "endColumn" : 70,
+            "charOffset" : 6117,
+            "charLength" : 50,
+            "byteOffset" : 6117,
+            "byteLength" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"end\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLSelectChannelConnectorLoadTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 188,
+            "startColumn" : 18,
+            "endLine" : 188,
+            "endColumn" : 68,
+            "charOffset" : 6553,
+            "charLength" : 50,
+            "byteOffset" : 6553,
+            "byteLength" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"len\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 149,
+            "startColumn" : 17,
+            "endLine" : 149,
+            "endColumn" : 29,
+            "charOffset" : 4169,
+            "charLength" : 12,
+            "byteOffset" : 4169,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"len\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 191,
+            "startColumn" : 17,
+            "endLine" : 191,
+            "endColumn" : 29,
+            "charOffset" : 5308,
+            "charLength" : 12,
+            "byteOffset" : 5308,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 214,
+            "startColumn" : 27,
+            "endLine" : 214,
+            "endColumn" : 33,
+            "charOffset" : 6783,
+            "charLength" : 6,
+            "byteOffset" : 6783,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"j0\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Password.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 159,
+            "startColumn" : 24,
+            "endLine" : 159,
+            "endColumn" : 49,
+            "charOffset" : 4754,
+            "charLength" : 25,
+            "byteOffset" : 4754,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"bx\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Password.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 162,
+            "startColumn" : 25,
+            "endLine" : 162,
+            "endColumn" : 54,
+            "charOffset" : 4879,
+            "charLength" : 29,
+            "byteOffset" : 4879,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"elapsedRun\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 259,
+            "startColumn" : 33,
+            "endLine" : 259,
+            "endColumn" : 63,
+            "charOffset" : 8090,
+            "charLength" : 30,
+            "byteOffset" : 8090,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"last\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/DateCacheTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 21,
+            "endLine" : 52,
+            "endColumn" : 24,
+            "charOffset" : 1724,
+            "charLength" : 3,
+            "byteOffset" : 1724,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"e2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/PoolTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 366,
+            "startColumn" : 31,
+            "endLine" : 366,
+            "endColumn" : 47,
+            "charOffset" : 12936,
+            "charLength" : 16,
+            "byteOffset" : 12936,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"e2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/PoolTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 519,
+            "startColumn" : 31,
+            "endLine" : 519,
+            "endColumn" : 47,
+            "charOffset" : 18225,
+            "charLength" : 16,
+            "byteOffset" : 18225,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,1446 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HostPortHttpField.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 15,
+            "endLine" : 37,
+            "endColumn" : 32,
+            "charOffset" : 1145,
+            "charLength" : 17,
+            "byteOffset" : 1145,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCookie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 125,
+            "startColumn" : 12,
+            "endLine" : 125,
+            "endColumn" : 22,
+            "charOffset" : 4419,
+            "charLength" : 10,
+            "byteOffset" : 4419,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/PrecompressedHttpContent.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 12,
+            "endLine" : 36,
+            "endColumn" : 36,
+            "charOffset" : 1261,
+            "charLength" : 24,
+            "byteOffset" : 1261,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/UriTemplatePathSpec.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 76,
+            "startColumn" : 12,
+            "endLine" : 76,
+            "endColumn" : 31,
+            "charOffset" : 2432,
+            "charLength" : 19,
+            "byteOffset" : 2432,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 15,
+            "endLine" : 51,
+            "endColumn" : 33,
+            "charOffset" : 2008,
+            "charLength" : 18,
+            "byteOffset" : 2008,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ArrayByteBufferPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 12,
+            "endLine" : 90,
+            "endColumn" : 31,
+            "charOffset" : 3269,
+            "charLength" : 19,
+            "byteOffset" : 3269,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 303,
+            "startColumn" : 12,
+            "endLine" : 303,
+            "endColumn" : 28,
+            "charOffset" : 10097,
+            "charLength" : 16,
+            "byteOffset" : 10097,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Dispatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 12,
+            "endLine" : 68,
+            "endColumn" : 22,
+            "charOffset" : 2299,
+            "charLength" : 10,
+            "byteOffset" : 2299,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/EncodingHttpWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 12,
+            "endLine" : 33,
+            "endColumn" : 30,
+            "charOffset" : 1032,
+            "charLength" : 18,
+            "byteOffset" : 1032,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelListeners.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 12,
+            "endLine" : 54,
+            "endColumn" : 32,
+            "charOffset" : 2077,
+            "charLength" : 20,
+            "byteOffset" : 2077,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 370,
+            "startColumn" : 12,
+            "endLine" : 370,
+            "endColumn" : 36,
+            "charOffset" : 12518,
+            "charLength" : 24,
+            "byteOffset" : 12518,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServletPathMapping.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 12,
+            "endLine" : 47,
+            "endColumn" : 30,
+            "charOffset" : 1792,
+            "charLength" : 18,
+            "byteOffset" : 1792,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertorFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 12,
+            "endLine" : 46,
+            "endColumn" : 36,
+            "charOffset" : 1597,
+            "charLength" : 24,
+            "byteOffset" : 1597,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BlockingArrayQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 126,
+            "startColumn" : 12,
+            "endLine" : 126,
+            "endColumn" : 30,
+            "charOffset" : 4551,
+            "charLength" : 18,
+            "byteOffset" : 4551,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ClassLoadingObjectInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 12,
+            "endLine" : 48,
+            "endColumn" : 41,
+            "charOffset" : 1555,
+            "charLength" : 29,
+            "byteOffset" : 1555,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ClassLoadingObjectInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 12,
+            "endLine" : 53,
+            "endColumn" : 41,
+            "charOffset" : 1671,
+            "charLength" : 29,
+            "byteOffset" : 1671,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/CountingCallback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 12,
+            "endLine" : 45,
+            "endColumn" : 28,
+            "charOffset" : 1725,
+            "charLength" : 16,
+            "byteOffset" : 1725,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/HostPort.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 12,
+            "endLine" : 37,
+            "endColumn" : 20,
+            "charOffset" : 1210,
+            "charLength" : 8,
+            "byteOffset" : 1210,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IncludeExcludeSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 85,
+            "startColumn" : 33,
+            "endLine" : 85,
+            "endColumn" : 50,
+            "charOffset" : 2829,
+            "charLength" : 17,
+            "byteOffset" : 2829,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 115,
+            "startColumn" : 16,
+            "endLine" : 115,
+            "endColumn" : 38,
+            "charOffset" : 3781,
+            "charLength" : 22,
+            "byteOffset" : 3781,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 198,
+            "startColumn" : 16,
+            "endLine" : 198,
+            "endColumn" : 36,
+            "charOffset" : 6233,
+            "charLength" : 20,
+            "byteOffset" : 6233,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 241,
+            "startColumn" : 16,
+            "endLine" : 241,
+            "endColumn" : 38,
+            "charOffset" : 7633,
+            "charLength" : 22,
+            "byteOffset" : 7633,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiPartOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 12,
+            "endLine" : 43,
+            "endColumn" : 33,
+            "charOffset" : 1428,
+            "charLength" : 21,
+            "byteOffset" : 1428,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiPartOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 12,
+            "endLine" : 53,
+            "endColumn" : 33,
+            "charOffset" : 1732,
+            "charLength" : 21,
+            "byteOffset" : 1732,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiPartWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 12,
+            "endLine" : 41,
+            "endColumn" : 27,
+            "charOffset" : 1348,
+            "charLength" : 15,
+            "byteOffset" : 1348,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiReleaseJarFile.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 12,
+            "endLine" : 55,
+            "endColumn" : 31,
+            "charOffset" : 1797,
+            "charLength" : 19,
+            "byteOffset" : 1797,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiReleaseJarFile.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 12,
+            "endLine" : 68,
+            "endColumn" : 31,
+            "charOffset" : 2257,
+            "charLength" : 19,
+            "byteOffset" : 2257,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiReleaseJarFile.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 162,
+            "startColumn" : 9,
+            "endLine" : 162,
+            "endColumn" : 26,
+            "charOffset" : 5058,
+            "charLength" : 17,
+            "byteOffset" : 5058,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 98,
+            "startColumn" : 16,
+            "endLine" : 98,
+            "endColumn" : 22,
+            "charOffset" : 3206,
+            "charLength" : 6,
+            "byteOffset" : 3206,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/QuotedStringTokenizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 12,
+            "endLine" : 52,
+            "endColumn" : 33,
+            "charOffset" : 1754,
+            "charLength" : 21,
+            "byteOffset" : 1754,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 12,
+            "endLine" : 79,
+            "endColumn" : 36,
+            "charOffset" : 2856,
+            "charLength" : 24,
+            "byteOffset" : 2856,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 91,
+            "startColumn" : 12,
+            "endLine" : 91,
+            "endColumn" : 36,
+            "charOffset" : 3303,
+            "charLength" : 24,
+            "byteOffset" : 3303,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 12,
+            "endLine" : 104,
+            "endColumn" : 36,
+            "charOffset" : 3872,
+            "charLength" : 24,
+            "byteOffset" : 3872,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 120,
+            "startColumn" : 12,
+            "endLine" : 120,
+            "endColumn" : 36,
+            "charOffset" : 4583,
+            "charLength" : 24,
+            "byteOffset" : 4583,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 140,
+            "startColumn" : 12,
+            "endLine" : 140,
+            "endColumn" : 36,
+            "charOffset" : 5719,
+            "charLength" : 24,
+            "byteOffset" : 5719,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 151,
+            "startColumn" : 5,
+            "endLine" : 151,
+            "endColumn" : 29,
+            "charOffset" : 6184,
+            "charLength" : 24,
+            "byteOffset" : 6184,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Uptime.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 16,
+            "endLine" : 41,
+            "endColumn" : 27,
+            "charOffset" : 1274,
+            "charLength" : 11,
+            "byteOffset" : 1274,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/FileDestroyable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 12,
+            "endLine" : 41,
+            "endColumn" : 27,
+            "charOffset" : 1321,
+            "charLength" : 15,
+            "byteOffset" : 1321,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 279,
+            "startColumn" : 12,
+            "endLine" : 279,
+            "endColumn" : 24,
+            "charOffset" : 8666,
+            "charLength" : 12,
+            "byteOffset" : 8666,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 331,
+            "startColumn" : 12,
+            "endLine" : 331,
+            "endColumn" : 24,
+            "charOffset" : 10153,
+            "charLength" : 12,
+            "byteOffset" : 10153,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceCollection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 12,
+            "endLine" : 89,
+            "endColumn" : 30,
+            "charOffset" : 2647,
+            "charLength" : 18,
+            "byteOffset" : 2647,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 86,
+            "startColumn" : 12,
+            "endLine" : 86,
+            "endColumn" : 32,
+            "charOffset" : 3076,
+            "charLength" : 20,
+            "byteOffset" : 3076,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/KeyStoreScanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 12,
+            "endLine" : 48,
+            "endColumn" : 27,
+            "charOffset" : 2007,
+            "charLength" : 15,
+            "byteOffset" : 2007,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/X509.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 12,
+            "endLine" : 67,
+            "endColumn" : 16,
+            "charOffset" : 2174,
+            "charLength" : 4,
+            "byteOffset" : 2174,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 126,
+            "startColumn" : 12,
+            "endLine" : 126,
+            "endColumn" : 28,
+            "charOffset" : 5270,
+            "charLength" : 16,
+            "byteOffset" : 5270,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlAppendable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 12,
+            "endLine" : 38,
+            "endColumn" : 25,
+            "charOffset" : 1304,
+            "charLength" : 13,
+            "byteOffset" : 1304,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlAppendable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 12,
+            "endLine" : 43,
+            "endColumn" : 25,
+            "charOffset" : 1459,
+            "charLength" : 13,
+            "byteOffset" : 1459,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlAppendable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 12,
+            "endLine" : 48,
+            "endColumn" : 25,
+            "charOffset" : 1554,
+            "charLength" : 13,
+            "byteOffset" : 1554,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlAppendable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 12,
+            "endLine" : 53,
+            "endColumn" : 25,
+            "charOffset" : 1676,
+            "charLength" : 13,
+            "byteOffset" : 1676,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlAppendable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 12,
+            "endLine" : 58,
+            "endColumn" : 25,
+            "charOffset" : 1797,
+            "charLength" : 13,
+            "byteOffset" : 1797,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9345",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class \"final\" or make this throwing constructor \"private\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 224,
+            "startColumn" : 12,
+            "endLine" : 224,
+            "endColumn" : 28,
+            "charOffset" : 8978,
+            "charLength" : 16,
+            "byteOffset" : 8978,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

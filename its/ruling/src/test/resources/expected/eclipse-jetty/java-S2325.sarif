@@ -1,0 +1,942 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"formatCsvExcludingExisting\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1301,
+            "startColumn" : 24,
+            "endLine" : 1301,
+            "endColumn" : 50,
+            "charOffset" : 39639,
+            "charLength" : 26,
+            "byteOffset" : 39639,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"generateRequestLine\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 513,
+            "startColumn" : 18,
+            "endLine" : 513,
+            "endColumn" : 37,
+            "charOffset" : 16218,
+            "charLength" : 19,
+            "byteOffset" : 16218,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"getReasonBytes\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 559,
+            "startColumn" : 20,
+            "endLine" : 559,
+            "endColumn" : 34,
+            "charOffset" : 17907,
+            "charLength" : 14,
+            "byteOffset" : 17907,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"convertContentLength\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1064,
+            "startColumn" : 18,
+            "endLine" : 1064,
+            "endColumn" : 38,
+            "charOffset" : 41043,
+            "charLength" : 20,
+            "byteOffset" : 41043,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"asPathSpec\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/PathSpecSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 22,
+            "endLine" : 46,
+            "endColumn" : 32,
+            "charOffset" : 1361,
+            "charLength" : 10,
+            "byteOffset" : 1361,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"connectionForName\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/IncludeExcludeConnectionStatistics.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 41,
+            "endLine" : 53,
+            "endColumn" : 58,
+            "charOffset" : 1710,
+            "charLength" : 17,
+            "byteOffset" : 1710,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"normalizeHost\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/ConnectorServer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 196,
+            "startColumn" : 20,
+            "endLine" : 196,
+            "endColumn" : 33,
+            "charOffset" : 7921,
+            "charLength" : 13,
+            "byteOffset" : 7921,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"reflectBasis\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MBeanContainer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 432,
+            "startColumn" : 20,
+            "endLine" : 432,
+            "endColumn" : 32,
+            "charOffset" : 14510,
+            "charLength" : 12,
+            "byteOffset" : 14510,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"findSetter\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 446,
+            "startColumn" : 24,
+            "endLine" : 446,
+            "endColumn" : 34,
+            "charOffset" : 16316,
+            "charLength" : 10,
+            "byteOffset" : 16316,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"updateLogHandle\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 574,
+            "startColumn" : 26,
+            "endLine" : 574,
+            "endColumn" : 41,
+            "charOffset" : 18508,
+            "charLength" : 15,
+            "byteOffset" : 18508,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"getBestPrecompressedContent\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 351,
+            "startColumn" : 37,
+            "endLine" : 351,
+            "endColumn" : 64,
+            "charOffset" : 12137,
+            "charLength" : 27,
+            "byteOffset" : 12137,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"hasDefinedRange\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 461,
+            "startColumn" : 21,
+            "endLine" : 461,
+            "endColumn" : 36,
+            "charOffset" : 15881,
+            "charLength" : 15,
+            "byteOffset" : 15881,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"getCertChain\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SecureRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 286,
+            "startColumn" : 31,
+            "endLine" : 286,
+            "endColumn" : 43,
+            "charOffset" : 10811,
+            "charLength" : 12,
+            "byteOffset" : 10811,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"hasSymbolicLink\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/AllowSymLinkAliasChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 73,
+            "startColumn" : 21,
+            "endLine" : 73,
+            "endColumn" : 36,
+            "charOffset" : 2554,
+            "charLength" : 15,
+            "byteOffset" : 2554,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"normalizeHostname\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2020,
+            "startColumn" : 20,
+            "endLine" : 2020,
+            "endColumn" : 37,
+            "charOffset" : 69234,
+            "charLength" : 17,
+            "byteOffset" : 69234,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"htmlRow\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 426,
+            "startColumn" : 18,
+            "endLine" : 426,
+            "endColumn" : 25,
+            "charOffset" : 16830,
+            "charLength" : 7,
+            "byteOffset" : 16830,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"requestFromLocalhost\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ShutdownHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 219,
+            "startColumn" : 21,
+            "endLine" : 219,
+            "endColumn" : 41,
+            "charOffset" : 7385,
+            "charLength" : 20,
+            "byteOffset" : 7385,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"etagGzip\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHttpOutputInterceptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 234,
+            "startColumn" : 20,
+            "endLine" : 234,
+            "endColumn" : 28,
+            "charOffset" : 8458,
+            "charLength" : 8,
+            "byteOffset" : 8458,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"checkNotNull\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 305,
+            "startColumn" : 22,
+            "endLine" : 305,
+            "endColumn" : 34,
+            "charOffset" : 9936,
+            "charLength" : 12,
+            "byteOffset" : 9936,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"canonicalizeVHost\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionContext.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 111,
+            "startColumn" : 20,
+            "endLine" : 111,
+            "endColumn" : 37,
+            "charOffset" : 3111,
+            "charLength" : 17,
+            "byteOffset" : 3111,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"canonicalize\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionContext.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 131,
+            "startColumn" : 20,
+            "endLine" : 131,
+            "endColumn" : 32,
+            "charOffset" : 3640,
+            "charLength" : 12,
+            "byteOffset" : 3640,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"getResource\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLoggerConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 220,
+            "startColumn" : 17,
+            "endLine" : 220,
+            "endColumn" : 28,
+            "charOffset" : 7479,
+            "charLength" : 11,
+            "byteOffset" : 7479,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"renderedLevel\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/StdErrAppender.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 188,
+            "startColumn" : 20,
+            "endLine" : 188,
+            "endColumn" : 33,
+            "charOffset" : 5426,
+            "charLength" : 13,
+            "byteOffset" : 5426,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"toConvertible\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/AsyncJSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1105,
+            "startColumn" : 25,
+            "endLine" : 1105,
+            "endColumn" : 38,
+            "charOffset" : 35040,
+            "charLength" : 13,
+            "byteOffset" : 35040,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"verifyIndirectTypes\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/DeprecationWarning.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 60,
+            "startColumn" : 18,
+            "endLine" : 60,
+            "endColumn" : 37,
+            "charOffset" : 1728,
+            "charLength" : 19,
+            "byteOffset" : 1728,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"toGlobPattern\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 376,
+            "startColumn" : 24,
+            "endLine" : 376,
+            "endColumn" : 37,
+            "charOffset" : 12149,
+            "charLength" : 13,
+            "byteOffset" : 12149,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"renameFile\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 285,
+            "startColumn" : 18,
+            "endLine" : 285,
+            "endColumn" : 28,
+            "charOffset" : 10719,
+            "charLength" : 10,
+            "byteOffset" : 10719,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"warn\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 806,
+            "startColumn" : 18,
+            "endLine" : 806,
+            "endColumn" : 22,
+            "charOffset" : 23176,
+            "charLength" : 4,
+            "byteOffset" : 23176,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"validateArgs\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SearchPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 175,
+            "startColumn" : 18,
+            "endLine" : 175,
+            "endColumn" : 30,
+            "charOffset" : 6141,
+            "charLength" : 12,
+            "byteOffset" : 6145,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"assertValidPath\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 355,
+            "startColumn" : 18,
+            "endLine" : 355,
+            "endColumn" : 33,
+            "charOffset" : 10842,
+            "charLength" : 15,
+            "byteOffset" : 10842,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"assertResourceValid\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceCollection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 503,
+            "startColumn" : 18,
+            "endLine" : 503,
+            "endColumn" : 37,
+            "charOffset" : 12247,
+            "charLength" : 19,
+            "byteOffset" : 12247,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"runTask\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/strategy/EatWhatYouKill.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 334,
+            "startColumn" : 18,
+            "endLine" : 334,
+            "endColumn" : 25,
+            "charOffset" : 11203,
+            "charLength" : 7,
+            "byteOffset" : 11203,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"invokeTask\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/strategy/EatWhatYouKill.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 346,
+            "startColumn" : 18,
+            "endLine" : 346,
+            "endColumn" : 28,
+            "charOffset" : 11404,
+            "charLength" : 10,
+            "byteOffset" : 11404,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,718 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpContent.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 9,
+            "endLine" : 78,
+            "endColumn" : 32,
+            "charOffset" : 2122,
+            "charLength" : 23,
+            "byteOffset" : 2122,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/PrecompressedHttpContent.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 177,
+            "startColumn" : 16,
+            "endLine" : 177,
+            "endColumn" : 39,
+            "charOffset" : 4395,
+            "charLength" : 23,
+            "byteOffset" : 4395,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/ResourceHttpContent.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 9,
+            "endLine" : 43,
+            "endColumn" : 32,
+            "charOffset" : 1477,
+            "charLength" : 23,
+            "byteOffset" : 1477,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/ResourceHttpContent.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 102,
+            "endLine" : 56,
+            "endColumn" : 125,
+            "charOffset" : 1965,
+            "charLength" : 23,
+            "byteOffset" : 1965,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/ResourceHttpContent.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 211,
+            "startColumn" : 16,
+            "endLine" : 211,
+            "endColumn" : 39,
+            "charOffset" : 5739,
+            "charLength" : 23,
+            "byteOffset" : 5739,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MBeanContainer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 33,
+            "endLine" : 65,
+            "endColumn" : 41,
+            "charOffset" : 2584,
+            "charLength" : 8,
+            "byteOffset" : 2584,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MBeanContainer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 33,
+            "endLine" : 66,
+            "endColumn" : 39,
+            "charOffset" : 2675,
+            "charLength" : 6,
+            "byteOffset" : 2675,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MBeanContainer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 33,
+            "endLine" : 67,
+            "endColumn" : 39,
+            "charOffset" : 2762,
+            "charLength" : 6,
+            "byteOffset" : 2762,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CachedContentFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 30,
+            "endLine" : 55,
+            "endColumn" : 53,
+            "charOffset" : 2157,
+            "charLength" : 23,
+            "byteOffset" : 2157,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CachedContentFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 229,
+            "startColumn" : 21,
+            "endLine" : 229,
+            "endColumn" : 44,
+            "charOffset" : 7809,
+            "charLength" : 23,
+            "byteOffset" : 7809,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CachedContentFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 274,
+            "startColumn" : 17,
+            "endLine" : 274,
+            "endColumn" : 40,
+            "charOffset" : 10104,
+            "charLength" : 23,
+            "byteOffset" : 10104,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CachedContentFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 394,
+            "startColumn" : 27,
+            "endLine" : 394,
+            "endColumn" : 50,
+            "charOffset" : 14751,
+            "charLength" : 23,
+            "byteOffset" : 14751,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CachedContentFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 400,
+            "startColumn" : 72,
+            "endLine" : 400,
+            "endColumn" : 95,
+            "charOffset" : 15216,
+            "charLength" : 23,
+            "byteOffset" : 15216,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CachedContentFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 660,
+            "startColumn" : 20,
+            "endLine" : 660,
+            "endColumn" : 43,
+            "charOffset" : 23450,
+            "charLength" : 23,
+            "byteOffset" : 23450,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CachedContentFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 664,
+            "startColumn" : 17,
+            "endLine" : 664,
+            "endColumn" : 40,
+            "charOffset" : 23624,
+            "charLength" : 23,
+            "byteOffset" : 23624,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceContentFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 17,
+            "endLine" : 84,
+            "endColumn" : 40,
+            "charOffset" : 3184,
+            "charLength" : 23,
+            "byteOffset" : 3184,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 273,
+            "startColumn" : 17,
+            "endLine" : 273,
+            "endColumn" : 40,
+            "charOffset" : 8936,
+            "charLength" : 23,
+            "byteOffset" : 8936,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandlerCollection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 380,
+            "startColumn" : 27,
+            "endLine" : 380,
+            "endColumn" : 41,
+            "charOffset" : 12522,
+            "charLength" : 14,
+            "byteOffset" : 12522,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 30,
+            "endLine" : 47,
+            "endColumn" : 38,
+            "charOffset" : 1731,
+            "charLength" : 8,
+            "byteOffset" : 1731,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 734,
+            "startColumn" : 23,
+            "endLine" : 734,
+            "endColumn" : 31,
+            "charOffset" : 21670,
+            "charLength" : 8,
+            "byteOffset" : 21670,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 118,
+            "startColumn" : 34,
+            "endLine" : 118,
+            "endColumn" : 42,
+            "charOffset" : 4805,
+            "charLength" : 8,
+            "byteOffset" : 4805,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 145,
+            "startColumn" : 34,
+            "endLine" : 145,
+            "endColumn" : 42,
+            "charOffset" : 6059,
+            "charLength" : 8,
+            "byteOffset" : 6059,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 782,
+            "startColumn" : 17,
+            "endLine" : 782,
+            "endColumn" : 23,
+            "charOffset" : 30502,
+            "charLength" : 6,
+            "byteOffset" : 30502,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 782,
+            "startColumn" : 44,
+            "endLine" : 782,
+            "endColumn" : 50,
+            "charOffset" : 30529,
+            "charLength" : 6,
+            "byteOffset" : 30529,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6411",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The key type should implement Comparable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1078,
+            "startColumn" : 17,
+            "endLine" : 1078,
+            "endColumn" : 23,
+            "charOffset" : 41660,
+            "charLength" : 6,
+            "byteOffset" : 41660,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

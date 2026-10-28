@@ -1,0 +1,410 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1301",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"switch\" statement by \"if\" statements to increase readability."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1761,
+            "startColumn" : 21,
+            "endLine" : 1761,
+            "endColumn" : 27,
+            "charOffset" : 69316,
+            "charLength" : 6,
+            "byteOffset" : 69316,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1301",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"switch\" statement by \"if\" statements to increase readability."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpVersion.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 75,
+            "startColumn" : 21,
+            "endLine" : 75,
+            "endColumn" : 27,
+            "charOffset" : 2667,
+            "charLength" : 6,
+            "byteOffset" : 2667,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1301",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"switch\" statement by \"if\" statements to increase readability."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 275,
+            "startColumn" : 9,
+            "endLine" : 275,
+            "endColumn" : 15,
+            "charOffset" : 7987,
+            "charLength" : 6,
+            "byteOffset" : 7987,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1301",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"switch\" statement by \"if\" statements to increase readability."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 282,
+            "startColumn" : 13,
+            "endLine" : 282,
+            "endColumn" : 19,
+            "charOffset" : 8705,
+            "charLength" : 6,
+            "byteOffset" : 8705,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1301",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"switch\" statement by \"if\" statements to increase readability."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 298,
+            "startColumn" : 13,
+            "endLine" : 298,
+            "endColumn" : 19,
+            "charOffset" : 9049,
+            "charLength" : 6,
+            "byteOffset" : 9049,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1301",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"switch\" statement by \"if\" statements to increase readability."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 331,
+            "startColumn" : 13,
+            "endLine" : 331,
+            "endColumn" : 19,
+            "charOffset" : 9774,
+            "charLength" : 6,
+            "byteOffset" : 9774,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1301",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"switch\" statement by \"if\" statements to increase readability."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 948,
+            "startColumn" : 13,
+            "endLine" : 948,
+            "endColumn" : 19,
+            "charOffset" : 29627,
+            "charLength" : 6,
+            "byteOffset" : 29627,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1301",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"switch\" statement by \"if\" statements to increase readability."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1070,
+            "startColumn" : 13,
+            "endLine" : 1070,
+            "endColumn" : 19,
+            "charOffset" : 33244,
+            "charLength" : 6,
+            "byteOffset" : 33244,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1301",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"switch\" statement by \"if\" statements to increase readability."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1329,
+            "startColumn" : 13,
+            "endLine" : 1329,
+            "endColumn" : 19,
+            "charOffset" : 40210,
+            "charLength" : 6,
+            "byteOffset" : 40210,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1301",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"switch\" statement by \"if\" statements to increase readability."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1362,
+            "startColumn" : 13,
+            "endLine" : 1362,
+            "endColumn" : 19,
+            "charOffset" : 41190,
+            "charLength" : 6,
+            "byteOffset" : 41190,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1301",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"switch\" statement by \"if\" statements to increase readability."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 941,
+            "startColumn" : 9,
+            "endLine" : 941,
+            "endColumn" : 15,
+            "charOffset" : 36263,
+            "charLength" : 6,
+            "byteOffset" : 36263,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1301",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"switch\" statement by \"if\" statements to increase readability."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 980,
+            "startColumn" : 9,
+            "endLine" : 980,
+            "endColumn" : 15,
+            "charOffset" : 37575,
+            "charLength" : 6,
+            "byteOffset" : 37575,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1301",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"switch\" statement by \"if\" statements to increase readability."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/AsyncJSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 960,
+            "startColumn" : 13,
+            "endLine" : 960,
+            "endColumn" : 19,
+            "charOffset" : 30615,
+            "charLength" : 6,
+            "byteOffset" : 30615,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1301",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this \"switch\" statement by \"if\" statements to increase readability."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/URIUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 365,
+            "startColumn" : 13,
+            "endLine" : 365,
+            "endColumn" : 19,
+            "charOffset" : 11383,
+            "charLength" : 6,
+            "byteOffset" : 11383,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

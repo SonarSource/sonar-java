@@ -1,0 +1,410 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1607",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either add an explanation about why this test is skipped or remove the \"@Disabled\" annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/CyclicTimeoutTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 144,
+            "startColumn" : 17,
+            "endLine" : 144,
+            "endColumn" : 25,
+            "charOffset" : 3987,
+            "charLength" : 8,
+            "byteOffset" : 3987,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1607",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either add an explanation about why this test is skipped or remove the \"@Disabled\" annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/SocketChannelEndPointTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 452,
+            "startColumn" : 17,
+            "endLine" : 452,
+            "endColumn" : 38,
+            "charOffset" : 17087,
+            "charLength" : 21,
+            "byteOffset" : 17087,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1607",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either add an explanation about why this test is skipped or remove the \"@Disabled\" annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectorTimeoutTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 286,
+            "startColumn" : 17,
+            "endLine" : 286,
+            "endColumn" : 42,
+            "charOffset" : 10342,
+            "charLength" : 25,
+            "byteOffset" : 10342,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1607",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either add an explanation about why this test is skipped or remove the \"@Disabled\" annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectorTimeoutTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 347,
+            "startColumn" : 17,
+            "endLine" : 347,
+            "endColumn" : 40,
+            "charOffset" : 12397,
+            "charLength" : 23,
+            "byteOffset" : 12397,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1607",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either add an explanation about why this test is skipped or remove the \"@Disabled\" annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectorTimeoutTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 403,
+            "startColumn" : 17,
+            "endLine" : 403,
+            "endColumn" : 43,
+            "charOffset" : 14348,
+            "charLength" : 26,
+            "byteOffset" : 14348,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1607",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either add an explanation about why this test is skipped or remove the \"@Disabled\" annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectorTimeoutTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 446,
+            "startColumn" : 17,
+            "endLine" : 446,
+            "endColumn" : 41,
+            "charOffset" : 15777,
+            "charLength" : 24,
+            "byteOffset" : 15777,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1607",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either add an explanation about why this test is skipped or remove the \"@Disabled\" annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/InclusiveByteRangeTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 284,
+            "startColumn" : 17,
+            "endLine" : 284,
+            "endColumn" : 44,
+            "charOffset" : 11585,
+            "charLength" : 27,
+            "byteOffset" : 11585,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1607",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either add an explanation about why this test is skipped or remove the \"@Disabled\" annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/InclusiveByteRangeTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 303,
+            "startColumn" : 17,
+            "endLine" : 303,
+            "endColumn" : 41,
+            "charOffset" : 11935,
+            "charLength" : 24,
+            "byteOffset" : 11935,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1607",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either add an explanation about why this test is skipped or remove the \"@Disabled\" annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/InclusiveByteRangeTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 316,
+            "startColumn" : 17,
+            "endLine" : 316,
+            "endColumn" : 42,
+            "charOffset" : 12169,
+            "charLength" : 25,
+            "byteOffset" : 12169,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1607",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either add an explanation about why this test is skipped or remove the \"@Disabled\" annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/NotAcceptingTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 153,
+            "startColumn" : 17,
+            "endLine" : 153,
+            "endColumn" : 35,
+            "charOffset" : 6035,
+            "charLength" : 18,
+            "byteOffset" : 6035,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1607",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either add an explanation about why this test is skipped or remove the \"@Disabled\" annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SelectChannelServerSslTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 243,
+            "startColumn" : 17,
+            "endLine" : 243,
+            "endColumn" : 30,
+            "charOffset" : 8152,
+            "charLength" : 13,
+            "byteOffset" : 8152,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1607",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either add an explanation about why this test is skipped or remove the \"@Disabled\" annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SslUploadTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 87,
+            "startColumn" : 17,
+            "endLine" : 87,
+            "endColumn" : 21,
+            "charOffset" : 2802,
+            "charLength" : 4,
+            "byteOffset" : 2802,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1607",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either add an explanation about why this test is skipped or remove the \"@Disabled\" annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/ReservedThreadExecutorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 271,
+            "startColumn" : 17,
+            "endLine" : 271,
+            "endColumn" : 27,
+            "charOffset" : 7552,
+            "charLength" : 10,
+            "byteOffset" : 7552,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1607",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either add an explanation about why this test is skipped or remove the \"@Disabled\" annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlConfigurationTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1090,
+            "startColumn" : 17,
+            "endLine" : 1090,
+            "endColumn" : 34,
+            "charOffset" : 49044,
+            "charLength" : 17,
+            "byteOffset" : 49044,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,6122 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/CookieCutterLenientTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 14,
+            "endLine" : 37,
+            "endColumn" : 37,
+            "charOffset" : 1316,
+            "charLength" : 23,
+            "byteOffset" : 1316,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/CookieCutterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 14,
+            "endLine" : 30,
+            "endColumn" : 30,
+            "charOffset" : 1013,
+            "charLength" : 16,
+            "byteOffset" : 1013,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/DateParserTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 14,
+            "endLine" : 30,
+            "endColumn" : 28,
+            "charOffset" : 978,
+            "charLength" : 14,
+            "byteOffset" : 978,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/GZIPContentDecoderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 14,
+            "endLine" : 44,
+            "endColumn" : 36,
+            "charOffset" : 1681,
+            "charLength" : 22,
+            "byteOffset" : 1681,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpCookieTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 14,
+            "endLine" : 43,
+            "endColumn" : 28,
+            "charOffset" : 1749,
+            "charLength" : 14,
+            "byteOffset" : 1749,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpFieldTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 14,
+            "endLine" : 34,
+            "endColumn" : 27,
+            "charOffset" : 1307,
+            "charLength" : 13,
+            "byteOffset" : 1307,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpFieldsTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 14,
+            "endLine" : 53,
+            "endColumn" : 28,
+            "charOffset" : 1980,
+            "charLength" : 14,
+            "byteOffset" : 1980,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpGeneratorClientTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 14,
+            "endLine" : 32,
+            "endColumn" : 37,
+            "charOffset" : 1177,
+            "charLength" : 23,
+            "byteOffset" : 1177,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpGeneratorServerHTTPTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 14,
+            "endLine" : 38,
+            "endColumn" : 41,
+            "charOffset" : 1444,
+            "charLength" : 27,
+            "byteOffset" : 1444,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpGeneratorServerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 14,
+            "endLine" : 35,
+            "endColumn" : 37,
+            "charOffset" : 1335,
+            "charLength" : 23,
+            "byteOffset" : 1335,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpParserTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 14,
+            "endLine" : 52,
+            "endColumn" : 28,
+            "charOffset" : 2290,
+            "charLength" : 14,
+            "byteOffset" : 2290,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpSchemeTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 14,
+            "endLine" : 34,
+            "endColumn" : 28,
+            "charOffset" : 1126,
+            "charLength" : 14,
+            "byteOffset" : 1126,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpStatusCodeTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 14,
+            "endLine" : 26,
+            "endColumn" : 32,
+            "charOffset" : 963,
+            "charLength" : 18,
+            "byteOffset" : 963,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpURIParseTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 14,
+            "endLine" : 35,
+            "endColumn" : 30,
+            "charOffset" : 1306,
+            "charLength" : 16,
+            "byteOffset" : 1306,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpURITest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 14,
+            "endLine" : 30,
+            "endColumn" : 25,
+            "charOffset" : 1156,
+            "charLength" : 11,
+            "byteOffset" : 1156,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/MimeTypesTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 14,
+            "endLine" : 29,
+            "endColumn" : 27,
+            "charOffset" : 1118,
+            "charLength" : 13,
+            "byteOffset" : 1118,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/QuotedCSVTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 14,
+            "endLine" : 32,
+            "endColumn" : 27,
+            "charOffset" : 1135,
+            "charLength" : 13,
+            "byteOffset" : 1135,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/QuotedQualityCSVTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 14,
+            "endLine" : 30,
+            "endColumn" : 34,
+            "charOffset" : 1024,
+            "charLength" : 20,
+            "byteOffset" : 1024,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/SyntaxTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 14,
+            "endLine" : 28,
+            "endColumn" : 24,
+            "charOffset" : 1044,
+            "charLength" : 10,
+            "byteOffset" : 1044,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/PathMappingsTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 14,
+            "endLine" : 35,
+            "endColumn" : 30,
+            "charOffset" : 1446,
+            "charLength" : 16,
+            "byteOffset" : 1446,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/RegexPathSpecTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 14,
+            "endLine" : 29,
+            "endColumn" : 31,
+            "charOffset" : 1091,
+            "charLength" : 17,
+            "byteOffset" : 1091,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/ServletPathSpecMatchListTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 14,
+            "endLine" : 36,
+            "endColumn" : 42,
+            "charOffset" : 1243,
+            "charLength" : 28,
+            "byteOffset" : 1243,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/ServletPathSpecOrderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 14,
+            "endLine" : 35,
+            "endColumn" : 38,
+            "charOffset" : 1267,
+            "charLength" : 24,
+            "byteOffset" : 1267,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/ServletPathSpecTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 14,
+            "endLine" : 30,
+            "endColumn" : 33,
+            "charOffset" : 1144,
+            "charLength" : 19,
+            "byteOffset" : 1144,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/UriTemplatePathSpecBadSpecsTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 14,
+            "endLine" : 32,
+            "endColumn" : 45,
+            "charOffset" : 1148,
+            "charLength" : 31,
+            "byteOffset" : 1148,
+            "byteLength" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/UriTemplatePathSpecTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 14,
+            "endLine" : 35,
+            "endColumn" : 37,
+            "charOffset" : 1209,
+            "charLength" : 23,
+            "byteOffset" : 1209,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/WebSocketUriMappingTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 14,
+            "endLine" : 31,
+            "endColumn" : 37,
+            "charOffset" : 1115,
+            "charLength" : 23,
+            "byteOffset" : 1115,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/ArrayByteBufferPoolTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 14,
+            "endLine" : 39,
+            "endColumn" : 37,
+            "charOffset" : 1526,
+            "charLength" : 23,
+            "byteOffset" : 1526,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/ByteArrayEndPointTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 14,
+            "endLine" : 45,
+            "endColumn" : 35,
+            "charOffset" : 1775,
+            "charLength" : 21,
+            "byteOffset" : 1775,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/CyclicTimeoutTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 14,
+            "endLine" : 34,
+            "endColumn" : 31,
+            "charOffset" : 1283,
+            "charLength" : 17,
+            "byteOffset" : 1283,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/IOTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 14,
+            "endLine" : 58,
+            "endColumn" : 20,
+            "charOffset" : 2228,
+            "charLength" : 6,
+            "byteOffset" : 2228,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/IdleTimeoutTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 14,
+            "endLine" : 32,
+            "endColumn" : 29,
+            "charOffset" : 1181,
+            "charLength" : 15,
+            "byteOffset" : 1181,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/MappedByteBufferPoolTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 14,
+            "endLine" : 39,
+            "endColumn" : 38,
+            "charOffset" : 1550,
+            "charLength" : 24,
+            "byteOffset" : 1550,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/NIOTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 14,
+            "endLine" : 37,
+            "endColumn" : 21,
+            "charOffset" : 1229,
+            "charLength" : 7,
+            "byteOffset" : 1229,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/SelectorManagerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 14,
+            "endLine" : 43,
+            "endColumn" : 33,
+            "charOffset" : 1647,
+            "charLength" : 19,
+            "byteOffset" : 1647,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/SocketChannelEndPointInterestsTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 14,
+            "endLine" : 48,
+            "endColumn" : 48,
+            "charOffset" : 1813,
+            "charLength" : 34,
+            "byteOffset" : 1813,
+            "byteLength" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/SocketChannelEndPointOpenCloseTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 14,
+            "endLine" : 34,
+            "endColumn" : 48,
+            "charOffset" : 1257,
+            "charLength" : 34,
+            "byteOffset" : 1257,
+            "byteLength" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/SocketChannelEndPointTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 76,
+            "startColumn" : 14,
+            "endLine" : 76,
+            "endColumn" : 39,
+            "charOffset" : 3016,
+            "charLength" : 25,
+            "byteOffset" : 3016,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/SslConnectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 14,
+            "endLine" : 62,
+            "endColumn" : 31,
+            "charOffset" : 2414,
+            "charLength" : 17,
+            "byteOffset" : 2414,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/SslEngineBehaviorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 14,
+            "endLine" : 39,
+            "endColumn" : 35,
+            "charOffset" : 1454,
+            "charLength" : 21,
+            "byteOffset" : 1454,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/WriteFlusherTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 14,
+            "endLine" : 50,
+            "endColumn" : 30,
+            "charOffset" : 1975,
+            "charLength" : 16,
+            "byteOffset" : 1975,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/ConnectorServerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 14,
+            "endLine" : 55,
+            "endColumn" : 33,
+            "charOffset" : 2213,
+            "charLength" : 19,
+            "byteOffset" : 2213,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/MBeanContainerLifeCycleTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 14,
+            "endLine" : 34,
+            "endColumn" : 41,
+            "charOffset" : 1242,
+            "charLength" : 27,
+            "byteOffset" : 1242,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/MBeanContainerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 14,
+            "endLine" : 37,
+            "endColumn" : 32,
+            "charOffset" : 1441,
+            "charLength" : 18,
+            "byteOffset" : 1441,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/ObjectMBeanTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 14,
+            "endLine" : 41,
+            "endColumn" : 29,
+            "charOffset" : 1577,
+            "charLength" : 15,
+            "byteOffset" : 1577,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/ObjectMBeanUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 14,
+            "endLine" : 42,
+            "endColumn" : 33,
+            "charOffset" : 1563,
+            "charLength" : 19,
+            "byteOffset" : 1563,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/PojoTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 14,
+            "endLine" : 34,
+            "endColumn" : 22,
+            "charOffset" : 1229,
+            "charLength" : 8,
+            "byteOffset" : 1229,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncCompletionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 71,
+            "startColumn" : 14,
+            "endLine" : 71,
+            "endColumn" : 33,
+            "charOffset" : 2650,
+            "charLength" : 19,
+            "byteOffset" : 2650,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncRequestReadTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 14,
+            "endLine" : 49,
+            "endColumn" : 34,
+            "charOffset" : 1810,
+            "charLength" : 20,
+            "byteOffset" : 1810,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncStressTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 14,
+            "endLine" : 54,
+            "endColumn" : 29,
+            "charOffset" : 1869,
+            "charLength" : 15,
+            "byteOffset" : 1869,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/CheckReverseProxyHeadersTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 14,
+            "endLine" : 36,
+            "endColumn" : 42,
+            "charOffset" : 1254,
+            "charLength" : 28,
+            "byteOffset" : 1254,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ClassLoaderDumpTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 14,
+            "endLine" : 32,
+            "endColumn" : 33,
+            "charOffset" : 1123,
+            "charLength" : 19,
+            "byteOffset" : 1123,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectionOpenCloseTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 14,
+            "endLine" : 51,
+            "endColumn" : 37,
+            "charOffset" : 1967,
+            "charLength" : 23,
+            "byteOffset" : 1967,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/CookiesTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 14,
+            "endLine" : 29,
+            "endColumn" : 25,
+            "charOffset" : 1003,
+            "charLength" : 11,
+            "byteOffset" : 1003,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/CustomResourcesMonitorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 14,
+            "endLine" : 45,
+            "endColumn" : 40,
+            "charOffset" : 1627,
+            "charLength" : 26,
+            "byteOffset" : 1627,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/DelayedServerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 14,
+            "endLine" : 33,
+            "endColumn" : 31,
+            "charOffset" : 1121,
+            "charLength" : 17,
+            "byteOffset" : 1121,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/DetectorConnectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 14,
+            "endLine" : 51,
+            "endColumn" : 36,
+            "charOffset" : 1902,
+            "charLength" : 22,
+            "byteOffset" : 1902,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ErrorHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 14,
+            "endLine" : 54,
+            "endColumn" : 30,
+            "charOffset" : 2109,
+            "charLength" : 16,
+            "byteOffset" : 2109,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ExtendedServerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 14,
+            "endLine" : 48,
+            "endColumn" : 32,
+            "charOffset" : 1699,
+            "charLength" : 18,
+            "byteOffset" : 1699,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ForwardedRequestCustomizerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 14,
+            "endLine" : 44,
+            "endColumn" : 44,
+            "charOffset" : 1708,
+            "charLength" : 30,
+            "byteOffset" : 1708,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 14,
+            "endLine" : 55,
+            "endColumn" : 30,
+            "charOffset" : 2212,
+            "charLength" : 16,
+            "byteOffset" : 2212,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HalfCloseTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 14,
+            "endLine" : 38,
+            "endColumn" : 27,
+            "charOffset" : 1389,
+            "charLength" : 13,
+            "byteOffset" : 1389,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HostHeaderCustomizerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 14,
+            "endLine" : 37,
+            "endColumn" : 38,
+            "charOffset" : 1388,
+            "charLength" : 24,
+            "byteOffset" : 1388,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpChannelEventTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 14,
+            "endLine" : 44,
+            "endColumn" : 34,
+            "charOffset" : 1698,
+            "charLength" : 20,
+            "byteOffset" : 1698,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpConnectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 14,
+            "endLine" : 72,
+            "endColumn" : 32,
+            "charOffset" : 2670,
+            "charLength" : 18,
+            "byteOffset" : 2670,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpInputAsyncStateTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 14,
+            "endLine" : 49,
+            "endColumn" : 37,
+            "charOffset" : 1837,
+            "charLength" : 23,
+            "byteOffset" : 1837,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpInputTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 14,
+            "endLine" : 41,
+            "endColumn" : 27,
+            "charOffset" : 1553,
+            "charLength" : 13,
+            "byteOffset" : 1553,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpManyWaysToAsyncCommitTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 14,
+            "endLine" : 51,
+            "endColumn" : 43,
+            "charOffset" : 2023,
+            "charLength" : 29,
+            "byteOffset" : 2023,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpManyWaysToCommitTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 14,
+            "endLine" : 45,
+            "endColumn" : 38,
+            "charOffset" : 1859,
+            "charLength" : 24,
+            "byteOffset" : 1859,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpOutputTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 14,
+            "endLine" : 59,
+            "endColumn" : 28,
+            "charOffset" : 2195,
+            "charLength" : 14,
+            "byteOffset" : 2195,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestFixture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 14,
+            "endLine" : 43,
+            "endColumn" : 35,
+            "charOffset" : 1579,
+            "charLength" : 21,
+            "byteOffset" : 1579,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpWriterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 14,
+            "endLine" : 36,
+            "endColumn" : 28,
+            "charOffset" : 1312,
+            "charLength" : 14,
+            "byteOffset" : 1312,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/InclusiveByteRangeTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 14,
+            "endLine" : 35,
+            "endColumn" : 36,
+            "charOffset" : 1282,
+            "charLength" : 22,
+            "byteOffset" : 1282,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/InsufficientThreadsDetectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 14,
+            "endLine" : 28,
+            "endColumn" : 46,
+            "charOffset" : 1050,
+            "charLength" : 32,
+            "byteOffset" : 1050,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/LargeHeaderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 14,
+            "endLine" : 48,
+            "endColumn" : 29,
+            "charOffset" : 1779,
+            "charLength" : 15,
+            "byteOffset" : 1779,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/LocalAsyncContextTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 14,
+            "endLine" : 45,
+            "endColumn" : 35,
+            "charOffset" : 1643,
+            "charLength" : 21,
+            "byteOffset" : 1643,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/LocalConnectorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 14,
+            "endLine" : 38,
+            "endColumn" : 32,
+            "charOffset" : 1447,
+            "charLength" : 18,
+            "byteOffset" : 1447,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/LowResourcesMonitorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 14,
+            "endLine" : 44,
+            "endColumn" : 37,
+            "charOffset" : 1675,
+            "charLength" : 23,
+            "byteOffset" : 1675,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartCaptureTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 14,
+            "endLine" : 59,
+            "endColumn" : 34,
+            "charOffset" : 2216,
+            "charLength" : 20,
+            "byteOffset" : 2216,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartFormInputStreamTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 60,
+            "startColumn" : 14,
+            "endLine" : 60,
+            "endColumn" : 42,
+            "charOffset" : 2420,
+            "charLength" : 28,
+            "byteOffset" : 2420,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartParserTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 14,
+            "endLine" : 38,
+            "endColumn" : 33,
+            "charOffset" : 1415,
+            "charLength" : 19,
+            "byteOffset" : 1415,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/NotAcceptingTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 14,
+            "endLine" : 47,
+            "endColumn" : 30,
+            "charOffset" : 1750,
+            "charLength" : 16,
+            "byteOffset" : 1750,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/OptionalSslConnectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 14,
+            "endLine" : 43,
+            "endColumn" : 39,
+            "charOffset" : 1669,
+            "charLength" : 25,
+            "byteOffset" : 1669,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 14,
+            "endLine" : 45,
+            "endColumn" : 32,
+            "charOffset" : 1764,
+            "charLength" : 18,
+            "byteOffset" : 1764,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyConnectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 14,
+            "endLine" : 40,
+            "endColumn" : 33,
+            "charOffset" : 1524,
+            "charLength" : 19,
+            "byteOffset" : 1524,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyCustomizerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 14,
+            "endLine" : 43,
+            "endColumn" : 33,
+            "charOffset" : 1509,
+            "charLength" : 19,
+            "byteOffset" : 1509,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyProtocolTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 14,
+            "endLine" : 42,
+            "endColumn" : 31,
+            "charOffset" : 1523,
+            "charLength" : 17,
+            "byteOffset" : 1523,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 103,
+            "startColumn" : 14,
+            "endLine" : 103,
+            "endColumn" : 25,
+            "charOffset" : 4238,
+            "charLength" : 11,
+            "byteOffset" : 4238,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ResourceCacheTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 14,
+            "endLine" : 53,
+            "endColumn" : 31,
+            "charOffset" : 2099,
+            "charLength" : 17,
+            "byteOffset" : 2099,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ResponseTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 96,
+            "startColumn" : 14,
+            "endLine" : 96,
+            "endColumn" : 26,
+            "charOffset" : 3922,
+            "charLength" : 12,
+            "byteOffset" : 3922,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ServerConnectorCloseTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 14,
+            "endLine" : 24,
+            "endColumn" : 38,
+            "charOffset" : 890,
+            "charLength" : 24,
+            "byteOffset" : 890,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ServerConnectorHttpServerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 14,
+            "endLine" : 26,
+            "endColumn" : 43,
+            "charOffset" : 880,
+            "charLength" : 29,
+            "byteOffset" : 880,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ServerConnectorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 14,
+            "endLine" : 62,
+            "endColumn" : 33,
+            "charOffset" : 2415,
+            "charLength" : 19,
+            "byteOffset" : 2415,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ServerConnectorTimeoutTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 14,
+            "endLine" : 49,
+            "endColumn" : 40,
+            "charOffset" : 1894,
+            "charLength" : 26,
+            "byteOffset" : 1894,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ServletRequestWrapperTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 14,
+            "endLine" : 36,
+            "endColumn" : 39,
+            "charOffset" : 1325,
+            "charLength" : 25,
+            "byteOffset" : 1325,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ServletWriterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 14,
+            "endLine" : 45,
+            "endColumn" : 31,
+            "charOffset" : 1655,
+            "charLength" : 17,
+            "byteOffset" : 1655,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ShutdownMonitorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 14,
+            "endLine" : 38,
+            "endColumn" : 33,
+            "charOffset" : 1363,
+            "charLength" : 19,
+            "byteOffset" : 1363,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/SlowClientWithPipelinedRequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 14,
+            "endLine" : 44,
+            "endColumn" : 48,
+            "charOffset" : 1617,
+            "charLength" : 34,
+            "byteOffset" : 1617,
+            "byteLength" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/StopTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 14,
+            "endLine" : 64,
+            "endColumn" : 22,
+            "charOffset" : 2592,
+            "charLength" : 8,
+            "byteOffset" : 2592,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/StressTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 14,
+            "endLine" : 55,
+            "endColumn" : 24,
+            "charOffset" : 2066,
+            "charLength" : 10,
+            "byteOffset" : 2066,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ThreadStarvationTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 14,
+            "endLine" : 62,
+            "endColumn" : 34,
+            "charOffset" : 2390,
+            "charLength" : 20,
+            "byteOffset" : 2390,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/AllowSymLinkAliasCheckerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 14,
+            "endLine" : 52,
+            "endColumn" : 42,
+            "charOffset" : 2007,
+            "charLength" : 28,
+            "byteOffset" : 2007,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/BufferedResponseHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 14,
+            "endLine" : 44,
+            "endColumn" : 41,
+            "charOffset" : 1573,
+            "charLength" : 27,
+            "byteOffset" : 1573,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerCollectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 14,
+            "endLine" : 45,
+            "endColumn" : 42,
+            "charOffset" : 1765,
+            "charLength" : 28,
+            "byteOffset" : 1765,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerGetResourceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 14,
+            "endLine" : 49,
+            "endColumn" : 43,
+            "charOffset" : 2011,
+            "charLength" : 29,
+            "byteOffset" : 2011,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 14,
+            "endLine" : 53,
+            "endColumn" : 32,
+            "charOffset" : 2017,
+            "charLength" : 18,
+            "byteOffset" : 2017,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/DebugHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 14,
+            "endLine" : 56,
+            "endColumn" : 30,
+            "charOffset" : 2161,
+            "charLength" : 16,
+            "byteOffset" : 2161,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/DefaultHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 14,
+            "endLine" : 39,
+            "endColumn" : 32,
+            "charOffset" : 1458,
+            "charLength" : 18,
+            "byteOffset" : 1458,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/HandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 14,
+            "endLine" : 37,
+            "endColumn" : 25,
+            "charOffset" : 1394,
+            "charLength" : 11,
+            "byteOffset" : 1394,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/InetAccessHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 14,
+            "endLine" : 47,
+            "endColumn" : 35,
+            "charOffset" : 1746,
+            "charLength" : 21,
+            "byteOffset" : 1746,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/NcsaRequestLogTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 14,
+            "endLine" : 61,
+            "endColumn" : 32,
+            "charOffset" : 2355,
+            "charLength" : 18,
+            "byteOffset" : 2355,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ResourceHandlerRangeTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 14,
+            "endLine" : 42,
+            "endColumn" : 38,
+            "charOffset" : 1516,
+            "charLength" : 24,
+            "byteOffset" : 1516,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ResourceHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 14,
+            "endLine" : 67,
+            "endColumn" : 33,
+            "charOffset" : 2564,
+            "charLength" : 19,
+            "byteOffset" : 2564,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ScopedHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 14,
+            "endLine" : 34,
+            "endColumn" : 31,
+            "charOffset" : 1239,
+            "charLength" : 17,
+            "byteOffset" : 1239,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/SecuredRedirectHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 14,
+            "endLine" : 57,
+            "endColumn" : 40,
+            "charOffset" : 2161,
+            "charLength" : 26,
+            "byteOffset" : 2161,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ShutdownHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 14,
+            "endLine" : 45,
+            "endColumn" : 33,
+            "charOffset" : 1717,
+            "charLength" : 19,
+            "byteOffset" : 1717,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/StatisticsHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 14,
+            "endLine" : 53,
+            "endColumn" : 35,
+            "charOffset" : 2119,
+            "charLength" : 21,
+            "byteOffset" : 2119,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ThreadLimitHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 14,
+            "endLine" : 46,
+            "endColumn" : 36,
+            "charOffset" : 1739,
+            "charLength" : 22,
+            "byteOffset" : 1739,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/resource/RangeWriterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 14,
+            "endLine" : 50,
+            "endColumn" : 29,
+            "charOffset" : 1855,
+            "charLength" : 15,
+            "byteOffset" : 1855,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/session/HouseKeeperTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 14,
+            "endLine" : 39,
+            "endColumn" : 29,
+            "charOffset" : 1445,
+            "charLength" : 15,
+            "byteOffset" : 1445,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/session/SessionCookieTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 14,
+            "endLine" : 36,
+            "endColumn" : 31,
+            "charOffset" : 1246,
+            "charLength" : 17,
+            "byteOffset" : 1246,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/session/SessionHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 14,
+            "endLine" : 35,
+            "endColumn" : 32,
+            "charOffset" : 1269,
+            "charLength" : 18,
+            "byteOffset" : 1269,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLCloseTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 14,
+            "endLine" : 42,
+            "endColumn" : 26,
+            "charOffset" : 1571,
+            "charLength" : 12,
+            "byteOffset" : 1571,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLEngineTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 14,
+            "endLine" : 68,
+            "endColumn" : 27,
+            "charOffset" : 2348,
+            "charLength" : 13,
+            "byteOffset" : 2348,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLReadEOFAfterResponseTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 14,
+            "endLine" : 50,
+            "endColumn" : 41,
+            "charOffset" : 1935,
+            "charLength" : 27,
+            "byteOffset" : 1935,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLSelectChannelConnectorLoadTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 14,
+            "endLine" : 55,
+            "endColumn" : 47,
+            "charOffset" : 2000,
+            "charLength" : 33,
+            "byteOffset" : 2000,
+            "byteLength" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SelectChannelServerSslTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 14,
+            "endLine" : 72,
+            "endColumn" : 40,
+            "charOffset" : 2733,
+            "charLength" : 26,
+            "byteOffset" : 2733,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SlowClientsTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 14,
+            "endLine" : 55,
+            "endColumn" : 29,
+            "charOffset" : 1998,
+            "charLength" : 15,
+            "byteOffset" : 1998,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SniSslConnectionFactoryTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 76,
+            "startColumn" : 14,
+            "endLine" : 76,
+            "endColumn" : 41,
+            "charOffset" : 3006,
+            "charLength" : 27,
+            "byteOffset" : 3006,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SslConnectionFactoryTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 14,
+            "endLine" : 63,
+            "endColumn" : 38,
+            "charOffset" : 2434,
+            "charLength" : 24,
+            "byteOffset" : 2434,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SslContextFactoryReloadTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 60,
+            "startColumn" : 14,
+            "endLine" : 60,
+            "endColumn" : 41,
+            "charOffset" : 2417,
+            "charLength" : 27,
+            "byteOffset" : 2417,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SslSelectChannelTimeoutTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 14,
+            "endLine" : 33,
+            "endColumn" : 41,
+            "charOffset" : 1201,
+            "charLength" : 27,
+            "byteOffset" : 1201,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SslUploadTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 14,
+            "endLine" : 54,
+            "endColumn" : 27,
+            "charOffset" : 1919,
+            "charLength" : 13,
+            "byteOffset" : 1919,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/JMXTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 14,
+            "endLine" : 36,
+            "endColumn" : 21,
+            "charOffset" : 1246,
+            "charLength" : 7,
+            "byteOffset" : 1246,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/JettyLoggerConfigurationTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 14,
+            "endLine" : 29,
+            "endColumn" : 42,
+            "charOffset" : 1056,
+            "charLength" : 28,
+            "byteOffset" : 1056,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/JettyLoggerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 14,
+            "endLine" : 38,
+            "endColumn" : 29,
+            "charOffset" : 1242,
+            "charLength" : 15,
+            "byteOffset" : 1242,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/StdErrAppenderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 14,
+            "endLine" : 26,
+            "endColumn" : 32,
+            "charOffset" : 905,
+            "charLength" : 18,
+            "byteOffset" : 905,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/AsyncJSONTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 14,
+            "endLine" : 40,
+            "endColumn" : 27,
+            "charOffset" : 1521,
+            "charLength" : 13,
+            "byteOffset" : 1521,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONCollectionConvertorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 14,
+            "endLine" : 39,
+            "endColumn" : 41,
+            "charOffset" : 1356,
+            "charLength" : 27,
+            "byteOffset" : 1356,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONPojoConvertorFactoryTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 14,
+            "endLine" : 34,
+            "endColumn" : 42,
+            "charOffset" : 1242,
+            "charLength" : 28,
+            "byteOffset" : 1242,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONPojoConvertorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 14,
+            "endLine" : 33,
+            "endColumn" : 35,
+            "charOffset" : 1188,
+            "charLength" : 21,
+            "byteOffset" : 1188,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 14,
+            "endLine" : 44,
+            "endColumn" : 22,
+            "charOffset" : 1623,
+            "charLength" : 8,
+            "byteOffset" : 1623,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ArrayUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 14,
+            "endLine" : 34,
+            "endColumn" : 27,
+            "charOffset" : 1216,
+            "charLength" : 13,
+            "byteOffset" : 1216,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/AtomicBiIntegerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 14,
+            "endLine" : 28,
+            "endColumn" : 33,
+            "charOffset" : 1055,
+            "charLength" : 19,
+            "byteOffset" : 1055,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/BlockingArrayQueueTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 14,
+            "endLine" : 41,
+            "endColumn" : 36,
+            "charOffset" : 1540,
+            "charLength" : 22,
+            "byteOffset" : 1540,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 14,
+            "endLine" : 43,
+            "endColumn" : 28,
+            "charOffset" : 1624,
+            "charLength" : 14,
+            "byteOffset" : 1624,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/DateCacheTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 14,
+            "endLine" : 36,
+            "endColumn" : 27,
+            "charOffset" : 1156,
+            "charLength" : 13,
+            "byteOffset" : 1156,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/FutureCallbackTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 14,
+            "endLine" : 36,
+            "endColumn" : 32,
+            "charOffset" : 1395,
+            "charLength" : 18,
+            "byteOffset" : 1395,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/HostPortTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 14,
+            "endLine" : 32,
+            "endColumn" : 26,
+            "charOffset" : 1212,
+            "charLength" : 12,
+            "byteOffset" : 1212,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/IncludeExcludeSetTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 14,
+            "endLine" : 28,
+            "endColumn" : 35,
+            "charOffset" : 992,
+            "charLength" : 21,
+            "byteOffset" : 992,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/IncludeExcludeTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 14,
+            "endLine" : 27,
+            "endColumn" : 32,
+            "charOffset" : 997,
+            "charLength" : 18,
+            "byteOffset" : 997,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/InetAddressSetTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 14,
+            "endLine" : 41,
+            "endColumn" : 32,
+            "charOffset" : 1588,
+            "charLength" : 18,
+            "byteOffset" : 1588,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/IntrospectionUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 14,
+            "endLine" : 34,
+            "endColumn" : 35,
+            "charOffset" : 1144,
+            "charLength" : 21,
+            "byteOffset" : 1144,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/IteratingCallbackTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 14,
+            "endLine" : 34,
+            "endColumn" : 35,
+            "charOffset" : 1300,
+            "charLength" : 21,
+            "byteOffset" : 1300,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/JavaVersionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 14,
+            "endLine" : 29,
+            "endColumn" : 29,
+            "charOffset" : 981,
+            "charLength" : 15,
+            "byteOffset" : 981,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 14,
+            "endLine" : 43,
+            "endColumn" : 26,
+            "charOffset" : 1524,
+            "charLength" : 12,
+            "byteOffset" : 1524,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LeakDetectorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 14,
+            "endLine" : 29,
+            "endColumn" : 30,
+            "charOffset" : 1045,
+            "charLength" : 16,
+            "byteOffset" : 1045,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LoaderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 14,
+            "endLine" : 34,
+            "endColumn" : 24,
+            "charOffset" : 1100,
+            "charLength" : 10,
+            "byteOffset" : 1100,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/MultiExceptionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 14,
+            "endLine" : 32,
+            "endColumn" : 32,
+            "charOffset" : 1180,
+            "charLength" : 18,
+            "byteOffset" : 1180,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/MultiMapTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 14,
+            "endLine" : 36,
+            "endColumn" : 26,
+            "charOffset" : 1322,
+            "charLength" : 12,
+            "byteOffset" : 1322,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/MultiReleaseJarFileTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 14,
+            "endLine" : 37,
+            "endColumn" : 37,
+            "charOffset" : 1362,
+            "charLength" : 23,
+            "byteOffset" : 1362,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/PathWatcherTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 14,
+            "endLine" : 57,
+            "endColumn" : 29,
+            "charOffset" : 2183,
+            "charLength" : 15,
+            "byteOffset" : 2183,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/PoolTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 14,
+            "endLine" : 41,
+            "endColumn" : 22,
+            "charOffset" : 1554,
+            "charLength" : 8,
+            "byteOffset" : 1554,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ProcessorUtilsTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 14,
+            "endLine" : 26,
+            "endColumn" : 32,
+            "charOffset" : 965,
+            "charLength" : 18,
+            "byteOffset" : 965,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/QueueBenchmarkTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 14,
+            "endLine" : 42,
+            "endColumn" : 32,
+            "charOffset" : 1566,
+            "charLength" : 18,
+            "byteOffset" : 1566,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/QuotedStringTokenizerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 14,
+            "endLine" : 28,
+            "endColumn" : 39,
+            "charOffset" : 1089,
+            "charLength" : 25,
+            "byteOffset" : 1089,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/RegexSetTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 14,
+            "endLine" : 25,
+            "endColumn" : 26,
+            "charOffset" : 904,
+            "charLength" : 12,
+            "byteOffset" : 904,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/RolloverFileOutputStreamTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 14,
+            "endLine" : 47,
+            "endColumn" : 42,
+            "charOffset" : 1684,
+            "charLength" : 28,
+            "byteOffset" : 1684,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 14,
+            "endLine" : 48,
+            "endColumn" : 25,
+            "charOffset" : 1844,
+            "charLength" : 11,
+            "byteOffset" : 1844,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/SearchPatternTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 14,
+            "endLine" : 29,
+            "endColumn" : 31,
+            "charOffset" : 1022,
+            "charLength" : 17,
+            "byteOffset" : 1022,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/SharedBlockingCallbackTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 14,
+            "endLine" : 40,
+            "endColumn" : 40,
+            "charOffset" : 1515,
+            "charLength" : 26,
+            "byteOffset" : 1515,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/StringUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 14,
+            "endLine" : 39,
+            "endColumn" : 28,
+            "charOffset" : 1520,
+            "charLength" : 14,
+            "byteOffset" : 1520,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/TestIntrospectionUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 14,
+            "endLine" : 33,
+            "endColumn" : 35,
+            "charOffset" : 1096,
+            "charLength" : 21,
+            "byteOffset" : 1096,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/TopologicalSortTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 14,
+            "endLine" : 28,
+            "endColumn" : 33,
+            "charOffset" : 1033,
+            "charLength" : 19,
+            "byteOffset" : 1033,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/TrieTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 14,
+            "endLine" : 37,
+            "endColumn" : 22,
+            "charOffset" : 1391,
+            "charLength" : 8,
+            "byteOffset" : 1391,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/TypeUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 14,
+            "endLine" : 38,
+            "endColumn" : 26,
+            "charOffset" : 1474,
+            "charLength" : 12,
+            "byteOffset" : 1474,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/URIUtilCanonicalPathTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 14,
+            "endLine" : 31,
+            "endColumn" : 38,
+            "charOffset" : 1120,
+            "charLength" : 24,
+            "byteOffset" : 1120,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/URIUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 14,
+            "endLine" : 63,
+            "endColumn" : 25,
+            "charOffset" : 2296,
+            "charLength" : 11,
+            "byteOffset" : 2296,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/URLEncodedTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 14,
+            "endLine" : 49,
+            "endColumn" : 28,
+            "charOffset" : 1869,
+            "charLength" : 14,
+            "byteOffset" : 1869,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/UptimeTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 14,
+            "endLine" : 23,
+            "endColumn" : 24,
+            "charOffset" : 842,
+            "charLength" : 10,
+            "byteOffset" : 842,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/UrlEncodedUtf8Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 14,
+            "endLine" : 33,
+            "endColumn" : 32,
+            "charOffset" : 1154,
+            "charLength" : 18,
+            "byteOffset" : 1154,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/Utf8AppendableTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 14,
+            "endLine" : 43,
+            "endColumn" : 32,
+            "charOffset" : 1712,
+            "charLength" : 18,
+            "byteOffset" : 1712,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/Utf8LineParserTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 14,
+            "endLine" : 31,
+            "endColumn" : 32,
+            "charOffset" : 1062,
+            "charLength" : 18,
+            "byteOffset" : 1062,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/component/ContainerLifeCycleTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 14,
+            "endLine" : 40,
+            "endColumn" : 36,
+            "charOffset" : 1537,
+            "charLength" : 22,
+            "byteOffset" : 1537,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/component/DumpableTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 14,
+            "endLine" : 29,
+            "endColumn" : 26,
+            "charOffset" : 994,
+            "charLength" : 12,
+            "byteOffset" : 994,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/component/LifeCycleListenerNestedTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 14,
+            "endLine" : 37,
+            "endColumn" : 41,
+            "charOffset" : 1209,
+            "charLength" : 27,
+            "byteOffset" : 1209,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/component/LifeCycleListenerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 14,
+            "endLine" : 30,
+            "endColumn" : 35,
+            "charOffset" : 1123,
+            "charLength" : 21,
+            "byteOffset" : 1123,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/ClassPathResourceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 14,
+            "endLine" : 30,
+            "endColumn" : 35,
+            "charOffset" : 1115,
+            "charLength" : 21,
+            "byteOffset" : 1115,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/FileSystemResourceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 14,
+            "endLine" : 78,
+            "endColumn" : 36,
+            "charOffset" : 3091,
+            "charLength" : 22,
+            "byteOffset" : 3091,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/JarResourceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 14,
+            "endLine" : 51,
+            "endColumn" : 29,
+            "charOffset" : 1904,
+            "charLength" : 15,
+            "byteOffset" : 1904,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/JrtResourceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 14,
+            "endLine" : 36,
+            "endColumn" : 29,
+            "charOffset" : 1302,
+            "charLength" : 15,
+            "byteOffset" : 1302,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/PathResourceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 14,
+            "endLine" : 41,
+            "endColumn" : 30,
+            "charOffset" : 1415,
+            "charLength" : 16,
+            "byteOffset" : 1415,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/ResourceAliasTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 14,
+            "endLine" : 43,
+            "endColumn" : 31,
+            "charOffset" : 1662,
+            "charLength" : 17,
+            "byteOffset" : 1662,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/ResourceCollectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 14,
+            "endLine" : 42,
+            "endColumn" : 36,
+            "charOffset" : 1615,
+            "charLength" : 22,
+            "byteOffset" : 1615,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/ResourceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 14,
+            "endLine" : 47,
+            "endColumn" : 26,
+            "charOffset" : 1730,
+            "charLength" : 12,
+            "byteOffset" : 1730,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/security/CredentialTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 14,
+            "endLine" : 31,
+            "endColumn" : 28,
+            "charOffset" : 1109,
+            "charLength" : 14,
+            "byteOffset" : 1109,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/security/PasswordTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 14,
+            "endLine" : 25,
+            "endColumn" : 26,
+            "charOffset" : 913,
+            "charLength" : 12,
+            "byteOffset" : 913,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ssl/SslContextFactoryTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 69,
+            "startColumn" : 14,
+            "endLine" : 69,
+            "endColumn" : 35,
+            "charOffset" : 2724,
+            "charLength" : 21,
+            "byteOffset" : 2724,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ssl/X509Test.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 14,
+            "endLine" : 32,
+            "endColumn" : 22,
+            "charOffset" : 1172,
+            "charLength" : 8,
+            "byteOffset" : 1172,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/statistic/CounterStatisticTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 14,
+            "endLine" : 31,
+            "endColumn" : 34,
+            "charOffset" : 1122,
+            "charLength" : 20,
+            "byteOffset" : 1122,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/statistic/RateStatisticTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 14,
+            "endLine" : 29,
+            "endColumn" : 31,
+            "charOffset" : 1020,
+            "charLength" : 17,
+            "byteOffset" : 1020,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/statistic/SampleStatisticTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 14,
+            "endLine" : 27,
+            "endColumn" : 33,
+            "charOffset" : 997,
+            "charLength" : 19,
+            "byteOffset" : 997,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/AutoLockTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 14,
+            "endLine" : 29,
+            "endColumn" : 26,
+            "charOffset" : 1052,
+            "charLength" : 12,
+            "byteOffset" : 1052,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/EatWhatYouKillTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 14,
+            "endLine" : 34,
+            "endColumn" : 32,
+            "charOffset" : 1289,
+            "charLength" : 18,
+            "byteOffset" : 1289,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/QueuedThreadPoolTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 14,
+            "endLine" : 44,
+            "endColumn" : 34,
+            "charOffset" : 1774,
+            "charLength" : 20,
+            "byteOffset" : 1774,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/ReservedThreadExecutorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 14,
+            "endLine" : 40,
+            "endColumn" : 40,
+            "charOffset" : 1521,
+            "charLength" : 26,
+            "byteOffset" : 1521,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/SchedulerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 14,
+            "endLine" : 40,
+            "endColumn" : 27,
+            "charOffset" : 1528,
+            "charLength" : 13,
+            "byteOffset" : 1528,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/SerializedExecutorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 14,
+            "endLine" : 33,
+            "endColumn" : 36,
+            "charOffset" : 1200,
+            "charLength" : 22,
+            "byteOffset" : 1200,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/SweeperTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 14,
+            "endLine" : 32,
+            "endColumn" : 25,
+            "charOffset" : 1185,
+            "charLength" : 11,
+            "byteOffset" : 1185,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/ThreadClassLoaderScopeTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 14,
+            "endLine" : 30,
+            "endColumn" : 40,
+            "charOffset" : 1046,
+            "charLength" : 26,
+            "byteOffset" : 1046,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/ThreadFactoryTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 14,
+            "endLine" : 31,
+            "endColumn" : 31,
+            "charOffset" : 1128,
+            "charLength" : 17,
+            "byteOffset" : 1128,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/strategy/ExecuteProduceConsumeTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 14,
+            "endLine" : 36,
+            "endColumn" : 39,
+            "charOffset" : 1348,
+            "charLength" : 25,
+            "byteOffset" : 1348,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/strategy/ExecutionStrategyTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 14,
+            "endLine" : 45,
+            "endColumn" : 35,
+            "charOffset" : 1796,
+            "charLength" : 21,
+            "byteOffset" : 1796,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlAppendableTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 14,
+            "endLine" : 28,
+            "endColumn" : 31,
+            "charOffset" : 958,
+            "charLength" : 17,
+            "byteOffset" : 958,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlConfigurationTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 14,
+            "endLine" : 79,
+            "endColumn" : 34,
+            "charOffset" : 3159,
+            "charLength" : 20,
+            "byteOffset" : 3159,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlParserTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 14,
+            "endLine" : 27,
+            "endColumn" : 27,
+            "charOffset" : 923,
+            "charLength" : 13,
+            "byteOffset" : 923,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:tests/jetty-http-tools/src/test/java/org/eclipse/jetty/http/tools/HttpTesterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 14,
+            "endLine" : 39,
+            "endColumn" : 28,
+            "charOffset" : 1377,
+            "charLength" : 14,
+            "byteOffset" : 1377,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5786",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove redundant visibility modifiers from the methods of this test class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:tests/jetty-http-tools/src/test/java/org/eclipse/jetty/http/tools/matchers/HttpFieldsMatchersTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 14,
+            "endLine" : 28,
+            "endColumn" : 36,
+            "charOffset" : 1047,
+            "charLength" : 22,
+            "byteOffset" : 1047,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

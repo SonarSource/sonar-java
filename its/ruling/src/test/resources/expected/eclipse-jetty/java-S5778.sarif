@@ -1,0 +1,998 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpCookieTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 160,
+            "startColumn" : 39,
+            "endLine" : 160,
+            "endColumn" : 51,
+            "charOffset" : 7833,
+            "charLength" : 12,
+            "byteOffset" : 7833,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpCookieTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 197,
+            "startColumn" : 39,
+            "endLine" : 197,
+            "endColumn" : 51,
+            "charOffset" : 8967,
+            "charLength" : 12,
+            "byteOffset" : 8967,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpFieldsTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 805,
+            "startColumn" : 9,
+            "endLine" : 805,
+            "endColumn" : 21,
+            "charOffset" : 30542,
+            "charLength" : 12,
+            "byteOffset" : 30542,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the body of this try/catch to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/SyntaxTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 69,
+            "startColumn" : 13,
+            "endLine" : 69,
+            "endColumn" : 16,
+            "charOffset" : 1881,
+            "charLength" : 3,
+            "byteOffset" : 1881,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the body of this try/catch to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/SyntaxTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 123,
+            "startColumn" : 13,
+            "endLine" : 123,
+            "endColumn" : 16,
+            "charOffset" : 3258,
+            "charLength" : 3,
+            "byteOffset" : 3258,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/WriteFlusherTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 403,
+            "startColumn" : 9,
+            "endLine" : 403,
+            "endColumn" : 21,
+            "charOffset" : 13470,
+            "charLength" : 12,
+            "byteOffset" : 13470,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/InsufficientThreadsDetectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 9,
+            "endLine" : 42,
+            "endColumn" : 21,
+            "charOffset" : 1321,
+            "charLength" : 12,
+            "byteOffset" : 1321,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/InsufficientThreadsDetectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 9,
+            "endLine" : 79,
+            "endColumn" : 21,
+            "charOffset" : 2817,
+            "charLength" : 12,
+            "byteOffset" : 2817,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartFormInputStreamTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 205,
+            "startColumn" : 23,
+            "endLine" : 205,
+            "endColumn" : 35,
+            "charOffset" : 8336,
+            "charLength" : 12,
+            "byteOffset" : 8336,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/session/SessionHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 9,
+            "endLine" : 43,
+            "endColumn" : 21,
+            "charOffset" : 1645,
+            "charLength" : 12,
+            "byteOffset" : 1645,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/AsyncJSONTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 195,
+            "startColumn" : 9,
+            "endLine" : 195,
+            "endColumn" : 21,
+            "charOffset" : 6614,
+            "charLength" : 12,
+            "byteOffset" : 6614,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/AsyncJSONTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 203,
+            "startColumn" : 9,
+            "endLine" : 203,
+            "endColumn" : 21,
+            "charOffset" : 6829,
+            "charLength" : 12,
+            "byteOffset" : 6829,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/AsyncJSONTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 278,
+            "startColumn" : 9,
+            "endLine" : 278,
+            "endColumn" : 21,
+            "charOffset" : 9116,
+            "charLength" : 12,
+            "byteOffset" : 9116,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/AsyncJSONTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 286,
+            "startColumn" : 9,
+            "endLine" : 286,
+            "endColumn" : 21,
+            "charOffset" : 9331,
+            "charLength" : 12,
+            "byteOffset" : 9331,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/AsyncJSONTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 349,
+            "startColumn" : 9,
+            "endLine" : 349,
+            "endColumn" : 21,
+            "charOffset" : 11350,
+            "charLength" : 12,
+            "byteOffset" : 11350,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/AsyncJSONTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 357,
+            "startColumn" : 9,
+            "endLine" : 357,
+            "endColumn" : 21,
+            "charOffset" : 11565,
+            "charLength" : 12,
+            "byteOffset" : 11565,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 172,
+            "startColumn" : 9,
+            "endLine" : 172,
+            "endColumn" : 21,
+            "charOffset" : 5301,
+            "charLength" : 12,
+            "byteOffset" : 5301,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1449,
+            "startColumn" : 9,
+            "endLine" : 1449,
+            "endColumn" : 21,
+            "charOffset" : 42874,
+            "charLength" : 12,
+            "byteOffset" : 42874,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1462,
+            "startColumn" : 9,
+            "endLine" : 1462,
+            "endColumn" : 21,
+            "charOffset" : 43215,
+            "charLength" : 12,
+            "byteOffset" : 43215,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/PoolTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 529,
+            "startColumn" : 9,
+            "endLine" : 529,
+            "endColumn" : 21,
+            "charOffset" : 18517,
+            "charLength" : 12,
+            "byteOffset" : 18517,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/PoolTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 530,
+            "startColumn" : 9,
+            "endLine" : 530,
+            "endColumn" : 21,
+            "charOffset" : 18620,
+            "charLength" : 12,
+            "byteOffset" : 18620,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/PoolTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 531,
+            "startColumn" : 9,
+            "endLine" : 531,
+            "endColumn" : 21,
+            "charOffset" : 18724,
+            "charLength" : 12,
+            "byteOffset" : 18724,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/Utf8AppendableTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 9,
+            "endLine" : 78,
+            "endColumn" : 21,
+            "charOffset" : 2827,
+            "charLength" : 12,
+            "byteOffset" : 2827,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/Utf8AppendableTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 286,
+            "startColumn" : 21,
+            "endLine" : 286,
+            "endColumn" : 33,
+            "charOffset" : 10097,
+            "charLength" : 12,
+            "byteOffset" : 10097,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/FileSystemResourceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 218,
+            "startColumn" : 9,
+            "endLine" : 218,
+            "endColumn" : 21,
+            "charOffset" : 6819,
+            "charLength" : 12,
+            "byteOffset" : 6819,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/FileSystemResourceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 226,
+            "startColumn" : 9,
+            "endLine" : 226,
+            "endColumn" : 21,
+            "charOffset" : 7090,
+            "charLength" : 12,
+            "byteOffset" : 7090,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/FileSystemResourceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 236,
+            "startColumn" : 9,
+            "endLine" : 236,
+            "endColumn" : 21,
+            "charOffset" : 7460,
+            "charLength" : 12,
+            "byteOffset" : 7460,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/FileSystemResourceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 246,
+            "startColumn" : 9,
+            "endLine" : 246,
+            "endColumn" : 21,
+            "charOffset" : 7811,
+            "charLength" : 12,
+            "byteOffset" : 7811,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/ResourceCollectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 171,
+            "startColumn" : 9,
+            "endLine" : 171,
+            "endColumn" : 21,
+            "charOffset" : 5616,
+            "charLength" : 12,
+            "byteOffset" : 5616,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ssl/SslContextFactoryTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 231,
+            "startColumn" : 39,
+            "endLine" : 231,
+            "endColumn" : 51,
+            "charOffset" : 8035,
+            "charLength" : 12,
+            "byteOffset" : 8035,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the body of this try/catch to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/AbstractThreadPoolTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 9,
+            "endLine" : 56,
+            "endColumn" : 12,
+            "charOffset" : 1743,
+            "charLength" : 3,
+            "byteOffset" : 1743,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:tests/jetty-http-tools/src/test/java/org/eclipse/jetty/http/tools/matchers/HttpFieldsMatchersTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 39,
+            "endLine" : 50,
+            "endColumn" : 51,
+            "charOffset" : 1617,
+            "charLength" : 12,
+            "byteOffset" : 1617,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:tests/jetty-http-tools/src/test/java/org/eclipse/jetty/http/tools/matchers/HttpFieldsMatchersTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 39,
+            "endLine" : 66,
+            "endColumn" : 51,
+            "charOffset" : 2155,
+            "charLength" : 12,
+            "byteOffset" : 2155,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:tests/jetty-http-tools/src/test/java/org/eclipse/jetty/http/tools/matchers/HttpFieldsMatchersTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 82,
+            "startColumn" : 39,
+            "endLine" : 82,
+            "endColumn" : 51,
+            "charOffset" : 2692,
+            "charLength" : 12,
+            "byteOffset" : 2692,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5778",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:tests/jetty-http-tools/src/test/java/org/eclipse/jetty/http/tools/matchers/HttpFieldsMatchersTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 98,
+            "startColumn" : 39,
+            "endLine" : 98,
+            "endColumn" : 51,
+            "charOffset" : 3259,
+            "charLength" : 12,
+            "byteOffset" : 3259,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

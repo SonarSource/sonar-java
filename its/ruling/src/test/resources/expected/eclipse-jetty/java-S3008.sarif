@@ -1,0 +1,2006 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"__known\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpHeaderValue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 87,
+            "startColumn" : 40,
+            "endLine" : 87,
+            "endColumn" : 47,
+            "charOffset" : 2128,
+            "charLength" : 7,
+            "byteOffset" : 2128,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"MOST_SPECIFIC_MIME_ORDERING\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 41,
+            "endLine" : 50,
+            "endColumn" : 68,
+            "charOffset" : 1769,
+            "charLength" : 27,
+            "byteOffset" : 1769,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"__byteBufferPool\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/SslConnectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 35,
+            "endLine" : 67,
+            "endColumn" : 51,
+            "charOffset" : 2605,
+            "charLength" : 16,
+            "byteOffset" : 2605,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"NOOP_LISTENER\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 69,
+            "startColumn" : 28,
+            "endLine" : 69,
+            "endColumn" : 41,
+            "charOffset" : 2931,
+            "charLength" : 13,
+            "byteOffset" : 2931,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"NOOP\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelListeners.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 40,
+            "endLine" : 36,
+            "endColumn" : 44,
+            "charOffset" : 1286,
+            "charLength" : 4,
+            "byteOffset" : 1286,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"LOG\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 179,
+            "startColumn" : 27,
+            "endLine" : 179,
+            "endColumn" : 30,
+            "charOffset" : 7876,
+            "charLength" : 3,
+            "byteOffset" : 7876,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"UNSAFE_METHODS\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/PushBuilderImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 40,
+            "endLine" : 45,
+            "endColumn" : 54,
+            "charOffset" : 1579,
+            "charLength" : 14,
+            "byteOffset" : 1579,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"NOT_PUSHED_HEADERS\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 296,
+            "startColumn" : 40,
+            "endLine" : 296,
+            "endColumn" : 58,
+            "charOffset" : 12235,
+            "charLength" : 18,
+            "byteOffset" : 12235,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"__serverInfo\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 141,
+            "startColumn" : 27,
+            "endLine" : 141,
+            "endColumn" : 39,
+            "charOffset" : 5884,
+            "charLength" : 12,
+            "byteOffset" : 5884,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"LOG\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHttpOutputInterceptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 26,
+            "endLine" : 46,
+            "endColumn" : 29,
+            "charOffset" : 1749,
+            "charLength" : 3,
+            "byteOffset" : 1749,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"__asyncListener\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncStressTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 329,
+            "startColumn" : 34,
+            "endLine" : 329,
+            "endColumn" : 49,
+            "charOffset" : 12502,
+            "charLength" : 15,
+            "byteOffset" : 12502,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"__content\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectorCloseTestBase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 27,
+            "endLine" : 40,
+            "endColumn" : 36,
+            "charOffset" : 1316,
+            "charLength" : 9,
+            "byteOffset" : 1316,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"__length\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ConnectorCloseTestBase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 24,
+            "endLine" : 53,
+            "endColumn" : 32,
+            "charOffset" : 2549,
+            "charLength" : 8,
+            "byteOffset" : 2549,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"POST_12345\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 19,
+            "endLine" : 57,
+            "endColumn" : 29,
+            "charOffset" : 2249,
+            "charLength" : 10,
+            "byteOffset" : 2249,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"POST_A_12345\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 19,
+            "endLine" : 64,
+            "endColumn" : 31,
+            "charOffset" : 2527,
+            "charLength" : 12,
+            "byteOffset" : 2527,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"POST_B_12345\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 71,
+            "startColumn" : 19,
+            "endLine" : 71,
+            "endColumn" : 31,
+            "charOffset" : 2809,
+            "charLength" : 12,
+            "byteOffset" : 2809,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"POST_12345_C\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 19,
+            "endLine" : 78,
+            "endColumn" : 31,
+            "charOffset" : 3091,
+            "charLength" : 12,
+            "byteOffset" : 3091,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"POST_A_12345_C\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 85,
+            "startColumn" : 19,
+            "endLine" : 85,
+            "endColumn" : 33,
+            "charOffset" : 3343,
+            "charLength" : 14,
+            "byteOffset" : 3343,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"POST_B_12345_C\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 92,
+            "startColumn" : 19,
+            "endLine" : 92,
+            "endColumn" : 33,
+            "charOffset" : 3599,
+            "charLength" : 14,
+            "byteOffset" : 3599,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"BODY_67890\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 99,
+            "startColumn" : 19,
+            "endLine" : 99,
+            "endColumn" : 29,
+            "charOffset" : 3855,
+            "charLength" : 10,
+            "byteOffset" : 3855,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_threads\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/StressTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 37,
+            "endLine" : 59,
+            "endColumn" : 45,
+            "charOffset" : 2197,
+            "charLength" : 8,
+            "byteOffset" : 2197,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_server\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/StressTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 60,
+            "startColumn" : 27,
+            "endLine" : 60,
+            "endColumn" : 34,
+            "charOffset" : 2233,
+            "charLength" : 7,
+            "byteOffset" : 2233,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_connector\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/StressTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 36,
+            "endLine" : 61,
+            "endColumn" : 46,
+            "charOffset" : 2277,
+            "charLength" : 10,
+            "byteOffset" : 2277,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_server\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/BufferedResponseHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 27,
+            "endLine" : 46,
+            "endColumn" : 34,
+            "charOffset" : 1629,
+            "charLength" : 7,
+            "byteOffset" : 1629,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_config\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/BufferedResponseHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 38,
+            "endLine" : 47,
+            "endColumn" : 45,
+            "charOffset" : 1675,
+            "charLength" : 7,
+            "byteOffset" : 1675,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_local\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/BufferedResponseHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 35,
+            "endLine" : 48,
+            "endColumn" : 41,
+            "charOffset" : 1718,
+            "charLength" : 6,
+            "byteOffset" : 1718,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_contextHandler\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/BufferedResponseHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 35,
+            "endLine" : 49,
+            "endColumn" : 50,
+            "charOffset" : 1760,
+            "charLength" : 15,
+            "byteOffset" : 1760,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_bufferedHandler\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/BufferedResponseHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 44,
+            "endLine" : 50,
+            "endColumn" : 60,
+            "charOffset" : 1820,
+            "charLength" : 16,
+            "byteOffset" : 1820,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_test\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/BufferedResponseHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 32,
+            "endLine" : 51,
+            "endColumn" : 37,
+            "charOffset" : 1869,
+            "charLength" : 5,
+            "byteOffset" : 1869,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"OS_ALIAS_SUPPORTED\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerGetResourceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 28,
+            "endLine" : 51,
+            "endColumn" : 46,
+            "charOffset" : 2070,
+            "charLength" : 18,
+            "byteOffset" : 2070,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_server\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/InetAccessHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 27,
+            "endLine" : 49,
+            "endColumn" : 34,
+            "charOffset" : 1796,
+            "charLength" : 7,
+            "byteOffset" : 1796,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_connector1\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/InetAccessHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 36,
+            "endLine" : 50,
+            "endColumn" : 47,
+            "charOffset" : 1840,
+            "charLength" : 11,
+            "byteOffset" : 1840,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_connector2\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/InetAccessHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 36,
+            "endLine" : 51,
+            "endColumn" : 47,
+            "charOffset" : 1888,
+            "charLength" : 11,
+            "byteOffset" : 1888,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_handler\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/InetAccessHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 38,
+            "endLine" : 52,
+            "endColumn" : 46,
+            "charOffset" : 1938,
+            "charLength" : 8,
+            "byteOffset" : 1938,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"LN\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ResourceHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 69,
+            "startColumn" : 27,
+            "endLine" : 69,
+            "endColumn" : 29,
+            "charOffset" : 2612,
+            "charLength" : 2,
+            "byteOffset" : 2612,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_server\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ResourceHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 27,
+            "endLine" : 70,
+            "endColumn" : 34,
+            "charOffset" : 2681,
+            "charLength" : 7,
+            "byteOffset" : 2681,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_config\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ResourceHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 71,
+            "startColumn" : 38,
+            "endLine" : 71,
+            "endColumn" : 45,
+            "charOffset" : 2727,
+            "charLength" : 7,
+            "byteOffset" : 2727,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_connector\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ResourceHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 36,
+            "endLine" : 72,
+            "endColumn" : 46,
+            "charOffset" : 2771,
+            "charLength" : 10,
+            "byteOffset" : 2771,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_local\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ResourceHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 73,
+            "startColumn" : 35,
+            "endLine" : 73,
+            "endColumn" : 41,
+            "charOffset" : 2817,
+            "charLength" : 6,
+            "byteOffset" : 2817,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_contextHandler\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ResourceHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 74,
+            "startColumn" : 35,
+            "endLine" : 74,
+            "endColumn" : 50,
+            "charOffset" : 2859,
+            "charLength" : 15,
+            "byteOffset" : 2859,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_resourceHandler\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ResourceHandlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 75,
+            "startColumn" : 36,
+            "endLine" : 75,
+            "endColumn" : 52,
+            "charOffset" : 2911,
+            "charLength" : 16,
+            "byteOffset" : 2911,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"__sslContext\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SslSelectChannelTimeoutTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 23,
+            "endLine" : 35,
+            "endColumn" : 35,
+            "charOffset" : 1282,
+            "charLength" : 12,
+            "byteOffset" : 1282,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"REQUESTED_API_VERSION\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLoggingServiceProvider.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 26,
+            "endLine" : 35,
+            "endColumn" : 47,
+            "charOffset" : 1374,
+            "charLength" : 21,
+            "byteOffset" : 1374,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"LO\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTernaryTrie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 24,
+            "endLine" : 62,
+            "endColumn" : 26,
+            "charOffset" : 2663,
+            "charLength" : 2,
+            "byteOffset" : 2663,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"EQ\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTernaryTrie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 24,
+            "endLine" : 63,
+            "endColumn" : 26,
+            "charOffset" : 2694,
+            "charLength" : 2,
+            "byteOffset" : 2694,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"HI\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTernaryTrie.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 24,
+            "endLine" : 64,
+            "endColumn" : 26,
+            "charOffset" : 2725,
+            "charLength" : 2,
+            "byteOffset" : 2725,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"COMPLETED\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/FuturePromise.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 30,
+            "endLine" : 32,
+            "endColumn" : 39,
+            "charOffset" : 1229,
+            "charLength" : 9,
+            "byteOffset" : 1229,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"__nullStream\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 518,
+            "startColumn" : 27,
+            "endLine" : 518,
+            "endColumn" : 39,
+            "charOffset" : 13996,
+            "charLength" : 12,
+            "byteOffset" : 13996,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"__closedStream\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 529,
+            "startColumn" : 29,
+            "endLine" : 529,
+            "endColumn" : 43,
+            "charOffset" : 14227,
+            "charLength" : 14,
+            "byteOffset" : 14227,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"__nullWriter\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 585,
+            "startColumn" : 30,
+            "endLine" : 585,
+            "endColumn" : 42,
+            "charOffset" : 15171,
+            "charLength" : 12,
+            "byteOffset" : 15171,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"__nullPrintWriter\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 586,
+            "startColumn" : 32,
+            "endLine" : 586,
+            "endColumn" : 49,
+            "charOffset" : 15234,
+            "charLength" : 17,
+            "byteOffset" : 15234,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"__availableProcessors\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ProcessorUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 24,
+            "endLine" : 30,
+            "endColumn" : 45,
+            "charOffset" : 1205,
+            "charLength" : 21,
+            "byteOffset" : 1205,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"__scannerId\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 24,
+            "endLine" : 68,
+            "endColumn" : 35,
+            "charOffset" : 2272,
+            "charLength" : 11,
+            "byteOffset" : 2272,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"IDLE\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SharedBlockingCallback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 30,
+            "endLine" : 52,
+            "endColumn" : 34,
+            "charOffset" : 1682,
+            "charLength" : 4,
+            "byteOffset" : 1682,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"SUCCEEDED\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SharedBlockingCallback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 30,
+            "endLine" : 53,
+            "endColumn" : 39,
+            "charOffset" : 1749,
+            "charLength" : 9,
+            "byteOffset" : 1749,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"FAILED\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SharedBlockingCallback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 30,
+            "endLine" : 55,
+            "endColumn" : 36,
+            "charOffset" : 1827,
+            "charLength" : 6,
+            "byteOffset" : 1827,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"__defaultUseCaches\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 27,
+            "endLine" : 63,
+            "endColumn" : 45,
+            "charOffset" : 2067,
+            "charLength" : 18,
+            "byteOffset" : 2067,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"BY_NAME_ASCENDING\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceCollators.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 49,
+            "endLine" : 28,
+            "endColumn" : 66,
+            "charOffset" : 995,
+            "charLength" : 17,
+            "byteOffset" : 995,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"BY_NAME_DESCENDING\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceCollators.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 49,
+            "endLine" : 40,
+            "endColumn" : 67,
+            "charOffset" : 1373,
+            "charLength" : 18,
+            "byteOffset" : 1373,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"BY_LAST_MODIFIED_ASCENDING\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceCollators.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 49,
+            "endLine" : 43,
+            "endColumn" : 75,
+            "charOffset" : 1496,
+            "charLength" : 26,
+            "byteOffset" : 1496,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"BY_LAST_MODIFIED_DESCENDING\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceCollators.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 49,
+            "endLine" : 46,
+            "endColumn" : 76,
+            "charOffset" : 1632,
+            "charLength" : 27,
+            "byteOffset" : 1632,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"BY_SIZE_ASCENDING\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceCollators.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 49,
+            "endLine" : 49,
+            "endColumn" : 66,
+            "charOffset" : 1773,
+            "charLength" : 17,
+            "byteOffset" : 1773,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"BY_SIZE_DESCENDING\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/ResourceCollators.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 49,
+            "endLine" : 52,
+            "endColumn" : 67,
+            "charOffset" : 1894,
+            "charLength" : 18,
+            "byteOffset" : 1894,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"__aliasCount\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 31,
+            "endLine" : 58,
+            "endColumn" : 43,
+            "charOffset" : 2307,
+            "charLength" : 12,
+            "byteOffset" : 2307,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"__md\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Credential.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 190,
+            "startColumn" : 38,
+            "endLine" : 190,
+            "endColumn" : 42,
+            "charOffset" : 7250,
+            "charLength" : 4,
+            "byteOffset" : 7250,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"NOOP\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 29,
+            "endLine" : 51,
+            "endColumn" : 33,
+            "charOffset" : 2126,
+            "charLength" : 4,
+            "byteOffset" : 2126,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_directory\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 17,
+            "endLine" : 50,
+            "endColumn" : 27,
+            "charOffset" : 1874,
+            "charLength" : 10,
+            "byteOffset" : 1874,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_scanner\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 20,
+            "endLine" : 51,
+            "endColumn" : 28,
+            "charOffset" : 1905,
+            "charLength" : 8,
+            "byteOffset" : 1905,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_queue\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 33,
+            "endLine" : 52,
+            "endColumn" : 39,
+            "charOffset" : 1947,
+            "charLength" : 6,
+            "byteOffset" : 1947,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"_bulk\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 40,
+            "endLine" : 53,
+            "endColumn" : 45,
+            "charOffset" : 2029,
+            "charLength" : 5,
+            "byteOffset" : 2029,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3008",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this field \"VALUE\" to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/test/java/org/eclipse/jetty/xml/TestConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 23,
+            "endLine" : 35,
+            "endColumn" : 28,
+            "charOffset" : 1148,
+            "charLength" : 5,
+            "byteOffset" : 1148,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

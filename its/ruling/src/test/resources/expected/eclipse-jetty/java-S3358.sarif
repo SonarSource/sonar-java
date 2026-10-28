@@ -1,0 +1,550 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1875,
+            "startColumn" : 73,
+            "endLine" : 1875,
+            "endColumn" : 120,
+            "charOffset" : 72553,
+            "charLength" : 47,
+            "byteOffset" : 72553,
+            "byteLength" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 63,
+            "endLine" : 47,
+            "endColumn" : 133,
+            "charOffset" : 1657,
+            "charLength" : 70,
+            "byteOffset" : 1657,
+            "byteLength" : 70
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SocketChannelEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 339,
+            "startColumn" : 16,
+            "endLine" : 341,
+            "endColumn" : 27,
+            "charOffset" : 9135,
+            "charLength" : 76,
+            "byteOffset" : 9135,
+            "byteLength" : 76
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SocketChannelEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 342,
+            "startColumn" : 16,
+            "endLine" : 344,
+            "endColumn" : 19,
+            "charOffset" : 9228,
+            "charLength" : 60,
+            "byteOffset" : 9228,
+            "byteLength" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 364,
+            "startColumn" : 19,
+            "endLine" : 366,
+            "endColumn" : 45,
+            "charOffset" : 13277,
+            "charLength" : 112,
+            "byteOffset" : 13277,
+            "byteLength" : 112
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 502,
+            "startColumn" : 19,
+            "endLine" : 504,
+            "endColumn" : 45,
+            "charOffset" : 18320,
+            "charLength" : 112,
+            "byteOffset" : 18320,
+            "byteLength" : 112
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1222,
+            "startColumn" : 68,
+            "endLine" : 1222,
+            "endColumn" : 119,
+            "charOffset" : 40750,
+            "charLength" : 51,
+            "byteOffset" : 40750,
+            "byteLength" : 51
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1842,
+            "startColumn" : 56,
+            "endLine" : 1842,
+            "endColumn" : 91,
+            "charOffset" : 58918,
+            "charLength" : 35,
+            "byteOffset" : 58918,
+            "byteLength" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 229,
+            "startColumn" : 54,
+            "endLine" : 229,
+            "endColumn" : 86,
+            "charOffset" : 7135,
+            "charLength" : 32,
+            "byteOffset" : 7135,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/AbstractHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 82,
+            "startColumn" : 72,
+            "endLine" : 82,
+            "endColumn" : 120,
+            "charOffset" : 3681,
+            "charLength" : 48,
+            "byteOffset" : 3681,
+            "byteLength" : 48
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DebugHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 115,
+            "startColumn" : 46,
+            "endLine" : 115,
+            "endColumn" : 67,
+            "charOffset" : 4046,
+            "charLength" : 21,
+            "byteOffset" : 4046,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1138,
+            "startColumn" : 53,
+            "endLine" : 1138,
+            "endColumn" : 124,
+            "charOffset" : 34097,
+            "charLength" : 71,
+            "byteOffset" : 34097,
+            "byteLength" : 71
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 201,
+            "startColumn" : 44,
+            "endLine" : 201,
+            "endColumn" : 130,
+            "charOffset" : 6241,
+            "charLength" : 86,
+            "byteOffset" : 6241,
+            "byteLength" : 86
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 233,
+            "startColumn" : 36,
+            "endLine" : 233,
+            "endColumn" : 119,
+            "charOffset" : 7390,
+            "charLength" : 83,
+            "byteOffset" : 7390,
+            "byteLength" : 83
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 238,
+            "startColumn" : 38,
+            "endLine" : 238,
+            "endColumn" : 93,
+            "charOffset" : 5811,
+            "charLength" : 55,
+            "byteOffset" : 5811,
+            "byteLength" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 239,
+            "startColumn" : 65,
+            "endLine" : 239,
+            "endColumn" : 168,
+            "charOffset" : 5935,
+            "charLength" : 103,
+            "byteOffset" : 5935,
+            "byteLength" : 103
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 239,
+            "startColumn" : 105,
+            "endLine" : 239,
+            "endColumn" : 167,
+            "charOffset" : 5975,
+            "charLength" : 62,
+            "byteOffset" : 5975,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1148,
+            "startColumn" : 77,
+            "endLine" : 1148,
+            "endColumn" : 154,
+            "charOffset" : 38114,
+            "charLength" : 77,
+            "byteOffset" : 38114,
+            "byteLength" : 77
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3358",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extract this nested ternary operation into an independent statement."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 381,
+            "startColumn" : 73,
+            "endLine" : 381,
+            "endColumn" : 108,
+            "charOffset" : 14691,
+            "charLength" : 35,
+            "byteOffset" : 14691,
+            "byteLength" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}
