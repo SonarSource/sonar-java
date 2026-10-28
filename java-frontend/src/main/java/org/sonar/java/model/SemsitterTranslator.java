@@ -995,8 +995,9 @@ final class SemsitterTranslator {
     }
     Node scope = object == null ? firstNamed(node) : object;
     ExpressionTree qualifier = object == null && compoundName(scope) ? typeExpression(scope) : (object == null ? primary(scope) : expression(object));
-    IdentifierTreeImpl identifier = identifier(name == null ? lastNamed(node) : name);
-    bindUse(identifier, name == null ? node : name);
+    Node nameNode = name == null ? lastNamed(node) : name;
+    IdentifierTreeImpl identifier = identifier(nameNode);
+    bindUse(identifier, name != null || nameNode.json.has("refs") ? nameNode : node);
     MemberSelectExpressionTreeImpl tree = new MemberSelectExpressionTreeImpl(qualifier, token(required(node, ".")), identifier);
     ascribe(tree, identifier.symbolType());
     return tree;
@@ -1651,6 +1652,14 @@ final class SemsitterTranslator {
       return;
     }
     Symbol symbol = sema.resolve(target);
+    String typeTarget = node.typeTarget();
+    if (symbol.isMethodSymbol() && "<init>".equals(symbol.name()) && typeTarget != null && !typeTarget.equals(target)) {
+      target = typeTarget;
+      symbol = sema.resolve(target);
+    }
+    if (symbol.isMethodSymbol() && symbol.isUnknown()) {
+      symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
+    }
     identifier.symbol = symbol;
     ascribe(identifier, symbol.type());
     sema.use(target, identifier);
