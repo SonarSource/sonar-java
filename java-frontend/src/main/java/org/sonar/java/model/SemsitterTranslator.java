@@ -893,7 +893,7 @@ final class SemsitterTranslator {
       case "identifier", "type_identifier", "this", "super", "true", "false", "null_literal" -> primary(node);
       case "decimal_integer_literal", "hex_integer_literal", "octal_integer_literal", "binary_integer_literal" -> integerLiteral(node);
       case "decimal_floating_point_literal", "hex_floating_point_literal" -> floatingLiteral(node);
-      case "string_literal", "string_fragment" -> literal(Tree.Kind.STRING_LITERAL, token(node), sema.getClassType("java.lang.String"));
+      case "string_literal", "string_fragment" -> literal(node.text().startsWith("\"\"\"") ? Tree.Kind.TEXT_BLOCK : Tree.Kind.STRING_LITERAL, token(node), sema.getClassType("java.lang.String"));
       case "character_literal" -> literal(Tree.Kind.CHAR_LITERAL, token(node), sema.getClassType("char"));
       case "text_block" -> literal(Tree.Kind.TEXT_BLOCK, token(node), sema.getClassType("java.lang.String"));
       case "scoped_identifier", "scoped_type_identifier", "field_access" -> memberSelect(node);
