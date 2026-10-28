@@ -172,24 +172,30 @@ final class SemsitterTranslator {
     JavaTree.PackageDeclarationTreeImpl packageDeclaration = null;
     List<ImportClauseTree> imports = new ArrayList<>();
     List<Tree> types = new ArrayList<>();
+    List<Tree> compactMembers = new ArrayList<>();
+    boolean compact = false;
     for (Node child : program.children()) {
       switch (child.k()) {
         case "package_declaration" -> packageDeclaration = packageDeclaration(child);
         case "import_declaration" -> imports.add(importDeclaration(child));
         case ";" -> imports.add(new EmptyStatementTreeImpl(token(child)));
-        default -> addMember(types, child);
-      }
-    }
-    if (types.isEmpty()) {
-      List<Tree> members = new ArrayList<>();
-      for (Node child : program.children()) {
-        if (!"package_declaration".equals(child.k()) && !"import_declaration".equals(child.k())) {
-          addMember(members, child);
+        case "class_declaration", "interface_declaration", "enum_declaration", "record_declaration", "annotation_type_declaration" ->
+          addMember(compact ? compactMembers : types, child);
+        case "method_declaration", "constructor_declaration", "field_declaration", "constant_declaration", "local_variable_declaration", "static_initializer", "block" -> {
+          if (!compact) {
+            compact = true;
+            compactMembers.addAll(types);
+            types.clear();
+          }
+          addMember(compactMembers, child);
+        }
+        default -> {
+          // skipped construct
         }
       }
-      if (!members.isEmpty()) {
-        types.add(new ClassTreeImpl(Tree.Kind.IMPLICIT_CLASS, null, members, null));
-      }
+    }
+    if (compact) {
+      types.add(new ClassTreeImpl(Tree.Kind.IMPLICIT_CLASS, null, compactMembers, null));
     }
     return new JavaTree.CompilationUnitTreeImpl(packageDeclaration, imports, types, null, eof);
   }
@@ -217,7 +223,7 @@ final class SemsitterTranslator {
 
   private void addMember(List<Tree> members, Node node) {
     switch (node.k()) {
-      case "field_declaration", "constant_declaration" -> members.addAll(variables(node));
+      case "field_declaration", "constant_declaration", "local_variable_declaration" -> members.addAll(variables(node));
       case "method_declaration", "constructor_declaration", "compact_constructor_declaration", "annotation_type_element_declaration" -> members.add(method(node));
       case "class_declaration", "interface_declaration", "enum_declaration", "record_declaration", "annotation_type_declaration" -> members.add(typeDeclaration(node));
       case "static_initializer" -> members.add(staticInitializer(node));
