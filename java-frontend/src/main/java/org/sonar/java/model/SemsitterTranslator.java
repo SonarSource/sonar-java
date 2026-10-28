@@ -157,13 +157,13 @@ final class SemsitterTranslator {
     if (node.missing()) {
       return;
     }
-    if (isComment(node) || node.children().isEmpty() || isLiteral(node.k())) {
+    if (isComment(node) || node.allChildren().isEmpty() || isLiteral(node.k())) {
       if (!node.text().isEmpty() || isComment(node)) {
         leaves.add(node);
       }
       return;
     }
-    for (Node child : node.children()) {
+    for (Node child : node.allChildren()) {
       collectLeaves(child, leaves);
     }
   }
@@ -1891,6 +1891,16 @@ final class SemsitterTranslator {
     }
 
     private List<Node> children() {
+      List<Node> children = new ArrayList<>();
+      for (Node child : allChildren()) {
+        if (!isComment(child)) {
+          children.add(child);
+        }
+      }
+      return children;
+    }
+
+    private List<Node> allChildren() {
       if (!json.has("c")) {
         return List.of();
       }
