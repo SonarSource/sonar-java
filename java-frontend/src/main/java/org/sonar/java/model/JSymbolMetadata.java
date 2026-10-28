@@ -36,8 +36,11 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 /**
@@ -115,7 +118,7 @@ final class JSymbolMetadata implements SymbolMetadata {
   public List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
     for (AnnotationInstance annotation : annotations()) {
       if (annotation.symbol().type().is(fullyQualifiedNameOfAnnotation)) {
-        return annotation.values();
+        return annotation instanceof FactAnnotation ? null : annotation.values();
       }
     }
     return null;
@@ -330,12 +333,36 @@ final class JSymbolMetadata implements SymbolMetadata {
 
     private Object literal(ExpressionTree expression) {
       if (expression instanceof LiteralTree literal) {
-        return literal.value();
+        return literalValue(literal);
       }
       if (expression instanceof AnnotationTree annotation) {
         return new TreeAnnotation(sema, annotation);
       }
+      if (expression instanceof NewArrayTree array) {
+        return array.initializers().stream().map(this::literal).toArray();
+      }
+      if (expression instanceof MemberSelectExpressionTree select && "class".equals(select.identifier().name())) {
+        return select.expression().symbolType().symbol();
+      }
+      Symbol symbol = expression instanceof MemberSelectExpressionTree select ? select.identifier().symbol()
+        : (expression instanceof IdentifierTree identifier ? identifier.symbol() : null);
+      if (symbol instanceof Symbol.VariableSymbol variable && !variable.isUnknown()) {
+        return variable.constantValue().orElse(variable);
+      }
       return expression.toString();
+    }
+
+    private static Object literalValue(LiteralTree literal) {
+      String value = literal.value();
+      return switch (literal.kind()) {
+        case STRING_LITERAL, TEXT_BLOCK -> LiteralUtils.trimQuotes(value);
+        case BOOLEAN_LITERAL -> Boolean.valueOf(value);
+        case INT_LITERAL -> {
+          Integer integer = LiteralUtils.intLiteralValue(literal);
+          yield integer == null ? value : integer;
+        }
+        default -> value;
+      };
     }
   }
 
