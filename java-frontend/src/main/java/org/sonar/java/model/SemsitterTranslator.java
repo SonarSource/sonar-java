@@ -184,7 +184,16 @@ final class SemsitterTranslator {
       switch (child.k()) {
         case "package_declaration" -> packageDeclaration = packageDeclaration(child);
         case "import_declaration" -> imports.add(importDeclaration(child));
-        case ";" -> imports.add(new EmptyStatementTreeImpl(token(child)));
+        case ";" -> {
+          EmptyStatementTreeImpl empty = new EmptyStatementTreeImpl(token(child));
+          if (compact) {
+            compactMembers.add(empty);
+          } else if (types.isEmpty()) {
+            imports.add(empty);
+          } else {
+            types.add(empty);
+          }
+        }
         case "class_declaration", "interface_declaration", "enum_declaration", "record_declaration", "annotation_type_declaration" ->
           addMember(compact ? compactMembers : types, child);
         case "method_declaration", "constructor_declaration", "field_declaration", "constant_declaration", "local_variable_declaration", "static_initializer", "block" -> {
@@ -210,7 +219,7 @@ final class SemsitterTranslator {
     return new JavaTree.PackageDeclarationTreeImpl(
       annotations(node),
       token(required(node, "package")),
-      expression(requiredField(node, "name", firstNamed(node))),
+      expression(requiredField(node, "name", firstOf(node, "scoped_identifier", "identifier"))),
       token(required(node, ";")));
   }
 
@@ -1291,9 +1300,15 @@ final class SemsitterTranslator {
   }
 
   private MethodReferenceTreeImpl methodReference(Node node) {
-    ExpressionTree qualifier = expression(requiredField(node, "type", firstNamed(node)));
-    IdentifierTreeImpl name = identifier(requiredField(node, "name", lastOf(node, "identifier")));
-    bindUse(name, field(node, "name") == null ? node : field(node, "name"));
+    ExpressionTree qualifier = expression(requiredField(node, "type", node.children().get(0)));
+    Node nameNode = field(node, "name");
+    if (nameNode == null) {
+      List<Node> children = node.children();
+      Node last = children.isEmpty() ? null : children.get(children.size() - 1);
+      nameNode = last != null && "new".equals(last.text()) ? last : lastOf(node, "identifier");
+    }
+    IdentifierTreeImpl name = identifier(nameNode == null ? node : nameNode);
+    bindUse(name, nameNode == null ? node : nameNode);
     MethodReferenceTreeImpl tree = new MethodReferenceTreeImpl(qualifier, token(required(node, "::")));
     Node typeArguments = field(node, "type_arguments");
     tree.complete(typeArguments == null ? null : typeArguments(typeArguments), name);
