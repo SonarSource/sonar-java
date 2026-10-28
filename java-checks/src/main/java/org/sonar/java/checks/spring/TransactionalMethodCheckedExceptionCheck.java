@@ -426,12 +426,15 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
    * after the body and may throw checked exceptions.
    */
   private static boolean isInTryWithResourcesClosingWithCheckedException(Tree tree) {
+    Tree child = tree;
     Tree parent = tree.parent();
     while (parent != null && !(parent instanceof MethodTree)) {
       if (parent instanceof TryStatementTree tryStatement
+        && (child == tryStatement.block() || child == tryStatement.resourceList())
         && tryStatement.resourceList().stream().anyMatch(TransactionalMethodCheckedExceptionCheck::closeMayThrowCheckedException)) {
         return true;
       }
+      child = parent;
       parent = parent.parent();
     }
     return false;
