@@ -17,6 +17,7 @@
 package org.sonar.plugins.java;
 
 import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestFileSystem;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
 import java.io.File;
@@ -33,6 +34,8 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.event.Level;
 import org.sonar.api.SonarEdition;
@@ -66,6 +69,7 @@ import org.sonar.java.model.springcontext.SpringContextGatheringModel;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.telemetry.DefaultTelemetry;
 import org.sonar.java.telemetry.Telemetry;
+import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -74,7 +78,6 @@ import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JspCodeVisitor;
 import org.sonar.scanner.plugin.api.impl.config.MapSettings;
-import com.sonarsource.scanner.engine.sensor.test.fixtures.TestFileSystem;
 import org.sonar.scanner.plugin.api.impl.fs.DefaultInputFile;
 import org.sonar.scanner.plugin.api.impl.rule.ActiveRulesBuilder;
 import org.sonar.scanner.plugin.api.impl.rule.NewActiveRule;
@@ -96,7 +99,7 @@ import static org.mockito.Mockito.when;
 
 class JavaSensorTest {
 
-  private static final String EXPECTED_TYPE_ERROR_COUNT = "214";
+  private static final String EXPECTED_TYPE_ERROR_COUNT = "223";
   private static final String SPRING_CONTEXT_MODEL_PATH = "state/context.json";
   private static final String SPRING_CONTEXT_FIXTURE_DIRECTORY = "/org/sonar/plugins/java/springcontext/";
   private static final CheckFactory checkFactory = mock(CheckFactory.class);
@@ -171,6 +174,84 @@ class JavaSensorTest {
     assertThat(gatheringModel.filesData().get("previous-module")).containsOnlyKeys("previous-file");
   }
 
+  @ParameterizedTest
+  @ValueSource(booleans = {false, true})
+  void skips_spring_context_restoration_without_spring_or_in_sonarlint(boolean sonarLint) throws IOException {
+    copySpringContextFixture("unvisited-service.json");
+    Path modelPath = tmp.resolve(SPRING_CONTEXT_MODEL_PATH);
+    String previousContent = Files.readString(modelPath);
+    SensorContextTester context = springSensorContext();
+    if (sonarLint) {
+      context.setRuntime(TestSonarRuntime.forSonarLint(Version.create(6, 7)));
+    }
+    SonarComponents components = createSonarComponentsMock(context);
+    if (sonarLint) {
+      when(components.getJavaClasspath()).thenReturn(TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    }
+    var gatheringModel = new SpringContextGatheringModel();
+
+    var javaResourceLocator = mock(JavaResourceLocator.class);
+    var noSonarFilter = mock(NoSonarFilter.class);
+    new JavaSensor(components, javaResourceLocator, noSonarFilter, null, telemetry, gatheringModel).execute(context);
+
+    assertThat(gatheringModel.isRestored()).isFalse();
+    assertThat(gatheringModel.isEnabled()).isFalse();
+    assertThat(gatheringModel.filesData()).isEmpty();
+    assertThat(Files.readString(modelPath)).isEqualTo(previousContent);
+    assertThat(telemetry.toMap().keySet()).noneMatch(key -> key.startsWith("java.spring."));
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {false, true})
+  void enables_spring_context_only_for_spring_modules_in_either_order(boolean springFirst) throws IOException {
+    copySpringContextFixture("unvisited-service.json");
+    SensorContextTester context = springSensorContext();
+    SonarComponents components = createSonarComponentsMock(context);
+    var gatheringModel = new SpringContextGatheringModel();
+    var sensor = new JavaSensor(components, mock(JavaResourceLocator.class), mock(NoSonarFilter.class), null, telemetry, gatheringModel);
+
+    for (boolean spring : List.of(springFirst, !springFirst)) {
+      when(components.getJavaClasspath()).thenReturn(spring ? TestClasspathUtils.DEFAULT_MODULE.getClassPath() : List.of());
+      sensor.execute(context);
+
+      assertThat(gatheringModel.isEnabled()).isEqualTo(spring || springFirst);
+      assertThat(gatheringModel.isRestored()).isEqualTo(spring || springFirst);
+    }
+    assertThat(gatheringModel.filesData().get("module")).containsOnlyKeys("unvisited");
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {false, true})
+  void collects_spring_context_only_outside_sonarlint(boolean sonarLint) throws IOException {
+    SensorContextTester context = springSensorContext();
+    if (sonarLint) {
+      context.setRuntime(TestSonarRuntime.forSonarLint(Version.create(6, 7)));
+    }
+    String contents = "@org.springframework.stereotype.Component class Service {}";
+    Files.writeString(tmp.resolve("Service.java"), contents);
+    InputFile inputFile = new TestInputFileBuilder("module", "Service.java")
+      .setModuleBaseDir(tmp).setLanguage("java").setType(InputFile.Type.MAIN).setContents(contents).setCharset(UTF_8).build();
+    context.fileSystem().add(inputFile);
+    SonarComponents components = createSonarComponentsMock(context);
+    when(components.getJavaClasspath()).thenReturn(TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var gatheringModel = new SpringContextGatheringModel();
+    var sensor = new JavaSensor(components, mock(JavaResourceLocator.class), mock(NoSonarFilter.class), null, telemetry, gatheringModel);
+
+    sensor.execute(context);
+    sensor.execute(context);
+
+    assertThat(gatheringModel.isEnabled()).isEqualTo(!sonarLint);
+    if (sonarLint) {
+      assertThat(gatheringModel.filesData()).isEmpty();
+      assertThat(telemetry.toMap().keySet()).noneMatch(key -> key.startsWith("java.spring."));
+    } else {
+      assertThat(gatheringModel.filesData().values()).hasSize(1);
+      var fileData = gatheringModel.filesData().values().iterator().next().get(inputFile.key());
+      assertThat(fileData.beans()).extracting(BeanDefinitionHolder.InputFileData::beanName).containsExactly("service");
+      assertThat(telemetry.toMap()).containsKey("java.spring.context_model_gathering_time_ms");
+    }
+  }
+
   private SensorContextTester springSensorContext() {
     SensorContextTester context = SensorContextTester.create(tmp);
     context.fileSystem().setWorkDir(tmp);
@@ -179,7 +260,9 @@ class JavaSensorTest {
   }
 
   private JavaSensor javaSensor(SensorContextTester context, SpringContextGatheringModel gatheringModel) {
-    return new JavaSensor(createSonarComponentsMock(context), mock(JavaResourceLocator.class), mock(NoSonarFilter.class), null, telemetry, gatheringModel);
+    SonarComponents components = createSonarComponentsMock(context);
+    when(components.getJavaClasspath()).thenReturn(TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    return new JavaSensor(components, mock(JavaResourceLocator.class), mock(NoSonarFilter.class), null, telemetry, gatheringModel);
   }
 
   private void copySpringContextFixture(String fixtureName) throws IOException {
@@ -192,7 +275,7 @@ class JavaSensorTest {
 
   @Test
   void test_issues_creation_on_main_file() throws IOException {
-    testIssueCreation(InputFile.Type.MAIN, 19);
+    testIssueCreation(InputFile.Type.MAIN, 22);
 
     Map<String, String> telemetryMap = telemetry.toMap();
     assertThat(telemetryMap).containsOnlyKeys(

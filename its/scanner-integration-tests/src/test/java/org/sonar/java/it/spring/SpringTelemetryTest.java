@@ -91,6 +91,8 @@ class SpringTelemetryTest extends ScannerIntegrationAbstractTest {
   void spring_context_model_is_reported_as_telemetry() {
     var project = analyzeProject(Path.of("ambiguous-dependencies-should-be-resolved"), "S9352").getProject();
 
+    assertThat(projectBaseDir.resolve(".sonar/spring-context-model.json")).exists();
+
     assertThat(telemetryValue(project, "java.spring.bean_count"))
       .isEqualTo(Integer.toString(EXPECTED_BEAN_COUNT));
     assertThat(telemetryValue(project, "java.spring.bean_name_count"))
@@ -107,6 +109,16 @@ class SpringTelemetryTest extends ScannerIntegrationAbstractTest {
       .as("estimated size with headroom for strings, locations, and nested payloads excluded from the structural lower bound")
       .isGreaterThan(MINIMUM_EXPECTED_CONTEXT_MODEL_SIZE_BYTES)
       .isLessThan(MAXIMUM_EXPECTED_CONTEXT_MODEL_SIZE_BYTES);
+  }
+
+  @Test
+  void spring_context_is_not_collected_or_saved_without_spring_dependencies() {
+    var project = analyzeProject(Path.of("no-spring-dependencies"), "S9352").getProject();
+
+    assertThat(projectBaseDir.resolve(".sonar/spring-context-model.json")).doesNotExist();
+    assertThat(project.getTelemetryEntry("java.spring.bean_count")).isNull();
+    assertThat(project.getTelemetryEntry("java.spring.context_model_gathering_time_ms")).isNull();
+    assertThat(project.getTelemetryEntry("java.spring.context_checks_time_ms")).isNull();
   }
 
   private static String telemetryValue(ScannerOutputReader.AnalyzedProject project, String key) {

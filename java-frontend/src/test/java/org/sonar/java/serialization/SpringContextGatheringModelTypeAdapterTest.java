@@ -44,12 +44,15 @@ class SpringContextGatheringModelTypeAdapterTest {
     var bean = new BeanDefinitionHolder.InputFileData("bean", "example.Bean", BeanDefinitionKind.STEREOTYPE, "example", new TextSpan(1, 0, 1, 4),
       false, ProfileExpression.UNCONDITIONAL, null, Map.of(), Set.of("example.Bean"));
     var model = new SpringContextGatheringModel();
+    model.enable();
     model.collectBeans("module-a", "file-a", INPUT_FILE, List.of(bean));
     model.collectPackages("module-a", "file-a", INPUT_FILE, Set.of("example"));
     model.collectBeans("module-a", "file-b", INPUT_FILE, List.of());
     model.collectPackages("module-b", "file-c", INPUT_FILE, Set.of("other"));
 
     String json = GSON.toJson(model);
+
+    assertThat(JsonParser.parseString(json).getAsJsonObject().keySet()).containsExactly("filesData");
 
     var filesData = JsonParser.parseString(json).getAsJsonObject().getAsJsonObject("filesData");
     assertThat(filesData.keySet()).containsExactlyInAnyOrder("module-a", "module-b");
@@ -59,6 +62,7 @@ class SpringContextGatheringModelTypeAdapterTest {
     assertThat(file.getAsJsonArray("packages").get(0).getAsString()).isEqualTo("example");
 
     var restored = GSON.fromJson(json, SpringContextGatheringModel.class);
+    assertThat(restored.isEnabled()).isFalse();
     assertThat(restored.filesData().get("module-a")).containsOnlyKeys("file-a", "file-b");
     assertThat(restored.filesData().get("module-b")).containsOnlyKeys("file-c");
     assertThat(restored.filesData().get("module-a").get("file-a").beans()).containsExactly(bean);

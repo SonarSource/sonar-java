@@ -71,6 +71,8 @@ public class SonarLintIntegrationTest {
 
     List<RaisedIssueDto> issues = analyzeFileAndGetIssues(inputFileDto.getUri());
 
+    assertThat(baseDir.resolve(".sonar/spring-context-model.json")).doesNotExist();
+
     assertThat(issues)
       .extracting(
         RaisedIssueDto::getRuleKey,

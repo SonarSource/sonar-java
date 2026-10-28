@@ -58,6 +58,7 @@ public class JavaPlugin implements Plugin {
     } else {
       list.add(DefaultTelemetry.class);
       list.add(ProjectEndOfAnalysisSensor.class);
+      list.add(SpringContextModelSensor.class);
       list.addAll(SurefireExtensions.getExtensions());
       list.add(DroppedPropertiesSensor.class);
       list.add(JavaSonarWayProfile.class);
@@ -125,7 +126,6 @@ public class JavaPlugin implements Plugin {
         .defaultValue("False")
         .build(),
       JavaSensor.class,
-      SpringContextModelSensor.class,
       PostAnalysisIssueFilter.class));
 
     list.add(AnalysisWarningsWrapper.class);
