@@ -41,10 +41,13 @@ public final class JavaIssue {
   }
 
   public JavaIssue setPrimaryLocationOnComponent(InputComponent fileOrProject, String message) {
-    newIssue.at(
-      newIssue.newLocation()
-        .on(fileOrProject)
-        .message(message));
+    NewIssueLocation location = newIssue.newLocation()
+      .on(fileOrProject)
+      .message(message);
+    if (fileOrProject instanceof InputFile inputFile && inputFile.lines() > 0) {
+      location.at(inputFile.selectLine(1));
+    }
+    newIssue.at(location);
     return this;
   }
 
