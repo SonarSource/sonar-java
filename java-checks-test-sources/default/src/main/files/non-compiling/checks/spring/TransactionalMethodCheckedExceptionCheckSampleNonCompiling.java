@@ -19,4 +19,31 @@ class TransactionalMethodCheckedExceptionCheckSampleNonCompiling {
   public void propagationFromMethodCall() throws java.io.IOException { // Noncompliant [[secondary=18]]
 //            ^^^^^^^^^^^^^^^^^^^^^^^^^
   }
+
+  @Transactional
+  public void unknownThrownTypeAfterWrite(Repository repository) throws java.io.IOException { // Noncompliant [[secondary=24]]
+//            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    repository.save(null);
+    throw new UnknownException();
+  }
+
+  @Transactional
+  public void unknownMethodAfterWrite(Repository repository) throws java.io.IOException { // Noncompliant [[secondary=31]]
+//            ^^^^^^^^^^^^^^^^^^^^^^^
+    repository.save(null);
+    unknownMethod();
+  }
+
+  @Transactional
+  public void checkedThrowBeforeWrite(Repository repository) throws java.io.IOException { // Compliant
+    if (repository == null) {
+      throw new java.io.IOException();
+    }
+    repository.save(null);
+  }
+
+  static class Repository {
+    void save(Object o) {
+    }
+  }
 }

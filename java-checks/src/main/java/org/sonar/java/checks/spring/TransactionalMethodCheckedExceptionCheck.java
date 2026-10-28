@@ -16,13 +16,20 @@
  */
 package org.sonar.java.checks.spring;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
@@ -34,6 +41,8 @@ import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.Version;
+import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -46,18 +55,36 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S8989")
 public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscriptionVisitor implements DependencyVersionAware {
 
   private static final List<String> TRANSACTIONAL_PREFIXES = List.of(
     "save", "delete", "update", "persist", "merge", "flush", "insert");
+
+  private static final List<String> READ_PREFIXES = List.of(
+    "get", "find", "read", "exists", "count", "is", "has", "query", "select", "load", "create", "contains");
+
+  private static final List<String> PERSISTENCE_TYPES = List.of(
+    "javax.persistence.EntityManager",
+    "jakarta.persistence.EntityManager",
+    "javax.persistence.Query",
+    "jakarta.persistence.Query",
+    "org.hibernate.SharedSessionContract",
+    "org.springframework.jdbc.core.JdbcOperations",
+    "org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations",
+    "org.springframework.data.repository.Repository",
+    "java.sql.Statement");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -110,6 +137,10 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
     boolean isClassLevel = isClassLevelAnnotation(method, transactionalAnnotation);
 
     if (isClassLevel && !looksTransactional(method)) {
+      return;
+    }
+
+    if (allCheckedExceptionsThrownBeforeWrites(method)) {
       return;
     }
 
@@ -291,14 +322,188 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
     if (hasTransactionalPrefix(method.simpleName().name())) {
       return true;
     }
-    var visitor = new MethodInvocationVisitor();
+    var visitor = new MethodInvocationVisitor(TransactionalMethodCheckedExceptionCheck::hasTransactionalName, ref -> false);
     method.accept(visitor);
     return visitor.foundTransactionalCall;
   }
 
+  /**
+   * Uses the control flow graph of the method to determine whether every point that may throw a checked exception
+   * is executed before any write operation. In that case, no write can have happened when a checked exception is
+   * thrown, so the rollback behavior is irrelevant.
+   * Returns false when the method has no body, no write operation or no point throwing a checked exception.
+   */
+  private static boolean allCheckedExceptionsThrownBeforeWrites(MethodTree method) {
+    ControlFlowGraph cfg = method.cfg();
+    if (cfg == null) {
+      return false;
+    }
+    boolean hasWrite = false;
+    boolean hasThrowPoint = false;
+    for (ControlFlowGraph.Block block : cfg.blocks()) {
+      List<Tree> items = blockItems(block);
+      for (int i = 0; i < items.size(); i++) {
+        hasThrowPoint |= isCheckedThrowPoint(items.get(i));
+        if (isWriteOperation(items.get(i))) {
+          hasWrite = true;
+          if (items.subList(i, items.size()).stream().anyMatch(TransactionalMethodCheckedExceptionCheck::isCheckedThrowPoint)
+            || hasReachableThrowPoint(block)
+            || isInTryWithResourcesClosingWithCheckedException(items.get(i))) {
+            return false;
+          }
+        }
+      }
+    }
+    return hasWrite && hasThrowPoint;
+  }
+
+  private static List<Tree> blockItems(ControlFlowGraph.Block block) {
+    Tree terminator = block.terminator();
+    if (terminator == null) {
+      return block.elements();
+    }
+    List<Tree> items = new ArrayList<>(block.elements());
+    items.add(terminator);
+    return items;
+  }
+
+  private static boolean hasReachableThrowPoint(ControlFlowGraph.Block start) {
+    Set<ControlFlowGraph.Block> visited = new HashSet<>();
+    Deque<ControlFlowGraph.Block> toVisit = new ArrayDeque<>();
+    addSuccessors(start, toVisit);
+    while (!toVisit.isEmpty()) {
+      ControlFlowGraph.Block block = toVisit.pop();
+      if (visited.add(block)) {
+        if (blockItems(block).stream().anyMatch(TransactionalMethodCheckedExceptionCheck::isCheckedThrowPoint)) {
+          return true;
+        }
+        addSuccessors(block, toVisit);
+      }
+    }
+    return false;
+  }
+
+  private static void addSuccessors(ControlFlowGraph.Block block, Deque<ControlFlowGraph.Block> toVisit) {
+    toVisit.addAll(block.successors());
+    toVisit.addAll(block.exceptions());
+  }
+
+  private static boolean isWriteOperation(Tree tree) {
+    if (!(tree instanceof MethodInvocationTree) && !(tree instanceof NewClassTree)) {
+      return false;
+    }
+    var visitor = new MethodInvocationVisitor(
+      mit -> isPotentialWrite(mit.methodSymbol(), ExpressionUtils.methodName(mit).name()),
+      ref -> isPotentialWrite(ref.method().symbol(), ref.method().name()));
+    tree.accept(visitor);
+    return visitor.foundTransactionalCall;
+  }
+
+  private static boolean hasTransactionalName(MethodInvocationTree mit) {
+    return hasTransactionalPrefix(ExpressionUtils.methodName(mit).name());
+  }
+
+  /**
+   * A method invocation is considered as a potential write when its name starts with a transactional prefix,
+   * or when it is invoked on a persistence API (EntityManager, JdbcTemplate, repository, ...) and its name
+   * does not look like a read operation.
+   */
+  private static boolean isPotentialWrite(Symbol symbol, String name) {
+    if (hasTransactionalPrefix(name)) {
+      return true;
+    }
+    if (symbol.isUnknown()) {
+      return false;
+    }
+    Type ownerType = symbol.owner().type();
+    return ownerType != null
+      && PERSISTENCE_TYPES.stream().anyMatch(ownerType::isSubtypeOf)
+      && !hasPrefix(name, READ_PREFIXES);
+  }
+
+  /**
+   * The control flow graph does not model the implicit close() calls of try-with-resources, which are executed
+   * after the body and may throw checked exceptions.
+   */
+  private static boolean isInTryWithResourcesClosingWithCheckedException(Tree tree) {
+    Tree child = tree;
+    Tree parent = tree.parent();
+    while (parent != null && !(parent instanceof MethodTree)) {
+      if (parent instanceof TryStatementTree tryStatement
+        && (child == tryStatement.block() || child == tryStatement.resourceList())
+        && tryStatement.resourceList().stream().anyMatch(TransactionalMethodCheckedExceptionCheck::closeMayThrowCheckedException)) {
+        return true;
+      }
+      child = parent;
+      parent = parent.parent();
+    }
+    return false;
+  }
+
+  /**
+   * A resource of a try-with-resources is closed after the body of the try. Considering it as a throw point covers
+   * writes executed before the try statement.
+   */
+  private static boolean isResourceClosingWithCheckedException(Tree tree) {
+    Tree parent = tree.parent();
+    return parent != null
+      && parent.parent() instanceof TryStatementTree tryStatement
+      && tryStatement.resourceList() == parent
+      && closeMayThrowCheckedException(tree);
+  }
+
+  private static boolean closeMayThrowCheckedException(Tree resource) {
+    Type type = resource instanceof VariableTree variable ? variable.symbol().type() : ((ExpressionTree) resource).symbolType();
+    return findCloseMethod(type).map(TransactionalMethodCheckedExceptionCheck::mayThrowCheckedException).orElse(true);
+  }
+
+  private static Optional<Symbol.MethodSymbol> findCloseMethod(@Nullable Type type) {
+    if (type == null || type.isUnknown()) {
+      return Optional.empty();
+    }
+    Symbol.TypeSymbol typeSymbol = type.symbol();
+    Optional<Symbol.MethodSymbol> close = typeSymbol.lookupSymbols("close").stream()
+      .filter(Symbol::isMethodSymbol)
+      .map(Symbol.MethodSymbol.class::cast)
+      .filter(m -> m.parameterTypes().isEmpty())
+      .findFirst();
+    if (close.isPresent()) {
+      return close;
+    }
+    return Stream.concat(Stream.of(typeSymbol.superClass()), typeSymbol.interfaces().stream())
+      .map(TransactionalMethodCheckedExceptionCheck::findCloseMethod)
+      .flatMap(Optional::stream)
+      .findFirst();
+  }
+
+  private static boolean isCheckedThrowPoint(Tree tree) {
+    if (isResourceClosingWithCheckedException(tree)) {
+      return true;
+    }
+    if (tree instanceof ThrowStatementTree throwStatement) {
+      Type type = throwStatement.expression().symbolType();
+      return type.isUnknown() || isCheckedException(type);
+    }
+    if (tree instanceof MethodInvocationTree mit) {
+      return mayThrowCheckedException(mit.methodSymbol());
+    }
+    if (tree instanceof NewClassTree newClass) {
+      return mayThrowCheckedException(newClass.methodSymbol());
+    }
+    return false;
+  }
+
+  private static boolean mayThrowCheckedException(Symbol.MethodSymbol symbol) {
+    return symbol.isUnknown() || symbol.thrownTypes().stream().anyMatch(type -> type.isUnknown() || isCheckedException(type));
+  }
+
   private static boolean hasTransactionalPrefix(String name) {
+    return hasPrefix(name, TRANSACTIONAL_PREFIXES);
+  }
+
+  private static boolean hasPrefix(String name, List<String> prefixes) {
     String lowerName = name.toLowerCase(Locale.ROOT);
-    return TRANSACTIONAL_PREFIXES.stream().anyMatch(prefix -> {
+    return prefixes.stream().anyMatch(prefix -> {
       if (!lowerName.startsWith(prefix)) {
         return false;
       }
@@ -311,16 +516,29 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
   }
 
   private static class MethodInvocationVisitor extends BaseTreeVisitor {
+    private final Predicate<MethodInvocationTree> isTransactionalCall;
+    private final Predicate<MethodReferenceTree> isTransactionalReference;
     boolean foundTransactionalCall = false;
+
+    MethodInvocationVisitor(Predicate<MethodInvocationTree> isTransactionalCall, Predicate<MethodReferenceTree> isTransactionalReference) {
+      this.isTransactionalCall = isTransactionalCall;
+      this.isTransactionalReference = isTransactionalReference;
+    }
+
+    @Override
+    public void visitMethodReference(MethodReferenceTree tree) {
+      if (!foundTransactionalCall && isTransactionalReference.test(tree)) {
+        foundTransactionalCall = true;
+        return;
+      }
+      super.visitMethodReference(tree);
+    }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (!foundTransactionalCall) {
-        String calledMethodName = ExpressionUtils.methodName(tree).name();
-        if (hasTransactionalPrefix(calledMethodName)) {
-          foundTransactionalCall = true;
-          return;
-        }
+      if (!foundTransactionalCall && isTransactionalCall.test(tree)) {
+        foundTransactionalCall = true;
+        return;
       }
       super.visitMethodInvocation(tree);
     }
