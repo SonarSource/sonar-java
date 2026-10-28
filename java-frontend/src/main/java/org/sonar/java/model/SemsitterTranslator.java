@@ -443,6 +443,12 @@ final class SemsitterTranslator {
   }
 
   private BlockTreeImpl block(Node node) {
+    if (!"block".equals(node.k())) {
+      Node nested = childKind(node, "block");
+      if (nested != null) {
+        node = nested;
+      }
+    }
     InternalSyntaxToken open = token(required(node, "{"));
     InternalSyntaxToken close = token(required(node, "}"));
     List<StatementTree> statements = new ArrayList<>();
@@ -1195,7 +1201,7 @@ final class SemsitterTranslator {
     if (text.isEmpty()) {
       text = node.k().replace("_type", "");
     }
-    JavaTree.PrimitiveTypeTreeImpl tree = new JavaTree.PrimitiveTypeTreeImpl(keyword == null ? synthetic(text) : token(keyword));
+    JavaTree.PrimitiveTypeTreeImpl tree = new JavaTree.PrimitiveTypeTreeImpl(keyword == null ? token(node) : token(keyword));
     tree.complete(List.of());
     ascribe(tree, sema.getClassType(text));
     return tree;
@@ -1636,7 +1642,18 @@ final class SemsitterTranslator {
     if ("@interface".equals(node.text())) {
       return new InternalSyntaxToken(node.line(), node.col(), "@", List.of(), false);
     }
-    return new InternalSyntaxToken(node.line(), node.col(), node.text().isEmpty() ? node.k() : node.text(), List.of(), false);
+    if (!node.children().isEmpty()) {
+      for (Node child : node.children()) {
+        if (child.children().isEmpty() && !child.text().isEmpty() && !isComment(child)) {
+          return token(child);
+        }
+      }
+    }
+    String text = node.text().isEmpty() ? node.k() : node.text();
+    if (text.indexOf('_') >= 0) {
+      text = "";
+    }
+    return new InternalSyntaxToken(node.line(), node.col(), text, List.of(), false);
   }
 
   private InternalSyntaxToken closingAngle(Node node) {
