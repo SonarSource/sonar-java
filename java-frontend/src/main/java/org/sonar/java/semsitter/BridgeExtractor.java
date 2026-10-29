@@ -46,14 +46,51 @@ public final class BridgeExtractor {
     if (!Files.exists(bridgePath)) {
       String archiveName = archiveName(platform);
       String resourcePath = "/bridge/" + archiveName;
-      try (InputStream stream = BridgeExtractor.class.getResourceAsStream(resourcePath)) {
-        if (stream == null) {
+      InputStream resource = BridgeExtractor.class.getResourceAsStream(resourcePath);
+      if (resource == null) {
+        Path archive = findPrebuilt(archiveName);
+        if (archive == null) {
           throw new IllegalStateException("Bridge resource not found");
         }
+        resource = Files.newInputStream(archive);
+      }
+      try (InputStream stream = resource) {
         extractArchive(targetDir, bridgePath, stream, resourcePath, bridgeName);
       }
     }
     return bridgePath;
+  }
+
+  private static Path findPrebuilt(String archiveName) {
+    Path found = walk(Path.of("").toAbsolutePath(), archiveName);
+    if (found != null) {
+      return found;
+    }
+    Path origin = codeOrigin();
+    return origin == null ? null : walk(origin, archiveName);
+  }
+
+  private static Path codeOrigin() {
+    try {
+      var source = BridgeExtractor.class.getProtectionDomain().getCodeSource();
+      if (source == null || source.getLocation() == null) {
+        return null;
+      }
+      return Path.of(source.getLocation().toURI());
+    } catch (Exception failure) {
+      return null;
+    }
+  }
+
+  private static Path walk(Path dir, String archiveName) {
+    for (int i = 0; i < 8 && dir != null; i++) {
+      Path archive = dir.resolve("semsitter-bridge").resolve("prebuilt").resolve(archiveName);
+      if (Files.isRegularFile(archive)) {
+        return archive;
+      }
+      dir = dir.getParent();
+    }
+    return null;
   }
 
   private static String archiveName(Platform platform) {

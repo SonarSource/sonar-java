@@ -28,17 +28,26 @@
 //!
 //! Failures answer `{"id":n,"ok":false,"error":"..."}` and keep the server running.
 
-use std::io::{BufRead, Write};
+use std::io::{BufRead, Read, Write};
 use std::path::{Path, PathBuf};
 
 use anyhow::{Result, anyhow};
 use serde_json::{Map, Value, json};
 
-use crate::{Analysis, analyze, parse_only};
+use crate::shm::{ATTACHED, Link, READY};
+use crate::wire::{self, Request};
+use crate::{Analysis, analyze_dumping, parse_only};
 
-#[derive(Default)]
 pub struct Server {
   analysis: Option<Analysis>,
+  dump: Option<PathBuf>,
+  types_written: u32,
+}
+
+impl Default for Server {
+  fn default() -> Self {
+    Self { analysis: None, dump: None, types_written: 0 }
+  }
 }
 
 impl Server {
@@ -65,7 +74,7 @@ impl Server {
         let root = PathBuf::from(string(request, "root")?);
         let files: Vec<PathBuf> = strings(request, "files").into_iter().map(PathBuf::from).collect();
         let classpath = strings(request, "classpath");
-        let analysis = analyze(&root, &files, &classpath)?;
+        let analysis = analyze_dumping(&root, &files, &classpath, self.dump.as_deref())?;
         let body = json!({
           "ok": true,
           "root": analysis.root().to_string_lossy(),
@@ -80,18 +89,74 @@ impl Server {
       }
       "types" => {
         let analysis = self.analysis.as_ref().ok_or_else(|| anyhow!("no analyze request yet"))?;
-        Ok(ok_with("types", analysis.types(&strings(request, "names"))))
+        let names = strings(request, "names");
+        let types = analysis.types(&names);
+        self.write_types(&types)?;
+        Ok(ok_with("types", types))
       }
-      "parse" => Ok(ok_with("cst", parse_only(string(request, "source")?.as_bytes())?)),
+      "parse" => {
+        let cst = parse_only(string(request, "source")?.as_bytes())?;
+        if let Some(dir) = &self.dump {
+          std::fs::create_dir_all(dir)?;
+          std::fs::write(dir.join("parse.json"), serde_json::to_vec_pretty(&cst)?)?;
+        }
+        Ok(ok_with("cst", cst))
+      }
       "quit" => Ok(json!({"ok": true})),
       other => Err(anyhow!("unknown op: {other}")),
     }
   }
 }
 
-/// Serves requests from `input` until `quit` or end of input.
-pub fn serve(input: impl BufRead, mut output: impl Write) -> Result<()> {
-  let mut server = Server::default();
+impl Server {
+  fn write_types(&mut self, types: &Value) -> Result<()> {
+    let Some(dir) = &self.dump else {
+      return Ok(());
+    };
+    self.types_written += 1;
+    let target = dir.join("types").join(format!("{}.json", self.types_written));
+    if let Some(parent) = target.parent() {
+      std::fs::create_dir_all(parent)?;
+    }
+    std::fs::write(target, serde_json::to_vec_pretty(types)?)?;
+    Ok(())
+  }
+
+  fn handle_bytes(&mut self, bytes: &[u8]) -> (Vec<u8>, bool) {
+    let incoming = match wire::decode_request(bytes) {
+      Ok(incoming) => incoming,
+      Err(e) => return (wire::encode_response(0, &json!({"ok": false, "error": format!("{e:#}")})), false),
+    };
+    let request = match &incoming.request {
+      Request::Analyze { root, files, classpath } => json!({
+        "op": "analyze",
+        "root": root,
+        "files": files,
+        "classpath": classpath,
+      }),
+      Request::Cst { path } => json!({"op": "cst", "path": path}),
+      Request::Types { names } => json!({"op": "types", "names": names}),
+      Request::Parse { source } => json!({"op": "parse", "source": source}),
+      Request::Quit => json!({"op": "quit"}),
+    };
+    let op = request.get("op").and_then(Value::as_str).unwrap_or_default();
+    let quit = matches!(incoming.request, Request::Quit);
+    let mut response = match self.dispatch(op, &request) {
+      Ok(body) => body,
+      Err(e) => json!({"ok": false, "error": format!("{e:#}")}),
+    };
+    response.as_object_mut().expect("response is an object").insert("id".into(), json!(incoming.id));
+    (wire::encode_response(incoming.id, &response), quit)
+  }
+}
+
+/// JSONL server. One request object per stdin line, one response object per stdout line.
+pub fn serve(input: impl BufRead, output: impl Write) -> Result<()> {
+  serve_jsonl(input, output, None)
+}
+
+pub fn serve_jsonl(input: impl BufRead, mut output: impl Write, dump: Option<PathBuf>) -> Result<()> {
+  let mut server = Server { dump, ..Server::default() };
   for line in input.lines() {
     let line = line?;
     if line.trim().is_empty() {
@@ -108,9 +173,34 @@ pub fn serve(input: impl BufRead, mut output: impl Write) -> Result<()> {
   Ok(())
 }
 
+/// Shared-memory server. Writes [`READY`] once the mappings exist, reads [`ATTACHED`],
+/// then exchanges protobuf messages. Each message is announced by a single byte on the pipe.
+pub fn serve_shm(mut input: impl Read, mut output: impl Write, dump: Option<PathBuf>) -> Result<()> {
+  let id = std::process::id().to_string();
+  let mut link = Link::create(&id)?;
+  output.write_all(&[READY])?;
+  output.flush()?;
+  let mut attached = [0u8; 1];
+  input.read_exact(&mut attached)?;
+  if attached[0] != ATTACHED {
+    return Err(anyhow!("expected the peer to attach the shared mappings"));
+  }
+  link.unlink();
+  let mut server = Server { dump, ..Server::default() };
+  loop {
+    let request = link.read_request(&mut input, &mut output)?;
+    let (response, quit) = server.handle_bytes(&request);
+    link.write_response(&response, &mut output, &mut input)?;
+    if quit {
+      break;
+    }
+  }
+  Ok(())
+}
+
 /// CSTs of `files` (with semantics), one JSON object per line.
-pub fn print_csts(root: &Path, files: &[PathBuf], classpath: &[String], mut output: impl Write) -> Result<()> {
-  let analysis = analyze(root, files, classpath)?;
+pub fn print_csts(root: &Path, files: &[PathBuf], classpath: &[String], dump: Option<&Path>, mut output: impl Write) -> Result<()> {
+  let analysis = analyze_dumping(root, files, classpath, dump)?;
   for file in analysis.files() {
     serde_json::to_writer(&mut output, &analysis.cst(file)?)?;
     output.write_all(b"\n")?;

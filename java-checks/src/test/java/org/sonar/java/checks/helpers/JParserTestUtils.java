@@ -19,7 +19,6 @@ package org.sonar.java.checks.helpers;
 import com.google.common.io.Files;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.java.model.JParser;
@@ -83,9 +82,8 @@ public abstract class JParserTestUtils {
   }
 
   public static CompilationUnitTree parse(String source) {
-    List<File> classpath = Arrays.asList(new File("target/test-classes"), new File("target/classes"));
     JavaVersion version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version.toString(), "test", source);
+    return JParser.parse(version.toString(), "test", source);
   }
 
 }
