@@ -336,7 +336,7 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.14.0</version>
+        <version>2.15.0</version>
         <scope>compile</scope>
       </dependency>
       <!-- staxmate is used by java-surefire -->
