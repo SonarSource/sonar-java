@@ -1,0 +1,42 @@
+{
+"sonar-server:src/main/java/org/sonar/server/batch/BatchIndex.java": [
+61
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/FileMoveDetectionStep.java": [
+216
+],
+"sonar-server:src/main/java/org/sonar/server/duplication/ws/DuplicationsParser.java": [
+67
+],
+"sonar-server:src/main/java/org/sonar/server/issue/ws/SearchResponseLoader.java": [
+297
+],
+"sonar-server:src/main/java/org/sonar/server/platform/ServerIdGenerator.java": [
+130
+],
+"sonar-server:src/main/java/org/sonar/server/plugins/ServerExtensionInstaller.java": [
+80
+],
+"sonar-server:src/main/java/org/sonar/server/plugins/ServerPluginRepository.java": [
+318
+],
+"sonar-server:src/main/java/org/sonar/server/qualityprofile/RuleActivator.java": [
+320,
+326
+],
+"sonar-server:src/main/java/org/sonar/server/rule/RegisterRules.java": [
+107
+],
+"sonar-server:src/main/java/org/sonar/server/source/HtmlTextDecorator.java": [
+65
+],
+"sonar-server:src/main/java/org/sonar/server/source/ws/IndexAction.java": [
+88
+],
+"sonar-server:src/main/java/org/sonar/server/user/UserUpdater.java": [
+343
+],
+"sonar-server:src/main/java/org/sonar/server/util/ClassLoaderUtils.java": [
+86
+]
+}

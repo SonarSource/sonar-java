@@ -1,0 +1,9 @@
+{
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/MaintainabilityMeasuresVisitor.java": [
+120,
+121
+],
+"sonar-server:src/main/java/org/sonar/server/measure/custom/ws/CustomMeasureValidator.java": [
+83
+]
+}

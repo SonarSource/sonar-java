@@ -1,0 +1,12 @@
+{
+"sonar-server:src/main/java/org/sonar/server/duplication/ws/DuplicationsParser.java": [
+108,
+154
+],
+"sonar-server:src/main/java/org/sonar/server/issue/notification/NewIssuesNotification.java": [
+47
+],
+"sonar-server:src/main/java/org/sonar/server/plugins/StaticResourcesServlet.java": [
+47
+]
+}

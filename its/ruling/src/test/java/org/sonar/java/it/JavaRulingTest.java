@@ -398,9 +398,9 @@ public class JavaRulingTest {
 
   @Test
   public void sonarqube_server() throws Exception {
-    // sonarqube-6.5/server/sonar-server (v.6.5)
-    String projectName = "sonarqube-6.5";
-    MavenBuild build = test_project(projectName, projectName + "/server", "sonar-server")
+    // sonar-server (v.6.5)
+    String projectName = "sonar-server";
+    MavenBuild build = test_project(projectName)
       .setProperty("sonar.java.fileByFile", "true");
     executeBuildWithCommonProperties(build, projectName);
   }

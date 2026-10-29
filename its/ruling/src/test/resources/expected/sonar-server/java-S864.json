@@ -1,0 +1,8 @@
+{
+"sonar-server:src/main/java/org/sonar/server/language/ws/ListAction.java": [
+83
+],
+"sonar-server:src/main/java/org/sonar/server/rule/ws/RepositoriesAction.java": [
+89
+]
+}

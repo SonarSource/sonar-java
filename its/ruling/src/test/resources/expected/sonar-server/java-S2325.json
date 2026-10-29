@@ -1,0 +1,71 @@
+{
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/UpdateConflictResolver.java": [
+56,
+60,
+64,
+68,
+76
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/CommentDensityRule.java": [
+66
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitygate/ConditionEvaluator.java": [
+36
+],
+"sonar-server:src/main/java/org/sonar/server/es/IndexDefinitionHash.java": [
+86
+],
+"sonar-server:src/main/java/org/sonar/server/issue/AbstractChangeTagsAction.java": [
+63
+],
+"sonar-server:src/main/java/org/sonar/server/issue/IssueStorage.java": [
+155
+],
+"sonar-server:src/main/java/org/sonar/server/issue/ws/SearchAction.java": [
+421,
+433
+],
+"sonar-server:src/main/java/org/sonar/server/issue/ws/SearchResponseFormat.java": [
+122,
+354
+],
+"sonar-server:src/main/java/org/sonar/server/measure/custom/ws/CustomMeasureJsonWriter.java": [
+85
+],
+"sonar-server:src/main/java/org/sonar/server/platform/web/PlatformServletContextListener.java": [
+56
+],
+"sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/SearchData.java": [
+50
+],
+"sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfileCopier.java": [
+80
+],
+"sonar-server:src/main/java/org/sonar/server/rule/RegisterRules.java": [
+199,
+279,
+307,
+375
+],
+"sonar-server:src/main/java/org/sonar/server/source/DecorationDataHolder.java": [
+116,
+125
+],
+"sonar-server:src/main/java/org/sonar/server/source/HtmlTextDecorator.java": [
+132,
+146,
+150,
+160,
+169,
+175,
+181,
+214,
+218
+],
+"sonar-server:src/main/java/org/sonar/server/startup/RegisterMetrics.java": [
+119
+],
+"sonar-server:src/main/java/org/sonar/server/usergroups/ws/CreateAction.java": [
+105
+]
+}

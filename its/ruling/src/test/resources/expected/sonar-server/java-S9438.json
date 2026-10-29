@@ -1,0 +1,189 @@
+{
+"sonar-server:src/main/java/org/sonar/ce/queue/CeQueueImpl.java": [
+56
+],
+"sonar-server:src/main/java/org/sonar/server/app/TomcatAccessLog.java": [
+62
+],
+"sonar-server:src/main/java/org/sonar/server/authentication/SsoAuthenticator.java": [
+90
+],
+"sonar-server:src/main/java/org/sonar/server/batch/ProjectDataLoader.java": [
+218,
+219,
+220,
+221
+],
+"sonar-server:src/main/java/org/sonar/server/component/ws/SuggestionsAction.java": [
+93
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/analysis/Analysis.java": [
+31,
+32,
+33
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/duplication/DuplicationRepositoryImpl.java": [
+36
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/duplication/IntegrateCrossProjectDuplications.java": [
+58
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/NewEffortAggregator.java": [
+62,
+63
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/filter/IssuePattern.java": [
+30,
+31
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureRepositoryImpl.java": [
+50
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/metric/ReportMetricValidatorImpl.java": [
+37,
+38
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/MaintainabilityMeasuresVisitor.java": [
+158,
+159
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewReliabilityAndSecurityRatingMeasuresVisitor.java": [
+145
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/ReliabilityAndSecurityRatingMeasuresVisitor.java": [
+137
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LoadMeasureComputersStep.java": [
+51,
+232
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistFileSourcesStep.java": [
+97
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/QualityGateMeasuresStep.java": [
+227,
+228
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/SendIssueNotificationsStep.java": [
+57
+],
+"sonar-server:src/main/java/org/sonar/server/debt/DebtModelPluginRepository.java": [
+56
+],
+"sonar-server:src/main/java/org/sonar/server/es/NewIndex.java": [
+203
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxyBulkRequestBuilder.java": [
+126,
+127,
+128
+],
+"sonar-server:src/main/java/org/sonar/server/issue/IssuesFinderSort.java": [
+36,
+37
+],
+"sonar-server:src/main/java/org/sonar/server/issue/notification/ChangesOnMyIssueNotificationDispatcher.java": [
+40
+],
+"sonar-server:src/main/java/org/sonar/server/issue/notification/NewIssuesStatistics.java": [
+41,
+42
+],
+"sonar-server:src/main/java/org/sonar/server/issue/workflow/Transition.java": [
+40,
+133,
+134
+],
+"sonar-server:src/main/java/org/sonar/server/issue/ws/BulkChangeAction.java": [
+364
+],
+"sonar-server:src/main/java/org/sonar/server/measure/index/ProjectMeasuresQuery.java": [
+38
+],
+"sonar-server:src/main/java/org/sonar/server/measure/ws/ComponentTreeData.java": [
+148,
+149,
+150
+],
+"sonar-server:src/main/java/org/sonar/server/notification/DefaultNotificationManager.java": [
+49,
+50,
+51
+],
+"sonar-server:src/main/java/org/sonar/server/notification/NotificationDispatcherMetadata.java": [
+41,
+42
+],
+"sonar-server:src/main/java/org/sonar/server/notification/email/AlertsEmailTemplate.java": [
+36
+],
+"sonar-server:src/main/java/org/sonar/server/notification/email/EmailNotificationChannel.java": [
+85,
+86,
+87
+],
+"sonar-server:src/main/java/org/sonar/server/permission/ApplyPermissionTemplateQuery.java": [
+30
+],
+"sonar-server:src/main/java/org/sonar/server/platform/DatabaseServerCompatibility.java": [
+33
+],
+"sonar-server:src/main/java/org/sonar/server/platform/ServerLifecycleNotifier.java": [
+33,
+34,
+35
+],
+"sonar-server:src/main/java/org/sonar/server/platform/web/MasterServletFilter.java": [
+112,
+113
+],
+"sonar-server:src/main/java/org/sonar/server/qualitygate/QgateProjectFinder.java": [
+93,
+94
+],
+"sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfileResult.java": [
+28,
+29,
+33
+],
+"sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ChangeParentAction.java": [
+44
+],
+"sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ChangelogAction.java": [
+48
+],
+"sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ExportersAction.java": [
+30
+],
+"sonar-server:src/main/java/org/sonar/server/rule/ReactivationException.java": [
+26
+],
+"sonar-server:src/main/java/org/sonar/server/source/DecorationDataHolder.java": [
+35,
+37
+],
+"sonar-server:src/main/java/org/sonar/server/startup/RenameDeprecatedPropertyKeys.java": [
+33,
+34
+],
+"sonar-server:src/main/java/org/sonar/server/user/ExternalIdentity.java": [
+28,
+29
+],
+"sonar-server:src/main/java/org/sonar/server/user/NewUser.java": [
+31,
+33
+],
+"sonar-server:src/main/java/org/sonar/server/user/NewUserNotifier.java": [
+32
+],
+"sonar-server:src/main/java/org/sonar/server/user/UpdateUser.java": [
+30
+],
+"sonar-server:src/main/java/org/sonar/server/usergroups/ws/UserGroupsWs.java": [
+26
+],
+"sonar-server:src/main/java/org/sonar/server/util/ObjectInputStreamIterator.java": [
+33
+]
+}
