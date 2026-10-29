@@ -1,6 +1,6 @@
 {
 "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/CookieCompliance.java": [
-39,
+34,
 40
 ],
 "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/CookieCutter.java": [
