@@ -16,6 +16,7 @@
  */
 package org.sonar.java.model;
 
+import java.io.IOException;
 import java.util.function.BiConsumer;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.ProgressMonitor;
@@ -39,6 +40,6 @@ abstract class FrontendSession implements AutoCloseable {
 
   @FunctionalInterface
   interface ParsedUnit {
-    JavaTree.CompilationUnitTreeImpl convert() throws Exception;
+    JavaTree.CompilationUnitTreeImpl convert() throws IOException;
   }
 }

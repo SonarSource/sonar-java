@@ -55,7 +55,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.sonar.java.model.EcjTestSupport.methodBinding;
 import static org.sonar.java.model.EcjTestSupport.sema;
-import static org.sonar.java.model.EcjTestSupport.typeBinding;
 import static org.sonar.java.model.JUtilsTest.firstClass;
 import static org.sonar.java.model.JUtilsTest.firstMethod;
 import static org.sonar.java.model.JUtilsTest.nthMethod;

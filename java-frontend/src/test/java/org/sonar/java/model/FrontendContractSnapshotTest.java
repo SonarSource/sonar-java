@@ -45,8 +45,8 @@ class FrontendContractSnapshotTest {
     Map<String, Object> first = records();
     Map<String, Object> second = records();
     String json = FrontendContractSnapshot.json(first);
-    assertThat(json).isEqualTo(FrontendContractSnapshot.json(second));
-    assertThat(json).contains("UNUSED_IMPORT", "UNKNOWN", "quickFixes", "replacement", "equalSymbols", "equalTypes");
+    assertThat(json).isEqualTo(FrontendContractSnapshot.json(second))
+      .contains("UNUSED_IMPORT", "UNKNOWN", "quickFixes", "replacement", "equalSymbols", "equalTypes");
     String output = System.getProperty("frontend.contract.output");
     if (output != null) {
       Files.writeString(Path.of(output), json + "\n");

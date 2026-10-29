@@ -44,7 +44,7 @@ class TestResourceScopeTest {
     TestResourceScope.Scope scope = TestResourceScope.open();
     List<String> calls = new ArrayList<>();
     IllegalStateException first = new IllegalStateException("first");
-    AssertionError second = new AssertionError("second");
+    Exception second = new Exception("second");
     TestResourceScope.retain(() -> calls.add("last"));
     TestResourceScope.retain(() -> { calls.add("second"); throw second; });
     TestResourceScope.retain(() -> { calls.add("first"); throw first; });
@@ -54,10 +54,61 @@ class TestResourceScopeTest {
   }
 
   @Test
+  void scope_cleanup_attempts_every_resource_and_suppresses_errors() throws Exception {
+    TestResourceScope.Scope scope = TestResourceScope.open();
+    List<String> calls = new ArrayList<>();
+    AssertionError failure = new AssertionError("cleanup");
+    TestResourceScope.retain(() -> calls.add("last"));
+    TestResourceScope.retain(() -> { throw failure; });
+    Exception first = new Exception("first");
+    TestResourceScope.retain(() -> { throw first; });
+
+    assertThatThrownBy(scope::close).isSameAs(first).hasSuppressedException(failure);
+    scope.close();
+    assertThat(calls).containsExactly("last");
+    try (TestResourceScope.Scope next = TestResourceScope.open()) {
+      TestResourceScope.retain(() -> calls.add("next"));
+    }
+    assertThat(calls).containsExactly("last", "next");
+  }
+
+  @Test
+  void scope_cleanup_rethrows_first_error_after_attempting_every_resource() throws Exception {
+    TestResourceScope.Scope scope = TestResourceScope.open();
+    List<String> calls = new ArrayList<>();
+    AssertionError first = new AssertionError("first");
+    Exception second = new Exception("second");
+    TestResourceScope.retain(() -> calls.add("last"));
+    TestResourceScope.retain(() -> { throw second; });
+    TestResourceScope.retain(() -> { throw first; });
+    TestResourceScope.retain(() -> { throw first; });
+
+    assertThatThrownBy(scope::close).isSameAs(first).hasSuppressedException(second);
+    scope.close();
+    assertThat(calls).containsExactly("last");
+  }
+
+  @Test
   void missing_scope_fails_loudly_and_closes_the_unretained_fixture() {
     List<String> calls = new ArrayList<>();
     assertThatThrownBy(() -> TestResourceScope.retain(() -> calls.add("closed")))
       .isInstanceOf(IllegalStateException.class).hasMessageContaining("@TestResourceScope.Scoped");
     assertThat(calls).containsExactly("closed");
+  }
+
+  @Test
+  void missing_scope_preserves_cleanup_exceptions_as_suppressed() {
+    Exception failure = new Exception("cleanup failed");
+    assertThatThrownBy(() -> TestResourceScope.retain(() -> { throw failure; }))
+      .isInstanceOf(IllegalStateException.class)
+      .hasMessageContaining("@TestResourceScope.Scoped")
+      .hasSuppressedException(failure);
+  }
+
+  @Test
+  void missing_scope_propagates_cleanup_errors() {
+    AssertionError failure = new AssertionError("cleanup failed");
+    assertThatThrownBy(() -> TestResourceScope.retain(() -> { throw failure; }))
+      .isSameAs(failure);
   }
 }

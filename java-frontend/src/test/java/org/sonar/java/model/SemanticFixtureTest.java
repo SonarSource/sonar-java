@@ -86,7 +86,8 @@ class SemanticFixtureTest {
     FrontendConfiguration configuration = FrontendConfiguration.from(new JavaVersionImpl(17, true), classpath, true);
     classpath.clear();
     assertThat(configuration.classpath()).containsExactly(new File("first"), new File("second"));
-    assertThatThrownBy(() -> configuration.classpath().clear()).isInstanceOf(UnsupportedOperationException.class);
+    List<File> configuredClasspath = configuration.classpath();
+    assertThatThrownBy(configuredClasspath::clear).isInstanceOf(UnsupportedOperationException.class);
     assertThat(configuration.sourceVersion()).isEqualTo("17");
     assertThat(configuration.previewEnabled()).isTrue();
     assertThat(configuration.ignoreUnnamedModuleForSplitPackage()).isTrue();

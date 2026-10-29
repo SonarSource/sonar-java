@@ -36,6 +36,7 @@ public final class FrontendResources implements AutoCloseable {
     return new Cleaner(cleaner);
   }
 
+  /** Attempts every cleaner even after errors, then rethrows the first failure with later failures suppressed. */
   @Override
   public void close() {
     if (closed) {
@@ -43,23 +44,26 @@ public final class FrontendResources implements AutoCloseable {
     }
     closed = true;
     Throwable failure = null;
-    for (Runnable cleaner : cleaners.values()) {
-      try {
-        cleaner.run();
-      } catch (RuntimeException | Error e) {
-        if (failure == null) {
-          failure = e;
-        } else if (failure != e) {
-          failure.addSuppressed(e);
+    try {
+      for (Runnable cleaner : cleaners.values()) {
+        try {
+          cleaner.run();
+        } catch (RuntimeException | Error e) {
+          if (failure == null) {
+            failure = e;
+          } else if (failure != e) {
+            failure.addSuppressed(e);
+          }
         }
       }
-    }
-    cleaners.clear();
-    if (failure instanceof RuntimeException exception) {
-      throw exception;
+    } finally {
+      cleaners.clear();
     }
     if (failure instanceof Error error) {
       throw error;
+    }
+    if (failure instanceof RuntimeException exception) {
+      throw exception;
     }
   }
 
@@ -81,7 +85,7 @@ public final class FrontendResources implements AutoCloseable {
 
     @Override
     public boolean equals(Object other) {
-      return this == other || other instanceof Cleaner cleaner && delegate.equals(cleaner.delegate);
+      return this == other || (other instanceof Cleaner cleaner && delegate.equals(cleaner.delegate));
     }
 
     @Override
