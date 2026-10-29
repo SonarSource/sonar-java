@@ -38,9 +38,9 @@ values, making bugs intermittent and difficult to reproduce.</p>
   <li>If the precision loss is acceptable, add an explicit cast to document that it is intentional.</li>
 </ul>
 <p>Simply adding a cast may hide a bug, which is why no automatic fix is proposed.</p>
-<p>For integer arithmetic expressions such as <code>a / b</code> converted to a floating-point type, casting the result would not fix the
-integer division or overflow. Instead, one of the operands should be cast before the operation, as described by rule {rule:java:S2184}. Such
-expressions are not reported by this rule when {rule:java:S2184} already reports them.</p>
+<p>For integer arithmetic expressions such as <code>a / b</code> converted to a floating-point type, casting the result would not fix the integer
+division or overflow. Instead, one of the operands should be cast before the operation, as described by rule {rule:java:S2184}. Such expressions are
+not reported by this rule when {rule:java:S2184} already reports them.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">

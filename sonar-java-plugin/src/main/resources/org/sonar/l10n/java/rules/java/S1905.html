@@ -12,6 +12,23 @@ offering any advantages.</p>
 <p>As a result, it’s generally advised to avoid unnecessary casting expressions. Instead, rely on the language’s type system to ensure type safety and
 code clarity.</p>
 <h3>Exceptions</h3>
+<p>Casts from <code>int</code> to <code>float</code>, from <code>long</code> to <code>float</code>, and from <code>long</code> to <code>double</code>
+can document potential precision loss. Although Java performs these widening conversions implicitly, they can lose precision. This rule preserves
+casts that document awareness of potential precision loss, as required by {rule:java:S9395}. The cast does not prevent rounding or preserve the
+original value’s precision.</p>
+<p>Compile-time constants between -2<sup>24</sup> and 2<sup>24</sup> (inclusive) for <code>float</code>, and between -2<sup>53</sup> and
+2<sup>53</sup> (inclusive) for <code>double</code>, do not lose precision during conversion. Redundant casts of these constants are still
+reported.</p>
+<pre>
+class NumericConversions {
+  void convert(int intValue, long longValue) {
+    float first = (float) intValue; // Compliant
+    float second = (float) longValue; // Compliant
+    double third = (double) longValue; // Compliant
+    float constant = (float) 1; // Noncompliant
+  }
+}
+</pre>
 <p>Casting may be required to distinguish the method to call in the case of overloading:</p>
 <pre>
 class A {}
@@ -61,5 +78,9 @@ class Example {
   <li>Wikipedia - <a href="https://en.wikipedia.org/wiki/Type_conversion">Type Conversion</a></li>
   <li>Wikipedia - <a href="https://en.wikipedia.org/wiki/Strong_and_weak_typing">Strong and Weak Typing</a></li>
   <li>Wikipedia - <a href="https://en.wikipedia.org/wiki/Polymorphism_(computer_science)"> Polymorphism (Computer Science)</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S9395} - Numeric values should be explicitly cast when assigned to narrower types</li>
 </ul>
 
