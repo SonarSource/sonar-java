@@ -1,0 +1,4742 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 135,
+            "startColumn" : 93,
+            "endLine" : 135,
+            "endColumn" : 108,
+            "charOffset" : 13750,
+            "charLength" : 15,
+            "byteOffset" : 13751,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 137,
+            "startColumn" : 22,
+            "endLine" : 137,
+            "endColumn" : 44,
+            "charOffset" : 14052,
+            "charLength" : 22,
+            "byteOffset" : 14053,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 139,
+            "startColumn" : 26,
+            "endLine" : 139,
+            "endColumn" : 38,
+            "charOffset" : 14306,
+            "charLength" : 12,
+            "byteOffset" : 14307,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 141,
+            "startColumn" : 39,
+            "endLine" : 141,
+            "endColumn" : 53,
+            "charOffset" : 14565,
+            "charLength" : 14,
+            "byteOffset" : 14566,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 143,
+            "startColumn" : 57,
+            "endLine" : 143,
+            "endColumn" : 72,
+            "charOffset" : 14843,
+            "charLength" : 15,
+            "byteOffset" : 14844,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 145,
+            "startColumn" : 63,
+            "endLine" : 145,
+            "endColumn" : 78,
+            "charOffset" : 15127,
+            "charLength" : 15,
+            "byteOffset" : 15128,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 147,
+            "startColumn" : 57,
+            "endLine" : 147,
+            "endColumn" : 72,
+            "charOffset" : 15412,
+            "charLength" : 15,
+            "byteOffset" : 15413,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 219,
+            "startColumn" : 33,
+            "endLine" : 219,
+            "endColumn" : 48,
+            "charOffset" : 23323,
+            "charLength" : 15,
+            "byteOffset" : 23347,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1347,
+            "startColumn" : 109,
+            "endLine" : 1347,
+            "endColumn" : 124,
+            "charOffset" : 154299,
+            "charLength" : 15,
+            "byteOffset" : 154471,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1349,
+            "startColumn" : 24,
+            "endLine" : 1349,
+            "endColumn" : 49,
+            "charOffset" : 154525,
+            "charLength" : 25,
+            "byteOffset" : 154697,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1351,
+            "startColumn" : 135,
+            "endLine" : 1351,
+            "endColumn" : 167,
+            "charOffset" : 154925,
+            "charLength" : 32,
+            "byteOffset" : 155097,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1719,
+            "startColumn" : 69,
+            "endLine" : 1719,
+            "endColumn" : 81,
+            "charOffset" : 200255,
+            "charLength" : 12,
+            "byteOffset" : 200469,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1721,
+            "startColumn" : 69,
+            "endLine" : 1721,
+            "endColumn" : 81,
+            "charOffset" : 200529,
+            "charLength" : 12,
+            "byteOffset" : 200743,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1723,
+            "startColumn" : 69,
+            "endLine" : 1723,
+            "endColumn" : 81,
+            "charOffset" : 200784,
+            "charLength" : 12,
+            "byteOffset" : 200998,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1725,
+            "startColumn" : 37,
+            "endLine" : 1725,
+            "endColumn" : 50,
+            "charOffset" : 201003,
+            "charLength" : 13,
+            "byteOffset" : 201217,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1909,
+            "startColumn" : 22,
+            "endLine" : 1909,
+            "endColumn" : 36,
+            "charOffset" : 221697,
+            "charLength" : 14,
+            "byteOffset" : 221912,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 495,
+            "startColumn" : 24,
+            "endLine" : 495,
+            "endColumn" : 44,
+            "charOffset" : 61608,
+            "charLength" : 20,
+            "byteOffset" : 61625,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 497,
+            "startColumn" : 24,
+            "endLine" : 497,
+            "endColumn" : 44,
+            "charOffset" : 61960,
+            "charLength" : 20,
+            "byteOffset" : 61977,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 541,
+            "startColumn" : 63,
+            "endLine" : 541,
+            "endColumn" : 74,
+            "charOffset" : 67141,
+            "charLength" : 11,
+            "byteOffset" : 67158,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 547,
+            "startColumn" : 22,
+            "endLine" : 547,
+            "endColumn" : 34,
+            "charOffset" : 67907,
+            "charLength" : 12,
+            "byteOffset" : 67924,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1021,
+            "startColumn" : 22,
+            "endLine" : 1021,
+            "endColumn" : 39,
+            "charOffset" : 120404,
+            "charLength" : 17,
+            "byteOffset" : 120494,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1399,
+            "startColumn" : 28,
+            "endLine" : 1399,
+            "endColumn" : 41,
+            "charOffset" : 166219,
+            "charLength" : 13,
+            "byteOffset" : 166396,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 22,
+            "endLine" : 13,
+            "endColumn" : 98,
+            "charOffset" : 1048,
+            "charLength" : 76,
+            "byteOffset" : 1048,
+            "byteLength" : 76
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 15,
+            "startColumn" : 23,
+            "endLine" : 15,
+            "endColumn" : 110,
+            "charOffset" : 1317,
+            "charLength" : 87,
+            "byteOffset" : 1317,
+            "byteLength" : 87
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 87,
+            "startColumn" : 37,
+            "endLine" : 87,
+            "endColumn" : 70,
+            "charOffset" : 10051,
+            "charLength" : 33,
+            "byteOffset" : 10051,
+            "byteLength" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 22,
+            "endLine" : 89,
+            "endColumn" : 117,
+            "charOffset" : 10310,
+            "charLength" : 95,
+            "byteOffset" : 10310,
+            "byteLength" : 95
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 91,
+            "startColumn" : 25,
+            "endLine" : 91,
+            "endColumn" : 120,
+            "charOffset" : 10602,
+            "charLength" : 95,
+            "byteOffset" : 10602,
+            "byteLength" : 95
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 93,
+            "startColumn" : 38,
+            "endLine" : 93,
+            "endColumn" : 133,
+            "charOffset" : 10910,
+            "charLength" : 95,
+            "byteOffset" : 10910,
+            "byteLength" : 95
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 137,
+            "startColumn" : 48,
+            "endLine" : 137,
+            "endColumn" : 63,
+            "charOffset" : 16804,
+            "charLength" : 15,
+            "byteOffset" : 16804,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 139,
+            "startColumn" : 33,
+            "endLine" : 139,
+            "endColumn" : 48,
+            "charOffset" : 17030,
+            "charLength" : 15,
+            "byteOffset" : 17030,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 279,
+            "startColumn" : 30,
+            "endLine" : 279,
+            "endColumn" : 41,
+            "charOffset" : 34175,
+            "charLength" : 11,
+            "byteOffset" : 34188,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 281,
+            "startColumn" : 50,
+            "endLine" : 281,
+            "endColumn" : 118,
+            "charOffset" : 34394,
+            "charLength" : 68,
+            "byteOffset" : 34407,
+            "byteLength" : 68
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 283,
+            "startColumn" : 50,
+            "endLine" : 283,
+            "endColumn" : 69,
+            "charOffset" : 34669,
+            "charLength" : 19,
+            "byteOffset" : 34682,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 463,
+            "startColumn" : 38,
+            "endLine" : 463,
+            "endColumn" : 50,
+            "charOffset" : 54981,
+            "charLength" : 12,
+            "byteOffset" : 54996,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 465,
+            "startColumn" : 55,
+            "endLine" : 465,
+            "endColumn" : 67,
+            "charOffset" : 55220,
+            "charLength" : 12,
+            "byteOffset" : 55235,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 467,
+            "startColumn" : 71,
+            "endLine" : 467,
+            "endColumn" : 83,
+            "charOffset" : 55475,
+            "charLength" : 12,
+            "byteOffset" : 55490,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 925,
+            "startColumn" : 39,
+            "endLine" : 925,
+            "endColumn" : 51,
+            "charOffset" : 104880,
+            "charLength" : 12,
+            "byteOffset" : 104895,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1161,
+            "startColumn" : 65,
+            "endLine" : 1161,
+            "endColumn" : 82,
+            "charOffset" : 132199,
+            "charLength" : 17,
+            "byteOffset" : 132228,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1163,
+            "startColumn" : 48,
+            "endLine" : 1163,
+            "endColumn" : 58,
+            "charOffset" : 132502,
+            "charLength" : 10,
+            "byteOffset" : 132531,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1323,
+            "startColumn" : 119,
+            "endLine" : 1323,
+            "endColumn" : 132,
+            "charOffset" : 150139,
+            "charLength" : 13,
+            "byteOffset" : 150168,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1369,
+            "startColumn" : 36,
+            "endLine" : 1369,
+            "endColumn" : 47,
+            "charOffset" : 155382,
+            "charLength" : 11,
+            "byteOffset" : 155411,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1379,
+            "startColumn" : 42,
+            "endLine" : 1379,
+            "endColumn" : 52,
+            "charOffset" : 156471,
+            "charLength" : 10,
+            "byteOffset" : 156500,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1483,
+            "startColumn" : 116,
+            "endLine" : 1483,
+            "endColumn" : 132,
+            "charOffset" : 167490,
+            "charLength" : 16,
+            "byteOffset" : 167519,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1529,
+            "startColumn" : 94,
+            "endLine" : 1529,
+            "endColumn" : 112,
+            "charOffset" : 172831,
+            "charLength" : 18,
+            "byteOffset" : 172860,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1531,
+            "startColumn" : 75,
+            "endLine" : 1531,
+            "endColumn" : 93,
+            "charOffset" : 173076,
+            "charLength" : 18,
+            "byteOffset" : 173105,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1727,
+            "startColumn" : 109,
+            "endLine" : 1727,
+            "endColumn" : 121,
+            "charOffset" : 196230,
+            "charLength" : 12,
+            "byteOffset" : 196259,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1731,
+            "startColumn" : 55,
+            "endLine" : 1731,
+            "endColumn" : 67,
+            "charOffset" : 196713,
+            "charLength" : 12,
+            "byteOffset" : 196742,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 145,
+            "startColumn" : 56,
+            "endLine" : 145,
+            "endColumn" : 72,
+            "charOffset" : 14473,
+            "charLength" : 16,
+            "byteOffset" : 14473,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 663,
+            "startColumn" : 60,
+            "endLine" : 663,
+            "endColumn" : 72,
+            "charOffset" : 79575,
+            "charLength" : 12,
+            "byteOffset" : 79607,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 665,
+            "startColumn" : 59,
+            "endLine" : 665,
+            "endColumn" : 71,
+            "charOffset" : 79967,
+            "charLength" : 12,
+            "byteOffset" : 79999,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 751,
+            "startColumn" : 44,
+            "endLine" : 751,
+            "endColumn" : 55,
+            "charOffset" : 89459,
+            "charLength" : 11,
+            "byteOffset" : 89491,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 753,
+            "startColumn" : 48,
+            "endLine" : 753,
+            "endColumn" : 60,
+            "charOffset" : 89707,
+            "charLength" : 12,
+            "byteOffset" : 89739,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 755,
+            "startColumn" : 42,
+            "endLine" : 755,
+            "endColumn" : 73,
+            "charOffset" : 89950,
+            "charLength" : 31,
+            "byteOffset" : 89982,
+            "byteLength" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1037,
+            "startColumn" : 28,
+            "endLine" : 1037,
+            "endColumn" : 49,
+            "charOffset" : 119633,
+            "charLength" : 21,
+            "byteOffset" : 119665,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1791,
+            "startColumn" : 43,
+            "endLine" : 1791,
+            "endColumn" : 60,
+            "charOffset" : 202211,
+            "charLength" : 17,
+            "byteOffset" : 202451,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1969,
+            "startColumn" : 23,
+            "endLine" : 1969,
+            "endColumn" : 40,
+            "charOffset" : 221548,
+            "charLength" : 17,
+            "byteOffset" : 221848,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 77,
+            "startColumn" : 35,
+            "endLine" : 77,
+            "endColumn" : 60,
+            "charOffset" : 8772,
+            "charLength" : 25,
+            "byteOffset" : 8772,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 101,
+            "startColumn" : 62,
+            "endLine" : 101,
+            "endColumn" : 78,
+            "charOffset" : 11707,
+            "charLength" : 16,
+            "byteOffset" : 11707,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 103,
+            "startColumn" : 123,
+            "endLine" : 103,
+            "endColumn" : 144,
+            "charOffset" : 12012,
+            "charLength" : 21,
+            "byteOffset" : 12012,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 129,
+            "startColumn" : 26,
+            "endLine" : 129,
+            "endColumn" : 37,
+            "charOffset" : 15043,
+            "charLength" : 11,
+            "byteOffset" : 15043,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 135,
+            "startColumn" : 22,
+            "endLine" : 135,
+            "endColumn" : 31,
+            "charOffset" : 15786,
+            "charLength" : 9,
+            "byteOffset" : 15786,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 309,
+            "startColumn" : 35,
+            "endLine" : 309,
+            "endColumn" : 47,
+            "charOffset" : 36655,
+            "charLength" : 12,
+            "byteOffset" : 36655,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 311,
+            "startColumn" : 35,
+            "endLine" : 311,
+            "endColumn" : 46,
+            "charOffset" : 36966,
+            "charLength" : 11,
+            "byteOffset" : 36966,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 359,
+            "startColumn" : 23,
+            "endLine" : 359,
+            "endColumn" : 39,
+            "charOffset" : 42343,
+            "charLength" : 16,
+            "byteOffset" : 42343,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 361,
+            "startColumn" : 57,
+            "endLine" : 361,
+            "endColumn" : 69,
+            "charOffset" : 42574,
+            "charLength" : 12,
+            "byteOffset" : 42574,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 363,
+            "startColumn" : 34,
+            "endLine" : 363,
+            "endColumn" : 51,
+            "charOffset" : 42769,
+            "charLength" : 17,
+            "byteOffset" : 42769,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 365,
+            "startColumn" : 48,
+            "endLine" : 365,
+            "endColumn" : 61,
+            "charOffset" : 43019,
+            "charLength" : 13,
+            "byteOffset" : 43019,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 367,
+            "startColumn" : 58,
+            "endLine" : 367,
+            "endColumn" : 75,
+            "charOffset" : 43262,
+            "charLength" : 17,
+            "byteOffset" : 43262,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 429,
+            "startColumn" : 22,
+            "endLine" : 429,
+            "endColumn" : 92,
+            "charOffset" : 50286,
+            "charLength" : 70,
+            "byteOffset" : 50585,
+            "byteLength" : 94
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 431,
+            "startColumn" : 84,
+            "endLine" : 431,
+            "endColumn" : 156,
+            "charOffset" : 50607,
+            "charLength" : 72,
+            "byteOffset" : 50956,
+            "byteLength" : 142
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 435,
+            "startColumn" : 55,
+            "endLine" : 435,
+            "endColumn" : 82,
+            "charOffset" : 51130,
+            "charLength" : 27,
+            "byteOffset" : 51589,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 437,
+            "startColumn" : 80,
+            "endLine" : 437,
+            "endColumn" : 141,
+            "charOffset" : 51406,
+            "charLength" : 61,
+            "byteOffset" : 51871,
+            "byteLength" : 91
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 439,
+            "startColumn" : 23,
+            "endLine" : 439,
+            "endColumn" : 84,
+            "charOffset" : 51659,
+            "charLength" : 61,
+            "byteOffset" : 52154,
+            "byteLength" : 91
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 551,
+            "startColumn" : 22,
+            "endLine" : 551,
+            "endColumn" : 37,
+            "charOffset" : 67339,
+            "charLength" : 15,
+            "byteOffset" : 67893,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 593,
+            "startColumn" : 33,
+            "endLine" : 593,
+            "endColumn" : 50,
+            "charOffset" : 72389,
+            "charLength" : 17,
+            "byteOffset" : 72943,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 653,
+            "startColumn" : 56,
+            "endLine" : 653,
+            "endColumn" : 74,
+            "charOffset" : 79098,
+            "charLength" : 18,
+            "byteOffset" : 79652,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 943,
+            "startColumn" : 45,
+            "endLine" : 943,
+            "endColumn" : 58,
+            "charOffset" : 143001,
+            "charLength" : 13,
+            "byteOffset" : 143569,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 945,
+            "startColumn" : 36,
+            "endLine" : 945,
+            "endColumn" : 48,
+            "charOffset" : 143182,
+            "charLength" : 12,
+            "byteOffset" : 143750,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 947,
+            "startColumn" : 44,
+            "endLine" : 947,
+            "endColumn" : 56,
+            "charOffset" : 143377,
+            "charLength" : 12,
+            "byteOffset" : 143945,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 965,
+            "startColumn" : 50,
+            "endLine" : 965,
+            "endColumn" : 67,
+            "charOffset" : 145389,
+            "charLength" : 17,
+            "byteOffset" : 145957,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1121,
+            "startColumn" : 35,
+            "endLine" : 1121,
+            "endColumn" : 47,
+            "charOffset" : 165283,
+            "charLength" : 12,
+            "byteOffset" : 165891,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1123,
+            "startColumn" : 31,
+            "endLine" : 1123,
+            "endColumn" : 43,
+            "charOffset" : 165478,
+            "charLength" : 12,
+            "byteOffset" : 166086,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1125,
+            "startColumn" : 30,
+            "endLine" : 1125,
+            "endColumn" : 41,
+            "charOffset" : 165672,
+            "charLength" : 11,
+            "byteOffset" : 166280,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1127,
+            "startColumn" : 37,
+            "endLine" : 1127,
+            "endColumn" : 49,
+            "charOffset" : 165885,
+            "charLength" : 12,
+            "byteOffset" : 166493,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1211,
+            "startColumn" : 22,
+            "endLine" : 1211,
+            "endColumn" : 48,
+            "charOffset" : 175603,
+            "charLength" : 26,
+            "byteOffset" : 176211,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1217,
+            "startColumn" : 28,
+            "endLine" : 1217,
+            "endColumn" : 44,
+            "charOffset" : 176270,
+            "charLength" : 16,
+            "byteOffset" : 176878,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1349,
+            "startColumn" : 105,
+            "endLine" : 1349,
+            "endColumn" : 141,
+            "charOffset" : 192046,
+            "charLength" : 36,
+            "byteOffset" : 192738,
+            "byteLength" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1351,
+            "startColumn" : 71,
+            "endLine" : 1351,
+            "endColumn" : 92,
+            "charOffset" : 192398,
+            "charLength" : 21,
+            "byteOffset" : 193090,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1647,
+            "startColumn" : 22,
+            "endLine" : 1647,
+            "endColumn" : 35,
+            "charOffset" : 228229,
+            "charLength" : 13,
+            "byteOffset" : 229508,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1649,
+            "startColumn" : 38,
+            "endLine" : 1649,
+            "endColumn" : 56,
+            "charOffset" : 228443,
+            "charLength" : 18,
+            "byteOffset" : 229722,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1885,
+            "startColumn" : 22,
+            "endLine" : 1885,
+            "endColumn" : 38,
+            "charOffset" : 256080,
+            "charLength" : 16,
+            "byteOffset" : 257515,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1887,
+            "startColumn" : 40,
+            "endLine" : 1887,
+            "endColumn" : 53,
+            "charOffset" : 256342,
+            "charLength" : 13,
+            "byteOffset" : 257777,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 62,
+            "endLine" : 45,
+            "endColumn" : 75,
+            "charOffset" : 4700,
+            "charLength" : 13,
+            "byteOffset" : 4700,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 23,
+            "endLine" : 55,
+            "endColumn" : 41,
+            "charOffset" : 5805,
+            "charLength" : 18,
+            "byteOffset" : 5805,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 22,
+            "endLine" : 57,
+            "endColumn" : 47,
+            "charOffset" : 6016,
+            "charLength" : 25,
+            "byteOffset" : 6016,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 121,
+            "endLine" : 61,
+            "endColumn" : 137,
+            "charOffset" : 6477,
+            "charLength" : 16,
+            "byteOffset" : 6477,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 481,
+            "startColumn" : 53,
+            "endLine" : 481,
+            "endColumn" : 69,
+            "charOffset" : 54934,
+            "charLength" : 16,
+            "byteOffset" : 54934,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 495,
+            "startColumn" : 66,
+            "endLine" : 495,
+            "endColumn" : 83,
+            "charOffset" : 56247,
+            "charLength" : 17,
+            "byteOffset" : 56247,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 497,
+            "startColumn" : 68,
+            "endLine" : 497,
+            "endColumn" : 112,
+            "charOffset" : 56461,
+            "charLength" : 44,
+            "byteOffset" : 56461,
+            "byteLength" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 615,
+            "startColumn" : 93,
+            "endLine" : 615,
+            "endColumn" : 115,
+            "charOffset" : 70404,
+            "charLength" : 22,
+            "byteOffset" : 70433,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 709,
+            "startColumn" : 42,
+            "endLine" : 709,
+            "endColumn" : 52,
+            "charOffset" : 80872,
+            "charLength" : 10,
+            "byteOffset" : 80923,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 937,
+            "startColumn" : 36,
+            "endLine" : 937,
+            "endColumn" : 50,
+            "charOffset" : 106949,
+            "charLength" : 14,
+            "byteOffset" : 107093,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 943,
+            "startColumn" : 62,
+            "endLine" : 943,
+            "endColumn" : 81,
+            "charOffset" : 107526,
+            "charLength" : 19,
+            "byteOffset" : 107670,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 945,
+            "startColumn" : 41,
+            "endLine" : 945,
+            "endColumn" : 58,
+            "charOffset" : 107725,
+            "charLength" : 17,
+            "byteOffset" : 107869,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1041,
+            "startColumn" : 30,
+            "endLine" : 1041,
+            "endColumn" : 60,
+            "charOffset" : 119343,
+            "charLength" : 30,
+            "byteOffset" : 119488,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1539,
+            "startColumn" : 54,
+            "endLine" : 1539,
+            "endColumn" : 77,
+            "charOffset" : 173167,
+            "charLength" : 23,
+            "byteOffset" : 173354,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1541,
+            "startColumn" : 67,
+            "endLine" : 1541,
+            "endColumn" : 87,
+            "charOffset" : 173541,
+            "charLength" : 20,
+            "byteOffset" : 173728,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1543,
+            "startColumn" : 99,
+            "endLine" : 1543,
+            "endColumn" : 119,
+            "charOffset" : 173982,
+            "charLength" : 20,
+            "byteOffset" : 174169,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1853,
+            "startColumn" : 57,
+            "endLine" : 1853,
+            "endColumn" : 75,
+            "charOffset" : 209171,
+            "charLength" : 18,
+            "byteOffset" : 209360,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1949,
+            "startColumn" : 58,
+            "endLine" : 1949,
+            "endColumn" : 68,
+            "charOffset" : 219873,
+            "charLength" : 10,
+            "byteOffset" : 220076,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 145,
+            "startColumn" : 23,
+            "endLine" : 145,
+            "endColumn" : 48,
+            "charOffset" : 15955,
+            "charLength" : 25,
+            "byteOffset" : 15959,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 147,
+            "startColumn" : 23,
+            "endLine" : 147,
+            "endColumn" : 48,
+            "charOffset" : 16310,
+            "charLength" : 25,
+            "byteOffset" : 16314,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 149,
+            "startColumn" : 23,
+            "endLine" : 149,
+            "endColumn" : 45,
+            "charOffset" : 16637,
+            "charLength" : 22,
+            "byteOffset" : 16641,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 151,
+            "startColumn" : 23,
+            "endLine" : 151,
+            "endColumn" : 45,
+            "charOffset" : 16915,
+            "charLength" : 22,
+            "byteOffset" : 16919,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 153,
+            "startColumn" : 42,
+            "endLine" : 153,
+            "endColumn" : 59,
+            "charOffset" : 17150,
+            "charLength" : 17,
+            "byteOffset" : 17154,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 155,
+            "startColumn" : 25,
+            "endLine" : 155,
+            "endColumn" : 71,
+            "charOffset" : 17364,
+            "charLength" : 46,
+            "byteOffset" : 17368,
+            "byteLength" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 213,
+            "startColumn" : 22,
+            "endLine" : 213,
+            "endColumn" : 38,
+            "charOffset" : 24712,
+            "charLength" : 16,
+            "byteOffset" : 24717,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 333,
+            "startColumn" : 44,
+            "endLine" : 333,
+            "endColumn" : 62,
+            "charOffset" : 40951,
+            "charLength" : 18,
+            "byteOffset" : 41028,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 335,
+            "startColumn" : 22,
+            "endLine" : 335,
+            "endColumn" : 39,
+            "charOffset" : 41290,
+            "charLength" : 17,
+            "byteOffset" : 41367,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 337,
+            "startColumn" : 22,
+            "endLine" : 337,
+            "endColumn" : 39,
+            "charOffset" : 41563,
+            "charLength" : 17,
+            "byteOffset" : 41640,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 355,
+            "startColumn" : 148,
+            "endLine" : 355,
+            "endColumn" : 165,
+            "charOffset" : 44226,
+            "charLength" : 17,
+            "byteOffset" : 44303,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 357,
+            "startColumn" : 72,
+            "endLine" : 357,
+            "endColumn" : 106,
+            "charOffset" : 44548,
+            "charLength" : 34,
+            "byteOffset" : 44625,
+            "byteLength" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 365,
+            "startColumn" : 101,
+            "endLine" : 365,
+            "endColumn" : 122,
+            "charOffset" : 45720,
+            "charLength" : 21,
+            "byteOffset" : 45797,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 643,
+            "startColumn" : 37,
+            "endLine" : 643,
+            "endColumn" : 51,
+            "charOffset" : 78649,
+            "charLength" : 14,
+            "byteOffset" : 78834,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 645,
+            "startColumn" : 36,
+            "endLine" : 645,
+            "endColumn" : 50,
+            "charOffset" : 78872,
+            "charLength" : 14,
+            "byteOffset" : 79057,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 649,
+            "startColumn" : 27,
+            "endLine" : 649,
+            "endColumn" : 38,
+            "charOffset" : 79292,
+            "charLength" : 11,
+            "byteOffset" : 79477,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 997,
+            "startColumn" : 24,
+            "endLine" : 997,
+            "endColumn" : 36,
+            "charOffset" : 113917,
+            "charLength" : 12,
+            "byteOffset" : 114104,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 999,
+            "startColumn" : 24,
+            "endLine" : 999,
+            "endColumn" : 37,
+            "charOffset" : 114090,
+            "charLength" : 13,
+            "byteOffset" : 114277,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1009,
+            "startColumn" : 24,
+            "endLine" : 1009,
+            "endColumn" : 33,
+            "charOffset" : 115021,
+            "charLength" : 9,
+            "byteOffset" : 115208,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1011,
+            "startColumn" : 22,
+            "endLine" : 1011,
+            "endColumn" : 34,
+            "charOffset" : 115189,
+            "charLength" : 12,
+            "byteOffset" : 115376,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1013,
+            "startColumn" : 22,
+            "endLine" : 1013,
+            "endColumn" : 35,
+            "charOffset" : 115359,
+            "charLength" : 13,
+            "byteOffset" : 115546,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1245,
+            "startColumn" : 22,
+            "endLine" : 1245,
+            "endColumn" : 31,
+            "charOffset" : 138884,
+            "charLength" : 9,
+            "byteOffset" : 139219,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1281,
+            "startColumn" : 41,
+            "endLine" : 1281,
+            "endColumn" : 61,
+            "charOffset" : 142715,
+            "charLength" : 20,
+            "byteOffset" : 143056,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1283,
+            "startColumn" : 39,
+            "endLine" : 1283,
+            "endColumn" : 71,
+            "charOffset" : 142961,
+            "charLength" : 32,
+            "byteOffset" : 143302,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1285,
+            "startColumn" : 43,
+            "endLine" : 1285,
+            "endColumn" : 60,
+            "charOffset" : 143194,
+            "charLength" : 17,
+            "byteOffset" : 143535,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1773,
+            "startColumn" : 25,
+            "endLine" : 1773,
+            "endColumn" : 45,
+            "charOffset" : 197421,
+            "charLength" : 20,
+            "byteOffset" : 197981,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1775,
+            "startColumn" : 22,
+            "endLine" : 1775,
+            "endColumn" : 42,
+            "charOffset" : 197653,
+            "charLength" : 20,
+            "byteOffset" : 198213,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1777,
+            "startColumn" : 23,
+            "endLine" : 1777,
+            "endColumn" : 36,
+            "charOffset" : 197885,
+            "charLength" : 13,
+            "byteOffset" : 198445,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1937,
+            "startColumn" : 43,
+            "endLine" : 1937,
+            "endColumn" : 58,
+            "charOffset" : 217197,
+            "charLength" : 15,
+            "byteOffset" : 217758,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1939,
+            "startColumn" : 23,
+            "endLine" : 1939,
+            "endColumn" : 34,
+            "charOffset" : 217399,
+            "charLength" : 11,
+            "byteOffset" : 217960,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1941,
+            "startColumn" : 30,
+            "endLine" : 1941,
+            "endColumn" : 45,
+            "charOffset" : 217665,
+            "charLength" : 15,
+            "byteOffset" : 218226,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 277,
+            "startColumn" : 105,
+            "endLine" : 277,
+            "endColumn" : 116,
+            "charOffset" : 30962,
+            "charLength" : 11,
+            "byteOffset" : 31024,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 279,
+            "startColumn" : 71,
+            "endLine" : 279,
+            "endColumn" : 82,
+            "charOffset" : 31210,
+            "charLength" : 11,
+            "byteOffset" : 31272,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 509,
+            "startColumn" : 72,
+            "endLine" : 509,
+            "endColumn" : 90,
+            "charOffset" : 57500,
+            "charLength" : 18,
+            "byteOffset" : 57670,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 735,
+            "startColumn" : 62,
+            "endLine" : 735,
+            "endColumn" : 83,
+            "charOffset" : 82891,
+            "charLength" : 21,
+            "byteOffset" : 83107,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 739,
+            "startColumn" : 28,
+            "endLine" : 739,
+            "endColumn" : 58,
+            "charOffset" : 83396,
+            "charLength" : 30,
+            "byteOffset" : 83612,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 845,
+            "startColumn" : 22,
+            "endLine" : 845,
+            "endColumn" : 40,
+            "charOffset" : 95137,
+            "charLength" : 18,
+            "byteOffset" : 95397,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1013,
+            "startColumn" : 22,
+            "endLine" : 1013,
+            "endColumn" : 244,
+            "charOffset" : 115239,
+            "charLength" : 222,
+            "byteOffset" : 115499,
+            "byteLength" : 222
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1015,
+            "startColumn" : 109,
+            "endLine" : 1015,
+            "endColumn" : 124,
+            "charOffset" : 115777,
+            "charLength" : 15,
+            "byteOffset" : 116037,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1017,
+            "startColumn" : 24,
+            "endLine" : 1017,
+            "endColumn" : 49,
+            "charOffset" : 116024,
+            "charLength" : 25,
+            "byteOffset" : 116284,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1019,
+            "startColumn" : 135,
+            "endLine" : 1019,
+            "endColumn" : 167,
+            "charOffset" : 116422,
+            "charLength" : 32,
+            "byteOffset" : 116682,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1023,
+            "startColumn" : 24,
+            "endLine" : 1023,
+            "endColumn" : 105,
+            "charOffset" : 116910,
+            "charLength" : 81,
+            "byteOffset" : 117170,
+            "byteLength" : 81
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1025,
+            "startColumn" : 33,
+            "endLine" : 1025,
+            "endColumn" : 79,
+            "charOffset" : 117205,
+            "charLength" : 46,
+            "byteOffset" : 117465,
+            "byteLength" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1027,
+            "startColumn" : 35,
+            "endLine" : 1027,
+            "endColumn" : 80,
+            "charOffset" : 117421,
+            "charLength" : 45,
+            "byteOffset" : 117681,
+            "byteLength" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1029,
+            "startColumn" : 50,
+            "endLine" : 1029,
+            "endColumn" : 100,
+            "charOffset" : 117651,
+            "charLength" : 50,
+            "byteOffset" : 117911,
+            "byteLength" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1091,
+            "startColumn" : 25,
+            "endLine" : 1091,
+            "endColumn" : 37,
+            "charOffset" : 124506,
+            "charLength" : 12,
+            "byteOffset" : 124777,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1093,
+            "startColumn" : 62,
+            "endLine" : 1093,
+            "endColumn" : 73,
+            "charOffset" : 124802,
+            "charLength" : 11,
+            "byteOffset" : 125073,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1491,
+            "startColumn" : 88,
+            "endLine" : 1491,
+            "endColumn" : 126,
+            "charOffset" : 170305,
+            "charLength" : 38,
+            "byteOffset" : 170637,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1493,
+            "startColumn" : 22,
+            "endLine" : 1493,
+            "endColumn" : 38,
+            "charOffset" : 170516,
+            "charLength" : 16,
+            "byteOffset" : 170848,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1505,
+            "startColumn" : 26,
+            "endLine" : 1505,
+            "endColumn" : 40,
+            "charOffset" : 172027,
+            "charLength" : 14,
+            "byteOffset" : 172359,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1521,
+            "startColumn" : 45,
+            "endLine" : 1521,
+            "endColumn" : 59,
+            "charOffset" : 173830,
+            "charLength" : 14,
+            "byteOffset" : 174162,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1523,
+            "startColumn" : 22,
+            "endLine" : 1523,
+            "endColumn" : 37,
+            "charOffset" : 174038,
+            "charLength" : 15,
+            "byteOffset" : 174370,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1525,
+            "startColumn" : 22,
+            "endLine" : 1525,
+            "endColumn" : 36,
+            "charOffset" : 174229,
+            "charLength" : 14,
+            "byteOffset" : 174561,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1491,
+            "startColumn" : 88,
+            "endLine" : 1491,
+            "endColumn" : 126,
+            "charOffset" : 170305,
+            "charLength" : 38,
+            "byteOffset" : 170637,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1493,
+            "startColumn" : 22,
+            "endLine" : 1493,
+            "endColumn" : 38,
+            "charOffset" : 170516,
+            "charLength" : 16,
+            "byteOffset" : 170848,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1505,
+            "startColumn" : 26,
+            "endLine" : 1505,
+            "endColumn" : 40,
+            "charOffset" : 172027,
+            "charLength" : 14,
+            "byteOffset" : 172359,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1521,
+            "startColumn" : 45,
+            "endLine" : 1521,
+            "endColumn" : 59,
+            "charOffset" : 173830,
+            "charLength" : 14,
+            "byteOffset" : 174162,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1523,
+            "startColumn" : 22,
+            "endLine" : 1523,
+            "endColumn" : 37,
+            "charOffset" : 174038,
+            "charLength" : 15,
+            "byteOffset" : 174370,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5860",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use the named groups of this regex or remove the names."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1525,
+            "startColumn" : 22,
+            "endLine" : 1525,
+            "endColumn" : 36,
+            "charOffset" : 174229,
+            "charLength" : 14,
+            "byteOffset" : 174561,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

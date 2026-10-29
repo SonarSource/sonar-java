@@ -1,0 +1,634 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanPredicate.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 23,
+            "endLine" : 34,
+            "endColumn" : 26,
+            "charOffset" : 1257,
+            "charLength" : 3,
+            "byteOffset" : 1257,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanPropertyValueChangeClosure.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 82,
+            "startColumn" : 23,
+            "endLine" : 82,
+            "endColumn" : 26,
+            "charOffset" : 3235,
+            "charLength" : 3,
+            "byteOffset" : 3235,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanPropertyValueEqualsPredicate.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 113,
+            "startColumn" : 23,
+            "endLine" : 113,
+            "endColumn" : 26,
+            "charOffset" : 4411,
+            "charLength" : 3,
+            "byteOffset" : 4411,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanToPropertyValueTransformer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 74,
+            "startColumn" : 23,
+            "endLine" : 74,
+            "endColumn" : 26,
+            "charOffset" : 3024,
+            "charLength" : 3,
+            "byteOffset" : 3024,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 94,
+            "startColumn" : 23,
+            "endLine" : 94,
+            "endColumn" : 26,
+            "charOffset" : 3394,
+            "charLength" : 3,
+            "byteOffset" : 3394,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1111,
+            "startColumn" : 23,
+            "endLine" : 1111,
+            "endColumn" : 26,
+            "charOffset" : 46318,
+            "charLength" : 3,
+            "byteOffset" : 46318,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1117,
+            "startColumn" : 23,
+            "endLine" : 1117,
+            "endColumn" : 26,
+            "charOffset" : 46581,
+            "charLength" : 3,
+            "byteOffset" : 46581,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 153,
+            "startColumn" : 23,
+            "endLine" : 153,
+            "endColumn" : 26,
+            "charOffset" : 6746,
+            "charLength" : 3,
+            "byteOffset" : 6746,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DefaultBeanIntrospector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 23,
+            "endLine" : 59,
+            "endColumn" : 26,
+            "charOffset" : 2361,
+            "charLength" : 3,
+            "byteOffset" : 2361,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/FluentPropertyBeanIntrospector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 83,
+            "startColumn" : 23,
+            "endLine" : 83,
+            "endColumn" : 26,
+            "charOffset" : 3230,
+            "charLength" : 3,
+            "byteOffset" : 3230,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"logger\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 130,
+            "startColumn" : 27,
+            "endLine" : 130,
+            "endColumn" : 33,
+            "charOffset" : 6262,
+            "charLength" : 6,
+            "byteOffset" : 6262,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 941,
+            "startColumn" : 19,
+            "endLine" : 941,
+            "endColumn" : 22,
+            "charOffset" : 36825,
+            "charLength" : 3,
+            "byteOffset" : 36825,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1062,
+            "startColumn" : 23,
+            "endLine" : 1062,
+            "endColumn" : 26,
+            "charOffset" : 41818,
+            "charLength" : 3,
+            "byteOffset" : 41818,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1244,
+            "startColumn" : 23,
+            "endLine" : 1244,
+            "endColumn" : 26,
+            "charOffset" : 49320,
+            "charLength" : 3,
+            "byteOffset" : 49320,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 120,
+            "startColumn" : 23,
+            "endLine" : 120,
+            "endColumn" : 26,
+            "charOffset" : 5463,
+            "charLength" : 3,
+            "byteOffset" : 5463,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/AbstractConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 71,
+            "startColumn" : 27,
+            "endLine" : 71,
+            "endColumn" : 30,
+            "charOffset" : 3075,
+            "charLength" : 3,
+            "byteOffset" : 3075,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/BaseLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 23,
+            "endLine" : 43,
+            "endColumn" : 26,
+            "charOffset" : 1718,
+            "charLength" : 3,
+            "byteOffset" : 1718,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 82,
+            "startColumn" : 23,
+            "endLine" : 82,
+            "endColumn" : 26,
+            "charOffset" : 3211,
+            "charLength" : 3,
+            "byteOffset" : 3211,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 23,
+            "endLine" : 104,
+            "endColumn" : 26,
+            "charOffset" : 4433,
+            "charLength" : 3,
+            "byteOffset" : 4433,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 23,
+            "endLine" : 48,
+            "endColumn" : 26,
+            "charOffset" : 1828,
+            "charLength" : 3,
+            "byteOffset" : 1828,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/DecimalLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 23,
+            "endLine" : 47,
+            "endColumn" : 26,
+            "charOffset" : 1721,
+            "charLength" : 3,
+            "byteOffset" : 1721,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/StringLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 23,
+            "endLine" : 50,
+            "endColumn" : 26,
+            "charOffset" : 1879,
+            "charLength" : 3,
+            "byteOffset" : 1879,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

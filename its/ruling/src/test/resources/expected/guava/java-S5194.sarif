@@ -1,0 +1,522 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to return the value from method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/CharMatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 335,
+            "startColumn" : 5,
+            "endLine" : 335,
+            "endColumn" : 11,
+            "charOffset" : 11925,
+            "charLength" : 6,
+            "byteOffset" : 11925,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to return the value from method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/CharMatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1263,
+            "startColumn" : 7,
+            "endLine" : 1263,
+            "endColumn" : 13,
+            "charOffset" : 39773,
+            "charLength" : 6,
+            "byteOffset" : 39773,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to return the value from method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Joiner.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 462,
+            "startColumn" : 9,
+            "endLine" : 462,
+            "endColumn" : 15,
+            "charOffset" : 16162,
+            "charLength" : 6,
+            "byteOffset" : 16162,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to return the value from method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Stopwatch.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 242,
+            "startColumn" : 5,
+            "endLine" : 242,
+            "endColumn" : 11,
+            "charOffset" : 7113,
+            "charLength" : 6,
+            "byteOffset" : 7113,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to set value of \"timeUnit\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/CacheBuilderSpec.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 420,
+            "startColumn" : 9,
+            "endLine" : 420,
+            "endColumn" : 15,
+            "charOffset" : 15708,
+            "charLength" : 6,
+            "byteOffset" : 15708,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to return the value from method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableCollection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 286,
+            "startColumn" : 5,
+            "endLine" : 286,
+            "endColumn" : 11,
+            "charOffset" : 10570,
+            "charLength" : 6,
+            "byteOffset" : 10570,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to return the value from method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableEnumSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 5,
+            "endLine" : 36,
+            "endColumn" : 11,
+            "charOffset" : 1224,
+            "charLength" : 6,
+            "byteOffset" : 1224,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to return the value from method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 272,
+            "startColumn" : 5,
+            "endLine" : 272,
+            "endColumn" : 11,
+            "charOffset" : 9348,
+            "charLength" : 6,
+            "byteOffset" : 9348,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to return the value from method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 372,
+            "startColumn" : 5,
+            "endLine" : 372,
+            "endColumn" : 11,
+            "charOffset" : 12240,
+            "charLength" : 6,
+            "byteOffset" : 12240,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to return the value from method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 298,
+            "startColumn" : 5,
+            "endLine" : 298,
+            "endColumn" : 11,
+            "charOffset" : 11471,
+            "charLength" : 6,
+            "byteOffset" : 11471,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to return the value from method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableSortedMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 494,
+            "startColumn" : 7,
+            "endLine" : 494,
+            "endColumn" : 13,
+            "charOffset" : 18956,
+            "charLength" : 6,
+            "byteOffset" : 18956,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to return the value from method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 227,
+            "startColumn" : 7,
+            "endLine" : 227,
+            "endColumn" : 13,
+            "charOffset" : 8570,
+            "charLength" : 6,
+            "byteOffset" : 8570,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to return the value from method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MinMaxPriorityQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 315,
+            "startColumn" : 5,
+            "endLine" : 315,
+            "endColumn" : 11,
+            "charOffset" : 11422,
+            "charLength" : 6,
+            "byteOffset" : 11422,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to return the value from method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Range.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 249,
+            "startColumn" : 5,
+            "endLine" : 249,
+            "endColumn" : 11,
+            "charOffset" : 9925,
+            "charLength" : 6,
+            "byteOffset" : 9937,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to return the value from method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Range.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 287,
+            "startColumn" : 5,
+            "endLine" : 287,
+            "endColumn" : 11,
+            "charOffset" : 10923,
+            "charLength" : 6,
+            "byteOffset" : 10935,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to return the value from method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/TreeMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 181,
+            "startColumn" : 7,
+            "endLine" : 181,
+            "endColumn" : 13,
+            "charOffset" : 6954,
+            "charLength" : 6,
+            "byteOffset" : 6954,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to return the value from method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/TreeMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 203,
+            "startColumn" : 7,
+            "endLine" : 203,
+            "endColumn" : 13,
+            "charOffset" : 7665,
+            "charLength" : 6,
+            "byteOffset" : 7665,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"switch\" expression to return the value from method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/net/MediaType.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 423,
+            "startColumn" : 5,
+            "endLine" : 423,
+            "endColumn" : 11,
+            "charOffset" : 21022,
+            "charLength" : 6,
+            "byteOffset" : 21022,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

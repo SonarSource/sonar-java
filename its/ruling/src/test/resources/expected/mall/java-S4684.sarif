@@ -1,0 +1,107 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S4684",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this persistent entity with a simple POJO or DTO object."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/MemberAttentionController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 63,
+            "endLine" : 27,
+            "endColumn" : 83,
+            "charOffset" : 1031,
+            "charLength" : 20,
+            "byteOffset" : 1075,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4684",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this persistent entity with a simple POJO or DTO object."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/MemberProductCollectionController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 66,
+            "endLine" : 28,
+            "endColumn" : 83,
+            "charOffset" : 1056,
+            "charLength" : 17,
+            "byteOffset" : 1096,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4684",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this persistent entity with a simple POJO or DTO object."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/MemberReadHistoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 63,
+            "endLine" : 30,
+            "endColumn" : 80,
+            "charOffset" : 1073,
+            "charLength" : 17,
+            "byteOffset" : 1125,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

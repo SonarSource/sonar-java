@@ -1,0 +1,606 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/ce/queue/CeQueueImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 212,
+            "startColumn" : 1,
+            "endLine" : 212,
+            "endColumn" : 54,
+            "charOffset" : 7837,
+            "charLength" : 53,
+            "byteOffset" : 7837,
+            "byteLength" : 53
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/ce/queue/CeTask.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 127,
+            "startColumn" : 1,
+            "endLine" : 127,
+            "endColumn" : 95,
+            "charOffset" : 3639,
+            "charLength" : 94,
+            "byteOffset" : 3639,
+            "byteLength" : 94
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/batch/ProjectDataLoader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 1,
+            "endLine" : 89,
+            "endColumn" : 139,
+            "charOffset" : 4186,
+            "charLength" : 138,
+            "byteOffset" : 4186,
+            "byteLength" : 138
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/ce/ws/TaskFormatter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 80,
+            "startColumn" : 1,
+            "endLine" : 80,
+            "endColumn" : 100,
+            "charOffset" : 3245,
+            "charLength" : 99,
+            "byteOffset" : 3245,
+            "byteLength" : 99
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/ce/ws/TaskFormatter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 116,
+            "startColumn" : 1,
+            "endLine" : 116,
+            "endColumn" : 103,
+            "charOffset" : 5164,
+            "charLength" : 102,
+            "byteOffset" : 5164,
+            "byteLength" : 102
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/FileMoveDetectionStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 154,
+            "startColumn" : 1,
+            "endLine" : 154,
+            "endColumn" : 141,
+            "charOffset" : 6938,
+            "charLength" : 140,
+            "byteOffset" : 6938,
+            "byteLength" : 140
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/FileMoveDetectionStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 184,
+            "startColumn" : 1,
+            "endLine" : 184,
+            "endColumn" : 136,
+            "charOffset" : 8312,
+            "charLength" : 135,
+            "byteOffset" : 8312,
+            "byteLength" : 135
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/BaseIssuesLoader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 1,
+            "endLine" : 65,
+            "endColumn" : 17,
+            "charOffset" : 2720,
+            "charLength" : 16,
+            "byteOffset" : 2720,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/BranchCoverageRule.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 1,
+            "endLine" : 42,
+            "endColumn" : 58,
+            "charOffset" : 1959,
+            "charLength" : 57,
+            "byteOffset" : 1959,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/CommonRule.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 1,
+            "endLine" : 72,
+            "endColumn" : 41,
+            "charOffset" : 2764,
+            "charLength" : 40,
+            "byteOffset" : 2764,
+            "byteLength" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistEventsStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 97,
+            "startColumn" : 1,
+            "endLine" : 97,
+            "endColumn" : 27,
+            "charOffset" : 4072,
+            "charLength" : 26,
+            "byteOffset" : 4072,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/es/BulkIndexer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 267,
+            "startColumn" : 1,
+            "endLine" : 267,
+            "endColumn" : 51,
+            "charOffset" : 9574,
+            "charLength" : 50,
+            "byteOffset" : 9574,
+            "byteLength" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/es/IndexingResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 1,
+            "endLine" : 27,
+            "endColumn" : 29,
+            "charOffset" : 953,
+            "charLength" : 28,
+            "byteOffset" : 953,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/SearchAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 336,
+            "startColumn" : 1,
+            "endLine" : 336,
+            "endColumn" : 34,
+            "charOffset" : 18744,
+            "charLength" : 33,
+            "byteOffset" : 18744,
+            "byteLength" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/platform/db/migration/AutoDbMigration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 1,
+            "endLine" : 39,
+            "endColumn" : 63,
+            "charOffset" : 1513,
+            "charLength" : 62,
+            "byteOffset" : 1513,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/plugins/ws/UninstallAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 69,
+            "startColumn" : 1,
+            "endLine" : 69,
+            "endColumn" : 71,
+            "charOffset" : 2422,
+            "charLength" : 70,
+            "byteOffset" : 2422,
+            "byteLength" : 70
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/rule/RegisterRules.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 401,
+            "startColumn" : 1,
+            "endLine" : 401,
+            "endColumn" : 128,
+            "charOffset" : 15944,
+            "charLength" : 127,
+            "byteOffset" : 15944,
+            "byteLength" : 127
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/rule/RegisterRules.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 443,
+            "startColumn" : 1,
+            "endLine" : 443,
+            "endColumn" : 86,
+            "charOffset" : 17699,
+            "charLength" : 85,
+            "byteOffset" : 17699,
+            "byteLength" : 85
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/CoverageRuleTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 107,
+            "startColumn" : 1,
+            "endLine" : 107,
+            "endColumn" : 21,
+            "charOffset" : 4558,
+            "charLength" : 20,
+            "byteOffset" : 4558,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/IssueServiceMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 144,
+            "startColumn" : 1,
+            "endLine" : 144,
+            "endColumn" : 82,
+            "charOffset" : 6221,
+            "charLength" : 81,
+            "byteOffset" : 6221,
+            "byteLength" : 81
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Take the required action to fix the issue indicated by this comment."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 251,
+            "startColumn" : 1,
+            "endLine" : 251,
+            "endColumn" : 144,
+            "charOffset" : 10426,
+            "charLength" : 143,
+            "byteOffset" : 10426,
+            "byteLength" : 143
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

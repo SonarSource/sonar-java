@@ -1,0 +1,130 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S4790",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure this weak hash algorithm is not used in a sensitive context here."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistFileSourcesStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 135,
+            "startColumn" : 37,
+            "endLine" : 135,
+            "endColumn" : 43,
+            "charOffset" : 6595,
+            "charLength" : 6,
+            "byteOffset" : 6595,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4790",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure this weak hash algorithm is not used in a sensitive context here."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/AvatarResolverImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 20,
+            "endLine" : 39,
+            "endColumn" : 23,
+            "charOffset" : 1422,
+            "charLength" : 3,
+            "byteOffset" : 1422,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4790",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure this weak hash algorithm is not used in a sensitive context here."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/platform/ServerIdGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 102,
+            "startColumn" : 34,
+            "endLine" : 102,
+            "endColumn" : 41,
+            "charOffset" : 3998,
+            "charLength" : 7,
+            "byteOffset" : 3998,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4790",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure this weak hash algorithm is not used in a sensitive context here."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/user/UserUpdater.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 381,
+            "startColumn" : 34,
+            "endLine" : 381,
+            "endColumn" : 41,
+            "charOffset" : 15614,
+            "charLength" : 7,
+            "byteOffset" : 15614,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

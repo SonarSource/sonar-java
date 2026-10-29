@@ -1,0 +1,74 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S2168",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this dangerous instance of double-checked locking."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsCancelInterceptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 76,
+            "startColumn" : 10,
+            "endLine" : 76,
+            "endColumn" : 22,
+            "charOffset" : 2596,
+            "charLength" : 12,
+            "byteOffset" : 2596,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2168",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this dangerous instance of double-checked locking."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsConfirmInterceptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 110,
+            "startColumn" : 10,
+            "endLine" : 110,
+            "endColumn" : 22,
+            "charOffset" : 3605,
+            "charLength" : 12,
+            "byteOffset" : 3605,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

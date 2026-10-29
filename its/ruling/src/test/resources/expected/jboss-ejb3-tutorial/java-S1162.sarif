@@ -1,0 +1,158 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'Exception'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/TracingInterceptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 16,
+            "endLine" : 40,
+            "endColumn" : 17,
+            "charOffset" : 1526,
+            "charLength" : 1,
+            "byteOffset" : 1526,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NamingException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENCBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 16,
+            "endLine" : 61,
+            "endColumn" : 83,
+            "charOffset" : 2235,
+            "charLength" : 67,
+            "byteOffset" : 2235,
+            "byteLength" : 67
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NamingException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENCBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 16,
+            "endLine" : 70,
+            "endColumn" : 78,
+            "charOffset" : 2595,
+            "charLength" : 62,
+            "byteOffset" : 2595,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NamingException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENCBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 16,
+            "endLine" : 79,
+            "endColumn" : 97,
+            "charOffset" : 2954,
+            "charLength" : 81,
+            "byteOffset" : 2954,
+            "byteLength" : 81
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1162",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the usage of the checked exception 'NamingException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENCBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 87,
+            "startColumn" : 16,
+            "endLine" : 87,
+            "endColumn" : 74,
+            "charOffset" : 3305,
+            "charLength" : 58,
+            "byteOffset" : 3305,
+            "byteLength" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

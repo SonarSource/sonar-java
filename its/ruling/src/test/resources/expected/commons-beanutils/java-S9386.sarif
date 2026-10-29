@@ -1,0 +1,1725 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : l instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 167,
+            "startColumn" : 34,
+            "endLine" : 167,
+            "endColumn" : 45,
+            "charOffset" : 5362,
+            "charLength" : 11,
+            "byteOffset" : 5362,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 112,
+            "startColumn" : 45,
+            "endLine" : 112,
+            "endColumn" : 58,
+            "charOffset" : 3234,
+            "charLength" : 13,
+            "byteOffset" : 3234,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 508,
+            "startColumn" : 21,
+            "endLine" : 508,
+            "endColumn" : 34,
+            "charOffset" : 14981,
+            "charLength" : 13,
+            "byteOffset" : 14981,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 509,
+            "startColumn" : 21,
+            "endLine" : 509,
+            "endColumn" : 34,
+            "charOffset" : 15016,
+            "charLength" : 13,
+            "byteOffset" : 15016,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 882,
+            "startColumn" : 47,
+            "endLine" : 882,
+            "endColumn" : 58,
+            "charOffset" : 26278,
+            "charLength" : 11,
+            "byteOffset" : 26278,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 887,
+            "startColumn" : 21,
+            "endLine" : 887,
+            "endColumn" : 34,
+            "charOffset" : 26517,
+            "charLength" : 13,
+            "byteOffset" : 26517,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 284,
+            "startColumn" : 39,
+            "endLine" : 284,
+            "endColumn" : 52,
+            "charOffset" : 9276,
+            "charLength" : 13,
+            "byteOffset" : 9276,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 285,
+            "startColumn" : 47,
+            "endLine" : 285,
+            "endColumn" : 60,
+            "charOffset" : 9337,
+            "charLength" : 13,
+            "byteOffset" : 9337,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 772,
+            "startColumn" : 26,
+            "endLine" : 772,
+            "endColumn" : 39,
+            "charOffset" : 27686,
+            "charLength" : 13,
+            "byteOffset" : 27686,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 774,
+            "startColumn" : 26,
+            "endLine" : 774,
+            "endColumn" : 39,
+            "charOffset" : 27788,
+            "charLength" : 13,
+            "byteOffset" : 27788,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 830,
+            "startColumn" : 26,
+            "endLine" : 830,
+            "endColumn" : 39,
+            "charOffset" : 30134,
+            "charLength" : 13,
+            "byteOffset" : 30134,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 831,
+            "startColumn" : 26,
+            "endLine" : 831,
+            "endColumn" : 39,
+            "charOffset" : 30199,
+            "charLength" : 13,
+            "byteOffset" : 30199,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BenchBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 35,
+            "endLine" : 78,
+            "endColumn" : 48,
+            "charOffset" : 1946,
+            "charLength" : 13,
+            "byteOffset" : 1946,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 164,
+            "startColumn" : 52,
+            "endLine" : 164,
+            "endColumn" : 63,
+            "charOffset" : 4956,
+            "charLength" : 11,
+            "byteOffset" : 4956,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 165,
+            "startColumn" : 22,
+            "endLine" : 165,
+            "endColumn" : 35,
+            "charOffset" : 4990,
+            "charLength" : 13,
+            "byteOffset" : 4990,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 169,
+            "startColumn" : 52,
+            "endLine" : 169,
+            "endColumn" : 63,
+            "charOffset" : 5160,
+            "charLength" : 11,
+            "byteOffset" : 5160,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 170,
+            "startColumn" : 22,
+            "endLine" : 170,
+            "endColumn" : 35,
+            "charOffset" : 5194,
+            "charLength" : 13,
+            "byteOffset" : 5194,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 258,
+            "startColumn" : 53,
+            "endLine" : 258,
+            "endColumn" : 66,
+            "charOffset" : 8279,
+            "charLength" : 13,
+            "byteOffset" : 8279,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 435,
+            "startColumn" : 52,
+            "endLine" : 435,
+            "endColumn" : 67,
+            "charOffset" : 15257,
+            "charLength" : 15,
+            "byteOffset" : 15257,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 436,
+            "startColumn" : 22,
+            "endLine" : 436,
+            "endColumn" : 35,
+            "charOffset" : 15295,
+            "charLength" : 13,
+            "byteOffset" : 15295,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 440,
+            "startColumn" : 52,
+            "endLine" : 440,
+            "endColumn" : 67,
+            "charOffset" : 15469,
+            "charLength" : 15,
+            "byteOffset" : 15469,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 441,
+            "startColumn" : 22,
+            "endLine" : 441,
+            "endColumn" : 35,
+            "charOffset" : 15507,
+            "charLength" : 13,
+            "byteOffset" : 15507,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 119,
+            "startColumn" : 45,
+            "endLine" : 119,
+            "endColumn" : 58,
+            "charOffset" : 3161,
+            "charLength" : 13,
+            "byteOffset" : 3161,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 372,
+            "startColumn" : 39,
+            "endLine" : 372,
+            "endColumn" : 52,
+            "charOffset" : 13954,
+            "charLength" : 13,
+            "byteOffset" : 13954,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 374,
+            "startColumn" : 22,
+            "endLine" : 374,
+            "endColumn" : 35,
+            "charOffset" : 14061,
+            "charLength" : 13,
+            "byteOffset" : 14061,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 503,
+            "startColumn" : 32,
+            "endLine" : 503,
+            "endColumn" : 45,
+            "charOffset" : 19677,
+            "charLength" : 13,
+            "byteOffset" : 19677,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 816,
+            "startColumn" : 26,
+            "endLine" : 816,
+            "endColumn" : 39,
+            "charOffset" : 31390,
+            "charLength" : 13,
+            "byteOffset" : 31390,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 818,
+            "startColumn" : 26,
+            "endLine" : 818,
+            "endColumn" : 39,
+            "charOffset" : 31482,
+            "charLength" : 13,
+            "byteOffset" : 31482,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 869,
+            "startColumn" : 26,
+            "endLine" : 869,
+            "endColumn" : 39,
+            "charOffset" : 33593,
+            "charLength" : 13,
+            "byteOffset" : 33593,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 870,
+            "startColumn" : 26,
+            "endLine" : 870,
+            "endColumn" : 39,
+            "charOffset" : 33661,
+            "charLength" : 13,
+            "byteOffset" : 33661,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 45,
+            "endLine" : 114,
+            "endColumn" : 58,
+            "charOffset" : 2995,
+            "charLength" : 13,
+            "byteOffset" : 2995,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 194,
+            "startColumn" : 44,
+            "endLine" : 194,
+            "endColumn" : 57,
+            "charOffset" : 5983,
+            "charLength" : 13,
+            "byteOffset" : 5983,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 213,
+            "startColumn" : 39,
+            "endLine" : 213,
+            "endColumn" : 52,
+            "charOffset" : 6771,
+            "charLength" : 13,
+            "byteOffset" : 6771,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 215,
+            "startColumn" : 22,
+            "endLine" : 215,
+            "endColumn" : 35,
+            "charOffset" : 6878,
+            "charLength" : 13,
+            "byteOffset" : 6878,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 268,
+            "startColumn" : 32,
+            "endLine" : 268,
+            "endColumn" : 45,
+            "charOffset" : 9148,
+            "charLength" : 13,
+            "byteOffset" : 9148,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 994,
+            "startColumn" : 21,
+            "endLine" : 994,
+            "endColumn" : 34,
+            "charOffset" : 35994,
+            "charLength" : 13,
+            "byteOffset" : 35994,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1260,
+            "startColumn" : 21,
+            "endLine" : 1260,
+            "endColumn" : 34,
+            "charOffset" : 45153,
+            "charLength" : 13,
+            "byteOffset" : 45153,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1261,
+            "startColumn" : 21,
+            "endLine" : 1261,
+            "endColumn" : 34,
+            "charOffset" : 45188,
+            "charLength" : 13,
+            "byteOffset" : 45188,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2106,
+            "startColumn" : 47,
+            "endLine" : 2106,
+            "endColumn" : 58,
+            "charOffset" : 74626,
+            "charLength" : 11,
+            "byteOffset" : 74626,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2113,
+            "startColumn" : 21,
+            "endLine" : 2113,
+            "endColumn" : 34,
+            "charOffset" : 74918,
+            "charLength" : 13,
+            "byteOffset" : 74918,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2400,
+            "startColumn" : 47,
+            "endLine" : 2400,
+            "endColumn" : 58,
+            "charOffset" : 84547,
+            "charLength" : 11,
+            "byteOffset" : 84547,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2407,
+            "startColumn" : 21,
+            "endLine" : 2407,
+            "endColumn" : 34,
+            "charOffset" : 84855,
+            "charLength" : 13,
+            "byteOffset" : 84855,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 264,
+            "startColumn" : 44,
+            "endLine" : 264,
+            "endColumn" : 57,
+            "charOffset" : 7622,
+            "charLength" : 13,
+            "byteOffset" : 7622,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 282,
+            "startColumn" : 39,
+            "endLine" : 282,
+            "endColumn" : 52,
+            "charOffset" : 8333,
+            "charLength" : 13,
+            "byteOffset" : 8333,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 283,
+            "startColumn" : 47,
+            "endLine" : 283,
+            "endColumn" : 60,
+            "charOffset" : 8394,
+            "charLength" : 13,
+            "byteOffset" : 8394,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 336,
+            "startColumn" : 32,
+            "endLine" : 336,
+            "endColumn" : 45,
+            "charOffset" : 10557,
+            "charLength" : 13,
+            "byteOffset" : 10557,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1500,
+            "startColumn" : 21,
+            "endLine" : 1500,
+            "endColumn" : 34,
+            "charOffset" : 53825,
+            "charLength" : 13,
+            "byteOffset" : 53825,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2032,
+            "startColumn" : 21,
+            "endLine" : 2032,
+            "endColumn" : 34,
+            "charOffset" : 74890,
+            "charLength" : 13,
+            "byteOffset" : 74890,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3383,
+            "startColumn" : 47,
+            "endLine" : 3383,
+            "endColumn" : 58,
+            "charOffset" : 125209,
+            "charLength" : 11,
+            "byteOffset" : 125209,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3390,
+            "startColumn" : 21,
+            "endLine" : 3390,
+            "endColumn" : 34,
+            "charOffset" : 125511,
+            "charLength" : 13,
+            "byteOffset" : 125511,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3677,
+            "startColumn" : 47,
+            "endLine" : 3677,
+            "endColumn" : 58,
+            "charOffset" : 135113,
+            "charLength" : 11,
+            "byteOffset" : 135113,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3684,
+            "startColumn" : 21,
+            "endLine" : 3684,
+            "endColumn" : 34,
+            "charOffset" : 135396,
+            "charLength" : 13,
+            "byteOffset" : 135396,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 215,
+            "startColumn" : 35,
+            "endLine" : 215,
+            "endColumn" : 48,
+            "charOffset" : 5664,
+            "charLength" : 13,
+            "byteOffset" : 5664,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 182,
+            "startColumn" : 30,
+            "endLine" : 182,
+            "endColumn" : 43,
+            "charOffset" : 5881,
+            "charLength" : 13,
+            "byteOffset" : 5881,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 302,
+            "startColumn" : 54,
+            "endLine" : 302,
+            "endColumn" : 67,
+            "charOffset" : 9511,
+            "charLength" : 13,
+            "byteOffset" : 9511,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 485,
+            "startColumn" : 52,
+            "endLine" : 485,
+            "endColumn" : 67,
+            "charOffset" : 17189,
+            "charLength" : 15,
+            "byteOffset" : 17189,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 486,
+            "startColumn" : 17,
+            "endLine" : 486,
+            "endColumn" : 30,
+            "charOffset" : 17222,
+            "charLength" : 13,
+            "byteOffset" : 17222,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 490,
+            "startColumn" : 52,
+            "endLine" : 490,
+            "endColumn" : 67,
+            "charOffset" : 17427,
+            "charLength" : 15,
+            "byteOffset" : 17427,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 491,
+            "startColumn" : 17,
+            "endLine" : 491,
+            "endColumn" : 30,
+            "charOffset" : 17460,
+            "charLength" : 13,
+            "byteOffset" : 17460,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+} : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 490,
+            "startColumn" : 52,
+            "endLine" : 490,
+            "endColumn" : 67,
+            "charOffset" : 17427,
+            "charLength" : 15,
+            "byteOffset" : 17427,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9386",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a float literal instead of casting a double literal to float."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 491,
+            "startColumn" : 17,
+            "endLine" : 491,
+            "endColumn" : 30,
+            "charOffset" : 17460,
+            "charLength" : 13,
+            "byteOffset" : 17460,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

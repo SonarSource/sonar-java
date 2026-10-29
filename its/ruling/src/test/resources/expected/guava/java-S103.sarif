@@ -1,0 +1,102 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S103",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this 48,941 characters long line (which is greater than 120 authorized)."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/thirdparty/publicsuffix/PublicSuffixPatterns.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 1,
+            "endLine" : 45,
+            "endColumn" : 48942,
+            "charOffset" : 1558,
+            "charLength" : 48941,
+            "byteOffset" : 1558,
+            "byteLength" : 50040
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S103",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this 192 characters long line (which is greater than 120 authorized)."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/thirdparty/publicsuffix/PublicSuffixPatterns.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 1,
+            "endLine" : 53,
+            "endColumn" : 193,
+            "charOffset" : 50752,
+            "charLength" : 192,
+            "byteOffset" : 51851,
+            "byteLength" : 192
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S103",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Split this 149 characters long line (which is greater than 120 authorized)."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/thirdparty/publicsuffix/PublicSuffixPatterns.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 1,
+            "endLine" : 62,
+            "endColumn" : 150,
+            "charOffset" : 51328,
+            "charLength" : 149,
+            "byteOffset" : 52427,
+            "byteLength" : 149
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

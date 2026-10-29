@@ -1,0 +1,186 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1067",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of conditional operators (4) used in the expression (maximum allowed 3)."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/BestValueOptimization.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 60,
+            "startColumn" : 12,
+            "endLine" : 63,
+            "endColumn" : 93,
+            "charOffset" : 2253,
+            "charLength" : 215,
+            "byteOffset" : 2253,
+            "byteLength" : 215
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1067",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of conditional operators (10) used in the expression (maximum allowed 3)."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistComponentsStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 409,
+            "startColumn" : 30,
+            "endLine" : 419,
+            "endColumn" : 68,
+            "charOffset" : 16377,
+            "charLength" : 747,
+            "byteOffset" : 16377,
+            "byteLength" : 747
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1067",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of conditional operators (4) used in the expression (maximum allowed 3)."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/rule/RuleUpdate.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 222,
+            "startColumn" : 12,
+            "endLine" : 222,
+            "endColumn" : 102,
+            "charOffset" : 5791,
+            "charLength" : 90,
+            "byteOffset" : 5791,
+            "byteLength" : 90
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1067",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of conditional operators (4) used in the expression (maximum allowed 3)."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/source/HtmlTextDecorator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 170,
+            "startColumn" : 12,
+            "endLine" : 172,
+            "endColumn" : 137,
+            "charOffset" : 6457,
+            "charLength" : 310,
+            "byteOffset" : 6457,
+            "byteLength" : 310
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1067",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of conditional operators (4) used in the expression (maximum allowed 3)."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/source/HtmlTextDecorator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 176,
+            "startColumn" : 12,
+            "endLine" : 178,
+            "endColumn" : 65,
+            "charOffset" : 6864,
+            "charLength" : 296,
+            "byteOffset" : 6864,
+            "byteLength" : 296
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1067",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of conditional operators (4) used in the expression (maximum allowed 3)."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/user/UserUpdater.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 251,
+            "startColumn" : 12,
+            "endLine" : 254,
+            "endColumn" : 94,
+            "charOffset" : 10382,
+            "charLength" : 271,
+            "byteOffset" : 10382,
+            "byteLength" : 271
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

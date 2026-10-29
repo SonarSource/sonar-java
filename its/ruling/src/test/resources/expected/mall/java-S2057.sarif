@@ -1,0 +1,107 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S2057",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a \"static final long serialVersionUID\" field to this class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/bo/AdminUserDetails.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 17,
+            "startColumn" : 14,
+            "endLine" : 17,
+            "endColumn" : 30,
+            "charOffset" : 480,
+            "charLength" : 16,
+            "byteOffset" : 500,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2057",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a \"static final long serialVersionUID\" field to this class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-demo/src/main/java/com/macro/mall/demo/bo/AdminUserDetails.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 15,
+            "startColumn" : 14,
+            "endLine" : 15,
+            "endColumn" : 30,
+            "charOffset" : 407,
+            "charLength" : 16,
+            "byteOffset" : 421,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2057",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a \"static final long serialVersionUID\" field to this class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/domain/MemberDetails.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 15,
+            "startColumn" : 14,
+            "endLine" : 15,
+            "endColumn" : 27,
+            "charOffset" : 416,
+            "charLength" : 13,
+            "byteOffset" : 436,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

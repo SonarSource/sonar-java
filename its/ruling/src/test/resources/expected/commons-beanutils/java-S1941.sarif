@@ -1,0 +1,326 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1941",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the declaration of \"oldValue\" closer to the code that uses it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 393,
+            "startColumn" : 26,
+            "endLine" : 393,
+            "endColumn" : 34,
+            "charOffset" : 13796,
+            "charLength" : 8,
+            "byteOffset" : 13796,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1941",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the declaration of \"index\" closer to the code that uses it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 375,
+            "startColumn" : 19,
+            "endLine" : 375,
+            "endColumn" : 24,
+            "charOffset" : 15463,
+            "charLength" : 5,
+            "byteOffset" : 15463,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1941",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the declaration of \"key\" closer to the code that uses it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 376,
+            "startColumn" : 22,
+            "endLine" : 376,
+            "endColumn" : 25,
+            "charOffset" : 15562,
+            "charLength" : 3,
+            "byteOffset" : 15562,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1941",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the declaration of \"indexedProperty\" closer to the code that uses it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 355,
+            "startColumn" : 16,
+            "endLine" : 355,
+            "endColumn" : 31,
+            "charOffset" : 13196,
+            "charLength" : 15,
+            "byteOffset" : 13196,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1941",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the declaration of \"mappedProperty\" closer to the code that uses it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 402,
+            "startColumn" : 22,
+            "endLine" : 402,
+            "endColumn" : 36,
+            "charOffset" : 14972,
+            "charLength" : 14,
+            "byteOffset" : 14972,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1941",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the declaration of \"indexedProperty\" closer to the code that uses it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 542,
+            "startColumn" : 16,
+            "endLine" : 542,
+            "endColumn" : 31,
+            "charOffset" : 19760,
+            "charLength" : 15,
+            "byteOffset" : 19760,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1941",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the declaration of \"mappedProperty\" closer to the code that uses it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 594,
+            "startColumn" : 22,
+            "endLine" : 594,
+            "endColumn" : 36,
+            "charOffset" : 21798,
+            "charLength" : 14,
+            "byteOffset" : 21798,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1941",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the declaration of \"mappedWriteMethod\" closer to the code that uses it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MappedPropertyDescriptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 285,
+            "startColumn" : 26,
+            "endLine" : 285,
+            "endColumn" : 43,
+            "charOffset" : 11137,
+            "charLength" : 17,
+            "byteOffset" : 11137,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1941",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the declaration of \"result\" closer to the code that uses it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 656,
+            "startColumn" : 16,
+            "endLine" : 656,
+            "endColumn" : 22,
+            "charOffset" : 27597,
+            "charLength" : 6,
+            "byteOffset" : 27597,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1941",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the declaration of \"sourceType\" closer to the code that uses it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/DateTimeConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 293,
+            "startColumn" : 24,
+            "endLine" : 293,
+            "endColumn" : 34,
+            "charOffset" : 9839,
+            "charLength" : 10,
+            "byteOffset" : 9839,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1941",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the declaration of \"parsedValue\" closer to the code that uses it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 286,
+            "startColumn" : 22,
+            "endLine" : 286,
+            "endColumn" : 33,
+            "charOffset" : 10390,
+            "charLength" : 11,
+            "byteOffset" : 10390,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,102 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1168",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Return an empty array instead of null."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 542,
+            "startColumn" : 20,
+            "endLine" : 542,
+            "endColumn" : 24,
+            "charOffset" : 22506,
+            "charLength" : 4,
+            "byteOffset" : 22506,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1168",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Return an empty map instead of null."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 710,
+            "startColumn" : 20,
+            "endLine" : 710,
+            "endColumn" : 24,
+            "charOffset" : 29840,
+            "charLength" : 4,
+            "byteOffset" : 29840,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1168",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Return an empty map instead of null."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 730,
+            "startColumn" : 20,
+            "endLine" : 730,
+            "endColumn" : 24,
+            "charOffset" : 30345,
+            "charLength" : 4,
+            "byteOffset" : 30345,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

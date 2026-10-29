@@ -1,0 +1,410 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor this code to not nest more than 3 if/for/while/switch/try statements."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/batch/BatchIndex.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 11,
+            "endLine" : 61,
+            "endColumn" : 14,
+            "charOffset" : 2317,
+            "charLength" : 3,
+            "byteOffset" : 2317,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor this code to not nest more than 3 if/for/while/switch/try statements."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/FileMoveDetectionStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 216,
+            "startColumn" : 11,
+            "endLine" : 216,
+            "endColumn" : 13,
+            "charOffset" : 9895,
+            "charLength" : 2,
+            "byteOffset" : 9895,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor this code to not nest more than 3 if/for/while/switch/try statements."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/duplication/ws/DuplicationsParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 11,
+            "endLine" : 67,
+            "endColumn" : 16,
+            "charOffset" : 2648,
+            "charLength" : 5,
+            "byteOffset" : 2648,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor this code to not nest more than 3 if/for/while/switch/try statements."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/SearchResponseLoader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 297,
+            "startColumn" : 13,
+            "endLine" : 297,
+            "endColumn" : 15,
+            "charOffset" : 14318,
+            "charLength" : 2,
+            "byteOffset" : 14318,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor this code to not nest more than 3 if/for/while/switch/try statements."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/platform/ServerIdGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 130,
+            "startColumn" : 11,
+            "endLine" : 130,
+            "endColumn" : 13,
+            "charOffset" : 5063,
+            "charLength" : 2,
+            "byteOffset" : 5063,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor this code to not nest more than 3 if/for/while/switch/try statements."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/plugins/ServerExtensionInstaller.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 80,
+            "startColumn" : 11,
+            "endLine" : 80,
+            "endColumn" : 13,
+            "charOffset" : 3412,
+            "charLength" : 2,
+            "byteOffset" : 3412,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor this code to not nest more than 3 if/for/while/switch/try statements."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/plugins/ServerPluginRepository.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 318,
+            "startColumn" : 11,
+            "endLine" : 318,
+            "endColumn" : 13,
+            "charOffset" : 13002,
+            "charLength" : 2,
+            "byteOffset" : 13003,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor this code to not nest more than 3 if/for/while/switch/try statements."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/RuleActivator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 320,
+            "startColumn" : 11,
+            "endLine" : 320,
+            "endColumn" : 13,
+            "charOffset" : 13584,
+            "charLength" : 2,
+            "byteOffset" : 13584,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor this code to not nest more than 3 if/for/while/switch/try statements."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/RuleActivator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 326,
+            "startColumn" : 11,
+            "endLine" : 326,
+            "endColumn" : 13,
+            "charOffset" : 13897,
+            "charLength" : 2,
+            "byteOffset" : 13897,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor this code to not nest more than 3 if/for/while/switch/try statements."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/rule/RegisterRules.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 107,
+            "startColumn" : 11,
+            "endLine" : 107,
+            "endColumn" : 14,
+            "charOffset" : 4369,
+            "charLength" : 3,
+            "byteOffset" : 4369,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor this code to not nest more than 3 if/for/while/switch/try statements."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/source/HtmlTextDecorator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 11,
+            "endLine" : 65,
+            "endColumn" : 13,
+            "charOffset" : 2391,
+            "charLength" : 2,
+            "byteOffset" : 2391,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor this code to not nest more than 3 if/for/while/switch/try statements."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/source/ws/IndexAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 88,
+            "startColumn" : 11,
+            "endLine" : 88,
+            "endColumn" : 14,
+            "charOffset" : 3479,
+            "charLength" : 3,
+            "byteOffset" : 3479,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor this code to not nest more than 3 if/for/while/switch/try statements."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/user/UserUpdater.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 343,
+            "startColumn" : 11,
+            "endLine" : 343,
+            "endColumn" : 13,
+            "charOffset" : 14150,
+            "charLength" : 2,
+            "byteOffset" : 14150,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S134",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor this code to not nest more than 3 if/for/while/switch/try statements."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/util/ClassLoaderUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 86,
+            "startColumn" : 11,
+            "endLine" : 86,
+            "endColumn" : 13,
+            "charOffset" : 3463,
+            "charLength" : 2,
+            "byteOffset" : 3463,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

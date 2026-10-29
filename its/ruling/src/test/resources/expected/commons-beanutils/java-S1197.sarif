@@ -1,0 +1,3854 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConstructorUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 110,
+            "startColumn" : 24,
+            "endLine" : 110,
+            "endColumn" : 40,
+            "charOffset" : 5139,
+            "charLength" : 16,
+            "byteOffset" : 5139,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConstructorUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 222,
+            "startColumn" : 24,
+            "endLine" : 222,
+            "endColumn" : 40,
+            "charOffset" : 9958,
+            "charLength" : 16,
+            "byteOffset" : 9958,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 94,
+            "endLine" : 104,
+            "endColumn" : 106,
+            "charOffset" : 4319,
+            "charLength" : 12,
+            "byteOffset" : 4319,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 113,
+            "startColumn" : 19,
+            "endLine" : 113,
+            "endColumn" : 29,
+            "charOffset" : 3269,
+            "charLength" : 10,
+            "byteOffset" : 3269,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 115,
+            "startColumn" : 19,
+            "endLine" : 115,
+            "endColumn" : 31,
+            "charOffset" : 3363,
+            "charLength" : 12,
+            "byteOffset" : 3363,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 136,
+            "startColumn" : 22,
+            "endLine" : 136,
+            "endColumn" : 35,
+            "charOffset" : 4476,
+            "charLength" : 13,
+            "byteOffset" : 4476,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 139,
+            "startColumn" : 22,
+            "endLine" : 139,
+            "endColumn" : 37,
+            "charOffset" : 4639,
+            "charLength" : 15,
+            "byteOffset" : 4639,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 285,
+            "startColumn" : 28,
+            "endLine" : 285,
+            "endColumn" : 32,
+            "charOffset" : 7954,
+            "charLength" : 4,
+            "byteOffset" : 7954,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 287,
+            "startColumn" : 19,
+            "endLine" : 287,
+            "endColumn" : 26,
+            "charOffset" : 8066,
+            "charLength" : 7,
+            "byteOffset" : 8066,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 983,
+            "startColumn" : 19,
+            "endLine" : 983,
+            "endColumn" : 29,
+            "charOffset" : 29141,
+            "charLength" : 10,
+            "byteOffset" : 29141,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 984,
+            "startColumn" : 22,
+            "endLine" : 984,
+            "endColumn" : 35,
+            "charOffset" : 29187,
+            "charLength" : 13,
+            "byteOffset" : 29187,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 77,
+            "startColumn" : 22,
+            "endLine" : 77,
+            "endColumn" : 33,
+            "charOffset" : 2298,
+            "charLength" : 11,
+            "byteOffset" : 2298,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 233,
+            "startColumn" : 22,
+            "endLine" : 233,
+            "endColumn" : 35,
+            "charOffset" : 7069,
+            "charLength" : 13,
+            "byteOffset" : 7069,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 239,
+            "startColumn" : 19,
+            "endLine" : 239,
+            "endColumn" : 29,
+            "charOffset" : 7447,
+            "charLength" : 10,
+            "byteOffset" : 7447,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 245,
+            "startColumn" : 22,
+            "endLine" : 245,
+            "endColumn" : 35,
+            "charOffset" : 7780,
+            "charLength" : 13,
+            "byteOffset" : 7780,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 296,
+            "startColumn" : 22,
+            "endLine" : 296,
+            "endColumn" : 35,
+            "charOffset" : 9788,
+            "charLength" : 13,
+            "byteOffset" : 9788,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 302,
+            "startColumn" : 19,
+            "endLine" : 302,
+            "endColumn" : 29,
+            "charOffset" : 10166,
+            "charLength" : 10,
+            "byteOffset" : 10166,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 362,
+            "startColumn" : 22,
+            "endLine" : 362,
+            "endColumn" : 35,
+            "charOffset" : 12437,
+            "charLength" : 13,
+            "byteOffset" : 12437,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 368,
+            "startColumn" : 19,
+            "endLine" : 368,
+            "endColumn" : 29,
+            "charOffset" : 12815,
+            "charLength" : 10,
+            "byteOffset" : 12815,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 374,
+            "startColumn" : 22,
+            "endLine" : 374,
+            "endColumn" : 35,
+            "charOffset" : 13148,
+            "charLength" : 13,
+            "byteOffset" : 13148,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 437,
+            "startColumn" : 20,
+            "endLine" : 437,
+            "endColumn" : 25,
+            "charOffset" : 15320,
+            "charLength" : 5,
+            "byteOffset" : 15320,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 438,
+            "startColumn" : 26,
+            "endLine" : 438,
+            "endColumn" : 32,
+            "charOffset" : 15402,
+            "charLength" : 6,
+            "byteOffset" : 15402,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 444,
+            "startColumn" : 23,
+            "endLine" : 444,
+            "endColumn" : 29,
+            "charOffset" : 15633,
+            "charLength" : 6,
+            "byteOffset" : 15633,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 679,
+            "startColumn" : 17,
+            "endLine" : 679,
+            "endColumn" : 27,
+            "charOffset" : 24108,
+            "charLength" : 10,
+            "byteOffset" : 24108,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 681,
+            "startColumn" : 20,
+            "endLine" : 681,
+            "endColumn" : 33,
+            "charOffset" : 24212,
+            "charLength" : 13,
+            "byteOffset" : 24212,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1334,
+            "startColumn" : 19,
+            "endLine" : 1334,
+            "endColumn" : 30,
+            "charOffset" : 50485,
+            "charLength" : 11,
+            "byteOffset" : 50485,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1335,
+            "startColumn" : 19,
+            "endLine" : 1335,
+            "endColumn" : 29,
+            "charOffset" : 50540,
+            "charLength" : 10,
+            "byteOffset" : 50540,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1337,
+            "startColumn" : 19,
+            "endLine" : 1337,
+            "endColumn" : 31,
+            "charOffset" : 50632,
+            "charLength" : 12,
+            "byteOffset" : 50632,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1559,
+            "startColumn" : 44,
+            "endLine" : 1559,
+            "endColumn" : 52,
+            "charOffset" : 58979,
+            "charLength" : 8,
+            "byteOffset" : 58979,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1559,
+            "startColumn" : 64,
+            "endLine" : 1559,
+            "endColumn" : 74,
+            "charOffset" : 58999,
+            "charLength" : 10,
+            "byteOffset" : 58999,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 100,
+            "startColumn" : 19,
+            "endLine" : 100,
+            "endColumn" : 29,
+            "charOffset" : 2470,
+            "charLength" : 10,
+            "byteOffset" : 2470,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 205,
+            "startColumn" : 22,
+            "endLine" : 205,
+            "endColumn" : 35,
+            "charOffset" : 6344,
+            "charLength" : 13,
+            "byteOffset" : 6344,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 218,
+            "startColumn" : 19,
+            "endLine" : 218,
+            "endColumn" : 30,
+            "charOffset" : 6642,
+            "charLength" : 11,
+            "byteOffset" : 6642,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 219,
+            "startColumn" : 19,
+            "endLine" : 219,
+            "endColumn" : 30,
+            "charOffset" : 6686,
+            "charLength" : 11,
+            "byteOffset" : 6686,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 220,
+            "startColumn" : 19,
+            "endLine" : 220,
+            "endColumn" : 30,
+            "charOffset" : 6727,
+            "charLength" : 11,
+            "byteOffset" : 6727,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 221,
+            "startColumn" : 22,
+            "endLine" : 221,
+            "endColumn" : 36,
+            "charOffset" : 6776,
+            "charLength" : 14,
+            "byteOffset" : 6776,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 222,
+            "startColumn" : 22,
+            "endLine" : 222,
+            "endColumn" : 36,
+            "charOffset" : 6829,
+            "charLength" : 14,
+            "byteOffset" : 6829,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 223,
+            "startColumn" : 22,
+            "endLine" : 223,
+            "endColumn" : 36,
+            "charOffset" : 6878,
+            "charLength" : 14,
+            "byteOffset" : 6878,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 278,
+            "startColumn" : 22,
+            "endLine" : 278,
+            "endColumn" : 31,
+            "charOffset" : 8944,
+            "charLength" : 9,
+            "byteOffset" : 8944,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 280,
+            "startColumn" : 19,
+            "endLine" : 280,
+            "endColumn" : 26,
+            "charOffset" : 9064,
+            "charLength" : 7,
+            "byteOffset" : 9064,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 282,
+            "startColumn" : 19,
+            "endLine" : 282,
+            "endColumn" : 29,
+            "charOffset" : 9162,
+            "charLength" : 10,
+            "byteOffset" : 9162,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 287,
+            "startColumn" : 22,
+            "endLine" : 287,
+            "endColumn" : 31,
+            "charOffset" : 9329,
+            "charLength" : 9,
+            "byteOffset" : 9329,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 290,
+            "startColumn" : 19,
+            "endLine" : 290,
+            "endColumn" : 29,
+            "charOffset" : 9507,
+            "charLength" : 10,
+            "byteOffset" : 9507,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 304,
+            "startColumn" : 19,
+            "endLine" : 304,
+            "endColumn" : 29,
+            "charOffset" : 9830,
+            "charLength" : 10,
+            "byteOffset" : 9830,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 305,
+            "startColumn" : 19,
+            "endLine" : 305,
+            "endColumn" : 30,
+            "charOffset" : 9873,
+            "charLength" : 11,
+            "byteOffset" : 9873,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 306,
+            "startColumn" : 19,
+            "endLine" : 306,
+            "endColumn" : 30,
+            "charOffset" : 9922,
+            "charLength" : 11,
+            "byteOffset" : 9922,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 493,
+            "startColumn" : 22,
+            "endLine" : 493,
+            "endColumn" : 35,
+            "charOffset" : 17245,
+            "charLength" : 13,
+            "byteOffset" : 17245,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 494,
+            "startColumn" : 22,
+            "endLine" : 494,
+            "endColumn" : 36,
+            "charOffset" : 17297,
+            "charLength" : 14,
+            "byteOffset" : 17297,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 496,
+            "startColumn" : 22,
+            "endLine" : 496,
+            "endColumn" : 36,
+            "charOffset" : 17371,
+            "charLength" : 14,
+            "byteOffset" : 17371,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 679,
+            "startColumn" : 66,
+            "endLine" : 679,
+            "endColumn" : 76,
+            "charOffset" : 25100,
+            "charLength" : 10,
+            "byteOffset" : 25100,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 684,
+            "startColumn" : 19,
+            "endLine" : 684,
+            "endColumn" : 28,
+            "charOffset" : 25302,
+            "charLength" : 9,
+            "byteOffset" : 25302,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 694,
+            "startColumn" : 68,
+            "endLine" : 694,
+            "endColumn" : 81,
+            "charOffset" : 25652,
+            "charLength" : 13,
+            "byteOffset" : 25652,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 699,
+            "startColumn" : 22,
+            "endLine" : 699,
+            "endColumn" : 31,
+            "charOffset" : 25866,
+            "charLength" : 9,
+            "byteOffset" : 25866,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 22,
+            "endLine" : 59,
+            "endColumn" : 33,
+            "charOffset" : 1652,
+            "charLength" : 11,
+            "byteOffset" : 1652,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 120,
+            "startColumn" : 22,
+            "endLine" : 120,
+            "endColumn" : 35,
+            "charOffset" : 3199,
+            "charLength" : 13,
+            "byteOffset" : 3199,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 122,
+            "startColumn" : 19,
+            "endLine" : 122,
+            "endColumn" : 29,
+            "charOffset" : 3327,
+            "charLength" : 10,
+            "byteOffset" : 3327,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 124,
+            "startColumn" : 19,
+            "endLine" : 124,
+            "endColumn" : 31,
+            "charOffset" : 3421,
+            "charLength" : 12,
+            "byteOffset" : 3421,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 151,
+            "startColumn" : 22,
+            "endLine" : 151,
+            "endColumn" : 35,
+            "charOffset" : 4826,
+            "charLength" : 13,
+            "byteOffset" : 4826,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 154,
+            "startColumn" : 22,
+            "endLine" : 154,
+            "endColumn" : 37,
+            "charOffset" : 4989,
+            "charLength" : 15,
+            "byteOffset" : 4989,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 244,
+            "startColumn" : 22,
+            "endLine" : 244,
+            "endColumn" : 35,
+            "charOffset" : 8126,
+            "charLength" : 13,
+            "byteOffset" : 8126,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 250,
+            "startColumn" : 19,
+            "endLine" : 250,
+            "endColumn" : 29,
+            "charOffset" : 8523,
+            "charLength" : 10,
+            "byteOffset" : 8523,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 256,
+            "startColumn" : 22,
+            "endLine" : 256,
+            "endColumn" : 35,
+            "charOffset" : 8872,
+            "charLength" : 13,
+            "byteOffset" : 8872,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 320,
+            "startColumn" : 22,
+            "endLine" : 320,
+            "endColumn" : 35,
+            "charOffset" : 11611,
+            "charLength" : 13,
+            "byteOffset" : 11611,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 326,
+            "startColumn" : 19,
+            "endLine" : 326,
+            "endColumn" : 29,
+            "charOffset" : 12002,
+            "charLength" : 10,
+            "byteOffset" : 12002,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 332,
+            "startColumn" : 22,
+            "endLine" : 332,
+            "endColumn" : 35,
+            "charOffset" : 12345,
+            "charLength" : 13,
+            "byteOffset" : 12345,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 385,
+            "startColumn" : 22,
+            "endLine" : 385,
+            "endColumn" : 35,
+            "charOffset" : 14595,
+            "charLength" : 13,
+            "byteOffset" : 14595,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 391,
+            "startColumn" : 19,
+            "endLine" : 391,
+            "endColumn" : 29,
+            "charOffset" : 14986,
+            "charLength" : 10,
+            "byteOffset" : 14986,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 451,
+            "startColumn" : 22,
+            "endLine" : 451,
+            "endColumn" : 35,
+            "charOffset" : 17430,
+            "charLength" : 13,
+            "byteOffset" : 17430,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 457,
+            "startColumn" : 19,
+            "endLine" : 457,
+            "endColumn" : 29,
+            "charOffset" : 17821,
+            "charLength" : 10,
+            "byteOffset" : 17821,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 463,
+            "startColumn" : 22,
+            "endLine" : 463,
+            "endColumn" : 35,
+            "charOffset" : 18164,
+            "charLength" : 13,
+            "byteOffset" : 18164,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 530,
+            "startColumn" : 26,
+            "endLine" : 530,
+            "endColumn" : 38,
+            "charOffset" : 20608,
+            "charLength" : 12,
+            "byteOffset" : 20608,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 532,
+            "startColumn" : 20,
+            "endLine" : 532,
+            "endColumn" : 33,
+            "charOffset" : 20725,
+            "charLength" : 13,
+            "byteOffset" : 20725,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 538,
+            "startColumn" : 23,
+            "endLine" : 538,
+            "endColumn" : 33,
+            "charOffset" : 20922,
+            "charLength" : 10,
+            "byteOffset" : 20922,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 565,
+            "startColumn" : 20,
+            "endLine" : 565,
+            "endColumn" : 25,
+            "charOffset" : 22001,
+            "charLength" : 5,
+            "byteOffset" : 22001,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 566,
+            "startColumn" : 26,
+            "endLine" : 566,
+            "endColumn" : 32,
+            "charOffset" : 22083,
+            "charLength" : 6,
+            "byteOffset" : 22083,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 572,
+            "startColumn" : 23,
+            "endLine" : 572,
+            "endColumn" : 29,
+            "charOffset" : 22327,
+            "charLength" : 6,
+            "byteOffset" : 22327,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1111,
+            "startColumn" : 19,
+            "endLine" : 1111,
+            "endColumn" : 30,
+            "charOffset" : 44131,
+            "charLength" : 11,
+            "byteOffset" : 44131,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1112,
+            "startColumn" : 19,
+            "endLine" : 1112,
+            "endColumn" : 29,
+            "charOffset" : 44185,
+            "charLength" : 10,
+            "byteOffset" : 44185,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1114,
+            "startColumn" : 19,
+            "endLine" : 1114,
+            "endColumn" : 31,
+            "charOffset" : 44292,
+            "charLength" : 12,
+            "byteOffset" : 44292,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1205,
+            "startColumn" : 44,
+            "endLine" : 1205,
+            "endColumn" : 52,
+            "charOffset" : 47826,
+            "charLength" : 8,
+            "byteOffset" : 47826,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1205,
+            "startColumn" : 64,
+            "endLine" : 1205,
+            "endColumn" : 74,
+            "charOffset" : 47846,
+            "charLength" : 10,
+            "byteOffset" : 47846,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1234,
+            "startColumn" : 19,
+            "endLine" : 1234,
+            "endColumn" : 29,
+            "charOffset" : 48901,
+            "charLength" : 10,
+            "byteOffset" : 48901,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1235,
+            "startColumn" : 22,
+            "endLine" : 1235,
+            "endColumn" : 35,
+            "charOffset" : 48947,
+            "charLength" : 13,
+            "byteOffset" : 48947,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 22,
+            "endLine" : 53,
+            "endColumn" : 33,
+            "charOffset" : 1499,
+            "charLength" : 11,
+            "byteOffset" : 1499,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 115,
+            "startColumn" : 19,
+            "endLine" : 115,
+            "endColumn" : 29,
+            "charOffset" : 3030,
+            "charLength" : 10,
+            "byteOffset" : 3030,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 117,
+            "startColumn" : 19,
+            "endLine" : 117,
+            "endColumn" : 31,
+            "charOffset" : 3124,
+            "charLength" : 12,
+            "byteOffset" : 3124,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 148,
+            "startColumn" : 22,
+            "endLine" : 148,
+            "endColumn" : 35,
+            "charOffset" : 4762,
+            "charLength" : 13,
+            "byteOffset" : 4762,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 151,
+            "startColumn" : 22,
+            "endLine" : 151,
+            "endColumn" : 37,
+            "charOffset" : 4925,
+            "charLength" : 15,
+            "byteOffset" : 4925,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 226,
+            "startColumn" : 22,
+            "endLine" : 226,
+            "endColumn" : 35,
+            "charOffset" : 7412,
+            "charLength" : 13,
+            "byteOffset" : 7412,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 232,
+            "startColumn" : 19,
+            "endLine" : 232,
+            "endColumn" : 29,
+            "charOffset" : 7803,
+            "charLength" : 10,
+            "byteOffset" : 7803,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2611,
+            "startColumn" : 19,
+            "endLine" : 2611,
+            "endColumn" : 29,
+            "charOffset" : 91648,
+            "charLength" : 10,
+            "byteOffset" : 91648,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2612,
+            "startColumn" : 22,
+            "endLine" : 2612,
+            "endColumn" : 35,
+            "charOffset" : 91694,
+            "charLength" : 13,
+            "byteOffset" : 91694,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaResultSetTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 22,
+            "endLine" : 51,
+            "endColumn" : 31,
+            "charOffset" : 1503,
+            "charLength" : 9,
+            "byteOffset" : 1503,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaResultSetTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 153,
+            "startColumn" : 28,
+            "endLine" : 153,
+            "endColumn" : 39,
+            "charOffset" : 3895,
+            "charLength" : 11,
+            "byteOffset" : 3895,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaRowSetTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 22,
+            "endLine" : 54,
+            "endColumn" : 31,
+            "charOffset" : 1582,
+            "charLength" : 9,
+            "byteOffset" : 1582,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaRowSetTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 156,
+            "startColumn" : 28,
+            "endLine" : 156,
+            "endColumn" : 39,
+            "charOffset" : 3962,
+            "charLength" : 11,
+            "byteOffset" : 3962,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/NestedTestBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 28,
+            "endLine" : 72,
+            "endColumn" : 42,
+            "charOffset" : 1817,
+            "charLength" : 14,
+            "byteOffset" : 1817,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 132,
+            "startColumn" : 22,
+            "endLine" : 132,
+            "endColumn" : 33,
+            "charOffset" : 4055,
+            "charLength" : 11,
+            "byteOffset" : 4055,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 294,
+            "startColumn" : 22,
+            "endLine" : 294,
+            "endColumn" : 35,
+            "charOffset" : 8844,
+            "charLength" : 13,
+            "byteOffset" : 8844,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 300,
+            "startColumn" : 19,
+            "endLine" : 300,
+            "endColumn" : 29,
+            "charOffset" : 9222,
+            "charLength" : 10,
+            "byteOffset" : 9222,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 571,
+            "startColumn" : 34,
+            "endLine" : 571,
+            "endColumn" : 38,
+            "charOffset" : 17843,
+            "charLength" : 4,
+            "byteOffset" : 17843,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 574,
+            "startColumn" : 19,
+            "endLine" : 574,
+            "endColumn" : 26,
+            "charOffset" : 17974,
+            "charLength" : 7,
+            "byteOffset" : 17974,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1714,
+            "startColumn" : 19,
+            "endLine" : 1714,
+            "endColumn" : 29,
+            "charOffset" : 61050,
+            "charLength" : 10,
+            "byteOffset" : 61050,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1715,
+            "startColumn" : 22,
+            "endLine" : 1715,
+            "endColumn" : 35,
+            "charOffset" : 61096,
+            "charLength" : 13,
+            "byteOffset" : 61096,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1903,
+            "startColumn" : 34,
+            "endLine" : 1903,
+            "endColumn" : 38,
+            "charOffset" : 70590,
+            "charLength" : 4,
+            "byteOffset" : 70590,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3989,
+            "startColumn" : 70,
+            "endLine" : 3989,
+            "endColumn" : 82,
+            "charOffset" : 145808,
+            "charLength" : 12,
+            "byteOffset" : 145808,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3992,
+            "startColumn" : 34,
+            "endLine" : 3992,
+            "endColumn" : 38,
+            "charOffset" : 145919,
+            "charLength" : 4,
+            "byteOffset" : 145919,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 4046,
+            "startColumn" : 71,
+            "endLine" : 4046,
+            "endColumn" : 83,
+            "charOffset" : 147813,
+            "charLength" : 12,
+            "byteOffset" : 147813,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 4050,
+            "startColumn" : 34,
+            "endLine" : 4050,
+            "endColumn" : 38,
+            "charOffset" : 147926,
+            "charLength" : 4,
+            "byteOffset" : 147926,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 229,
+            "startColumn" : 17,
+            "endLine" : 229,
+            "endColumn" : 27,
+            "charOffset" : 5961,
+            "charLength" : 10,
+            "byteOffset" : 5961,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 243,
+            "startColumn" : 23,
+            "endLine" : 243,
+            "endColumn" : 35,
+            "charOffset" : 6266,
+            "charLength" : 12,
+            "byteOffset" : 6266,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 754,
+            "startColumn" : 66,
+            "endLine" : 754,
+            "endColumn" : 69,
+            "charOffset" : 20897,
+            "charLength" : 3,
+            "byteOffset" : 20897,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 760,
+            "startColumn" : 65,
+            "endLine" : 760,
+            "endColumn" : 68,
+            "charOffset" : 21055,
+            "charLength" : 3,
+            "byteOffset" : 21055,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [][] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSetMetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 22,
+            "endLine" : 46,
+            "endColumn" : 34,
+            "charOffset" : 1462,
+            "charLength" : 12,
+            "byteOffset" : 1462,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 110,
+            "startColumn" : 19,
+            "endLine" : 110,
+            "endColumn" : 29,
+            "charOffset" : 2876,
+            "charLength" : 10,
+            "byteOffset" : 2876,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 249,
+            "startColumn" : 22,
+            "endLine" : 249,
+            "endColumn" : 35,
+            "charOffset" : 7453,
+            "charLength" : 13,
+            "byteOffset" : 7453,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 262,
+            "startColumn" : 19,
+            "endLine" : 262,
+            "endColumn" : 30,
+            "charOffset" : 7820,
+            "charLength" : 11,
+            "byteOffset" : 7820,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 263,
+            "startColumn" : 19,
+            "endLine" : 263,
+            "endColumn" : 30,
+            "charOffset" : 7864,
+            "charLength" : 11,
+            "byteOffset" : 7864,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 264,
+            "startColumn" : 19,
+            "endLine" : 264,
+            "endColumn" : 30,
+            "charOffset" : 7903,
+            "charLength" : 11,
+            "byteOffset" : 7903,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 265,
+            "startColumn" : 22,
+            "endLine" : 265,
+            "endColumn" : 36,
+            "charOffset" : 7950,
+            "charLength" : 14,
+            "byteOffset" : 7950,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 266,
+            "startColumn" : 22,
+            "endLine" : 266,
+            "endColumn" : 36,
+            "charOffset" : 8003,
+            "charLength" : 14,
+            "byteOffset" : 8003,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 267,
+            "startColumn" : 22,
+            "endLine" : 267,
+            "endColumn" : 36,
+            "charOffset" : 8050,
+            "charLength" : 14,
+            "byteOffset" : 8050,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 324,
+            "startColumn" : 22,
+            "endLine" : 324,
+            "endColumn" : 31,
+            "charOffset" : 10243,
+            "charLength" : 9,
+            "byteOffset" : 10243,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 326,
+            "startColumn" : 19,
+            "endLine" : 326,
+            "endColumn" : 26,
+            "charOffset" : 10367,
+            "charLength" : 7,
+            "byteOffset" : 10367,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 328,
+            "startColumn" : 19,
+            "endLine" : 328,
+            "endColumn" : 29,
+            "charOffset" : 10465,
+            "charLength" : 10,
+            "byteOffset" : 10465,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 333,
+            "startColumn" : 22,
+            "endLine" : 333,
+            "endColumn" : 31,
+            "charOffset" : 10632,
+            "charLength" : 9,
+            "byteOffset" : 10632,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 336,
+            "startColumn" : 19,
+            "endLine" : 336,
+            "endColumn" : 29,
+            "charOffset" : 10814,
+            "charLength" : 10,
+            "byteOffset" : 10814,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 351,
+            "startColumn" : 19,
+            "endLine" : 351,
+            "endColumn" : 29,
+            "charOffset" : 11198,
+            "charLength" : 10,
+            "byteOffset" : 11198,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 352,
+            "startColumn" : 19,
+            "endLine" : 352,
+            "endColumn" : 30,
+            "charOffset" : 11241,
+            "charLength" : 11,
+            "byteOffset" : 11241,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 353,
+            "startColumn" : 19,
+            "endLine" : 353,
+            "endColumn" : 30,
+            "charOffset" : 11287,
+            "charLength" : 11,
+            "byteOffset" : 11287,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 547,
+            "startColumn" : 22,
+            "endLine" : 547,
+            "endColumn" : 35,
+            "charOffset" : 19397,
+            "charLength" : 13,
+            "byteOffset" : 19397,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 548,
+            "startColumn" : 22,
+            "endLine" : 548,
+            "endColumn" : 36,
+            "charOffset" : 19449,
+            "charLength" : 14,
+            "byteOffset" : 19449,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 550,
+            "startColumn" : 22,
+            "endLine" : 550,
+            "endColumn" : 36,
+            "charOffset" : 19517,
+            "charLength" : 14,
+            "byteOffset" : 19517,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 644,
+            "startColumn" : 66,
+            "endLine" : 644,
+            "endColumn" : 76,
+            "charOffset" : 23658,
+            "charLength" : 10,
+            "byteOffset" : 23658,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 649,
+            "startColumn" : 19,
+            "endLine" : 649,
+            "endColumn" : 28,
+            "charOffset" : 23855,
+            "charLength" : 9,
+            "byteOffset" : 23855,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 659,
+            "startColumn" : 68,
+            "endLine" : 659,
+            "endColumn" : 81,
+            "charOffset" : 24200,
+            "charLength" : 13,
+            "byteOffset" : 24200,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1197",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move the array designators [] to the type."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 664,
+            "startColumn" : 22,
+            "endLine" : 664,
+            "endColumn" : 31,
+            "charOffset" : 24409,
+            "charLength" : 9,
+            "byteOffset" : 24409,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,102 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1258",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a constructor to the class, or provide default values."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MinMaxPriorityQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 763,
+            "startColumn" : 17,
+            "endLine" : 763,
+            "endColumn" : 30,
+            "charOffset" : 25748,
+            "charLength" : 13,
+            "byteOffset" : 25748,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1258",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a constructor to the class, or provide default values."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/TreeMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 504,
+            "startColumn" : 30,
+            "endLine" : 504,
+            "endColumn" : 39,
+            "charOffset" : 15883,
+            "charLength" : 9,
+            "byteOffset" : 15883,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1258",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a constructor to the class, or provide default values."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/reflect/TypeToken.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 720,
+            "startColumn" : 23,
+            "endLine" : 720,
+            "endColumn" : 31,
+            "charOffset" : 28097,
+            "charLength" : 8,
+            "byteOffset" : 28097,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

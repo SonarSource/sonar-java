@@ -1,0 +1,130 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/Striped64.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 200,
+            "startColumn" : 9,
+            "endLine" : 200,
+            "endColumn" : 13,
+            "charOffset" : 7880,
+            "charLength" : 4,
+            "byteOffset" : 7880,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/Striped64.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 229,
+            "startColumn" : 17,
+            "endLine" : 229,
+            "endColumn" : 21,
+            "charOffset" : 9247,
+            "charLength" : 4,
+            "byteOffset" : 9247,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/Striped64.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 256,
+            "startColumn" : 13,
+            "endLine" : 256,
+            "endColumn" : 17,
+            "charOffset" : 10480,
+            "charLength" : 4,
+            "byteOffset" : 10480,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/Striped64.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 271,
+            "startColumn" : 13,
+            "endLine" : 271,
+            "endColumn" : 17,
+            "charOffset" : 11023,
+            "charLength" : 4,
+            "byteOffset" : 11023,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

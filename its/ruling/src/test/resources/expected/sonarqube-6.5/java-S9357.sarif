@@ -1,0 +1,1194 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/NewEffortCalculator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 122,
+            "endLine" : 55,
+            "endColumn" : 148,
+            "charOffset" : 2180,
+            "charLength" : 26,
+            "byteOffset" : 2180,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/IssuesFinderSort.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 18,
+            "endLine" : 89,
+            "endColumn" : 44,
+            "charOffset" : 2894,
+            "charLength" : 26,
+            "byteOffset" : 2894,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/IssuesFinderSort.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 142,
+            "startColumn" : 18,
+            "endLine" : 142,
+            "endColumn" : 42,
+            "charOffset" : 4306,
+            "charLength" : 24,
+            "byteOffset" : 4306,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/container/TaskContainerImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 71,
+            "endLine" : 64,
+            "endColumn" : 104,
+            "charOffset" : 2497,
+            "charLength" : 33,
+            "byteOffset" : 2497,
+            "byteLength" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/component/CrawlerDepthLimitTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 88,
+            "endLine" : 46,
+            "endColumn" : 103,
+            "charOffset" : 1987,
+            "charLength" : 15,
+            "byteOffset" : 1987,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/component/CrawlerDepthLimitTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 87,
+            "endLine" : 52,
+            "endColumn" : 102,
+            "charOffset" : 2201,
+            "charLength" : 15,
+            "byteOffset" : 2201,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/container/ProjectAnalysisTaskContainerPopulatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 184,
+            "startColumn" : 21,
+            "endLine" : 184,
+            "endColumn" : 38,
+            "charOffset" : 6926,
+            "charLength" : 17,
+            "byteOffset" : 6926,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MapBasedRawMeasureRepositoryTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 86,
+            "startColumn" : 100,
+            "endLine" : 86,
+            "endColumn" : 128,
+            "charOffset" : 4142,
+            "charLength" : 28,
+            "byteOffset" : 4142,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MapBasedRawMeasureRepositoryTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 210,
+            "startColumn" : 38,
+            "endLine" : 210,
+            "endColumn" : 56,
+            "charOffset" : 9073,
+            "charLength" : 18,
+            "byteOffset" : 9073,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureRepositoryImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 267,
+            "startColumn" : 38,
+            "endLine" : 267,
+            "endColumn" : 56,
+            "charOffset" : 11198,
+            "charLength" : 18,
+            "byteOffset" : 11198,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureRepositoryRule.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 81,
+            "endLine" : 65,
+            "endColumn" : 123,
+            "charOffset" : 3330,
+            "charLength" : 42,
+            "byteOffset" : 3330,
+            "byteLength" : 42
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 98,
+            "startColumn" : 19,
+            "endLine" : 98,
+            "endColumn" : 37,
+            "charOffset" : 3974,
+            "charLength" : 18,
+            "byteOffset" : 3974,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/source/SourceHashRepositoryImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 83,
+            "startColumn" : 21,
+            "endLine" : 83,
+            "endColumn" : 46,
+            "charOffset" : 3712,
+            "charLength" : 25,
+            "byteOffset" : 3712,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/PurgeDatastoresStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 93,
+            "startColumn" : 52,
+            "endLine" : 93,
+            "endColumn" : 77,
+            "charOffset" : 4324,
+            "charLength" : 25,
+            "byteOffset" : 4324,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/PurgeDatastoresStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 111,
+            "startColumn" : 52,
+            "endLine" : 111,
+            "endColumn" : 77,
+            "charOffset" : 4988,
+            "charLength" : 25,
+            "byteOffset" : 4988,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ReportComputationStepsTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 100,
+            "endLine" : 42,
+            "endColumn" : 133,
+            "charOffset" : 1787,
+            "charLength" : 33,
+            "byteOffset" : 1787,
+            "byteLength" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ReportComputationStepsTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 94,
+            "endLine" : 63,
+            "endColumn" : 127,
+            "charOffset" : 2660,
+            "charLength" : 33,
+            "byteOffset" : 2660,
+            "byteLength" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/duplication/ws/DuplicationsParserTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 235,
+            "startColumn" : 45,
+            "endLine" : 235,
+            "endColumn" : 86,
+            "charOffset" : 10686,
+            "charLength" : 41,
+            "byteOffset" : 10686,
+            "byteLength" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/es/EsTester.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 168,
+            "startColumn" : 74,
+            "endLine" : 168,
+            "endColumn" : 96,
+            "charOffset" : 6169,
+            "charLength" : 22,
+            "byteOffset" : 6169,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/workflow/IssueWorkflowTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 259,
+            "startColumn" : 52,
+            "endLine" : 259,
+            "endColumn" : 80,
+            "charOffset" : 9122,
+            "charLength" : 28,
+            "byteOffset" : 9122,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/notification/NotificationDaemonTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 252,
+            "startColumn" : 16,
+            "endLine" : 252,
+            "endColumn" : 30,
+            "charOffset" : 10613,
+            "charLength" : 14,
+            "byteOffset" : 10613,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/platform/db/migration/DatabaseMigrationImplConcurrentAccessTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 61,
+            "endLine" : 55,
+            "endColumn" : 76,
+            "charOffset" : 2121,
+            "charLength" : 15,
+            "byteOffset" : 2121,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/CompareActionMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 24,
+            "endLine" : 54,
+            "endColumn" : 39,
+            "charOffset" : 2094,
+            "charLength" : 15,
+            "byteOffset" : 2094,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 118,
+            "startColumn" : 18,
+            "endLine" : 118,
+            "endColumn" : 23,
+            "charOffset" : 4386,
+            "charLength" : 5,
+            "byteOffset" : 4386,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 135,
+            "startColumn" : 18,
+            "endLine" : 135,
+            "endColumn" : 23,
+            "charOffset" : 5068,
+            "charLength" : 5,
+            "byteOffset" : 5068,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 149,
+            "startColumn" : 23,
+            "endLine" : 149,
+            "endColumn" : 28,
+            "charOffset" : 5892,
+            "charLength" : 5,
+            "byteOffset" : 5892,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 183,
+            "startColumn" : 18,
+            "endLine" : 183,
+            "endColumn" : 23,
+            "charOffset" : 7250,
+            "charLength" : 5,
+            "byteOffset" : 7250,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 205,
+            "startColumn" : 18,
+            "endLine" : 205,
+            "endColumn" : 23,
+            "charOffset" : 8291,
+            "charLength" : 5,
+            "byteOffset" : 8291,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 230,
+            "startColumn" : 18,
+            "endLine" : 230,
+            "endColumn" : 23,
+            "charOffset" : 9512,
+            "charLength" : 5,
+            "byteOffset" : 9512,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 265,
+            "startColumn" : 18,
+            "endLine" : 265,
+            "endColumn" : 23,
+            "charOffset" : 11088,
+            "charLength" : 5,
+            "byteOffset" : 11088,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 290,
+            "startColumn" : 18,
+            "endLine" : 290,
+            "endColumn" : 23,
+            "charOffset" : 12072,
+            "charLength" : 5,
+            "byteOffset" : 12072,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 320,
+            "startColumn" : 23,
+            "endLine" : 320,
+            "endColumn" : 28,
+            "charOffset" : 13487,
+            "charLength" : 5,
+            "byteOffset" : 13487,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 356,
+            "startColumn" : 18,
+            "endLine" : 356,
+            "endColumn" : 23,
+            "charOffset" : 14895,
+            "charLength" : 5,
+            "byteOffset" : 14895,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 380,
+            "startColumn" : 18,
+            "endLine" : 380,
+            "endColumn" : 23,
+            "charOffset" : 15852,
+            "charLength" : 5,
+            "byteOffset" : 15852,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 403,
+            "startColumn" : 23,
+            "endLine" : 403,
+            "endColumn" : 28,
+            "charOffset" : 16677,
+            "charLength" : 5,
+            "byteOffset" : 16677,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 252,
+            "startColumn" : 17,
+            "endLine" : 252,
+            "endColumn" : 32,
+            "charOffset" : 11270,
+            "charLength" : 15,
+            "byteOffset" : 11270,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 268,
+            "startColumn" : 17,
+            "endLine" : 268,
+            "endColumn" : 32,
+            "charOffset" : 11905,
+            "charLength" : 15,
+            "byteOffset" : 11905,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 287,
+            "startColumn" : 17,
+            "endLine" : 287,
+            "endColumn" : 32,
+            "charOffset" : 12592,
+            "charLength" : 15,
+            "byteOffset" : 12592,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 299,
+            "startColumn" : 17,
+            "endLine" : 299,
+            "endColumn" : 32,
+            "charOffset" : 12955,
+            "charLength" : 15,
+            "byteOffset" : 12955,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 322,
+            "startColumn" : 17,
+            "endLine" : 322,
+            "endColumn" : 32,
+            "charOffset" : 13909,
+            "charLength" : 15,
+            "byteOffset" : 13909,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 334,
+            "startColumn" : 17,
+            "endLine" : 334,
+            "endColumn" : 32,
+            "charOffset" : 14265,
+            "charLength" : 15,
+            "byteOffset" : 14265,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9357",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/util/AbstractStoppableExecutorServiceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 53,
+            "endLine" : 44,
+            "endColumn" : 61,
+            "charOffset" : 1626,
+            "charLength" : 8,
+            "byteOffset" : 1626,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

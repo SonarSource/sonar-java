@@ -1,0 +1,970 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \";charset=\" 3 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 106,
+            "startColumn" : 31,
+            "endLine" : 106,
+            "endColumn" : 42,
+            "charOffset" : 3840,
+            "charLength" : 11,
+            "byteOffset" : 3840,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"server\" 4 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 597,
+            "startColumn" : 27,
+            "endLine" : 597,
+            "endColumn" : 35,
+            "charOffset" : 19681,
+            "charLength" : 8,
+            "byteOffset" : 19681,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"unknown\" 3 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 698,
+            "startColumn" : 54,
+            "endLine" : 698,
+            "endColumn" : 63,
+            "charOffset" : 24119,
+            "charLength" : 9,
+            "byteOffset" : 24119,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \";charset=\" 5 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 992,
+            "startColumn" : 73,
+            "endLine" : 992,
+            "endColumn" : 84,
+            "charOffset" : 31263,
+            "charLength" : 11,
+            "byteOffset" : 31263,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"Informing client that we are stopped\" 3 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 359,
+            "startColumn" : 35,
+            "endLine" : 359,
+            "endColumn" : 73,
+            "charOffset" : 10390,
+            "charLength" : 38,
+            "byteOffset" : 10390,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"Stopped\\r\n\" 3 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 360,
+            "startColumn" : 47,
+            "endLine" : 360,
+            "endColumn" : 60,
+            "charOffset" : 10477,
+            "charLength" : 13,
+            "byteOffset" : 10477,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"Killing JVM\" 4 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 366,
+            "startColumn" : 35,
+            "endLine" : 366,
+            "endColumn" : 48,
+            "charOffset" : 10649,
+            "charLength" : 13,
+            "byteOffset" : 10649,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"<br />\n\" 24 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/StatisticsHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 575,
+            "startColumn" : 99,
+            "endLine" : 575,
+            "endColumn" : 109,
+            "charOffset" : 18383,
+            "charLength" : 10,
+            "byteOffset" : 18383,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"oracle\" 3 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DatabaseAdaptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 109,
+            "startColumn" : 32,
+            "endLine" : 109,
+            "endColumn" : 40,
+            "charOffset" : 3209,
+            "charLength" : 8,
+            "byteOffset" : 3209,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"(60), \" 3 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 277,
+            "startColumn" : 57,
+            "endLine" : 277,
+            "endColumn" : 65,
+            "charOffset" : 8257,
+            "charLength" : 8,
+            "byteOffset" : 8257,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \" = ?, \" 12 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 324,
+            "startColumn" : 49,
+            "endLine" : 324,
+            "endColumn" : 57,
+            "charOffset" : 10949,
+            "charLength" : 8,
+            "byteOffset" : 10949,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \" = ? and \" 15 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 326,
+            "startColumn" : 102,
+            "endLine" : 326,
+            "endColumn" : 113,
+            "charOffset" : 11224,
+            "charLength" : 11,
+            "byteOffset" : 11224,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"select \" 3 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 352,
+            "startColumn" : 71,
+            "endLine" : 352,
+            "endColumn" : 80,
+            "charOffset" : 12345,
+            "charLength" : 9,
+            "byteOffset" : 12345,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \" from \" 3 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 353,
+            "startColumn" : 17,
+            "endLine" : 353,
+            "endColumn" : 25,
+            "charOffset" : 12420,
+            "charLength" : 8,
+            "byteOffset" : 12420,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \" where \" 6 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 353,
+            "startColumn" : 51,
+            "endLine" : 353,
+            "endColumn" : 60,
+            "charOffset" : 12454,
+            "charLength" : 9,
+            "byteOffset" : 12454,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \" <= ?\" 3 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 355,
+            "startColumn" : 78,
+            "endLine" : 355,
+            "endColumn" : 85,
+            "charOffset" : 12637,
+            "charLength" : 7,
+            "byteOffset" : 12637,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use already-defined constant 'SUFFIX_LEVEL' instead of duplicating its value here."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLoggerConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 241,
+            "startColumn" : 31,
+            "endLine" : 241,
+            "endColumn" : 39,
+            "charOffset" : 8085,
+            "charLength" : 8,
+            "byteOffset" : 8085,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use already-defined constant 'SUFFIX_STACKS' instead of duplicating its value here."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLoggerConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 242,
+            "startColumn" : 31,
+            "endLine" : 242,
+            "endColumn" : 40,
+            "charOffset" : 8128,
+            "charLength" : 9,
+            "byteOffset" : 8128,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"invalid 'null' literal\" 4 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/AsyncJSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 557,
+            "startColumn" : 50,
+            "endLine" : 557,
+            "endColumn" : 74,
+            "charOffset" : 17974,
+            "charLength" : 24,
+            "byteOffset" : 17974,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"invalid 'true' literal\" 3 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/AsyncJSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 605,
+            "startColumn" : 50,
+            "endLine" : 605,
+            "endColumn" : 74,
+            "charOffset" : 19601,
+            "charLength" : 24,
+            "byteOffset" : 19601,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"invalid 'false' literal\" 3 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/AsyncJSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 648,
+            "startColumn" : 50,
+            "endLine" : 648,
+            "endColumn" : 75,
+            "charOffset" : 21001,
+            "charLength" : 25,
+            "byteOffset" : 21001,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"invalid object field\" 3 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/AsyncJSON.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 992,
+            "startColumn" : 54,
+            "endLine" : 992,
+            "endColumn" : 76,
+            "charOffset" : 31738,
+            "charLength" : 22,
+            "byteOffset" : 31738,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"%s[action=%s]\" 3 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IteratingCallback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 289,
+            "startColumn" : 71,
+            "endLine" : 289,
+            "endColumn" : 86,
+            "charOffset" : 9330,
+            "charLength" : 15,
+            "byteOffset" : 9330,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"unknown\" 4 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Jetty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 71,
+            "endLine" : 58,
+            "endColumn" : 80,
+            "charOffset" : 1843,
+            "charLength" : 9,
+            "byteOffset" : 1843,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use already-defined constant '__UTF8' instead of duplicating its value here."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/StringUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 22,
+            "endLine" : 47,
+            "endColumn" : 29,
+            "charOffset" : 1596,
+            "charLength" : 7,
+            "byteOffset" : 1596,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use already-defined constant '__UTF16' instead of duplicating its value here."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/StringUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 22,
+            "endLine" : 49,
+            "endColumn" : 30,
+            "charOffset" : 1673,
+            "charLength" : 8,
+            "byteOffset" : 1673,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use already-defined constant '__ISO_8859_1' instead of duplicating its value here."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/StringUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 22,
+            "endLine" : 51,
+            "endColumn" : 34,
+            "charOffset" : 1754,
+            "charLength" : 12,
+            "byteOffset" : 1754,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"valueOf\" 14 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 154,
+            "startColumn" : 51,
+            "endLine" : 154,
+            "endColumn" : 60,
+            "charOffset" : 6304,
+            "charLength" : 9,
+            "byteOffset" : 6304,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use already-defined constant 'HTTPS' instead of duplicating its value here."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/URIUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1163,
+            "startColumn" : 22,
+            "endLine" : 1163,
+            "endColumn" : 29,
+            "charOffset" : 35048,
+            "charLength" : 7,
+            "byteOffset" : 35048,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"Class\" 8 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 366,
+            "startColumn" : 81,
+            "endLine" : 366,
+            "endColumn" : 88,
+            "charOffset" : 13917,
+            "charLength" : 7,
+            "byteOffset" : 13917,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"String\" 4 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1033,
+            "startColumn" : 30,
+            "endLine" : 1033,
+            "endColumn" : 38,
+            "charOffset" : 40045,
+            "charLength" : 8,
+            "byteOffset" : 40045,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"Entry\" 3 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1074,
+            "startColumn" : 75,
+            "endLine" : 1074,
+            "endColumn" : 82,
+            "charOffset" : 41514,
+            "charLength" : 7,
+            "byteOffset" : 41514,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"Deprecated\" 6 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1129,
+            "startColumn" : 83,
+            "endLine" : 1129,
+            "endColumn" : 95,
+            "charOffset" : 43488,
+            "charLength" : 12,
+            "byteOffset" : 43488,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1192",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Define a constant instead of duplicating this literal \"Default\" 6 times."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1129,
+            "startColumn" : 97,
+            "endLine" : 1129,
+            "endColumn" : 106,
+            "charOffset" : 43502,
+            "charLength" : 9,
+            "byteOffset" : 43502,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,326 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1942",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this fully qualified name with \"HashMap\""
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 490,
+            "startColumn" : 24,
+            "endLine" : 490,
+            "endColumn" : 41,
+            "charOffset" : 20479,
+            "charLength" : 17,
+            "byteOffset" : 20479,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1942",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this fully qualified name with \"List\""
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DefaultBeanIntrospector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 74,
+            "endLine" : 56,
+            "endColumn" : 88,
+            "charOffset" : 2290,
+            "charLength" : 14,
+            "byteOffset" : 2290,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1942",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this fully qualified name with \"Date\""
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/JDBCDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 208,
+            "startColumn" : 51,
+            "endLine" : 208,
+            "endColumn" : 64,
+            "charOffset" : 7154,
+            "charLength" : 13,
+            "byteOffset" : 7154,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1942",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this fully qualified name with \"Timestamp\""
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/JDBCDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 210,
+            "startColumn" : 51,
+            "endLine" : 210,
+            "endColumn" : 69,
+            "charOffset" : 7273,
+            "charLength" : 18,
+            "byteOffset" : 7273,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1942",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this fully qualified name with \"Time\""
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/JDBCDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 212,
+            "startColumn" : 51,
+            "endLine" : 212,
+            "endColumn" : 64,
+            "charOffset" : 7392,
+            "charLength" : 13,
+            "byteOffset" : 7392,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1942",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this fully qualified name with \"List\""
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 539,
+            "startColumn" : 36,
+            "endLine" : 539,
+            "endColumn" : 50,
+            "charOffset" : 23006,
+            "charLength" : 14,
+            "byteOffset" : 23006,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1942",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this fully qualified name with \"List\""
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 544,
+            "startColumn" : 22,
+            "endLine" : 544,
+            "endColumn" : 36,
+            "charOffset" : 23253,
+            "charLength" : 14,
+            "byteOffset" : 23253,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1942",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this fully qualified name with \"Map\""
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 685,
+            "startColumn" : 41,
+            "endLine" : 685,
+            "endColumn" : 54,
+            "charOffset" : 29080,
+            "charLength" : 13,
+            "byteOffset" : 29080,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1942",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this fully qualified name with \"Map\""
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 686,
+            "startColumn" : 26,
+            "endLine" : 686,
+            "endColumn" : 39,
+            "charOffset" : 29122,
+            "charLength" : 13,
+            "byteOffset" : 29122,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1942",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this fully qualified name with \"Map\""
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1810,
+            "startColumn" : 41,
+            "endLine" : 1810,
+            "endColumn" : 54,
+            "charOffset" : 73812,
+            "charLength" : 13,
+            "byteOffset" : 73812,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1942",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this fully qualified name with \"Map\""
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1811,
+            "startColumn" : 21,
+            "endLine" : 1811,
+            "endColumn" : 34,
+            "charOffset" : 73849,
+            "charLength" : 13,
+            "byteOffset" : 73849,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

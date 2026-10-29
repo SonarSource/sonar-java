@@ -1,0 +1,1726 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpFieldsTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 602,
+            "startColumn" : 9,
+            "endLine" : 602,
+            "endColumn" : 19,
+            "charOffset" : 23217,
+            "charLength" : 10,
+            "byteOffset" : 23217,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpConnectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 747,
+            "startColumn" : 9,
+            "endLine" : 747,
+            "endColumn" : 19,
+            "charOffset" : 28086,
+            "charLength" : 10,
+            "byteOffset" : 28086,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpConnectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 796,
+            "startColumn" : 9,
+            "endLine" : 796,
+            "endColumn" : 19,
+            "charOffset" : 29807,
+            "charLength" : 10,
+            "byteOffset" : 29807,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 422,
+            "startColumn" : 9,
+            "endLine" : 422,
+            "endColumn" : 19,
+            "charOffset" : 15753,
+            "charLength" : 10,
+            "byteOffset" : 15753,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 477,
+            "startColumn" : 9,
+            "endLine" : 477,
+            "endColumn" : 19,
+            "charOffset" : 17995,
+            "charLength" : 10,
+            "byteOffset" : 17995,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ArrayUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 9,
+            "endLine" : 49,
+            "endColumn" : 20,
+            "charOffset" : 1628,
+            "charLength" : 11,
+            "byteOffset" : 1628,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ArrayUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 9,
+            "endLine" : 78,
+            "endColumn" : 20,
+            "charOffset" : 2497,
+            "charLength" : 11,
+            "byteOffset" : 2497,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ArrayUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 100,
+            "startColumn" : 9,
+            "endLine" : 100,
+            "endColumn" : 20,
+            "charOffset" : 3110,
+            "charLength" : 11,
+            "byteOffset" : 3110,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 297,
+            "startColumn" : 9,
+            "endLine" : 297,
+            "endColumn" : 19,
+            "charOffset" : 9573,
+            "charLength" : 10,
+            "byteOffset" : 9573,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 298,
+            "startColumn" : 9,
+            "endLine" : 298,
+            "endColumn" : 19,
+            "charOffset" : 9631,
+            "charLength" : 10,
+            "byteOffset" : 9631,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 299,
+            "startColumn" : 9,
+            "endLine" : 299,
+            "endColumn" : 19,
+            "charOffset" : 9690,
+            "charLength" : 10,
+            "byteOffset" : 9690,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 302,
+            "startColumn" : 9,
+            "endLine" : 302,
+            "endColumn" : 19,
+            "charOffset" : 9818,
+            "charLength" : 10,
+            "byteOffset" : 9818,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 315,
+            "startColumn" : 9,
+            "endLine" : 315,
+            "endColumn" : 19,
+            "charOffset" : 10296,
+            "charLength" : 10,
+            "byteOffset" : 10296,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 318,
+            "startColumn" : 9,
+            "endLine" : 318,
+            "endColumn" : 19,
+            "charOffset" : 10416,
+            "charLength" : 10,
+            "byteOffset" : 10416,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 825,
+            "startColumn" : 9,
+            "endLine" : 825,
+            "endColumn" : 19,
+            "charOffset" : 25062,
+            "charLength" : 10,
+            "byteOffset" : 25062,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 829,
+            "startColumn" : 9,
+            "endLine" : 829,
+            "endColumn" : 19,
+            "charOffset" : 25205,
+            "charLength" : 10,
+            "byteOffset" : 25205,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 856,
+            "startColumn" : 9,
+            "endLine" : 856,
+            "endColumn" : 19,
+            "charOffset" : 26103,
+            "charLength" : 10,
+            "byteOffset" : 26103,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 860,
+            "startColumn" : 9,
+            "endLine" : 860,
+            "endColumn" : 19,
+            "charOffset" : 26246,
+            "charLength" : 10,
+            "byteOffset" : 26246,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 956,
+            "startColumn" : 9,
+            "endLine" : 956,
+            "endColumn" : 19,
+            "charOffset" : 29055,
+            "charLength" : 10,
+            "byteOffset" : 29055,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 963,
+            "startColumn" : 9,
+            "endLine" : 963,
+            "endColumn" : 19,
+            "charOffset" : 29348,
+            "charLength" : 10,
+            "byteOffset" : 29348,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 970,
+            "startColumn" : 9,
+            "endLine" : 970,
+            "endColumn" : 19,
+            "charOffset" : 29632,
+            "charLength" : 10,
+            "byteOffset" : 29632,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 997,
+            "startColumn" : 9,
+            "endLine" : 997,
+            "endColumn" : 19,
+            "charOffset" : 30485,
+            "charLength" : 10,
+            "byteOffset" : 30485,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1004,
+            "startColumn" : 9,
+            "endLine" : 1004,
+            "endColumn" : 19,
+            "charOffset" : 30778,
+            "charLength" : 10,
+            "byteOffset" : 30778,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1011,
+            "startColumn" : 9,
+            "endLine" : 1011,
+            "endColumn" : 19,
+            "charOffset" : 31062,
+            "charLength" : 10,
+            "byteOffset" : 31062,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1585,
+            "startColumn" : 9,
+            "endLine" : 1585,
+            "endColumn" : 19,
+            "charOffset" : 46526,
+            "charLength" : 10,
+            "byteOffset" : 46526,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1601,
+            "startColumn" : 9,
+            "endLine" : 1601,
+            "endColumn" : 20,
+            "charOffset" : 46994,
+            "charLength" : 11,
+            "byteOffset" : 46994,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1624,
+            "startColumn" : 9,
+            "endLine" : 1624,
+            "endColumn" : 20,
+            "charOffset" : 47776,
+            "charLength" : 11,
+            "byteOffset" : 47776,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/MultiExceptionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 13,
+            "endLine" : 65,
+            "endColumn" : 23,
+            "charOffset" : 2008,
+            "charLength" : 10,
+            "byteOffset" : 2008,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/MultiExceptionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 85,
+            "startColumn" : 13,
+            "endLine" : 85,
+            "endColumn" : 23,
+            "charOffset" : 2412,
+            "charLength" : 10,
+            "byteOffset" : 2412,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/MultiExceptionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 95,
+            "startColumn" : 13,
+            "endLine" : 95,
+            "endColumn" : 23,
+            "charOffset" : 2615,
+            "charLength" : 10,
+            "byteOffset" : 2615,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/MultiExceptionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 109,
+            "startColumn" : 13,
+            "endLine" : 109,
+            "endColumn" : 23,
+            "charOffset" : 2926,
+            "charLength" : 10,
+            "byteOffset" : 2926,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNull instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 299,
+            "startColumn" : 9,
+            "endLine" : 299,
+            "endColumn" : 19,
+            "charOffset" : 10055,
+            "charLength" : 10,
+            "byteOffset" : 10055,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotNull instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 309,
+            "startColumn" : 9,
+            "endLine" : 309,
+            "endColumn" : 19,
+            "charOffset" : 10370,
+            "charLength" : 10,
+            "byteOffset" : 10370,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotNull instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 317,
+            "startColumn" : 9,
+            "endLine" : 317,
+            "endColumn" : 19,
+            "charOffset" : 10650,
+            "charLength" : 10,
+            "byteOffset" : 10650,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNull instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 331,
+            "startColumn" : 9,
+            "endLine" : 331,
+            "endColumn" : 19,
+            "charOffset" : 11172,
+            "charLength" : 10,
+            "byteOffset" : 11172,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotNull instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 340,
+            "startColumn" : 9,
+            "endLine" : 340,
+            "endColumn" : 19,
+            "charOffset" : 11430,
+            "charLength" : 10,
+            "byteOffset" : 11430,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotNull instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 348,
+            "startColumn" : 9,
+            "endLine" : 348,
+            "endColumn" : 19,
+            "charOffset" : 11712,
+            "charLength" : 10,
+            "byteOffset" : 11712,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNull instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 359,
+            "startColumn" : 9,
+            "endLine" : 359,
+            "endColumn" : 19,
+            "charOffset" : 12107,
+            "charLength" : 10,
+            "byteOffset" : 12107,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotNull instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 367,
+            "startColumn" : 9,
+            "endLine" : 367,
+            "endColumn" : 19,
+            "charOffset" : 12292,
+            "charLength" : 10,
+            "byteOffset" : 12292,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotNull instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 375,
+            "startColumn" : 9,
+            "endLine" : 375,
+            "endColumn" : 19,
+            "charOffset" : 12617,
+            "charLength" : 10,
+            "byteOffset" : 12617,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotNull instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 391,
+            "startColumn" : 9,
+            "endLine" : 391,
+            "endColumn" : 19,
+            "charOffset" : 13140,
+            "charLength" : 10,
+            "byteOffset" : 13140,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNull instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 407,
+            "startColumn" : 13,
+            "endLine" : 407,
+            "endColumn" : 23,
+            "charOffset" : 13751,
+            "charLength" : 10,
+            "byteOffset" : 13751,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNull instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 417,
+            "startColumn" : 13,
+            "endLine" : 417,
+            "endColumn" : 23,
+            "charOffset" : 14036,
+            "charLength" : 10,
+            "byteOffset" : 14036,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotNull instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 422,
+            "startColumn" : 13,
+            "endLine" : 422,
+            "endColumn" : 23,
+            "charOffset" : 14191,
+            "charLength" : 10,
+            "byteOffset" : 14191,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNull instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 434,
+            "startColumn" : 13,
+            "endLine" : 434,
+            "endColumn" : 23,
+            "charOffset" : 14606,
+            "charLength" : 10,
+            "byteOffset" : 14606,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotNull instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ScannerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 439,
+            "startColumn" : 13,
+            "endLine" : 439,
+            "endColumn" : 23,
+            "charOffset" : 14761,
+            "charLength" : 10,
+            "byteOffset" : 14761,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/StringUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 9,
+            "endLine" : 47,
+            "endColumn" : 19,
+            "charOffset" : 1768,
+            "charLength" : 10,
+            "byteOffset" : 1768,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/StringUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 100,
+            "startColumn" : 9,
+            "endLine" : 100,
+            "endColumn" : 19,
+            "charOffset" : 4203,
+            "charLength" : 10,
+            "byteOffset" : 4203,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertSame instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/StringUtilTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 142,
+            "startColumn" : 9,
+            "endLine" : 142,
+            "endColumn" : 19,
+            "charOffset" : 5563,
+            "charLength" : 10,
+            "byteOffset" : 5563,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotNull instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/ClassPathResourceTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 111,
+            "startColumn" : 9,
+            "endLine" : 111,
+            "endColumn" : 19,
+            "charOffset" : 3661,
+            "charLength" : 10,
+            "byteOffset" : 3661,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/security/CredentialTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 9,
+            "endLine" : 44,
+            "endColumn" : 19,
+            "charOffset" : 1529,
+            "charLength" : 10,
+            "byteOffset" : 1529,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/security/CredentialTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 9,
+            "endLine" : 45,
+            "endColumn" : 19,
+            "charOffset" : 1564,
+            "charLength" : 10,
+            "byteOffset" : 1564,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/security/CredentialTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 9,
+            "endLine" : 46,
+            "endColumn" : 20,
+            "charOffset" : 1599,
+            "charLength" : 11,
+            "byteOffset" : 1599,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/security/CredentialTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 9,
+            "endLine" : 47,
+            "endColumn" : 20,
+            "charOffset" : 1635,
+            "charLength" : 11,
+            "byteOffset" : 1635,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/security/CredentialTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 9,
+            "endLine" : 48,
+            "endColumn" : 20,
+            "charOffset" : 1671,
+            "charLength" : 11,
+            "byteOffset" : 1671,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/security/CredentialTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 9,
+            "endLine" : 49,
+            "endColumn" : 19,
+            "charOffset" : 1707,
+            "charLength" : 10,
+            "byteOffset" : 1707,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/security/CredentialTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 9,
+            "endLine" : 50,
+            "endColumn" : 20,
+            "charOffset" : 1742,
+            "charLength" : 11,
+            "byteOffset" : 1742,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/security/CredentialTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 60,
+            "startColumn" : 9,
+            "endLine" : 60,
+            "endColumn" : 19,
+            "charOffset" : 2055,
+            "charLength" : 10,
+            "byteOffset" : 2055,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/security/CredentialTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 9,
+            "endLine" : 61,
+            "endColumn" : 19,
+            "charOffset" : 2090,
+            "charLength" : 10,
+            "byteOffset" : 2090,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertNotEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/security/CredentialTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 9,
+            "endLine" : 62,
+            "endColumn" : 20,
+            "charOffset" : 2125,
+            "charLength" : 11,
+            "byteOffset" : 2125,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5785",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use assertEquals instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/security/CredentialTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 71,
+            "startColumn" : 9,
+            "endLine" : 71,
+            "endColumn" : 19,
+            "charOffset" : 2379,
+            "charLength" : 10,
+            "byteOffset" : 2379,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

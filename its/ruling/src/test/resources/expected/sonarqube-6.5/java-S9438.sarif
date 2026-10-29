@@ -1,0 +1,2398 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/ce/queue/CeQueueImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 3,
+            "endLine" : 56,
+            "endColumn" : 65,
+            "charOffset" : 2063,
+            "charLength" : 62,
+            "byteOffset" : 2063,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/app/TomcatAccessLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 5,
+            "endLine" : 62,
+            "endColumn" : 27,
+            "charOffset" : 2687,
+            "charLength" : 22,
+            "byteOffset" : 2687,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/authentication/SsoAuthenticator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 3,
+            "endLine" : 90,
+            "endColumn" : 63,
+            "charOffset" : 3913,
+            "charLength" : 60,
+            "byteOffset" : 3913,
+            "byteLength" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/batch/ProjectDataLoader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 218,
+            "startColumn" : 5,
+            "endLine" : 218,
+            "endColumn" : 46,
+            "charOffset" : 9564,
+            "charLength" : 41,
+            "byteOffset" : 9564,
+            "byteLength" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/batch/ProjectDataLoader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 219,
+            "startColumn" : 5,
+            "endLine" : 219,
+            "endColumn" : 50,
+            "charOffset" : 9610,
+            "charLength" : 45,
+            "byteOffset" : 9610,
+            "byteLength" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/batch/ProjectDataLoader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 220,
+            "startColumn" : 5,
+            "endLine" : 220,
+            "endColumn" : 62,
+            "charOffset" : 9660,
+            "charLength" : 57,
+            "byteOffset" : 9660,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/batch/ProjectDataLoader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 221,
+            "startColumn" : 5,
+            "endLine" : 221,
+            "endColumn" : 71,
+            "charOffset" : 9722,
+            "charLength" : 66,
+            "byteOffset" : 9722,
+            "byteLength" : 66
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/component/ws/SuggestionsAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 93,
+            "startColumn" : 3,
+            "endLine" : 93,
+            "endColumn" : 29,
+            "charOffset" : 4202,
+            "charLength" : 26,
+            "byteOffset" : 4202,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/analysis/Analysis.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 3,
+            "endLine" : 31,
+            "endColumn" : 19,
+            "charOffset" : 1135,
+            "charLength" : 16,
+            "byteOffset" : 1135,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/analysis/Analysis.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 3,
+            "endLine" : 32,
+            "endColumn" : 23,
+            "charOffset" : 1154,
+            "charLength" : 20,
+            "byteOffset" : 1154,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/analysis/Analysis.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 3,
+            "endLine" : 33,
+            "endColumn" : 26,
+            "charOffset" : 1177,
+            "charLength" : 23,
+            "byteOffset" : 1177,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/duplication/DuplicationRepositoryImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 3,
+            "endLine" : 36,
+            "endColumn" : 78,
+            "charOffset" : 1469,
+            "charLength" : 75,
+            "byteOffset" : 1469,
+            "byteLength" : 75
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/duplication/IntegrateCrossProjectDuplications.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 3,
+            "endLine" : 58,
+            "endColumn" : 91,
+            "charOffset" : 2312,
+            "charLength" : 88,
+            "byteOffset" : 2312,
+            "byteLength" : 88
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/NewEffortAggregator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 3,
+            "endLine" : 62,
+            "endColumn" : 96,
+            "charOffset" : 2710,
+            "charLength" : 93,
+            "byteOffset" : 2710,
+            "byteLength" : 93
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/NewEffortAggregator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 3,
+            "endLine" : 63,
+            "endColumn" : 82,
+            "charOffset" : 2806,
+            "charLength" : 79,
+            "byteOffset" : 2806,
+            "byteLength" : 79
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/filter/IssuePattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 3,
+            "endLine" : 30,
+            "endColumn" : 44,
+            "charOffset" : 1181,
+            "charLength" : 41,
+            "byteOffset" : 1181,
+            "byteLength" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/filter/IssuePattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 3,
+            "endLine" : 31,
+            "endColumn" : 39,
+            "charOffset" : 1225,
+            "charLength" : 36,
+            "byteOffset" : 1225,
+            "byteLength" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureRepositoryImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 3,
+            "endLine" : 50,
+            "endColumn" : 69,
+            "charOffset" : 2398,
+            "charLength" : 66,
+            "byteOffset" : 2398,
+            "byteLength" : 66
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/metric/ReportMetricValidatorImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 3,
+            "endLine" : 37,
+            "endColumn" : 66,
+            "charOffset" : 1421,
+            "charLength" : 63,
+            "byteOffset" : 1421,
+            "byteLength" : 63
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/metric/ReportMetricValidatorImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 3,
+            "endLine" : 38,
+            "endColumn" : 65,
+            "charOffset" : 1487,
+            "charLength" : 62,
+            "byteOffset" : 1487,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/MaintainabilityMeasuresVisitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 158,
+            "startColumn" : 5,
+            "endLine" : 158,
+            "endColumn" : 63,
+            "charOffset" : 7653,
+            "charLength" : 58,
+            "byteOffset" : 7653,
+            "byteLength" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/MaintainabilityMeasuresVisitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 159,
+            "startColumn" : 5,
+            "endLine" : 159,
+            "endColumn" : 60,
+            "charOffset" : 7716,
+            "charLength" : 55,
+            "byteOffset" : 7716,
+            "byteLength" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewReliabilityAndSecurityRatingMeasuresVisitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 145,
+            "startColumn" : 5,
+            "endLine" : 147,
+            "endColumn" : 51,
+            "charOffset" : 6335,
+            "charLength" : 178,
+            "byteOffset" : 6335,
+            "byteLength" : 178
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/ReliabilityAndSecurityRatingMeasuresVisitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 137,
+            "startColumn" : 5,
+            "endLine" : 139,
+            "endColumn" : 47,
+            "charOffset" : 6032,
+            "charLength" : 167,
+            "byteOffset" : 6032,
+            "byteLength" : 167
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LoadMeasureComputersStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 3,
+            "endLine" : 51,
+            "endColumn" : 40,
+            "charOffset" : 2263,
+            "charLength" : 37,
+            "byteOffset" : 2263,
+            "byteLength" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LoadMeasureComputersStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 232,
+            "startColumn" : 5,
+            "endLine" : 232,
+            "endColumn" : 60,
+            "charOffset" : 10046,
+            "charLength" : 55,
+            "byteOffset" : 10046,
+            "byteLength" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistFileSourcesStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 97,
+            "startColumn" : 5,
+            "endLine" : 97,
+            "endColumn" : 84,
+            "charOffset" : 4779,
+            "charLength" : 79,
+            "byteOffset" : 4779,
+            "byteLength" : 79
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/QualityGateMeasuresStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 227,
+            "startColumn" : 5,
+            "endLine" : 227,
+            "endColumn" : 53,
+            "charOffset" : 11444,
+            "charLength" : 48,
+            "byteOffset" : 11444,
+            "byteLength" : 48
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/QualityGateMeasuresStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 228,
+            "startColumn" : 5,
+            "endLine" : 228,
+            "endColumn" : 78,
+            "charOffset" : 11497,
+            "charLength" : 73,
+            "byteOffset" : 11497,
+            "byteLength" : 73
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/SendIssueNotificationsStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 3,
+            "endLine" : 57,
+            "endColumn" : 69,
+            "charOffset" : 2751,
+            "charLength" : 66,
+            "byteOffset" : 2751,
+            "byteLength" : 66
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/debt/DebtModelPluginRepository.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 3,
+            "endLine" : 56,
+            "endColumn" : 32,
+            "charOffset" : 2173,
+            "charLength" : 29,
+            "byteOffset" : 2173,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/es/NewIndex.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 203,
+            "startColumn" : 5,
+            "endLine" : 203,
+            "endColumn" : 69,
+            "charOffset" : 6953,
+            "charLength" : 64,
+            "byteOffset" : 6953,
+            "byteLength" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/es/request/ProxyBulkRequestBuilder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 126,
+            "startColumn" : 5,
+            "endLine" : 126,
+            "endColumn" : 32,
+            "charOffset" : 4372,
+            "charLength" : 27,
+            "byteOffset" : 4372,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/es/request/ProxyBulkRequestBuilder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 127,
+            "startColumn" : 5,
+            "endLine" : 127,
+            "endColumn" : 26,
+            "charOffset" : 4404,
+            "charLength" : 21,
+            "byteOffset" : 4404,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/es/request/ProxyBulkRequestBuilder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 128,
+            "startColumn" : 5,
+            "endLine" : 128,
+            "endColumn" : 28,
+            "charOffset" : 4430,
+            "charLength" : 23,
+            "byteOffset" : 4430,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/IssuesFinderSort.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 3,
+            "endLine" : 36,
+            "endColumn" : 33,
+            "charOffset" : 1190,
+            "charLength" : 30,
+            "byteOffset" : 1190,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/IssuesFinderSort.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 3,
+            "endLine" : 37,
+            "endColumn" : 28,
+            "charOffset" : 1223,
+            "charLength" : 25,
+            "byteOffset" : 1223,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/notification/ChangesOnMyIssueNotificationDispatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 3,
+            "endLine" : 40,
+            "endColumn" : 51,
+            "charOffset" : 1664,
+            "charLength" : 48,
+            "byteOffset" : 1664,
+            "byteLength" : 48
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/notification/NewIssuesStatistics.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 3,
+            "endLine" : 41,
+            "endColumn" : 74,
+            "charOffset" : 1764,
+            "charLength" : 71,
+            "byteOffset" : 1764,
+            "byteLength" : 71
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/notification/NewIssuesStatistics.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 3,
+            "endLine" : 42,
+            "endColumn" : 48,
+            "charOffset" : 1838,
+            "charLength" : 45,
+            "byteOffset" : 1838,
+            "byteLength" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/workflow/Transition.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 3,
+            "endLine" : 40,
+            "endColumn" : 44,
+            "charOffset" : 1469,
+            "charLength" : 41,
+            "byteOffset" : 1469,
+            "byteLength" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/workflow/Transition.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 133,
+            "startColumn" : 5,
+            "endLine" : 133,
+            "endColumn" : 63,
+            "charOffset" : 3478,
+            "charLength" : 58,
+            "byteOffset" : 3478,
+            "byteLength" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/workflow/Transition.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 134,
+            "startColumn" : 5,
+            "endLine" : 134,
+            "endColumn" : 61,
+            "charOffset" : 3541,
+            "charLength" : 56,
+            "byteOffset" : 3541,
+            "byteLength" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/BulkChangeAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 364,
+            "startColumn" : 5,
+            "endLine" : 364,
+            "endColumn" : 51,
+            "charOffset" : 17001,
+            "charLength" : 46,
+            "byteOffset" : 17001,
+            "byteLength" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/measure/index/ProjectMeasuresQuery.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 3,
+            "endLine" : 38,
+            "endColumn" : 68,
+            "charOffset" : 1402,
+            "charLength" : 65,
+            "byteOffset" : 1402,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/ComponentTreeData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 148,
+            "startColumn" : 5,
+            "endLine" : 148,
+            "endColumn" : 26,
+            "charOffset" : 4540,
+            "charLength" : 21,
+            "byteOffset" : 4540,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/ComponentTreeData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 149,
+            "startColumn" : 5,
+            "endLine" : 149,
+            "endColumn" : 25,
+            "charOffset" : 4566,
+            "charLength" : 20,
+            "byteOffset" : 4566,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/ComponentTreeData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 150,
+            "startColumn" : 5,
+            "endLine" : 150,
+            "endColumn" : 30,
+            "charOffset" : 4591,
+            "charLength" : 25,
+            "byteOffset" : 4591,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/notification/DefaultNotificationManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 3,
+            "endLine" : 49,
+            "endColumn" : 54,
+            "charOffset" : 1949,
+            "charLength" : 51,
+            "byteOffset" : 1949,
+            "byteLength" : 51
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/notification/DefaultNotificationManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 3,
+            "endLine" : 50,
+            "endColumn" : 53,
+            "charOffset" : 2003,
+            "charLength" : 50,
+            "byteOffset" : 2003,
+            "byteLength" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/notification/DefaultNotificationManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 3,
+            "endLine" : 51,
+            "endColumn" : 39,
+            "charOffset" : 2056,
+            "charLength" : 36,
+            "byteOffset" : 2056,
+            "byteLength" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/notification/NotificationDispatcherMetadata.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 3,
+            "endLine" : 41,
+            "endColumn" : 32,
+            "charOffset" : 1511,
+            "charLength" : 29,
+            "byteOffset" : 1511,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/notification/NotificationDispatcherMetadata.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 3,
+            "endLine" : 42,
+            "endColumn" : 42,
+            "charOffset" : 1543,
+            "charLength" : 39,
+            "byteOffset" : 1543,
+            "byteLength" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/notification/email/AlertsEmailTemplate.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 3,
+            "endLine" : 36,
+            "endColumn" : 39,
+            "charOffset" : 1326,
+            "charLength" : 36,
+            "byteOffset" : 1326,
+            "byteLength" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/notification/email/EmailNotificationChannel.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 85,
+            "startColumn" : 3,
+            "endLine" : 85,
+            "endColumn" : 39,
+            "charOffset" : 3485,
+            "charLength" : 36,
+            "byteOffset" : 3485,
+            "byteLength" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/notification/email/EmailNotificationChannel.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 86,
+            "startColumn" : 3,
+            "endLine" : 86,
+            "endColumn" : 37,
+            "charOffset" : 3524,
+            "charLength" : 34,
+            "byteOffset" : 3524,
+            "byteLength" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/notification/email/EmailNotificationChannel.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 87,
+            "startColumn" : 3,
+            "endLine" : 87,
+            "endColumn" : 33,
+            "charOffset" : 3561,
+            "charLength" : 30,
+            "byteOffset" : 3561,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ApplyPermissionTemplateQuery.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 3,
+            "endLine" : 30,
+            "endColumn" : 38,
+            "charOffset" : 1108,
+            "charLength" : 35,
+            "byteOffset" : 1108,
+            "byteLength" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/platform/DatabaseServerCompatibility.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 3,
+            "endLine" : 33,
+            "endColumn" : 35,
+            "charOffset" : 1372,
+            "charLength" : 32,
+            "byteOffset" : 1372,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/platform/ServerLifecycleNotifier.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 3,
+            "endLine" : 33,
+            "endColumn" : 46,
+            "charOffset" : 1178,
+            "charLength" : 43,
+            "byteOffset" : 1178,
+            "byteLength" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/platform/ServerLifecycleNotifier.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 3,
+            "endLine" : 34,
+            "endColumn" : 44,
+            "charOffset" : 1224,
+            "charLength" : 41,
+            "byteOffset" : 1224,
+            "byteLength" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/platform/ServerLifecycleNotifier.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 3,
+            "endLine" : 35,
+            "endColumn" : 25,
+            "charOffset" : 1268,
+            "charLength" : 22,
+            "byteOffset" : 1268,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/platform/web/MasterServletFilter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 112,
+            "startColumn" : 5,
+            "endLine" : 112,
+            "endColumn" : 31,
+            "charOffset" : 3995,
+            "charLength" : 26,
+            "byteOffset" : 3995,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/platform/web/MasterServletFilter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 113,
+            "startColumn" : 5,
+            "endLine" : 113,
+            "endColumn" : 58,
+            "charOffset" : 4026,
+            "charLength" : 53,
+            "byteOffset" : 4026,
+            "byteLength" : 53
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/QgateProjectFinder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 93,
+            "startColumn" : 5,
+            "endLine" : 93,
+            "endColumn" : 52,
+            "charOffset" : 4287,
+            "charLength" : 47,
+            "byteOffset" : 4287,
+            "byteLength" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/QgateProjectFinder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 94,
+            "startColumn" : 5,
+            "endLine" : 94,
+            "endColumn" : 36,
+            "charOffset" : 4339,
+            "charLength" : 31,
+            "byteOffset" : 4339,
+            "byteLength" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/QProfileResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 3,
+            "endLine" : 28,
+            "endColumn" : 33,
+            "charOffset" : 1018,
+            "charLength" : 30,
+            "byteOffset" : 1018,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/QProfileResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 3,
+            "endLine" : 29,
+            "endColumn" : 30,
+            "charOffset" : 1051,
+            "charLength" : 27,
+            "byteOffset" : 1051,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/QProfileResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 3,
+            "endLine" : 33,
+            "endColumn" : 42,
+            "charOffset" : 1114,
+            "charLength" : 39,
+            "byteOffset" : 1114,
+            "byteLength" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/ChangeParentAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 3,
+            "endLine" : 44,
+            "endColumn" : 29,
+            "charOffset" : 1912,
+            "charLength" : 26,
+            "byteOffset" : 1912,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/ChangelogAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 3,
+            "endLine" : 48,
+            "endColumn" : 29,
+            "charOffset" : 2043,
+            "charLength" : 26,
+            "byteOffset" : 2043,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/ExportersAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 3,
+            "endLine" : 30,
+            "endColumn" : 39,
+            "charOffset" : 1180,
+            "charLength" : 36,
+            "byteOffset" : 1180,
+            "byteLength" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/rule/ReactivationException.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 3,
+            "endLine" : 26,
+            "endColumn" : 27,
+            "charOffset" : 976,
+            "charLength" : 24,
+            "byteOffset" : 976,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/source/DecorationDataHolder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 3,
+            "endLine" : 35,
+            "endColumn" : 51,
+            "charOffset" : 1241,
+            "charLength" : 48,
+            "byteOffset" : 1241,
+            "byteLength" : 48
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/source/DecorationDataHolder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 3,
+            "endLine" : 37,
+            "endColumn" : 44,
+            "charOffset" : 1324,
+            "charLength" : 41,
+            "byteOffset" : 1324,
+            "byteLength" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/startup/RenameDeprecatedPropertyKeys.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 3,
+            "endLine" : 33,
+            "endColumn" : 29,
+            "charOffset" : 1168,
+            "charLength" : 26,
+            "byteOffset" : 1168,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/startup/RenameDeprecatedPropertyKeys.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 3,
+            "endLine" : 34,
+            "endColumn" : 43,
+            "charOffset" : 1197,
+            "charLength" : 40,
+            "byteOffset" : 1197,
+            "byteLength" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/user/ExternalIdentity.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 3,
+            "endLine" : 28,
+            "endColumn" : 27,
+            "charOffset" : 1017,
+            "charLength" : 24,
+            "byteOffset" : 1017,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/user/ExternalIdentity.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 3,
+            "endLine" : 29,
+            "endColumn" : 21,
+            "charOffset" : 1044,
+            "charLength" : 18,
+            "byteOffset" : 1044,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/user/NewUser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 3,
+            "endLine" : 31,
+            "endColumn" : 24,
+            "charOffset" : 1089,
+            "charLength" : 21,
+            "byteOffset" : 1089,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/user/NewUser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 3,
+            "endLine" : 33,
+            "endColumn" : 23,
+            "charOffset" : 1140,
+            "charLength" : 20,
+            "byteOffset" : 1140,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/user/NewUserNotifier.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 3,
+            "endLine" : 32,
+            "endColumn" : 37,
+            "charOffset" : 1070,
+            "charLength" : 34,
+            "byteOffset" : 1070,
+            "byteLength" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/user/UpdateUser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 3,
+            "endLine" : 30,
+            "endColumn" : 24,
+            "charOffset" : 1066,
+            "charLength" : 21,
+            "byteOffset" : 1066,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/usergroups/ws/UserGroupsWs.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 3,
+            "endLine" : 26,
+            "endColumn" : 40,
+            "charOffset" : 981,
+            "charLength" : 37,
+            "byteOffset" : 981,
+            "byteLength" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/util/ObjectInputStreamIterator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 3,
+            "endLine" : 33,
+            "endColumn" : 36,
+            "charOffset" : 1198,
+            "charLength" : 33,
+            "byteOffset" : 1198,
+            "byteLength" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,2280 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelp.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 31,
+            "endLine" : 24,
+            "endColumn" : 47,
+            "charOffset" : 441,
+            "charLength" : 16,
+            "byteOffset" : 441,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpCategory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 31,
+            "endLine" : 21,
+            "endColumn" : 47,
+            "charOffset" : 419,
+            "charLength" : 16,
+            "byteOffset" : 435,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsMemberReport.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 31,
+            "endLine" : 28,
+            "endColumn" : 47,
+            "charOffset" : 640,
+            "charLength" : 16,
+            "byteOffset" : 734,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceArea.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 20,
+            "startColumn" : 31,
+            "endLine" : 20,
+            "endColumn" : 47,
+            "charOffset" : 389,
+            "charLength" : 16,
+            "byteOffset" : 397,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaProductRelation.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 31,
+            "endLine" : 13,
+            "endColumn" : 47,
+            "charOffset" : 299,
+            "charLength" : 16,
+            "byteOffset" : 299,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubject.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 31,
+            "endLine" : 46,
+            "endColumn" : 47,
+            "charOffset" : 908,
+            "charLength" : 16,
+            "byteOffset" : 986,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCategory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 31,
+            "endLine" : 21,
+            "endColumn" : 47,
+            "charOffset" : 425,
+            "charLength" : 16,
+            "byteOffset" : 441,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectComment.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 22,
+            "startColumn" : 31,
+            "endLine" : 22,
+            "endColumn" : 47,
+            "charOffset" : 433,
+            "charLength" : 16,
+            "byteOffset" : 433,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectProductRelation.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 31,
+            "endLine" : 13,
+            "endColumn" : 47,
+            "charOffset" : 287,
+            "charLength" : 16,
+            "byteOffset" : 287,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopic.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 31,
+            "endLine" : 37,
+            "endColumn" : 47,
+            "charOffset" : 712,
+            "charLength" : 16,
+            "byteOffset" : 752,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCategory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 31,
+            "endLine" : 21,
+            "endColumn" : 47,
+            "charOffset" : 423,
+            "charLength" : 16,
+            "byteOffset" : 439,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicComment.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 22,
+            "startColumn" : 31,
+            "endLine" : 22,
+            "endColumn" : 47,
+            "charOffset" : 429,
+            "charLength" : 16,
+            "byteOffset" : 429,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCartItem.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 31,
+            "endLine" : 57,
+            "endColumn" : 47,
+            "charOffset" : 1227,
+            "charLength" : 16,
+            "byteOffset" : 1359,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCompanyAddress.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 31,
+            "endLine" : 36,
+            "endColumn" : 47,
+            "charOffset" : 771,
+            "charLength" : 16,
+            "byteOffset" : 865,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 139,
+            "startColumn" : 31,
+            "endLine" : 139,
+            "endColumn" : 47,
+            "charOffset" : 3129,
+            "charLength" : 16,
+            "byteOffset" : 3757,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderItem.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 31,
+            "endLine" : 63,
+            "endColumn" : 47,
+            "charOffset" : 1390,
+            "charLength" : 16,
+            "byteOffset" : 1554,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderOperateHistory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 31,
+            "endLine" : 25,
+            "endColumn" : 47,
+            "charOffset" : 590,
+            "charLength" : 16,
+            "byteOffset" : 694,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnApply.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 31,
+            "endLine" : 89,
+            "endColumn" : 47,
+            "charOffset" : 1906,
+            "charLength" : 16,
+            "byteOffset" : 2184,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnReason.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 31,
+            "endLine" : 21,
+            "endColumn" : 47,
+            "charOffset" : 454,
+            "charLength" : 16,
+            "byteOffset" : 488,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderSetting.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 31,
+            "endLine" : 24,
+            "endColumn" : 47,
+            "charOffset" : 605,
+            "charLength" : 16,
+            "byteOffset" : 737,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbum.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 19,
+            "startColumn" : 31,
+            "endLine" : 19,
+            "endColumn" : 47,
+            "charOffset" : 359,
+            "charLength" : 16,
+            "byteOffset" : 359,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumPic.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 31,
+            "endLine" : 13,
+            "endColumn" : 47,
+            "charOffset" : 267,
+            "charLength" : 16,
+            "byteOffset" : 267,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsBrand.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 31,
+            "endLine" : 36,
+            "endColumn" : 47,
+            "charOffset" : 744,
+            "charLength" : 16,
+            "byteOffset" : 816,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsComment.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 31,
+            "endLine" : 43,
+            "endColumn" : 47,
+            "charOffset" : 842,
+            "charLength" : 16,
+            "byteOffset" : 910,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentReplay.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 31,
+            "endLine" : 23,
+            "endColumn" : 47,
+            "charOffset" : 469,
+            "charLength" : 16,
+            "byteOffset" : 495,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsFeightTemplate.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 31,
+            "endLine" : 28,
+            "endColumn" : 47,
+            "charOffset" : 614,
+            "charLength" : 16,
+            "byteOffset" : 666,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsMemberPrice.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 19,
+            "startColumn" : 31,
+            "endLine" : 19,
+            "endColumn" : 47,
+            "charOffset" : 411,
+            "charLength" : 16,
+            "byteOffset" : 419,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProduct.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 123,
+            "startColumn" : 31,
+            "endLine" : 123,
+            "endColumn" : 47,
+            "charOffset" : 2669,
+            "charLength" : 16,
+            "byteOffset" : 3181,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttribute.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 31,
+            "endLine" : 40,
+            "endColumn" : 47,
+            "charOffset" : 985,
+            "charLength" : 16,
+            "byteOffset" : 1261,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeCategory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 17,
+            "startColumn" : 31,
+            "endLine" : 17,
+            "endColumn" : 47,
+            "charOffset" : 383,
+            "charLength" : 16,
+            "byteOffset" : 399,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeValue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 16,
+            "startColumn" : 31,
+            "endLine" : 16,
+            "endColumn" : 47,
+            "charOffset" : 374,
+            "charLength" : 16,
+            "byteOffset" : 430,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 31,
+            "endLine" : 37,
+            "endColumn" : 47,
+            "charOffset" : 770,
+            "charLength" : 16,
+            "byteOffset" : 874,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryAttributeRelation.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 31,
+            "endLine" : 13,
+            "endColumn" : 47,
+            "charOffset" : 314,
+            "charLength" : 16,
+            "byteOffset" : 314,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductFullReduction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 16,
+            "startColumn" : 31,
+            "endLine" : 16,
+            "endColumn" : 47,
+            "charOffset" : 357,
+            "charLength" : 16,
+            "byteOffset" : 357,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductLadder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 31,
+            "endLine" : 21,
+            "endColumn" : 47,
+            "charOffset" : 456,
+            "charLength" : 16,
+            "byteOffset" : 482,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductOperateLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 31,
+            "endLine" : 35,
+            "endColumn" : 47,
+            "charOffset" : 715,
+            "charLength" : 16,
+            "byteOffset" : 731,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductVertifyRecord.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 22,
+            "startColumn" : 31,
+            "endLine" : 22,
+            "endColumn" : 47,
+            "charOffset" : 453,
+            "charLength" : 16,
+            "byteOffset" : 467,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsSkuStock.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 31,
+            "endLine" : 38,
+            "endColumn" : 47,
+            "charOffset" : 776,
+            "charLength" : 16,
+            "byteOffset" : 842,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCoupon.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 31,
+            "endLine" : 59,
+            "endColumn" : 47,
+            "charOffset" : 1261,
+            "charLength" : 16,
+            "byteOffset" : 1485,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponHistory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 31,
+            "endLine" : 36,
+            "endColumn" : 47,
+            "charOffset" : 748,
+            "charLength" : 16,
+            "byteOffset" : 842,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductCategoryRelation.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 19,
+            "startColumn" : 31,
+            "endLine" : 19,
+            "endColumn" : 47,
+            "charOffset" : 441,
+            "charLength" : 16,
+            "byteOffset" : 463,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductRelation.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 19,
+            "startColumn" : 31,
+            "endLine" : 19,
+            "endColumn" : 47,
+            "charOffset" : 405,
+            "charLength" : 16,
+            "byteOffset" : 421,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotion.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 31,
+            "endLine" : 25,
+            "endColumn" : 47,
+            "charOffset" : 530,
+            "charLength" : 16,
+            "byteOffset" : 578,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 31,
+            "endLine" : 23,
+            "endColumn" : 47,
+            "charOffset" : 467,
+            "charLength" : 16,
+            "byteOffset" : 479,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionProductRelation.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 31,
+            "endLine" : 30,
+            "endColumn" : 47,
+            "charOffset" : 695,
+            "charLength" : 16,
+            "byteOffset" : 739,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionSession.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 31,
+            "endLine" : 26,
+            "endColumn" : 47,
+            "charOffset" : 575,
+            "charLength" : 16,
+            "byteOffset" : 641,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeAdvertise.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 31,
+            "endLine" : 39,
+            "endColumn" : 47,
+            "charOffset" : 774,
+            "charLength" : 16,
+            "byteOffset" : 852,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeBrand.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 17,
+            "startColumn" : 31,
+            "endLine" : 17,
+            "endColumn" : 47,
+            "charOffset" : 339,
+            "charLength" : 16,
+            "byteOffset" : 339,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeNewProduct.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 17,
+            "startColumn" : 31,
+            "endLine" : 17,
+            "endColumn" : 47,
+            "charOffset" : 348,
+            "charLength" : 16,
+            "byteOffset" : 348,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendProduct.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 17,
+            "startColumn" : 31,
+            "endLine" : 17,
+            "endColumn" : 47,
+            "charOffset" : 354,
+            "charLength" : 16,
+            "byteOffset" : 354,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendSubject.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 17,
+            "startColumn" : 31,
+            "endLine" : 17,
+            "endColumn" : 47,
+            "charOffset" : 354,
+            "charLength" : 16,
+            "byteOffset" : 354,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdmin.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 31,
+            "endLine" : 35,
+            "endColumn" : 47,
+            "charOffset" : 698,
+            "charLength" : 16,
+            "byteOffset" : 762,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminLoginLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 31,
+            "endLine" : 21,
+            "endColumn" : 47,
+            "charOffset" : 415,
+            "charLength" : 16,
+            "byteOffset" : 429,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminPermissionRelation.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 15,
+            "startColumn" : 31,
+            "endLine" : 15,
+            "endColumn" : 47,
+            "charOffset" : 316,
+            "charLength" : 16,
+            "byteOffset" : 316,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminRoleRelation.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 31,
+            "endLine" : 13,
+            "endColumn" : 47,
+            "charOffset" : 277,
+            "charLength" : 16,
+            "byteOffset" : 277,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsGrowthChangeHistory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 31,
+            "endLine" : 29,
+            "endColumn" : 47,
+            "charOffset" : 641,
+            "charLength" : 16,
+            "byteOffset" : 715,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationChangeHistory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 31,
+            "endLine" : 29,
+            "endColumn" : 47,
+            "charOffset" : 646,
+            "charLength" : 16,
+            "byteOffset" : 720,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationConsumeSetting.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 31,
+            "endLine" : 21,
+            "endColumn" : 47,
+            "charOffset" : 534,
+            "charLength" : 16,
+            "byteOffset" : 634,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMember.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 31,
+            "endLine" : 63,
+            "endColumn" : 47,
+            "charOffset" : 1287,
+            "charLength" : 16,
+            "byteOffset" : 1427,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLevel.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 31,
+            "endLine" : 43,
+            "endColumn" : 47,
+            "charOffset" : 1000,
+            "charLength" : 16,
+            "byteOffset" : 1152,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLoginLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 31,
+            "endLine" : 23,
+            "endColumn" : 47,
+            "charOffset" : 473,
+            "charLength" : 16,
+            "byteOffset" : 491,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberMemberTagRelation.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 31,
+            "endLine" : 13,
+            "endColumn" : 47,
+            "charOffset" : 283,
+            "charLength" : 16,
+            "byteOffset" : 283,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberProductCategoryRelation.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 31,
+            "endLine" : 13,
+            "endColumn" : 47,
+            "charOffset" : 301,
+            "charLength" : 16,
+            "byteOffset" : 301,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberReceiveAddress.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 31,
+            "endLine" : 34,
+            "endColumn" : 47,
+            "charOffset" : 698,
+            "charLength" : 16,
+            "byteOffset" : 754,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberRuleSetting.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 31,
+            "endLine" : 28,
+            "endColumn" : 47,
+            "charOffset" : 687,
+            "charLength" : 16,
+            "byteOffset" : 803,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberStatisticsInfo.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 31,
+            "endLine" : 50,
+            "endColumn" : 47,
+            "charOffset" : 1086,
+            "charLength" : 16,
+            "byteOffset" : 1172,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTag.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 18,
+            "startColumn" : 31,
+            "endLine" : 18,
+            "endColumn" : 47,
+            "charOffset" : 423,
+            "charLength" : 16,
+            "byteOffset" : 467,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTask.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 20,
+            "startColumn" : 31,
+            "endLine" : 20,
+            "endColumn" : 47,
+            "charOffset" : 435,
+            "charLength" : 16,
+            "byteOffset" : 481,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMenu.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 31,
+            "endLine" : 34,
+            "endColumn" : 47,
+            "charOffset" : 679,
+            "charLength" : 16,
+            "byteOffset" : 739,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsPermission.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 31,
+            "endLine" : 37,
+            "endColumn" : 47,
+            "charOffset" : 767,
+            "charLength" : 16,
+            "byteOffset" : 875,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 31,
+            "endLine" : 25,
+            "endColumn" : 47,
+            "charOffset" : 523,
+            "charLength" : 16,
+            "byteOffset" : 555,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceCategory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 19,
+            "startColumn" : 31,
+            "endLine" : 19,
+            "endColumn" : 47,
+            "charOffset" : 411,
+            "charLength" : 16,
+            "byteOffset" : 431,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRole.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 31,
+            "endLine" : 27,
+            "endColumn" : 47,
+            "charOffset" : 562,
+            "charLength" : 16,
+            "byteOffset" : 610,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleMenuRelation.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 15,
+            "startColumn" : 31,
+            "endLine" : 15,
+            "endColumn" : 47,
+            "charOffset" : 331,
+            "charLength" : 16,
+            "byteOffset" : 339,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRolePermissionRelation.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 31,
+            "endLine" : 13,
+            "endColumn" : 47,
+            "charOffset" : 287,
+            "charLength" : 16,
+            "byteOffset" : 287,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleResourceRelation.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 15,
+            "startColumn" : 31,
+            "endLine" : 15,
+            "endColumn" : 47,
+            "charOffset" : 339,
+            "charLength" : 16,
+            "byteOffset" : 347,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-search/src/main/java/com/macro/mall/search/domain/EsProduct.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 31,
+            "endLine" : 24,
+            "endColumn" : 47,
+            "charOffset" : 711,
+            "charLength" : 16,
+            "byteOffset" : 725,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-search/src/main/java/com/macro/mall/search/domain/EsProductAttributeValue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 17,
+            "startColumn" : 31,
+            "endLine" : 17,
+            "endColumn" : 47,
+            "charOffset" : 430,
+            "charLength" : 16,
+            "byteOffset" : 448,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleResourceRelation.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 15,
+            "startColumn" : 31,
+            "endLine" : 15,
+            "endColumn" : 47,
+            "charOffset" : 339,
+            "charLength" : 16,
+            "byteOffset" : 347,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-search/src/main/java/com/macro/mall/search/domain/EsProduct.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 31,
+            "endLine" : 24,
+            "endColumn" : 47,
+            "charOffset" : 711,
+            "charLength" : 16,
+            "byteOffset" : 725,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4926",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this \"serialVersionUID\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-search/src/main/java/com/macro/mall/search/domain/EsProductAttributeValue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 17,
+            "startColumn" : 31,
+            "endLine" : 17,
+            "endColumn" : 47,
+            "charOffset" : 430,
+            "charLength" : 16,
+            "byteOffset" : 448,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

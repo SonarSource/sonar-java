@@ -1,0 +1,74 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1161",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add the \"@Override\" annotation above this method signature"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/platform/web/WebPagesFilterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 170,
+            "startColumn" : 17,
+            "endLine" : 170,
+            "endColumn" : 22,
+            "charOffset" : 5838,
+            "charLength" : 5,
+            "byteOffset" : 5838,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1161",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add the \"@Override\" annotation above this method signature"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/platform/web/WebPagesFilterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 174,
+            "startColumn" : 17,
+            "endLine" : 174,
+            "endColumn" : 22,
+            "charOffset" : 5936,
+            "charLength" : 5,
+            "byteOffset" : 5936,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

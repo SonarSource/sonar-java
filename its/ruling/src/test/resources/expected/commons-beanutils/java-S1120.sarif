@@ -1,0 +1,1418 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 16 spaces instead of 14 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 470,
+            "startColumn" : 1,
+            "endLine" : 470,
+            "endColumn" : 54,
+            "charOffset" : 16505,
+            "charLength" : 53,
+            "byteOffset" : 16505,
+            "byteLength" : 53
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 10 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1018,
+            "startColumn" : 1,
+            "endLine" : 1018,
+            "endColumn" : 66,
+            "charOffset" : 43007,
+            "charLength" : 65,
+            "byteOffset" : 43007,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 8 spaces instead of 7 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 236,
+            "startColumn" : 1,
+            "endLine" : 236,
+            "endColumn" : 23,
+            "charOffset" : 7639,
+            "charLength" : 22,
+            "byteOffset" : 7639,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 20 spaces instead of 35 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 355,
+            "startColumn" : 1,
+            "endLine" : 355,
+            "endColumn" : 58,
+            "charOffset" : 11665,
+            "charLength" : 57,
+            "byteOffset" : 11665,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 20 spaces instead of 35 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 356,
+            "startColumn" : 1,
+            "endLine" : 356,
+            "endColumn" : 58,
+            "charOffset" : 11723,
+            "charLength" : 57,
+            "byteOffset" : 11723,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 20 spaces instead of 35 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 357,
+            "startColumn" : 1,
+            "endLine" : 357,
+            "endColumn" : 58,
+            "charOffset" : 11781,
+            "charLength" : 57,
+            "byteOffset" : 11781,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 20 spaces instead of 35 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 358,
+            "startColumn" : 1,
+            "endLine" : 358,
+            "endColumn" : 58,
+            "charOffset" : 11839,
+            "charLength" : 57,
+            "byteOffset" : 11839,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 20 spaces instead of 35 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 359,
+            "startColumn" : 1,
+            "endLine" : 359,
+            "endColumn" : 58,
+            "charOffset" : 11897,
+            "charLength" : 57,
+            "byteOffset" : 11897,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 20 spaces instead of 35 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 360,
+            "startColumn" : 1,
+            "endLine" : 360,
+            "endColumn" : 58,
+            "charOffset" : 11955,
+            "charLength" : 57,
+            "byteOffset" : 11955,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 20 spaces instead of 35 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 361,
+            "startColumn" : 1,
+            "endLine" : 361,
+            "endColumn" : 58,
+            "charOffset" : 12013,
+            "charLength" : 57,
+            "byteOffset" : 12013,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 20 spaces instead of 35 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 362,
+            "startColumn" : 1,
+            "endLine" : 362,
+            "endColumn" : 58,
+            "charOffset" : 12071,
+            "charLength" : 57,
+            "byteOffset" : 12071,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 16 spaces instead of 20 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/JDBCDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 164,
+            "startColumn" : 1,
+            "endLine" : 164,
+            "endColumn" : 59,
+            "charOffset" : 5437,
+            "charLength" : 58,
+            "byteOffset" : 5437,
+            "byteLength" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 16 spaces instead of 20 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/JDBCDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 251,
+            "startColumn" : 1,
+            "endLine" : 251,
+            "endColumn" : 44,
+            "charOffset" : 8857,
+            "charLength" : 43,
+            "byteOffset" : 8857,
+            "byteLength" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 11 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 240,
+            "startColumn" : 1,
+            "endLine" : 240,
+            "endColumn" : 19,
+            "charOffset" : 9452,
+            "charLength" : 18,
+            "byteOffset" : 9452,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 8 spaces instead of 7 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 250,
+            "startColumn" : 1,
+            "endLine" : 250,
+            "endColumn" : 37,
+            "charOffset" : 9875,
+            "charLength" : 36,
+            "byteOffset" : 9875,
+            "byteLength" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 32 spaces instead of 31 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1014,
+            "startColumn" : 1,
+            "endLine" : 1014,
+            "endColumn" : 51,
+            "charOffset" : 40170,
+            "charLength" : 50,
+            "byteOffset" : 40170,
+            "byteLength" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 17 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1025,
+            "startColumn" : 1,
+            "endLine" : 1025,
+            "endColumn" : 45,
+            "charOffset" : 40502,
+            "charLength" : 44,
+            "byteOffset" : 40502,
+            "byteLength" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 15 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1028,
+            "startColumn" : 1,
+            "endLine" : 1028,
+            "endColumn" : 45,
+            "charOffset" : 40595,
+            "charLength" : 44,
+            "byteOffset" : 40595,
+            "byteLength" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 28 spaces instead of 32 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 288,
+            "startColumn" : 1,
+            "endLine" : 288,
+            "endColumn" : 70,
+            "charOffset" : 12037,
+            "charLength" : 69,
+            "byteOffset" : 12037,
+            "byteLength" : 69
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 28 spaces instead of 32 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 325,
+            "startColumn" : 1,
+            "endLine" : 325,
+            "endColumn" : 70,
+            "charOffset" : 13894,
+            "charLength" : 69,
+            "byteOffset" : 13894,
+            "byteLength" : 69
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 10 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 681,
+            "startColumn" : 1,
+            "endLine" : 681,
+            "endColumn" : 80,
+            "charOffset" : 28786,
+            "charLength" : 79,
+            "byteOffset" : 28786,
+            "byteLength" : 79
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 16 spaces instead of 12 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 683,
+            "startColumn" : 1,
+            "endLine" : 683,
+            "endColumn" : 92,
+            "charOffset" : 28902,
+            "charLength" : 91,
+            "byteOffset" : 28902,
+            "byteLength" : 91
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 20 spaces instead of 14 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 686,
+            "startColumn" : 1,
+            "endLine" : 686,
+            "endColumn" : 69,
+            "charOffset" : 29097,
+            "charLength" : 68,
+            "byteOffset" : 29097,
+            "byteLength" : 68
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 16 spaces instead of 12 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 689,
+            "startColumn" : 1,
+            "endLine" : 689,
+            "endColumn" : 66,
+            "charOffset" : 29199,
+            "charLength" : 65,
+            "byteOffset" : 29199,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 10 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1806,
+            "startColumn" : 1,
+            "endLine" : 1806,
+            "endColumn" : 80,
+            "charOffset" : 73518,
+            "charLength" : 79,
+            "byteOffset" : 73518,
+            "byteLength" : 79
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 16 spaces instead of 12 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1808,
+            "startColumn" : 1,
+            "endLine" : 1808,
+            "endColumn" : 92,
+            "charOffset" : 73634,
+            "charLength" : 91,
+            "byteOffset" : 73634,
+            "byteLength" : 91
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 20 spaces instead of 14 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1811,
+            "startColumn" : 1,
+            "endLine" : 1811,
+            "endColumn" : 85,
+            "charOffset" : 73829,
+            "charLength" : 84,
+            "byteOffset" : 73829,
+            "byteLength" : 84
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 16 spaces instead of 12 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1815,
+            "startColumn" : 1,
+            "endLine" : 1815,
+            "endColumn" : 66,
+            "charOffset" : 73982,
+            "charLength" : 65,
+            "byteOffset" : 73982,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 8 spaces instead of 12 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 118,
+            "startColumn" : 1,
+            "endLine" : 118,
+            "endColumn" : 72,
+            "charOffset" : 3879,
+            "charLength" : 71,
+            "byteOffset" : 3879,
+            "byteLength" : 71
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 20 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 119,
+            "startColumn" : 1,
+            "endLine" : 119,
+            "endColumn" : 48,
+            "charOffset" : 3951,
+            "charLength" : 47,
+            "byteOffset" : 3951,
+            "byteLength" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 11 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/AbstractConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 354,
+            "startColumn" : 1,
+            "endLine" : 354,
+            "endColumn" : 38,
+            "charOffset" : 13120,
+            "charLength" : 37,
+            "byteOffset" : 13120,
+            "byteLength" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 11 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/AbstractConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 356,
+            "startColumn" : 1,
+            "endLine" : 356,
+            "endColumn" : 73,
+            "charOffset" : 13175,
+            "charLength" : 72,
+            "byteOffset" : 13175,
+            "byteLength" : 72
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 8 spaces instead of 7 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 621,
+            "startColumn" : 1,
+            "endLine" : 621,
+            "endColumn" : 110,
+            "charOffset" : 25895,
+            "charLength" : 109,
+            "byteOffset" : 25895,
+            "byteLength" : 109
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 4 spaces instead of 5 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 1,
+            "endLine" : 66,
+            "endColumn" : 70,
+            "charOffset" : 2528,
+            "charLength" : 69,
+            "byteOffset" : 2528,
+            "byteLength" : 69
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 4 spaces instead of 3 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 217,
+            "startColumn" : 1,
+            "endLine" : 217,
+            "endColumn" : 79,
+            "charOffset" : 8352,
+            "charLength" : 78,
+            "byteOffset" : 8352,
+            "byteLength" : 78
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 8 spaces instead of 7 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 219,
+            "startColumn" : 1,
+            "endLine" : 219,
+            "endColumn" : 75,
+            "charOffset" : 8432,
+            "charLength" : 74,
+            "byteOffset" : 8432,
+            "byteLength" : 74
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 8 spaces instead of 7 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 266,
+            "startColumn" : 1,
+            "endLine" : 266,
+            "endColumn" : 58,
+            "charOffset" : 10270,
+            "charLength" : 57,
+            "byteOffset" : 10270,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 4 spaces instead of 3 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 316,
+            "startColumn" : 1,
+            "endLine" : 316,
+            "endColumn" : 72,
+            "charOffset" : 11452,
+            "charLength" : 71,
+            "byteOffset" : 11452,
+            "byteLength" : 71
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 8 spaces instead of 7 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 318,
+            "startColumn" : 1,
+            "endLine" : 318,
+            "endColumn" : 64,
+            "charOffset" : 11525,
+            "charLength" : 63,
+            "byteOffset" : 11525,
+            "byteLength" : 63
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 8 spaces instead of 9 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 273,
+            "startColumn" : 1,
+            "endLine" : 273,
+            "endColumn" : 27,
+            "charOffset" : 9828,
+            "charLength" : 26,
+            "byteOffset" : 9828,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 13 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 274,
+            "startColumn" : 1,
+            "endLine" : 274,
+            "endColumn" : 65,
+            "charOffset" : 9855,
+            "charLength" : 64,
+            "byteOffset" : 9855,
+            "byteLength" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 4 spaces instead of 5 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 306,
+            "startColumn" : 1,
+            "endLine" : 306,
+            "endColumn" : 98,
+            "charOffset" : 11126,
+            "charLength" : 97,
+            "byteOffset" : 11126,
+            "byteLength" : 97
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 8 spaces instead of 9 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 308,
+            "startColumn" : 1,
+            "endLine" : 308,
+            "endColumn" : 41,
+            "charOffset" : 11225,
+            "charLength" : 40,
+            "byteOffset" : 11225,
+            "byteLength" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 13 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 321,
+            "startColumn" : 1,
+            "endLine" : 321,
+            "endColumn" : 38,
+            "charOffset" : 11740,
+            "charLength" : 37,
+            "byteOffset" : 11740,
+            "byteLength" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 13 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 327,
+            "startColumn" : 1,
+            "endLine" : 327,
+            "endColumn" : 65,
+            "charOffset" : 11899,
+            "charLength" : 64,
+            "byteOffset" : 11899,
+            "byteLength" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 13 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 331,
+            "startColumn" : 1,
+            "endLine" : 331,
+            "endColumn" : 91,
+            "charOffset" : 12136,
+            "charLength" : 90,
+            "byteOffset" : 12136,
+            "byteLength" : 90
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 20 spaces instead of 19 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 352,
+            "startColumn" : 1,
+            "endLine" : 352,
+            "endColumn" : 34,
+            "charOffset" : 12843,
+            "charLength" : 33,
+            "byteOffset" : 12843,
+            "byteLength" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 4 spaces instead of 3 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/FloatLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 217,
+            "startColumn" : 1,
+            "endLine" : 217,
+            "endColumn" : 89,
+            "charOffset" : 8132,
+            "charLength" : 88,
+            "byteOffset" : 8132,
+            "byteLength" : 88
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 8 spaces instead of 6 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/FloatLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 218,
+            "startColumn" : 1,
+            "endLine" : 218,
+            "endColumn" : 66,
+            "charOffset" : 8221,
+            "charLength" : 65,
+            "byteOffset" : 8221,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 12 spaces instead of 10 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/FloatLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 222,
+            "startColumn" : 1,
+            "endLine" : 222,
+            "endColumn" : 90,
+            "charOffset" : 8516,
+            "charLength" : 89,
+            "byteOffset" : 8516,
+            "byteLength" : 89
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

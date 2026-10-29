@@ -1,0 +1,1474 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 31 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:blob/src/org/jboss/tutorial/blob/bean/LobTesterBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 132,
+            "startColumn" : 47,
+            "endLine" : 132,
+            "endColumn" : 49,
+            "charOffset" : 9226,
+            "charLength" : 2,
+            "byteOffset" : 9226,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 2 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/client/CachedEntityRun.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 26,
+            "endLine" : 43,
+            "endColumn" : 27,
+            "charOffset" : 1594,
+            "charLength" : 1,
+            "byteOffset" : 1594,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 2 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/EntityTestBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 29,
+            "endLine" : 53,
+            "endColumn" : 30,
+            "charOffset" : 1850,
+            "charLength" : 1,
+            "byteOffset" : 1850,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 2 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 49,
+            "endLine" : 46,
+            "endColumn" : 50,
+            "charOffset" : 1715,
+            "charLength" : 1,
+            "byteOffset" : 1715,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 2 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:entity/src/org/jboss/tutorial/entity/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 32,
+            "endLine" : 45,
+            "endColumn" : 33,
+            "charOffset" : 1661,
+            "charLength" : 1,
+            "byteOffset" : 1661,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 500.00 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:entity/src/org/jboss/tutorial/entity/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 35,
+            "endLine" : 45,
+            "endColumn" : 41,
+            "charOffset" : 1664,
+            "charLength" : 6,
+            "byteOffset" : 1664,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 2000.00 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:entity/src/org/jboss/tutorial/entity/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 29,
+            "endLine" : 47,
+            "endColumn" : 36,
+            "charOffset" : 1746,
+            "charLength" : 7,
+            "byteOffset" : 1746,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 2000 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 20,
+            "endLine" : 38,
+            "endColumn" : 24,
+            "charOffset" : 1608,
+            "charLength" : 4,
+            "byteOffset" : 1608,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 100 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 50,
+            "endLine" : 41,
+            "endColumn" : 53,
+            "charOffset" : 1735,
+            "charLength" : 3,
+            "byteOffset" : 1735,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 2000 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 20,
+            "endLine" : 43,
+            "endColumn" : 24,
+            "charOffset" : 1807,
+            "charLength" : 4,
+            "byteOffset" : 1807,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 100 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 50,
+            "endLine" : 46,
+            "endColumn" : 53,
+            "charOffset" : 1934,
+            "charLength" : 3,
+            "byteOffset" : 1934,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 2000 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 20,
+            "endLine" : 48,
+            "endColumn" : 24,
+            "charOffset" : 2006,
+            "charLength" : 4,
+            "byteOffset" : 2006,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 100 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 50,
+            "endLine" : 51,
+            "endColumn" : 53,
+            "charOffset" : 2133,
+            "charLength" : 3,
+            "byteOffset" : 2133,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 2000 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 20,
+            "endLine" : 53,
+            "endColumn" : 24,
+            "charOffset" : 2205,
+            "charLength" : 4,
+            "byteOffset" : 2205,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 2000 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 20,
+            "endLine" : 58,
+            "endColumn" : 24,
+            "charOffset" : 2349,
+            "charLength" : 4,
+            "byteOffset" : 2349,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 2000 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 20,
+            "endLine" : 63,
+            "endColumn" : 24,
+            "charOffset" : 2495,
+            "charLength" : 4,
+            "byteOffset" : 2495,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 15.0 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:joininheritance/src/org/jboss/tutorial/joininheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 32,
+            "endLine" : 44,
+            "endColumn" : 36,
+            "charOffset" : 1592,
+            "charLength" : 4,
+            "byteOffset" : 1592,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 9 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:joininheritance/src/org/jboss/tutorial/joininheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 38,
+            "endLine" : 44,
+            "endColumn" : 39,
+            "charOffset" : 1598,
+            "charLength" : 1,
+            "byteOffset" : 1598,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 10.0 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:joininheritance/src/org/jboss/tutorial/joininheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 28,
+            "endLine" : 45,
+            "endColumn" : 32,
+            "charOffset" : 1629,
+            "charLength" : 4,
+            "byteOffset" : 1629,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 5 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:joininheritance/src/org/jboss/tutorial/joininheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 34,
+            "endLine" : 45,
+            "endColumn" : 35,
+            "charOffset" : 1635,
+            "charLength" : 1,
+            "byteOffset" : 1635,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 70.0 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:joininheritance/src/org/jboss/tutorial/joininheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 31,
+            "endLine" : 46,
+            "endColumn" : 35,
+            "charOffset" : 1669,
+            "charLength" : 4,
+            "byteOffset" : 1669,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 5 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:joininheritance/src/org/jboss/tutorial/joininheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 37,
+            "endLine" : 46,
+            "endColumn" : 38,
+            "charOffset" : 1675,
+            "charLength" : 1,
+            "byteOffset" : 1675,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 11.0 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:joininheritance/src/org/jboss/tutorial/joininheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 31,
+            "endLine" : 47,
+            "endColumn" : 35,
+            "charOffset" : 1709,
+            "charLength" : 4,
+            "byteOffset" : 1709,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 14.0 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:joininheritance/src/org/jboss/tutorial/joininheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 33,
+            "endLine" : 49,
+            "endColumn" : 37,
+            "charOffset" : 1752,
+            "charLength" : 4,
+            "byteOffset" : 1752,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 2 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/bean/EntityTestBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 29,
+            "endLine" : 51,
+            "endColumn" : 30,
+            "charOffset" : 1775,
+            "charLength" : 1,
+            "byteOffset" : 1775,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 2 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 49,
+            "endLine" : 46,
+            "endColumn" : 50,
+            "charOffset" : 1731,
+            "charLength" : 1,
+            "byteOffset" : 1731,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 16 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:security/src/org/jboss/tutorial/security/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 73,
+            "startColumn" : 28,
+            "endLine" : 73,
+            "endColumn" : 30,
+            "charOffset" : 2747,
+            "charLength" : 2,
+            "byteOffset" : 2747,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 4 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:security/src/org/jboss/tutorial/security/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 73,
+            "startColumn" : 32,
+            "endLine" : 73,
+            "endColumn" : 33,
+            "charOffset" : 2751,
+            "charLength" : 1,
+            "byteOffset" : 2751,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 100 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 31,
+            "endLine" : 52,
+            "endColumn" : 34,
+            "charOffset" : 2165,
+            "charLength" : 3,
+            "byteOffset" : 2165,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 50 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:service/src/org/jboss/tutorial/service/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 55,
+            "endLine" : 79,
+            "endColumn" : 57,
+            "charOffset" : 3639,
+            "charLength" : 2,
+            "byteOffset" : 3639,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 100 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 31,
+            "endLine" : 43,
+            "endColumn" : 34,
+            "charOffset" : 1824,
+            "charLength" : 3,
+            "byteOffset" : 1824,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 15.0 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:singleinheritance/src/org/jboss/tutorial/singleinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 32,
+            "endLine" : 45,
+            "endColumn" : 36,
+            "charOffset" : 1591,
+            "charLength" : 4,
+            "byteOffset" : 1591,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 9 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:singleinheritance/src/org/jboss/tutorial/singleinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 38,
+            "endLine" : 45,
+            "endColumn" : 39,
+            "charOffset" : 1597,
+            "charLength" : 1,
+            "byteOffset" : 1597,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 10.0 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:singleinheritance/src/org/jboss/tutorial/singleinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 28,
+            "endLine" : 46,
+            "endColumn" : 32,
+            "charOffset" : 1628,
+            "charLength" : 4,
+            "byteOffset" : 1628,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 5 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:singleinheritance/src/org/jboss/tutorial/singleinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 34,
+            "endLine" : 46,
+            "endColumn" : 35,
+            "charOffset" : 1634,
+            "charLength" : 1,
+            "byteOffset" : 1634,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 70.0 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:singleinheritance/src/org/jboss/tutorial/singleinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 31,
+            "endLine" : 47,
+            "endColumn" : 35,
+            "charOffset" : 1668,
+            "charLength" : 4,
+            "byteOffset" : 1668,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 5 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:singleinheritance/src/org/jboss/tutorial/singleinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 37,
+            "endLine" : 47,
+            "endColumn" : 38,
+            "charOffset" : 1674,
+            "charLength" : 1,
+            "byteOffset" : 1674,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 11.0 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:singleinheritance/src/org/jboss/tutorial/singleinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 31,
+            "endLine" : 48,
+            "endColumn" : 35,
+            "charOffset" : 1708,
+            "charLength" : 4,
+            "byteOffset" : 1708,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 14.0 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:singleinheritance/src/org/jboss/tutorial/singleinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 33,
+            "endLine" : 50,
+            "endColumn" : 37,
+            "charOffset" : 1751,
+            "charLength" : 4,
+            "byteOffset" : 1751,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 16 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:ssl/src/org/jboss/tutorial/ssl/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 73,
+            "startColumn" : 31,
+            "endLine" : 73,
+            "endColumn" : 33,
+            "charOffset" : 2891,
+            "charLength" : 2,
+            "byteOffset" : 2891,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 4 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:ssl/src/org/jboss/tutorial/ssl/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 73,
+            "startColumn" : 35,
+            "endLine" : 73,
+            "endColumn" : 36,
+            "charOffset" : 2895,
+            "charLength" : 1,
+            "byteOffset" : 2895,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 2 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:ssl/src/org/jboss/tutorial/ssl/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 60,
+            "endLine" : 89,
+            "endColumn" : 61,
+            "charOffset" : 3731,
+            "charLength" : 1,
+            "byteOffset" : 3731,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 2 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:ssl/src/org/jboss/tutorial/ssl/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 63,
+            "endLine" : 89,
+            "endColumn" : 64,
+            "charOffset" : 3734,
+            "charLength" : 1,
+            "byteOffset" : 3734,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 15.0 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:tableperinheritance/src/org/jboss/tutorial/tableperinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 32,
+            "endLine" : 45,
+            "endColumn" : 36,
+            "charOffset" : 1605,
+            "charLength" : 4,
+            "byteOffset" : 1605,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 9 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:tableperinheritance/src/org/jboss/tutorial/tableperinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 38,
+            "endLine" : 45,
+            "endColumn" : 39,
+            "charOffset" : 1611,
+            "charLength" : 1,
+            "byteOffset" : 1611,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 10.0 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:tableperinheritance/src/org/jboss/tutorial/tableperinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 28,
+            "endLine" : 46,
+            "endColumn" : 32,
+            "charOffset" : 1642,
+            "charLength" : 4,
+            "byteOffset" : 1642,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 5 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:tableperinheritance/src/org/jboss/tutorial/tableperinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 34,
+            "endLine" : 46,
+            "endColumn" : 35,
+            "charOffset" : 1648,
+            "charLength" : 1,
+            "byteOffset" : 1648,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 70.0 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:tableperinheritance/src/org/jboss/tutorial/tableperinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 31,
+            "endLine" : 47,
+            "endColumn" : 35,
+            "charOffset" : 1682,
+            "charLength" : 4,
+            "byteOffset" : 1682,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 5 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:tableperinheritance/src/org/jboss/tutorial/tableperinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 37,
+            "endLine" : 47,
+            "endColumn" : 38,
+            "charOffset" : 1688,
+            "charLength" : 1,
+            "byteOffset" : 1688,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 11.0 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:tableperinheritance/src/org/jboss/tutorial/tableperinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 31,
+            "endLine" : 48,
+            "endColumn" : 35,
+            "charOffset" : 1722,
+            "charLength" : 4,
+            "byteOffset" : 1722,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 14.0 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:tableperinheritance/src/org/jboss/tutorial/tableperinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 33,
+            "endLine" : 50,
+            "endColumn" : 37,
+            "charOffset" : 1765,
+            "charLength" : 4,
+            "byteOffset" : 1765,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S109",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Assign this magic number 5000 to a well-named constant, and use the constant instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:timer/src/org/jboss/tutorial/timer/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 27,
+            "endLine" : 35,
+            "endColumn" : 31,
+            "charOffset" : 1406,
+            "charLength" : 4,
+            "byteOffset" : 1406,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

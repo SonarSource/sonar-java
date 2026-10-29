@@ -1,0 +1,1670 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Before to the equivalent JUnit5 org.junit.jupiter.api.BeforeEach annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 5,
+            "endLine" : 63,
+            "endColumn" : 12,
+            "charOffset" : 1964,
+            "charLength" : 7,
+            "byteOffset" : 1964,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.After to the equivalent JUnit5 org.junit.jupiter.api.AfterEach annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 99,
+            "startColumn" : 5,
+            "endLine" : 99,
+            "endColumn" : 11,
+            "charOffset" : 3030,
+            "charLength" : 6,
+            "byteOffset" : 3030,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 110,
+            "startColumn" : 5,
+            "endLine" : 110,
+            "endColumn" : 10,
+            "charOffset" : 3247,
+            "charLength" : 5,
+            "byteOffset" : 3247,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 125,
+            "startColumn" : 5,
+            "endLine" : 125,
+            "endColumn" : 10,
+            "charOffset" : 3870,
+            "charLength" : 5,
+            "byteOffset" : 3870,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 142,
+            "startColumn" : 5,
+            "endLine" : 142,
+            "endColumn" : 10,
+            "charOffset" : 4631,
+            "charLength" : 5,
+            "byteOffset" : 4631,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 158,
+            "startColumn" : 5,
+            "endLine" : 158,
+            "endColumn" : 10,
+            "charOffset" : 5300,
+            "charLength" : 5,
+            "byteOffset" : 5300,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 168,
+            "startColumn" : 5,
+            "endLine" : 168,
+            "endColumn" : 10,
+            "charOffset" : 5624,
+            "charLength" : 5,
+            "byteOffset" : 5624,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 178,
+            "startColumn" : 5,
+            "endLine" : 178,
+            "endColumn" : 10,
+            "charOffset" : 5958,
+            "charLength" : 5,
+            "byteOffset" : 5958,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 188,
+            "startColumn" : 5,
+            "endLine" : 188,
+            "endColumn" : 10,
+            "charOffset" : 6346,
+            "charLength" : 5,
+            "byteOffset" : 6346,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 202,
+            "startColumn" : 5,
+            "endLine" : 202,
+            "endColumn" : 10,
+            "charOffset" : 6929,
+            "charLength" : 5,
+            "byteOffset" : 6929,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 216,
+            "startColumn" : 5,
+            "endLine" : 216,
+            "endColumn" : 10,
+            "charOffset" : 7453,
+            "charLength" : 5,
+            "byteOffset" : 7453,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 226,
+            "startColumn" : 5,
+            "endLine" : 226,
+            "endColumn" : 10,
+            "charOffset" : 7782,
+            "charLength" : 5,
+            "byteOffset" : 7782,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 238,
+            "startColumn" : 5,
+            "endLine" : 238,
+            "endColumn" : 10,
+            "charOffset" : 8369,
+            "charLength" : 5,
+            "byteOffset" : 8369,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 250,
+            "startColumn" : 5,
+            "endLine" : 250,
+            "endColumn" : 10,
+            "charOffset" : 8955,
+            "charLength" : 5,
+            "byteOffset" : 8955,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 260,
+            "startColumn" : 5,
+            "endLine" : 260,
+            "endColumn" : 10,
+            "charOffset" : 9289,
+            "charLength" : 5,
+            "byteOffset" : 9289,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 270,
+            "startColumn" : 5,
+            "endLine" : 270,
+            "endColumn" : 10,
+            "charOffset" : 9622,
+            "charLength" : 5,
+            "byteOffset" : 9622,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 282,
+            "startColumn" : 5,
+            "endLine" : 282,
+            "endColumn" : 10,
+            "charOffset" : 10043,
+            "charLength" : 5,
+            "byteOffset" : 10043,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 291,
+            "startColumn" : 5,
+            "endLine" : 291,
+            "endColumn" : 10,
+            "charOffset" : 10313,
+            "charLength" : 5,
+            "byteOffset" : 10313,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 300,
+            "startColumn" : 5,
+            "endLine" : 300,
+            "endColumn" : 10,
+            "charOffset" : 10587,
+            "charLength" : 5,
+            "byteOffset" : 10587,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 313,
+            "startColumn" : 5,
+            "endLine" : 313,
+            "endColumn" : 10,
+            "charOffset" : 10995,
+            "charLength" : 5,
+            "byteOffset" : 10995,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 326,
+            "startColumn" : 5,
+            "endLine" : 326,
+            "endColumn" : 10,
+            "charOffset" : 11410,
+            "charLength" : 5,
+            "byteOffset" : 11410,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 335,
+            "startColumn" : 5,
+            "endLine" : 335,
+            "endColumn" : 10,
+            "charOffset" : 11675,
+            "charLength" : 5,
+            "byteOffset" : 11675,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 344,
+            "startColumn" : 5,
+            "endLine" : 344,
+            "endColumn" : 10,
+            "charOffset" : 11944,
+            "charLength" : 5,
+            "byteOffset" : 11944,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 361,
+            "startColumn" : 5,
+            "endLine" : 361,
+            "endColumn" : 10,
+            "charOffset" : 12703,
+            "charLength" : 5,
+            "byteOffset" : 12703,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 377,
+            "startColumn" : 5,
+            "endLine" : 377,
+            "endColumn" : 10,
+            "charOffset" : 13343,
+            "charLength" : 5,
+            "byteOffset" : 13343,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 386,
+            "startColumn" : 5,
+            "endLine" : 386,
+            "endColumn" : 10,
+            "charOffset" : 13652,
+            "charLength" : 5,
+            "byteOffset" : 13652,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 400,
+            "startColumn" : 5,
+            "endLine" : 400,
+            "endColumn" : 10,
+            "charOffset" : 14223,
+            "charLength" : 5,
+            "byteOffset" : 14223,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 416,
+            "startColumn" : 5,
+            "endLine" : 416,
+            "endColumn" : 10,
+            "charOffset" : 14854,
+            "charLength" : 5,
+            "byteOffset" : 14854,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 425,
+            "startColumn" : 5,
+            "endLine" : 425,
+            "endColumn" : 10,
+            "charOffset" : 15158,
+            "charLength" : 5,
+            "byteOffset" : 15158,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 435,
+            "startColumn" : 5,
+            "endLine" : 435,
+            "endColumn" : 10,
+            "charOffset" : 15421,
+            "charLength" : 5,
+            "byteOffset" : 15421,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 444,
+            "startColumn" : 5,
+            "endLine" : 444,
+            "endColumn" : 10,
+            "charOffset" : 15654,
+            "charLength" : 5,
+            "byteOffset" : 15654,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.BeforeClass to the equivalent JUnit5 org.junit.jupiter.api.BeforeAll annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira422TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 5,
+            "endLine" : 51,
+            "endColumn" : 17,
+            "charOffset" : 1788,
+            "charLength" : 12,
+            "byteOffset" : 1788,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira422TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 5,
+            "endLine" : 64,
+            "endColumn" : 10,
+            "charOffset" : 2399,
+            "charLength" : 5,
+            "byteOffset" : 2399,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira422TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 71,
+            "startColumn" : 5,
+            "endLine" : 71,
+            "endColumn" : 10,
+            "charOffset" : 2674,
+            "charLength" : 5,
+            "byteOffset" : 2674,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira422bTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 5,
+            "endLine" : 32,
+            "endColumn" : 10,
+            "charOffset" : 1270,
+            "charLength" : 5,
+            "byteOffset" : 1270,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira422bTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 5,
+            "endLine" : 40,
+            "endColumn" : 10,
+            "charOffset" : 1548,
+            "charLength" : 5,
+            "byteOffset" : 1548,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Before to the equivalent JUnit5 org.junit.jupiter.api.BeforeEach annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira492TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 5,
+            "endLine" : 51,
+            "endColumn" : 12,
+            "charOffset" : 1952,
+            "charLength" : 7,
+            "byteOffset" : 1952,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira492TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 5,
+            "endLine" : 57,
+            "endColumn" : 10,
+            "charOffset" : 2093,
+            "charLength" : 5,
+            "byteOffset" : 2093,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira492TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 5,
+            "endLine" : 63,
+            "endColumn" : 10,
+            "charOffset" : 2330,
+            "charLength" : 5,
+            "byteOffset" : 2330,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira492TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 69,
+            "startColumn" : 5,
+            "endLine" : 69,
+            "endColumn" : 10,
+            "charOffset" : 2555,
+            "charLength" : 5,
+            "byteOffset" : 2555,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira492TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 75,
+            "startColumn" : 5,
+            "endLine" : 75,
+            "endColumn" : 10,
+            "charOffset" : 2789,
+            "charLength" : 5,
+            "byteOffset" : 2789,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira492TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 80,
+            "startColumn" : 5,
+            "endLine" : 80,
+            "endColumn" : 10,
+            "charOffset" : 2927,
+            "charLength" : 5,
+            "byteOffset" : 2927,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira492TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 93,
+            "startColumn" : 5,
+            "endLine" : 93,
+            "endColumn" : 10,
+            "charOffset" : 3403,
+            "charLength" : 5,
+            "byteOffset" : 3403,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira492TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 100,
+            "startColumn" : 5,
+            "endLine" : 100,
+            "endColumn" : 10,
+            "charOffset" : 3647,
+            "charLength" : 5,
+            "byteOffset" : 3647,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira492TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 110,
+            "startColumn" : 5,
+            "endLine" : 110,
+            "endColumn" : 10,
+            "charOffset" : 4004,
+            "charLength" : 5,
+            "byteOffset" : 4004,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira493TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 2,
+            "endLine" : 33,
+            "endColumn" : 7,
+            "charOffset" : 1202,
+            "charLength" : 5,
+            "byteOffset" : 1202,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Ignore to the equivalent JUnit5 org.junit.jupiter.api.Disabled annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira509TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 1,
+            "endLine" : 43,
+            "endColumn" : 64,
+            "charOffset" : 1594,
+            "charLength" : 63,
+            "byteOffset" : 1594,
+            "byteLength" : 63
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira509TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 5,
+            "endLine" : 54,
+            "endColumn" : 28,
+            "charOffset" : 2052,
+            "charLength" : 23,
+            "byteOffset" : 2052,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/MemoryTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 5,
+            "endLine" : 38,
+            "endColumn" : 10,
+            "charOffset" : 1372,
+            "charLength" : 5,
+            "byteOffset" : 1372,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/MemoryTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 5,
+            "endLine" : 79,
+            "endColumn" : 10,
+            "charOffset" : 3128,
+            "charLength" : 5,
+            "byteOffset" : 3128,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/MemoryTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 169,
+            "startColumn" : 5,
+            "endLine" : 169,
+            "endColumn" : 10,
+            "charOffset" : 7547,
+            "charLength" : 5,
+            "byteOffset" : 7547,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 5,
+            "endLine" : 57,
+            "endColumn" : 10,
+            "charOffset" : 2212,
+            "charLength" : 5,
+            "byteOffset" : 2212,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 5,
+            "endLine" : 104,
+            "endColumn" : 10,
+            "charOffset" : 4277,
+            "charLength" : 5,
+            "byteOffset" : 4277,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 158,
+            "startColumn" : 5,
+            "endLine" : 158,
+            "endColumn" : 10,
+            "charOffset" : 6831,
+            "charLength" : 5,
+            "byteOffset" : 6831,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 204,
+            "startColumn" : 5,
+            "endLine" : 204,
+            "endColumn" : 10,
+            "charOffset" : 9428,
+            "charLength" : 5,
+            "byteOffset" : 9428,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 254,
+            "startColumn" : 5,
+            "endLine" : 254,
+            "endColumn" : 10,
+            "charOffset" : 12074,
+            "charLength" : 5,
+            "byteOffset" : 12074,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 301,
+            "startColumn" : 5,
+            "endLine" : 301,
+            "endColumn" : 10,
+            "charOffset" : 14104,
+            "charLength" : 5,
+            "byteOffset" : 14104,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 354,
+            "startColumn" : 5,
+            "endLine" : 354,
+            "endColumn" : 10,
+            "charOffset" : 16466,
+            "charLength" : 5,
+            "byteOffset" : 16466,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5793",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Change this JUnit4 org.junit.Test to the equivalent JUnit5 org.junit.jupiter.api.Test annotation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 402,
+            "startColumn" : 5,
+            "endLine" : 402,
+            "endColumn" : 10,
+            "charOffset" : 18582,
+            "charLength" : 5,
+            "byteOffset" : 18582,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

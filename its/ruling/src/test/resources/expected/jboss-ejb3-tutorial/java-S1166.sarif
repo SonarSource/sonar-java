@@ -1,0 +1,466 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1166",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either log or rethrow this exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsCancelInterceptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 48,
+            "charOffset" : 2392,
+            "charLength" : 11,
+            "byteOffset" : 2392,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1166",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either log or rethrow this exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsConfirmInterceptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 101,
+            "startColumn" : 37,
+            "endLine" : 101,
+            "endColumn" : 48,
+            "charOffset" : 3403,
+            "charLength" : 11,
+            "byteOffset" : 3403,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1166",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either log or rethrow this exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 14,
+            "endLine" : 67,
+            "endColumn" : 44,
+            "charOffset" : 2509,
+            "charLength" : 30,
+            "byteOffset" : 2509,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1166",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either log or rethrow this exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 100,
+            "startColumn" : 14,
+            "endLine" : 100,
+            "endColumn" : 45,
+            "charOffset" : 3654,
+            "charLength" : 31,
+            "byteOffset" : 3654,
+            "byteLength" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1166",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either log or rethrow this exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 14,
+            "endLine" : 114,
+            "endColumn" : 34,
+            "charOffset" : 4088,
+            "charLength" : 20,
+            "byteOffset" : 4088,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1166",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either log or rethrow this exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 137,
+            "startColumn" : 14,
+            "endLine" : 137,
+            "endColumn" : 44,
+            "charOffset" : 4824,
+            "charLength" : 30,
+            "byteOffset" : 4824,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1166",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either log or rethrow this exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 14,
+            "endLine" : 67,
+            "endColumn" : 34,
+            "charOffset" : 2611,
+            "charLength" : 20,
+            "byteOffset" : 2611,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1166",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either log or rethrow this exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:reference21_30/ejb21_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless2Bean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 14,
+            "endLine" : 46,
+            "endColumn" : 25,
+            "charOffset" : 1731,
+            "charLength" : 11,
+            "byteOffset" : 1731,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1166",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either log or rethrow this exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:reference21_30/ejb3_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless3Bean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 14,
+            "endLine" : 67,
+            "endColumn" : 25,
+            "charOffset" : 2568,
+            "charLength" : 11,
+            "byteOffset" : 2568,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1166",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either log or rethrow this exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:security/src/org/jboss/tutorial/security/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 14,
+            "endLine" : 53,
+            "endColumn" : 35,
+            "charOffset" : 2060,
+            "charLength" : 21,
+            "byteOffset" : 2060,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1166",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either log or rethrow this exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:security/src/org/jboss/tutorial/security/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 75,
+            "startColumn" : 14,
+            "endLine" : 75,
+            "endColumn" : 45,
+            "charOffset" : 2776,
+            "charLength" : 31,
+            "byteOffset" : 2776,
+            "byteLength" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1166",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either log or rethrow this exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 16,
+            "endLine" : 61,
+            "endColumn" : 27,
+            "charOffset" : 2795,
+            "charLength" : 11,
+            "byteOffset" : 2795,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1166",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either log or rethrow this exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:ssl/src/org/jboss/tutorial/ssl/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 14,
+            "endLine" : 54,
+            "endColumn" : 35,
+            "charOffset" : 2261,
+            "charLength" : 21,
+            "byteOffset" : 2261,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1166",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either log or rethrow this exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:ssl/src/org/jboss/tutorial/ssl/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 76,
+            "startColumn" : 14,
+            "endLine" : 76,
+            "endColumn" : 36,
+            "charOffset" : 3027,
+            "charLength" : 22,
+            "byteOffset" : 3027,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1166",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either log or rethrow this exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:stateful/src/org/jboss/tutorial/stateful/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 14,
+            "endLine" : 65,
+            "endColumn" : 44,
+            "charOffset" : 2266,
+            "charLength" : 30,
+            "byteOffset" : 2266,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1166",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either log or rethrow this exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:stateful_deployment_descriptor/src/org/jboss/tutorial/stateful_deployment_descriptor/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 14,
+            "endLine" : 70,
+            "endColumn" : 34,
+            "charOffset" : 2414,
+            "charLength" : 20,
+            "byteOffset" : 2414,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

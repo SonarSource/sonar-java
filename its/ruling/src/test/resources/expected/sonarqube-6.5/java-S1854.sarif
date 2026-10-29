@@ -1,0 +1,3098 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"groupInOrg\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/authentication/UserIdentityAuthenticatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 291,
+            "startColumn" : 25,
+            "endLine" : 291,
+            "endColumn" : 65,
+            "charOffset" : 11694,
+            "charLength" : 40,
+            "byteOffset" : 11694,
+            "byteLength" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project1\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 268,
+            "startColumn" : 27,
+            "endLine" : 270,
+            "endColumn" : 52,
+            "charOffset" : 12411,
+            "charLength" : 135,
+            "byteOffset" : 12411,
+            "byteLength" : 135
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project3\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 274,
+            "startColumn" : 27,
+            "endLine" : 276,
+            "endColumn" : 52,
+            "charOffset" : 12737,
+            "charLength" : 135,
+            "byteOffset" : 12737,
+            "byteLength" : 135
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project3\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 312,
+            "startColumn" : 27,
+            "endLine" : 312,
+            "endColumn" : 116,
+            "charOffset" : 15072,
+            "charLength" : 89,
+            "byteOffset" : 15072,
+            "byteLength" : 89
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project3\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 328,
+            "startColumn" : 27,
+            "endLine" : 328,
+            "endColumn" : 120,
+            "charOffset" : 15992,
+            "charLength" : 93,
+            "byteOffset" : 15992,
+            "byteLength" : 93
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project1\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 342,
+            "startColumn" : 27,
+            "endLine" : 342,
+            "endColumn" : 107,
+            "charOffset" : 16829,
+            "charLength" : 80,
+            "byteOffset" : 16829,
+            "byteLength" : 80
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project3\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 344,
+            "startColumn" : 27,
+            "endLine" : 344,
+            "endColumn" : 107,
+            "charOffset" : 17045,
+            "charLength" : 80,
+            "byteOffset" : 17045,
+            "byteLength" : 80
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project1\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 357,
+            "startColumn" : 27,
+            "endLine" : 357,
+            "endColumn" : 111,
+            "charOffset" : 17682,
+            "charLength" : 84,
+            "byteOffset" : 17682,
+            "byteLength" : 84
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project3\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 359,
+            "startColumn" : 27,
+            "endLine" : 359,
+            "endColumn" : 111,
+            "charOffset" : 17906,
+            "charLength" : 84,
+            "byteOffset" : 17906,
+            "byteLength" : 84
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 371,
+            "startColumn" : 27,
+            "endLine" : 371,
+            "endColumn" : 103,
+            "charOffset" : 18469,
+            "charLength" : 76,
+            "byteOffset" : 18469,
+            "byteLength" : 76
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 385,
+            "startColumn" : 27,
+            "endLine" : 385,
+            "endColumn" : 104,
+            "charOffset" : 19280,
+            "charLength" : 77,
+            "byteOffset" : 19280,
+            "byteLength" : 77
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 399,
+            "startColumn" : 27,
+            "endLine" : 399,
+            "endColumn" : 108,
+            "charOffset" : 20090,
+            "charLength" : 81,
+            "byteOffset" : 20090,
+            "byteLength" : 81
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 413,
+            "startColumn" : 27,
+            "endLine" : 413,
+            "endColumn" : 108,
+            "charOffset" : 20932,
+            "charLength" : 81,
+            "byteOffset" : 20932,
+            "byteLength" : 81
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 428,
+            "startColumn" : 27,
+            "endLine" : 428,
+            "endColumn" : 107,
+            "charOffset" : 21898,
+            "charLength" : 80,
+            "byteOffset" : 21898,
+            "byteLength" : 80
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project3\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 429,
+            "startColumn" : 27,
+            "endLine" : 429,
+            "endColumn" : 108,
+            "charOffset" : 22006,
+            "charLength" : 81,
+            "byteOffset" : 22006,
+            "byteLength" : 81
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 455,
+            "startColumn" : 27,
+            "endLine" : 455,
+            "endColumn" : 115,
+            "charOffset" : 23527,
+            "charLength" : 88,
+            "byteOffset" : 23527,
+            "byteLength" : 88
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 469,
+            "startColumn" : 27,
+            "endLine" : 469,
+            "endColumn" : 101,
+            "charOffset" : 24351,
+            "charLength" : 74,
+            "byteOffset" : 24351,
+            "byteLength" : 74
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 483,
+            "startColumn" : 27,
+            "endLine" : 483,
+            "endColumn" : 108,
+            "charOffset" : 25146,
+            "charLength" : 81,
+            "byteOffset" : 25146,
+            "byteLength" : 81
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"sonarQubeProject\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 558,
+            "startColumn" : 35,
+            "endLine" : 558,
+            "endColumn" : 64,
+            "charOffset" : 29819,
+            "charLength" : 29,
+            "byteOffset" : 29819,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"sonarQubeProject\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 573,
+            "startColumn" : 35,
+            "endLine" : 573,
+            "endColumn" : 64,
+            "charOffset" : 30542,
+            "charLength" : 29,
+            "byteOffset" : 30542,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"subView\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SuggestionsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 576,
+            "startColumn" : 26,
+            "endLine" : 576,
+            "endColumn" : 109,
+            "charOffset" : 25036,
+            "charLength" : 83,
+            "byteOffset" : 25036,
+            "byteLength" : 83
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"file\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SuggestionsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 579,
+            "startColumn" : 23,
+            "endLine" : 579,
+            "endColumn" : 108,
+            "charOffset" : 25359,
+            "charLength" : 85,
+            "byteOffset" : 25359,
+            "byteLength" : 85
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"test\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SuggestionsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 580,
+            "startColumn" : 23,
+            "endLine" : 580,
+            "endColumn" : 148,
+            "charOffset" : 25468,
+            "charLength" : 125,
+            "byteOffset" : 25468,
+            "byteLength" : 125
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"projectSnapshot\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/TreeActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 140,
+            "startColumn" : 33,
+            "endLine" : 140,
+            "endColumn" : 80,
+            "charOffset" : 6038,
+            "charLength" : 47,
+            "byteOffset" : 6038,
+            "byteLength" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"branchProject\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/queue/ReportSubmitterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 260,
+            "startColumn" : 32,
+            "endLine" : 260,
+            "endColumn" : 126,
+            "charOffset" : 11539,
+            "charLength" : 94,
+            "byteOffset" : 11539,
+            "byteLength" : 94
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"ceContainer\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/container/TaskContainerImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 35,
+            "endLine" : 70,
+            "endColumn" : 7,
+            "charOffset" : 2461,
+            "charLength" : 247,
+            "byteOffset" : 2461,
+            "byteLength" : 247
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"subViewDto\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ViewsPersistAnalysisStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 128,
+            "startColumn" : 29,
+            "endLine" : 128,
+            "endColumn" : 87,
+            "charOffset" : 5466,
+            "charLength" : 58,
+            "byteOffset" : 5466,
+            "byteLength" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/duplication/ws/ShowResponseBuilderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 74,
+            "startColumn" : 27,
+            "endLine" : 75,
+            "endColumn" : 55,
+            "charOffset" : 3073,
+            "charLength" : 177,
+            "byteOffset" : 3073,
+            "byteLength" : 177
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"issue2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/index/IssueIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 105,
+            "startColumn" : 21,
+            "endLine" : 105,
+            "endColumn" : 94,
+            "charOffset" : 4289,
+            "charLength" : 73,
+            "byteOffset" : 4289,
+            "byteLength" : 73
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"issue2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/index/IssueIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 133,
+            "startColumn" : 21,
+            "endLine" : 133,
+            "endColumn" : 96,
+            "charOffset" : 5614,
+            "charLength" : 75,
+            "byteOffset" : 5614,
+            "byteLength" : 75
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"issue\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/index/IssueIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 157,
+            "startColumn" : 20,
+            "endLine" : 157,
+            "endColumn" : 93,
+            "charOffset" : 6692,
+            "charLength" : 73,
+            "byteOffset" : 6692,
+            "byteLength" : 73
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"file4\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/measure/ws/ComponentTreeActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 298,
+            "startColumn" : 24,
+            "endLine" : 298,
+            "endColumn" : 98,
+            "charOffset" : 15482,
+            "charLength" : 74,
+            "byteOffset" : 15482,
+            "byteLength" : 74
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"file2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/measure/ws/ComponentTreeActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 664,
+            "startColumn" : 24,
+            "endLine" : 670,
+            "endColumn" : 84,
+            "charOffset" : 32496,
+            "charLength" : 403,
+            "byteOffset" : 32496,
+            "byteLength" : 403
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"settings\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/notification/NotificationDaemonTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 210,
+            "startColumn" : 23,
+            "endLine" : 210,
+            "endColumn" : 87,
+            "charOffset" : 8692,
+            "charLength" : 64,
+            "byteOffset" : 8692,
+            "byteLength" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"user\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/OrganizationCreationImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 266,
+            "startColumn" : 18,
+            "endLine" : 266,
+            "endColumn" : 43,
+            "charOffset" : 12956,
+            "charLength" : 25,
+            "byteOffset" : 12956,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"file\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/DeleteActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 231,
+            "startColumn" : 23,
+            "endLine" : 231,
+            "endColumn" : 104,
+            "charOffset" : 9180,
+            "charLength" : 81,
+            "byteOffset" : 9180,
+            "byteLength" : 81
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"subview2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/DeleteActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 235,
+            "startColumn" : 27,
+            "endLine" : 235,
+            "endColumn" : 113,
+            "charOffset" : 9483,
+            "charLength" : 86,
+            "byteOffset" : 9483,
+            "byteLength" : 86
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"projectCopy\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/DeleteActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 236,
+            "startColumn" : 30,
+            "endLine" : 236,
+            "endColumn" : 122,
+            "charOffset" : 9600,
+            "charLength" : 92,
+            "byteOffset" : 9600,
+            "byteLength" : 92
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"user2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/DeleteActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 253,
+            "startColumn" : 19,
+            "endLine" : 253,
+            "endColumn" : 44,
+            "charOffset" : 10402,
+            "charLength" : 25,
+            "byteOffset" : 10402,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"profileInOrg\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/DeleteActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 325,
+            "startColumn" : 30,
+            "endLine" : 325,
+            "endColumn" : 64,
+            "charOffset" : 14381,
+            "charLength" : 34,
+            "byteOffset" : 14381,
+            "byteLength" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"project2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/permission/index/PermissionIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 204,
+            "startColumn" : 27,
+            "endLine" : 204,
+            "endColumn" : 58,
+            "charOffset" : 7081,
+            "charLength" : 31,
+            "byteOffset" : 7081,
+            "byteLength" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"group3\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/permission/ws/template/TemplateGroupsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 175,
+            "startColumn" : 21,
+            "endLine" : 175,
+            "endColumn" : 73,
+            "charOffset" : 8416,
+            "charLength" : 52,
+            "byteOffset" : 8416,
+            "byteLength" : 52
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"group2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/permission/ws/template/TemplateGroupsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 221,
+            "startColumn" : 21,
+            "endLine" : 221,
+            "endColumn" : 73,
+            "charOffset" : 10658,
+            "charLength" : 52,
+            "byteOffset" : 10658,
+            "byteLength" : 52
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"group3\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/permission/ws/template/TemplateGroupsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 222,
+            "startColumn" : 21,
+            "endLine" : 222,
+            "endColumn" : 68,
+            "charOffset" : 10732,
+            "charLength" : 47,
+            "byteOffset" : 10732,
+            "byteLength" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"toKeep\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/project/ws/BulkDeleteActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 80,
+            "startColumn" : 25,
+            "endLine" : 80,
+            "endColumn" : 69,
+            "charOffset" : 3164,
+            "charLength" : 44,
+            "byteOffset" : 3164,
+            "byteLength" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"toKeep\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/project/ws/BulkDeleteActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 95,
+            "startColumn" : 25,
+            "endLine" : 95,
+            "endColumn" : 69,
+            "charOffset" : 3803,
+            "charLength" : 44,
+            "byteOffset" : 3803,
+            "byteLength" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"inactiveModule\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/project/ws/BulkUpdateKeyActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 131,
+            "startColumn" : 33,
+            "endLine" : 131,
+            "endColumn" : 145,
+            "charOffset" : 5771,
+            "charLength" : 112,
+            "byteOffset" : 5771,
+            "byteLength" : 112
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"file\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/project/ws/BulkUpdateKeyActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 132,
+            "startColumn" : 23,
+            "endLine" : 132,
+            "endColumn" : 124,
+            "charOffset" : 5907,
+            "charLength" : 101,
+            "byteOffset" : 5907,
+            "byteLength" : 101
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"inactiveFile\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/project/ws/BulkUpdateKeyActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 133,
+            "startColumn" : 31,
+            "endLine" : 133,
+            "endColumn" : 158,
+            "charOffset" : 6040,
+            "charLength" : 127,
+            "byteOffset" : 6040,
+            "byteLength" : 127
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"conditionOnLeakPeriod\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualitygate/QualityGateConditionsUpdaterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 282,
+            "startColumn" : 51,
+            "endLine" : 282,
+            "endColumn" : 116,
+            "charOffset" : 12210,
+            "charLength" : 65,
+            "byteOffset" : 12210,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"childQProfileDto\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RegisterQualityProfilesNotificationTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 206,
+            "startColumn" : 34,
+            "endLine" : 206,
+            "endColumn" : 175,
+            "charOffset" : 9976,
+            "charLength" : 141,
+            "byteOffset" : 9976,
+            "byteLength" : 141
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"ruleParam\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 121,
+            "startColumn" : 28,
+            "endLine" : 121,
+            "endColumn" : 107,
+            "charOffset" : 5238,
+            "charLength" : 79,
+            "byteOffset" : 5238,
+            "byteLength" : 79
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"ruleParam\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 162,
+            "startColumn" : 28,
+            "endLine" : 162,
+            "endColumn" : 107,
+            "charOffset" : 6887,
+            "charLength" : 79,
+            "byteOffset" : 6887,
+            "byteLength" : 79
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"changes\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 215,
+            "startColumn" : 36,
+            "endLine" : 215,
+            "endColumn" : 73,
+            "charOffset" : 9415,
+            "charLength" : 37,
+            "byteOffset" : 9415,
+            "byteLength" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"changes\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 234,
+            "startColumn" : 36,
+            "endLine" : 234,
+            "endColumn" : 73,
+            "charOffset" : 10380,
+            "charLength" : 37,
+            "byteOffset" : 10380,
+            "byteLength" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"templateParam\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 380,
+            "startColumn" : 32,
+            "endLine" : 380,
+            "endColumn" : 100,
+            "charOffset" : 17070,
+            "charLength" : 68,
+            "byteOffset" : 17070,
+            "byteLength" : 68
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"customParam\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 382,
+            "startColumn" : 30,
+            "endLine" : 382,
+            "endColumn" : 119,
+            "charOffset" : 17252,
+            "charLength" : 89,
+            "byteOffset" : 17252,
+            "byteLength" : 89
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"childProfile\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 719,
+            "startColumn" : 30,
+            "endLine" : 719,
+            "endColumn" : 65,
+            "charOffset" : 33477,
+            "charLength" : 35,
+            "byteOffset" : 33477,
+            "byteLength" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"changes\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 908,
+            "startColumn" : 36,
+            "endLine" : 908,
+            "endColumn" : 99,
+            "charOffset" : 41905,
+            "charLength" : 63,
+            "byteOffset" : 41905,
+            "byteLength" : 63
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"ar3\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/index/ActiveRuleIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 102,
+            "startColumn" : 23,
+            "endLine" : 102,
+            "endColumn" : 75,
+            "charOffset" : 3624,
+            "charLength" : 52,
+            "byteOffset" : 3624,
+            "byteLength" : 52
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"ar\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/index/ActiveRuleIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 112,
+            "startColumn" : 22,
+            "endLine" : 112,
+            "endColumn" : 74,
+            "charOffset" : 3858,
+            "charLength" : 52,
+            "byteOffset" : 3858,
+            "byteLength" : 52
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"ar2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/index/ActiveRuleIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 159,
+            "startColumn" : 23,
+            "endLine" : 159,
+            "endColumn" : 75,
+            "charOffset" : 5594,
+            "charLength" : 52,
+            "byteOffset" : 5594,
+            "byteLength" : 52
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"ar3\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/index/ActiveRuleIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 160,
+            "startColumn" : 23,
+            "endLine" : 160,
+            "endColumn" : 75,
+            "charOffset" : 5670,
+            "charLength" : 52,
+            "byteOffset" : 5670,
+            "byteLength" : 52
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"profileInOrg2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/BackupActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 142,
+            "startColumn" : 31,
+            "endLine" : 142,
+            "endColumn" : 98,
+            "charOffset" : 6415,
+            "charLength" : 67,
+            "byteOffset" : 6415,
+            "byteLength" : 67
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"profileInOrg1\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/DeleteActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 156,
+            "startColumn" : 31,
+            "endLine" : 156,
+            "endColumn" : 61,
+            "charOffset" : 6280,
+            "charLength" : 30,
+            "byteOffset" : 6280,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"nonDefaultProfile\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ExportActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 189,
+            "startColumn" : 35,
+            "endLine" : 189,
+            "endColumn" : 86,
+            "charOffset" : 7879,
+            "charLength" : 51,
+            "byteOffset" : 7879,
+            "byteLength" : 51
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"profile\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ExportActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 213,
+            "startColumn" : 25,
+            "endLine" : 213,
+            "endColumn" : 75,
+            "charOffset" : 8853,
+            "charLength" : 50,
+            "byteOffset" : 8853,
+            "byteLength" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"nonDefaultJavaInOrg1\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ExportActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 242,
+            "startColumn" : 38,
+            "endLine" : 242,
+            "endColumn" : 126,
+            "charOffset" : 10149,
+            "charLength" : 88,
+            "byteOffset" : 10149,
+            "byteLength" : 88
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"nonDefaultXooInOrg1\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ExportActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 244,
+            "startColumn" : 37,
+            "endLine" : 244,
+            "endColumn" : 124,
+            "charOffset" : 10400,
+            "charLength" : 87,
+            "byteOffset" : 10400,
+            "byteLength" : 87
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"nonDefaultJavaInOrg2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ExportActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 246,
+            "startColumn" : 38,
+            "endLine" : 246,
+            "endColumn" : 126,
+            "charOffset" : 10653,
+            "charLength" : 88,
+            "byteOffset" : 10653,
+            "byteLength" : 88
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"nonDefaultXooInOrg2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ExportActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 248,
+            "startColumn" : 37,
+            "endLine" : 248,
+            "endColumn" : 124,
+            "charOffset" : 10904,
+            "charLength" : 87,
+            "byteOffset" : 10904,
+            "byteLength" : 87
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"activeRule1\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/InheritanceActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 122,
+            "startColumn" : 31,
+            "endLine" : 122,
+            "endColumn" : 66,
+            "charOffset" : 4939,
+            "charLength" : 35,
+            "byteOffset" : 4939,
+            "byteLength" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"activeRule2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/InheritanceActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 123,
+            "startColumn" : 31,
+            "endLine" : 123,
+            "endColumn" : 66,
+            "charOffset" : 5006,
+            "charLength" : 35,
+            "byteOffset" : 5006,
+            "byteLength" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"result\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/QProfilesWsMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 149,
+            "startColumn" : 28,
+            "endLine" : 149,
+            "endColumn" : 47,
+            "charOffset" : 6578,
+            "charLength" : 19,
+            "byteOffset" : 6578,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"result\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/QProfilesWsMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 175,
+            "startColumn" : 28,
+            "endLine" : 175,
+            "endColumn" : 47,
+            "charOffset" : 7691,
+            "charLength" : 19,
+            "byteOffset" : 7691,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"result\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/QProfilesWsMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 200,
+            "startColumn" : 28,
+            "endLine" : 200,
+            "endColumn" : 47,
+            "charOffset" : 8843,
+            "charLength" : 19,
+            "byteOffset" : 8843,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"result\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/QProfilesWsMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 220,
+            "startColumn" : 28,
+            "endLine" : 220,
+            "endColumn" : 47,
+            "charOffset" : 9686,
+            "charLength" : 19,
+            "byteOffset" : 9686,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"result\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/QProfilesWsMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 263,
+            "startColumn" : 28,
+            "endLine" : 263,
+            "endColumn" : 47,
+            "charOffset" : 11458,
+            "charLength" : 19,
+            "byteOffset" : 11458,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"rule1\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/QProfilesWsMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 358,
+            "startColumn" : 29,
+            "endLine" : 358,
+            "endColumn" : 72,
+            "charOffset" : 15407,
+            "charLength" : 43,
+            "byteOffset" : 15407,
+            "byteLength" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"qualityProfileKey2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/RenameActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 103,
+            "startColumn" : 31,
+            "endLine" : 103,
+            "endColumn" : 57,
+            "charOffset" : 3960,
+            "charLength" : 26,
+            "byteOffset" : 3960,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"qualityProfileKey2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/RenameActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 130,
+            "startColumn" : 31,
+            "endLine" : 130,
+            "endColumn" : 57,
+            "charOffset" : 5075,
+            "charLength" : 26,
+            "byteOffset" : 5075,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"inactiveRule\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 362,
+            "startColumn" : 36,
+            "endLine" : 362,
+            "endColumn" : 110,
+            "charOffset" : 18984,
+            "charLength" : 74,
+            "byteOffset" : 18984,
+            "byteLength" : 74
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"response\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/SetDefaultActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 219,
+            "startColumn" : 29,
+            "endLine" : 222,
+            "endColumn" : 19,
+            "charOffset" : 8884,
+            "charLength" : 139,
+            "byteOffset" : 8884,
+            "byteLength" : 139
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"anotherSonarWayProfile\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ShowActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 226,
+            "startColumn" : 40,
+            "endLine" : 227,
+            "endColumn" : 89,
+            "charOffset" : 11146,
+            "charLength" : 147,
+            "byteOffset" : 11146,
+            "byteLength" : 147
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"sonarWayProfile\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ShowActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 239,
+            "startColumn" : 33,
+            "endLine" : 239,
+            "endColumn" : 166,
+            "charOffset" : 11725,
+            "charLength" : 133,
+            "byteOffset" : 11725,
+            "byteLength" : 133
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"sonarWayProfile\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ShowActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 251,
+            "startColumn" : 33,
+            "endLine" : 251,
+            "endColumn" : 167,
+            "charOffset" : 12357,
+            "charLength" : 134,
+            "byteOffset" : 12357,
+            "byteLength" : 134
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"sonarWayProfile\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ShowActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 263,
+            "startColumn" : 33,
+            "endLine" : 263,
+            "endColumn" : 166,
+            "charOffset" : 12934,
+            "charLength" : 133,
+            "byteOffset" : 12934,
+            "byteLength" : 133
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"sonarQubeWayProfile\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ShowActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 291,
+            "startColumn" : 37,
+            "endLine" : 291,
+            "endColumn" : 174,
+            "charOffset" : 14415,
+            "charLength" : 137,
+            "byteOffset" : 14415,
+            "byteLength" : 137
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"organizationUuid\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 385,
+            "startColumn" : 29,
+            "endLine" : 385,
+            "endColumn" : 74,
+            "charOffset" : 16352,
+            "charLength" : 45,
+            "byteOffset" : 16352,
+            "byteLength" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"organizationUuid\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 397,
+            "startColumn" : 29,
+            "endLine" : 397,
+            "endColumn" : 74,
+            "charOffset" : 16993,
+            "charLength" : 45,
+            "byteOffset" : 16993,
+            "byteLength" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"php2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 130,
+            "startColumn" : 28,
+            "endLine" : 132,
+            "endColumn" : 26,
+            "charOffset" : 5355,
+            "charLength" : 70,
+            "byteOffset" : 5355,
+            "byteLength" : 70
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"codeSmell\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 284,
+            "startColumn" : 33,
+            "endLine" : 284,
+            "endColumn" : 66,
+            "charOffset" : 10618,
+            "charLength" : 33,
+            "byteOffset" : 10618,
+            "byteLength" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"java\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 364,
+            "startColumn" : 28,
+            "endLine" : 364,
+            "endColumn" : 61,
+            "charOffset" : 13737,
+            "charLength" : 33,
+            "byteOffset" : 13737,
+            "byteLength" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"blocker\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 427,
+            "startColumn" : 31,
+            "endLine" : 427,
+            "endColumn" : 65,
+            "charOffset" : 17100,
+            "charLength" : 34,
+            "byteOffset" : 17100,
+            "byteLength" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"beta\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 450,
+            "startColumn" : 28,
+            "endLine" : 450,
+            "endColumn" : 68,
+            "charOffset" : 17998,
+            "charLength" : 40,
+            "byteOffset" : 17998,
+            "byteLength" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"info\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 568,
+            "startColumn" : 28,
+            "endLine" : 568,
+            "endColumn" : 59,
+            "charOffset" : 23164,
+            "charLength" : 31,
+            "byteOffset" : 23164,
+            "byteLength" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"rule\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 777,
+            "startColumn" : 28,
+            "endLine" : 778,
+            "endColumn" : 23,
+            "charOffset" : 32841,
+            "charLength" : 121,
+            "byteOffset" : 32841,
+            "byteLength" : 121
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"rule\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 793,
+            "startColumn" : 28,
+            "endLine" : 794,
+            "endColumn" : 23,
+            "charOffset" : 33650,
+            "charLength" : 121,
+            "byteOffset" : 33650,
+            "byteLength" : 121
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"rule2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 169,
+            "startColumn" : 29,
+            "endLine" : 169,
+            "endColumn" : 47,
+            "charOffset" : 7608,
+            "charLength" : 18,
+            "byteOffset" : 7608,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"metadata2\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 229,
+            "startColumn" : 31,
+            "endLine" : 229,
+            "endColumn" : 68,
+            "charOffset" : 10049,
+            "charLength" : 37,
+            "byteOffset" : 10049,
+            "byteLength" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"metadata\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 263,
+            "startColumn" : 30,
+            "endLine" : 263,
+            "endColumn" : 115,
+            "charOffset" : 11526,
+            "charLength" : 85,
+            "byteOffset" : 11526,
+            "byteLength" : 85
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"rule\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 277,
+            "startColumn" : 28,
+            "endLine" : 277,
+            "endColumn" : 147,
+            "charOffset" : 12269,
+            "charLength" : 119,
+            "byteOffset" : 12269,
+            "byteLength" : 119
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"rule\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 289,
+            "startColumn" : 28,
+            "endLine" : 289,
+            "endColumn" : 142,
+            "charOffset" : 12829,
+            "charLength" : 114,
+            "byteOffset" : 12829,
+            "byteLength" : 114
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"rule\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 363,
+            "startColumn" : 28,
+            "endLine" : 363,
+            "endColumn" : 84,
+            "charOffset" : 16318,
+            "charLength" : 56,
+            "byteOffset" : 16318,
+            "byteLength" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"metadata\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 387,
+            "startColumn" : 30,
+            "endLine" : 390,
+            "endColumn" : 44,
+            "charOffset" : 17229,
+            "charLength" : 225,
+            "byteOffset" : 17229,
+            "byteLength" : 225
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"metadata\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 422,
+            "startColumn" : 30,
+            "endLine" : 425,
+            "endColumn" : 43,
+            "charOffset" : 19071,
+            "charLength" : 225,
+            "byteOffset" : 19071,
+            "byteLength" : 225
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"metadata\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 458,
+            "startColumn" : 30,
+            "endLine" : 461,
+            "endColumn" : 41,
+            "charOffset" : 20911,
+            "charLength" : 215,
+            "byteOffset" : 20911,
+            "byteLength" : 215
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"rule\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 490,
+            "startColumn" : 28,
+            "endLine" : 492,
+            "endColumn" : 46,
+            "charOffset" : 22531,
+            "charLength" : 98,
+            "byteOffset" : 22531,
+            "byteLength" : 98
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"ruleParam3\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 579,
+            "startColumn" : 29,
+            "endLine" : 583,
+            "endColumn" : 31,
+            "charOffset" : 26067,
+            "charLength" : 166,
+            "byteOffset" : 26067,
+            "byteLength" : 166
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"user\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/user/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 131,
+            "startColumn" : 18,
+            "endLine" : 136,
+            "endColumn" : 47,
+            "charOffset" : 5242,
+            "charLength" : 194,
+            "byteOffset" : 5242,
+            "byteLength" : 194
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

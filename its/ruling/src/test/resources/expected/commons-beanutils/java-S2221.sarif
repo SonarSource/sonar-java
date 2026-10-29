@@ -1,0 +1,578 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 222,
+            "startColumn" : 24,
+            "endLine" : 222,
+            "endColumn" : 33,
+            "charOffset" : 7449,
+            "charLength" : 9,
+            "byteOffset" : 7449,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 233,
+            "startColumn" : 24,
+            "endLine" : 233,
+            "endColumn" : 33,
+            "charOffset" : 7853,
+            "charLength" : 9,
+            "byteOffset" : 7853,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 250,
+            "startColumn" : 24,
+            "endLine" : 250,
+            "endColumn" : 33,
+            "charOffset" : 8588,
+            "charLength" : 9,
+            "byteOffset" : 8588,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 22,
+            "endLine" : 295,
+            "endColumn" : 31,
+            "charOffset" : 10076,
+            "charLength" : 9,
+            "byteOffset" : 10076,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DefaultBeanIntrospector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 141,
+            "startColumn" : 40,
+            "endLine" : 141,
+            "endColumn" : 49,
+            "charOffset" : 5791,
+            "charLength" : 9,
+            "byteOffset" : 5791,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DefaultBeanIntrospector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 171,
+            "startColumn" : 40,
+            "endLine" : 171,
+            "endColumn" : 49,
+            "charOffset" : 7368,
+            "charLength" : 9,
+            "byteOffset" : 7368,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/JDBCDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 168,
+            "startColumn" : 24,
+            "endLine" : 168,
+            "endColumn" : 33,
+            "charOffset" : 5644,
+            "charLength" : 9,
+            "byteOffset" : 5644,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 725,
+            "startColumn" : 30,
+            "endLine" : 725,
+            "endColumn" : 39,
+            "charOffset" : 26324,
+            "charLength" : 9,
+            "byteOffset" : 26324,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 764,
+            "startColumn" : 26,
+            "endLine" : 764,
+            "endColumn" : 35,
+            "charOffset" : 27500,
+            "charLength" : 9,
+            "byteOffset" : 27500,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 789,
+            "startColumn" : 22,
+            "endLine" : 789,
+            "endColumn" : 31,
+            "charOffset" : 28299,
+            "charLength" : 9,
+            "byteOffset" : 28299,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 861,
+            "startColumn" : 22,
+            "endLine" : 861,
+            "endColumn" : 31,
+            "charOffset" : 30412,
+            "charLength" : 9,
+            "byteOffset" : 30412,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 529,
+            "startColumn" : 24,
+            "endLine" : 529,
+            "endColumn" : 33,
+            "charOffset" : 16439,
+            "charLength" : 9,
+            "byteOffset" : 16439,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 589,
+            "startColumn" : 24,
+            "endLine" : 589,
+            "endColumn" : 33,
+            "charOffset" : 18983,
+            "charLength" : 9,
+            "byteOffset" : 18983,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 658,
+            "startColumn" : 28,
+            "endLine" : 658,
+            "endColumn" : 37,
+            "charOffset" : 20976,
+            "charLength" : 9,
+            "byteOffset" : 20976,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 283,
+            "startColumn" : 23,
+            "endLine" : 283,
+            "endColumn" : 32,
+            "charOffset" : 10097,
+            "charLength" : 9,
+            "byteOffset" : 10097,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ResultSetDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 243,
+            "startColumn" : 22,
+            "endLine" : 243,
+            "endColumn" : 31,
+            "charOffset" : 8626,
+            "charLength" : 9,
+            "byteOffset" : 8626,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/DateTimeConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 530,
+            "startColumn" : 28,
+            "endLine" : 530,
+            "endColumn" : 37,
+            "charOffset" : 18467,
+            "charLength" : 9,
+            "byteOffset" : 18467,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/expression/DefaultResolver.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 99,
+            "startColumn" : 32,
+            "endLine" : 99,
+            "endColumn" : 41,
+            "charOffset" : 4621,
+            "charLength" : 9,
+            "byteOffset" : 4621,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/BaseLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 237,
+            "startColumn" : 24,
+            "endLine" : 237,
+            "endColumn" : 33,
+            "charOffset" : 8903,
+            "charLength" : 9,
+            "byteOffset" : 8903,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2221",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch a list of specific exception subtypes instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 330,
+            "startColumn" : 25,
+            "endLine" : 330,
+            "endColumn" : 34,
+            "charOffset" : 12120,
+            "charLength" : 9,
+            "byteOffset" : 12120,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

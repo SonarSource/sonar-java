@@ -1,0 +1,1670 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 939,
+            "startColumn" : 72,
+            "endLine" : 939,
+            "endColumn" : 84,
+            "charOffset" : 105781,
+            "charLength" : 12,
+            "byteOffset" : 105872,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1457,
+            "startColumn" : 25,
+            "endLine" : 1457,
+            "endColumn" : 28,
+            "charOffset" : 170343,
+            "charLength" : 3,
+            "byteOffset" : 170551,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 239,
+            "startColumn" : 60,
+            "endLine" : 239,
+            "endColumn" : 63,
+            "charOffset" : 26977,
+            "charLength" : 3,
+            "byteOffset" : 26989,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 241,
+            "startColumn" : 63,
+            "endLine" : 241,
+            "endColumn" : 66,
+            "charOffset" : 27308,
+            "charLength" : 3,
+            "byteOffset" : 27320,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 243,
+            "startColumn" : 62,
+            "endLine" : 243,
+            "endColumn" : 65,
+            "charOffset" : 27641,
+            "charLength" : 3,
+            "byteOffset" : 27653,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1097,
+            "startColumn" : 101,
+            "endLine" : 1097,
+            "endColumn" : 104,
+            "charOffset" : 129849,
+            "charLength" : 3,
+            "byteOffset" : 129977,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1097,
+            "startColumn" : 105,
+            "endLine" : 1097,
+            "endColumn" : 108,
+            "charOffset" : 129853,
+            "charLength" : 3,
+            "byteOffset" : 129981,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1097,
+            "startColumn" : 145,
+            "endLine" : 1097,
+            "endColumn" : 148,
+            "charOffset" : 129893,
+            "charLength" : 3,
+            "byteOffset" : 130021,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1265,
+            "startColumn" : 33,
+            "endLine" : 1265,
+            "endColumn" : 34,
+            "charOffset" : 149987,
+            "charLength" : 1,
+            "byteOffset" : 150156,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1265,
+            "startColumn" : 60,
+            "endLine" : 1265,
+            "endColumn" : 61,
+            "charOffset" : 150014,
+            "charLength" : 1,
+            "byteOffset" : 150183,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1267,
+            "startColumn" : 33,
+            "endLine" : 1267,
+            "endColumn" : 34,
+            "charOffset" : 150205,
+            "charLength" : 1,
+            "byteOffset" : 150374,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1267,
+            "startColumn" : 58,
+            "endLine" : 1267,
+            "endColumn" : 59,
+            "charOffset" : 150230,
+            "charLength" : 1,
+            "byteOffset" : 150399,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1269,
+            "startColumn" : 33,
+            "endLine" : 1269,
+            "endColumn" : 34,
+            "charOffset" : 150420,
+            "charLength" : 1,
+            "byteOffset" : 150589,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1269,
+            "startColumn" : 57,
+            "endLine" : 1269,
+            "endColumn" : 58,
+            "charOffset" : 150444,
+            "charLength" : 1,
+            "byteOffset" : 150613,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1271,
+            "startColumn" : 33,
+            "endLine" : 1271,
+            "endColumn" : 34,
+            "charOffset" : 150633,
+            "charLength" : 1,
+            "byteOffset" : 150802,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1271,
+            "startColumn" : 50,
+            "endLine" : 1271,
+            "endColumn" : 51,
+            "charOffset" : 150650,
+            "charLength" : 1,
+            "byteOffset" : 150819,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1617,
+            "startColumn" : 27,
+            "endLine" : 1617,
+            "endColumn" : 29,
+            "charOffset" : 191697,
+            "charLength" : 2,
+            "byteOffset" : 192335,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1767,
+            "startColumn" : 45,
+            "endLine" : 1767,
+            "endColumn" : 46,
+            "charOffset" : 212913,
+            "charLength" : 1,
+            "byteOffset" : 213551,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1767,
+            "startColumn" : 47,
+            "endLine" : 1767,
+            "endColumn" : 48,
+            "charOffset" : 212915,
+            "charLength" : 1,
+            "byteOffset" : 213553,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1767,
+            "startColumn" : 63,
+            "endLine" : 1767,
+            "endColumn" : 66,
+            "charOffset" : 212931,
+            "charLength" : 3,
+            "byteOffset" : 213569,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1767,
+            "startColumn" : 67,
+            "endLine" : 1767,
+            "endColumn" : 71,
+            "charOffset" : 212935,
+            "charLength" : 4,
+            "byteOffset" : 213573,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 82,
+            "endLine" : 21,
+            "endColumn" : 87,
+            "charOffset" : 2163,
+            "charLength" : 5,
+            "byteOffset" : 2163,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 371,
+            "startColumn" : 40,
+            "endLine" : 371,
+            "endColumn" : 43,
+            "charOffset" : 44821,
+            "charLength" : 3,
+            "byteOffset" : 44834,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 985,
+            "startColumn" : 32,
+            "endLine" : 985,
+            "endColumn" : 33,
+            "charOffset" : 111444,
+            "charLength" : 1,
+            "byteOffset" : 111459,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 985,
+            "startColumn" : 53,
+            "endLine" : 985,
+            "endColumn" : 54,
+            "charOffset" : 111465,
+            "charLength" : 1,
+            "byteOffset" : 111480,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 985,
+            "startColumn" : 74,
+            "endLine" : 985,
+            "endColumn" : 75,
+            "charOffset" : 111486,
+            "charLength" : 1,
+            "byteOffset" : 111501,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 987,
+            "startColumn" : 58,
+            "endLine" : 987,
+            "endColumn" : 61,
+            "charOffset" : 111714,
+            "charLength" : 3,
+            "byteOffset" : 111729,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1127,
+            "startColumn" : 34,
+            "endLine" : 1127,
+            "endColumn" : 37,
+            "charOffset" : 127298,
+            "charLength" : 3,
+            "byteOffset" : 127327,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1375,
+            "startColumn" : 53,
+            "endLine" : 1375,
+            "endColumn" : 56,
+            "charOffset" : 156001,
+            "charLength" : 3,
+            "byteOffset" : 156030,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1167,
+            "startColumn" : 48,
+            "endLine" : 1167,
+            "endColumn" : 51,
+            "charOffset" : 133770,
+            "charLength" : 3,
+            "byteOffset" : 133802,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1259,
+            "startColumn" : 27,
+            "endLine" : 1259,
+            "endColumn" : 29,
+            "charOffset" : 143831,
+            "charLength" : 2,
+            "byteOffset" : 143879,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1601,
+            "startColumn" : 34,
+            "endLine" : 1601,
+            "endColumn" : 39,
+            "charOffset" : 182441,
+            "charLength" : 5,
+            "byteOffset" : 182675,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1753,
+            "startColumn" : 27,
+            "endLine" : 1753,
+            "endColumn" : 30,
+            "charOffset" : 198522,
+            "charLength" : 3,
+            "byteOffset" : 198762,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1915,
+            "startColumn" : 25,
+            "endLine" : 1915,
+            "endColumn" : 28,
+            "charOffset" : 215568,
+            "charLength" : 3,
+            "byteOffset" : 215868,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1995,
+            "startColumn" : 66,
+            "endLine" : 1995,
+            "endColumn" : 68,
+            "charOffset" : 224400,
+            "charLength" : 2,
+            "byteOffset" : 224702,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1547,
+            "startColumn" : 160,
+            "endLine" : 1547,
+            "endColumn" : 164,
+            "charOffset" : 216566,
+            "charLength" : 4,
+            "byteOffset" : 217461,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1757,
+            "startColumn" : 35,
+            "endLine" : 1757,
+            "endColumn" : 42,
+            "charOffset" : 241905,
+            "charLength" : 7,
+            "byteOffset" : 243251,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1879,
+            "startColumn" : 46,
+            "endLine" : 1879,
+            "endColumn" : 57,
+            "charOffset" : 255019,
+            "charLength" : 11,
+            "byteOffset" : 256454,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1921,
+            "startColumn" : 34,
+            "endLine" : 1921,
+            "endColumn" : 37,
+            "charOffset" : 259764,
+            "charLength" : 3,
+            "byteOffset" : 261199,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 36,
+            "endLine" : 21,
+            "endColumn" : 46,
+            "charOffset" : 1934,
+            "charLength" : 10,
+            "byteOffset" : 1934,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 46,
+            "endLine" : 67,
+            "endColumn" : 57,
+            "charOffset" : 7444,
+            "charLength" : 11,
+            "byteOffset" : 7444,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 355,
+            "startColumn" : 33,
+            "endLine" : 355,
+            "endColumn" : 41,
+            "charOffset" : 41767,
+            "charLength" : 8,
+            "byteOffset" : 41767,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 355,
+            "startColumn" : 54,
+            "endLine" : 355,
+            "endColumn" : 62,
+            "charOffset" : 41788,
+            "charLength" : 8,
+            "byteOffset" : 41788,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 461,
+            "startColumn" : 50,
+            "endLine" : 461,
+            "endColumn" : 51,
+            "charOffset" : 52807,
+            "charLength" : 1,
+            "byteOffset" : 52807,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 597,
+            "startColumn" : 39,
+            "endLine" : 597,
+            "endColumn" : 42,
+            "charOffset" : 67442,
+            "charLength" : 3,
+            "byteOffset" : 67471,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1253,
+            "startColumn" : 26,
+            "endLine" : 1253,
+            "endColumn" : 29,
+            "charOffset" : 139754,
+            "charLength" : 3,
+            "byteOffset" : 140089,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 285,
+            "startColumn" : 59,
+            "endLine" : 285,
+            "endColumn" : 62,
+            "charOffset" : 32063,
+            "charLength" : 3,
+            "byteOffset" : 32131,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 319,
+            "startColumn" : 569,
+            "endLine" : 319,
+            "endColumn" : 571,
+            "charOffset" : 36885,
+            "charLength" : 2,
+            "byteOffset" : 36957,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 319,
+            "startColumn" : 715,
+            "endLine" : 319,
+            "endColumn" : 719,
+            "charOffset" : 37031,
+            "charLength" : 4,
+            "byteOffset" : 37103,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 319,
+            "startColumn" : 862,
+            "endLine" : 319,
+            "endColumn" : 866,
+            "charOffset" : 37178,
+            "charLength" : 4,
+            "byteOffset" : 37250,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 319,
+            "startColumn" : 920,
+            "endLine" : 319,
+            "endColumn" : 922,
+            "charOffset" : 37236,
+            "charLength" : 2,
+            "byteOffset" : 37308,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 319,
+            "startColumn" : 1089,
+            "endLine" : 319,
+            "endColumn" : 1093,
+            "charOffset" : 37405,
+            "charLength" : 4,
+            "byteOffset" : 37477,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 319,
+            "startColumn" : 1103,
+            "endLine" : 319,
+            "endColumn" : 1111,
+            "charOffset" : 37419,
+            "charLength" : 8,
+            "byteOffset" : 37491,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 319,
+            "startColumn" : 1122,
+            "endLine" : 319,
+            "endColumn" : 1124,
+            "charOffset" : 37438,
+            "charLength" : 2,
+            "byteOffset" : 37510,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 319,
+            "startColumn" : 1125,
+            "endLine" : 319,
+            "endColumn" : 1128,
+            "charOffset" : 37441,
+            "charLength" : 3,
+            "byteOffset" : 37513,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 319,
+            "startColumn" : 1129,
+            "endLine" : 319,
+            "endColumn" : 1131,
+            "charOffset" : 37445,
+            "charLength" : 2,
+            "byteOffset" : 37517,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 319,
+            "startColumn" : 1379,
+            "endLine" : 319,
+            "endColumn" : 1382,
+            "charOffset" : 37695,
+            "charLength" : 3,
+            "byteOffset" : 37767,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 323,
+            "startColumn" : 43,
+            "endLine" : 323,
+            "endColumn" : 46,
+            "charOffset" : 38333,
+            "charLength" : 3,
+            "byteOffset" : 38405,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5855",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove or rework this redundant alternative."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 967,
+            "startColumn" : 26,
+            "endLine" : 967,
+            "endColumn" : 28,
+            "charOffset" : 110026,
+            "charLength" : 2,
+            "byteOffset" : 110286,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,326 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S3242",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use 'java.lang.Iterable' here; it is a more general type than 'Collection'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/component/index/ComponentIndexer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 113,
+            "startColumn" : 42,
+            "endLine" : 113,
+            "endColumn" : 83,
+            "charOffset" : 4064,
+            "charLength" : 41,
+            "byteOffset" : 4064,
+            "byteLength" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3242",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use 'java.util.Collection' here; it is a more general type than 'List'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/index/IssueIndexer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 137,
+            "startColumn" : 48,
+            "endLine" : 137,
+            "endColumn" : 70,
+            "charOffset" : 4934,
+            "charLength" : 22,
+            "byteOffset" : 4934,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3242",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use 'java.lang.Iterable' here; it is a more general type than 'List'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/SearchResponseData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 131,
+            "startColumn" : 27,
+            "endLine" : 131,
+            "endColumn" : 66,
+            "charOffset" : 4170,
+            "charLength" : 39,
+            "byteOffset" : 4170,
+            "byteLength" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3242",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use 'java.util.Collection' here; it is a more general type than 'Set'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/notification/NotificationService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 101,
+            "startColumn" : 68,
+            "endLine" : 101,
+            "endColumn" : 97,
+            "charOffset" : 3881,
+            "charLength" : 29,
+            "byteOffset" : 3881,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3242",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use 'java.lang.Iterable' here; it is a more general type than 'Collection'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/PermissionUpdater.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 42,
+            "endLine" : 52,
+            "endColumn" : 78,
+            "charOffset" : 2021,
+            "charLength" : 36,
+            "byteOffset" : 2021,
+            "byteLength" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3242",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use 'java.lang.Iterable' here; it is a more general type than 'List'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/platform/web/MasterServletFilter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 27,
+            "endLine" : 67,
+            "endColumn" : 63,
+            "charOffset" : 2435,
+            "charLength" : 36,
+            "byteOffset" : 2435,
+            "byteLength" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3242",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use 'java.lang.Iterable' here; it is a more general type than 'List'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/rule/ws/SearchAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 500,
+            "startColumn" : 43,
+            "endLine" : 500,
+            "endColumn" : 72,
+            "charOffset" : 21872,
+            "charLength" : 29,
+            "byteOffset" : 21872,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3242",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use 'java.lang.Iterable' here; it is a more general type than 'List'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/rule/ws/SearchAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 512,
+            "startColumn" : 42,
+            "endLine" : 512,
+            "endColumn" : 79,
+            "charOffset" : 22245,
+            "charLength" : 37,
+            "byteOffset" : 22245,
+            "byteLength" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3242",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use 'java.lang.Iterable' here; it is a more general type than 'List'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/test/index/TestDoc.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 154,
+            "startColumn" : 34,
+            "endLine" : 154,
+            "endColumn" : 67,
+            "charOffset" : 4333,
+            "charLength" : 33,
+            "byteOffset" : 4333,
+            "byteLength" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3242",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use 'java.lang.Iterable' here; it is a more general type than 'List'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/test/index/TestResultSetIterator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 101,
+            "startColumn" : 80,
+            "endLine" : 101,
+            "endColumn" : 110,
+            "charOffset" : 4490,
+            "charLength" : 30,
+            "byteOffset" : 4490,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3242",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use 'java.util.Collection' here; it is a more general type than 'List'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/ws/WebServiceEngine.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 150,
+            "startColumn" : 51,
+            "endLine" : 150,
+            "endColumn" : 77,
+            "charOffset" : 5922,
+            "charLength" : 26,
+            "byteOffset" : 5922,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

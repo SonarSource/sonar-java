@@ -1,0 +1,2742 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/CmsPrefrenceAreaController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 5,
+            "endLine" : 24,
+            "endColumn" : 15,
+            "charOffset" : 822,
+            "charLength" : 10,
+            "byteOffset" : 846,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/CmsSubjectController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 5,
+            "endLine" : 26,
+            "endColumn" : 15,
+            "charOffset" : 898,
+            "charLength" : 10,
+            "byteOffset" : 922,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/OmsCompanyAddressController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 5,
+            "endLine" : 24,
+            "endColumn" : 15,
+            "charOffset" : 829,
+            "charLength" : 10,
+            "byteOffset" : 853,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/OmsOrderController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 5,
+            "endLine" : 24,
+            "endColumn" : 15,
+            "charOffset" : 718,
+            "charLength" : 10,
+            "byteOffset" : 734,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/OmsOrderReturnApplyController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 5,
+            "endLine" : 26,
+            "endColumn" : 15,
+            "charOffset" : 900,
+            "charLength" : 10,
+            "byteOffset" : 932,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/OmsOrderReturnReasonController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 5,
+            "endLine" : 23,
+            "endColumn" : 15,
+            "charOffset" : 748,
+            "charLength" : 10,
+            "byteOffset" : 772,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/OmsOrderSettingController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 20,
+            "startColumn" : 5,
+            "endLine" : 20,
+            "endColumn" : 15,
+            "charOffset" : 659,
+            "charLength" : 10,
+            "byteOffset" : 683,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/OssController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 5,
+            "endLine" : 26,
+            "endColumn" : 15,
+            "charOffset" : 855,
+            "charLength" : 10,
+            "byteOffset" : 879,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsBrandController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 5,
+            "endLine" : 25,
+            "endColumn" : 15,
+            "charOffset" : 793,
+            "charLength" : 10,
+            "byteOffset" : 817,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductAttributeCategoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 5,
+            "endLine" : 24,
+            "endColumn" : 15,
+            "charOffset" : 851,
+            "charLength" : 10,
+            "byteOffset" : 883,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductAttributeController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 5,
+            "endLine" : 29,
+            "endColumn" : 15,
+            "charOffset" : 1046,
+            "charLength" : 10,
+            "byteOffset" : 1070,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductCategoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 5,
+            "endLine" : 26,
+            "endColumn" : 15,
+            "charOffset" : 915,
+            "charLength" : 10,
+            "byteOffset" : 939,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 5,
+            "endLine" : 26,
+            "endColumn" : 15,
+            "charOffset" : 833,
+            "charLength" : 10,
+            "byteOffset" : 849,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsSkuStockController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 22,
+            "startColumn" : 5,
+            "endLine" : 22,
+            "endColumn" : 15,
+            "charOffset" : 663,
+            "charLength" : 10,
+            "byteOffset" : 687,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/SmsCouponController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 5,
+            "endLine" : 24,
+            "endColumn" : 15,
+            "charOffset" : 737,
+            "charLength" : 10,
+            "byteOffset" : 757,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/SmsCouponHistoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 5,
+            "endLine" : 26,
+            "endColumn" : 15,
+            "charOffset" : 935,
+            "charLength" : 10,
+            "byteOffset" : 971,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/SmsFlashPromotionController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 5,
+            "endLine" : 23,
+            "endColumn" : 15,
+            "charOffset" : 731,
+            "charLength" : 10,
+            "byteOffset" : 759,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/SmsFlashPromotionProductRelationController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 5,
+            "endLine" : 24,
+            "endColumn" : 15,
+            "charOffset" : 864,
+            "charLength" : 10,
+            "byteOffset" : 904,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/SmsFlashPromotionSessionController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 5,
+            "endLine" : 23,
+            "endColumn" : 15,
+            "charOffset" : 779,
+            "charLength" : 10,
+            "byteOffset" : 807,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/SmsHomeAdvertiseController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 5,
+            "endLine" : 23,
+            "endColumn" : 15,
+            "charOffset" : 737,
+            "charLength" : 10,
+            "byteOffset" : 769,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/SmsHomeBrandController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 5,
+            "endLine" : 23,
+            "endColumn" : 15,
+            "charOffset" : 713,
+            "charLength" : 10,
+            "byteOffset" : 737,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/SmsHomeNewProductController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 5,
+            "endLine" : 23,
+            "endColumn" : 15,
+            "charOffset" : 738,
+            "charLength" : 10,
+            "byteOffset" : 762,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/SmsHomeRecommendProductController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 5,
+            "endLine" : 23,
+            "endColumn" : 15,
+            "charOffset" : 772,
+            "charLength" : 10,
+            "byteOffset" : 804,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/SmsHomeRecommendSubjectController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 5,
+            "endLine" : 23,
+            "endColumn" : 15,
+            "charOffset" : 772,
+            "charLength" : 10,
+            "byteOffset" : 804,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsAdminController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 5,
+            "endLine" : 41,
+            "endColumn" : 15,
+            "charOffset" : 1367,
+            "charLength" : 10,
+            "byteOffset" : 1391,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsMemberLevelController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 5,
+            "endLine" : 25,
+            "endColumn" : 15,
+            "charOffset" : 874,
+            "charLength" : 10,
+            "byteOffset" : 898,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsMenuController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 5,
+            "endLine" : 25,
+            "endColumn" : 15,
+            "charOffset" : 726,
+            "charLength" : 10,
+            "byteOffset" : 750,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsResourceCategoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 22,
+            "startColumn" : 5,
+            "endLine" : 22,
+            "endColumn" : 15,
+            "charOffset" : 705,
+            "charLength" : 10,
+            "byteOffset" : 737,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsResourceController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 5,
+            "endLine" : 25,
+            "endColumn" : 15,
+            "charOffset" : 779,
+            "charLength" : 10,
+            "byteOffset" : 803,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsRoleController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 5,
+            "endLine" : 23,
+            "endColumn" : 15,
+            "charOffset" : 685,
+            "charLength" : 10,
+            "byteOffset" : 717,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/CmsPrefrenceAreaServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 18,
+            "startColumn" : 5,
+            "endLine" : 18,
+            "endColumn" : 15,
+            "charOffset" : 532,
+            "charLength" : 10,
+            "byteOffset" : 550,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/CmsSubjectServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 20,
+            "startColumn" : 5,
+            "endLine" : 20,
+            "endColumn" : 15,
+            "charOffset" : 573,
+            "charLength" : 10,
+            "byteOffset" : 591,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsCompanyAddressServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 18,
+            "startColumn" : 5,
+            "endLine" : 18,
+            "endColumn" : 15,
+            "charOffset" : 540,
+            "charLength" : 10,
+            "byteOffset" : 558,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderReturnApplyServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 5,
+            "endLine" : 24,
+            "endColumn" : 15,
+            "charOffset" : 819,
+            "charLength" : 10,
+            "byteOffset" : 837,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderReturnReasonServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 20,
+            "startColumn" : 5,
+            "endLine" : 20,
+            "endColumn" : 15,
+            "charOffset" : 622,
+            "charLength" : 10,
+            "byteOffset" : 640,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 5,
+            "endLine" : 26,
+            "endColumn" : 15,
+            "charOffset" : 816,
+            "charLength" : 10,
+            "byteOffset" : 830,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderSettingServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 15,
+            "startColumn" : 5,
+            "endLine" : 15,
+            "endColumn" : 15,
+            "charOffset" : 452,
+            "charLength" : 10,
+            "byteOffset" : 470,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/OssServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 2,
+            "endLine" : 43,
+            "endColumn" : 12,
+            "charOffset" : 1388,
+            "charLength" : 10,
+            "byteOffset" : 1406,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsBrandServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 5,
+            "endLine" : 25,
+            "endColumn" : 15,
+            "charOffset" : 781,
+            "charLength" : 10,
+            "byteOffset" : 799,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductAttributeCategoryServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 5,
+            "endLine" : 21,
+            "endColumn" : 15,
+            "charOffset" : 759,
+            "charLength" : 10,
+            "byteOffset" : 781,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductAttributeServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 5,
+            "endLine" : 25,
+            "endColumn" : 15,
+            "charOffset" : 902,
+            "charLength" : 10,
+            "byteOffset" : 920,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductCategoryServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 5,
+            "endLine" : 27,
+            "endColumn" : 15,
+            "charOffset" : 976,
+            "charLength" : 10,
+            "byteOffset" : 994,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 5,
+            "endLine" : 33,
+            "endColumn" : 15,
+            "charOffset" : 1064,
+            "charLength" : 10,
+            "byteOffset" : 1078,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsSkuStockServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 5,
+            "endLine" : 21,
+            "endColumn" : 15,
+            "charOffset" : 620,
+            "charLength" : 10,
+            "byteOffset" : 638,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsCouponHistoryServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 20,
+            "startColumn" : 5,
+            "endLine" : 20,
+            "endColumn" : 15,
+            "charOffset" : 613,
+            "charLength" : 10,
+            "byteOffset" : 637,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsCouponServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 5,
+            "endLine" : 25,
+            "endColumn" : 15,
+            "charOffset" : 843,
+            "charLength" : 10,
+            "byteOffset" : 859,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsFlashPromotionProductRelationServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 5,
+            "endLine" : 21,
+            "endColumn" : 15,
+            "charOffset" : 789,
+            "charLength" : 10,
+            "byteOffset" : 813,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsFlashPromotionServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 5,
+            "endLine" : 21,
+            "endColumn" : 15,
+            "charOffset" : 641,
+            "charLength" : 10,
+            "byteOffset" : 661,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsFlashPromotionSessionServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 5,
+            "endLine" : 23,
+            "endColumn" : 15,
+            "charOffset" : 807,
+            "charLength" : 10,
+            "byteOffset" : 827,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeAdvertiseServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 5,
+            "endLine" : 23,
+            "endColumn" : 15,
+            "charOffset" : 701,
+            "charLength" : 10,
+            "byteOffset" : 719,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeBrandServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 20,
+            "startColumn" : 5,
+            "endLine" : 20,
+            "endColumn" : 15,
+            "charOffset" : 586,
+            "charLength" : 10,
+            "byteOffset" : 604,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeNewProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 20,
+            "startColumn" : 5,
+            "endLine" : 20,
+            "endColumn" : 15,
+            "charOffset" : 618,
+            "charLength" : 10,
+            "byteOffset" : 640,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeRecommendProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 20,
+            "startColumn" : 5,
+            "endLine" : 20,
+            "endColumn" : 15,
+            "charOffset" : 654,
+            "charLength" : 10,
+            "byteOffset" : 676,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeRecommendSubjectServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 20,
+            "startColumn" : 5,
+            "endLine" : 20,
+            "endColumn" : 15,
+            "charOffset" : 654,
+            "charLength" : 10,
+            "byteOffset" : 676,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminCacheServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 5,
+            "endLine" : 26,
+            "endColumn" : 15,
+            "charOffset" : 904,
+            "charLength" : 10,
+            "byteOffset" : 926,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 5,
+            "endLine" : 47,
+            "endColumn" : 15,
+            "charOffset" : 2020,
+            "charLength" : 10,
+            "byteOffset" : 2038,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsMemberLevelServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 18,
+            "startColumn" : 5,
+            "endLine" : 18,
+            "endColumn" : 15,
+            "charOffset" : 520,
+            "charLength" : 10,
+            "byteOffset" : 538,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsMenuServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 22,
+            "startColumn" : 5,
+            "endLine" : 22,
+            "endColumn" : 15,
+            "charOffset" : 611,
+            "charLength" : 10,
+            "byteOffset" : 629,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsResourceCategoryServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 19,
+            "startColumn" : 5,
+            "endLine" : 19,
+            "endColumn" : 15,
+            "charOffset" : 575,
+            "charLength" : 10,
+            "byteOffset" : 597,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsResourceServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 22,
+            "startColumn" : 5,
+            "endLine" : 22,
+            "endColumn" : 15,
+            "charOffset" : 654,
+            "charLength" : 10,
+            "byteOffset" : 672,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsRoleServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 5,
+            "endLine" : 24,
+            "endColumn" : 15,
+            "charOffset" : 735,
+            "charLength" : 10,
+            "byteOffset" : 753,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-demo/src/main/java/com/macro/mall/demo/controller/DemoController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 5,
+            "endLine" : 26,
+            "endColumn" : 15,
+            "charOffset" : 825,
+            "charLength" : 10,
+            "byteOffset" : 853,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-demo/src/main/java/com/macro/mall/demo/controller/RestTemplateDemoController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 5,
+            "endLine" : 32,
+            "endColumn" : 15,
+            "charOffset" : 1164,
+            "charLength" : 10,
+            "byteOffset" : 1172,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-demo/src/main/java/com/macro/mall/demo/service/impl/DemoServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 5,
+            "endLine" : 21,
+            "endColumn" : 15,
+            "charOffset" : 609,
+            "charLength" : 10,
+            "byteOffset" : 615,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/AlipayController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 5,
+            "endLine" : 32,
+            "endColumn" : 15,
+            "charOffset" : 1066,
+            "charLength" : 10,
+            "byteOffset" : 1094,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/HomeController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 5,
+            "endLine" : 25,
+            "endColumn" : 15,
+            "charOffset" : 793,
+            "charLength" : 10,
+            "byteOffset" : 817,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/MemberAttentionController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 22,
+            "startColumn" : 5,
+            "endLine" : 22,
+            "endColumn" : 15,
+            "charOffset" : 781,
+            "charLength" : 10,
+            "byteOffset" : 813,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/MemberProductCollectionController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 22,
+            "startColumn" : 5,
+            "endLine" : 22,
+            "endColumn" : 15,
+            "charOffset" : 800,
+            "charLength" : 10,
+            "byteOffset" : 828,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/MemberReadHistoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 5,
+            "endLine" : 24,
+            "endColumn" : 15,
+            "charOffset" : 815,
+            "charLength" : 10,
+            "byteOffset" : 855,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/OmsCartItemController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 5,
+            "endLine" : 25,
+            "endColumn" : 15,
+            "charOffset" : 828,
+            "charLength" : 10,
+            "byteOffset" : 848,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/OmsPortalOrderController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 5,
+            "endLine" : 29,
+            "endColumn" : 15,
+            "charOffset" : 1015,
+            "charLength" : 10,
+            "byteOffset" : 1031,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/OmsPortalOrderReturnApplyController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 5,
+            "endLine" : 23,
+            "endColumn" : 15,
+            "charOffset" : 914,
+            "charLength" : 10,
+            "byteOffset" : 938,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/PmsPortalBrandController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 5,
+            "endLine" : 25,
+            "endColumn" : 15,
+            "charOffset" : 767,
+            "charLength" : 10,
+            "byteOffset" : 795,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/PmsPortalProductController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 5,
+            "endLine" : 29,
+            "endColumn" : 15,
+            "charOffset" : 1009,
+            "charLength" : 10,
+            "byteOffset" : 1033,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/UmsMemberController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 5,
+            "endLine" : 33,
+            "endColumn" : 15,
+            "charOffset" : 1149,
+            "charLength" : 10,
+            "byteOffset" : 1173,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/UmsMemberCouponController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 5,
+            "endLine" : 30,
+            "endColumn" : 15,
+            "charOffset" : 1121,
+            "charLength" : 10,
+            "byteOffset" : 1149,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/UmsMemberReceiveAddressController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 22,
+            "startColumn" : 5,
+            "endLine" : 22,
+            "endColumn" : 15,
+            "charOffset" : 734,
+            "charLength" : 10,
+            "byteOffset" : 766,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/AlipayServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 5,
+            "endLine" : 32,
+            "endColumn" : 15,
+            "charOffset" : 1100,
+            "charLength" : 10,
+            "byteOffset" : 1116,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/HomeServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 5,
+            "endLine" : 25,
+            "endColumn" : 15,
+            "charOffset" : 791,
+            "charLength" : 10,
+            "byteOffset" : 809,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/MemberAttentionServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 5,
+            "endLine" : 27,
+            "endColumn" : 15,
+            "charOffset" : 972,
+            "charLength" : 10,
+            "byteOffset" : 986,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/MemberCollectionServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 5,
+            "endLine" : 25,
+            "endColumn" : 15,
+            "charOffset" : 961,
+            "charLength" : 10,
+            "byteOffset" : 975,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/MemberReadHistoryServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 5,
+            "endLine" : 30,
+            "endColumn" : 15,
+            "charOffset" : 1032,
+            "charLength" : 10,
+            "byteOffset" : 1054,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsCartItemServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 5,
+            "endLine" : 29,
+            "endColumn" : 15,
+            "charOffset" : 1001,
+            "charLength" : 10,
+            "byteOffset" : 1017,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderReturnApplyServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 19,
+            "startColumn" : 5,
+            "endLine" : 19,
+            "endColumn" : 15,
+            "charOffset" : 634,
+            "charLength" : 10,
+            "byteOffset" : 652,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 5,
+            "endLine" : 34,
+            "endColumn" : 15,
+            "charOffset" : 1183,
+            "charLength" : 10,
+            "byteOffset" : 1195,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPromotionServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 5,
+            "endLine" : 25,
+            "endColumn" : 15,
+            "charOffset" : 823,
+            "charLength" : 10,
+            "byteOffset" : 837,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalBrandServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 5,
+            "endLine" : 23,
+            "endColumn" : 15,
+            "charOffset" : 734,
+            "charLength" : 10,
+            "byteOffset" : 752,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 5,
+            "endLine" : 25,
+            "endColumn" : 15,
+            "charOffset" : 828,
+            "charLength" : 10,
+            "byteOffset" : 846,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCacheServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 18,
+            "startColumn" : 5,
+            "endLine" : 18,
+            "endColumn" : 15,
+            "charOffset" : 626,
+            "charLength" : 10,
+            "byteOffset" : 632,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCouponServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 5,
+            "endLine" : 28,
+            "endColumn" : 15,
+            "charOffset" : 912,
+            "charLength" : 10,
+            "byteOffset" : 932,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberReceiveAddressServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 5,
+            "endLine" : 21,
+            "endColumn" : 15,
+            "charOffset" : 732,
+            "charLength" : 10,
+            "byteOffset" : 750,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 5,
+            "endLine" : 42,
+            "endColumn" : 15,
+            "charOffset" : 1840,
+            "charLength" : 10,
+            "byteOffset" : 1854,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-search/src/main/java/com/macro/mall/search/controller/EsProductController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 5,
+            "endLine" : 28,
+            "endColumn" : 15,
+            "charOffset" : 979,
+            "charLength" : 10,
+            "byteOffset" : 1003,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 5,
+            "endLine" : 38,
+            "endColumn" : 15,
+            "charOffset" : 1512,
+            "charLength" : 10,
+            "byteOffset" : 1530,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}     }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 5,
+            "endLine" : 42,
+            "endColumn" : 15,
+            "charOffset" : 1840,
+            "charLength" : 10,
+            "byteOffset" : 1854,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-search/src/main/java/com/macro/mall/search/controller/EsProductController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 5,
+            "endLine" : 28,
+            "endColumn" : 15,
+            "charOffset" : 979,
+            "charLength" : 10,
+            "byteOffset" : 1003,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4288",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this annotation and use constructor injection instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 5,
+            "endLine" : 38,
+            "endColumn" : 15,
+            "charOffset" : 1512,
+            "charLength" : 10,
+            "byteOffset" : 1530,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

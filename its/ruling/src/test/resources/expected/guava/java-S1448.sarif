@@ -1,0 +1,634 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"CharMatcher\" has 51 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/CharMatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 23,
+            "endLine" : 59,
+            "endColumn" : 34,
+            "charOffset" : 2494,
+            "charLength" : 11,
+            "byteOffset" : 2494,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"CacheBuilder\" has 43 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/CacheBuilder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 152,
+            "startColumn" : 20,
+            "endLine" : 152,
+            "endColumn" : 32,
+            "charOffset" : 7325,
+            "charLength" : 12,
+            "byteOffset" : 7325,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"LocalCache\" has 64 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 96,
+            "startColumn" : 7,
+            "endLine" : 96,
+            "endColumn" : 17,
+            "charOffset" : 3932,
+            "charLength" : 10,
+            "byteOffset" : 3932,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"Segment\" has 60 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1975,
+            "startColumn" : 16,
+            "endLine" : 1975,
+            "endColumn" : 23,
+            "charOffset" : 56195,
+            "charLength" : 7,
+            "byteOffset" : 56195,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"ForwardingNavigableMap\" has 38 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingNavigableMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 23,
+            "endLine" : 52,
+            "endColumn" : 45,
+            "charOffset" : 2263,
+            "charLength" : 22,
+            "byteOffset" : 2263,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"ImmutableList\" has 41 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 23,
+            "endLine" : 54,
+            "endColumn" : 36,
+            "charOffset" : 1919,
+            "charLength" : 13,
+            "byteOffset" : 1919,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"ImmutableSortedMap\" has 55 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableSortedMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 20,
+            "endLine" : 57,
+            "endColumn" : 38,
+            "charOffset" : 2227,
+            "charLength" : 18,
+            "byteOffset" : 2227,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"ImmutableSortedSet\" has 48 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableSortedSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 23,
+            "endLine" : 59,
+            "endColumn" : 41,
+            "charOffset" : 2344,
+            "charLength" : 18,
+            "byteOffset" : 2344,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"Iterables\" has 52 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Iterables.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 20,
+            "endLine" : 61,
+            "endColumn" : 29,
+            "charOffset" : 2182,
+            "charLength" : 9,
+            "byteOffset" : 2182,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"Iterators\" has 57 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Iterators.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 20,
+            "endLine" : 70,
+            "endColumn" : 29,
+            "charOffset" : 2605,
+            "charLength" : 9,
+            "byteOffset" : 2605,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"MapMakerInternalMap\" has 47 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MapMakerInternalMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 73,
+            "startColumn" : 7,
+            "endLine" : 73,
+            "endColumn" : 26,
+            "charOffset" : 2703,
+            "charLength" : 19,
+            "byteOffset" : 2703,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"Segment\" has 50 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MapMakerInternalMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1986,
+            "startColumn" : 16,
+            "endLine" : 1986,
+            "endColumn" : 23,
+            "charOffset" : 56578,
+            "charLength" : 7,
+            "byteOffset" : 56578,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"Maps\" has 93 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 85,
+            "startColumn" : 20,
+            "endLine" : 85,
+            "endColumn" : 24,
+            "charOffset" : 3025,
+            "charLength" : 4,
+            "byteOffset" : 3025,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"Multimaps\" has 40 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Multimaps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 20,
+            "endLine" : 68,
+            "endColumn" : 29,
+            "charOffset" : 2274,
+            "charLength" : 9,
+            "byteOffset" : 2274,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"Ordering\" has 36 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Ordering.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 132,
+            "startColumn" : 23,
+            "endLine" : 132,
+            "endColumn" : 31,
+            "charOffset" : 4724,
+            "charLength" : 8,
+            "byteOffset" : 4724,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"Range\" has 40 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Range.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 115,
+            "startColumn" : 20,
+            "endLine" : 115,
+            "endColumn" : 25,
+            "charOffset" : 5729,
+            "charLength" : 5,
+            "byteOffset" : 5741,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"Sets\" has 41 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Sets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 20,
+            "endLine" : 65,
+            "endColumn" : 24,
+            "charOffset" : 2128,
+            "charLength" : 4,
+            "byteOffset" : 2128,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"Files\" has 38 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/Files.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 20,
+            "endLine" : 66,
+            "endColumn" : 25,
+            "charOffset" : 2145,
+            "charLength" : 5,
+            "byteOffset" : 2145,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"InetAddresses\" has 36 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/net/InetAddresses.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 115,
+            "startColumn" : 20,
+            "endLine" : 115,
+            "endColumn" : 33,
+            "charOffset" : 4666,
+            "charLength" : 13,
+            "byteOffset" : 4666,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"TypeToken\" has 53 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/reflect/TypeToken.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 94,
+            "startColumn" : 23,
+            "endLine" : 94,
+            "endColumn" : 32,
+            "charOffset" : 3759,
+            "charLength" : 9,
+            "byteOffset" : 3759,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"Futures\" has 38 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Futures.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 20,
+            "endLine" : 68,
+            "endColumn" : 27,
+            "charOffset" : 2541,
+            "charLength" : 7,
+            "byteOffset" : 2541,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1448",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "class \"Monitor\" has 41 methods, which is greater than the 35 authorized. Split it into smaller classes."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Monitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 202,
+            "startColumn" : 20,
+            "endLine" : 202,
+            "endColumn" : 27,
+            "charOffset" : 7421,
+            "charLength" : 7,
+            "byteOffset" : 7421,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

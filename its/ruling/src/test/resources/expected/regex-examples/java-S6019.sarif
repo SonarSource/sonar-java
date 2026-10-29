@@ -1,0 +1,578 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 60,
+            "endLine" : 49,
+            "endColumn" : 63,
+            "charOffset" : 4610,
+            "charLength" : 3,
+            "byteOffset" : 4611,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1539,
+            "startColumn" : 46,
+            "endLine" : 1539,
+            "endColumn" : 49,
+            "charOffset" : 179855,
+            "charLength" : 3,
+            "byteOffset" : 180065,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 497,
+            "startColumn" : 123,
+            "endLine" : 497,
+            "endColumn" : 126,
+            "charOffset" : 62059,
+            "charLength" : 3,
+            "byteOffset" : 62076,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1405,
+            "startColumn" : 34,
+            "endLine" : 1405,
+            "endColumn" : 37,
+            "charOffset" : 166844,
+            "charLength" : 3,
+            "byteOffset" : 167021,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1931,
+            "startColumn" : 44,
+            "endLine" : 1931,
+            "endColumn" : 47,
+            "charOffset" : 231737,
+            "charLength" : 3,
+            "byteOffset" : 232411,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 219,
+            "startColumn" : 83,
+            "endLine" : 219,
+            "endColumn" : 86,
+            "charOffset" : 26406,
+            "charLength" : 3,
+            "byteOffset" : 26419,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 241,
+            "startColumn" : 27,
+            "endLine" : 241,
+            "endColumn" : 30,
+            "charOffset" : 29887,
+            "charLength" : 3,
+            "byteOffset" : 29900,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1081,
+            "startColumn" : 77,
+            "endLine" : 1081,
+            "endColumn" : 84,
+            "charOffset" : 122283,
+            "charLength" : 7,
+            "byteOffset" : 122312,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 383,
+            "startColumn" : 60,
+            "endLine" : 383,
+            "endColumn" : 71,
+            "charOffset" : 44474,
+            "charLength" : 11,
+            "byteOffset" : 44506,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 535,
+            "startColumn" : 77,
+            "endLine" : 535,
+            "endColumn" : 80,
+            "charOffset" : 63561,
+            "charLength" : 3,
+            "byteOffset" : 63593,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 365,
+            "startColumn" : 62,
+            "endLine" : 365,
+            "endColumn" : 67,
+            "charOffset" : 43033,
+            "charLength" : 5,
+            "byteOffset" : 43033,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 347,
+            "startColumn" : 58,
+            "endLine" : 347,
+            "endColumn" : 61,
+            "charOffset" : 40875,
+            "charLength" : 3,
+            "byteOffset" : 40875,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1123,
+            "startColumn" : 41,
+            "endLine" : 1123,
+            "endColumn" : 44,
+            "charOffset" : 128282,
+            "charLength" : 3,
+            "byteOffset" : 128427,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1509,
+            "startColumn" : 25,
+            "endLine" : 1509,
+            "endColumn" : 28,
+            "charOffset" : 169715,
+            "charLength" : 3,
+            "byteOffset" : 169902,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1603,
+            "startColumn" : 23,
+            "endLine" : 1603,
+            "endColumn" : 34,
+            "charOffset" : 182139,
+            "charLength" : 11,
+            "byteOffset" : 182327,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 353,
+            "startColumn" : 154,
+            "endLine" : 353,
+            "endColumn" : 160,
+            "charOffset" : 43801,
+            "charLength" : 6,
+            "byteOffset" : 43878,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1731,
+            "startColumn" : 32,
+            "endLine" : 1731,
+            "endColumn" : 37,
+            "charOffset" : 192672,
+            "charLength" : 5,
+            "byteOffset" : 193132,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1735,
+            "startColumn" : 22,
+            "endLine" : 1735,
+            "endColumn" : 25,
+            "charOffset" : 193116,
+            "charLength" : 3,
+            "byteOffset" : 193576,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 965,
+            "startColumn" : 111,
+            "endLine" : 965,
+            "endColumn" : 114,
+            "charOffset" : 109830,
+            "charLength" : 3,
+            "byteOffset" : 110090,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6019",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove the '?' from this unnecessarily reluctant quantifier."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1483,
+            "startColumn" : 46,
+            "endLine" : 1483,
+            "endColumn" : 49,
+            "charOffset" : 169267,
+            "charLength" : 3,
+            "byteOffset" : 169599,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

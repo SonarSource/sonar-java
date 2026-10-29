@@ -1,0 +1,522 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 349,
+            "startColumn" : 18,
+            "endLine" : 349,
+            "endColumn" : 34,
+            "charOffset" : 11650,
+            "charLength" : 16,
+            "byteOffset" : 11650,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 388,
+            "startColumn" : 14,
+            "endLine" : 388,
+            "endColumn" : 30,
+            "charOffset" : 13129,
+            "charLength" : 16,
+            "byteOffset" : 13129,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanComparator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 235,
+            "startColumn" : 10,
+            "endLine" : 235,
+            "endColumn" : 26,
+            "charOffset" : 8317,
+            "charLength" : 16,
+            "byteOffset" : 8317,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 446,
+            "startColumn" : 6,
+            "endLine" : 446,
+            "endColumn" : 22,
+            "charOffset" : 15630,
+            "charLength" : 16,
+            "byteOffset" : 15630,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 556,
+            "startColumn" : 18,
+            "endLine" : 556,
+            "endColumn" : 34,
+            "charOffset" : 19140,
+            "charLength" : 16,
+            "byteOffset" : 19140,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 260,
+            "startColumn" : 14,
+            "endLine" : 260,
+            "endColumn" : 30,
+            "charOffset" : 10507,
+            "charLength" : 16,
+            "byteOffset" : 10507,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConstructorUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 429,
+            "startColumn" : 26,
+            "endLine" : 429,
+            "endColumn" : 42,
+            "charOffset" : 18062,
+            "charLength" : 16,
+            "byteOffset" : 18062,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 186,
+            "startColumn" : 6,
+            "endLine" : 186,
+            "endColumn" : 22,
+            "charOffset" : 6634,
+            "charLength" : 16,
+            "byteOffset" : 6634,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 558,
+            "startColumn" : 14,
+            "endLine" : 558,
+            "endColumn" : 30,
+            "charOffset" : 20453,
+            "charLength" : 16,
+            "byteOffset" : 20453,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 604,
+            "startColumn" : 10,
+            "endLine" : 604,
+            "endColumn" : 26,
+            "charOffset" : 22189,
+            "charLength" : 16,
+            "byteOffset" : 22189,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 627,
+            "startColumn" : 14,
+            "endLine" : 627,
+            "endColumn" : 30,
+            "charOffset" : 23051,
+            "charLength" : 16,
+            "byteOffset" : 23051,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 456,
+            "startColumn" : 18,
+            "endLine" : 456,
+            "endColumn" : 34,
+            "charOffset" : 14051,
+            "charLength" : 16,
+            "byteOffset" : 14051,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 706,
+            "startColumn" : 10,
+            "endLine" : 706,
+            "endColumn" : 26,
+            "charOffset" : 22756,
+            "charLength" : 16,
+            "byteOffset" : 22756,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2245,
+            "startColumn" : 10,
+            "endLine" : 2245,
+            "endColumn" : 26,
+            "charOffset" : 92092,
+            "charLength" : 16,
+            "byteOffset" : 92092,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2261,
+            "startColumn" : 10,
+            "endLine" : 2261,
+            "endColumn" : 26,
+            "charOffset" : 92672,
+            "charLength" : 16,
+            "byteOffset" : 92672,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/AbstractConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 455,
+            "startColumn" : 10,
+            "endLine" : 455,
+            "endColumn" : 26,
+            "charOffset" : 16385,
+            "charLength" : 16,
+            "byteOffset" : 16385,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/ArrayConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 317,
+            "startColumn" : 10,
+            "endLine" : 317,
+            "endColumn" : 26,
+            "charOffset" : 13164,
+            "charLength" : 16,
+            "byteOffset" : 13164,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1309",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Suppressing warnings is not allowed"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/BaseLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 278,
+            "startColumn" : 14,
+            "endLine" : 278,
+            "endColumn" : 30,
+            "charOffset" : 10544,
+            "charLength" : 16,
+            "byteOffset" : 10544,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

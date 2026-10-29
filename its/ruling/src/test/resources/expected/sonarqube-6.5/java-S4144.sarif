@@ -1,0 +1,606 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"fail_with_NPE_when_cookie_name_is_null\" on line 110."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/authentication/CookiesTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 116,
+            "startColumn" : 15,
+            "endLine" : 116,
+            "endColumn" : 52,
+            "charOffset" : 4621,
+            "charLength" : 37,
+            "byteOffset" : 4621,
+            "byteLength" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"does_not_force_default_group_when_authenticating_new_user_if_organizations_are_enabled\" on line 143."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/authentication/UserIdentityAuthenticatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 268,
+            "startColumn" : 15,
+            "endLine" : 268,
+            "endColumn" : 108,
+            "charOffset" : 10744,
+            "charLength" : 93,
+            "byteOffset" : 10744,
+            "byteLength" : 93
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"formatActivity_with_both_error_message_only\" on line 209."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/ce/ws/TaskFormatterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 220,
+            "startColumn" : 15,
+            "endLine" : 220,
+            "endColumn" : 78,
+            "charOffset" : 8566,
+            "charLength" : 63,
+            "byteOffset" : 8566,
+            "byteLength" : 63
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"assertComponentKeyUpdated\" on line 193."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ComponentServiceUpdateKeyTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 211,
+            "startColumn" : 16,
+            "endLine" : 211,
+            "endColumn" : 48,
+            "charOffset" : 9079,
+            "charLength" : 32,
+            "byteOffset" : 9079,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"does_not_add_project_to_favorite_when_anonymously_created\" on line 171."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ComponentUpdaterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 184,
+            "startColumn" : 15,
+            "endLine" : 184,
+            "endColumn" : 90,
+            "charOffset" : 7693,
+            "charLength" : 75,
+            "byteOffset" : 7693,
+            "byteLength" : 75
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"create_query_having_q\" on line 189."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/ProjectMeasuresQueryFactoryTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 198,
+            "startColumn" : 15,
+            "endLine" : 198,
+            "endColumn" : 58,
+            "charOffset" : 8641,
+            "charLength" : 43,
+            "byteOffset" : 8641,
+            "byteLength" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"create_production_file\" on line 34."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/component/FileAttributesTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 15,
+            "endLine" : 43,
+            "endColumn" : 31,
+            "charOffset" : 1504,
+            "charLength" : 16,
+            "byteOffset" : 1504,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"visit_module_with_depth_MODULE_calls_visit_module\" on line 149."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ReportPostOrderDepthTraversalTypeAwareCrawlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 159,
+            "startColumn" : 15,
+            "endLine" : 159,
+            "endColumn" : 66,
+            "charOffset" : 6542,
+            "charLength" : 51,
+            "byteOffset" : 6542,
+            "byteLength" : 51
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"visit_module_with_depth_MODULE_calls_visit_module\" on line 150."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ReportPreOrderDepthTraversalTypeAwareCrawlerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 160,
+            "startColumn" : 15,
+            "endLine" : 160,
+            "endColumn" : 66,
+            "charOffset" : 6507,
+            "charLength" : 51,
+            "byteOffset" : 6507,
+            "byteLength" : 51
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"visit_module_with_depth_MODULE_calls_visit_module\" on line 169."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ReportVisitorsCrawlerWithPostOrderTypeAwareVisitorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 180,
+            "startColumn" : 15,
+            "endLine" : 180,
+            "endColumn" : 66,
+            "charOffset" : 7398,
+            "charLength" : 51,
+            "byteOffset" : 7398,
+            "byteLength" : 51
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"visit_module_with_depth_MODULE_calls_visit_module\" on line 167."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ReportVisitorsCrawlerWithPreOrderTypeAwareVisitorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 178,
+            "startColumn" : 15,
+            "endLine" : 178,
+            "endColumn" : 66,
+            "charOffset" : 7265,
+            "charLength" : 51,
+            "byteOffset" : 7265,
+            "byteLength" : 51
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"create_measure_when_counter_is_aggregated_from_context\" on line 104."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/formula/AverageFormulaTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 127,
+            "startColumn" : 15,
+            "endLine" : 127,
+            "endColumn" : 36,
+            "charOffset" : 5063,
+            "charLength" : 21,
+            "byteOffset" : 5063,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"testEquals_Percent\" on line 146."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitygate/ConditionEvaluatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 154,
+            "startColumn" : 15,
+            "endLine" : 154,
+            "endColumn" : 31,
+            "charOffset" : 7444,
+            "charLength" : 16,
+            "byteOffset" : 7444,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"fail_if_bad_query\" on line 63."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/es/request/ProxyIndexRequestBuilderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 75,
+            "startColumn" : 15,
+            "endLine" : 75,
+            "endColumn" : 53,
+            "charOffset" : 2698,
+            "charLength" : 38,
+            "byteOffset" : 2698,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"request_deletes_specified_organization_if_exists_and_user_is_administrator_of_it\" on line 196."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/DeleteActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 206,
+            "startColumn" : 15,
+            "endLine" : 206,
+            "endColumn" : 102,
+            "charOffset" : 8111,
+            "charLength" : 87,
+            "byteOffset" : 8111,
+            "byteLength" : 87
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"request_succeeds_if_user_is_organization_administrator\" on line 112."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/UpdateActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 120,
+            "startColumn" : 15,
+            "endLine" : 120,
+            "endColumn" : 82,
+            "charOffset" : 5204,
+            "charLength" : 67,
+            "byteOffset" : 5204,
+            "byteLength" : 67
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"execute_fails_with_IAE_when_project_parameter_is_not_provided\" on line 113."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/project/ws/UpdateVisibilityActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 121,
+            "startColumn" : 15,
+            "endLine" : 121,
+            "endColumn" : 73,
+            "charOffset" : 5214,
+            "charLength" : 58,
+            "byteOffset" : 5214,
+            "byteLength" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"throw_ForbiddenException_if_not_profile_administrator_of_organization\" on line 208."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/CopyActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 224,
+            "startColumn" : 15,
+            "endLine" : 224,
+            "endColumn" : 68,
+            "charOffset" : 10150,
+            "charLength" : 53,
+            "byteOffset" : 10150,
+            "byteLength" : 53
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"fail_when_test_file_id_is_unknown\" on line 256."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/test/ws/ListActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 262,
+            "startColumn" : 15,
+            "endLine" : 262,
+            "endColumn" : 49,
+            "charOffset" : 11304,
+            "charLength" : 34,
+            "byteOffset" : 11304,
+            "byteLength" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"execute_request\" on line 72."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/ws/WebServiceEngineTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 81,
+            "startColumn" : 15,
+            "endLine" : 81,
+            "endColumn" : 66,
+            "charOffset" : 2609,
+            "charLength" : 51,
+            "byteOffset" : 2609,
+            "byteLength" : 51
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4144",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Update this method so that its implementation is not identical to \"execute_request\" on line 72."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/ws/WebServiceEngineTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 15,
+            "endLine" : 90,
+            "endColumn" : 49,
+            "charOffset" : 2951,
+            "charLength" : 34,
+            "byteOffset" : 2951,
+            "byteLength" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

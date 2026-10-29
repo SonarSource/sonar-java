@@ -1,0 +1,224 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S122",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "At most one statement is allowed per line, but 2 statements were found on this line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 98,
+            "startColumn" : 1,
+            "endLine" : 98,
+            "endColumn" : 57,
+            "charOffset" : 3706,
+            "charLength" : 56,
+            "byteOffset" : 3870,
+            "byteLength" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S122",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "At most one statement is allowed per line, but 2 statements were found on this line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 312,
+            "startColumn" : 1,
+            "endLine" : 312,
+            "endColumn" : 59,
+            "charOffset" : 13666,
+            "charLength" : 58,
+            "byteOffset" : 14122,
+            "byteLength" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S122",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "At most one statement is allowed per line, but 2 statements were found on this line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 1,
+            "endLine" : 64,
+            "endColumn" : 41,
+            "charOffset" : 2559,
+            "charLength" : 40,
+            "byteOffset" : 2595,
+            "byteLength" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S122",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "At most one statement is allowed per line, but 2 statements were found on this line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 127,
+            "startColumn" : 1,
+            "endLine" : 127,
+            "endColumn" : 32,
+            "charOffset" : 4948,
+            "charLength" : 31,
+            "byteOffset" : 5150,
+            "byteLength" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S122",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "At most one statement is allowed per line, but 2 statements were found on this line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 497,
+            "startColumn" : 1,
+            "endLine" : 497,
+            "endColumn" : 38,
+            "charOffset" : 21047,
+            "charLength" : 37,
+            "byteOffset" : 22427,
+            "byteLength" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S122",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "At most one statement is allowed per line, but 2 statements were found on this line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 60,
+            "startColumn" : 1,
+            "endLine" : 60,
+            "endColumn" : 40,
+            "charOffset" : 2444,
+            "charLength" : 39,
+            "byteOffset" : 2458,
+            "byteLength" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S122",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "At most one statement is allowed per line, but 2 statements were found on this line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-security/src/main/java/com/macro/mall/security/component/DynamicSecurityMetadataSource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 1,
+            "endLine" : 44,
+            "endColumn" : 63,
+            "charOffset" : 1459,
+            "charLength" : 62,
+            "byteOffset" : 1543,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}    "byteOffset" : 1543,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

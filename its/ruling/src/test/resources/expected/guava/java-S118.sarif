@@ -1,0 +1,4414 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/CharMatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 23,
+            "endLine" : 59,
+            "endColumn" : 34,
+            "charOffset" : 2494,
+            "charLength" : 11,
+            "byteOffset" : 2494,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/CharMatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 955,
+            "startColumn" : 25,
+            "endLine" : 955,
+            "endColumn" : 36,
+            "charOffset" : 32424,
+            "charLength" : 11,
+            "byteOffset" : 32424,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/CharMatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 969,
+            "startColumn" : 25,
+            "endLine" : 969,
+            "endColumn" : 41,
+            "charOffset" : 32754,
+            "charLength" : 16,
+            "byteOffset" : 32754,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Converter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 95,
+            "startColumn" : 23,
+            "endLine" : 95,
+            "endColumn" : 32,
+            "charOffset" : 3971,
+            "charLength" : 9,
+            "byteOffset" : 3971,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Equivalence.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 23,
+            "endLine" : 42,
+            "endColumn" : 34,
+            "charOffset" : 1368,
+            "charLength" : 11,
+            "byteOffset" : 1368,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/FinalizablePhantomReference.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 23,
+            "endLine" : 32,
+            "endColumn" : 50,
+            "charOffset" : 1086,
+            "charLength" : 27,
+            "byteOffset" : 1086,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/FinalizableSoftReference.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 23,
+            "endLine" : 30,
+            "endColumn" : 47,
+            "charOffset" : 990,
+            "charLength" : 24,
+            "byteOffset" : 990,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/FinalizableWeakReference.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 23,
+            "endLine" : 30,
+            "endColumn" : 47,
+            "charOffset" : 990,
+            "charLength" : 24,
+            "byteOffset" : 990,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Optional.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 92,
+            "startColumn" : 23,
+            "endLine" : 92,
+            "endColumn" : 31,
+            "charOffset" : 4044,
+            "charLength" : 8,
+            "byteOffset" : 4044,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Splitter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 545,
+            "startColumn" : 33,
+            "endLine" : 545,
+            "endColumn" : 50,
+            "charOffset" : 20543,
+            "charLength" : 17,
+            "byteOffset" : 20543,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Ticker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 23,
+            "endLine" : 38,
+            "endColumn" : 29,
+            "charOffset" : 1323,
+            "charLength" : 6,
+            "byteOffset" : 1323,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/CacheBuilderSpec.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 287,
+            "startColumn" : 25,
+            "endLine" : 287,
+            "endColumn" : 38,
+            "charOffset" : 11038,
+            "charLength" : 13,
+            "byteOffset" : 11038,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/CacheBuilderSpec.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 303,
+            "startColumn" : 25,
+            "endLine" : 303,
+            "endColumn" : 35,
+            "charOffset" : 11644,
+            "charLength" : 10,
+            "byteOffset" : 11644,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/CacheBuilderSpec.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 408,
+            "startColumn" : 25,
+            "endLine" : 408,
+            "endColumn" : 39,
+            "charOffset" : 15266,
+            "charLength" : 14,
+            "byteOffset" : 15266,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/CacheLoader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 23,
+            "endLine" : 53,
+            "endColumn" : 34,
+            "charOffset" : 1821,
+            "charLength" : 11,
+            "byteOffset" : 1821,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/ForwardingCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 23,
+            "endLine" : 38,
+            "endColumn" : 38,
+            "charOffset" : 1299,
+            "charLength" : 15,
+            "byteOffset" : 1299,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/ForwardingCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 131,
+            "startColumn" : 32,
+            "endLine" : 131,
+            "endColumn" : 53,
+            "charOffset" : 3022,
+            "charLength" : 21,
+            "byteOffset" : 3022,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/ForwardingLoadingCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 23,
+            "endLine" : 35,
+            "endColumn" : 45,
+            "charOffset" : 1279,
+            "charLength" : 22,
+            "byteOffset" : 1279,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/ForwardingLoadingCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 75,
+            "startColumn" : 32,
+            "endLine" : 75,
+            "endColumn" : 60,
+            "charOffset" : 2233,
+            "charLength" : 28,
+            "byteOffset" : 2233,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 4260,
+            "startColumn" : 18,
+            "endLine" : 4260,
+            "endColumn" : 30,
+            "charOffset" : 129293,
+            "charLength" : 12,
+            "byteOffset" : 129293,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/Striped64.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 16,
+            "endLine" : 21,
+            "endColumn" : 25,
+            "charOffset" : 598,
+            "charLength" : 9,
+            "byteOffset" : 598,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/AbstractMapBasedMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1147,
+            "startColumn" : 26,
+            "endLine" : 1147,
+            "endColumn" : 29,
+            "charOffset" : 32583,
+            "charLength" : 3,
+            "byteOffset" : 32583,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ArrayTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 187,
+            "startColumn" : 33,
+            "endLine" : 187,
+            "endColumn" : 41,
+            "charOffset" : 7720,
+            "charLength" : 8,
+            "byteOffset" : 7720,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/BinaryTreeTraverser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 23,
+            "endLine" : 39,
+            "endColumn" : 42,
+            "charOffset" : 1176,
+            "charLength" : 19,
+            "byteOffset" : 1176,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ComparisonChain.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 23,
+            "endLine" : 66,
+            "endColumn" : 38,
+            "charOffset" : 2441,
+            "charLength" : 15,
+            "byteOffset" : 2441,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ContiguousSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 23,
+            "endLine" : 42,
+            "endColumn" : 36,
+            "charOffset" : 1624,
+            "charLength" : 13,
+            "byteOffset" : 1624,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Cut.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 16,
+            "endLine" : 37,
+            "endColumn" : 19,
+            "charOffset" : 1419,
+            "charLength" : 3,
+            "byteOffset" : 1419,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/DenseImmutableTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 81,
+            "startColumn" : 33,
+            "endLine" : 81,
+            "endColumn" : 50,
+            "charOffset" : 3102,
+            "charLength" : 17,
+            "byteOffset" : 3102,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/DescendingMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 16,
+            "endLine" : 34,
+            "endColumn" : 34,
+            "charOffset" : 1059,
+            "charLength" : 18,
+            "byteOffset" : 1059,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/DiscreteDomain.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 23,
+            "endLine" : 46,
+            "endColumn" : 37,
+            "charOffset" : 1646,
+            "charLength" : 14,
+            "byteOffset" : 1646,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/FluentIterable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 73,
+            "startColumn" : 23,
+            "endLine" : 73,
+            "endColumn" : 37,
+            "charOffset" : 2881,
+            "charLength" : 14,
+            "byteOffset" : 2881,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingBlockingDeque.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 23,
+            "endLine" : 41,
+            "endColumn" : 46,
+            "charOffset" : 1708,
+            "charLength" : 23,
+            "byteOffset" : 1708,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingCollection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 23,
+            "endLine" : 48,
+            "endColumn" : 43,
+            "charOffset" : 1811,
+            "charLength" : 20,
+            "byteOffset" : 1811,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingConcurrentMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 23,
+            "endLine" : 33,
+            "endColumn" : 46,
+            "charOffset" : 1100,
+            "charLength" : 23,
+            "byteOffset" : 1100,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingDeque.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 23,
+            "endLine" : 37,
+            "endColumn" : 38,
+            "charOffset" : 1366,
+            "charLength" : 15,
+            "byteOffset" : 1366,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingImmutableList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 16,
+            "endLine" : 27,
+            "endColumn" : 39,
+            "charOffset" : 852,
+            "charLength" : 23,
+            "byteOffset" : 852,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingImmutableMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 16,
+            "endLine" : 27,
+            "endColumn" : 38,
+            "charOffset" : 852,
+            "charLength" : 22,
+            "byteOffset" : 852,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingImmutableSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 16,
+            "endLine" : 27,
+            "endColumn" : 38,
+            "charOffset" : 852,
+            "charLength" : 22,
+            "byteOffset" : 852,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingIterator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 23,
+            "endLine" : 33,
+            "endColumn" : 41,
+            "charOffset" : 1084,
+            "charLength" : 18,
+            "byteOffset" : 1084,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 23,
+            "endLine" : 55,
+            "endColumn" : 37,
+            "charOffset" : 2086,
+            "charLength" : 14,
+            "byteOffset" : 2086,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingListIterator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 23,
+            "endLine" : 33,
+            "endColumn" : 45,
+            "charOffset" : 1092,
+            "charLength" : 22,
+            "byteOffset" : 1092,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingListMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 23,
+            "endLine" : 35,
+            "endColumn" : 45,
+            "charOffset" : 1126,
+            "charLength" : 22,
+            "byteOffset" : 1126,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 23,
+            "endLine" : 59,
+            "endColumn" : 36,
+            "charOffset" : 2271,
+            "charLength" : 13,
+            "byteOffset" : 2271,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 260,
+            "startColumn" : 28,
+            "endLine" : 260,
+            "endColumn" : 44,
+            "charOffset" : 7998,
+            "charLength" : 16,
+            "byteOffset" : 7998,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingMapEntry.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 23,
+            "endLine" : 55,
+            "endColumn" : 41,
+            "charOffset" : 2195,
+            "charLength" : 18,
+            "byteOffset" : 2195,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 23,
+            "endLine" : 38,
+            "endColumn" : 41,
+            "charOffset" : 1192,
+            "charLength" : 18,
+            "byteOffset" : 1192,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 23,
+            "endLine" : 52,
+            "endColumn" : 41,
+            "charOffset" : 1931,
+            "charLength" : 18,
+            "byteOffset" : 1931,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingNavigableMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 23,
+            "endLine" : 52,
+            "endColumn" : 45,
+            "charOffset" : 2263,
+            "charLength" : 22,
+            "byteOffset" : 2263,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingNavigableSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 23,
+            "endLine" : 47,
+            "endColumn" : 45,
+            "charOffset" : 2060,
+            "charLength" : 22,
+            "byteOffset" : 2060,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingObject.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 23,
+            "endLine" : 53,
+            "endColumn" : 39,
+            "charOffset" : 2328,
+            "charLength" : 16,
+            "byteOffset" : 2328,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 23,
+            "endLine" : 45,
+            "endColumn" : 38,
+            "charOffset" : 1717,
+            "charLength" : 15,
+            "byteOffset" : 1717,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 23,
+            "endLine" : 49,
+            "endColumn" : 36,
+            "charOffset" : 1805,
+            "charLength" : 13,
+            "byteOffset" : 1805,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingSetMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 23,
+            "endLine" : 36,
+            "endColumn" : 44,
+            "charOffset" : 1151,
+            "charLength" : 21,
+            "byteOffset" : 1151,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingSortedMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 23,
+            "endLine" : 56,
+            "endColumn" : 42,
+            "charOffset" : 2133,
+            "charLength" : 19,
+            "byteOffset" : 2133,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingSortedMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 23,
+            "endLine" : 44,
+            "endColumn" : 47,
+            "charOffset" : 1866,
+            "charLength" : 24,
+            "byteOffset" : 1866,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingSortedMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 95,
+            "startColumn" : 28,
+            "endLine" : 95,
+            "endColumn" : 54,
+            "charOffset" : 4030,
+            "charLength" : 26,
+            "byteOffset" : 4030,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingSortedSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 23,
+            "endLine" : 57,
+            "endColumn" : 42,
+            "charOffset" : 2254,
+            "charLength" : 19,
+            "byteOffset" : 2254,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingSortedSetMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 23,
+            "endLine" : 36,
+            "endColumn" : 50,
+            "charOffset" : 1172,
+            "charLength" : 27,
+            "byteOffset" : 1172,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 23,
+            "endLine" : 35,
+            "endColumn" : 38,
+            "charOffset" : 1113,
+            "charLength" : 15,
+            "byteOffset" : 1113,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/GenericMapMaker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 16,
+            "endLine" : 50,
+            "endColumn" : 31,
+            "charOffset" : 2103,
+            "charLength" : 15,
+            "byteOffset" : 2103,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/HashBiMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 390,
+            "startColumn" : 18,
+            "endLine" : 390,
+            "endColumn" : 21,
+            "charOffset" : 12046,
+            "charLength" : 3,
+            "byteOffset" : 12046,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableAsList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 16,
+            "endLine" : 35,
+            "endColumn" : 31,
+            "charOffset" : 1128,
+            "charLength" : 15,
+            "byteOffset" : 1128,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableBiMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 23,
+            "endLine" : 34,
+            "endColumn" : 37,
+            "charOffset" : 1067,
+            "charLength" : 14,
+            "byteOffset" : 1067,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableCollection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 155,
+            "startColumn" : 23,
+            "endLine" : 155,
+            "endColumn" : 42,
+            "charOffset" : 7110,
+            "charLength" : 19,
+            "byteOffset" : 7110,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableCollection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 325,
+            "startColumn" : 32,
+            "endLine" : 325,
+            "endColumn" : 39,
+            "charOffset" : 11742,
+            "charLength" : 7,
+            "byteOffset" : 11742,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableCollection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 425,
+            "startColumn" : 25,
+            "endLine" : 425,
+            "endColumn" : 42,
+            "charOffset" : 14899,
+            "charLength" : 17,
+            "byteOffset" : 14899,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 23,
+            "endLine" : 54,
+            "endColumn" : 36,
+            "charOffset" : 1919,
+            "charLength" : 13,
+            "byteOffset" : 1919,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 23,
+            "endLine" : 51,
+            "endColumn" : 35,
+            "charOffset" : 1727,
+            "charLength" : 12,
+            "byteOffset" : 1727,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 363,
+            "startColumn" : 25,
+            "endLine" : 363,
+            "endColumn" : 50,
+            "charOffset" : 13201,
+            "charLength" : 25,
+            "byteOffset" : 13201,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableMapEntrySet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 16,
+            "endLine" : 35,
+            "endColumn" : 36,
+            "charOffset" : 1055,
+            "charLength" : 20,
+            "byteOffset" : 1055,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 69,
+            "startColumn" : 23,
+            "endLine" : 69,
+            "endColumn" : 40,
+            "charOffset" : 2709,
+            "charLength" : 17,
+            "byteOffset" : 2709,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 562,
+            "startColumn" : 26,
+            "endLine" : 562,
+            "endColumn" : 29,
+            "charOffset" : 18060,
+            "charLength" : 3,
+            "byteOffset" : 18060,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 23,
+            "endLine" : 53,
+            "endColumn" : 40,
+            "charOffset" : 1899,
+            "charLength" : 17,
+            "byteOffset" : 1899,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 23,
+            "endLine" : 44,
+            "endColumn" : 35,
+            "charOffset" : 1456,
+            "charLength" : 12,
+            "byteOffset" : 1456,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 343,
+            "startColumn" : 25,
+            "endLine" : 343,
+            "endColumn" : 32,
+            "charOffset" : 12654,
+            "charLength" : 7,
+            "byteOffset" : 12654,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableSortedMapFauxverideShim.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 16,
+            "endLine" : 26,
+            "endColumn" : 48,
+            "charOffset" : 902,
+            "charLength" : 32,
+            "byteOffset" : 902,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableSortedMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 23,
+            "endLine" : 50,
+            "endColumn" : 46,
+            "charOffset" : 1922,
+            "charLength" : 23,
+            "byteOffset" : 1922,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableSortedMultisetFauxverideShim.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 16,
+            "endLine" : 34,
+            "endColumn" : 53,
+            "charOffset" : 1309,
+            "charLength" : 37,
+            "byteOffset" : 1309,
+            "byteLength" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableSortedSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 23,
+            "endLine" : 59,
+            "endColumn" : 41,
+            "charOffset" : 2344,
+            "charLength" : 18,
+            "byteOffset" : 2344,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableSortedSetFauxverideShim.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 16,
+            "endLine" : 35,
+            "endColumn" : 48,
+            "charOffset" : 1279,
+            "charLength" : 32,
+            "byteOffset" : 1279,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 23,
+            "endLine" : 44,
+            "endColumn" : 37,
+            "charOffset" : 1347,
+            "charLength" : 14,
+            "byteOffset" : 1347,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class abstract or rename it, since it matches the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Lists.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1091,
+            "startColumn" : 24,
+            "endLine" : 1091,
+            "endColumn" : 43,
+            "charOffset" : 38761,
+            "charLength" : 19,
+            "byteOffset" : 38761,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MapMakerInternalMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3592,
+            "startColumn" : 18,
+            "endLine" : 3592,
+            "endColumn" : 30,
+            "charOffset" : 107723,
+            "charLength" : 12,
+            "byteOffset" : 107723,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3369,
+            "startColumn" : 25,
+            "endLine" : 3369,
+            "endColumn" : 47,
+            "charOffset" : 122638,
+            "charLength" : 22,
+            "byteOffset" : 122638,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3407,
+            "startColumn" : 25,
+            "endLine" : 3407,
+            "endColumn" : 49,
+            "charOffset" : 123735,
+            "charLength" : 24,
+            "byteOffset" : 123735,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3817,
+            "startColumn" : 25,
+            "endLine" : 3817,
+            "endColumn" : 33,
+            "charOffset" : 134332,
+            "charLength" : 8,
+            "byteOffset" : 134332,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3879,
+            "startColumn" : 25,
+            "endLine" : 3879,
+            "endColumn" : 38,
+            "charOffset" : 136074,
+            "charLength" : 13,
+            "byteOffset" : 136074,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MultimapBuilder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 75,
+            "startColumn" : 23,
+            "endLine" : 75,
+            "endColumn" : 38,
+            "charOffset" : 2722,
+            "charLength" : 15,
+            "byteOffset" : 2722,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MultimapBuilder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 282,
+            "startColumn" : 32,
+            "endLine" : 282,
+            "endColumn" : 55,
+            "charOffset" : 10101,
+            "charLength" : 23,
+            "byteOffset" : 10101,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MultimapBuilder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 445,
+            "startColumn" : 32,
+            "endLine" : 445,
+            "endColumn" : 51,
+            "charOffset" : 15951,
+            "charLength" : 19,
+            "byteOffset" : 15951,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MultimapBuilder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 461,
+            "startColumn" : 32,
+            "endLine" : 461,
+            "endColumn" : 50,
+            "charOffset" : 16476,
+            "charLength" : 18,
+            "byteOffset" : 16476,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MultimapBuilder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 477,
+            "startColumn" : 32,
+            "endLine" : 477,
+            "endColumn" : 56,
+            "charOffset" : 17002,
+            "charLength" : 24,
+            "byteOffset" : 17002,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Multimaps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1643,
+            "startColumn" : 25,
+            "endLine" : 1643,
+            "endColumn" : 32,
+            "charOffset" : 60526,
+            "charLength" : 7,
+            "byteOffset" : 60526,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Multisets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 941,
+            "startColumn" : 25,
+            "endLine" : 941,
+            "endColumn" : 35,
+            "charOffset" : 32132,
+            "charLength" : 10,
+            "byteOffset" : 32132,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Multisets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 979,
+            "startColumn" : 25,
+            "endLine" : 979,
+            "endColumn" : 33,
+            "charOffset" : 33055,
+            "charLength" : 8,
+            "byteOffset" : 33055,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Ordering.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 132,
+            "startColumn" : 23,
+            "endLine" : 132,
+            "endColumn" : 31,
+            "charOffset" : 4724,
+            "charLength" : 8,
+            "byteOffset" : 4724,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/RegularImmutableTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 16,
+            "endLine" : 38,
+            "endColumn" : 37,
+            "charOffset" : 1169,
+            "charLength" : 21,
+            "byteOffset" : 1169,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Sets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 25,
+            "endLine" : 72,
+            "endColumn" : 44,
+            "charOffset" : 2301,
+            "charLength" : 19,
+            "byteOffset" : 2301,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Sets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 532,
+            "startColumn" : 32,
+            "endLine" : 532,
+            "endColumn" : 39,
+            "charOffset" : 21285,
+            "charLength" : 7,
+            "byteOffset" : 21285,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/StandardTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 200,
+            "startColumn" : 26,
+            "endLine" : 200,
+            "endColumn" : 34,
+            "charOffset" : 6312,
+            "charLength" : 8,
+            "byteOffset" : 6312,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/TransformedIterator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 16,
+            "endLine" : 32,
+            "endColumn" : 35,
+            "charOffset" : 1014,
+            "charLength" : 19,
+            "byteOffset" : 1014,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/TransformedListIterator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 16,
+            "endLine" : 32,
+            "endColumn" : 39,
+            "charOffset" : 1000,
+            "charLength" : 23,
+            "byteOffset" : 1000,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/TreeTraverser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 23,
+            "endLine" : 54,
+            "endColumn" : 36,
+            "charOffset" : 1499,
+            "charLength" : 13,
+            "byteOffset" : 1499,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/UnmodifiableIterator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 23,
+            "endLine" : 34,
+            "endColumn" : 43,
+            "charOffset" : 1146,
+            "charLength" : 20,
+            "byteOffset" : 1146,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/UnmodifiableListIterator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 23,
+            "endLine" : 31,
+            "endColumn" : 47,
+            "charOffset" : 904,
+            "charLength" : 24,
+            "byteOffset" : 904,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/escape/ArrayBasedCharEscaper.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 23,
+            "endLine" : 51,
+            "endColumn" : 44,
+            "charOffset" : 2005,
+            "charLength" : 21,
+            "byteOffset" : 2005,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/escape/ArrayBasedUnicodeEscaper.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 23,
+            "endLine" : 51,
+            "endColumn" : 47,
+            "charOffset" : 1998,
+            "charLength" : 24,
+            "byteOffset" : 1998,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/escape/CharEscaper.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 23,
+            "endLine" : 47,
+            "endColumn" : 34,
+            "charOffset" : 1854,
+            "charLength" : 11,
+            "byteOffset" : 1854,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/escape/Escaper.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 23,
+            "endLine" : 61,
+            "endColumn" : 30,
+            "charOffset" : 3061,
+            "charLength" : 7,
+            "byteOffset" : 3061,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/escape/UnicodeEscaper.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 23,
+            "endLine" : 59,
+            "endColumn" : 37,
+            "charOffset" : 2452,
+            "charLength" : 14,
+            "byteOffset" : 2452,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/eventbus/Dispatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 16,
+            "endLine" : 37,
+            "endColumn" : 26,
+            "charOffset" : 1326,
+            "charLength" : 10,
+            "byteOffset" : 1326,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/hash/HashCode.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 23,
+            "endLine" : 39,
+            "endColumn" : 31,
+            "charOffset" : 1276,
+            "charLength" : 8,
+            "byteOffset" : 1276,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/BaseEncoding.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 124,
+            "startColumn" : 23,
+            "endLine" : 124,
+            "endColumn" : 35,
+            "charOffset" : 4185,
+            "charLength" : 12,
+            "byteOffset" : 4185,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/ByteSink.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 23,
+            "endLine" : 47,
+            "endColumn" : 31,
+            "charOffset" : 1815,
+            "charLength" : 8,
+            "byteOffset" : 1815,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/ByteSource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 23,
+            "endLine" : 59,
+            "endColumn" : 33,
+            "charOffset" : 2239,
+            "charLength" : 10,
+            "byteOffset" : 2239,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/CharSink.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 23,
+            "endLine" : 49,
+            "endColumn" : 31,
+            "charOffset" : 2006,
+            "charLength" : 8,
+            "byteOffset" : 2006,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/CharSource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 23,
+            "endLine" : 66,
+            "endColumn" : 33,
+            "charOffset" : 2755,
+            "charLength" : 10,
+            "byteOffset" : 2755,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/LineBuffer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 16,
+            "endLine" : 33,
+            "endColumn" : 26,
+            "charOffset" : 1132,
+            "charLength" : 10,
+            "byteOffset" : 1132,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/reflect/ClassPath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 293,
+            "startColumn" : 25,
+            "endLine" : 293,
+            "endColumn" : 32,
+            "charOffset" : 9634,
+            "charLength" : 7,
+            "byteOffset" : 9634,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/reflect/Invokable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 60,
+            "startColumn" : 23,
+            "endLine" : 60,
+            "endColumn" : 32,
+            "charOffset" : 2345,
+            "charLength" : 9,
+            "byteOffset" : 2345,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/reflect/TypeCapture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 16,
+            "endLine" : 29,
+            "endColumn" : 27,
+            "charOffset" : 867,
+            "charLength" : 11,
+            "byteOffset" : 867,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/reflect/TypeParameter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 23,
+            "endLine" : 42,
+            "endColumn" : 36,
+            "charOffset" : 1223,
+            "charLength" : 13,
+            "byteOffset" : 1223,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/reflect/TypeToken.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 94,
+            "startColumn" : 23,
+            "endLine" : 94,
+            "endColumn" : 32,
+            "charOffset" : 3759,
+            "charLength" : 9,
+            "byteOffset" : 3759,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/reflect/TypeToken.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1100,
+            "startColumn" : 33,
+            "endLine" : 1100,
+            "endColumn" : 46,
+            "charOffset" : 42067,
+            "charLength" : 13,
+            "byteOffset" : 42067,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/reflect/TypeVisitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 16,
+            "endLine" : 61,
+            "endColumn" : 27,
+            "charOffset" : 2273,
+            "charLength" : 11,
+            "byteOffset" : 2273,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 25,
+            "endLine" : 70,
+            "endColumn" : 38,
+            "charOffset" : 3081,
+            "charLength" : 13,
+            "byteOffset" : 3081,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 834,
+            "startColumn" : 33,
+            "endLine" : 834,
+            "endColumn" : 45,
+            "charOffset" : 33742,
+            "charLength" : 12,
+            "byteOffset" : 33742,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractScheduledService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 112,
+            "startColumn" : 32,
+            "endLine" : 112,
+            "endColumn" : 41,
+            "charOffset" : 4712,
+            "charLength" : 9,
+            "byteOffset" : 4712,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractScheduledService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 414,
+            "startColumn" : 32,
+            "endLine" : 414,
+            "endColumn" : 47,
+            "charOffset" : 15029,
+            "charLength" : 15,
+            "byteOffset" : 15029,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AggregateFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 16,
+            "endLine" : 43,
+            "endColumn" : 31,
+            "charOffset" : 1514,
+            "charLength" : 15,
+            "byteOffset" : 1514,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AggregateFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 18,
+            "endLine" : 89,
+            "endColumn" : 30,
+            "charOffset" : 3113,
+            "charLength" : 12,
+            "byteOffset" : 3113,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AggregateFutureState.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 16,
+            "endLine" : 36,
+            "endColumn" : 36,
+            "charOffset" : 1353,
+            "charLength" : 20,
+            "byteOffset" : 1353,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/CollectionFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 16,
+            "endLine" : 35,
+            "endColumn" : 32,
+            "charOffset" : 1109,
+            "charLength" : 16,
+            "byteOffset" : 1109,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/CollectionFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 18,
+            "endLine" : 37,
+            "endColumn" : 46,
+            "charOffset" : 1182,
+            "charLength" : 28,
+            "byteOffset" : 1182,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/ForwardingBlockingQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 23,
+            "endLine" : 36,
+            "endColumn" : 46,
+            "charOffset" : 1247,
+            "charLength" : 23,
+            "byteOffset" : 1247,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/ForwardingCheckedFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 23,
+            "endLine" : 41,
+            "endColumn" : 46,
+            "charOffset" : 1431,
+            "charLength" : 23,
+            "byteOffset" : 1431,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/ForwardingCheckedFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 32,
+            "endLine" : 65,
+            "endColumn" : 61,
+            "charOffset" : 2154,
+            "charLength" : 29,
+            "byteOffset" : 2154,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/ForwardingExecutorService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 23,
+            "endLine" : 39,
+            "endColumn" : 48,
+            "charOffset" : 1379,
+            "charLength" : 25,
+            "byteOffset" : 1379,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/ForwardingFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 23,
+            "endLine" : 38,
+            "endColumn" : 39,
+            "charOffset" : 1328,
+            "charLength" : 16,
+            "byteOffset" : 1328,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/ForwardingFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 82,
+            "startColumn" : 32,
+            "endLine" : 82,
+            "endColumn" : 54,
+            "charOffset" : 2429,
+            "charLength" : 22,
+            "byteOffset" : 2429,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/ForwardingListenableFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 23,
+            "endLine" : 36,
+            "endColumn" : 49,
+            "charOffset" : 1245,
+            "charLength" : 26,
+            "byteOffset" : 1245,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/ForwardingListenableFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 32,
+            "endLine" : 61,
+            "endColumn" : 64,
+            "charOffset" : 1959,
+            "charLength" : 32,
+            "byteOffset" : 1959,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/ForwardingListeningExecutorService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 23,
+            "endLine" : 30,
+            "endColumn" : 57,
+            "charOffset" : 1072,
+            "charLength" : 34,
+            "byteOffset" : 1072,
+            "byteLength" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Futures.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 136,
+            "startColumn" : 33,
+            "endLine" : 136,
+            "endColumn" : 48,
+            "charOffset" : 6474,
+            "charLength" : 15,
+            "byteOffset" : 6474,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/GwtFuturesCatchingSpecialization.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 16,
+            "endLine" : 27,
+            "endColumn" : 48,
+            "charOffset" : 1034,
+            "charLength" : 32,
+            "byteOffset" : 1034,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/InterruptibleTask.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 16,
+            "endLine" : 26,
+            "endColumn" : 33,
+            "charOffset" : 894,
+            "charLength" : 17,
+            "byteOffset" : 894,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/ListenerCallQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 25,
+            "endLine" : 42,
+            "endColumn" : 33,
+            "charOffset" : 1573,
+            "charLength" : 8,
+            "byteOffset" : 1573,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Monitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 304,
+            "startColumn" : 32,
+            "endLine" : 304,
+            "endColumn" : 37,
+            "charOffset" : 13131,
+            "charLength" : 5,
+            "byteOffset" : 13131,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/RateLimiter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 97,
+            "startColumn" : 23,
+            "endLine" : 97,
+            "endColumn" : 34,
+            "charOffset" : 4321,
+            "charLength" : 11,
+            "byteOffset" : 4321,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/RateLimiter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 405,
+            "startColumn" : 25,
+            "endLine" : 405,
+            "endColumn" : 42,
+            "charOffset" : 17231,
+            "charLength" : 17,
+            "byteOffset" : 17231,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Service.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 255,
+            "startColumn" : 18,
+            "endLine" : 255,
+            "endColumn" : 26,
+            "charOffset" : 9173,
+            "charLength" : 8,
+            "byteOffset" : 9173,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/ServiceManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 146,
+            "startColumn" : 32,
+            "endLine" : 146,
+            "endColumn" : 40,
+            "charOffset" : 6333,
+            "charLength" : 8,
+            "byteOffset" : 6333,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/SmoothRateLimiter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 16,
+            "endLine" : 26,
+            "endColumn" : 33,
+            "charOffset" : 829,
+            "charLength" : 17,
+            "byteOffset" : 829,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Striped.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 88,
+            "startColumn" : 23,
+            "endLine" : 88,
+            "endColumn" : 30,
+            "charOffset" : 4587,
+            "charLength" : 7,
+            "byteOffset" : 4587,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Striped.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 289,
+            "startColumn" : 33,
+            "endLine" : 289,
+            "endColumn" : 50,
+            "charOffset" : 12142,
+            "charLength" : 17,
+            "byteOffset" : 12142,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/WrappingExecutorService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 16,
+            "endLine" : 46,
+            "endColumn" : 39,
+            "charOffset" : 1536,
+            "charLength" : 23,
+            "byteOffset" : 1536,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/WrappingScheduledExecutorService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 16,
+            "endLine" : 31,
+            "endColumn" : 48,
+            "charOffset" : 1126,
+            "charLength" : 32,
+            "byteOffset" : 1126,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,186 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"toString\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BaseDynaBeanMapDecorator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 353,
+            "startColumn" : 20,
+            "endLine" : 353,
+            "endColumn" : 28,
+            "charOffset" : 11762,
+            "charLength" : 8,
+            "byteOffset" : 11762,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"writeAnyClass\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 290,
+            "startColumn" : 18,
+            "endLine" : 290,
+            "endColumn" : 31,
+            "charOffset" : 9273,
+            "charLength" : 13,
+            "byteOffset" : 9273,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"readAnyClass\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 349,
+            "startColumn" : 22,
+            "endLine" : 349,
+            "endColumn" : 34,
+            "charOffset" : 11435,
+            "charLength" : 12,
+            "byteOffset" : 11435,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"createDynaBeanForMapProperty\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 705,
+            "startColumn" : 25,
+            "endLine" : 705,
+            "endColumn" : 53,
+            "charOffset" : 22696,
+            "charLength" : 28,
+            "byteOffset" : 22696,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"reLoadClass\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MappedPropertyDescriptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 507,
+            "startColumn" : 26,
+            "endLine" : 507,
+            "endColumn" : 37,
+            "charOffset" : 20149,
+            "charLength" : 11,
+            "byteOffset" : 20149,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2325",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make \"convertPattern\" a \"static\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 339,
+            "startColumn" : 20,
+            "endLine" : 339,
+            "endColumn" : 34,
+            "charOffset" : 12382,
+            "charLength" : 14,
+            "byteOffset" : 12382,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

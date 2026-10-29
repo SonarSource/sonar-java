@@ -1,0 +1,550 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/GZIPContentDecoderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 107,
+            "startColumn" : 13,
+            "endLine" : 107,
+            "endColumn" : 17,
+            "charOffset" : 3486,
+            "charLength" : 4,
+            "byteOffset" : 3486,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/GZIPContentDecoderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 275,
+            "startColumn" : 13,
+            "endLine" : 275,
+            "endColumn" : 17,
+            "charOffset" : 10055,
+            "charLength" : 4,
+            "byteOffset" : 10055,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/GZIPContentDecoderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 289,
+            "startColumn" : 13,
+            "endLine" : 289,
+            "endColumn" : 19,
+            "charOffset" : 10606,
+            "charLength" : 6,
+            "byteOffset" : 10606,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/GZIPContentDecoderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 301,
+            "startColumn" : 13,
+            "endLine" : 301,
+            "endColumn" : 17,
+            "charOffset" : 10937,
+            "charLength" : 4,
+            "byteOffset" : 10937,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/GZIPContentDecoderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 316,
+            "startColumn" : 17,
+            "endLine" : 316,
+            "endColumn" : 23,
+            "charOffset" : 11559,
+            "charLength" : 6,
+            "byteOffset" : 11559,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/GZIPContentDecoderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 329,
+            "startColumn" : 13,
+            "endLine" : 329,
+            "endColumn" : 18,
+            "charOffset" : 11933,
+            "charLength" : 5,
+            "byteOffset" : 11933,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/GZIPContentDecoderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 351,
+            "startColumn" : 17,
+            "endLine" : 351,
+            "endColumn" : 23,
+            "charOffset" : 12822,
+            "charLength" : 6,
+            "byteOffset" : 12822,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DefaultSessionIdManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 271,
+            "startColumn" : 21,
+            "endLine" : 271,
+            "endColumn" : 23,
+            "charOffset" : 8340,
+            "charLength" : 2,
+            "byteOffset" : 8340,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DefaultSessionIdManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 273,
+            "startColumn" : 17,
+            "endLine" : 273,
+            "endColumn" : 19,
+            "charOffset" : 8380,
+            "charLength" : 2,
+            "byteOffset" : 8380,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpConnectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1176,
+            "startColumn" : 17,
+            "endLine" : 1176,
+            "endColumn" : 23,
+            "charOffset" : 43072,
+            "charLength" : 6,
+            "byteOffset" : 43072,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpConnectionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1224,
+            "startColumn" : 13,
+            "endLine" : 1224,
+            "endColumn" : 16,
+            "charOffset" : 44524,
+            "charLength" : 3,
+            "byteOffset" : 44524,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestBase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1050,
+            "startColumn" : 21,
+            "endLine" : 1050,
+            "endColumn" : 28,
+            "charOffset" : 36258,
+            "charLength" : 7,
+            "byteOffset" : 36258,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestBase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1386,
+            "startColumn" : 17,
+            "endLine" : 1386,
+            "endColumn" : 20,
+            "charOffset" : 49045,
+            "charLength" : 3,
+            "byteOffset" : 49045,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestBase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1423,
+            "startColumn" : 17,
+            "endLine" : 1423,
+            "endColumn" : 20,
+            "charOffset" : 49993,
+            "charLength" : 3,
+            "byteOffset" : 49993,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestBase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1433,
+            "startColumn" : 17,
+            "endLine" : 1433,
+            "endColumn" : 20,
+            "charOffset" : 50238,
+            "charLength" : 3,
+            "byteOffset" : 50238,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestFixture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 17,
+            "endLine" : 295,
+            "endColumn" : 21,
+            "charOffset" : 9862,
+            "charLength" : 4,
+            "byteOffset" : 9862,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/LocalConnectorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 384,
+            "startColumn" : 13,
+            "endLine" : 384,
+            "endColumn" : 14,
+            "charOffset" : 13229,
+            "charLength" : 1,
+            "byteOffset" : 13229,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 953,
+            "startColumn" : 13,
+            "endLine" : 953,
+            "endColumn" : 20,
+            "charOffset" : 34973,
+            "charLength" : 7,
+            "byteOffset" : 34973,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1643",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use a StringBuilder instead."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ResponseTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 738,
+            "startColumn" : 13,
+            "endLine" : 738,
+            "endColumn" : 14,
+            "charOffset" : 28849,
+            "charLength" : 1,
+            "byteOffset" : 28849,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

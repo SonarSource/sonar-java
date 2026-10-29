@@ -1,0 +1,858 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 697,
+            "startColumn" : 20,
+            "endLine" : 697,
+            "endColumn" : 38,
+            "charOffset" : 24026,
+            "charLength" : 18,
+            "byteOffset" : 24026,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/expression/DefaultResolver.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 12,
+            "endLine" : 67,
+            "endColumn" : 27,
+            "charOffset" : 3324,
+            "charLength" : 15,
+            "byteOffset" : 3324,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/AlphaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 17,
+            "endLine" : 44,
+            "endColumn" : 22,
+            "charOffset" : 1283,
+            "charLength" : 5,
+            "byteOffset" : 1283,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanWithInnerBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 10,
+            "endLine" : 29,
+            "endColumn" : 27,
+            "charOffset" : 1008,
+            "charLength" : 17,
+            "byteOffset" : 1008,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ExtendMapBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 12,
+            "endLine" : 32,
+            "endColumn" : 25,
+            "charOffset" : 1017,
+            "charLength" : 13,
+            "byteOffset" : 1017,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/IndexedTestBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 12,
+            "endLine" : 39,
+            "endColumn" : 27,
+            "charOffset" : 1268,
+            "charLength" : 15,
+            "byteOffset" : 1268,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 82,
+            "startColumn" : 17,
+            "endLine" : 82,
+            "endColumn" : 22,
+            "charOffset" : 2879,
+            "charLength" : 5,
+            "byteOffset" : 2879,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 17,
+            "endLine" : 89,
+            "endColumn" : 25,
+            "charOffset" : 3023,
+            "charLength" : 8,
+            "byteOffset" : 3023,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/MappedPropertyTestBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 17,
+            "endLine" : 90,
+            "endColumn" : 33,
+            "charOffset" : 2795,
+            "charLength" : 16,
+            "byteOffset" : 2795,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/MappedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 17,
+            "endLine" : 53,
+            "endColumn" : 22,
+            "charOffset" : 1678,
+            "charLength" : 5,
+            "byteOffset" : 1678,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/MappedPropertyTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 17,
+            "endLine" : 67,
+            "endColumn" : 25,
+            "charOffset" : 1991,
+            "charLength" : 8,
+            "byteOffset" : 1991,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/MethodUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 17,
+            "endLine" : 56,
+            "endColumn" : 22,
+            "charOffset" : 1765,
+            "charLength" : 5,
+            "byteOffset" : 1765,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/MethodUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 71,
+            "startColumn" : 17,
+            "endLine" : 71,
+            "endColumn" : 25,
+            "charOffset" : 2059,
+            "charLength" : 8,
+            "byteOffset" : 2059,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 433,
+            "startColumn" : 21,
+            "endLine" : 433,
+            "endColumn" : 29,
+            "charOffset" : 11504,
+            "charLength" : 8,
+            "byteOffset" : 11504,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira359TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 151,
+            "startColumn" : 16,
+            "endLine" : 151,
+            "endColumn" : 30,
+            "charOffset" : 5815,
+            "charLength" : 14,
+            "byteOffset" : 5815,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira381TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 69,
+            "startColumn" : 21,
+            "endLine" : 69,
+            "endColumn" : 30,
+            "charOffset" : 2338,
+            "charLength" : 9,
+            "byteOffset" : 2338,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira381TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 75,
+            "startColumn" : 21,
+            "endLine" : 75,
+            "endColumn" : 30,
+            "charOffset" : 2445,
+            "charLength" : 9,
+            "byteOffset" : 2445,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ArrayConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 17,
+            "endLine" : 52,
+            "endColumn" : 22,
+            "charOffset" : 1597,
+            "charLength" : 5,
+            "byteOffset" : 1597,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ArrayConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 17,
+            "endLine" : 57,
+            "endColumn" : 25,
+            "charOffset" : 1682,
+            "charLength" : 8,
+            "byteOffset" : 1682,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/CharacterConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 17,
+            "endLine" : 51,
+            "endColumn" : 22,
+            "charOffset" : 1638,
+            "charLength" : 5,
+            "byteOffset" : 1638,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/CharacterConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 17,
+            "endLine" : 56,
+            "endColumn" : 25,
+            "charOffset" : 1723,
+            "charLength" : 8,
+            "byteOffset" : 1723,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ClassConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 17,
+            "endLine" : 51,
+            "endColumn" : 22,
+            "charOffset" : 1618,
+            "charLength" : 5,
+            "byteOffset" : 1618,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ClassConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 17,
+            "endLine" : 56,
+            "endColumn" : 25,
+            "charOffset" : 1703,
+            "charLength" : 8,
+            "byteOffset" : 1703,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/DateConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 17,
+            "endLine" : 50,
+            "endColumn" : 22,
+            "charOffset" : 1527,
+            "charLength" : 5,
+            "byteOffset" : 1527,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/DateConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 17,
+            "endLine" : 55,
+            "endColumn" : 25,
+            "charOffset" : 1612,
+            "charLength" : 8,
+            "byteOffset" : 1612,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/expression/DefaultResolverTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 20,
+            "endLine" : 70,
+            "endColumn" : 25,
+            "charOffset" : 3115,
+            "charLength" : 5,
+            "byteOffset" : 3115,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/expression/DefaultResolverTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 77,
+            "startColumn" : 20,
+            "endLine" : 77,
+            "endColumn" : 28,
+            "charOffset" : 3198,
+            "charLength" : 8,
+            "byteOffset" : 3198,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 17,
+            "endLine" : 52,
+            "endColumn" : 22,
+            "charOffset" : 1658,
+            "charLength" : 5,
+            "byteOffset" : 1658,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 69,
+            "startColumn" : 17,
+            "endLine" : 69,
+            "endColumn" : 25,
+            "charOffset" : 1983,
+            "charLength" : 8,
+            "byteOffset" : 1983,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1186",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/BaseLocaleConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 268,
+            "startColumn" : 17,
+            "endLine" : 268,
+            "endColumn" : 28,
+            "charOffset" : 8832,
+            "charLength" : 11,
+            "byteOffset" : 8832,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

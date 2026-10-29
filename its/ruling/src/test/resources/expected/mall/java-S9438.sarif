@@ -1,0 +1,4509 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/ResultCode.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 5,
+            "endLine" : 13,
+            "endColumn" : 23,
+            "charOffset" : 300,
+            "charLength" : 18,
+            "byteOffset" : 370,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/ResultCode.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 14,
+            "startColumn" : 5,
+            "endLine" : 14,
+            "endColumn" : 28,
+            "charOffset" : 323,
+            "charLength" : 23,
+            "byteOffset" : 393,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-demo/src/main/java/com/macro/mall/demo/bo/AdminUserDetails.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 16,
+            "startColumn" : 5,
+            "endLine" : 16,
+            "endColumn" : 31,
+            "charOffset" : 453,
+            "charLength" : 26,
+            "byteOffset" : 467,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 495,
+            "startColumn" : 9,
+            "endLine" : 495,
+            "endColumn" : 34,
+            "charOffset" : 15454,
+            "charLength" : 25,
+            "byteOffset" : 15454,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 509,
+            "startColumn" : 9,
+            "endLine" : 509,
+            "endColumn" : 36,
+            "charOffset" : 15704,
+            "charLength" : 27,
+            "byteOffset" : 15704,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 556,
+            "startColumn" : 9,
+            "endLine" : 556,
+            "endColumn" : 34,
+            "charOffset" : 17790,
+            "charLength" : 25,
+            "byteOffset" : 17790,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 570,
+            "startColumn" : 9,
+            "endLine" : 570,
+            "endColumn" : 36,
+            "charOffset" : 18040,
+            "charLength" : 27,
+            "byteOffset" : 18040,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsMemberReportExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 626,
+            "startColumn" : 9,
+            "endLine" : 626,
+            "endColumn" : 34,
+            "charOffset" : 21044,
+            "charLength" : 25,
+            "byteOffset" : 21044,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsMemberReportExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 640,
+            "startColumn" : 9,
+            "endLine" : 640,
+            "endColumn" : 36,
+            "charOffset" : 21294,
+            "charLength" : 27,
+            "byteOffset" : 21294,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 435,
+            "startColumn" : 9,
+            "endLine" : 435,
+            "endColumn" : 34,
+            "charOffset" : 13519,
+            "charLength" : 25,
+            "byteOffset" : 13519,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 449,
+            "startColumn" : 9,
+            "endLine" : 449,
+            "endColumn" : 36,
+            "charOffset" : 13769,
+            "charLength" : 27,
+            "byteOffset" : 13769,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 9,
+            "endLine" : 295,
+            "endColumn" : 34,
+            "charOffset" : 9207,
+            "charLength" : 25,
+            "byteOffset" : 9207,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 309,
+            "startColumn" : 9,
+            "endLine" : 309,
+            "endColumn" : 36,
+            "charOffset" : 9457,
+            "charLength" : 27,
+            "byteOffset" : 9457,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 495,
+            "startColumn" : 9,
+            "endLine" : 495,
+            "endColumn" : 34,
+            "charOffset" : 15562,
+            "charLength" : 25,
+            "byteOffset" : 15562,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 509,
+            "startColumn" : 9,
+            "endLine" : 509,
+            "endColumn" : 36,
+            "charOffset" : 15812,
+            "charLength" : 27,
+            "byteOffset" : 15812,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 566,
+            "startColumn" : 9,
+            "endLine" : 566,
+            "endColumn" : 34,
+            "charOffset" : 18657,
+            "charLength" : 25,
+            "byteOffset" : 18657,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 580,
+            "startColumn" : 9,
+            "endLine" : 580,
+            "endColumn" : 36,
+            "charOffset" : 18907,
+            "charLength" : 27,
+            "byteOffset" : 18907,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1066,
+            "startColumn" : 9,
+            "endLine" : 1066,
+            "endColumn" : 34,
+            "charOffset" : 36441,
+            "charLength" : 25,
+            "byteOffset" : 36441,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1080,
+            "startColumn" : 9,
+            "endLine" : 1080,
+            "endColumn" : 36,
+            "charOffset" : 36691,
+            "charLength" : 27,
+            "byteOffset" : 36691,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 9,
+            "endLine" : 295,
+            "endColumn" : 34,
+            "charOffset" : 8979,
+            "charLength" : 25,
+            "byteOffset" : 8979,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 309,
+            "startColumn" : 9,
+            "endLine" : 309,
+            "endColumn" : 36,
+            "charOffset" : 9229,
+            "charLength" : 27,
+            "byteOffset" : 9229,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 495,
+            "startColumn" : 9,
+            "endLine" : 495,
+            "endColumn" : 34,
+            "charOffset" : 15558,
+            "charLength" : 25,
+            "byteOffset" : 15558,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 509,
+            "startColumn" : 9,
+            "endLine" : 509,
+            "endColumn" : 36,
+            "charOffset" : 15808,
+            "charLength" : 27,
+            "byteOffset" : 15808,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 566,
+            "startColumn" : 9,
+            "endLine" : 566,
+            "endColumn" : 34,
+            "charOffset" : 18585,
+            "charLength" : 25,
+            "byteOffset" : 18585,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 580,
+            "startColumn" : 9,
+            "endLine" : 580,
+            "endColumn" : 36,
+            "charOffset" : 18835,
+            "charLength" : 27,
+            "byteOffset" : 18835,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 806,
+            "startColumn" : 9,
+            "endLine" : 806,
+            "endColumn" : 34,
+            "charOffset" : 26847,
+            "charLength" : 25,
+            "byteOffset" : 26847,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 820,
+            "startColumn" : 9,
+            "endLine" : 820,
+            "endColumn" : 36,
+            "charOffset" : 27097,
+            "charLength" : 27,
+            "byteOffset" : 27097,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCartItemExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1277,
+            "startColumn" : 9,
+            "endLine" : 1277,
+            "endColumn" : 34,
+            "charOffset" : 44552,
+            "charLength" : 25,
+            "byteOffset" : 44552,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCartItemExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1291,
+            "startColumn" : 9,
+            "endLine" : 1291,
+            "endColumn" : 36,
+            "charOffset" : 44802,
+            "charLength" : 27,
+            "byteOffset" : 44802,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCompanyAddressExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 785,
+            "startColumn" : 9,
+            "endLine" : 785,
+            "endColumn" : 34,
+            "charOffset" : 25763,
+            "charLength" : 25,
+            "byteOffset" : 25763,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCompanyAddressExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 799,
+            "startColumn" : 9,
+            "endLine" : 799,
+            "endColumn" : 36,
+            "charOffset" : 26013,
+            "charLength" : 27,
+            "byteOffset" : 26013,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2927,
+            "startColumn" : 9,
+            "endLine" : 2927,
+            "endColumn" : 34,
+            "charOffset" : 105655,
+            "charLength" : 25,
+            "byteOffset" : 105655,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2941,
+            "startColumn" : 9,
+            "endLine" : 2941,
+            "endColumn" : 36,
+            "charOffset" : 105905,
+            "charLength" : 27,
+            "byteOffset" : 105905,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderItemExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1456,
+            "startColumn" : 9,
+            "endLine" : 1456,
+            "endColumn" : 34,
+            "charOffset" : 51852,
+            "charLength" : 25,
+            "byteOffset" : 51852,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderItemExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1470,
+            "startColumn" : 9,
+            "endLine" : 1470,
+            "endColumn" : 36,
+            "charOffset" : 52102,
+            "charLength" : 27,
+            "byteOffset" : 52102,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderOperateHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 496,
+            "startColumn" : 9,
+            "endLine" : 496,
+            "endColumn" : 34,
+            "charOffset" : 15855,
+            "charLength" : 25,
+            "byteOffset" : 15855,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderOperateHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 510,
+            "startColumn" : 9,
+            "endLine" : 510,
+            "endColumn" : 36,
+            "charOffset" : 16105,
+            "charLength" : 27,
+            "byteOffset" : 16105,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnApplyExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1887,
+            "startColumn" : 9,
+            "endLine" : 1887,
+            "endColumn" : 34,
+            "charOffset" : 66054,
+            "charLength" : 25,
+            "byteOffset" : 66054,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnApplyExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1901,
+            "startColumn" : 9,
+            "endLine" : 1901,
+            "endColumn" : 36,
+            "charOffset" : 66304,
+            "charLength" : 27,
+            "byteOffset" : 66304,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnReasonExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 426,
+            "startColumn" : 9,
+            "endLine" : 426,
+            "endColumn" : 34,
+            "charOffset" : 13107,
+            "charLength" : 25,
+            "byteOffset" : 13107,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnReasonExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 440,
+            "startColumn" : 9,
+            "endLine" : 440,
+            "endColumn" : 36,
+            "charOffset" : 13357,
+            "charLength" : 27,
+            "byteOffset" : 13357,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 475,
+            "startColumn" : 9,
+            "endLine" : 475,
+            "endColumn" : 34,
+            "charOffset" : 16612,
+            "charLength" : 25,
+            "byteOffset" : 16612,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 489,
+            "startColumn" : 9,
+            "endLine" : 489,
+            "endColumn" : 36,
+            "charOffset" : 16862,
+            "charLength" : 27,
+            "byteOffset" : 16862,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 505,
+            "startColumn" : 9,
+            "endLine" : 505,
+            "endColumn" : 34,
+            "charOffset" : 15945,
+            "charLength" : 25,
+            "byteOffset" : 15945,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 519,
+            "startColumn" : 9,
+            "endLine" : 519,
+            "endColumn" : 36,
+            "charOffset" : 16195,
+            "charLength" : 27,
+            "byteOffset" : 16195,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumPicExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 305,
+            "startColumn" : 9,
+            "endLine" : 305,
+            "endColumn" : 34,
+            "charOffset" : 8998,
+            "charLength" : 25,
+            "byteOffset" : 8998,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumPicExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 319,
+            "startColumn" : 9,
+            "endLine" : 319,
+            "endColumn" : 36,
+            "charOffset" : 9248,
+            "charLength" : 27,
+            "byteOffset" : 9248,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsBrandExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 755,
+            "startColumn" : 9,
+            "endLine" : 755,
+            "endColumn" : 34,
+            "charOffset" : 25100,
+            "charLength" : 25,
+            "byteOffset" : 25100,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsBrandExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 769,
+            "startColumn" : 9,
+            "endLine" : 769,
+            "endColumn" : 36,
+            "charOffset" : 25350,
+            "charLength" : 27,
+            "byteOffset" : 25350,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1016,
+            "startColumn" : 9,
+            "endLine" : 1016,
+            "endColumn" : 34,
+            "charOffset" : 34641,
+            "charLength" : 25,
+            "byteOffset" : 34641,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1030,
+            "startColumn" : 9,
+            "endLine" : 1030,
+            "endColumn" : 36,
+            "charOffset" : 34891,
+            "charLength" : 27,
+            "byteOffset" : 34891,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentReplayExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 566,
+            "startColumn" : 9,
+            "endLine" : 566,
+            "endColumn" : 34,
+            "charOffset" : 18439,
+            "charLength" : 25,
+            "byteOffset" : 18439,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentReplayExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 580,
+            "startColumn" : 9,
+            "endLine" : 580,
+            "endColumn" : 36,
+            "charOffset" : 18689,
+            "charLength" : 27,
+            "byteOffset" : 18689,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsFeightTemplateExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 616,
+            "startColumn" : 9,
+            "endLine" : 616,
+            "endColumn" : 34,
+            "charOffset" : 20307,
+            "charLength" : 25,
+            "byteOffset" : 20307,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsFeightTemplateExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 630,
+            "startColumn" : 9,
+            "endLine" : 630,
+            "endColumn" : 36,
+            "charOffset" : 20557,
+            "charLength" : 27,
+            "byteOffset" : 20557,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsMemberPriceExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 426,
+            "startColumn" : 9,
+            "endLine" : 426,
+            "endColumn" : 34,
+            "charOffset" : 14047,
+            "charLength" : 25,
+            "byteOffset" : 14047,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsMemberPriceExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 440,
+            "startColumn" : 9,
+            "endLine" : 440,
+            "endColumn" : 36,
+            "charOffset" : 14297,
+            "charLength" : 27,
+            "byteOffset" : 14297,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 365,
+            "startColumn" : 9,
+            "endLine" : 365,
+            "endColumn" : 34,
+            "charOffset" : 11489,
+            "charLength" : 25,
+            "byteOffset" : 11489,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 379,
+            "startColumn" : 9,
+            "endLine" : 379,
+            "endColumn" : 36,
+            "charOffset" : 11739,
+            "charLength" : 27,
+            "byteOffset" : 11739,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 855,
+            "startColumn" : 9,
+            "endLine" : 855,
+            "endColumn" : 34,
+            "charOffset" : 29078,
+            "charLength" : 25,
+            "byteOffset" : 29078,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 869,
+            "startColumn" : 9,
+            "endLine" : 869,
+            "endColumn" : 36,
+            "charOffset" : 29328,
+            "charLength" : 27,
+            "byteOffset" : 29328,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeValueExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 365,
+            "startColumn" : 9,
+            "endLine" : 365,
+            "endColumn" : 34,
+            "charOffset" : 11565,
+            "charLength" : 25,
+            "byteOffset" : 11565,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeValueExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 379,
+            "startColumn" : 9,
+            "endLine" : 379,
+            "endColumn" : 36,
+            "charOffset" : 11815,
+            "charLength" : 27,
+            "byteOffset" : 11815,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryAttributeRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 9,
+            "endLine" : 295,
+            "endColumn" : 34,
+            "charOffset" : 9601,
+            "charLength" : 25,
+            "byteOffset" : 9601,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryAttributeRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 309,
+            "startColumn" : 9,
+            "endLine" : 309,
+            "endColumn" : 36,
+            "charOffset" : 9851,
+            "charLength" : 27,
+            "byteOffset" : 9851,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 815,
+            "startColumn" : 9,
+            "endLine" : 815,
+            "endColumn" : 34,
+            "charOffset" : 26591,
+            "charLength" : 25,
+            "byteOffset" : 26591,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 829,
+            "startColumn" : 9,
+            "endLine" : 829,
+            "endColumn" : 36,
+            "charOffset" : 26841,
+            "charLength" : 27,
+            "byteOffset" : 26841,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2517,
+            "startColumn" : 9,
+            "endLine" : 2517,
+            "endColumn" : 34,
+            "charOffset" : 88842,
+            "charLength" : 25,
+            "byteOffset" : 88842,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2531,
+            "startColumn" : 9,
+            "endLine" : 2531,
+            "endColumn" : 36,
+            "charOffset" : 89092,
+            "charLength" : 27,
+            "byteOffset" : 89092,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductFullReductionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 356,
+            "startColumn" : 9,
+            "endLine" : 356,
+            "endColumn" : 34,
+            "charOffset" : 11291,
+            "charLength" : 25,
+            "byteOffset" : 11291,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductFullReductionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 370,
+            "startColumn" : 9,
+            "endLine" : 370,
+            "endColumn" : 36,
+            "charOffset" : 11541,
+            "charLength" : 27,
+            "byteOffset" : 11541,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductLadderExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 416,
+            "startColumn" : 9,
+            "endLine" : 416,
+            "endColumn" : 34,
+            "charOffset" : 12978,
+            "charLength" : 25,
+            "byteOffset" : 12978,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductLadderExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 430,
+            "startColumn" : 9,
+            "endLine" : 430,
+            "endColumn" : 36,
+            "charOffset" : 13228,
+            "charLength" : 27,
+            "byteOffset" : 13228,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductOperateLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 847,
+            "startColumn" : 9,
+            "endLine" : 847,
+            "endColumn" : 34,
+            "charOffset" : 29483,
+            "charLength" : 25,
+            "byteOffset" : 29483,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductOperateLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 861,
+            "startColumn" : 9,
+            "endLine" : 861,
+            "endColumn" : 36,
+            "charOffset" : 29733,
+            "charLength" : 27,
+            "byteOffset" : 29733,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductVertifyRecordExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 496,
+            "startColumn" : 9,
+            "endLine" : 496,
+            "endColumn" : 34,
+            "charOffset" : 15823,
+            "charLength" : 25,
+            "byteOffset" : 15823,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductVertifyRecordExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 510,
+            "startColumn" : 9,
+            "endLine" : 510,
+            "endColumn" : 36,
+            "charOffset" : 16073,
+            "charLength" : 27,
+            "byteOffset" : 16073,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsSkuStockExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 806,
+            "startColumn" : 9,
+            "endLine" : 806,
+            "endColumn" : 34,
+            "charOffset" : 26179,
+            "charLength" : 25,
+            "byteOffset" : 26179,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsSkuStockExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 820,
+            "startColumn" : 9,
+            "endLine" : 820,
+            "endColumn" : 36,
+            "charOffset" : 26429,
+            "charLength" : 27,
+            "byteOffset" : 26429,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1227,
+            "startColumn" : 9,
+            "endLine" : 1227,
+            "endColumn" : 34,
+            "charOffset" : 40635,
+            "charLength" : 25,
+            "byteOffset" : 40635,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1241,
+            "startColumn" : 9,
+            "endLine" : 1241,
+            "endColumn" : 36,
+            "charOffset" : 40885,
+            "charLength" : 27,
+            "byteOffset" : 40885,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 806,
+            "startColumn" : 9,
+            "endLine" : 806,
+            "endColumn" : 34,
+            "charOffset" : 26685,
+            "charLength" : 25,
+            "byteOffset" : 26685,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 820,
+            "startColumn" : 9,
+            "endLine" : 820,
+            "endColumn" : 36,
+            "charOffset" : 26935,
+            "charLength" : 27,
+            "byteOffset" : 26935,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductCategoryRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 435,
+            "startColumn" : 9,
+            "endLine" : 435,
+            "endColumn" : 34,
+            "charOffset" : 14919,
+            "charLength" : 25,
+            "byteOffset" : 14919,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductCategoryRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 449,
+            "startColumn" : 9,
+            "endLine" : 449,
+            "endColumn" : 36,
+            "charOffset" : 15169,
+            "charLength" : 27,
+            "byteOffset" : 15169,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 435,
+            "startColumn" : 9,
+            "endLine" : 435,
+            "endColumn" : 34,
+            "charOffset" : 13911,
+            "charLength" : 25,
+            "byteOffset" : 13911,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 449,
+            "startColumn" : 9,
+            "endLine" : 449,
+            "endColumn" : 36,
+            "charOffset" : 14161,
+            "charLength" : 27,
+            "byteOffset" : 14161,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 513,
+            "startColumn" : 9,
+            "endLine" : 513,
+            "endColumn" : 34,
+            "charOffset" : 16855,
+            "charLength" : 25,
+            "byteOffset" : 16855,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 527,
+            "startColumn" : 9,
+            "endLine" : 527,
+            "endColumn" : 36,
+            "charOffset" : 17105,
+            "charLength" : 27,
+            "byteOffset" : 17105,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 556,
+            "startColumn" : 9,
+            "endLine" : 556,
+            "endColumn" : 34,
+            "charOffset" : 18330,
+            "charLength" : 25,
+            "byteOffset" : 18330,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 570,
+            "startColumn" : 9,
+            "endLine" : 570,
+            "endColumn" : 36,
+            "charOffset" : 18580,
+            "charLength" : 27,
+            "byteOffset" : 18580,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 596,
+            "startColumn" : 9,
+            "endLine" : 596,
+            "endColumn" : 34,
+            "charOffset" : 21201,
+            "charLength" : 25,
+            "byteOffset" : 21201,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 610,
+            "startColumn" : 9,
+            "endLine" : 610,
+            "endColumn" : 36,
+            "charOffset" : 21451,
+            "charLength" : 27,
+            "byteOffset" : 21451,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionSessionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 513,
+            "startColumn" : 9,
+            "endLine" : 513,
+            "endColumn" : 34,
+            "charOffset" : 16829,
+            "charLength" : 25,
+            "byteOffset" : 16829,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionSessionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 527,
+            "startColumn" : 9,
+            "endLine" : 527,
+            "endColumn" : 36,
+            "charOffset" : 17079,
+            "charLength" : 27,
+            "byteOffset" : 17079,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeAdvertiseExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 876,
+            "startColumn" : 9,
+            "endLine" : 876,
+            "endColumn" : 34,
+            "charOffset" : 27901,
+            "charLength" : 25,
+            "byteOffset" : 27901,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeAdvertiseExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 890,
+            "startColumn" : 9,
+            "endLine" : 890,
+            "endColumn" : 36,
+            "charOffset" : 28151,
+            "charLength" : 27,
+            "byteOffset" : 28151,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeBrandExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 425,
+            "startColumn" : 9,
+            "endLine" : 425,
+            "endColumn" : 34,
+            "charOffset" : 13498,
+            "charLength" : 25,
+            "byteOffset" : 13498,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeBrandExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 439,
+            "startColumn" : 9,
+            "endLine" : 439,
+            "endColumn" : 36,
+            "charOffset" : 13748,
+            "charLength" : 27,
+            "byteOffset" : 13748,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeNewProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 425,
+            "startColumn" : 9,
+            "endLine" : 425,
+            "endColumn" : 34,
+            "charOffset" : 13656,
+            "charLength" : 25,
+            "byteOffset" : 13656,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeNewProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 439,
+            "startColumn" : 9,
+            "endLine" : 439,
+            "endColumn" : 36,
+            "charOffset" : 13906,
+            "charLength" : 27,
+            "byteOffset" : 13906,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 425,
+            "startColumn" : 9,
+            "endLine" : 425,
+            "endColumn" : 34,
+            "charOffset" : 13668,
+            "charLength" : 25,
+            "byteOffset" : 13668,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 439,
+            "startColumn" : 9,
+            "endLine" : 439,
+            "endColumn" : 36,
+            "charOffset" : 13918,
+            "charLength" : 27,
+            "byteOffset" : 13918,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendSubjectExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 425,
+            "startColumn" : 9,
+            "endLine" : 425,
+            "endColumn" : 34,
+            "charOffset" : 13668,
+            "charLength" : 25,
+            "byteOffset" : 13668,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendSubjectExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 439,
+            "startColumn" : 9,
+            "endLine" : 439,
+            "endColumn" : 36,
+            "charOffset" : 13918,
+            "charLength" : 27,
+            "byteOffset" : 13918,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 776,
+            "startColumn" : 9,
+            "endLine" : 776,
+            "endColumn" : 34,
+            "charOffset" : 24913,
+            "charLength" : 25,
+            "byteOffset" : 24913,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 790,
+            "startColumn" : 9,
+            "endLine" : 790,
+            "endColumn" : 36,
+            "charOffset" : 25163,
+            "charLength" : 27,
+            "byteOffset" : 25163,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminLoginLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 506,
+            "startColumn" : 9,
+            "endLine" : 506,
+            "endColumn" : 34,
+            "charOffset" : 15894,
+            "charLength" : 25,
+            "byteOffset" : 15894,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminLoginLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 520,
+            "startColumn" : 9,
+            "endLine" : 520,
+            "endColumn" : 36,
+            "charOffset" : 16144,
+            "charLength" : 27,
+            "byteOffset" : 16144,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminPermissionRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 355,
+            "startColumn" : 9,
+            "endLine" : 355,
+            "endColumn" : 34,
+            "charOffset" : 10944,
+            "charLength" : 25,
+            "byteOffset" : 10944,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminPermissionRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 369,
+            "startColumn" : 9,
+            "endLine" : 369,
+            "endColumn" : 36,
+            "charOffset" : 11194,
+            "charLength" : 27,
+            "byteOffset" : 11194,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminRoleRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 9,
+            "endLine" : 295,
+            "endColumn" : 34,
+            "charOffset" : 8799,
+            "charLength" : 25,
+            "byteOffset" : 8799,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminRoleRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 309,
+            "startColumn" : 9,
+            "endLine" : 309,
+            "endColumn" : 36,
+            "charOffset" : 9049,
+            "charLength" : 27,
+            "byteOffset" : 9049,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsGrowthChangeHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 616,
+            "startColumn" : 9,
+            "endLine" : 616,
+            "endColumn" : 34,
+            "charOffset" : 20473,
+            "charLength" : 25,
+            "byteOffset" : 20473,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsGrowthChangeHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 630,
+            "startColumn" : 9,
+            "endLine" : 630,
+            "endColumn" : 36,
+            "charOffset" : 20723,
+            "charLength" : 27,
+            "byteOffset" : 20723,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationChangeHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 616,
+            "startColumn" : 9,
+            "endLine" : 616,
+            "endColumn" : 34,
+            "charOffset" : 20483,
+            "charLength" : 25,
+            "byteOffset" : 20483,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationChangeHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 630,
+            "startColumn" : 9,
+            "endLine" : 630,
+            "endColumn" : 36,
+            "charOffset" : 20733,
+            "charLength" : 27,
+            "byteOffset" : 20733,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationConsumeSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 415,
+            "startColumn" : 9,
+            "endLine" : 415,
+            "endColumn" : 34,
+            "charOffset" : 13961,
+            "charLength" : 25,
+            "byteOffset" : 13961,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationConsumeSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 429,
+            "startColumn" : 9,
+            "endLine" : 429,
+            "endColumn" : 36,
+            "charOffset" : 14211,
+            "charLength" : 27,
+            "byteOffset" : 14211,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1363,
+            "startColumn" : 9,
+            "endLine" : 1363,
+            "endColumn" : 34,
+            "charOffset" : 46545,
+            "charLength" : 25,
+            "byteOffset" : 46545,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1377,
+            "startColumn" : 9,
+            "endLine" : 1377,
+            "endColumn" : 36,
+            "charOffset" : 46795,
+            "charLength" : 27,
+            "byteOffset" : 46795,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLevelExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 916,
+            "startColumn" : 9,
+            "endLine" : 916,
+            "endColumn" : 34,
+            "charOffset" : 33222,
+            "charLength" : 25,
+            "byteOffset" : 33222,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLevelExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 930,
+            "startColumn" : 9,
+            "endLine" : 930,
+            "endColumn" : 36,
+            "charOffset" : 33472,
+            "charLength" : 27,
+            "byteOffset" : 33472,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLoginLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 566,
+            "startColumn" : 9,
+            "endLine" : 566,
+            "endColumn" : 34,
+            "charOffset" : 17867,
+            "charLength" : 25,
+            "byteOffset" : 17867,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLoginLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 580,
+            "startColumn" : 9,
+            "endLine" : 580,
+            "endColumn" : 36,
+            "charOffset" : 18117,
+            "charLength" : 27,
+            "byteOffset" : 18117,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberMemberTagRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 9,
+            "endLine" : 295,
+            "endColumn" : 34,
+            "charOffset" : 8811,
+            "charLength" : 25,
+            "byteOffset" : 8811,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberMemberTagRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 309,
+            "startColumn" : 9,
+            "endLine" : 309,
+            "endColumn" : 36,
+            "charOffset" : 9061,
+            "charLength" : 27,
+            "byteOffset" : 9061,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberProductCategoryRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 9,
+            "endLine" : 295,
+            "endColumn" : 34,
+            "charOffset" : 9243,
+            "charLength" : 25,
+            "byteOffset" : 9243,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberProductCategoryRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 309,
+            "startColumn" : 9,
+            "endLine" : 309,
+            "endColumn" : 36,
+            "charOffset" : 9493,
+            "charLength" : 27,
+            "byteOffset" : 9493,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberReceiveAddressExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 785,
+            "startColumn" : 9,
+            "endLine" : 785,
+            "endColumn" : 34,
+            "charOffset" : 25805,
+            "charLength" : 25,
+            "byteOffset" : 25805,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberReceiveAddressExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 799,
+            "startColumn" : 9,
+            "endLine" : 799,
+            "endColumn" : 36,
+            "charOffset" : 26055,
+            "charLength" : 27,
+            "byteOffset" : 26055,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberRuleSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 536,
+            "startColumn" : 9,
+            "endLine" : 536,
+            "endColumn" : 34,
+            "charOffset" : 18564,
+            "charLength" : 25,
+            "byteOffset" : 18564,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberRuleSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 550,
+            "startColumn" : 9,
+            "endLine" : 550,
+            "endColumn" : 36,
+            "charOffset" : 18814,
+            "charLength" : 27,
+            "byteOffset" : 18814,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberStatisticsInfoExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1077,
+            "startColumn" : 9,
+            "endLine" : 1077,
+            "endColumn" : 34,
+            "charOffset" : 39004,
+            "charLength" : 25,
+            "byteOffset" : 39004,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberStatisticsInfoExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1091,
+            "startColumn" : 9,
+            "endLine" : 1091,
+            "endColumn" : 36,
+            "charOffset" : 39254,
+            "charLength" : 27,
+            "byteOffset" : 39254,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTagExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 366,
+            "startColumn" : 9,
+            "endLine" : 366,
+            "endColumn" : 34,
+            "charOffset" : 11854,
+            "charLength" : 25,
+            "byteOffset" : 11854,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTagExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 380,
+            "startColumn" : 9,
+            "endLine" : 380,
+            "endColumn" : 36,
+            "charOffset" : 12104,
+            "charLength" : 27,
+            "byteOffset" : 12104,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTaskExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 425,
+            "startColumn" : 9,
+            "endLine" : 425,
+            "endColumn" : 34,
+            "charOffset" : 13162,
+            "charLength" : 25,
+            "byteOffset" : 13162,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTaskExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 439,
+            "startColumn" : 9,
+            "endLine" : 439,
+            "endColumn" : 36,
+            "charOffset" : 13412,
+            "charLength" : 27,
+            "byteOffset" : 13412,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMenuExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 686,
+            "startColumn" : 9,
+            "endLine" : 686,
+            "endColumn" : 34,
+            "charOffset" : 21585,
+            "charLength" : 25,
+            "byteOffset" : 21585,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMenuExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 700,
+            "startColumn" : 9,
+            "endLine" : 700,
+            "endColumn" : 36,
+            "charOffset" : 21835,
+            "charLength" : 27,
+            "byteOffset" : 21835,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsPermissionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 756,
+            "startColumn" : 9,
+            "endLine" : 756,
+            "endColumn" : 34,
+            "charOffset" : 23571,
+            "charLength" : 25,
+            "byteOffset" : 23571,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsPermissionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 770,
+            "startColumn" : 9,
+            "endLine" : 770,
+            "endColumn" : 36,
+            "charOffset" : 23821,
+            "charLength" : 27,
+            "byteOffset" : 23821,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 366,
+            "startColumn" : 9,
+            "endLine" : 366,
+            "endColumn" : 34,
+            "charOffset" : 11108,
+            "charLength" : 25,
+            "byteOffset" : 11108,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 380,
+            "startColumn" : 9,
+            "endLine" : 380,
+            "endColumn" : 36,
+            "charOffset" : 11358,
+            "charLength" : 27,
+            "byteOffset" : 11358,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 506,
+            "startColumn" : 9,
+            "endLine" : 506,
+            "endColumn" : 34,
+            "charOffset" : 15972,
+            "charLength" : 25,
+            "byteOffset" : 15972,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 520,
+            "startColumn" : 9,
+            "endLine" : 520,
+            "endColumn" : 36,
+            "charOffset" : 16222,
+            "charLength" : 27,
+            "byteOffset" : 16222,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 556,
+            "startColumn" : 9,
+            "endLine" : 556,
+            "endColumn" : 34,
+            "charOffset" : 17736,
+            "charLength" : 25,
+            "byteOffset" : 17736,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 570,
+            "startColumn" : 9,
+            "endLine" : 570,
+            "endColumn" : 36,
+            "charOffset" : 17986,
+            "charLength" : 27,
+            "byteOffset" : 17986,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleMenuRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 9,
+            "endLine" : 295,
+            "endColumn" : 34,
+            "charOffset" : 8763,
+            "charLength" : 25,
+            "byteOffset" : 8763,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleMenuRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 309,
+            "startColumn" : 9,
+            "endLine" : 309,
+            "endColumn" : 36,
+            "charOffset" : 9013,
+            "charLength" : 27,
+            "byteOffset" : 9013,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRolePermissionRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 9,
+            "endLine" : 295,
+            "endColumn" : 34,
+            "charOffset" : 8979,
+            "charLength" : 25,
+            "byteOffset" : 8979,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRolePermissionRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 309,
+            "startColumn" : 9,
+            "endLine" : 309,
+            "endColumn" : 36,
+            "charOffset" : 9229,
+            "charLength" : 27,
+            "byteOffset" : 9229,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleResourceRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 9,
+            "endLine" : 295,
+            "endColumn" : 34,
+            "charOffset" : 8907,
+            "charLength" : 25,
+            "byteOffset" : 8907,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleResourceRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 309,
+            "startColumn" : 9,
+            "endLine" : 309,
+            "endColumn" : 36,
+            "charOffset" : 9157,
+            "charLength" : 27,
+            "byteOffset" : 9157,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+} 25,
+            "byteOffset" : 8763,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleMenuRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 309,
+            "startColumn" : 9,
+            "endLine" : 309,
+            "endColumn" : 36,
+            "charOffset" : 9013,
+            "charLength" : 27,
+            "byteOffset" : 9013,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRolePermissionRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 9,
+            "endLine" : 295,
+            "endColumn" : 34,
+            "charOffset" : 8979,
+            "charLength" : 25,
+            "byteOffset" : 8979,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRolePermissionRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 309,
+            "startColumn" : 9,
+            "endLine" : 309,
+            "endColumn" : 36,
+            "charOffset" : 9229,
+            "charLength" : 27,
+            "byteOffset" : 9229,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleResourceRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 9,
+            "endLine" : 295,
+            "endColumn" : 34,
+            "charOffset" : 8907,
+            "charLength" : 25,
+            "byteOffset" : 8907,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleResourceRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 309,
+            "startColumn" : 9,
+            "endLine" : 309,
+            "endColumn" : 36,
+            "charOffset" : 9157,
+            "charLength" : 27,
+            "byteOffset" : 9157,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

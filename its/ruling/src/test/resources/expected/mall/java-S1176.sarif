@@ -1,0 +1,534 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document the type parameter(s): <T>"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonPage.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 12,
+            "startColumn" : 14,
+            "endLine" : 12,
+            "endColumn" : 24,
+            "charOffset" : 213,
+            "charLength" : 10,
+            "byteOffset" : 231,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document the parameter(s): list"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonPage.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 37,
+            "endLine" : 37,
+            "endColumn" : 45,
+            "charOffset" : 593,
+            "charLength" : 8,
+            "byteOffset" : 669,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document this method return value."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonPage.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 37,
+            "endLine" : 37,
+            "endColumn" : 45,
+            "charOffset" : 593,
+            "charLength" : 8,
+            "byteOffset" : 669,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document the parameter(s): pageInfo"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonPage.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 37,
+            "endLine" : 51,
+            "endColumn" : 45,
+            "charOffset" : 1081,
+            "charLength" : 8,
+            "byteOffset" : 1179,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document this method return value."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonPage.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 37,
+            "endLine" : 51,
+            "endColumn" : 45,
+            "charOffset" : 1081,
+            "charLength" : 8,
+            "byteOffset" : 1179,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document the type parameter(s): <T>"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 7,
+            "startColumn" : 14,
+            "endLine" : 7,
+            "endColumn" : 26,
+            "charOffset" : 104,
+            "charLength" : 12,
+            "byteOffset" : 122,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document this method return value."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 39,
+            "endLine" : 35,
+            "endColumn" : 46,
+            "charOffset" : 570,
+            "charLength" : 7,
+            "byteOffset" : 632,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document this method return value."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonRes8,
+            "charLength" : 7,
+            "byteOffset" : 920,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document this method return value."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 39,
+            "endLine" : 53,
+            "endColumn" : 45,
+            "charOffset" : 1046,
+            "charLength" : 6,
+            "byteOffset" : 1156,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document this method return value."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 39,
+            "endLine" : 62,
+            "endColumn" : 45,
+            "charOffset" : 1294,
+            "charLength" : 6,
+            "byteOffset" : 1430,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document this method return value."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 39,
+            "endLine" : 70,
+            "endColumn" : 45,
+            "charOffset" : 1514,
+            "charLength" : 6,
+            "byteOffset" : 1670,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document this method return value."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 77,
+            "startColumn" : 39,
+            "endLine" : 77,
+            "endColumn" : 45,
+            "charOffset" : 1694,
+            "charLength" : 6,
+            "byteOffset" : 1862,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document this method return value."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 39,
+            "endLine" : 84,
+            "endColumn" : 53,
+            "charOffset" : 1826,
+            "charLength" : 14,
+            "byteOffset" : 2014,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document this method return value."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 92,
+            "startColumn" : 39,
+            "endLine" : 92,
+            "endColumn" : 53,
+            "charOffset" : 2002,
+            "charLength" : 14,
+            "byteOffset" : 2218,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document the parameter(s): data"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 99,
+            "startColumn" : 39,
+            "endLine" : 99,
+            "endColumn" : 51,
+            "charOffset" : 2200,
+            "charLength" : 12,
+            "byteOffset" : 2430,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document this method return value."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 99,
+            "startColumn" : 39,
+            "endLine" : 99,
+            "endColumn" : 51,
+            "charOffset" : 2200,
+            "charLength" : 12,
+            "byteOffset" : 2430,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document the parameter(s): data"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 106,
+            "startColumn" : 39,
+            "endLine" : 106,
+            "endColumn" : 48,
+            "charOffset" : 2414,
+            "charLength" : 9,
+            "byteOffset" : 2658,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1176",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Document this method return value."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/api/CommonResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 106,
+            "startColumn" : 39,
+            "endLine" : 106,
+            "endColumn" : 48,
+            "charOffset" : 2414,
+            "charLength" : 9,
+            "byteOffset" : 2658,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}om/macro/mall/common/api/CommonResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 106,
+            "startColumn" : 39,
+            "endLine" : 106,
+            "endColumn" : 48,
+            "charOffset" : 2414,
+            "charLength" : 9,
+            "byteOffset" : 2658,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

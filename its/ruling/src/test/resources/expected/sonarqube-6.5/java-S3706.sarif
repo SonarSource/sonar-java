@@ -1,0 +1,130 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S3706",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Simplify the code by replacing .stream().forEach() with .forEach()."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/SearchTemplatesDataLoader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 96,
+            "startColumn" : 25,
+            "endLine" : 97,
+            "endColumn" : 15,
+            "charOffset" : 4951,
+            "charLength" : 23,
+            "byteOffset" : 4951,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3706",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Simplify the code by replacing .stream().forEach() with .forEach()."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/rule/ws/ShowAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 140,
+            "startColumn" : 87,
+            "endLine" : 141,
+            "endColumn" : 17,
+            "charOffset" : 6091,
+            "charLength" : 25,
+            "byteOffset" : 6091,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3706",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Simplify the code by replacing .stream().forEach() with .forEach()."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 863,
+            "startColumn" : 11,
+            "endLine" : 863,
+            "endColumn" : 27,
+            "charOffset" : 39851,
+            "charLength" : 16,
+            "byteOffset" : 39851,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3706",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Simplify the code by replacing .stream().forEach() with .forEach()."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 898,
+            "startColumn" : 11,
+            "endLine" : 898,
+            "endColumn" : 27,
+            "charOffset" : 41557,
+            "charLength" : 16,
+            "byteOffset" : 41557,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

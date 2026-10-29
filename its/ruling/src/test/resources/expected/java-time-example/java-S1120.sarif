@@ -1,0 +1,298 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 4 spaces instead of 2 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 11,
+            "startColumn" : 1,
+            "endLine" : 11,
+            "endColumn" : 20,
+            "charOffset" : 193,
+            "charLength" : 19,
+            "byteOffset" : 193,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 8 spaces instead of 4 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 12,
+            "startColumn" : 1,
+            "endLine" : 12,
+            "endColumn" : 31,
+            "charOffset" : 213,
+            "charLength" : 30,
+            "byteOffset" : 213,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 4 spaces instead of 2 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 12,
+            "startColumn" : 1,
+            "endLine" : 12,
+            "endColumn" : 19,
+            "charOffset" : 216,
+            "charLength" : 18,
+            "byteOffset" : 216,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 8 spaces instead of 4 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 1,
+            "endLine" : 13,
+            "endColumn" : 31,
+            "charOffset" : 235,
+            "charLength" : 30,
+            "byteOffset" : 235,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 4 spaces instead of 2 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 12,
+            "startColumn" : 1,
+            "endLine" : 12,
+            "endColumn" : 16,
+            "charOffset" : 217,
+            "charLength" : 15,
+            "byteOffset" : 217,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 8 spaces instead of 4 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 1,
+            "endLine" : 13,
+            "endColumn" : 31,
+            "charOffset" : 233,
+            "charLength" : 30,
+            "byteOffset" : 233,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 4 spaces instead of 2 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 12,
+            "startColumn" : 1,
+            "endLine" : 12,
+            "endColumn" : 17,
+            "charOffset" : 217,
+            "charLength" : 16,
+            "byteOffset" : 217,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 8 spaces instead of 4 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 1,
+            "endLine" : 13,
+            "endColumn" : 30,
+            "charOffset" : 234,
+            "charLength" : 29,
+            "byteOffset" : 234,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 4 spaces instead of 2 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 12,
+            "startColumn" : 1,
+            "endLine" : 12,
+            "endColumn" : 20,
+            "charOffset" : 218,
+            "charLength" : 19,
+            "byteOffset" : 218,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1120",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this line start after 8 spaces instead of 4 in order to indent the code consistently. (Indentation level is at 4.)"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 1,
+            "endLine" : 13,
+            "endColumn" : 31,
+            "charOffset" : 238,
+            "charLength" : 30,
+            "byteOffset" : 238,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,1502 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanComparator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 168,
+            "startColumn" : 9,
+            "endLine" : 168,
+            "endColumn" : 14,
+            "charOffset" : 6251,
+            "charLength" : 5,
+            "byteOffset" : 6251,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanComparator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 171,
+            "startColumn" : 9,
+            "endLine" : 171,
+            "endColumn" : 14,
+            "charOffset" : 6401,
+            "charLength" : 5,
+            "byteOffset" : 6401,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanComparator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 174,
+            "startColumn" : 9,
+            "endLine" : 174,
+            "endColumn" : 14,
+            "charOffset" : 6557,
+            "charLength" : 5,
+            "byteOffset" : 6557,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanComparator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 206,
+            "startColumn" : 9,
+            "endLine" : 206,
+            "endColumn" : 13,
+            "charOffset" : 7512,
+            "charLength" : 4,
+            "byteOffset" : 7512,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 9,
+            "endLine" : 295,
+            "endColumn" : 14,
+            "charOffset" : 10063,
+            "charLength" : 5,
+            "byteOffset" : 10063,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 361,
+            "startColumn" : 17,
+            "endLine" : 361,
+            "endColumn" : 22,
+            "charOffset" : 12551,
+            "charLength" : 5,
+            "byteOffset" : 12551,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 364,
+            "startColumn" : 17,
+            "endLine" : 364,
+            "endColumn" : 22,
+            "charOffset" : 12663,
+            "charLength" : 5,
+            "byteOffset" : 12663,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 367,
+            "startColumn" : 17,
+            "endLine" : 367,
+            "endColumn" : 22,
+            "charOffset" : 12777,
+            "charLength" : 5,
+            "byteOffset" : 12777,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 370,
+            "startColumn" : 17,
+            "endLine" : 370,
+            "endColumn" : 22,
+            "charOffset" : 12892,
+            "charLength" : 5,
+            "byteOffset" : 12892,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 406,
+            "startColumn" : 13,
+            "endLine" : 406,
+            "endColumn" : 18,
+            "charOffset" : 14392,
+            "charLength" : 5,
+            "byteOffset" : 14392,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 413,
+            "startColumn" : 13,
+            "endLine" : 413,
+            "endColumn" : 18,
+            "charOffset" : 14700,
+            "charLength" : 5,
+            "byteOffset" : 14700,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 683,
+            "startColumn" : 9,
+            "endLine" : 683,
+            "endColumn" : 14,
+            "charOffset" : 23527,
+            "charLength" : 5,
+            "byteOffset" : 23527,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 769,
+            "startColumn" : 9,
+            "endLine" : 769,
+            "endColumn" : 14,
+            "charOffset" : 26779,
+            "charLength" : 5,
+            "byteOffset" : 26779,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 776,
+            "startColumn" : 9,
+            "endLine" : 776,
+            "endColumn" : 14,
+            "charOffset" : 27059,
+            "charLength" : 5,
+            "byteOffset" : 27059,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 826,
+            "startColumn" : 9,
+            "endLine" : 826,
+            "endColumn" : 14,
+            "charOffset" : 29373,
+            "charLength" : 5,
+            "byteOffset" : 29373,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 725,
+            "startColumn" : 17,
+            "endLine" : 725,
+            "endColumn" : 22,
+            "charOffset" : 26311,
+            "charLength" : 5,
+            "byteOffset" : 26311,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 764,
+            "startColumn" : 13,
+            "endLine" : 764,
+            "endColumn" : 18,
+            "charOffset" : 27487,
+            "charLength" : 5,
+            "byteOffset" : 27487,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 789,
+            "startColumn" : 9,
+            "endLine" : 789,
+            "endColumn" : 14,
+            "charOffset" : 28286,
+            "charLength" : 5,
+            "byteOffset" : 28286,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 861,
+            "startColumn" : 9,
+            "endLine" : 861,
+            "endColumn" : 14,
+            "charOffset" : 30399,
+            "charLength" : 5,
+            "byteOffset" : 30399,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ResultSetDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 243,
+            "startColumn" : 9,
+            "endLine" : 243,
+            "endColumn" : 14,
+            "charOffset" : 8613,
+            "charLength" : 5,
+            "byteOffset" : 8613,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 647,
+            "startColumn" : 13,
+            "endLine" : 647,
+            "endColumn" : 17,
+            "charOffset" : 27075,
+            "charLength" : 4,
+            "byteOffset" : 27075,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 650,
+            "startColumn" : 13,
+            "endLine" : 650,
+            "endColumn" : 17,
+            "charOffset" : 27180,
+            "charLength" : 4,
+            "byteOffset" : 27180,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 661,
+            "startColumn" : 13,
+            "endLine" : 661,
+            "endColumn" : 17,
+            "charOffset" : 27579,
+            "charLength" : 4,
+            "byteOffset" : 27579,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 722,
+            "startColumn" : 9,
+            "endLine" : 722,
+            "endColumn" : 13,
+            "charOffset" : 30026,
+            "charLength" : 4,
+            "byteOffset" : 30026,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 731,
+            "startColumn" : 13,
+            "endLine" : 731,
+            "endColumn" : 18,
+            "charOffset" : 30358,
+            "charLength" : 5,
+            "byteOffset" : 30358,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 738,
+            "startColumn" : 13,
+            "endLine" : 738,
+            "endColumn" : 17,
+            "charOffset" : 30675,
+            "charLength" : 4,
+            "byteOffset" : 30675,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 742,
+            "startColumn" : 13,
+            "endLine" : 742,
+            "endColumn" : 17,
+            "charOffset" : 30876,
+            "charLength" : 4,
+            "byteOffset" : 30876,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 773,
+            "startColumn" : 13,
+            "endLine" : 773,
+            "endColumn" : 17,
+            "charOffset" : 31937,
+            "charLength" : 4,
+            "byteOffset" : 31937,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 776,
+            "startColumn" : 13,
+            "endLine" : 776,
+            "endColumn" : 17,
+            "charOffset" : 32094,
+            "charLength" : 4,
+            "byteOffset" : 32094,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 780,
+            "startColumn" : 9,
+            "endLine" : 780,
+            "endColumn" : 13,
+            "charOffset" : 32167,
+            "charLength" : 4,
+            "byteOffset" : 32167,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 785,
+            "startColumn" : 13,
+            "endLine" : 785,
+            "endColumn" : 17,
+            "charOffset" : 32433,
+            "charLength" : 4,
+            "byteOffset" : 32433,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 789,
+            "startColumn" : 13,
+            "endLine" : 789,
+            "endColumn" : 17,
+            "charOffset" : 32638,
+            "charLength" : 4,
+            "byteOffset" : 32638,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 793,
+            "startColumn" : 9,
+            "endLine" : 793,
+            "endColumn" : 13,
+            "charOffset" : 32711,
+            "charLength" : 4,
+            "byteOffset" : 32711,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 797,
+            "startColumn" : 13,
+            "endLine" : 797,
+            "endColumn" : 17,
+            "charOffset" : 32927,
+            "charLength" : 4,
+            "byteOffset" : 32927,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 801,
+            "startColumn" : 13,
+            "endLine" : 801,
+            "endColumn" : 17,
+            "charOffset" : 33113,
+            "charLength" : 4,
+            "byteOffset" : 33113,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 826,
+            "startColumn" : 13,
+            "endLine" : 826,
+            "endColumn" : 17,
+            "charOffset" : 33905,
+            "charLength" : 4,
+            "byteOffset" : 33905,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 829,
+            "startColumn" : 13,
+            "endLine" : 829,
+            "endColumn" : 17,
+            "charOffset" : 34042,
+            "charLength" : 4,
+            "byteOffset" : 34042,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 833,
+            "startColumn" : 9,
+            "endLine" : 833,
+            "endColumn" : 13,
+            "charOffset" : 34115,
+            "charLength" : 4,
+            "byteOffset" : 34115,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 838,
+            "startColumn" : 13,
+            "endLine" : 838,
+            "endColumn" : 17,
+            "charOffset" : 34361,
+            "charLength" : 4,
+            "byteOffset" : 34361,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 842,
+            "startColumn" : 13,
+            "endLine" : 842,
+            "endColumn" : 17,
+            "charOffset" : 34546,
+            "charLength" : 4,
+            "byteOffset" : 34546,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 846,
+            "startColumn" : 9,
+            "endLine" : 846,
+            "endColumn" : 13,
+            "charOffset" : 34619,
+            "charLength" : 4,
+            "byteOffset" : 34619,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 850,
+            "startColumn" : 13,
+            "endLine" : 850,
+            "endColumn" : 17,
+            "charOffset" : 34815,
+            "charLength" : 4,
+            "byteOffset" : 34815,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 854,
+            "startColumn" : 13,
+            "endLine" : 854,
+            "endColumn" : 17,
+            "charOffset" : 34981,
+            "charLength" : 4,
+            "byteOffset" : 34981,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 883,
+            "startColumn" : 13,
+            "endLine" : 883,
+            "endColumn" : 17,
+            "charOffset" : 35981,
+            "charLength" : 4,
+            "byteOffset" : 35981,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 887,
+            "startColumn" : 13,
+            "endLine" : 887,
+            "endColumn" : 17,
+            "charOffset" : 36142,
+            "charLength" : 4,
+            "byteOffset" : 36142,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 891,
+            "startColumn" : 9,
+            "endLine" : 891,
+            "endColumn" : 14,
+            "charOffset" : 36257,
+            "charLength" : 5,
+            "byteOffset" : 36257,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 144,
+            "startColumn" : 9,
+            "endLine" : 144,
+            "endColumn" : 13,
+            "charOffset" : 5577,
+            "charLength" : 4,
+            "byteOffset" : 5577,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 440,
+            "startColumn" : 9,
+            "endLine" : 440,
+            "endColumn" : 13,
+            "charOffset" : 15513,
+            "charLength" : 4,
+            "byteOffset" : 15513,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/BigDecimalLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 227,
+            "startColumn" : 9,
+            "endLine" : 227,
+            "endColumn" : 14,
+            "charOffset" : 8491,
+            "charLength" : 5,
+            "byteOffset" : 8491,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/BigIntegerLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 232,
+            "startColumn" : 9,
+            "endLine" : 232,
+            "endColumn" : 14,
+            "charOffset" : 8612,
+            "charLength" : 5,
+            "byteOffset" : 8612,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/StringLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 244,
+            "startColumn" : 9,
+            "endLine" : 244,
+            "endColumn" : 13,
+            "charOffset" : 9119,
+            "charLength" : 4,
+            "byteOffset" : 9119,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/StringLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 250,
+            "startColumn" : 9,
+            "endLine" : 250,
+            "endColumn" : 13,
+            "charOffset" : 9358,
+            "charLength" : 4,
+            "byteOffset" : 9358,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1107",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" on the same line that the previous closing curly brace."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/StringLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 257,
+            "startColumn" : 9,
+            "endLine" : 257,
+            "endColumn" : 13,
+            "charOffset" : 9634,
+            "charLength" : 4,
+            "byteOffset" : 9634,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,3126 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"groupInOrg\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/authentication/UserIdentityAuthenticatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 291,
+            "startColumn" : 14,
+            "endLine" : 291,
+            "endColumn" : 24,
+            "charOffset" : 11683,
+            "charLength" : 10,
+            "byteOffset" : 11683,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project1\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 268,
+            "startColumn" : 18,
+            "endLine" : 268,
+            "endColumn" : 26,
+            "charOffset" : 12402,
+            "charLength" : 8,
+            "byteOffset" : 12402,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project3\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 274,
+            "startColumn" : 18,
+            "endLine" : 274,
+            "endColumn" : 26,
+            "charOffset" : 12728,
+            "charLength" : 8,
+            "byteOffset" : 12728,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project3\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 312,
+            "startColumn" : 18,
+            "endLine" : 312,
+            "endColumn" : 26,
+            "charOffset" : 15063,
+            "charLength" : 8,
+            "byteOffset" : 15063,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project3\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 328,
+            "startColumn" : 18,
+            "endLine" : 328,
+            "endColumn" : 26,
+            "charOffset" : 15983,
+            "charLength" : 8,
+            "byteOffset" : 15983,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project1\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 342,
+            "startColumn" : 18,
+            "endLine" : 342,
+            "endColumn" : 26,
+            "charOffset" : 16820,
+            "charLength" : 8,
+            "byteOffset" : 16820,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project3\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 344,
+            "startColumn" : 18,
+            "endLine" : 344,
+            "endColumn" : 26,
+            "charOffset" : 17036,
+            "charLength" : 8,
+            "byteOffset" : 17036,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project1\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 357,
+            "startColumn" : 18,
+            "endLine" : 357,
+            "endColumn" : 26,
+            "charOffset" : 17673,
+            "charLength" : 8,
+            "byteOffset" : 17673,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project3\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 359,
+            "startColumn" : 18,
+            "endLine" : 359,
+            "endColumn" : 26,
+            "charOffset" : 17897,
+            "charLength" : 8,
+            "byteOffset" : 17897,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 371,
+            "startColumn" : 18,
+            "endLine" : 371,
+            "endColumn" : 26,
+            "charOffset" : 18460,
+            "charLength" : 8,
+            "byteOffset" : 18460,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 385,
+            "startColumn" : 18,
+            "endLine" : 385,
+            "endColumn" : 26,
+            "charOffset" : 19271,
+            "charLength" : 8,
+            "byteOffset" : 19271,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 399,
+            "startColumn" : 18,
+            "endLine" : 399,
+            "endColumn" : 26,
+            "charOffset" : 20081,
+            "charLength" : 8,
+            "byteOffset" : 20081,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 413,
+            "startColumn" : 18,
+            "endLine" : 413,
+            "endColumn" : 26,
+            "charOffset" : 20923,
+            "charLength" : 8,
+            "byteOffset" : 20923,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 428,
+            "startColumn" : 18,
+            "endLine" : 428,
+            "endColumn" : 26,
+            "charOffset" : 21889,
+            "charLength" : 8,
+            "byteOffset" : 21889,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project3\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 429,
+            "startColumn" : 18,
+            "endLine" : 429,
+            "endColumn" : 26,
+            "charOffset" : 21997,
+            "charLength" : 8,
+            "byteOffset" : 21997,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 455,
+            "startColumn" : 18,
+            "endLine" : 455,
+            "endColumn" : 26,
+            "charOffset" : 23518,
+            "charLength" : 8,
+            "byteOffset" : 23518,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 469,
+            "startColumn" : 18,
+            "endLine" : 469,
+            "endColumn" : 26,
+            "charOffset" : 24342,
+            "charLength" : 8,
+            "byteOffset" : 24342,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 483,
+            "startColumn" : 18,
+            "endLine" : 483,
+            "endColumn" : 26,
+            "charOffset" : 25137,
+            "charLength" : 8,
+            "byteOffset" : 25137,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"sonarQubeProject\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 558,
+            "startColumn" : 18,
+            "endLine" : 558,
+            "endColumn" : 34,
+            "charOffset" : 29802,
+            "charLength" : 16,
+            "byteOffset" : 29802,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"sonarQubeProject\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 573,
+            "startColumn" : 18,
+            "endLine" : 573,
+            "endColumn" : 34,
+            "charOffset" : 30525,
+            "charLength" : 16,
+            "byteOffset" : 30525,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"subView\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SuggestionsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 576,
+            "startColumn" : 18,
+            "endLine" : 576,
+            "endColumn" : 25,
+            "charOffset" : 25028,
+            "charLength" : 7,
+            "byteOffset" : 25028,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"file\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SuggestionsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 579,
+            "startColumn" : 18,
+            "endLine" : 579,
+            "endColumn" : 22,
+            "charOffset" : 25354,
+            "charLength" : 4,
+            "byteOffset" : 25354,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"test\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SuggestionsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 580,
+            "startColumn" : 18,
+            "endLine" : 580,
+            "endColumn" : 22,
+            "charOffset" : 25463,
+            "charLength" : 4,
+            "byteOffset" : 25463,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"projectSnapshot\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/TreeActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 140,
+            "startColumn" : 17,
+            "endLine" : 140,
+            "endColumn" : 32,
+            "charOffset" : 6022,
+            "charLength" : 15,
+            "byteOffset" : 6022,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"branchProject\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/queue/ReportSubmitterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 260,
+            "startColumn" : 18,
+            "endLine" : 260,
+            "endColumn" : 31,
+            "charOffset" : 11525,
+            "charLength" : 13,
+            "byteOffset" : 11525,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"ceContainer\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/container/TaskContainerImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 23,
+            "endLine" : 64,
+            "endColumn" : 34,
+            "charOffset" : 2449,
+            "charLength" : 11,
+            "byteOffset" : 2449,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"periodIndex\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitygate/EvaluationResultTextConverterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 129,
+            "startColumn" : 9,
+            "endLine" : 129,
+            "endColumn" : 20,
+            "charOffset" : 5984,
+            "charLength" : 11,
+            "byteOffset" : 5984,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"periodIndex\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitygate/EvaluationResultTextConverterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 151,
+            "startColumn" : 9,
+            "endLine" : 151,
+            "endColumn" : 20,
+            "charOffset" : 7080,
+            "charLength" : 11,
+            "byteOffset" : 7080,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"subViewDto\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ViewsPersistAnalysisStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 128,
+            "startColumn" : 18,
+            "endLine" : 128,
+            "endColumn" : 28,
+            "charOffset" : 5455,
+            "charLength" : 10,
+            "byteOffset" : 5455,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/duplication/ws/ShowResponseBuilderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 74,
+            "startColumn" : 18,
+            "endLine" : 74,
+            "endColumn" : 26,
+            "charOffset" : 3064,
+            "charLength" : 8,
+            "byteOffset" : 3064,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"issue2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/index/IssueIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 105,
+            "startColumn" : 14,
+            "endLine" : 105,
+            "endColumn" : 20,
+            "charOffset" : 4282,
+            "charLength" : 6,
+            "byteOffset" : 4282,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"issue2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/index/IssueIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 133,
+            "startColumn" : 14,
+            "endLine" : 133,
+            "endColumn" : 20,
+            "charOffset" : 5607,
+            "charLength" : 6,
+            "byteOffset" : 5607,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"issue\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/index/IssueIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 157,
+            "startColumn" : 14,
+            "endLine" : 157,
+            "endColumn" : 19,
+            "charOffset" : 6686,
+            "charLength" : 5,
+            "byteOffset" : 6686,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"file4\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/measure/ws/ComponentTreeActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 298,
+            "startColumn" : 18,
+            "endLine" : 298,
+            "endColumn" : 23,
+            "charOffset" : 15476,
+            "charLength" : 5,
+            "byteOffset" : 15476,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"file2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/measure/ws/ComponentTreeActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 664,
+            "startColumn" : 18,
+            "endLine" : 664,
+            "endColumn" : 23,
+            "charOffset" : 32490,
+            "charLength" : 5,
+            "byteOffset" : 32490,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"settings\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/notification/NotificationDaemonTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 210,
+            "startColumn" : 14,
+            "endLine" : 210,
+            "endColumn" : 22,
+            "charOffset" : 8683,
+            "charLength" : 8,
+            "byteOffset" : 8683,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"user\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/OrganizationCreationImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 266,
+            "startColumn" : 13,
+            "endLine" : 266,
+            "endColumn" : 17,
+            "charOffset" : 12951,
+            "charLength" : 4,
+            "byteOffset" : 12951,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"file\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/DeleteActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 231,
+            "startColumn" : 18,
+            "endLine" : 231,
+            "endColumn" : 22,
+            "charOffset" : 9175,
+            "charLength" : 4,
+            "byteOffset" : 9175,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"subview2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/DeleteActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 235,
+            "startColumn" : 18,
+            "endLine" : 235,
+            "endColumn" : 26,
+            "charOffset" : 9474,
+            "charLength" : 8,
+            "byteOffset" : 9474,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"projectCopy\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/DeleteActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 236,
+            "startColumn" : 18,
+            "endLine" : 236,
+            "endColumn" : 29,
+            "charOffset" : 9588,
+            "charLength" : 11,
+            "byteOffset" : 9588,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"user2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/DeleteActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 253,
+            "startColumn" : 13,
+            "endLine" : 253,
+            "endColumn" : 18,
+            "charOffset" : 10396,
+            "charLength" : 5,
+            "byteOffset" : 10396,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"profileInOrg\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/DeleteActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 325,
+            "startColumn" : 17,
+            "endLine" : 325,
+            "endColumn" : 29,
+            "charOffset" : 14368,
+            "charLength" : 12,
+            "byteOffset" : 14368,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"project2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/permission/index/PermissionIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 204,
+            "startColumn" : 18,
+            "endLine" : 204,
+            "endColumn" : 26,
+            "charOffset" : 7072,
+            "charLength" : 8,
+            "byteOffset" : 7072,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"group3\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/permission/ws/template/TemplateGroupsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 175,
+            "startColumn" : 14,
+            "endLine" : 175,
+            "endColumn" : 20,
+            "charOffset" : 8409,
+            "charLength" : 6,
+            "byteOffset" : 8409,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"group2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/permission/ws/template/TemplateGroupsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 221,
+            "startColumn" : 14,
+            "endLine" : 221,
+            "endColumn" : 20,
+            "charOffset" : 10651,
+            "charLength" : 6,
+            "byteOffset" : 10651,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"group3\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/permission/ws/template/TemplateGroupsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 222,
+            "startColumn" : 14,
+            "endLine" : 222,
+            "endColumn" : 20,
+            "charOffset" : 10725,
+            "charLength" : 6,
+            "byteOffset" : 10725,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"toKeep\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/project/ws/BulkDeleteActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 80,
+            "startColumn" : 18,
+            "endLine" : 80,
+            "endColumn" : 24,
+            "charOffset" : 3157,
+            "charLength" : 6,
+            "byteOffset" : 3157,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"toKeep\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/project/ws/BulkDeleteActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 95,
+            "startColumn" : 18,
+            "endLine" : 95,
+            "endColumn" : 24,
+            "charOffset" : 3796,
+            "charLength" : 6,
+            "byteOffset" : 3796,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"inactiveModule\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/project/ws/BulkUpdateKeyActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 131,
+            "startColumn" : 18,
+            "endLine" : 131,
+            "endColumn" : 32,
+            "charOffset" : 5756,
+            "charLength" : 14,
+            "byteOffset" : 5756,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"file\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/project/ws/BulkUpdateKeyActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 132,
+            "startColumn" : 18,
+            "endLine" : 132,
+            "endColumn" : 22,
+            "charOffset" : 5902,
+            "charLength" : 4,
+            "byteOffset" : 5902,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"inactiveFile\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/project/ws/BulkUpdateKeyActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 133,
+            "startColumn" : 18,
+            "endLine" : 133,
+            "endColumn" : 30,
+            "charOffset" : 6027,
+            "charLength" : 12,
+            "byteOffset" : 6027,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"conditionOnLeakPeriod\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualitygate/QualityGateConditionsUpdaterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 282,
+            "startColumn" : 29,
+            "endLine" : 282,
+            "endColumn" : 50,
+            "charOffset" : 12188,
+            "charLength" : 21,
+            "byteOffset" : 12188,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"childQProfileDto\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RegisterQualityProfilesNotificationTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 206,
+            "startColumn" : 17,
+            "endLine" : 206,
+            "endColumn" : 33,
+            "charOffset" : 9959,
+            "charLength" : 16,
+            "byteOffset" : 9959,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"ruleParam\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 121,
+            "startColumn" : 18,
+            "endLine" : 121,
+            "endColumn" : 27,
+            "charOffset" : 5228,
+            "charLength" : 9,
+            "byteOffset" : 5228,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"ruleParam\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 162,
+            "startColumn" : 18,
+            "endLine" : 162,
+            "endColumn" : 27,
+            "charOffset" : 6877,
+            "charLength" : 9,
+            "byteOffset" : 6877,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"changes\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 215,
+            "startColumn" : 28,
+            "endLine" : 215,
+            "endColumn" : 35,
+            "charOffset" : 9407,
+            "charLength" : 7,
+            "byteOffset" : 9407,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"changes\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 234,
+            "startColumn" : 28,
+            "endLine" : 234,
+            "endColumn" : 35,
+            "charOffset" : 10372,
+            "charLength" : 7,
+            "byteOffset" : 10372,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"templateParam\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 380,
+            "startColumn" : 18,
+            "endLine" : 380,
+            "endColumn" : 31,
+            "charOffset" : 17056,
+            "charLength" : 13,
+            "byteOffset" : 17056,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"customParam\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 382,
+            "startColumn" : 18,
+            "endLine" : 382,
+            "endColumn" : 29,
+            "charOffset" : 17240,
+            "charLength" : 11,
+            "byteOffset" : 17240,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"childProfile\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 719,
+            "startColumn" : 17,
+            "endLine" : 719,
+            "endColumn" : 29,
+            "charOffset" : 33464,
+            "charLength" : 12,
+            "byteOffset" : 33464,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"changes\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 908,
+            "startColumn" : 28,
+            "endLine" : 908,
+            "endColumn" : 35,
+            "charOffset" : 41897,
+            "charLength" : 7,
+            "byteOffset" : 41897,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"ar3\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/index/ActiveRuleIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 102,
+            "startColumn" : 19,
+            "endLine" : 102,
+            "endColumn" : 22,
+            "charOffset" : 3620,
+            "charLength" : 3,
+            "byteOffset" : 3620,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"ar\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/index/ActiveRuleIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 112,
+            "startColumn" : 19,
+            "endLine" : 112,
+            "endColumn" : 21,
+            "charOffset" : 3855,
+            "charLength" : 2,
+            "byteOffset" : 3855,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"ar2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/index/ActiveRuleIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 159,
+            "startColumn" : 19,
+            "endLine" : 159,
+            "endColumn" : 22,
+            "charOffset" : 5590,
+            "charLength" : 3,
+            "byteOffset" : 5590,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"ar3\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/index/ActiveRuleIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 160,
+            "startColumn" : 19,
+            "endLine" : 160,
+            "endColumn" : 22,
+            "charOffset" : 5666,
+            "charLength" : 3,
+            "byteOffset" : 5666,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"profileInOrg2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/BackupActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 142,
+            "startColumn" : 17,
+            "endLine" : 142,
+            "endColumn" : 30,
+            "charOffset" : 6401,
+            "charLength" : 13,
+            "byteOffset" : 6401,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"profileInOrg1\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/DeleteActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 156,
+            "startColumn" : 17,
+            "endLine" : 156,
+            "endColumn" : 30,
+            "charOffset" : 6266,
+            "charLength" : 13,
+            "byteOffset" : 6266,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"nonDefaultProfile\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ExportActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 189,
+            "startColumn" : 17,
+            "endLine" : 189,
+            "endColumn" : 34,
+            "charOffset" : 7861,
+            "charLength" : 17,
+            "byteOffset" : 7861,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"profile\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ExportActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 213,
+            "startColumn" : 17,
+            "endLine" : 213,
+            "endColumn" : 24,
+            "charOffset" : 8845,
+            "charLength" : 7,
+            "byteOffset" : 8845,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"nonDefaultJavaInOrg1\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ExportActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 242,
+            "startColumn" : 17,
+            "endLine" : 242,
+            "endColumn" : 37,
+            "charOffset" : 10128,
+            "charLength" : 20,
+            "byteOffset" : 10128,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"nonDefaultXooInOrg1\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ExportActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 244,
+            "startColumn" : 17,
+            "endLine" : 244,
+            "endColumn" : 36,
+            "charOffset" : 10380,
+            "charLength" : 19,
+            "byteOffset" : 10380,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"nonDefaultJavaInOrg2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ExportActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 246,
+            "startColumn" : 17,
+            "endLine" : 246,
+            "endColumn" : 37,
+            "charOffset" : 10632,
+            "charLength" : 20,
+            "byteOffset" : 10632,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"nonDefaultXooInOrg2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ExportActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 248,
+            "startColumn" : 17,
+            "endLine" : 248,
+            "endColumn" : 36,
+            "charOffset" : 10884,
+            "charLength" : 19,
+            "byteOffset" : 10884,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"activeRule1\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/InheritanceActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 122,
+            "startColumn" : 19,
+            "endLine" : 122,
+            "endColumn" : 30,
+            "charOffset" : 4927,
+            "charLength" : 11,
+            "byteOffset" : 4927,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"activeRule2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/InheritanceActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 123,
+            "startColumn" : 19,
+            "endLine" : 123,
+            "endColumn" : 30,
+            "charOffset" : 4994,
+            "charLength" : 11,
+            "byteOffset" : 4994,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"result\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/QProfilesWsMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 149,
+            "startColumn" : 21,
+            "endLine" : 149,
+            "endColumn" : 27,
+            "charOffset" : 6571,
+            "charLength" : 6,
+            "byteOffset" : 6571,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"result\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/QProfilesWsMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 175,
+            "startColumn" : 21,
+            "endLine" : 175,
+            "endColumn" : 27,
+            "charOffset" : 7684,
+            "charLength" : 6,
+            "byteOffset" : 7684,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"result\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/QProfilesWsMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 200,
+            "startColumn" : 21,
+            "endLine" : 200,
+            "endColumn" : 27,
+            "charOffset" : 8836,
+            "charLength" : 6,
+            "byteOffset" : 8836,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"result\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/QProfilesWsMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 220,
+            "startColumn" : 21,
+            "endLine" : 220,
+            "endColumn" : 27,
+            "charOffset" : 9679,
+            "charLength" : 6,
+            "byteOffset" : 9679,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"result\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/QProfilesWsMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 263,
+            "startColumn" : 21,
+            "endLine" : 263,
+            "endColumn" : 27,
+            "charOffset" : 11451,
+            "charLength" : 6,
+            "byteOffset" : 11451,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"rule1\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/QProfilesWsMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 358,
+            "startColumn" : 23,
+            "endLine" : 358,
+            "endColumn" : 28,
+            "charOffset" : 15401,
+            "charLength" : 5,
+            "byteOffset" : 15401,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"qualityProfileKey2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/RenameActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 103,
+            "startColumn" : 12,
+            "endLine" : 103,
+            "endColumn" : 30,
+            "charOffset" : 3941,
+            "charLength" : 18,
+            "byteOffset" : 3941,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"qualityProfileKey2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/RenameActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 130,
+            "startColumn" : 12,
+            "endLine" : 130,
+            "endColumn" : 30,
+            "charOffset" : 5056,
+            "charLength" : 18,
+            "byteOffset" : 5056,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"inactiveRule\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 362,
+            "startColumn" : 23,
+            "endLine" : 362,
+            "endColumn" : 35,
+            "charOffset" : 18971,
+            "charLength" : 12,
+            "byteOffset" : 18971,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"response\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/SetDefaultActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 219,
+            "startColumn" : 20,
+            "endLine" : 219,
+            "endColumn" : 28,
+            "charOffset" : 8875,
+            "charLength" : 8,
+            "byteOffset" : 8875,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"anotherSonarWayProfile\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ShowActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 226,
+            "startColumn" : 17,
+            "endLine" : 226,
+            "endColumn" : 39,
+            "charOffset" : 11123,
+            "charLength" : 22,
+            "byteOffset" : 11123,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"sonarWayProfile\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ShowActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 239,
+            "startColumn" : 17,
+            "endLine" : 239,
+            "endColumn" : 32,
+            "charOffset" : 11709,
+            "charLength" : 15,
+            "byteOffset" : 11709,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"sonarWayProfile\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ShowActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 251,
+            "startColumn" : 17,
+            "endLine" : 251,
+            "endColumn" : 32,
+            "charOffset" : 12341,
+            "charLength" : 15,
+            "byteOffset" : 12341,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"sonarWayProfile\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ShowActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 263,
+            "startColumn" : 17,
+            "endLine" : 263,
+            "endColumn" : 32,
+            "charOffset" : 12918,
+            "charLength" : 15,
+            "byteOffset" : 12918,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"sonarQubeWayProfile\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ShowActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 291,
+            "startColumn" : 17,
+            "endLine" : 291,
+            "endColumn" : 36,
+            "charOffset" : 14395,
+            "charLength" : 19,
+            "byteOffset" : 14395,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"organizationUuid\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 385,
+            "startColumn" : 12,
+            "endLine" : 385,
+            "endColumn" : 28,
+            "charOffset" : 16335,
+            "charLength" : 16,
+            "byteOffset" : 16335,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"organizationUuid\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 397,
+            "startColumn" : 12,
+            "endLine" : 397,
+            "endColumn" : 28,
+            "charOffset" : 16976,
+            "charLength" : 16,
+            "byteOffset" : 16976,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"php2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 130,
+            "startColumn" : 23,
+            "endLine" : 130,
+            "endColumn" : 27,
+            "charOffset" : 5350,
+            "charLength" : 4,
+            "byteOffset" : 5350,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"codeSmell\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 284,
+            "startColumn" : 23,
+            "endLine" : 284,
+            "endColumn" : 32,
+            "charOffset" : 10608,
+            "charLength" : 9,
+            "byteOffset" : 10608,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"blocker\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 427,
+            "startColumn" : 23,
+            "endLine" : 427,
+            "endColumn" : 30,
+            "charOffset" : 17092,
+            "charLength" : 7,
+            "byteOffset" : 17092,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"beta\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 450,
+            "startColumn" : 23,
+            "endLine" : 450,
+            "endColumn" : 27,
+            "charOffset" : 17993,
+            "charLength" : 4,
+            "byteOffset" : 17993,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"info\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 568,
+            "startColumn" : 23,
+            "endLine" : 568,
+            "endColumn" : 27,
+            "charOffset" : 23159,
+            "charLength" : 4,
+            "byteOffset" : 23159,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"rule\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 777,
+            "startColumn" : 23,
+            "endLine" : 777,
+            "endColumn" : 27,
+            "charOffset" : 32836,
+            "charLength" : 4,
+            "byteOffset" : 32836,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"rule\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 793,
+            "startColumn" : 23,
+            "endLine" : 793,
+            "endColumn" : 27,
+            "charOffset" : 33645,
+            "charLength" : 4,
+            "byteOffset" : 33645,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"rule2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 169,
+            "startColumn" : 23,
+            "endLine" : 169,
+            "endColumn" : 28,
+            "charOffset" : 7602,
+            "charLength" : 5,
+            "byteOffset" : 7602,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"metadata2\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 229,
+            "startColumn" : 21,
+            "endLine" : 229,
+            "endColumn" : 30,
+            "charOffset" : 10039,
+            "charLength" : 9,
+            "byteOffset" : 10039,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"metadata\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 263,
+            "startColumn" : 21,
+            "endLine" : 263,
+            "endColumn" : 29,
+            "charOffset" : 11517,
+            "charLength" : 8,
+            "byteOffset" : 11517,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"rule\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 277,
+            "startColumn" : 23,
+            "endLine" : 277,
+            "endColumn" : 27,
+            "charOffset" : 12264,
+            "charLength" : 4,
+            "byteOffset" : 12264,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"rule\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 289,
+            "startColumn" : 23,
+            "endLine" : 289,
+            "endColumn" : 27,
+            "charOffset" : 12824,
+            "charLength" : 4,
+            "byteOffset" : 12824,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"rule\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 363,
+            "startColumn" : 23,
+            "endLine" : 363,
+            "endColumn" : 27,
+            "charOffset" : 16313,
+            "charLength" : 4,
+            "byteOffset" : 16313,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"metadata\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 387,
+            "startColumn" : 21,
+            "endLine" : 387,
+            "endColumn" : 29,
+            "charOffset" : 17220,
+            "charLength" : 8,
+            "byteOffset" : 17220,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"metadata\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 422,
+            "startColumn" : 21,
+            "endLine" : 422,
+            "endColumn" : 29,
+            "charOffset" : 19062,
+            "charLength" : 8,
+            "byteOffset" : 19062,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"metadata\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 458,
+            "startColumn" : 21,
+            "endLine" : 458,
+            "endColumn" : 29,
+            "charOffset" : 20902,
+            "charLength" : 8,
+            "byteOffset" : 20902,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"rule\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 490,
+            "startColumn" : 23,
+            "endLine" : 490,
+            "endColumn" : 27,
+            "charOffset" : 22526,
+            "charLength" : 4,
+            "byteOffset" : 22526,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"ruleParam3\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 579,
+            "startColumn" : 18,
+            "endLine" : 579,
+            "endColumn" : 28,
+            "charOffset" : 26056,
+            "charLength" : 10,
+            "byteOffset" : 26056,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1481",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused \"user\" local variable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/user/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 131,
+            "startColumn" : 13,
+            "endLine" : 131,
+            "endColumn" : 17,
+            "charOffset" : 5237,
+            "charLength" : 4,
+            "byteOffset" : 5237,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

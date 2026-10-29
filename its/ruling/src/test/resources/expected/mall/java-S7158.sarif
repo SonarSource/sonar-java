@@ -1,0 +1,107 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"String\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/util/RequestUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 19,
+            "startColumn" : 34,
+            "endLine" : 19,
+            "endColumn" : 57,
+            "charOffset" : 459,
+            "charLength" : 23,
+            "byteOffset" : 509,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"String\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/util/RequestUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 22,
+            "startColumn" : 34,
+            "endLine" : 22,
+            "endColumn" : 57,
+            "charOffset" : 632,
+            "charLength" : 23,
+            "byteOffset" : 682,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"String\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/util/RequestUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 34,
+            "endLine" : 25,
+            "endColumn" : 57,
+            "charOffset" : 808,
+            "charLength" : 23,
+            "byteOffset" : 858,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

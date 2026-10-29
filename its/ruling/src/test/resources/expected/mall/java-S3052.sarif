@@ -1,0 +1,77 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"false\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/CommentGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 18,
+            "startColumn" : 41,
+            "endLine" : 18,
+            "endColumn" : 46,
+            "charOffset" : 614,
+            "charLength" : 5,
+            "byteOffset" : 630,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3052",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this initialization to \"null\", the compiler will do that for you."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-security/src/main/java/com/macro/mall/security/component/DynamicSecurityMetadataSource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 20,
+            "startColumn" : 70,
+            "endLine" : 20,
+            "endColumn" : 74,
+            "charOffset" : 742,
+            "charLength" : 4,
+            "byteOffset" : 778,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}ences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

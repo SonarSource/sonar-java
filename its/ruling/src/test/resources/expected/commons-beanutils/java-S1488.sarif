@@ -1,0 +1,354 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"answer\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 766,
+            "startColumn" : 37,
+            "endLine" : 766,
+            "endColumn" : 46,
+            "charOffset" : 26723,
+            "charLength" : 9,
+            "byteOffset" : 26723,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1265,
+            "startColumn" : 30,
+            "endLine" : 1265,
+            "endColumn" : 80,
+            "charOffset" : 51465,
+            "charLength" : 50,
+            "byteOffset" : 51465,
+            "byteLength" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"calendar\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/DateTimeConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 528,
+            "startColumn" : 43,
+            "endLine" : 528,
+            "endColumn" : 87,
+            "charOffset" : 18361,
+            "charLength" : 44,
+            "byteOffset" : 18361,
+            "byteLength" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"calendar\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/DateTimeConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 570,
+            "startColumn" : 35,
+            "endLine" : 570,
+            "endColumn" : 55,
+            "charOffset" : 20257,
+            "charLength" : 20,
+            "byteOffset" : 20257,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"dynaClass\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 986,
+            "startColumn" : 37,
+            "endLine" : 1005,
+            "endColumn" : 27,
+            "charOffset" : 29255,
+            "charLength" : 1372,
+            "byteOffset" : 29255,
+            "byteLength" : 1372
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"keys\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanMapTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 181,
+            "startColumn" : 31,
+            "endLine" : 193,
+            "endColumn" : 10,
+            "charOffset" : 5335,
+            "charLength" : 345,
+            "byteOffset" : 5335,
+            "byteLength" : 345
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"values\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanMapTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 208,
+            "startColumn" : 33,
+            "endLine" : 220,
+            "endColumn" : 10,
+            "charOffset" : 6207,
+            "charLength" : 392,
+            "byteOffset" : 6207,
+            "byteLength" : 392
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"values\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanMapTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 226,
+            "startColumn" : 33,
+            "endLine" : 238,
+            "endColumn" : 10,
+            "charOffset" : 6720,
+            "charLength" : 366,
+            "byteOffset" : 6720,
+            "byteLength" : 366
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"dynaClass\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1237,
+            "startColumn" : 37,
+            "endLine" : 1260,
+            "endColumn" : 27,
+            "charOffset" : 49015,
+            "charLength" : 1674,
+            "byteOffset" : 49015,
+            "byteLength" : 1674
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"dynaClass\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2614,
+            "startColumn" : 37,
+            "endLine" : 2637,
+            "endColumn" : 27,
+            "charOffset" : 91762,
+            "charLength" : 1675,
+            "byteOffset" : 91762,
+            "byteLength" : 1675
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"theLoader\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira347TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 150,
+            "startColumn" : 42,
+            "endLine" : 150,
+            "endColumn" : 108,
+            "charOffset" : 6677,
+            "charLength" : 66,
+            "byteOffset" : 6677,
+            "byteLength" : 66
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"theLoader\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 528,
+            "startColumn" : 42,
+            "endLine" : 528,
+            "endColumn" : 108,
+            "charOffset" : 24342,
+            "charLength" : 66,
+            "byteOffset" : 24342,
+            "byteLength" : 66
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

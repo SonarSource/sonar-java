@@ -1,0 +1,466 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"CharSequence\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/CharMatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1040,
+            "startColumn" : 15,
+            "endLine" : 1040,
+            "endColumn" : 37,
+            "charOffset" : 34378,
+            "charLength" : 22,
+            "byteOffset" : 34378,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"CharSequence\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/CharMatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1063,
+            "startColumn" : 14,
+            "endLine" : 1063,
+            "endColumn" : 36,
+            "charOffset" : 34944,
+            "charLength" : 22,
+            "byteOffset" : 34944,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"CharSequence\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/CharMatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1090,
+            "startColumn" : 15,
+            "endLine" : 1090,
+            "endColumn" : 37,
+            "charOffset" : 35734,
+            "charLength" : 22,
+            "byteOffset" : 35734,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"CharSequence\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/CharMatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1156,
+            "startColumn" : 14,
+            "endLine" : 1156,
+            "endColumn" : 36,
+            "charOffset" : 37108,
+            "charLength" : 22,
+            "byteOffset" : 37108,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"String\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Splitter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 176,
+            "startColumn" : 19,
+            "endLine" : 176,
+            "endColumn" : 42,
+            "charOffset" : 6667,
+            "charLength" : 23,
+            "byteOffset" : 6667,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"String\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Strings.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 30,
+            "endLine" : 78,
+            "endColumn" : 50,
+            "charOffset" : 2647,
+            "charLength" : 20,
+            "byteOffset" : 2647,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"CharSequence\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/CharSource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 423,
+            "startColumn" : 14,
+            "endLine" : 423,
+            "endColumn" : 31,
+            "charOffset" : 15562,
+            "charLength" : 17,
+            "byteOffset" : 15562,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"String\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/Files.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 730,
+            "startColumn" : 9,
+            "endLine" : 730,
+            "endColumn" : 31,
+            "charOffset" : 24490,
+            "charLength" : 22,
+            "byteOffset" : 24490,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"StringBuilder\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/LineBuffer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 22,
+            "endLine" : 104,
+            "endColumn" : 39,
+            "charOffset" : 3272,
+            "charLength" : 17,
+            "byteOffset" : 3272,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"String\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/net/InetAddresses.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 233,
+            "startColumn" : 11,
+            "endLine" : 233,
+            "endColumn" : 33,
+            "charOffset" : 8742,
+            "charLength" : 22,
+            "byteOffset" : 8742,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"String\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/net/InetAddresses.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 247,
+            "startColumn" : 11,
+            "endLine" : 247,
+            "endColumn" : 33,
+            "charOffset" : 9226,
+            "charLength" : 22,
+            "byteOffset" : 9226,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"String\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/net/InetAddresses.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 250,
+            "startColumn" : 11,
+            "endLine" : 250,
+            "endColumn" : 48,
+            "charOffset" : 9329,
+            "charLength" : 37,
+            "byteOffset" : 9329,
+            "byteLength" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"String\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/net/InternetDomainName.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 259,
+            "startColumn" : 9,
+            "endLine" : 259,
+            "endColumn" : 26,
+            "charOffset" : 9347,
+            "charLength" : 17,
+            "byteOffset" : 9351,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"String\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/ParseRequest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 9,
+            "endLine" : 36,
+            "endColumn" : 34,
+            "charOffset" : 1090,
+            "charLength" : 25,
+            "byteOffset" : 1090,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"String\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/UnsignedLongs.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 304,
+            "startColumn" : 9,
+            "endLine" : 304,
+            "endColumn" : 24,
+            "charOffset" : 11136,
+            "charLength" : 15,
+            "byteOffset" : 11136,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S7158",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Use \"isEmpty()\" to check whether a \"String\" is empty or not."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/thirdparty/publicsuffix/TrieParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 85,
+            "startColumn" : 11,
+            "endLine" : 85,
+            "endColumn" : 30,
+            "charOffset" : 2987,
+            "charLength" : 19,
+            "byteOffset" : 2987,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

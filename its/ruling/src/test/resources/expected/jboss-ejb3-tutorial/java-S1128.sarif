@@ -1,0 +1,102 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1128",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused import 'java.rmi.RemoteException'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENC.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 8,
+            "endLine" : 24,
+            "endColumn" : 32,
+            "charOffset" : 1086,
+            "charLength" : 24,
+            "byteOffset" : 1086,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1128",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused import 'javax.management.MBeanServer'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/bean/ServiceThreeManagement.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 8,
+            "endLine" : 24,
+            "endColumn" : 36,
+            "charOffset" : 1103,
+            "charLength" : 28,
+            "byteOffset" : 1103,
+            "byteLength" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1128",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this unused import 'javax.management.MBeanServerFactory'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/bean/ServiceThreeManagement.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 8,
+            "endLine" : 25,
+            "endColumn" : 43,
+            "charOffset" : 1140,
+            "charLength" : 35,
+            "byteOffset" : 1140,
+            "byteLength" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

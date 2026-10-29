@@ -1,0 +1,3294 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"props\" which hides the field declared at line 60."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/app/WebServerProcessLoggingTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 86,
+            "startColumn" : 11,
+            "endLine" : 86,
+            "endColumn" : 16,
+            "charOffset" : 2910,
+            "charLength" : 5,
+            "byteOffset" : 2910,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"login\" which hides the field declared at line 42."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/authentication/event/AuthenticationExceptionMatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 103,
+            "startColumn" : 12,
+            "endLine" : 103,
+            "endColumn" : 17,
+            "charOffset" : 3475,
+            "charLength" : 5,
+            "byteOffset" : 3475,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"publicMessage\" which hides the field declared at line 44."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/authentication/event/AuthenticationExceptionMatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 12,
+            "endLine" : 114,
+            "endColumn" : 25,
+            "charOffset" : 3796,
+            "charLength" : 13,
+            "byteOffset" : 3796,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"organization\" which hides the field declared at line 103."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SuggestionsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 142,
+            "startColumn" : 21,
+            "endLine" : 142,
+            "endColumn" : 33,
+            "charOffset" : 6628,
+            "charLength" : 12,
+            "byteOffset" : 6628,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 41."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/AnalysisMetadataHolderImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 32,
+            "endLine" : 114,
+            "endColumn" : 41,
+            "charOffset" : 3786,
+            "charLength" : 9,
+            "byteOffset" : 3786,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 41."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/AnalysisMetadataHolderImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 137,
+            "startColumn" : 32,
+            "endLine" : 137,
+            "endColumn" : 41,
+            "charOffset" : 4601,
+            "charLength" : 9,
+            "byteOffset" : 4601,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 41."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/AnalysisMetadataHolderImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 145,
+            "startColumn" : 32,
+            "endLine" : 145,
+            "endColumn" : 41,
+            "charOffset" : 4847,
+            "charLength" : 9,
+            "byteOffset" : 4847,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 41."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/AnalysisMetadataHolderImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 169,
+            "startColumn" : 32,
+            "endLine" : 169,
+            "endColumn" : 41,
+            "charOffset" : 5701,
+            "charLength" : 9,
+            "byteOffset" : 5701,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 41."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/AnalysisMetadataHolderImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 179,
+            "startColumn" : 32,
+            "endLine" : 179,
+            "endColumn" : 41,
+            "charOffset" : 6101,
+            "charLength" : 9,
+            "byteOffset" : 6101,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 41."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/AnalysisMetadataHolderImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 188,
+            "startColumn" : 32,
+            "endLine" : 188,
+            "endColumn" : 41,
+            "charOffset" : 6390,
+            "charLength" : 9,
+            "byteOffset" : 6390,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 41."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/AnalysisMetadataHolderImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 205,
+            "startColumn" : 32,
+            "endLine" : 205,
+            "endColumn" : 41,
+            "charOffset" : 7027,
+            "charLength" : 9,
+            "byteOffset" : 7027,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 41."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/AnalysisMetadataHolderImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 215,
+            "startColumn" : 32,
+            "endLine" : 215,
+            "endColumn" : 41,
+            "charOffset" : 7409,
+            "charLength" : 9,
+            "byteOffset" : 7409,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 41."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/AnalysisMetadataHolderImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 224,
+            "startColumn" : 32,
+            "endLine" : 224,
+            "endColumn" : 41,
+            "charOffset" : 7641,
+            "charLength" : 9,
+            "byteOffset" : 7641,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 41."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/AnalysisMetadataHolderImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 241,
+            "startColumn" : 32,
+            "endLine" : 241,
+            "endColumn" : 41,
+            "charOffset" : 8126,
+            "charLength" : 9,
+            "byteOffset" : 8126,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 41."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/AnalysisMetadataHolderImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 251,
+            "startColumn" : 32,
+            "endLine" : 251,
+            "endColumn" : 41,
+            "charOffset" : 8494,
+            "charLength" : 9,
+            "byteOffset" : 8494,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 41."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/AnalysisMetadataHolderImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 268,
+            "startColumn" : 32,
+            "endLine" : 268,
+            "endColumn" : 41,
+            "charOffset" : 9044,
+            "charLength" : 9,
+            "byteOffset" : 9044,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 43."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/api/posttask/QualityGateImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 81,
+            "startColumn" : 21,
+            "endLine" : 81,
+            "endColumn" : 30,
+            "charOffset" : 3106,
+            "charLength" : 9,
+            "byteOffset" : 3106,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"component\" which hides the field declared at line 45."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/ComponentIssuesRepositoryRule.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 60,
+            "startColumn" : 15,
+            "endLine" : 60,
+            "endColumn" : 24,
+            "charOffset" : 2560,
+            "charLength" : 9,
+            "byteOffset" : 2560,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"component\" which hides the field declared at line 45."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/ComponentIssuesRepositoryRule.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 15,
+            "endLine" : 79,
+            "endColumn" : 24,
+            "charOffset" : 3353,
+            "charLength" : 9,
+            "byteOffset" : 3353,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"issue\" which hides the field declared at line 34."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/DebtCalculatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 18,
+            "endLine" : 43,
+            "endColumn" : 23,
+            "charOffset" : 1660,
+            "charLength" : 5,
+            "byteOffset" : 1660,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"issue\" which hides the field declared at line 34."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/DebtCalculatorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 18,
+            "endLine" : 52,
+            "endColumn" : 23,
+            "charOffset" : 1880,
+            "charLength" : 5,
+            "byteOffset" : 1880,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"analysisMetadataHolder\" which hides the field declared at line 81."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/scm/ScmInfoRepositoryImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 210,
+            "startColumn" : 28,
+            "endLine" : 210,
+            "endColumn" : 50,
+            "charOffset" : 8666,
+            "charLength" : 22,
+            "byteOffset" : 8666,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"dbClient\" which hides the field declared at line 86."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/scm/ScmInfoRepositoryImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 211,
+            "startColumn" : 14,
+            "endLine" : 211,
+            "endColumn" : 22,
+            "charOffset" : 8740,
+            "charLength" : 8,
+            "byteOffset" : 8740,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 88."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/scm/ScmInfoRepositoryImplTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 213,
+            "startColumn" : 27,
+            "endLine" : 213,
+            "endColumn" : 36,
+            "charOffset" : 8881,
+            "charLength" : 9,
+            "byteOffset" : 8881,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"line2\" which hides the field declared at line 76."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/source/HighlightingLineReaderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 189,
+            "startColumn" : 32,
+            "endLine" : 189,
+            "endColumn" : 37,
+            "charOffset" : 8604,
+            "charLength" : 5,
+            "byteOffset" : 8604,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"analysisMetadataHolder\" which hides the field declared at line 89."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/BuildComponentTreeStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 194,
+            "startColumn" : 35,
+            "endLine" : 194,
+            "endColumn" : 57,
+            "charOffset" : 9286,
+            "charLength" : 22,
+            "byteOffset" : 9286,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 96."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/BuildComponentTreeStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 199,
+            "startColumn" : 28,
+            "endLine" : 199,
+            "endColumn" : 37,
+            "charOffset" : 9482,
+            "charLength" : 9,
+            "byteOffset" : 9482,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 69."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadReportAnalysisMetadataHolderStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 109,
+            "startColumn" : 21,
+            "endLine" : 109,
+            "endColumn" : 30,
+            "charOffset" : 4158,
+            "charLength" : 9,
+            "byteOffset" : 4158,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 69."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadReportAnalysisMetadataHolderStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 168,
+            "startColumn" : 21,
+            "endLine" : 168,
+            "endColumn" : 30,
+            "charOffset" : 5750,
+            "charLength" : 9,
+            "byteOffset" : 5750,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 69."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadReportAnalysisMetadataHolderStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 211,
+            "startColumn" : 21,
+            "endLine" : 211,
+            "endColumn" : 30,
+            "charOffset" : 7383,
+            "charLength" : 9,
+            "byteOffset" : 7383,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 69."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadReportAnalysisMetadataHolderStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 259,
+            "startColumn" : 21,
+            "endLine" : 259,
+            "endColumn" : 30,
+            "charOffset" : 9424,
+            "charLength" : 9,
+            "byteOffset" : 9424,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 69."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadReportAnalysisMetadataHolderStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 279,
+            "startColumn" : 21,
+            "endLine" : 279,
+            "endColumn" : 30,
+            "charOffset" : 10536,
+            "charLength" : 9,
+            "byteOffset" : 10536,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 69."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadReportAnalysisMetadataHolderStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 298,
+            "startColumn" : 21,
+            "endLine" : 298,
+            "endColumn" : 30,
+            "charOffset" : 11691,
+            "charLength" : 9,
+            "byteOffset" : 11691,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 69."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadReportAnalysisMetadataHolderStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 314,
+            "startColumn" : 21,
+            "endLine" : 314,
+            "endColumn" : 30,
+            "charOffset" : 12569,
+            "charLength" : 9,
+            "byteOffset" : 12569,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 69."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadReportAnalysisMetadataHolderStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 325,
+            "startColumn" : 21,
+            "endLine" : 325,
+            "endColumn" : 30,
+            "charOffset" : 12999,
+            "charLength" : 9,
+            "byteOffset" : 12999,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 69."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadReportAnalysisMetadataHolderStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 341,
+            "startColumn" : 21,
+            "endLine" : 341,
+            "endColumn" : 30,
+            "charOffset" : 13754,
+            "charLength" : 9,
+            "byteOffset" : 13754,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 79."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ReportComputeMeasureVariationsStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 110,
+            "startColumn" : 15,
+            "endLine" : 110,
+            "endColumn" : 22,
+            "charOffset" : 5100,
+            "charLength" : 7,
+            "byteOffset" : 5100,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 79."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ReportComputeMeasureVariationsStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 135,
+            "startColumn" : 15,
+            "endLine" : 135,
+            "endColumn" : 22,
+            "charOffset" : 6173,
+            "charLength" : 7,
+            "byteOffset" : 6173,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 79."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ReportComputeMeasureVariationsStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 163,
+            "startColumn" : 15,
+            "endLine" : 163,
+            "endColumn" : 22,
+            "charOffset" : 7563,
+            "charLength" : 7,
+            "byteOffset" : 7563,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 79."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ReportComputeMeasureVariationsStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 190,
+            "startColumn" : 15,
+            "endLine" : 190,
+            "endColumn" : 22,
+            "charOffset" : 9073,
+            "charLength" : 7,
+            "byteOffset" : 9073,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"view\" which hides the field declared at line 83."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ViewsComputeMeasureVariationsStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 110,
+            "startColumn" : 15,
+            "endLine" : 110,
+            "endColumn" : 19,
+            "charOffset" : 4682,
+            "charLength" : 4,
+            "byteOffset" : 4682,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"view\" which hides the field declared at line 83."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ViewsComputeMeasureVariationsStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 135,
+            "startColumn" : 15,
+            "endLine" : 135,
+            "endColumn" : 19,
+            "charOffset" : 5717,
+            "charLength" : 4,
+            "byteOffset" : 5717,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"listener\" which hides the field declared at line 48."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/step/ComputationStepExecutorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 147,
+            "startColumn" : 38,
+            "endLine" : 147,
+            "endColumn" : 46,
+            "charOffset" : 5971,
+            "charLength" : 8,
+            "byteOffset" : 5971,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"currentFile\" which hides the field declared at line 57."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/duplication/ws/DuplicationsParserTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 201,
+            "startColumn" : 18,
+            "endLine" : 201,
+            "endColumn" : 29,
+            "charOffset" : 8001,
+            "charLength" : 11,
+            "byteOffset" : 8001,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"fileOnSameProject\" which hides the field declared at line 58."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/duplication/ws/DuplicationsParserTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 202,
+            "startColumn" : 18,
+            "endLine" : 202,
+            "endColumn" : 35,
+            "charOffset" : 8071,
+            "charLength" : 17,
+            "byteOffset" : 8071,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"fileOnDifferentProject\" which hides the field declared at line 59."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/duplication/ws/DuplicationsParserTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 203,
+            "startColumn" : 18,
+            "endLine" : 203,
+            "endColumn" : 40,
+            "charOffset" : 8147,
+            "charLength" : 22,
+            "byteOffset" : 8147,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"issue\" which hides the field declared at line 53."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/ActionFinderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 14,
+            "endLine" : 78,
+            "endColumn" : 19,
+            "charOffset" : 3203,
+            "charLength" : 5,
+            "byteOffset" : 3203,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"issue\" which hides the field declared at line 53."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/ActionFinderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 14,
+            "endLine" : 84,
+            "endColumn" : 19,
+            "charOffset" : 3502,
+            "charLength" : 5,
+            "byteOffset" : 3502,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 67."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/ws/ChangelogActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 97,
+            "startColumn" : 18,
+            "endLine" : 97,
+            "endColumn" : 25,
+            "charOffset" : 4184,
+            "charLength" : 7,
+            "byteOffset" : 4184,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"defaultOrganization\" which hides the field declared at line 83."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/ws/SearchActionComponentsMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 94,
+            "startColumn" : 25,
+            "endLine" : 94,
+            "endColumn" : 44,
+            "charOffset" : 3792,
+            "charLength" : 19,
+            "byteOffset" : 3792,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"defaultOrganization\" which hides the field declared at line 87."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/ws/SearchActionMediumTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 98,
+            "startColumn" : 25,
+            "endLine" : 98,
+            "endColumn" : 44,
+            "charOffset" : 4182,
+            "charLength" : 19,
+            "byteOffset" : 4182,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"organization\" which hides the field declared at line 74."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/ws/TagsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 214,
+            "startColumn" : 11,
+            "endLine" : 214,
+            "endColumn" : 23,
+            "charOffset" : 9214,
+            "charLength" : 12,
+            "byteOffset" : 9214,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 86."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/measure/ws/SearchHistoryActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 305,
+            "startColumn" : 18,
+            "endLine" : 305,
+            "endColumn" : 25,
+            "charOffset" : 13931,
+            "charLength" : 7,
+            "byteOffset" : 13931,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"analysis\" which hides the field declared at line 87."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/measure/ws/SearchHistoryActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 336,
+            "startColumn" : 16,
+            "endLine" : 336,
+            "endColumn" : 24,
+            "charOffset" : 15214,
+            "charLength" : 8,
+            "byteOffset" : 15214,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"wsRequest\" which hides the field declared at line 92."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/measure/ws/SearchHistoryActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 351,
+            "startColumn" : 26,
+            "endLine" : 351,
+            "endColumn" : 35,
+            "charOffset" : 15830,
+            "charLength" : 9,
+            "byteOffset" : 15830,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"request\" which hides the field declared at line 83."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/notification/ws/AddActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 257,
+            "startColumn" : 17,
+            "endLine" : 257,
+            "endColumn" : 24,
+            "charOffset" : 9624,
+            "charLength" : 7,
+            "byteOffset" : 9624,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"request\" which hides the field declared at line 81."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/notification/ws/RemoveActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 274,
+            "startColumn" : 17,
+            "endLine" : 274,
+            "endColumn" : 24,
+            "charOffset" : 10573,
+            "charLength" : 7,
+            "byteOffset" : 10573,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"user\" which hides the field declared at line 106."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/CreateActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 472,
+            "startColumn" : 13,
+            "endLine" : 472,
+            "endColumn" : 17,
+            "charOffset" : 17807,
+            "charLength" : 4,
+            "byteOffset" : 17807,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"dbSession\" which hides the field declared at line 95."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/CreateActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 477,
+            "startColumn" : 15,
+            "endLine" : 477,
+            "endColumn" : 24,
+            "charOffset" : 17945,
+            "charLength" : 9,
+            "byteOffset" : 17945,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"user\" which hides the field declared at line 106."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/CreateActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 500,
+            "startColumn" : 13,
+            "endLine" : 500,
+            "endColumn" : 17,
+            "charOffset" : 19179,
+            "charLength" : 4,
+            "byteOffset" : 19179,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"dbSession\" which hides the field declared at line 95."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/CreateActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 505,
+            "startColumn" : 15,
+            "endLine" : 505,
+            "endColumn" : 24,
+            "charOffset" : 19317,
+            "charLength" : 9,
+            "byteOffset" : 19317,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"user\" which hides the field declared at line 106."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/CreateActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 527,
+            "startColumn" : 13,
+            "endLine" : 527,
+            "endColumn" : 17,
+            "charOffset" : 20463,
+            "charLength" : 4,
+            "byteOffset" : 20463,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"user\" which hides the field declared at line 106."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/CreateActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 551,
+            "startColumn" : 13,
+            "endLine" : 551,
+            "endColumn" : 17,
+            "charOffset" : 22168,
+            "charLength" : 4,
+            "byteOffset" : 22168,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"organization\" which hides the field declared at line 87."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/RemoveMemberActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 115,
+            "startColumn" : 22,
+            "endLine" : 115,
+            "endColumn" : 34,
+            "charOffset" : 4704,
+            "charLength" : 12,
+            "byteOffset" : 4704,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"user\" which hides the field declared at line 89."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/organization/ws/RemoveMemberActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 337,
+            "startColumn" : 13,
+            "endLine" : 337,
+            "endColumn" : 17,
+            "charOffset" : 14441,
+            "charLength" : 4,
+            "byteOffset" : 14441,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"permissionTemplate\" which hides the field declared at line 49."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/permission/ws/template/AddUserToTemplateActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 88,
+            "startColumn" : 27,
+            "endLine" : 88,
+            "endColumn" : 45,
+            "charOffset" : 3674,
+            "charLength" : 18,
+            "byteOffset" : 3674,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"permissionTemplate\" which hides the field declared at line 49."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/permission/ws/template/AddUserToTemplateActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 197,
+            "startColumn" : 27,
+            "endLine" : 197,
+            "endColumn" : 45,
+            "charOffset" : 7621,
+            "charLength" : 18,
+            "byteOffset" : 7621,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 41."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/platform/monitoring/EsMonitorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 15,
+            "endLine" : 84,
+            "endColumn" : 24,
+            "charOffset" : 3129,
+            "charLength" : 9,
+            "byteOffset" : 3129,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 41."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/platform/monitoring/EsMonitorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 95,
+            "startColumn" : 15,
+            "endLine" : 95,
+            "endColumn" : 24,
+            "charOffset" : 3660,
+            "charLength" : 9,
+            "byteOffset" : 3660,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 41."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/platform/monitoring/EsMonitorTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 106,
+            "startColumn" : 15,
+            "endLine" : 106,
+            "endColumn" : 24,
+            "charOffset" : 4243,
+            "charLength" : 9,
+            "byteOffset" : 4243,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"platform\" which hides the field declared at line 43."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/platform/web/requestid/RequestIdFilterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 14,
+            "endLine" : 104,
+            "endColumn" : 22,
+            "charOffset" : 4078,
+            "charLength" : 8,
+            "byteOffset" : 4078,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 48."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/platform/web/requestid/RequestIdFilterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 106,
+            "startColumn" : 21,
+            "endLine" : 106,
+            "endColumn" : 30,
+            "charOffset" : 4203,
+            "charLength" : 9,
+            "byteOffset" : 4203,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"platform\" which hides the field declared at line 43."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/platform/web/requestid/RequestIdFilterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 113,
+            "startColumn" : 14,
+            "endLine" : 113,
+            "endColumn" : 22,
+            "charOffset" : 4507,
+            "charLength" : 8,
+            "byteOffset" : 4507,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 48."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/platform/web/requestid/RequestIdFilterTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 115,
+            "startColumn" : 21,
+            "endLine" : 115,
+            "endColumn" : 30,
+            "charOffset" : 4632,
+            "charLength" : 9,
+            "byteOffset" : 4632,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"inOrder\" which hides the field declared at line 55."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/platform/ws/RestartActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 13,
+            "endLine" : 67,
+            "endColumn" : 20,
+            "charOffset" : 2723,
+            "charLength" : 7,
+            "byteOffset" : 2723,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"downloadDir\" which hides the field declared at line 67."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/plugins/PluginDownloaderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 168,
+            "startColumn" : 10,
+            "endLine" : 168,
+            "endColumn" : 21,
+            "charOffset" : 6534,
+            "charLength" : 11,
+            "byteOffset" : 6534,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"response\" which hides the field declared at line 49."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/plugins/StaticResourcesServletTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 85,
+            "startColumn" : 25,
+            "endLine" : 85,
+            "endColumn" : 33,
+            "charOffset" : 3146,
+            "charLength" : 8,
+            "byteOffset" : 3146,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"wsTester\" which hides the field declared at line 61."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/plugins/ws/InstallActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 96,
+            "startColumn" : 14,
+            "endLine" : 96,
+            "endColumn" : 22,
+            "charOffset" : 3815,
+            "charLength" : 8,
+            "byteOffset" : 3815,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"wsTester\" which hides the field declared at line 52."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/plugins/ws/UninstallActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 14,
+            "endLine" : 79,
+            "endColumn" : 22,
+            "charOffset" : 3174,
+            "charLength" : 8,
+            "byteOffset" : 3174,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"wsTester\" which hides the field declared at line 63."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/plugins/ws/UpdateActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 98,
+            "startColumn" : 14,
+            "endLine" : 98,
+            "endColumn" : 22,
+            "charOffset" : 3979,
+            "charLength" : 8,
+            "byteOffset" : 3979,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"request\" which hides the field declared at line 100."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/project/ws/UpdateVisibilityActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 324,
+            "startColumn" : 17,
+            "endLine" : 324,
+            "endColumn" : 24,
+            "charOffset" : 13994,
+            "charLength" : 7,
+            "byteOffset" : 13994,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"gate\" which hides the field declared at line 62."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualitygate/ws/DeselectActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 183,
+            "startColumn" : 20,
+            "endLine" : 183,
+            "endColumn" : 24,
+            "charOffset" : 5747,
+            "charLength" : 4,
+            "byteOffset" : 5747,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"gate\" which hides the field declared at line 57."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualitygate/ws/SelectActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 172,
+            "startColumn" : 20,
+            "endLine" : 172,
+            "endColumn" : 24,
+            "charOffset" : 5292,
+            "charLength" : 4,
+            "byteOffset" : 5292,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"language\" which hides the field declared at line 96."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/ChangeParentActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 146,
+            "startColumn" : 22,
+            "endLine" : 146,
+            "endColumn" : 30,
+            "charOffset" : 6518,
+            "charLength" : 8,
+            "byteOffset" : 6518,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"ws\" which hides the field declared at line 85."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 133,
+            "startColumn" : 20,
+            "endLine" : 133,
+            "endColumn" : 22,
+            "charOffset" : 6228,
+            "charLength" : 2,
+            "byteOffset" : 6228,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"ws\" which hides the field declared at line 85."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 310,
+            "startColumn" : 20,
+            "endLine" : 310,
+            "endColumn" : 22,
+            "charOffset" : 16452,
+            "charLength" : 2,
+            "byteOffset" : 16452,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"dbClient\" which hides the field declared at line 55."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/CachingRuleFinderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 88,
+            "startColumn" : 14,
+            "endLine" : 88,
+            "endColumn" : 22,
+            "charOffset" : 3383,
+            "charLength" : 8,
+            "byteOffset" : 3383,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"dbClient\" which hides the field declared at line 55."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/CachingRuleFinderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 103,
+            "startColumn" : 14,
+            "endLine" : 103,
+            "endColumn" : 22,
+            "charOffset" : 3886,
+            "charLength" : 8,
+            "byteOffset" : 3886,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 60."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/CachingRuleFinderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 186,
+            "startColumn" : 23,
+            "endLine" : 186,
+            "endColumn" : 32,
+            "charOffset" : 6938,
+            "charLength" : 9,
+            "byteOffset" : 6938,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 60."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/CachingRuleFinderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 207,
+            "startColumn" : 23,
+            "endLine" : 207,
+            "endColumn" : 32,
+            "charOffset" : 7965,
+            "charLength" : 9,
+            "byteOffset" : 7965,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 60."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/CachingRuleFinderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 228,
+            "startColumn" : 23,
+            "endLine" : 228,
+            "endColumn" : 32,
+            "charOffset" : 8960,
+            "charLength" : 9,
+            "byteOffset" : 8960,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 60."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/CachingRuleFinderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 259,
+            "startColumn" : 23,
+            "endLine" : 259,
+            "endColumn" : 32,
+            "charOffset" : 10851,
+            "charLength" : 9,
+            "byteOffset" : 10851,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 60."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/CachingRuleFinderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 291,
+            "startColumn" : 23,
+            "endLine" : 291,
+            "endColumn" : 32,
+            "charOffset" : 12472,
+            "charLength" : 9,
+            "byteOffset" : 12472,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 60."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/CachingRuleFinderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 314,
+            "startColumn" : 23,
+            "endLine" : 314,
+            "endColumn" : 32,
+            "charOffset" : 13646,
+            "charLength" : 9,
+            "byteOffset" : 13646,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 60."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/CachingRuleFinderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 337,
+            "startColumn" : 23,
+            "endLine" : 337,
+            "endColumn" : 32,
+            "charOffset" : 14788,
+            "charLength" : 9,
+            "byteOffset" : 14788,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"underTest\" which hides the field declared at line 60."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/CachingRuleFinderTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 370,
+            "startColumn" : 23,
+            "endLine" : 370,
+            "endColumn" : 32,
+            "charOffset" : 16823,
+            "charLength" : 9,
+            "byteOffset" : 16823,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"defaultOrganization\" which hides the field declared at line 93."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 200,
+            "startColumn" : 21,
+            "endLine" : 200,
+            "endColumn" : 40,
+            "charOffset" : 8542,
+            "charLength" : 19,
+            "byteOffset" : 8542,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"defaultOrganization\" which hides the field declared at line 93."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/RegisterRulesTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 264,
+            "startColumn" : 21,
+            "endLine" : 264,
+            "endColumn" : 40,
+            "charOffset" : 11660,
+            "charLength" : 19,
+            "byteOffset" : 11660,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"rule\" which hides the field declared at line 54."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/index/RuleIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 101,
+            "startColumn" : 23,
+            "endLine" : 101,
+            "endColumn" : 27,
+            "charOffset" : 3711,
+            "charLength" : 4,
+            "byteOffset" : 3711,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"organization\" which hides the field declared at line 84."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/RuleQueryFactoryTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 243,
+            "startColumn" : 21,
+            "endLine" : 243,
+            "endColumn" : 33,
+            "charOffset" : 10630,
+            "charLength" : 12,
+            "byteOffset" : 10630,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"organization\" which hides the field declared at line 61."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/TagsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 22,
+            "endLine" : 90,
+            "endColumn" : 34,
+            "charOffset" : 3504,
+            "charLength" : 12,
+            "byteOffset" : 3504,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 81."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/setting/ws/ResetActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 18,
+            "endLine" : 295,
+            "endColumn" : 25,
+            "charOffset" : 11019,
+            "charLength" : 7,
+            "byteOffset" : 11019,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 81."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/setting/ws/ResetActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 301,
+            "startColumn" : 18,
+            "endLine" : 301,
+            "endColumn" : 25,
+            "charOffset" : 11254,
+            "charLength" : 7,
+            "byteOffset" : 11254,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 81."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/setting/ws/ResetActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 308,
+            "startColumn" : 18,
+            "endLine" : 308,
+            "endColumn" : 25,
+            "charOffset" : 11587,
+            "charLength" : 7,
+            "byteOffset" : 11587,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 81."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/setting/ws/ResetActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 315,
+            "startColumn" : 18,
+            "endLine" : 315,
+            "endColumn" : 25,
+            "charOffset" : 11930,
+            "charLength" : 7,
+            "byteOffset" : 11930,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"file\" which hides the field declared at line 71."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/source/ws/LinesActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 152,
+            "startColumn" : 18,
+            "endLine" : 152,
+            "endColumn" : 22,
+            "charOffset" : 5654,
+            "charLength" : 4,
+            "byteOffset" : 5654,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 101."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/ui/ws/ComponentActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 344,
+            "startColumn" : 18,
+            "endLine" : 344,
+            "endColumn" : 25,
+            "charOffset" : 12755,
+            "charLength" : 7,
+            "byteOffset" : 12755,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 101."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/ui/ws/ComponentActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 378,
+            "startColumn" : 18,
+            "endLine" : 378,
+            "endColumn" : 25,
+            "charOffset" : 14065,
+            "charLength" : 7,
+            "byteOffset" : 14065,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 101."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/ui/ws/ComponentActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 402,
+            "startColumn" : 18,
+            "endLine" : 402,
+            "endColumn" : 25,
+            "charOffset" : 15172,
+            "charLength" : 7,
+            "byteOffset" : 15172,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 101."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/ui/ws/ComponentActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 432,
+            "startColumn" : 18,
+            "endLine" : 432,
+            "endColumn" : 25,
+            "charOffset" : 16766,
+            "charLength" : 7,
+            "byteOffset" : 16766,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 101."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/ui/ws/ComponentActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 444,
+            "startColumn" : 18,
+            "endLine" : 444,
+            "endColumn" : 25,
+            "charOffset" : 17226,
+            "charLength" : 7,
+            "byteOffset" : 17226,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 101."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/ui/ws/ComponentActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 456,
+            "startColumn" : 18,
+            "endLine" : 456,
+            "endColumn" : 25,
+            "charOffset" : 17688,
+            "charLength" : 7,
+            "byteOffset" : 17688,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 101."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/ui/ws/ComponentActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 470,
+            "startColumn" : 18,
+            "endLine" : 470,
+            "endColumn" : 25,
+            "charOffset" : 18296,
+            "charLength" : 7,
+            "byteOffset" : 18296,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"project\" which hides the field declared at line 101."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/ui/ws/ComponentActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 487,
+            "startColumn" : 18,
+            "endLine" : 487,
+            "endColumn" : 25,
+            "charOffset" : 19050,
+            "charLength" : 7,
+            "byteOffset" : 19050,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"pageRepository\" which hides the field declared at line 66."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/ui/ws/OrganizationActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 249,
+            "startColumn" : 20,
+            "endLine" : 249,
+            "endColumn" : 34,
+            "charOffset" : 10939,
+            "charLength" : 14,
+            "byteOffset" : 10939,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"index\" which hides the field declared at line 69."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/user/ws/SearchActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 287,
+            "startColumn" : 14,
+            "endLine" : 287,
+            "endColumn" : 19,
+            "charOffset" : 10574,
+            "charLength" : 5,
+            "byteOffset" : 10574,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename \"issueIndexer\" which hides the field declared at line 71."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/view/index/ViewIndexerTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 128,
+            "startColumn" : 18,
+            "endLine" : 128,
+            "endColumn" : 30,
+            "charOffset" : 4986,
+            "charLength" : 12,
+            "byteOffset" : 4986,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

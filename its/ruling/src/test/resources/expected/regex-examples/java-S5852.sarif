@@ -1,0 +1,102 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S5852",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the regex used here, which is vulnerable to exponential runtime due to backtracking, cannot lead to denial of service."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1433,
+            "startColumn" : 13,
+            "endLine" : 1433,
+            "endColumn" : 20,
+            "charOffset" : 167056,
+            "charLength" : 7,
+            "byteOffset" : 167264,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5852",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the regex used here, which is vulnerable to exponential runtime due to backtracking, cannot lead to denial of service."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 345,
+            "startColumn" : 13,
+            "endLine" : 345,
+            "endColumn" : 20,
+            "charOffset" : 40285,
+            "charLength" : 7,
+            "byteOffset" : 40302,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5852",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make sure the regex used here, which is vulnerable to exponential runtime due to backtracking, cannot lead to denial of service."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1265,
+            "startColumn" : 13,
+            "endLine" : 1265,
+            "endColumn" : 20,
+            "charOffset" : 144407,
+            "charLength" : 7,
+            "byteOffset" : 144436,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,2390 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"result\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsMenuServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 36,
+            "endLine" : 82,
+            "endColumn" : 46,
+            "charOffset" : 2292,
+            "charLength" : 187,
+            "byteOffset" : 2372,
+            "byteLength" : 187
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"commonResult\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-demo/src/main/java/com/macro/mall/demo/controller/RestTemplateDemoController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 37,
+            "endLine" : 72,
+            "endColumn" : 91,
+            "charOffset" : 2995,
+            "charLength" : 54,
+            "byteOffset" : 3003,
+            "byteLength" : 54
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"commonResult\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-demo/src/main/java/com/macro/mall/demo/controller/RestTemplateDemoController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 37,
+            "endLine" : 90,
+            "endColumn" : 95,
+            "charOffset" : 3794,
+            "charLength" : 58,
+            "byteOffset" : 3802,
+            "byteLength" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1268,
+            "charLength" : 14,
+            "byteOffset" : 1268,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1275,
+            "charLength" : 14,
+            "byteOffset" : 1275,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsMemberReportExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1291,
+            "charLength" : 14,
+            "byteOffset" : 1291,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1270,
+            "charLength" : 14,
+            "byteOffset" : 1270,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1300,
+            "charLength" : 14,
+            "byteOffset" : 1300,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1274,
+            "charLength" : 14,
+            "byteOffset" : 1274,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1295,
+            "charLength" : 14,
+            "byteOffset" : 1295,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1281,
+            "charLength" : 14,
+            "byteOffset" : 1281,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1288,
+            "charLength" : 14,
+            "byteOffset" : 1288,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1270,
+            "charLength" : 14,
+            "byteOffset" : 1270,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1291,
+            "charLength" : 14,
+            "byteOffset" : 1291,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1277,
+            "charLength" : 14,
+            "byteOffset" : 1277,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCartItemExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 29,
+            "endLine" : 58,
+            "endColumn" : 43,
+            "charOffset" : 1312,
+            "charLength" : 14,
+            "byteOffset" : 1312,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCompanyAddressExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1272,
+            "charLength" : 14,
+            "byteOffset" : 1272,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 29,
+            "endLine" : 58,
+            "endColumn" : 43,
+            "charOffset" : 1306,
+            "charLength" : 14,
+            "byteOffset" : 1306,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderItemExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1291,
+            "charLength" : 14,
+            "byteOffset" : 1291,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderOperateHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1305,
+            "charLength" : 14,
+            "byteOffset" : 1305,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnApplyExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 29,
+            "endLine" : 58,
+            "endColumn" : 43,
+            "charOffset" : 1328,
+            "charLength" : 14,
+            "byteOffset" : 1328,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnReasonExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1301,
+            "charLength" : 14,
+            "byteOffset" : 1301,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1268,
+            "charLength" : 14,
+            "byteOffset" : 1268,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1254,
+            "charLength" : 14,
+            "byteOffset" : 1254,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumPicExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1260,
+            "charLength" : 14,
+            "byteOffset" : 1260,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsBrandExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1254,
+            "charLength" : 14,
+            "byteOffset" : 1254,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1281,
+            "charLength" : 14,
+            "byteOffset" : 1281,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentReplayExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1293,
+            "charLength" : 14,
+            "byteOffset" : 1293,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsFeightTemplateExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1301,
+            "charLength" : 14,
+            "byteOffset" : 1301,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsMemberPriceExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1295,
+            "charLength" : 14,
+            "byteOffset" : 1295,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1292,
+            "charLength" : 14,
+            "byteOffset" : 1292,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1276,
+            "charLength" : 14,
+            "byteOffset" : 1276,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeValueExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1286,
+            "charLength" : 14,
+            "byteOffset" : 1286,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryAttributeRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1308,
+            "charLength" : 14,
+            "byteOffset" : 1308,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1274,
+            "charLength" : 14,
+            "byteOffset" : 1274,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 29,
+            "endLine" : 58,
+            "endColumn" : 43,
+            "charOffset" : 1310,
+            "charLength" : 14,
+            "byteOffset" : 1310,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductFullReductionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1313,
+            "charLength" : 14,
+            "byteOffset" : 1313,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductLadderExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1299,
+            "charLength" : 14,
+            "byteOffset" : 1299,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductOperateLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 29,
+            "endLine" : 58,
+            "endColumn" : 43,
+            "charOffset" : 1330,
+            "charLength" : 14,
+            "byteOffset" : 1330,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductVertifyRecordExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1307,
+            "charLength" : 14,
+            "byteOffset" : 1307,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsSkuStockExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1289,
+            "charLength" : 14,
+            "byteOffset" : 1289,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 29,
+            "endLine" : 58,
+            "endColumn" : 43,
+            "charOffset" : 1308,
+            "charLength" : 14,
+            "byteOffset" : 1308,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1293,
+            "charLength" : 14,
+            "byteOffset" : 1293,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductCategoryRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1302,
+            "charLength" : 14,
+            "byteOffset" : 1302,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1286,
+            "charLength" : 14,
+            "byteOffset" : 1286,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 29,
+            "endLine" : 58,
+            "endColumn" : 43,
+            "charOffset" : 1322,
+            "charLength" : 14,
+            "byteOffset" : 1322,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1301,
+            "charLength" : 14,
+            "byteOffset" : 1301,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1331,
+            "charLength" : 14,
+            "byteOffset" : 1331,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionSessionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 29,
+            "endLine" : 58,
+            "endColumn" : 43,
+            "charOffset" : 1336,
+            "charLength" : 14,
+            "byteOffset" : 1336,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeAdvertiseExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1293,
+            "charLength" : 14,
+            "byteOffset" : 1293,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeBrandExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1262,
+            "charLength" : 14,
+            "byteOffset" : 1262,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeNewProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1272,
+            "charLength" : 14,
+            "byteOffset" : 1272,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1284,
+            "charLength" : 14,
+            "byteOffset" : 1284,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendSubjectExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1284,
+            "charLength" : 14,
+            "byteOffset" : 1284,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1277,
+            "charLength" : 14,
+            "byteOffset" : 1277,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminLoginLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1293,
+            "charLength" : 14,
+            "byteOffset" : 1293,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminPermissionRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1290,
+            "charLength" : 14,
+            "byteOffset" : 1290,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminRoleRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1278,
+            "charLength" : 14,
+            "byteOffset" : 1278,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsGrowthChangeHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1305,
+            "charLength" : 14,
+            "byteOffset" : 1305,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationChangeHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1315,
+            "charLength" : 14,
+            "byteOffset" : 1315,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationConsumeSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1294,
+            "charLength" : 14,
+            "byteOffset" : 1294,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 29,
+            "endLine" : 58,
+            "endColumn" : 43,
+            "charOffset" : 1306,
+            "charLength" : 14,
+            "byteOffset" : 1306,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLevelExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1295,
+            "charLength" : 14,
+            "byteOffset" : 1295,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLoginLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1295,
+            "charLength" : 14,
+            "byteOffset" : 1295,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberMemberTagRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1290,
+            "charLength" : 14,
+            "byteOffset" : 1290,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberProductCategoryRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1302,
+            "charLength" : 14,
+            "byteOffset" : 1302,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberReceiveAddressExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1284,
+            "charLength" : 14,
+            "byteOffset" : 1284,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberRuleSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1307,
+            "charLength" : 14,
+            "byteOffset" : 1307,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberStatisticsInfoExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 29,
+            "endLine" : 58,
+            "endColumn" : 43,
+            "charOffset" : 1336,
+            "charLength" : 14,
+            "byteOffset" : 1336,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTagExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1291,
+            "charLength" : 14,
+            "byteOffset" : 1291,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTaskExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1264,
+            "charLength" : 14,
+            "byteOffset" : 1264,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMenuExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1275,
+            "charLength" : 14,
+            "byteOffset" : 1275,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsPermissionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1287,
+            "charLength" : 14,
+            "byteOffset" : 1287,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1299,
+            "charLength" : 14,
+            "byteOffset" : 1299,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1283,
+            "charLength" : 14,
+            "byteOffset" : 1283,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 29,
+            "endLine" : 57,
+            "endColumn" : 43,
+            "charOffset" : 1275,
+            "charLength" : 14,
+            "byteOffset" : 1275,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleMenuRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1276,
+            "charLength" : 14,
+            "byteOffset" : 1276,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRolePermissionRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1288,
+            "charLength" : 14,
+            "byteOffset" : 1288,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"criteria\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleResourceRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 29,
+            "endLine" : 56,
+            "endColumn" : 43,
+            "charOffset" : 1284,
+            "charLength" : 14,
+            "byteOffset" : 1284,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"count\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 263,
+            "startColumn" : 21,
+            "endLine" : 263,
+            "endColumn" : 82,
+            "charOffset" : 11602,
+            "charLength" : 61,
+            "byteOffset" : 12490,
+            "byteLength" : 61
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"payAmount\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 543,
+            "startColumn" : 32,
+            "endLine" : 547,
+            "endColumn" : 56,
+            "charOffset" : 22857,
+            "charLength" : 230,
+            "byteOffset" : 24351,
+            "byteLength" : 230
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"result\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 77,
+            "startColumn" : 47,
+            "endLine" : 80,
+            "endColumn" : 46,
+            "charOffset" : 2929,
+            "charLength" : 177,
+            "byteOffset" : 2989,
+            "byteLength" : 177
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}a/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 263,
+            "startColumn" : 21,
+            "endLine" : 263,
+            "endColumn" : 82,
+            "charOffset" : 11602,
+            "charLength" : 61,
+            "byteOffset" : 12490,
+            "byteLength" : 61
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"payAmount\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 543,
+            "startColumn" : 32,
+            "endLine" : 547,
+            "endColumn" : 56,
+            "charOffset" : 22857,
+            "charLength" : 230,
+            "byteOffset" : 24351,
+            "byteLength" : 230
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1488",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Immediately return this expression instead of assigning it to the temporary variable \"result\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 77,
+            "startColumn" : 47,
+            "endLine" : 80,
+            "endColumn" : 46,
+            "charOffset" : 2929,
+            "charLength" : 177,
+            "byteOffset" : 2989,
+            "byteLength" : 177
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

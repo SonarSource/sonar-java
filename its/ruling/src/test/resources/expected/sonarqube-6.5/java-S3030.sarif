@@ -1,0 +1,5898 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/ce/queue/CeQueueImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 1,
+            "endLine" : 42,
+            "endColumn" : 63,
+            "charOffset" : 1557,
+            "charLength" : 62,
+            "byteOffset" : 1557,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/authentication/BasicAuthenticator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 1,
+            "endLine" : 32,
+            "endColumn" : 55,
+            "charOffset" : 1273,
+            "charLength" : 54,
+            "byteOffset" : 1273,
+            "byteLength" : 54
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/authentication/JwtHttpHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 1,
+            "endLine" : 39,
+            "endColumn" : 66,
+            "charOffset" : 1441,
+            "charLength" : 65,
+            "byteOffset" : 1441,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/authentication/OAuthCsrfVerifier.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 1,
+            "endLine" : 30,
+            "endColumn" : 39,
+            "charOffset" : 1214,
+            "charLength" : 38,
+            "byteOffset" : 1214,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/authentication/UserSessionInitializer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 1,
+            "endLine" : 39,
+            "endColumn" : 60,
+            "charOffset" : 1669,
+            "charLength" : 59,
+            "byteOffset" : 1669,
+            "byteLength" : 59
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/authentication/ws/LoginAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 1,
+            "endLine" : 43,
+            "endColumn" : 59,
+            "charOffset" : 1809,
+            "charLength" : 58,
+            "byteOffset" : 1809,
+            "byteLength" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/batch/ProjectDataLoader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 1,
+            "endLine" : 43,
+            "endColumn" : 60,
+            "charOffset" : 1692,
+            "charLength" : 59,
+            "byteOffset" : 1692,
+            "byteLength" : 59
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 15 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/ce/ws/ActivityAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 1,
+            "endLine" : 54,
+            "endColumn" : 39,
+            "charOffset" : 2053,
+            "charLength" : 38,
+            "byteOffset" : 2053,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/ce/ws/TaskFormatter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 1,
+            "endLine" : 43,
+            "endColumn" : 66,
+            "charOffset" : 1563,
+            "charLength" : 65,
+            "byteOffset" : 1563,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/component/NewComponent.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 1,
+            "endLine" : 26,
+            "endColumn" : 48,
+            "charOffset" : 999,
+            "charLength" : 47,
+            "byteOffset" : 999,
+            "byteLength" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/component/index/ComponentIndex.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 1,
+            "endLine" : 49,
+            "endColumn" : 69,
+            "charOffset" : 2413,
+            "charLength" : 68,
+            "byteOffset" : 2413,
+            "byteLength" : 68
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/component/ws/ProjectMeasuresQueryFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 1,
+            "endLine" : 36,
+            "endColumn" : 66,
+            "charOffset" : 1373,
+            "charLength" : 65,
+            "byteOffset" : 1373,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/component/ws/ProjectMeasuresQueryValidator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 1,
+            "endLine" : 29,
+            "endColumn" : 66,
+            "charOffset" : 1092,
+            "charLength" : 65,
+            "byteOffset" : 1092,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 11 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/component/ws/SearchAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 1,
+            "endLine" : 45,
+            "endColumn" : 66,
+            "charOffset" : 1793,
+            "charLength" : 65,
+            "byteOffset" : 1793,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 25 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/component/ws/SearchProjectsAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 1,
+            "endLine" : 63,
+            "endColumn" : 63,
+            "charOffset" : 2514,
+            "charLength" : 62,
+            "byteOffset" : 2514,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/component/ws/ShowAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 1,
+            "endLine" : 41,
+            "endColumn" : 39,
+            "charOffset" : 1629,
+            "charLength" : 38,
+            "byteOffset" : 1629,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 14 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/component/ws/SuggestionsAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 1,
+            "endLine" : 62,
+            "endColumn" : 63,
+            "charOffset" : 2583,
+            "charLength" : 62,
+            "byteOffset" : 2583,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 21 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/component/ws/TreeAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 1,
+            "endLine" : 56,
+            "endColumn" : 61,
+            "charOffset" : 2206,
+            "charLength" : 60,
+            "byteOffset" : 2206,
+            "byteLength" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/queue/ReportSubmitter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 1,
+            "endLine" : 44,
+            "endColumn" : 66,
+            "charOffset" : 1778,
+            "charLength" : 65,
+            "byteOffset" : 1778,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/MeasureImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 1,
+            "endLine" : 27,
+            "endColumn" : 63,
+            "charOffset" : 1062,
+            "charLength" : 62,
+            "byteOffset" : 1062,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/api/posttask/PostProjectAnalysisTasksExecutor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 1,
+            "endLine" : 46,
+            "endColumn" : 61,
+            "charOffset" : 2155,
+            "charLength" : 60,
+            "byteOffset" : 2155,
+            "byteLength" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/component/ComponentImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 1,
+            "endLine" : 29,
+            "endColumn" : 66,
+            "charOffset" : 1131,
+            "charLength" : 65,
+            "byteOffset" : 1131,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/component/ComponentRootBuilder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 1,
+            "endLine" : 33,
+            "endColumn" : 66,
+            "charOffset" : 1344,
+            "charLength" : 65,
+            "byteOffset" : 1344,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/component/PathAwareCrawler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 1,
+            "endLine" : 27,
+            "endColumn" : 61,
+            "charOffset" : 1071,
+            "charLength" : 60,
+            "byteOffset" : 1071,
+            "byteLength" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/FileMoveDetectionStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 1,
+            "endLine" : 59,
+            "endColumn" : 63,
+            "charOffset" : 2766,
+            "charLength" : 62,
+            "byteOffset" : 2766,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 27 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IssueCounter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 1,
+            "endLine" : 40,
+            "endColumn" : 67,
+            "charOffset" : 1838,
+            "charLength" : 66,
+            "byteOffset" : 1838,
+            "byteLength" : 66
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/filter/IssueFilter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 1,
+            "endLine" : 35,
+            "endColumn" : 66,
+            "charOffset" : 1495,
+            "charLength" : 65,
+            "byteOffset" : 1495,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/metric/MetricImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 1,
+            "endLine" : 28,
+            "endColumn" : 63,
+            "charOffset" : 1129,
+            "charLength" : 62,
+            "byteOffset" : 1129,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/MaintainabilityMeasuresVisitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 1,
+            "endLine" : 34,
+            "endColumn" : 71,
+            "charOffset" : 1743,
+            "charLength" : 70,
+            "byteOffset" : 1743,
+            "byteLength" : 70
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewMaintainabilityMeasuresVisitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 1,
+            "endLine" : 44,
+            "endColumn" : 65,
+            "charOffset" : 2291,
+            "charLength" : 64,
+            "byteOffset" : 2291,
+            "byteLength" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 18 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewReliabilityAndSecurityRatingMeasuresVisitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 1,
+            "endLine" : 37,
+            "endColumn" : 77,
+            "charOffset" : 1844,
+            "charLength" : 76,
+            "byteOffset" : 1844,
+            "byteLength" : 76
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/RatingSettings.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 1,
+            "endLine" : 30,
+            "endColumn" : 39,
+            "charOffset" : 1192,
+            "charLength" : 38,
+            "byteOffset" : 1192,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 18 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/ReliabilityAndSecurityRatingMeasuresVisitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 1,
+            "endLine" : 35,
+            "endColumn" : 73,
+            "charOffset" : 1726,
+            "charLength" : 72,
+            "byteOffset" : 1726,
+            "byteLength" : 72
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/scm/ReportScmInfo.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 1,
+            "endLine" : 31,
+            "endColumn" : 66,
+            "charOffset" : 1199,
+            "charLength" : 65,
+            "byteOffset" : 1199,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/scm/ScmInfoImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 1,
+            "endLine" : 28,
+            "endColumn" : 66,
+            "charOffset" : 1092,
+            "charLength" : 65,
+            "byteOffset" : 1092,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/CommentMeasuresStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 1,
+            "endLine" : 40,
+            "endColumn" : 79,
+            "charOffset" : 2227,
+            "charLength" : 78,
+            "byteOffset" : 2227,
+            "byteLength" : 78
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 14 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ComplexityMeasuresStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 1,
+            "endLine" : 33,
+            "endColumn" : 62,
+            "charOffset" : 1693,
+            "charLength" : 61,
+            "byteOffset" : 1693,
+            "byteLength" : 61
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ComputeMeasureVariationsStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 1,
+            "endLine" : 50,
+            "endColumn" : 66,
+            "charOffset" : 2414,
+            "charLength" : 65,
+            "byteOffset" : 2414,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/CoverageMeasuresStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 1,
+            "endLine" : 35,
+            "endColumn" : 70,
+            "charOffset" : 1964,
+            "charLength" : 69,
+            "byteOffset" : 1964,
+            "byteLength" : 69
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/DuplicationMeasuresStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 1,
+            "endLine" : 47,
+            "endColumn" : 61,
+            "charOffset" : 2548,
+            "charLength" : 60,
+            "byteOffset" : 2548,
+            "byteLength" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LanguageDistributionMeasuresStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 1,
+            "endLine" : 45,
+            "endColumn" : 52,
+            "charOffset" : 2279,
+            "charLength" : 51,
+            "byteOffset" : 2279,
+            "byteLength" : 51
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LoadReportAnalysisMetadataHolderStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 1,
+            "endLine" : 47,
+            "endColumn" : 63,
+            "charOffset" : 2159,
+            "charLength" : 62,
+            "byteOffset" : 2159,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PeriodResolver.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 1,
+            "endLine" : 38,
+            "endColumn" : 73,
+            "charOffset" : 1490,
+            "charLength" : 72,
+            "byteOffset" : 1490,
+            "byteLength" : 72
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistComponentsStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 1,
+            "endLine" : 52,
+            "endColumn" : 61,
+            "charOffset" : 2494,
+            "charLength" : 60,
+            "byteOffset" : 2494,
+            "byteLength" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistMeasuresStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 1,
+            "endLine" : 47,
+            "endColumn" : 61,
+            "charOffset" : 2318,
+            "charLength" : 60,
+            "byteOffset" : 2318,
+            "byteLength" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/QualityGateMeasuresStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 1,
+            "endLine" : 59,
+            "endColumn" : 61,
+            "charOffset" : 3272,
+            "charLength" : 60,
+            "byteOffset" : 3272,
+            "byteLength" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 13 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/SizeMeasuresStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 1,
+            "endLine" : 38,
+            "endColumn" : 64,
+            "charOffset" : 1991,
+            "charLength" : 63,
+            "byteOffset" : 1991,
+            "byteLength" : 63
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/UnitTestMeasuresStep.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 1,
+            "endLine" : 39,
+            "endColumn" : 68,
+            "charOffset" : 2148,
+            "charLength" : 67,
+            "byteOffset" : 2148,
+            "byteLength" : 67
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/webhook/WebhookCallerImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 1,
+            "endLine" : 32,
+            "endColumn" : 39,
+            "charOffset" : 1175,
+            "charLength" : 38,
+            "byteOffset" : 1175,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 21 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/debt/DebtRulesXMLImporter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 1,
+            "endLine" : 46,
+            "endColumn" : 60,
+            "charOffset" : 1808,
+            "charLength" : 59,
+            "byteOffset" : 1808,
+            "byteLength" : 59
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 24 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/es/DefaultIndexSettingsElement.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 1,
+            "endLine" : 29,
+            "endColumn" : 65,
+            "charOffset" : 1115,
+            "charLength" : 64,
+            "byteOffset" : 1115,
+            "byteLength" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/es/NewIndex.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 1,
+            "endLine" : 39,
+            "endColumn" : 66,
+            "charOffset" : 1535,
+            "charLength" : 65,
+            "byteOffset" : 1535,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 9 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/es/textsearch/ComponentTextSearchFeatureRepertoire.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 1,
+            "endLine" : 36,
+            "endColumn" : 69,
+            "charOffset" : 1494,
+            "charLength" : 68,
+            "byteOffset" : 1494,
+            "byteLength" : 68
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/favorite/ws/SearchAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 1,
+            "endLine" : 43,
+            "endColumn" : 66,
+            "charOffset" : 1670,
+            "charLength" : 65,
+            "byteOffset" : 1670,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/ActionFinder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 1,
+            "endLine" : 27,
+            "endColumn" : 60,
+            "charOffset" : 1008,
+            "charLength" : 59,
+            "byteOffset" : 1008,
+            "byteLength" : 59
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 17 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/IssueQueryFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 1,
+            "endLine" : 57,
+            "endColumn" : 66,
+            "charOffset" : 2130,
+            "charLength" : 65,
+            "byteOffset" : 2130,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 28 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/index/IssueIndex.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 75,
+            "startColumn" : 1,
+            "endLine" : 75,
+            "endColumn" : 39,
+            "charOffset" : 3249,
+            "charLength" : 38,
+            "byteOffset" : 3249,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/notification/NewIssuesNotification.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 1,
+            "endLine" : 38,
+            "endColumn" : 93,
+            "charOffset" : 1478,
+            "charLength" : 92,
+            "byteOffset" : 1478,
+            "byteLength" : 92
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/notification/NewIssuesStatistics.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 1,
+            "endLine" : 33,
+            "endColumn" : 66,
+            "charOffset" : 1233,
+            "charLength" : 65,
+            "byteOffset" : 1233,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/AddCommentAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 1,
+            "endLine" : 41,
+            "endColumn" : 66,
+            "charOffset" : 1619,
+            "charLength" : 65,
+            "byteOffset" : 1619,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/AssignAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 1,
+            "endLine" : 48,
+            "endColumn" : 58,
+            "charOffset" : 1851,
+            "charLength" : 57,
+            "byteOffset" : 1851,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 33 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/BulkChangeAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 1,
+            "endLine" : 64,
+            "endColumn" : 66,
+            "charOffset" : 2431,
+            "charLength" : 65,
+            "byteOffset" : 2431,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 9 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/ChangelogAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 1,
+            "endLine" : 46,
+            "endColumn" : 58,
+            "charOffset" : 1747,
+            "charLength" : 57,
+            "byteOffset" : 1747,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/ComponentTagsAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 1,
+            "endLine" : 34,
+            "endColumn" : 51,
+            "charOffset" : 1351,
+            "charLength" : 50,
+            "byteOffset" : 1351,
+            "byteLength" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/DeleteCommentAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 1,
+            "endLine" : 40,
+            "endColumn" : 66,
+            "charOffset" : 1540,
+            "charLength" : 65,
+            "byteOffset" : 1540,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/EditCommentAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 1,
+            "endLine" : 42,
+            "endColumn" : 66,
+            "charOffset" : 1633,
+            "charLength" : 65,
+            "byteOffset" : 1633,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 49 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/SearchAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 1,
+            "endLine" : 53,
+            "endColumn" : 58,
+            "charOffset" : 2042,
+            "charLength" : 57,
+            "byteOffset" : 2042,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 14 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/SearchResponseFormat.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 1,
+            "endLine" : 52,
+            "endColumn" : 58,
+            "charOffset" : 1909,
+            "charLength" : 57,
+            "byteOffset" : 1909,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 12 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/SearchResponseLoader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 1,
+            "endLine" : 48,
+            "endColumn" : 63,
+            "charOffset" : 1833,
+            "charLength" : 62,
+            "byteOffset" : 1833,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/license/ws/ListAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 1,
+            "endLine" : 47,
+            "endColumn" : 60,
+            "charOffset" : 1753,
+            "charLength" : 59,
+            "byteOffset" : 1753,
+            "byteLength" : 59
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/measure/custom/ws/CreateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 1,
+            "endLine" : 37,
+            "endColumn" : 66,
+            "charOffset" : 1455,
+            "charLength" : 65,
+            "byteOffset" : 1455,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/measure/custom/ws/SearchAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 1,
+            "endLine" : 47,
+            "endColumn" : 57,
+            "charOffset" : 1810,
+            "charLength" : 56,
+            "byteOffset" : 1810,
+            "byteLength" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 13 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/measure/index/ProjectMeasuresDoc.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 1,
+            "endLine" : 33,
+            "endColumn" : 57,
+            "charOffset" : 1213,
+            "charLength" : 56,
+            "byteOffset" : 1213,
+            "byteLength" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 39 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/measure/index/ProjectMeasuresIndex.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 1,
+            "endLine" : 53,
+            "endColumn" : 66,
+            "charOffset" : 2423,
+            "charLength" : 65,
+            "byteOffset" : 2423,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/measure/index/ProjectsTextSearchQueryFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 1,
+            "endLine" : 32,
+            "endColumn" : 69,
+            "charOffset" : 1272,
+            "charLength" : 68,
+            "byteOffset" : 1272,
+            "byteLength" : 68
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 25 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/ComponentAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 1,
+            "endLine" : 57,
+            "endColumn" : 39,
+            "charOffset" : 2294,
+            "charLength" : 38,
+            "byteOffset" : 2294,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 32 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/ComponentTreeAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 1,
+            "endLine" : 44,
+            "endColumn" : 66,
+            "charOffset" : 1759,
+            "charLength" : 65,
+            "byteOffset" : 1759,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 12 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/ComponentTreeDataLoader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 1,
+            "endLine" : 65,
+            "endColumn" : 66,
+            "charOffset" : 2513,
+            "charLength" : 65,
+            "byteOffset" : 2513,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 15 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/ComponentTreeSort.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 1,
+            "endLine" : 40,
+            "endColumn" : 55,
+            "charOffset" : 1538,
+            "charLength" : 54,
+            "byteOffset" : 1538,
+            "byteLength" : 54
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/MeasuresWsParametersBuilder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 1,
+            "endLine" : 25,
+            "endColumn" : 86,
+            "charOffset" : 987,
+            "charLength" : 85,
+            "byteOffset" : 987,
+            "byteLength" : 85
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 16 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/SearchAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 1,
+            "endLine" : 44,
+            "endColumn" : 66,
+            "charOffset" : 1672,
+            "charLength" : 65,
+            "byteOffset" : 1672,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 13 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/SearchHistoryAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 1,
+            "endLine" : 50,
+            "endColumn" : 39,
+            "charOffset" : 1996,
+            "charLength" : 38,
+            "byteOffset" : 1996,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/SearchHistoryResult.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 1,
+            "endLine" : 36,
+            "endColumn" : 47,
+            "charOffset" : 1400,
+            "charLength" : 46,
+            "byteOffset" : 1400,
+            "byteLength" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 12 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/notification/ws/AddAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 1,
+            "endLine" : 44,
+            "endColumn" : 40,
+            "charOffset" : 1827,
+            "charLength" : 39,
+            "byteOffset" : 1827,
+            "byteLength" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 12 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/notification/ws/ListAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 1,
+            "endLine" : 50,
+            "endColumn" : 66,
+            "charOffset" : 1938,
+            "charLength" : 65,
+            "byteOffset" : 1938,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 11 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/notification/ws/RemoveAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 1,
+            "endLine" : 44,
+            "endColumn" : 40,
+            "charOffset" : 1828,
+            "charLength" : 39,
+            "byteOffset" : 1828,
+            "byteLength" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/organization/OrganizationCreationImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 1,
+            "endLine" : 54,
+            "endColumn" : 63,
+            "charOffset" : 2257,
+            "charLength" : 62,
+            "byteOffset" : 2257,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/organization/ws/AddMemberAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 1,
+            "endLine" : 42,
+            "endColumn" : 56,
+            "charOffset" : 1708,
+            "charLength" : 55,
+            "byteOffset" : 1708,
+            "byteLength" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/organization/ws/DeleteAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 1,
+            "endLine" : 40,
+            "endColumn" : 66,
+            "charOffset" : 1651,
+            "charLength" : 65,
+            "byteOffset" : 1651,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 9 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/organization/ws/RemoveMemberAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 1,
+            "endLine" : 34,
+            "endColumn" : 51,
+            "charOffset" : 1304,
+            "charLength" : 50,
+            "byteOffset" : 1304,
+            "byteLength" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/organization/ws/SearchMembersAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 1,
+            "endLine" : 51,
+            "endColumn" : 66,
+            "charOffset" : 2053,
+            "charLength" : 65,
+            "byteOffset" : 2053,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/organization/ws/UpdateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 1,
+            "endLine" : 36,
+            "endColumn" : 39,
+            "charOffset" : 1412,
+            "charLength" : 38,
+            "byteOffset" : 1412,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/GroupPermissionChanger.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 1,
+            "endLine" : 29,
+            "endColumn" : 72,
+            "charOffset" : 1097,
+            "charLength" : 71,
+            "byteOffset" : 1097,
+            "byteLength" : 71
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/PermissionTemplateService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 1,
+            "endLine" : 52,
+            "endColumn" : 66,
+            "charOffset" : 2231,
+            "charLength" : 65,
+            "byteOffset" : 2231,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/AddGroupAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 1,
+            "endLine" : 35,
+            "endColumn" : 39,
+            "charOffset" : 1405,
+            "charLength" : 38,
+            "byteOffset" : 1405,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 12 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/AddUserAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 1,
+            "endLine" : 38,
+            "endColumn" : 66,
+            "charOffset" : 1540,
+            "charLength" : 65,
+            "byteOffset" : 1540,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 12 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/GroupsAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 1,
+            "endLine" : 46,
+            "endColumn" : 47,
+            "charOffset" : 1844,
+            "charLength" : 46,
+            "byteOffset" : 1844,
+            "byteLength" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/PermissionRequestValidator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 1,
+            "endLine" : 34,
+            "endColumn" : 60,
+            "charOffset" : 1376,
+            "charLength" : 59,
+            "byteOffset" : 1376,
+            "byteLength" : 59
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/PermissionWsSupport.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 1,
+            "endLine" : 40,
+            "endColumn" : 39,
+            "charOffset" : 1666,
+            "charLength" : 38,
+            "byteOffset" : 1666,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 14 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/PermissionsWsParametersBuilder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 1,
+            "endLine" : 28,
+            "endColumn" : 39,
+            "charOffset" : 1129,
+            "charLength" : 38,
+            "byteOffset" : 1129,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/RemoveGroupAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 1,
+            "endLine" : 35,
+            "endColumn" : 39,
+            "charOffset" : 1405,
+            "charLength" : 38,
+            "byteOffset" : 1405,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 9 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/RemoveUserAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 1,
+            "endLine" : 36,
+            "endColumn" : 39,
+            "charOffset" : 1442,
+            "charLength" : 38,
+            "byteOffset" : 1442,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/SearchGlobalPermissionsAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 1,
+            "endLine" : 36,
+            "endColumn" : 87,
+            "charOffset" : 1445,
+            "charLength" : 86,
+            "byteOffset" : 1445,
+            "byteLength" : 86
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 9 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/SearchProjectPermissionsAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 1,
+            "endLine" : 44,
+            "endColumn" : 91,
+            "charOffset" : 1847,
+            "charLength" : 90,
+            "byteOffset" : 1847,
+            "byteLength" : 90
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 15 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/UsersAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 1,
+            "endLine" : 44,
+            "endColumn" : 47,
+            "charOffset" : 1737,
+            "charLength" : 46,
+            "byteOffset" : 1737,
+            "byteLength" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/AddGroupToTemplateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 1,
+            "endLine" : 33,
+            "endColumn" : 39,
+            "charOffset" : 1357,
+            "charLength" : 38,
+            "byteOffset" : 1357,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/AddProjectCreatorToTemplateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 1,
+            "endLine" : 36,
+            "endColumn" : 87,
+            "charOffset" : 1522,
+            "charLength" : 86,
+            "byteOffset" : 1522,
+            "byteLength" : 86
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/AddUserToTemplateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 1,
+            "endLine" : 37,
+            "endColumn" : 87,
+            "charOffset" : 1536,
+            "charLength" : 86,
+            "byteOffset" : 1536,
+            "byteLength" : 86
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 9 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/ApplyTemplateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 1,
+            "endLine" : 36,
+            "endColumn" : 87,
+            "charOffset" : 1504,
+            "charLength" : 86,
+            "byteOffset" : 1504,
+            "byteLength" : 86
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 9 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/BulkApplyTemplateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 1,
+            "endLine" : 43,
+            "endColumn" : 87,
+            "charOffset" : 1800,
+            "charLength" : 86,
+            "byteOffset" : 1800,
+            "byteLength" : 86
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 15 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/CreateTemplateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 1,
+            "endLine" : 39,
+            "endColumn" : 39,
+            "charOffset" : 1634,
+            "charLength" : 38,
+            "byteOffset" : 1634,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/DeleteTemplateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 1,
+            "endLine" : 34,
+            "endColumn" : 87,
+            "charOffset" : 1420,
+            "charLength" : 86,
+            "byteOffset" : 1420,
+            "byteLength" : 86
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/RemoveGroupFromTemplateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 1,
+            "endLine" : 33,
+            "endColumn" : 66,
+            "charOffset" : 1357,
+            "charLength" : 65,
+            "byteOffset" : 1357,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/RemoveProjectCreatorFromTemplateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 1,
+            "endLine" : 36,
+            "endColumn" : 87,
+            "charOffset" : 1577,
+            "charLength" : 86,
+            "byteOffset" : 1577,
+            "byteLength" : 86
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/RemoveUserFromTemplateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 1,
+            "endLine" : 34,
+            "endColumn" : 87,
+            "charOffset" : 1420,
+            "charLength" : 86,
+            "byteOffset" : 1420,
+            "byteLength" : 86
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/SearchTemplatesAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 1,
+            "endLine" : 44,
+            "endColumn" : 60,
+            "charOffset" : 1919,
+            "charLength" : 59,
+            "byteOffset" : 1919,
+            "byteLength" : 59
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 11 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/SetDefaultTemplateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 1,
+            "endLine" : 38,
+            "endColumn" : 87,
+            "charOffset" : 1595,
+            "charLength" : 86,
+            "byteOffset" : 1595,
+            "byteLength" : 86
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 13 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/TemplateGroupsAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 1,
+            "endLine" : 43,
+            "endColumn" : 61,
+            "charOffset" : 1764,
+            "charLength" : 60,
+            "byteOffset" : 1764,
+            "byteLength" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 13 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/TemplateUsersAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 1,
+            "endLine" : 44,
+            "endColumn" : 61,
+            "charOffset" : 1821,
+            "charLength" : 60,
+            "byteOffset" : 1821,
+            "byteLength" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 16 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/UpdateTemplateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 1,
+            "endLine" : 38,
+            "endColumn" : 63,
+            "charOffset" : 1584,
+            "charLength" : 62,
+            "byteOffset" : 1584,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/platform/db/EmbeddedDatabase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 1,
+            "endLine" : 35,
+            "endColumn" : 66,
+            "charOffset" : 1282,
+            "charLength" : 65,
+            "byteOffset" : 1282,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/platform/web/WebPagesFilter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 1,
+            "endLine" : 35,
+            "endColumn" : 55,
+            "charOffset" : 1332,
+            "charLength" : 54,
+            "byteOffset" : 1332,
+            "byteLength" : 54
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/platform/ws/DbMigrationStatusAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 1,
+            "endLine" : 32,
+            "endColumn" : 63,
+            "charOffset" : 1288,
+            "charLength" : 62,
+            "byteOffset" : 1288,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/platform/ws/MigrateDbAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 1,
+            "endLine" : 33,
+            "endColumn" : 63,
+            "charOffset" : 1353,
+            "charLength" : 62,
+            "byteOffset" : 1353,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/plugins/PluginDownloader.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 1,
+            "endLine" : 42,
+            "endColumn" : 61,
+            "charOffset" : 1583,
+            "charLength" : 60,
+            "byteOffset" : 1583,
+            "byteLength" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/plugins/ServerPluginRepository.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 1,
+            "endLine" : 54,
+            "endColumn" : 66,
+            "charOffset" : 2049,
+            "charLength" : 65,
+            "byteOffset" : 2049,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/plugins/ws/InstalledAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 1,
+            "endLine" : 38,
+            "endColumn" : 67,
+            "charOffset" : 1466,
+            "charLength" : 66,
+            "byteOffset" : 1466,
+            "byteLength" : 66
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/plugins/ws/PluginWSCommons.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 1,
+            "endLine" : 45,
+            "endColumn" : 67,
+            "charOffset" : 1788,
+            "charLength" : 66,
+            "byteOffset" : 1788,
+            "byteLength" : 66
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/project/ws/BulkUpdateKeyAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 1,
+            "endLine" : 41,
+            "endColumn" : 57,
+            "charOffset" : 1668,
+            "charLength" : 56,
+            "byteOffset" : 1668,
+            "byteLength" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 12 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/project/ws/CreateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 1,
+            "endLine" : 37,
+            "endColumn" : 45,
+            "charOffset" : 1511,
+            "charLength" : 44,
+            "byteOffset" : 1511,
+            "byteLength" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/project/ws/GhostsAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 1,
+            "endLine" : 41,
+            "endColumn" : 57,
+            "charOffset" : 1584,
+            "charLength" : 56,
+            "byteOffset" : 1584,
+            "byteLength" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 9 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/project/ws/ProvisionedAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 1,
+            "endLine" : 47,
+            "endColumn" : 57,
+            "charOffset" : 1870,
+            "charLength" : 56,
+            "byteOffset" : 1870,
+            "byteLength" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 15 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/project/ws/SearchAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 1,
+            "endLine" : 41,
+            "endColumn" : 66,
+            "charOffset" : 1669,
+            "charLength" : 65,
+            "byteOffset" : 1669,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/project/ws/UpdateKeyAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 1,
+            "endLine" : 35,
+            "endColumn" : 57,
+            "charOffset" : 1375,
+            "charLength" : 56,
+            "byteOffset" : 1375,
+            "byteLength" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/project/ws/UpdateVisibilityAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 1,
+            "endLine" : 42,
+            "endColumn" : 39,
+            "charOffset" : 1706,
+            "charLength" : 38,
+            "byteOffset" : 1706,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 12 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/projectanalysis/ws/CreateEventAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 1,
+            "endLine" : 46,
+            "endColumn" : 66,
+            "charOffset" : 1854,
+            "charLength" : 65,
+            "byteOffset" : 1854,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/projectanalysis/ws/DeleteEventAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 1,
+            "endLine" : 37,
+            "endColumn" : 66,
+            "charOffset" : 1454,
+            "charLength" : 65,
+            "byteOffset" : 1454,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 13 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/projectanalysis/ws/SearchAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 1,
+            "endLine" : 44,
+            "endColumn" : 66,
+            "charOffset" : 1770,
+            "charLength" : 65,
+            "byteOffset" : 1770,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/projectanalysis/ws/UpdateEventAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 1,
+            "endLine" : 43,
+            "endColumn" : 66,
+            "charOffset" : 1720,
+            "charLength" : 65,
+            "byteOffset" : 1720,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/projectlink/ws/CreateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 1,
+            "endLine" : 36,
+            "endColumn" : 66,
+            "charOffset" : 1449,
+            "charLength" : 65,
+            "byteOffset" : 1449,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/projectlink/ws/SearchAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 1,
+            "endLine" : 38,
+            "endColumn" : 56,
+            "charOffset" : 1513,
+            "charLength" : 55,
+            "byteOffset" : 1513,
+            "byteLength" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/property/ws/IndexAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 1,
+            "endLine" : 48,
+            "endColumn" : 59,
+            "charOffset" : 1798,
+            "charLength" : 58,
+            "byteOffset" : 1798,
+            "byteLength" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/QualityGateConditionsUpdater.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 1,
+            "endLine" : 40,
+            "endColumn" : 60,
+            "charOffset" : 1586,
+            "charLength" : 59,
+            "byteOffset" : 1586,
+            "byteLength" : 59
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/RegisterQualityGates.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 1,
+            "endLine" : 30,
+            "endColumn" : 67,
+            "charOffset" : 1218,
+            "charLength" : 66,
+            "byteOffset" : 1218,
+            "byteLength" : 66
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/ws/AppAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 1,
+            "endLine" : 35,
+            "endColumn" : 67,
+            "charOffset" : 1398,
+            "charLength" : 66,
+            "byteOffset" : 1398,
+            "byteLength" : 66
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/ws/CreateConditionAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 1,
+            "endLine" : 35,
+            "endColumn" : 56,
+            "charOffset" : 1490,
+            "charLength" : 55,
+            "byteOffset" : 1490,
+            "byteLength" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/ws/GetByProjectAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 1,
+            "endLine" : 38,
+            "endColumn" : 57,
+            "charOffset" : 1569,
+            "charLength" : 56,
+            "byteOffset" : 1569,
+            "byteLength" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/ws/ProjectStatusAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 1,
+            "endLine" : 47,
+            "endColumn" : 60,
+            "charOffset" : 1892,
+            "charLength" : 59,
+            "byteOffset" : 1892,
+            "byteLength" : 59
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/ws/QualityGatesWs.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 1,
+            "endLine" : 29,
+            "endColumn" : 101,
+            "charOffset" : 1174,
+            "charLength" : 100,
+            "byteOffset" : 1174,
+            "byteLength" : 100
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/ws/SelectAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 1,
+            "endLine" : 39,
+            "endColumn" : 84,
+            "charOffset" : 1570,
+            "charLength" : 83,
+            "byteOffset" : 1570,
+            "byteLength" : 83
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 11 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/ws/UpdateConditionAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 1,
+            "endLine" : 34,
+            "endColumn" : 56,
+            "charOffset" : 1435,
+            "charLength" : 55,
+            "byteOffset" : 1435,
+            "byteLength" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/BuiltInQProfileRepositoryImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 1,
+            "endLine" : 43,
+            "endColumn" : 66,
+            "charOffset" : 1643,
+            "charLength" : 65,
+            "byteOffset" : 1643,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/BuiltInQualityProfilesNotification.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 1,
+            "endLine" : 29,
+            "endColumn" : 63,
+            "charOffset" : 1072,
+            "charLength" : 62,
+            "byteOffset" : 1072,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/BuiltInQualityProfilesNotificationTemplate.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 1,
+            "endLine" : 31,
+            "endColumn" : 55,
+            "charOffset" : 1223,
+            "charLength" : 54,
+            "byteOffset" : 1223,
+            "byteLength" : 54
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/index/ActiveRuleDoc.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 1,
+            "endLine" : 29,
+            "endColumn" : 70,
+            "charOffset" : 1109,
+            "charLength" : 69,
+            "byteOffset" : 1109,
+            "byteLength" : 69
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/ActivateRuleAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 1,
+            "endLine" : 36,
+            "endColumn" : 39,
+            "charOffset" : 1409,
+            "charLength" : 38,
+            "byteOffset" : 1409,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/ActivateRulesAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 1,
+            "endLine" : 34,
+            "endColumn" : 57,
+            "charOffset" : 1361,
+            "charLength" : 56,
+            "byteOffset" : 1361,
+            "byteLength" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/AddProjectAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 1,
+            "endLine" : 37,
+            "endColumn" : 57,
+            "charOffset" : 1499,
+            "charLength" : 56,
+            "byteOffset" : 1499,
+            "byteLength" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/ChangeParentAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 1,
+            "endLine" : 34,
+            "endColumn" : 59,
+            "charOffset" : 1377,
+            "charLength" : 58,
+            "byteOffset" : 1377,
+            "byteLength" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/ChangelogAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 1,
+            "endLine" : 37,
+            "endColumn" : 71,
+            "charOffset" : 1463,
+            "charLength" : 70,
+            "byteOffset" : 1463,
+            "byteLength" : 70
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/CopyAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 1,
+            "endLine" : 35,
+            "endColumn" : 56,
+            "charOffset" : 1411,
+            "charLength" : 55,
+            "byteOffset" : 1411,
+            "byteLength" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/CreateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 1,
+            "endLine" : 43,
+            "endColumn" : 90,
+            "charOffset" : 1838,
+            "charLength" : 89,
+            "byteOffset" : 1838,
+            "byteLength" : 89
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/DeactivateRulesAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 1,
+            "endLine" : 33,
+            "endColumn" : 57,
+            "charOffset" : 1325,
+            "charLength" : 56,
+            "byteOffset" : 1325,
+            "byteLength" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/ExportAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 1,
+            "endLine" : 47,
+            "endColumn" : 55,
+            "charOffset" : 1837,
+            "charLength" : 54,
+            "byteOffset" : 1837,
+            "byteLength" : 54
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/ProjectsAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 1,
+            "endLine" : 44,
+            "endColumn" : 66,
+            "charOffset" : 1784,
+            "charLength" : 65,
+            "byteOffset" : 1784,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 9 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/QProfileReference.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 1,
+            "endLine" : 31,
+            "endColumn" : 66,
+            "charOffset" : 1191,
+            "charLength" : 65,
+            "byteOffset" : 1191,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/RemoveProjectAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 1,
+            "endLine" : 37,
+            "endColumn" : 57,
+            "charOffset" : 1499,
+            "charLength" : 56,
+            "byteOffset" : 1499,
+            "byteLength" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/RenameAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 1,
+            "endLine" : 34,
+            "endColumn" : 39,
+            "charOffset" : 1367,
+            "charLength" : 38,
+            "byteOffset" : 1367,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/RestoreAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 1,
+            "endLine" : 40,
+            "endColumn" : 66,
+            "charOffset" : 1618,
+            "charLength" : 65,
+            "byteOffset" : 1618,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 14 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/SearchAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 1,
+            "endLine" : 56,
+            "endColumn" : 63,
+            "charOffset" : 2288,
+            "charLength" : 62,
+            "byteOffset" : 2288,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/ShowAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 1,
+            "endLine" : 46,
+            "endColumn" : 51,
+            "charOffset" : 1887,
+            "charLength" : 50,
+            "byteOffset" : 1887,
+            "byteLength" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/rule/RuleUpdater.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 1,
+            "endLine" : 52,
+            "endColumn" : 65,
+            "charOffset" : 1998,
+            "charLength" : 64,
+            "byteOffset" : 1998,
+            "byteLength" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 36 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/rule/index/RuleIndex.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 1,
+            "endLine" : 66,
+            "endColumn" : 66,
+            "charOffset" : 2901,
+            "charLength" : 65,
+            "byteOffset" : 2901,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/rule/index/RuleIndexer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 1,
+            "endLine" : 47,
+            "endColumn" : 66,
+            "charOffset" : 1863,
+            "charLength" : 65,
+            "byteOffset" : 1863,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 26 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/rule/ws/RuleMapper.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 1,
+            "endLine" : 42,
+            "endColumn" : 39,
+            "charOffset" : 1654,
+            "charLength" : 38,
+            "byteOffset" : 1654,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 21 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/rule/ws/RuleQueryFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 1,
+            "endLine" : 35,
+            "endColumn" : 66,
+            "charOffset" : 1353,
+            "charLength" : 65,
+            "byteOffset" : 1353,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 38 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/rule/ws/SearchAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 1,
+            "endLine" : 63,
+            "endColumn" : 39,
+            "charOffset" : 2409,
+            "charLength" : 38,
+            "byteOffset" : 2409,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/rule/ws/UpdateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 1,
+            "endLine" : 51,
+            "endColumn" : 39,
+            "charOffset" : 2046,
+            "charLength" : 38,
+            "byteOffset" : 2046,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 6 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/serverid/ws/ShowAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 1,
+            "endLine" : 40,
+            "endColumn" : 50,
+            "charOffset" : 1494,
+            "charLength" : 49,
+            "byteOffset" : 1494,
+            "byteLength" : 49
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/setting/ws/ListDefinitionsAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 1,
+            "endLine" : 39,
+            "endColumn" : 58,
+            "charOffset" : 1561,
+            "charLength" : 57,
+            "byteOffset" : 1561,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/setting/ws/ResetAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 1,
+            "endLine" : 41,
+            "endColumn" : 47,
+            "charOffset" : 1632,
+            "charLength" : 46,
+            "byteOffset" : 1632,
+            "byteLength" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/setting/ws/ScannerSettings.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 1,
+            "endLine" : 31,
+            "endColumn" : 49,
+            "charOffset" : 1183,
+            "charLength" : 48,
+            "byteOffset" : 1183,
+            "byteLength" : 48
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/setting/ws/SetAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 1,
+            "endLine" : 59,
+            "endColumn" : 71,
+            "charOffset" : 2344,
+            "charLength" : 70,
+            "byteOffset" : 2344,
+            "byteLength" : 70
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/setting/ws/ValuesAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 1,
+            "endLine" : 47,
+            "endColumn" : 39,
+            "charOffset" : 1752,
+            "charLength" : 38,
+            "byteOffset" : 1752,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 9 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/test/index/TestDoc.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 1,
+            "endLine" : 30,
+            "endColumn" : 83,
+            "charOffset" : 1124,
+            "charLength" : 82,
+            "byteOffset" : 1124,
+            "byteLength" : 82
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 9 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/test/index/TestIndex.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 1,
+            "endLine" : 31,
+            "endColumn" : 69,
+            "charOffset" : 1197,
+            "charLength" : 68,
+            "byteOffset" : 1197,
+            "byteLength" : 68
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 13 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/test/index/TestResultSetIterator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 1,
+            "endLine" : 45,
+            "endColumn" : 83,
+            "charOffset" : 1717,
+            "charLength" : 82,
+            "byteOffset" : 1717,
+            "byteLength" : 82
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/ui/PageRepository.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 1,
+            "endLine" : 38,
+            "endColumn" : 63,
+            "charOffset" : 1471,
+            "charLength" : 62,
+            "byteOffset" : 1471,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/ui/ws/ComponentAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 1,
+            "endLine" : 65,
+            "endColumn" : 71,
+            "charOffset" : 2645,
+            "charLength" : 70,
+            "byteOffset" : 2645,
+            "byteLength" : 70
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 7 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/ui/ws/GlobalAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 1,
+            "endLine" : 41,
+            "endColumn" : 56,
+            "charOffset" : 1645,
+            "charLength" : 55,
+            "byteOffset" : 1645,
+            "byteLength" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/user/UserUpdater.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 1,
+            "endLine" : 50,
+            "endColumn" : 66,
+            "charOffset" : 1971,
+            "charLength" : 65,
+            "byteOffset" : 1971,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 12 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/user/index/UserIndex.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 1,
+            "endLine" : 42,
+            "endColumn" : 69,
+            "charOffset" : 1715,
+            "charLength" : 68,
+            "byteOffset" : 1715,
+            "byteLength" : 68
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 13 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/user/ws/CreateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 1,
+            "endLine" : 38,
+            "endColumn" : 58,
+            "charOffset" : 1460,
+            "charLength" : 57,
+            "byteOffset" : 1460,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/user/ws/CurrentAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 1,
+            "endLine" : 37,
+            "endColumn" : 63,
+            "charOffset" : 1453,
+            "charLength" : 62,
+            "byteOffset" : 1453,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/user/ws/DeactivateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 1,
+            "endLine" : 43,
+            "endColumn" : 39,
+            "charOffset" : 1704,
+            "charLength" : 38,
+            "byteOffset" : 1704,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 11 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/user/ws/GroupsAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 1,
+            "endLine" : 48,
+            "endColumn" : 66,
+            "charOffset" : 1969,
+            "charLength" : 65,
+            "byteOffset" : 1969,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 24 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/user/ws/SearchAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 1,
+            "endLine" : 47,
+            "endColumn" : 63,
+            "charOffset" : 1803,
+            "charLength" : 62,
+            "byteOffset" : 1803,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 10 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/user/ws/UpdateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 1,
+            "endLine" : 39,
+            "endColumn" : 58,
+            "charOffset" : 1469,
+            "charLength" : 57,
+            "byteOffset" : 1469,
+            "byteLength" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 9 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/usergroups/ws/AddUserAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 1,
+            "endLine" : 35,
+            "endColumn" : 39,
+            "charOffset" : 1376,
+            "charLength" : 38,
+            "byteOffset" : 1376,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/usergroups/ws/CreateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 1,
+            "endLine" : 34,
+            "endColumn" : 76,
+            "charOffset" : 1349,
+            "charLength" : 75,
+            "byteOffset" : 1349,
+            "byteLength" : 75
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/usergroups/ws/DeleteAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 1,
+            "endLine" : 32,
+            "endColumn" : 66,
+            "charOffset" : 1259,
+            "charLength" : 65,
+            "byteOffset" : 1259,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/usergroups/ws/GroupWsSupport.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 1,
+            "endLine" : 37,
+            "endColumn" : 66,
+            "charOffset" : 1473,
+            "charLength" : 65,
+            "byteOffset" : 1473,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/usergroups/ws/RemoveUserAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 1,
+            "endLine" : 33,
+            "endColumn" : 39,
+            "charOffset" : 1303,
+            "charLength" : 38,
+            "byteOffset" : 1303,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 9 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/usergroups/ws/SearchAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 1,
+            "endLine" : 43,
+            "endColumn" : 66,
+            "charOffset" : 1655,
+            "charLength" : 65,
+            "byteOffset" : 1655,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 11 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/usergroups/ws/UpdateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 1,
+            "endLine" : 37,
+            "endColumn" : 39,
+            "charOffset" : 1461,
+            "charLength" : 38,
+            "byteOffset" : 1461,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 8 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/usertoken/ws/GenerateAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 1,
+            "endLine" : 38,
+            "endColumn" : 62,
+            "charOffset" : 1517,
+            "charLength" : 61,
+            "byteOffset" : 1517,
+            "byteLength" : 61
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/usertoken/ws/SearchAction.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 1,
+            "endLine" : 34,
+            "endColumn" : 60,
+            "charOffset" : 1309,
+            "charLength" : 59,
+            "byteOffset" : 1309,
+            "byteLength" : 59
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 11 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/ws/DeprecatedPropertiesWsFilter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 1,
+            "endLine" : 42,
+            "endColumn" : 60,
+            "charOffset" : 1561,
+            "charLength" : 59,
+            "byteOffset" : 1561,
+            "byteLength" : 59
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 5 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/ws/ServletRequest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 1,
+            "endLine" : 34,
+            "endColumn" : 63,
+            "charOffset" : 1313,
+            "charLength" : 62,
+            "byteOffset" : 1313,
+            "byteLength" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3030",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce the number of \"static\" imports in this class from 9 to the maximum allowed 4."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/main/java/org/sonar/server/ws/WebServiceEngine.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 1,
+            "endLine" : 43,
+            "endColumn" : 66,
+            "charOffset" : 1686,
+            "charLength" : 65,
+            "byteOffset" : 1686,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

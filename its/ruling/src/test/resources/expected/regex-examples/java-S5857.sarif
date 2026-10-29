@@ -1,0 +1,2006 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^;]++\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 81,
+            "endLine" : 31,
+            "endColumn" : 84,
+            "charOffset" : 2779,
+            "charLength" : 3,
+            "byteOffset" : 2780,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^;]++\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 95,
+            "endLine" : 33,
+            "endColumn" : 98,
+            "charOffset" : 3031,
+            "charLength" : 3,
+            "byteOffset" : 3032,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"\\\\P{Lu}*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 843,
+            "startColumn" : 26,
+            "endLine" : 843,
+            "endColumn" : 29,
+            "charOffset" : 94548,
+            "charLength" : 3,
+            "byteOffset" : 94639,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"\\\\P{Ll}*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 843,
+            "startColumn" : 40,
+            "endLine" : 843,
+            "endColumn" : 43,
+            "charOffset" : 94562,
+            "charLength" : 3,
+            "byteOffset" : 94653,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"\\\\D*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 843,
+            "startColumn" : 54,
+            "endLine" : 843,
+            "endColumn" : 57,
+            "charOffset" : 94576,
+            "charLength" : 3,
+            "byteOffset" : 94667,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^`~!@#$%^&*()\\\\-_=+\\\\\\\\|\\\\[{\\\\]};:'\\\",<.>/?]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 843,
+            "startColumn" : 64,
+            "endLine" : 843,
+            "endColumn" : 67,
+            "charOffset" : 94586,
+            "charLength" : 3,
+            "byteOffset" : 94677,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\"]++\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1565,
+            "startColumn" : 36,
+            "endLine" : 1565,
+            "endColumn" : 39,
+            "charOffset" : 182849,
+            "charLength" : 3,
+            "byteOffset" : 183059,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^>]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1691,
+            "startColumn" : 27,
+            "endLine" : 1691,
+            "endColumn" : 30,
+            "charOffset" : 196952,
+            "charLength" : 3,
+            "byteOffset" : 197166,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^}]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1735,
+            "startColumn" : 25,
+            "endLine" : 1735,
+            "endColumn" : 28,
+            "charOffset" : 201975,
+            "charLength" : 3,
+            "byteOffset" : 202189,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^0-9a-zA-Z]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase1.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1923,
+            "startColumn" : 26,
+            "endLine" : 1923,
+            "endColumn" : 29,
+            "charOffset" : 223173,
+            "charLength" : 3,
+            "byteOffset" : 223388,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\\]]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 15,
+            "startColumn" : 113,
+            "endLine" : 15,
+            "endColumn" : 116,
+            "charOffset" : 1510,
+            "charLength" : 3,
+            "byteOffset" : 1510,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\\}\\\\]]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 101,
+            "startColumn" : 51,
+            "endLine" : 101,
+            "endColumn" : 54,
+            "charOffset" : 11726,
+            "charLength" : 3,
+            "byteOffset" : 11734,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\\]]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 175,
+            "startColumn" : 32,
+            "endLine" : 175,
+            "endColumn" : 35,
+            "charOffset" : 19687,
+            "charLength" : 3,
+            "byteOffset" : 19699,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^>]++\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 219,
+            "startColumn" : 23,
+            "endLine" : 219,
+            "endColumn" : 26,
+            "charOffset" : 24221,
+            "charLength" : 3,
+            "byteOffset" : 24233,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^'\\\"]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 283,
+            "startColumn" : 37,
+            "endLine" : 283,
+            "endColumn" : 40,
+            "charOffset" : 33128,
+            "charLength" : 3,
+            "byteOffset" : 33140,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^'\\\"]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 285,
+            "startColumn" : 51,
+            "endLine" : 285,
+            "endColumn" : 54,
+            "charOffset" : 33403,
+            "charLength" : 3,
+            "byteOffset" : 33415,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\\)]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 29,
+            "endLine" : 295,
+            "endColumn" : 32,
+            "charOffset" : 34679,
+            "charLength" : 3,
+            "byteOffset" : 34691,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^&]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 737,
+            "startColumn" : 89,
+            "endLine" : 737,
+            "endColumn" : 92,
+            "charOffset" : 88792,
+            "charLength" : 3,
+            "byteOffset" : 88816,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\"]++\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1151,
+            "startColumn" : 35,
+            "endLine" : 1151,
+            "endColumn" : 38,
+            "charOffset" : 136350,
+            "charLength" : 3,
+            "byteOffset" : 136479,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^>]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1157,
+            "startColumn" : 25,
+            "endLine" : 1157,
+            "endColumn" : 28,
+            "charOffset" : 136897,
+            "charLength" : 3,
+            "byteOffset" : 137026,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^/]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1453,
+            "startColumn" : 142,
+            "endLine" : 1453,
+            "endColumn" : 145,
+            "charOffset" : 172683,
+            "charLength" : 3,
+            "byteOffset" : 172860,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^}]++\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1513,
+            "startColumn" : 31,
+            "endLine" : 1513,
+            "endColumn" : 34,
+            "charOffset" : 179970,
+            "charLength" : 3,
+            "byteOffset" : 180147,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\\]]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1659,
+            "startColumn" : 32,
+            "endLine" : 1659,
+            "endColumn" : 35,
+            "charOffset" : 197216,
+            "charLength" : 3,
+            "byteOffset" : 197854,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^A-Z]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1815,
+            "startColumn" : 26,
+            "endLine" : 1815,
+            "endColumn" : 29,
+            "charOffset" : 218359,
+            "charLength" : 3,
+            "byteOffset" : 218997,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^0-9]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1815,
+            "startColumn" : 38,
+            "endLine" : 1815,
+            "endColumn" : 41,
+            "charOffset" : 218371,
+            "charLength" : 3,
+            "byteOffset" : 219009,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^ ]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1935,
+            "startColumn" : 25,
+            "endLine" : 1935,
+            "endColumn" : 28,
+            "charOffset" : 232143,
+            "charLength" : 3,
+            "byteOffset" : 232817,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^ ]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1937,
+            "startColumn" : 25,
+            "endLine" : 1937,
+            "endColumn" : 28,
+            "charOffset" : 232350,
+            "charLength" : 3,
+            "byteOffset" : 233024,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\\]]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1975,
+            "startColumn" : 29,
+            "endLine" : 1975,
+            "endColumn" : 32,
+            "charOffset" : 236595,
+            "charLength" : 3,
+            "byteOffset" : 237276,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\\)]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 175,
+            "startColumn" : 32,
+            "endLine" : 175,
+            "endColumn" : 35,
+            "charOffset" : 20939,
+            "charLength" : 3,
+            "byteOffset" : 20952,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\\}]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 429,
+            "startColumn" : 25,
+            "endLine" : 429,
+            "endColumn" : 28,
+            "charOffset" : 51338,
+            "charLength" : 3,
+            "byteOffset" : 51353,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^a-z]?+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1109,
+            "startColumn" : 22,
+            "endLine" : 1109,
+            "endColumn" : 25,
+            "charOffset" : 125321,
+            "charLength" : 3,
+            "byteOffset" : 125350,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^A-Z]?+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1111,
+            "startColumn" : 22,
+            "endLine" : 1111,
+            "endColumn" : 25,
+            "charOffset" : 125500,
+            "charLength" : 3,
+            "byteOffset" : 125529,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^0-9]?+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1113,
+            "startColumn" : 22,
+            "endLine" : 1113,
+            "endColumn" : 25,
+            "charOffset" : 125679,
+            "charLength" : 3,
+            "byteOffset" : 125708,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^:,!,@,#,$,%,^,&,*,?,_,~]?+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1115,
+            "startColumn" : 22,
+            "endLine" : 1115,
+            "endColumn" : 25,
+            "charOffset" : 125859,
+            "charLength" : 3,
+            "byteOffset" : 125888,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^>]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase3.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1129,
+            "startColumn" : 23,
+            "endLine" : 1129,
+            "endColumn" : 26,
+            "charOffset" : 127532,
+            "charLength" : 3,
+            "byteOffset" : 127561,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\\>]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 25,
+            "endLine" : 51,
+            "endColumn" : 28,
+            "charOffset" : 4787,
+            "charLength" : 3,
+            "byteOffset" : 4787,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\\)]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 221,
+            "startColumn" : 60,
+            "endLine" : 221,
+            "endColumn" : 63,
+            "charOffset" : 24554,
+            "charLength" : 3,
+            "byteOffset" : 24586,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[\\\\\\\\]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 307,
+            "startColumn" : 23,
+            "endLine" : 307,
+            "endColumn" : 26,
+            "charOffset" : 35588,
+            "charLength" : 3,
+            "byteOffset" : 35620,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^;]++\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1473,
+            "startColumn" : 36,
+            "endLine" : 1473,
+            "endColumn" : 39,
+            "charOffset" : 168180,
+            "charLength" : 3,
+            "byteOffset" : 168290,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^;]++\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1481,
+            "startColumn" : 33,
+            "endLine" : 1481,
+            "endColumn" : 36,
+            "charOffset" : 168898,
+            "charLength" : 3,
+            "byteOffset" : 169008,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^>]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1577,
+            "startColumn" : 31,
+            "endLine" : 1577,
+            "endColumn" : 34,
+            "charOffset" : 179559,
+            "charLength" : 3,
+            "byteOffset" : 179793,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^>]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1819,
+            "startColumn" : 53,
+            "endLine" : 1819,
+            "endColumn" : 56,
+            "charOffset" : 205151,
+            "charLength" : 3,
+            "byteOffset" : 205391,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^>]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1991,
+            "startColumn" : 64,
+            "endLine" : 1991,
+            "endColumn" : 67,
+            "charOffset" : 223957,
+            "charLength" : 3,
+            "byteOffset" : 224257,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^;]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase4.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1997,
+            "startColumn" : 56,
+            "endLine" : 1997,
+            "endColumn" : 59,
+            "charOffset" : 225163,
+            "charLength" : 3,
+            "byteOffset" : 225481,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^:]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 835,
+            "startColumn" : 29,
+            "endLine" : 835,
+            "endColumn" : 32,
+            "charOffset" : 129735,
+            "charLength" : 3,
+            "byteOffset" : 130299,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^:]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 939,
+            "startColumn" : 23,
+            "endLine" : 939,
+            "endColumn" : 26,
+            "charOffset" : 142646,
+            "charLength" : 3,
+            "byteOffset" : 143214,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\"]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1103,
+            "startColumn" : 57,
+            "endLine" : 1103,
+            "endColumn" : 60,
+            "charOffset" : 163154,
+            "charLength" : 3,
+            "byteOffset" : 163762,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^']*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1103,
+            "startColumn" : 64,
+            "endLine" : 1103,
+            "endColumn" : 67,
+            "charOffset" : 163161,
+            "charLength" : 3,
+            "byteOffset" : 163769,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\"]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1103,
+            "startColumn" : 150,
+            "endLine" : 1103,
+            "endColumn" : 153,
+            "charOffset" : 163247,
+            "charLength" : 3,
+            "byteOffset" : 163855,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^']*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1103,
+            "startColumn" : 157,
+            "endLine" : 1103,
+            "endColumn" : 160,
+            "charOffset" : 163254,
+            "charLength" : 3,
+            "byteOffset" : 163862,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\\>]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1259,
+            "startColumn" : 25,
+            "endLine" : 1259,
+            "endColumn" : 28,
+            "charOffset" : 181113,
+            "charLength" : 3,
+            "byteOffset" : 181749,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^A-Z]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1583,
+            "startColumn" : 26,
+            "endLine" : 1583,
+            "endColumn" : 29,
+            "charOffset" : 221239,
+            "charLength" : 3,
+            "byteOffset" : 222514,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^a-z]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1583,
+            "startColumn" : 38,
+            "endLine" : 1583,
+            "endColumn" : 41,
+            "charOffset" : 221251,
+            "charLength" : 3,
+            "byteOffset" : 222526,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^0-9]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1583,
+            "startColumn" : 50,
+            "endLine" : 1583,
+            "endColumn" : 53,
+            "charOffset" : 221263,
+            "charLength" : 3,
+            "byteOffset" : 222538,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^#?!@$%^&*-]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase5.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1583,
+            "startColumn" : 62,
+            "endLine" : 1583,
+            "endColumn" : 65,
+            "charOffset" : 221275,
+            "charLength" : 3,
+            "byteOffset" : 222550,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^>]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 71,
+            "startColumn" : 37,
+            "endLine" : 71,
+            "endColumn" : 40,
+            "charOffset" : 8063,
+            "charLength" : 3,
+            "byteOffset" : 8063,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^>]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1375,
+            "startColumn" : 47,
+            "endLine" : 1375,
+            "endColumn" : 50,
+            "charOffset" : 155369,
+            "charLength" : 3,
+            "byteOffset" : 155554,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^A-Z]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1403,
+            "startColumn" : 26,
+            "endLine" : 1403,
+            "endColumn" : 29,
+            "charOffset" : 158863,
+            "charLength" : 3,
+            "byteOffset" : 159048,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^a-z]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1403,
+            "startColumn" : 38,
+            "endLine" : 1403,
+            "endColumn" : 41,
+            "charOffset" : 158875,
+            "charLength" : 3,
+            "byteOffset" : 159060,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"\\\\D*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1405,
+            "startColumn" : 26,
+            "endLine" : 1405,
+            "endColumn" : 29,
+            "charOffset" : 159076,
+            "charLength" : 3,
+            "byteOffset" : 159261,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^A-Z]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1405,
+            "startColumn" : 36,
+            "endLine" : 1405,
+            "endColumn" : 39,
+            "charOffset" : 159086,
+            "charLength" : 3,
+            "byteOffset" : 159271,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^a-z]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase6.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1405,
+            "startColumn" : 48,
+            "endLine" : 1405,
+            "endColumn" : 51,
+            "charOffset" : 159098,
+            "charLength" : 3,
+            "byteOffset" : 159283,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\"]++\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 571,
+            "startColumn" : 37,
+            "endLine" : 571,
+            "endColumn" : 40,
+            "charOffset" : 69873,
+            "charLength" : 3,
+            "byteOffset" : 70058,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\']++\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 571,
+            "startColumn" : 45,
+            "endLine" : 571,
+            "endColumn" : 48,
+            "charOffset" : 69881,
+            "charLength" : 3,
+            "byteOffset" : 70066,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^>)}\\\\]]++\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 701,
+            "startColumn" : 30,
+            "endLine" : 701,
+            "endColumn" : 33,
+            "charOffset" : 85240,
+            "charLength" : 3,
+            "byteOffset" : 85427,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\\)]++\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase7.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1921,
+            "startColumn" : 79,
+            "endLine" : 1921,
+            "endColumn" : 82,
+            "charOffset" : 215274,
+            "charLength" : 3,
+            "byteOffset" : 215835,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\r]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 191,
+            "startColumn" : 34,
+            "endLine" : 191,
+            "endColumn" : 37,
+            "charOffset" : 20930,
+            "charLength" : 3,
+            "byteOffset" : 20958,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\\#]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 449,
+            "startColumn" : 25,
+            "endLine" : 449,
+            "endColumn" : 28,
+            "charOffset" : 51139,
+            "charLength" : 3,
+            "byteOffset" : 51219,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^A-Za-z]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 775,
+            "startColumn" : 25,
+            "endLine" : 775,
+            "endColumn" : 28,
+            "charOffset" : 87228,
+            "charLength" : 3,
+            "byteOffset" : 87486,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^>]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1083,
+            "startColumn" : 26,
+            "endLine" : 1083,
+            "endColumn" : 29,
+            "charOffset" : 123712,
+            "charLength" : 3,
+            "byteOffset" : 123982,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S5857",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace this use of a reluctant quantifier with \"[^\\\"]*+\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "regex-examples:src/main/java/org/regex/examples/RegexDatabase8.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1085,
+            "startColumn" : 31,
+            "endLine" : 1085,
+            "endColumn" : 34,
+            "charOffset" : 123864,
+            "charLength" : 3,
+            "byteOffset" : 124134,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,2146 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BaseDynaBeanMapDecorator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 124,
+            "startColumn" : 37,
+            "endLine" : 124,
+            "endColumn" : 38,
+            "charOffset" : 4672,
+            "charLength" : 1,
+            "byteOffset" : 4672,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BaseDynaBeanMapDecorator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 354,
+            "startColumn" : 28,
+            "endLine" : 354,
+            "endColumn" : 29,
+            "charOffset" : 11818,
+            "charLength" : 1,
+            "byteOffset" : 11818,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BaseDynaBeanMapDecorator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 374,
+            "startColumn" : 36,
+            "endLine" : 374,
+            "endColumn" : 37,
+            "charOffset" : 12450,
+            "charLength" : 1,
+            "byteOffset" : 12450,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BaseDynaBeanMapDecorator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 379,
+            "startColumn" : 52,
+            "endLine" : 379,
+            "endColumn" : 53,
+            "charOffset" : 12650,
+            "charLength" : 1,
+            "byteOffset" : 12650,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 969,
+            "startColumn" : 38,
+            "endLine" : 969,
+            "endColumn" : 39,
+            "charOffset" : 40815,
+            "charLength" : 1,
+            "byteOffset" : 40815,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1094,
+            "startColumn" : 30,
+            "endLine" : 1094,
+            "endColumn" : 31,
+            "charOffset" : 45653,
+            "charLength" : 1,
+            "byteOffset" : 45653,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1138,
+            "startColumn" : 30,
+            "endLine" : 1138,
+            "endColumn" : 31,
+            "charOffset" : 47330,
+            "charLength" : 1,
+            "byteOffset" : 47330,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 279,
+            "startColumn" : 51,
+            "endLine" : 279,
+            "endColumn" : 52,
+            "charOffset" : 11275,
+            "charLength" : 1,
+            "byteOffset" : 11275,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 380,
+            "startColumn" : 49,
+            "endLine" : 380,
+            "endColumn" : 50,
+            "charOffset" : 15572,
+            "charLength" : 1,
+            "byteOffset" : 15572,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 381,
+            "startColumn" : 49,
+            "endLine" : 381,
+            "endColumn" : 50,
+            "charOffset" : 15688,
+            "charLength" : 1,
+            "byteOffset" : 15688,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 382,
+            "startColumn" : 49,
+            "endLine" : 382,
+            "endColumn" : 50,
+            "charOffset" : 15792,
+            "charLength" : 1,
+            "byteOffset" : 15792,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 383,
+            "startColumn" : 49,
+            "endLine" : 383,
+            "endColumn" : 50,
+            "charOffset" : 15902,
+            "charLength" : 1,
+            "byteOffset" : 15902,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 384,
+            "startColumn" : 49,
+            "endLine" : 384,
+            "endColumn" : 50,
+            "charOffset" : 16008,
+            "charLength" : 1,
+            "byteOffset" : 16008,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 385,
+            "startColumn" : 49,
+            "endLine" : 385,
+            "endColumn" : 50,
+            "charOffset" : 16113,
+            "charLength" : 1,
+            "byteOffset" : 16113,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 386,
+            "startColumn" : 49,
+            "endLine" : 386,
+            "endColumn" : 50,
+            "charOffset" : 16220,
+            "charLength" : 1,
+            "byteOffset" : 16220,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 387,
+            "startColumn" : 49,
+            "endLine" : 387,
+            "endColumn" : 50,
+            "charOffset" : 16324,
+            "charLength" : 1,
+            "byteOffset" : 16324,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 417,
+            "startColumn" : 58,
+            "endLine" : 417,
+            "endColumn" : 59,
+            "charOffset" : 18035,
+            "charLength" : 1,
+            "byteOffset" : 18035,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 418,
+            "startColumn" : 58,
+            "endLine" : 418,
+            "endColumn" : 59,
+            "charOffset" : 18107,
+            "charLength" : 1,
+            "byteOffset" : 18107,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 419,
+            "startColumn" : 58,
+            "endLine" : 419,
+            "endColumn" : 59,
+            "charOffset" : 18196,
+            "charLength" : 1,
+            "byteOffset" : 18196,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 420,
+            "startColumn" : 58,
+            "endLine" : 420,
+            "endColumn" : 59,
+            "charOffset" : 18283,
+            "charLength" : 1,
+            "byteOffset" : 18283,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 421,
+            "startColumn" : 58,
+            "endLine" : 421,
+            "endColumn" : 59,
+            "charOffset" : 18364,
+            "charLength" : 1,
+            "byteOffset" : 18364,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 422,
+            "startColumn" : 58,
+            "endLine" : 422,
+            "endColumn" : 59,
+            "charOffset" : 18437,
+            "charLength" : 1,
+            "byteOffset" : 18437,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 424,
+            "startColumn" : 51,
+            "endLine" : 424,
+            "endColumn" : 52,
+            "charOffset" : 18501,
+            "charLength" : 1,
+            "byteOffset" : 18501,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 425,
+            "startColumn" : 51,
+            "endLine" : 425,
+            "endColumn" : 52,
+            "charOffset" : 18620,
+            "charLength" : 1,
+            "byteOffset" : 18620,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 426,
+            "startColumn" : 51,
+            "endLine" : 426,
+            "endColumn" : 52,
+            "charOffset" : 18739,
+            "charLength" : 1,
+            "byteOffset" : 18739,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 427,
+            "startColumn" : 51,
+            "endLine" : 427,
+            "endColumn" : 52,
+            "charOffset" : 18858,
+            "charLength" : 1,
+            "byteOffset" : 18858,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 428,
+            "startColumn" : 51,
+            "endLine" : 428,
+            "endColumn" : 52,
+            "charOffset" : 18973,
+            "charLength" : 1,
+            "byteOffset" : 18973,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 429,
+            "startColumn" : 51,
+            "endLine" : 429,
+            "endColumn" : 52,
+            "charOffset" : 19091,
+            "charLength" : 1,
+            "byteOffset" : 19091,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 430,
+            "startColumn" : 51,
+            "endLine" : 430,
+            "endColumn" : 52,
+            "charOffset" : 19208,
+            "charLength" : 1,
+            "byteOffset" : 19208,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 431,
+            "startColumn" : 51,
+            "endLine" : 431,
+            "endColumn" : 52,
+            "charOffset" : 19324,
+            "charLength" : 1,
+            "byteOffset" : 19324,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 432,
+            "startColumn" : 51,
+            "endLine" : 432,
+            "endColumn" : 52,
+            "charOffset" : 19442,
+            "charLength" : 1,
+            "byteOffset" : 19442,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 433,
+            "startColumn" : 51,
+            "endLine" : 433,
+            "endColumn" : 52,
+            "charOffset" : 19557,
+            "charLength" : 1,
+            "byteOffset" : 19557,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 434,
+            "startColumn" : 51,
+            "endLine" : 434,
+            "endColumn" : 52,
+            "charOffset" : 19673,
+            "charLength" : 1,
+            "byteOffset" : 19673,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 457,
+            "startColumn" : 54,
+            "endLine" : 457,
+            "endColumn" : 55,
+            "charOffset" : 20846,
+            "charLength" : 1,
+            "byteOffset" : 20846,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 458,
+            "startColumn" : 55,
+            "endLine" : 458,
+            "endColumn" : 56,
+            "charOffset" : 20959,
+            "charLength" : 1,
+            "byteOffset" : 20959,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 459,
+            "startColumn" : 54,
+            "endLine" : 459,
+            "endColumn" : 55,
+            "charOffset" : 21069,
+            "charLength" : 1,
+            "byteOffset" : 21069,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 460,
+            "startColumn" : 54,
+            "endLine" : 460,
+            "endColumn" : 55,
+            "charOffset" : 21184,
+            "charLength" : 1,
+            "byteOffset" : 21184,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 461,
+            "startColumn" : 54,
+            "endLine" : 461,
+            "endColumn" : 55,
+            "charOffset" : 21295,
+            "charLength" : 1,
+            "byteOffset" : 21295,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 462,
+            "startColumn" : 54,
+            "endLine" : 462,
+            "endColumn" : 55,
+            "charOffset" : 21409,
+            "charLength" : 1,
+            "byteOffset" : 21409,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 463,
+            "startColumn" : 54,
+            "endLine" : 463,
+            "endColumn" : 55,
+            "charOffset" : 21523,
+            "charLength" : 1,
+            "byteOffset" : 21523,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 464,
+            "startColumn" : 54,
+            "endLine" : 464,
+            "endColumn" : 55,
+            "charOffset" : 21642,
+            "charLength" : 1,
+            "byteOffset" : 21642,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DefaultBeanIntrospector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 132,
+            "startColumn" : 89,
+            "endLine" : 132,
+            "endColumn" : 90,
+            "charOffset" : 5288,
+            "charLength" : 1,
+            "byteOffset" : 5288,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DefaultBeanIntrospector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 149,
+            "startColumn" : 90,
+            "endLine" : 149,
+            "endColumn" : 91,
+            "charOffset" : 6181,
+            "charLength" : 1,
+            "byteOffset" : 6181,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 220,
+            "startColumn" : 35,
+            "endLine" : 220,
+            "endColumn" : 36,
+            "charOffset" : 7174,
+            "charLength" : 1,
+            "byteOffset" : 7174,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 221,
+            "startColumn" : 35,
+            "endLine" : 221,
+            "endColumn" : 36,
+            "charOffset" : 7262,
+            "charLength" : 1,
+            "byteOffset" : 7262,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 222,
+            "startColumn" : 42,
+            "endLine" : 222,
+            "endColumn" : 43,
+            "charOffset" : 7357,
+            "charLength" : 1,
+            "byteOffset" : 7357,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 238,
+            "startColumn" : 45,
+            "endLine" : 238,
+            "endColumn" : 46,
+            "charOffset" : 7707,
+            "charLength" : 1,
+            "byteOffset" : 7707,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 239,
+            "startColumn" : 45,
+            "endLine" : 239,
+            "endColumn" : 46,
+            "charOffset" : 7775,
+            "charLength" : 1,
+            "byteOffset" : 7775,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 240,
+            "startColumn" : 52,
+            "endLine" : 240,
+            "endColumn" : 53,
+            "charOffset" : 7850,
+            "charLength" : 1,
+            "byteOffset" : 7850,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/FluentPropertyBeanIntrospector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 164,
+            "startColumn" : 40,
+            "endLine" : 164,
+            "endColumn" : 41,
+            "charOffset" : 6201,
+            "charLength" : 1,
+            "byteOffset" : 6201,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/JDBCDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 196,
+            "startColumn" : 39,
+            "endLine" : 196,
+            "endColumn" : 40,
+            "charOffset" : 6678,
+            "charLength" : 1,
+            "byteOffset" : 6678,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 915,
+            "startColumn" : 56,
+            "endLine" : 915,
+            "endColumn" : 57,
+            "charOffset" : 32389,
+            "charLength" : 1,
+            "byteOffset" : 32389,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 361,
+            "startColumn" : 49,
+            "endLine" : 361,
+            "endColumn" : 50,
+            "charOffset" : 14019,
+            "charLength" : 1,
+            "byteOffset" : 14019,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 337,
+            "startColumn" : 40,
+            "endLine" : 337,
+            "endColumn" : 41,
+            "charOffset" : 10459,
+            "charLength" : 1,
+            "byteOffset" : 10459,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 717,
+            "startColumn" : 41,
+            "endLine" : 717,
+            "endColumn" : 42,
+            "charOffset" : 23108,
+            "charLength" : 1,
+            "byteOffset" : 23108,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 105,
+            "startColumn" : 41,
+            "endLine" : 105,
+            "endColumn" : 42,
+            "charOffset" : 4173,
+            "charLength" : 1,
+            "byteOffset" : 4173,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 106,
+            "startColumn" : 41,
+            "endLine" : 106,
+            "endColumn" : 42,
+            "charOffset" : 4237,
+            "charLength" : 1,
+            "byteOffset" : 4237,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 260,
+            "startColumn" : 68,
+            "endLine" : 260,
+            "endColumn" : 69,
+            "charOffset" : 9494,
+            "charLength" : 1,
+            "byteOffset" : 9494,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 366,
+            "startColumn" : 43,
+            "endLine" : 366,
+            "endColumn" : 44,
+            "charOffset" : 12785,
+            "charLength" : 1,
+            "byteOffset" : 12785,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MappedPropertyDescriptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 408,
+            "startColumn" : 59,
+            "endLine" : 408,
+            "endColumn" : 60,
+            "charOffset" : 15901,
+            "charLength" : 1,
+            "byteOffset" : 15901,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1625,
+            "startColumn" : 43,
+            "endLine" : 1625,
+            "endColumn" : 44,
+            "charOffset" : 65891,
+            "charLength" : 1,
+            "byteOffset" : 65891,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1792,
+            "startColumn" : 39,
+            "endLine" : 1792,
+            "endColumn" : 40,
+            "charOffset" : 72828,
+            "charLength" : 1,
+            "byteOffset" : 72828,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2086,
+            "startColumn" : 31,
+            "endLine" : 2086,
+            "endColumn" : 32,
+            "charOffset" : 85636,
+            "charLength" : 1,
+            "byteOffset" : 85636,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 38,
+            "endLine" : 78,
+            "endColumn" : 39,
+            "charOffset" : 2756,
+            "charLength" : 1,
+            "byteOffset" : 2756,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 414,
+            "startColumn" : 34,
+            "endLine" : 414,
+            "endColumn" : 35,
+            "charOffset" : 14272,
+            "charLength" : 1,
+            "byteOffset" : 14272,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 297,
+            "startColumn" : 56,
+            "endLine" : 297,
+            "endColumn" : 57,
+            "charOffset" : 9600,
+            "charLength" : 1,
+            "byteOffset" : 9600,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/AbstractConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 136,
+            "startColumn" : 46,
+            "endLine" : 136,
+            "endColumn" : 47,
+            "charOffset" : 5063,
+            "charLength" : 1,
+            "byteOffset" : 5063,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/AbstractConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 141,
+            "startColumn" : 38,
+            "endLine" : 141,
+            "endColumn" : 39,
+            "charOffset" : 5279,
+            "charLength" : 1,
+            "byteOffset" : 5279,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/AbstractConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 318,
+            "startColumn" : 42,
+            "endLine" : 318,
+            "endColumn" : 43,
+            "charOffset" : 11821,
+            "charLength" : 1,
+            "byteOffset" : 11821,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/ArrayConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 264,
+            "startColumn" : 47,
+            "endLine" : 264,
+            "endColumn" : 48,
+            "charOffset" : 11210,
+            "charLength" : 1,
+            "byteOffset" : 11210,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/ArrayConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 310,
+            "startColumn" : 47,
+            "endLine" : 310,
+            "endColumn" : 48,
+            "charOffset" : 12839,
+            "charLength" : 1,
+            "byteOffset" : 12839,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/CharacterConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 39,
+            "endLine" : 72,
+            "endColumn" : 40,
+            "charOffset" : 2474,
+            "charLength" : 1,
+            "byteOffset" : 2474,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/ClassConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 74,
+            "startColumn" : 39,
+            "endLine" : 74,
+            "endColumn" : 40,
+            "charOffset" : 2553,
+            "charLength" : 1,
+            "byteOffset" : 2553,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/NumberConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 246,
+            "startColumn" : 85,
+            "endLine" : 246,
+            "endColumn" : 86,
+            "charOffset" : 8394,
+            "charLength" : 1,
+            "byteOffset" : 8394,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 278,
+            "startColumn" : 55,
+            "endLine" : 278,
+            "endColumn" : 56,
+            "charOffset" : 10048,
+            "charLength" : 1,
+            "byteOffset" : 10048,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1774",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Convert this usage of the ternary operator to an \"if\"/\"else\" structure."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/FloatLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 220,
+            "startColumn" : 49,
+            "endLine" : 220,
+            "endColumn" : 50,
+            "charOffset" : 8390,
+            "charLength" : 1,
+            "byteOffset" : 8390,
+            "byteLength" : 1
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}
