@@ -1,0 +1,4413 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 338 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1471,
+            "charLength" : 17,
+            "byteOffset" : 1471,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 494,
+            "startColumn" : 25,
+            "endLine" : 494,
+            "endColumn" : 34,
+            "charOffset" : 15434,
+            "charLength" : 9,
+            "byteOffset" : 15434,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 386 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1478,
+            "charLength" : 17,
+            "byteOffset" : 1478,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 555,
+            "startColumn" : 25,
+            "endLine" : 555,
+            "endColumn" : 34,
+            "charOffset" : 17770,
+            "charLength" : 9,
+            "byteOffset" : 17770,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 442 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsMemberReportExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1494,
+            "charLength" : 17,
+            "byteOffset" : 1494,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsMemberReportExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 625,
+            "startColumn" : 25,
+            "endLine" : 625,
+            "endColumn" : 34,
+            "charOffset" : 21024,
+            "charLength" : 9,
+            "byteOffset" : 21024,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 290 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1473,
+            "charLength" : 17,
+            "byteOffset" : 1473,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 434,
+            "startColumn" : 25,
+            "endLine" : 434,
+            "endColumn" : 34,
+            "charOffset" : 13499,
+            "charLength" : 9,
+            "byteOffset" : 13499,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 178 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1503,
+            "charLength" : 17,
+            "byteOffset" : 1503,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 294,
+            "startColumn" : 25,
+            "endLine" : 294,
+            "endColumn" : 34,
+            "charOffset" : 9187,
+            "charLength" : 9,
+            "byteOffset" : 9187,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 338 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1477,
+            "charLength" : 17,
+            "byteOffset" : 1477,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 494,
+            "startColumn" : 25,
+            "endLine" : 494,
+            "endColumn" : 34,
+            "charOffset" : 15542,
+            "charLength" : 9,
+            "byteOffset" : 15542,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 394 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1498,
+            "charLength" : 17,
+            "byteOffset" : 1498,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 565,
+            "startColumn" : 25,
+            "endLine" : 565,
+            "endColumn" : 34,
+            "charOffset" : 18637,
+            "charLength" : 9,
+            "byteOffset" : 18637,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 794 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1484,
+            "charLength" : 17,
+            "byteOffset" : 1484,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1065,
+            "startColumn" : 25,
+            "endLine" : 1065,
+            "endColumn" : 34,
+            "charOffset" : 36421,
+            "charLength" : 9,
+            "byteOffset" : 36421,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 178 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1491,
+            "charLength" : 17,
+            "byteOffset" : 1491,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 294,
+            "startColumn" : 25,
+            "endLine" : 294,
+            "endColumn" : 34,
+            "charOffset" : 8959,
+            "charLength" : 9,
+            "byteOffset" : 8959,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 338 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1473,
+            "charLength" : 17,
+            "byteOffset" : 1473,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 494,
+            "startColumn" : 25,
+            "endLine" : 494,
+            "endColumn" : 34,
+            "charOffset" : 15538,
+            "charLength" : 9,
+            "byteOffset" : 15538,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 394 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1494,
+            "charLength" : 17,
+            "byteOffset" : 1494,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 565,
+            "startColumn" : 25,
+            "endLine" : 565,
+            "endColumn" : 34,
+            "charOffset" : 18565,
+            "charLength" : 9,
+            "byteOffset" : 18565,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 586 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1480,
+            "charLength" : 17,
+            "byteOffset" : 1480,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 805,
+            "startColumn" : 25,
+            "endLine" : 805,
+            "endColumn" : 34,
+            "charOffset" : 26827,
+            "charLength" : 9,
+            "byteOffset" : 26827,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 962 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCartItemExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 37,
+            "endLine" : 68,
+            "endColumn" : 54,
+            "charOffset" : 1515,
+            "charLength" : 17,
+            "byteOffset" : 1515,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCartItemExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1276,
+            "startColumn" : 25,
+            "endLine" : 1276,
+            "endColumn" : 34,
+            "charOffset" : 44532,
+            "charLength" : 9,
+            "byteOffset" : 44532,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 570 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCompanyAddressExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1475,
+            "charLength" : 17,
+            "byteOffset" : 1475,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCompanyAddressExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 784,
+            "startColumn" : 25,
+            "endLine" : 784,
+            "endColumn" : 34,
+            "charOffset" : 25743,
+            "charLength" : 9,
+            "byteOffset" : 25743,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 2282 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 37,
+            "endLine" : 68,
+            "endColumn" : 54,
+            "charOffset" : 1509,
+            "charLength" : 17,
+            "byteOffset" : 1509,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2926,
+            "startColumn" : 25,
+            "endLine" : 2926,
+            "endColumn" : 34,
+            "charOffset" : 105635,
+            "charLength" : 9,
+            "byteOffset" : 105635,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 1106 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderItemExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1494,
+            "charLength" : 17,
+            "byteOffset" : 1494,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderItemExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1455,
+            "startColumn" : 25,
+            "endLine" : 1455,
+            "endColumn" : 34,
+            "charOffset" : 51832,
+            "charLength" : 9,
+            "byteOffset" : 51832,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 338 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderOperateHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1508,
+            "charLength" : 17,
+            "byteOffset" : 1508,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderOperateHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 495,
+            "startColumn" : 25,
+            "endLine" : 495,
+            "endColumn" : 34,
+            "charOffset" : 15835,
+            "charLength" : 9,
+            "byteOffset" : 15835,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 1450 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnApplyExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 37,
+            "endLine" : 68,
+            "endColumn" : 54,
+            "charOffset" : 1531,
+            "charLength" : 17,
+            "byteOffset" : 1531,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnApplyExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1886,
+            "startColumn" : 25,
+            "endLine" : 1886,
+            "endColumn" : 34,
+            "charOffset" : 66034,
+            "charLength" : 9,
+            "byteOffset" : 66034,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 282 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnReasonExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1504,
+            "charLength" : 17,
+            "byteOffset" : 1504,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnReasonExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 425,
+            "startColumn" : 25,
+            "endLine" : 425,
+            "endColumn" : 34,
+            "charOffset" : 13087,
+            "charLength" : 9,
+            "byteOffset" : 13087,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 322 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1471,
+            "charLength" : 17,
+            "byteOffset" : 1471,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 474,
+            "startColumn" : 25,
+            "endLine" : 474,
+            "endColumn" : 34,
+            "charOffset" : 16592,
+            "charLength" : 9,
+            "byteOffset" : 16592,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 346 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1457,
+            "charLength" : 17,
+            "byteOffset" : 1457,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 504,
+            "startColumn" : 25,
+            "endLine" : 504,
+            "endColumn" : 34,
+            "charOffset" : 15925,
+            "charLength" : 9,
+            "byteOffset" : 15925,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 186 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumPicExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1463,
+            "charLength" : 17,
+            "byteOffset" : 1463,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumPicExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 304,
+            "startColumn" : 25,
+            "endLine" : 304,
+            "endColumn" : 34,
+            "charOffset" : 8978,
+            "charLength" : 9,
+            "byteOffset" : 8978,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 546 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsBrandExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1457,
+            "charLength" : 17,
+            "byteOffset" : 1457,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsBrandExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 754,
+            "startColumn" : 25,
+            "endLine" : 754,
+            "endColumn" : 34,
+            "charOffset" : 25080,
+            "charLength" : 9,
+            "byteOffset" : 25080,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 754 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1484,
+            "charLength" : 17,
+            "byteOffset" : 1484,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1015,
+            "startColumn" : 25,
+            "endLine" : 1015,
+            "endColumn" : 34,
+            "charOffset" : 34621,
+            "charLength" : 9,
+            "byteOffset" : 34621,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 394 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentReplayExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1496,
+            "charLength" : 17,
+            "byteOffset" : 1496,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentReplayExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 565,
+            "startColumn" : 25,
+            "endLine" : 565,
+            "endColumn" : 34,
+            "charOffset" : 18419,
+            "charLength" : 9,
+            "byteOffset" : 18419,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 434 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsFeightTemplateExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1504,
+            "charLength" : 17,
+            "byteOffset" : 1504,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsFeightTemplateExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 615,
+            "startColumn" : 25,
+            "endLine" : 615,
+            "endColumn" : 34,
+            "charOffset" : 20287,
+            "charLength" : 9,
+            "byteOffset" : 20287,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 282 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsMemberPriceExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1498,
+            "charLength" : 17,
+            "byteOffset" : 1498,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsMemberPriceExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 425,
+            "startColumn" : 25,
+            "endLine" : 425,
+            "endColumn" : 34,
+            "charOffset" : 14027,
+            "charLength" : 9,
+            "byteOffset" : 14027,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 234 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1495,
+            "charLength" : 17,
+            "byteOffset" : 1495,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 364,
+            "startColumn" : 25,
+            "endLine" : 364,
+            "endColumn" : 34,
+            "charOffset" : 11469,
+            "charLength" : 9,
+            "byteOffset" : 11469,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 626 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1479,
+            "charLength" : 17,
+            "byteOffset" : 1479,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 854,
+            "startColumn" : 25,
+            "endLine" : 854,
+            "endColumn" : 34,
+            "charOffset" : 29058,
+            "charLength" : 9,
+            "byteOffset" : 29058,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 234 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeValueExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1489,
+            "charLength" : 17,
+            "byteOffset" : 1489,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeValueExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 364,
+            "startColumn" : 25,
+            "endLine" : 364,
+            "endColumn" : 34,
+            "charOffset" : 11545,
+            "charLength" : 9,
+            "byteOffset" : 11545,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 178 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryAttributeRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1511,
+            "charLength" : 17,
+            "byteOffset" : 1511,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryAttributeRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 294,
+            "startColumn" : 25,
+            "endLine" : 294,
+            "endColumn" : 34,
+            "charOffset" : 9581,
+            "charLength" : 9,
+            "byteOffset" : 9581,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 594 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1477,
+            "charLength" : 17,
+            "byteOffset" : 1477,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 814,
+            "startColumn" : 25,
+            "endLine" : 814,
+            "endColumn" : 34,
+            "charOffset" : 26571,
+            "charLength" : 9,
+            "byteOffset" : 26571,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 1954 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 37,
+            "endLine" : 68,
+            "endColumn" : 54,
+            "charOffset" : 1513,
+            "charLength" : 17,
+            "byteOffset" : 1513,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2516,
+            "startColumn" : 25,
+            "endLine" : 2516,
+            "endColumn" : 34,
+            "charOffset" : 88822,
+            "charLength" : 9,
+            "byteOffset" : 88822,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 226 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductFullReductionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1516,
+            "charLength" : 17,
+            "byteOffset" : 1516,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductFullReductionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 355,
+            "startColumn" : 25,
+            "endLine" : 355,
+            "endColumn" : 34,
+            "charOffset" : 11271,
+            "charLength" : 9,
+            "byteOffset" : 11271,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 274 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductLadderExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1502,
+            "charLength" : 17,
+            "byteOffset" : 1502,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductLadderExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 415,
+            "startColumn" : 25,
+            "endLine" : 415,
+            "endColumn" : 34,
+            "charOffset" : 12958,
+            "charLength" : 9,
+            "byteOffset" : 12958,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 618 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductOperateLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 37,
+            "endLine" : 68,
+            "endColumn" : 54,
+            "charOffset" : 1533,
+            "charLength" : 17,
+            "byteOffset" : 1533,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductOperateLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 846,
+            "startColumn" : 25,
+            "endLine" : 846,
+            "endColumn" : 34,
+            "charOffset" : 29463,
+            "charLength" : 9,
+            "byteOffset" : 29463,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 338 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductVertifyRecordExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1510,
+            "charLength" : 17,
+            "byteOffset" : 1510,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductVertifyRecordExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 495,
+            "startColumn" : 25,
+            "endLine" : 495,
+            "endColumn" : 34,
+            "charOffset" : 15803,
+            "charLength" : 9,
+            "byteOffset" : 15803,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 586 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsSkuStockExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1492,
+            "charLength" : 17,
+            "byteOffset" : 1492,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsSkuStockExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 805,
+            "startColumn" : 25,
+            "endLine" : 805,
+            "endColumn" : 34,
+            "charOffset" : 26159,
+            "charLength" : 9,
+            "byteOffset" : 26159,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 922 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 37,
+            "endLine" : 68,
+            "endColumn" : 54,
+            "charOffset" : 1511,
+            "charLength" : 17,
+            "byteOffset" : 1511,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1226,
+            "startColumn" : 25,
+            "endLine" : 1226,
+            "endColumn" : 34,
+            "charOffset" : 40615,
+            "charLength" : 9,
+            "byteOffset" : 40615,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 586 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1496,
+            "charLength" : 17,
+            "byteOffset" : 1496,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 805,
+            "startColumn" : 25,
+            "endLine" : 805,
+            "endColumn" : 34,
+            "charOffset" : 26665,
+            "charLength" : 9,
+            "byteOffset" : 26665,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 290 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductCategoryRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1505,
+            "charLength" : 17,
+            "byteOffset" : 1505,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductCategoryRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 434,
+            "startColumn" : 25,
+            "endLine" : 434,
+            "endColumn" : 34,
+            "charOffset" : 14899,
+            "charLength" : 9,
+            "byteOffset" : 14899,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 290 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1489,
+            "charLength" : 17,
+            "byteOffset" : 1489,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 434,
+            "startColumn" : 25,
+            "endLine" : 434,
+            "endColumn" : 34,
+            "charOffset" : 13891,
+            "charLength" : 9,
+            "byteOffset" : 13891,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 353 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 37,
+            "endLine" : 68,
+            "endColumn" : 54,
+            "charOffset" : 1525,
+            "charLength" : 17,
+            "byteOffset" : 1525,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 512,
+            "startColumn" : 25,
+            "endLine" : 512,
+            "endColumn" : 34,
+            "charOffset" : 16835,
+            "charLength" : 9,
+            "byteOffset" : 16835,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 386 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1504,
+            "charLength" : 17,
+            "byteOffset" : 1504,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 555,
+            "startColumn" : 25,
+            "endLine" : 555,
+            "endColumn" : 34,
+            "charOffset" : 18310,
+            "charLength" : 9,
+            "byteOffset" : 18310,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 418 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1534,
+            "charLength" : 17,
+            "byteOffset" : 1534,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 595,
+            "startColumn" : 25,
+            "endLine" : 595,
+            "endColumn" : 34,
+            "charOffset" : 21181,
+            "charLength" : 9,
+            "byteOffset" : 21181,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 353 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionSessionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 37,
+            "endLine" : 68,
+            "endColumn" : 54,
+            "charOffset" : 1539,
+            "charLength" : 17,
+            "byteOffset" : 1539,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionSessionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 512,
+            "startColumn" : 25,
+            "endLine" : 512,
+            "endColumn" : 34,
+            "charOffset" : 16809,
+            "charLength" : 9,
+            "byteOffset" : 16809,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 642 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeAdvertiseExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1496,
+            "charLength" : 17,
+            "byteOffset" : 1496,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeAdvertiseExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 875,
+            "startColumn" : 25,
+            "endLine" : 875,
+            "endColumn" : 34,
+            "charOffset" : 27881,
+            "charLength" : 9,
+            "byteOffset" : 27881,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 282 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeBrandExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1465,
+            "charLength" : 17,
+            "byteOffset" : 1465,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeBrandExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 424,
+            "startColumn" : 25,
+            "endLine" : 424,
+            "endColumn" : 34,
+            "charOffset" : 13478,
+            "charLength" : 9,
+            "byteOffset" : 13478,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 282 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeNewProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1475,
+            "charLength" : 17,
+            "byteOffset" : 1475,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeNewProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 424,
+            "startColumn" : 25,
+            "endLine" : 424,
+            "endColumn" : 34,
+            "charOffset" : 13636,
+            "charLength" : 9,
+            "byteOffset" : 13636,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 282 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1487,
+            "charLength" : 17,
+            "byteOffset" : 1487,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 424,
+            "startColumn" : 25,
+            "endLine" : 424,
+            "endColumn" : 34,
+            "charOffset" : 13648,
+            "charLength" : 9,
+            "byteOffset" : 13648,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 282 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendSubjectExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1487,
+            "charLength" : 17,
+            "byteOffset" : 1487,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendSubjectExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 424,
+            "startColumn" : 25,
+            "endLine" : 424,
+            "endColumn" : 34,
+            "charOffset" : 13648,
+            "charLength" : 9,
+            "byteOffset" : 13648,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 562 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1480,
+            "charLength" : 17,
+            "byteOffset" : 1480,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 775,
+            "startColumn" : 25,
+            "endLine" : 775,
+            "endColumn" : 34,
+            "charOffset" : 24893,
+            "charLength" : 9,
+            "byteOffset" : 24893,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 346 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminLoginLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1496,
+            "charLength" : 17,
+            "byteOffset" : 1496,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminLoginLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 505,
+            "startColumn" : 25,
+            "endLine" : 505,
+            "endColumn" : 34,
+            "charOffset" : 15874,
+            "charLength" : 9,
+            "byteOffset" : 15874,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 226 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminPermissionRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1493,
+            "charLength" : 17,
+            "byteOffset" : 1493,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminPermissionRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 354,
+            "startColumn" : 25,
+            "endLine" : 354,
+            "endColumn" : 34,
+            "charOffset" : 10924,
+            "charLength" : 9,
+            "byteOffset" : 10924,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 178 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminRoleRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1481,
+            "charLength" : 17,
+            "byteOffset" : 1481,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminRoleRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 294,
+            "startColumn" : 25,
+            "endLine" : 294,
+            "endColumn" : 34,
+            "charOffset" : 8779,
+            "charLength" : 9,
+            "byteOffset" : 8779,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 434 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsGrowthChangeHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1508,
+            "charLength" : 17,
+            "byteOffset" : 1508,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsGrowthChangeHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 615,
+            "startColumn" : 25,
+            "endLine" : 615,
+            "endColumn" : 34,
+            "charOffset" : 20453,
+            "charLength" : 9,
+            "byteOffset" : 20453,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 434 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationChangeHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1518,
+            "charLength" : 17,
+            "byteOffset" : 1518,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationChangeHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 615,
+            "startColumn" : 25,
+            "endLine" : 615,
+            "endColumn" : 34,
+            "charOffset" : 20463,
+            "charLength" : 9,
+            "byteOffset" : 20463,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 274 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationConsumeSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1497,
+            "charLength" : 17,
+            "byteOffset" : 1497,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationConsumeSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 414,
+            "startColumn" : 25,
+            "endLine" : 414,
+            "endColumn" : 34,
+            "charOffset" : 13941,
+            "charLength" : 9,
+            "byteOffset" : 13941,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 1033 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 37,
+            "endLine" : 68,
+            "endColumn" : 54,
+            "charOffset" : 1509,
+            "charLength" : 17,
+            "byteOffset" : 1509,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1362,
+            "startColumn" : 25,
+            "endLine" : 1362,
+            "endColumn" : 34,
+            "charOffset" : 46525,
+            "charLength" : 9,
+            "byteOffset" : 46525,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 674 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLevelExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1498,
+            "charLength" : 17,
+            "byteOffset" : 1498,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLevelExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 915,
+            "startColumn" : 25,
+            "endLine" : 915,
+            "endColumn" : 34,
+            "charOffset" : 33202,
+            "charLength" : 9,
+            "byteOffset" : 33202,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 394 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLoginLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1498,
+            "charLength" : 17,
+            "byteOffset" : 1498,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLoginLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 565,
+            "startColumn" : 25,
+            "endLine" : 565,
+            "endColumn" : 34,
+            "charOffset" : 17847,
+            "charLength" : 9,
+            "byteOffset" : 17847,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 178 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberMemberTagRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1493,
+            "charLength" : 17,
+            "byteOffset" : 1493,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberMemberTagRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 294,
+            "startColumn" : 25,
+            "endLine" : 294,
+            "endColumn" : 34,
+            "charOffset" : 8791,
+            "charLength" : 9,
+            "byteOffset" : 8791,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 178 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberProductCategoryRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1505,
+            "charLength" : 17,
+            "byteOffset" : 1505,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberProductCategoryRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 294,
+            "startColumn" : 25,
+            "endLine" : 294,
+            "endColumn" : 34,
+            "charOffset" : 9223,
+            "charLength" : 9,
+            "byteOffset" : 9223,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 570 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberReceiveAddressExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1487,
+            "charLength" : 17,
+            "byteOffset" : 1487,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberReceiveAddressExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 784,
+            "startColumn" : 25,
+            "endLine" : 784,
+            "endColumn" : 34,
+            "charOffset" : 25785,
+            "charLength" : 9,
+            "byteOffset" : 25785,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 370 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberRuleSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1510,
+            "charLength" : 17,
+            "byteOffset" : 1510,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberRuleSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 535,
+            "startColumn" : 25,
+            "endLine" : 535,
+            "endColumn" : 34,
+            "charOffset" : 18544,
+            "charLength" : 9,
+            "byteOffset" : 18544,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 802 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberStatisticsInfoExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 37,
+            "endLine" : 68,
+            "endColumn" : 54,
+            "charOffset" : 1539,
+            "charLength" : 17,
+            "byteOffset" : 1539,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberStatisticsInfoExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1076,
+            "startColumn" : 25,
+            "endLine" : 1076,
+            "endColumn" : 34,
+            "charOffset" : 38984,
+            "charLength" : 9,
+            "byteOffset" : 38984,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 234 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTagExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1494,
+            "charLength" : 17,
+            "byteOffset" : 1494,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTagExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 365,
+            "startColumn" : 25,
+            "endLine" : 365,
+            "endColumn" : 34,
+            "charOffset" : 11834,
+            "charLength" : 9,
+            "byteOffset" : 11834,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 282 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTaskExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1467,
+            "charLength" : 17,
+            "byteOffset" : 1467,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTaskExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 424,
+            "startColumn" : 25,
+            "endLine" : 424,
+            "endColumn" : 34,
+            "charOffset" : 13142,
+            "charLength" : 9,
+            "byteOffset" : 13142,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 490 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMenuExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1478,
+            "charLength" : 17,
+            "byteOffset" : 1478,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMenuExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 685,
+            "startColumn" : 25,
+            "endLine" : 685,
+            "endColumn" : 34,
+            "charOffset" : 21565,
+            "charLength" : 9,
+            "byteOffset" : 21565,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 546 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsPermissionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1490,
+            "charLength" : 17,
+            "byteOffset" : 1490,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsPermissionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 755,
+            "startColumn" : 25,
+            "endLine" : 755,
+            "endColumn" : 34,
+            "charOffset" : 23551,
+            "charLength" : 9,
+            "byteOffset" : 23551,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 234 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1502,
+            "charLength" : 17,
+            "byteOffset" : 1502,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 365,
+            "startColumn" : 25,
+            "endLine" : 365,
+            "endColumn" : 34,
+            "charOffset" : 11088,
+            "charLength" : 9,
+            "byteOffset" : 11088,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 346 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1486,
+            "charLength" : 17,
+            "byteOffset" : 1486,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 505,
+            "startColumn" : 25,
+            "endLine" : 505,
+            "endColumn" : 34,
+            "charOffset" : 15952,
+            "charLength" : 9,
+            "byteOffset" : 15952,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 386 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 37,
+            "endLine" : 67,
+            "endColumn" : 54,
+            "charOffset" : 1478,
+            "charLength" : 17,
+            "byteOffset" : 1478,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 555,
+            "startColumn" : 25,
+            "endLine" : 555,
+            "endColumn" : 34,
+            "charOffset" : 17716,
+            "charLength" : 9,
+            "byteOffset" : 17716,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 178 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleMenuRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1479,
+            "charLength" : 17,
+            "byteOffset" : 1479,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleMenuRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 294,
+            "startColumn" : 25,
+            "endLine" : 294,
+            "endColumn" : 34,
+            "charOffset" : 8743,
+            "charLength" : 9,
+            "byteOffset" : 8743,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 178 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRolePermissionRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1491,
+            "charLength" : 17,
+            "byteOffset" : 1491,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRolePermissionRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 294,
+            "startColumn" : 25,
+            "endLine" : 294,
+            "endColumn" : 34,
+            "charOffset" : 8959,
+            "charLength" : 9,
+            "byteOffset" : 8959,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 178 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleResourceRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1487,
+            "charLength" : 17,
+            "byteOffset" : 1487,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleResourceRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 294,
+            "startColumn" : 25,
+            "endLine" : 294,
+            "endColumn" : 34,
+            "charOffset" : 8887,
+            "charLength" : 9,
+            "byteOffset" : 8887,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleMenuRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 294,
+            "startColumn" : 25,
+            "endLine" : 294,
+            "endColumn" : 34,
+            "charOffset" : 8743,
+            "charLength" : 9,
+            "byteOffset" : 8743,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 178 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRolePermissionRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1491,
+            "charLength" : 17,
+            "byteOffset" : 1491,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRolePermissionRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 294,
+            "startColumn" : 25,
+            "endLine" : 294,
+            "endColumn" : 34,
+            "charOffset" : 8959,
+            "charLength" : 9,
+            "byteOffset" : 8959,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 178 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleResourceRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 37,
+            "endLine" : 66,
+            "endColumn" : 54,
+            "charOffset" : 1487,
+            "charLength" : 17,
+            "byteOffset" : 1487,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2972",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Reduce this class from 65 lines to the maximum allowed 25 or externalize it in a public class."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleResourceRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 294,
+            "startColumn" : 25,
+            "endLine" : 294,
+            "endColumn" : 34,
+            "charOffset" : 8887,
+            "charLength" : 9,
+            "byteOffset" : 8887,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

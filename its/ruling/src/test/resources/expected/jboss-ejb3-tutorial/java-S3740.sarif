@@ -1,0 +1,634 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:blob/src/org/jboss/tutorial/blob/bean/LobTester.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 4,
+            "endLine" : 36,
+            "endColumn" : 11,
+            "charOffset" : 1252,
+            "charLength" : 7,
+            "byteOffset" : 1252,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:blob/src/org/jboss/tutorial/blob/bean/LobTesterBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 7,
+            "endLine" : 53,
+            "endColumn" : 14,
+            "charOffset" : 1763,
+            "charLength" : 7,
+            "byteOffset" : 1763,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:blob/src/org/jboss/tutorial/blob/bean/LobTesterBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 25,
+            "endLine" : 53,
+            "endColumn" : 32,
+            "charOffset" : 1781,
+            "charLength" : 7,
+            "byteOffset" : 1781,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:blob/src/org/jboss/tutorial/blob/bean/LobTesterBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 139,
+            "startColumn" : 7,
+            "endLine" : 139,
+            "endColumn" : 14,
+            "charOffset" : 9318,
+            "charLength" : 7,
+            "byteOffset" : 9318,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:blob/src/org/jboss/tutorial/blob/bean/LobTesterBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 139,
+            "startColumn" : 25,
+            "endLine" : 139,
+            "endColumn" : 32,
+            "charOffset" : 9336,
+            "charLength" : 7,
+            "byteOffset" : 9336,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:blob/src/org/jboss/tutorial/blob/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 7,
+            "endLine" : 42,
+            "endColumn" : 14,
+            "charOffset" : 1582,
+            "charLength" : 7,
+            "byteOffset" : 1582,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:callbacks/src/org/jboss/tutorial/callback/bean/CustomerDAO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 4,
+            "endLine" : 32,
+            "endColumn" : 8,
+            "charOffset" : 1257,
+            "charLength" : 4,
+            "byteOffset" : 1257,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:callbacks/src/org/jboss/tutorial/callback/bean/CustomerDAO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 16,
+            "endLine" : 36,
+            "endColumn" : 20,
+            "charOffset" : 1335,
+            "charLength" : 4,
+            "byteOffset" : 1335,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:callbacks/src/org/jboss/tutorial/callback/bean/CustomerDAOBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 12,
+            "endLine" : 72,
+            "endColumn" : 20,
+            "charOffset" : 2496,
+            "charLength" : 8,
+            "byteOffset" : 2496,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:callbacks/src/org/jboss/tutorial/callback/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 7,
+            "endLine" : 49,
+            "endColumn" : 11,
+            "charOffset" : 1895,
+            "charLength" : 4,
+            "byteOffset" : 1895,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:embeddable/src/org/jboss/tutorial/embeddable/bean/CustomerDAO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 4,
+            "endLine" : 32,
+            "endColumn" : 8,
+            "charOffset" : 1259,
+            "charLength" : 4,
+            "byteOffset" : 1259,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:embeddable/src/org/jboss/tutorial/embeddable/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 7,
+            "endLine" : 49,
+            "endColumn" : 11,
+            "charOffset" : 1911,
+            "charLength" : 4,
+            "byteOffset" : 1911,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:joininheritance/src/org/jboss/tutorial/joininheritance/bean/PetDAO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 4,
+            "endLine" : 32,
+            "endColumn" : 8,
+            "charOffset" : 1253,
+            "charLength" : 4,
+            "byteOffset" : 1253,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:joininheritance/src/org/jboss/tutorial/joininheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 7,
+            "endLine" : 49,
+            "endColumn" : 11,
+            "charOffset" : 1726,
+            "charLength" : 4,
+            "byteOffset" : 1726,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:merge/src/org/jboss/tutorial/merge/bean/CustomerDAO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 4,
+            "endLine" : 32,
+            "endColumn" : 8,
+            "charOffset" : 1254,
+            "charLength" : 4,
+            "byteOffset" : 1254,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:merge/src/org/jboss/tutorial/merge/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 7,
+            "endLine" : 49,
+            "endColumn" : 11,
+            "charOffset" : 1886,
+            "charLength" : 4,
+            "byteOffset" : 1886,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:secondary/src/org/jboss/tutorial/secondary/bean/CustomerDAO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 4,
+            "endLine" : 32,
+            "endColumn" : 8,
+            "charOffset" : 1258,
+            "charLength" : 4,
+            "byteOffset" : 1258,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:secondary/src/org/jboss/tutorial/secondary/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 7,
+            "endLine" : 50,
+            "endColumn" : 11,
+            "charOffset" : 1899,
+            "charLength" : 4,
+            "byteOffset" : 1899,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:singleinheritance/src/org/jboss/tutorial/singleinheritance/bean/PetDAO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 4,
+            "endLine" : 32,
+            "endColumn" : 8,
+            "charOffset" : 1255,
+            "charLength" : 4,
+            "byteOffset" : 1255,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:singleinheritance/src/org/jboss/tutorial/singleinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 7,
+            "endLine" : 50,
+            "endColumn" : 11,
+            "charOffset" : 1725,
+            "charLength" : 4,
+            "byteOffset" : 1725,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:tableperinheritance/src/org/jboss/tutorial/tableperinheritance/bean/PetDAO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 4,
+            "endLine" : 32,
+            "endColumn" : 8,
+            "charOffset" : 1257,
+            "charLength" : 4,
+            "byteOffset" : 1257,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S3740",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide the parametrized type for this generic."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:tableperinheritance/src/org/jboss/tutorial/tableperinheritance/client/Client.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 7,
+            "endLine" : 50,
+            "endColumn" : 11,
+            "charOffset" : 1739,
+            "charLength" : 4,
+            "byteOffset" : 1739,
+            "byteLength" : 4
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

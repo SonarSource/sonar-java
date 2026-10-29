@@ -1,0 +1,2594 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/CharMatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 453,
+            "startColumn" : 17,
+            "endLine" : 453,
+            "endColumn" : 37,
+            "charOffset" : 16429,
+            "charLength" : 20,
+            "byteOffset" : 16429,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Converter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 214,
+            "startColumn" : 31,
+            "endLine" : 214,
+            "endColumn" : 73,
+            "charOffset" : 8010,
+            "charLength" : 42,
+            "byteOffset" : 8010,
+            "byteLength" : 42
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Stopwatch.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 186,
+            "startColumn" : 24,
+            "endLine" : 186,
+            "endColumn" : 64,
+            "charOffset" : 5461,
+            "charLength" : 40,
+            "byteOffset" : 5461,
+            "byteLength" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/CacheStats.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 40,
+            "endLine" : 114,
+            "endColumn" : 72,
+            "charOffset" : 4336,
+            "charLength" : 32,
+            "byteOffset" : 4336,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/CacheStats.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 138,
+            "startColumn" : 40,
+            "endLine" : 138,
+            "endColumn" : 73,
+            "charOffset" : 5477,
+            "charLength" : 33,
+            "byteOffset" : 5477,
+            "byteLength" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/CacheStats.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 181,
+            "startColumn" : 11,
+            "endLine" : 181,
+            "endColumn" : 55,
+            "charOffset" : 7263,
+            "charLength" : 44,
+            "byteOffset" : 7263,
+            "byteLength" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/CacheStats.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 201,
+            "startColumn" : 11,
+            "endLine" : 201,
+            "endColumn" : 50,
+            "charOffset" : 7956,
+            "charLength" : 39,
+            "byteOffset" : 7956,
+            "byteLength" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/AbstractBiMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 189,
+            "startColumn" : 31,
+            "endLine" : 189,
+            "endColumn" : 52,
+            "charOffset" : 5084,
+            "charLength" : 21,
+            "byteOffset" : 5084,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/AbstractBiMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 238,
+            "startColumn" : 31,
+            "endLine" : 238,
+            "endColumn" : 56,
+            "charOffset" : 6185,
+            "charLength" : 25,
+            "byteOffset" : 6185,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/AbstractBiMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 276,
+            "startColumn" : 31,
+            "endLine" : 276,
+            "endColumn" : 56,
+            "charOffset" : 6982,
+            "charLength" : 25,
+            "byteOffset" : 6982,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/AbstractMapBasedMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1448,
+            "startColumn" : 33,
+            "endLine" : 1448,
+            "endColumn" : 62,
+            "charOffset" : 40463,
+            "charLength" : 29,
+            "byteOffset" : 40463,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/AbstractMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 109,
+            "startColumn" : 31,
+            "endLine" : 109,
+            "endColumn" : 56,
+            "charOffset" : 3270,
+            "charLength" : 25,
+            "byteOffset" : 3270,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/AbstractMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 153,
+            "startColumn" : 31,
+            "endLine" : 153,
+            "endColumn" : 54,
+            "charOffset" : 4207,
+            "charLength" : 23,
+            "byteOffset" : 4207,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/AbstractMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 165,
+            "startColumn" : 31,
+            "endLine" : 165,
+            "endColumn" : 50,
+            "charOffset" : 4474,
+            "charLength" : 19,
+            "byteOffset" : 4474,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/AbstractMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 177,
+            "startColumn" : 31,
+            "endLine" : 177,
+            "endColumn" : 54,
+            "charOffset" : 4740,
+            "charLength" : 23,
+            "byteOffset" : 4740,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/AbstractMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 216,
+            "startColumn" : 31,
+            "endLine" : 216,
+            "endColumn" : 52,
+            "charOffset" : 5554,
+            "charLength" : 21,
+            "byteOffset" : 5554,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/AbstractSortedMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 125,
+            "startColumn" : 31,
+            "endLine" : 125,
+            "endColumn" : 78,
+            "charOffset" : 3889,
+            "charLength" : 47,
+            "byteOffset" : 3889,
+            "byteLength" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/AbstractTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 112,
+            "startColumn" : 31,
+            "endLine" : 112,
+            "endColumn" : 56,
+            "charOffset" : 3085,
+            "charLength" : 25,
+            "byteOffset" : 3085,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/AbstractTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 168,
+            "startColumn" : 31,
+            "endLine" : 168,
+            "endColumn" : 54,
+            "charOffset" : 4544,
+            "charLength" : 23,
+            "byteOffset" : 4544,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ArrayTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 627,
+            "startColumn" : 28,
+            "endLine" : 627,
+            "endColumn" : 55,
+            "charOffset" : 20862,
+            "charLength" : 27,
+            "byteOffset" : 20862,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ArrayTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 717,
+            "startColumn" : 28,
+            "endLine" : 717,
+            "endColumn" : 49,
+            "charOffset" : 23026,
+            "charLength" : 21,
+            "byteOffset" : 23026,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ComparisonChain.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 122,
+            "startColumn" : 40,
+            "endLine" : 122,
+            "endColumn" : 71,
+            "charOffset" : 4171,
+            "charLength" : 31,
+            "byteOffset" : 4171,
+            "byteLength" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/DescendingMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 31,
+            "endLine" : 114,
+            "endColumn" : 58,
+            "charOffset" : 3176,
+            "charLength" : 27,
+            "byteOffset" : 3176,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/DiscreteDomain.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 48,
+            "endLine" : 63,
+            "endColumn" : 53,
+            "charOffset" : 2229,
+            "charLength" : 5,
+            "byteOffset" : 2229,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/DiscreteDomain.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 69,
+            "startColumn" : 48,
+            "endLine" : 69,
+            "endColumn" : 53,
+            "charOffset" : 2370,
+            "charLength" : 5,
+            "byteOffset" : 2370,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/DiscreteDomain.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 45,
+            "endLine" : 114,
+            "endColumn" : 50,
+            "charOffset" : 3387,
+            "charLength" : 5,
+            "byteOffset" : 3387,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/DiscreteDomain.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 120,
+            "startColumn" : 45,
+            "endLine" : 120,
+            "endColumn" : 50,
+            "charOffset" : 3520,
+            "charLength" : 5,
+            "byteOffset" : 3520,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/HashBiMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 523,
+            "startColumn" : 32,
+            "endLine" : 523,
+            "endColumn" : 55,
+            "charOffset" : 15272,
+            "charLength" : 23,
+            "byteOffset" : 15272,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableEnumSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 28,
+            "endLine" : 114,
+            "endColumn" : 58,
+            "charOffset" : 3039,
+            "charLength" : 30,
+            "byteOffset" : 3039,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 462,
+            "startColumn" : 31,
+            "endLine" : 462,
+            "endColumn" : 58,
+            "charOffset" : 15678,
+            "charLength" : 27,
+            "byteOffset" : 15678,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 476,
+            "startColumn" : 31,
+            "endLine" : 476,
+            "endColumn" : 54,
+            "charOffset" : 16084,
+            "charLength" : 23,
+            "byteOffset" : 16084,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 507,
+            "startColumn" : 31,
+            "endLine" : 507,
+            "endColumn" : 74,
+            "charOffset" : 16954,
+            "charLength" : 43,
+            "byteOffset" : 16954,
+            "byteLength" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableSortedMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 281,
+            "startColumn" : 17,
+            "endLine" : 281,
+            "endColumn" : 44,
+            "charOffset" : 11197,
+            "charLength" : 27,
+            "byteOffset" : 11197,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1496,
+            "startColumn" : 13,
+            "endLine" : 1496,
+            "endColumn" : 76,
+            "charOffset" : 51971,
+            "charLength" : 63,
+            "byteOffset" : 51971,
+            "byteLength" : 63
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1503,
+            "startColumn" : 13,
+            "endLine" : 1503,
+            "endColumn" : 68,
+            "charOffset" : 52173,
+            "charLength" : 55,
+            "byteOffset" : 52173,
+            "byteLength" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3254,
+            "startColumn" : 13,
+            "endLine" : 3254,
+            "endColumn" : 95,
+            "charOffset" : 118916,
+            "charLength" : 82,
+            "byteOffset" : 118916,
+            "byteLength" : 82
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3381,
+            "startColumn" : 33,
+            "endLine" : 3381,
+            "endColumn" : 60,
+            "charOffset" : 123120,
+            "charLength" : 27,
+            "byteOffset" : 123120,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3388,
+            "startColumn" : 33,
+            "endLine" : 3388,
+            "endColumn" : 56,
+            "charOffset" : 123304,
+            "charLength" : 23,
+            "byteOffset" : 123304,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3399,
+            "startColumn" : 33,
+            "endLine" : 3399,
+            "endColumn" : 56,
+            "charOffset" : 123581,
+            "charLength" : 23,
+            "byteOffset" : 123581,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3990,
+            "startColumn" : 33,
+            "endLine" : 3990,
+            "endColumn" : 60,
+            "charOffset" : 138566,
+            "charLength" : 27,
+            "byteOffset" : 138566,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 4021,
+            "startColumn" : 33,
+            "endLine" : 4021,
+            "endColumn" : 82,
+            "charOffset" : 139302,
+            "charLength" : 49,
+            "byteOffset" : 139302,
+            "byteLength" : 49
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MinMaxPriorityQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 945,
+            "startColumn" : 11,
+            "endLine" : 945,
+            "endColumn" : 32,
+            "charOffset" : 31586,
+            "charLength" : 21,
+            "byteOffset" : 31586,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Multisets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 119,
+            "startColumn" : 29,
+            "endLine" : 119,
+            "endColumn" : 60,
+            "charOffset" : 3843,
+            "charLength" : 31,
+            "byteOffset" : 3843,
+            "byteLength" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Multisets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 130,
+            "startColumn" : 13,
+            "endLine" : 130,
+            "endColumn" : 78,
+            "charOffset" : 4216,
+            "charLength" : 65,
+            "byteOffset" : 4216,
+            "byteLength" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/RegularContiguousSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 115,
+            "startColumn" : 66,
+            "endLine" : 115,
+            "endColumn" : 84,
+            "charOffset" : 3922,
+            "charLength" : 18,
+            "byteOffset" : 3922,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/RegularImmutableBiMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 169,
+            "startColumn" : 31,
+            "endLine" : 169,
+            "endColumn" : 54,
+            "charOffset" : 6003,
+            "charLength" : 23,
+            "byteOffset" : 6003,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/RegularImmutableMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 139,
+            "startColumn" : 31,
+            "endLine" : 139,
+            "endColumn" : 60,
+            "charOffset" : 4650,
+            "charLength" : 29,
+            "byteOffset" : 4650,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/StandardTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 273,
+            "startColumn" : 13,
+            "endLine" : 273,
+            "endColumn" : 51,
+            "charOffset" : 8361,
+            "charLength" : 38,
+            "byteOffset" : 8361,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/StandardTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 575,
+            "startColumn" : 31,
+            "endLine" : 575,
+            "endColumn" : 64,
+            "charOffset" : 16854,
+            "charLength" : 33,
+            "byteOffset" : 16854,
+            "byteLength" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/StandardTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 691,
+            "startColumn" : 31,
+            "endLine" : 691,
+            "endColumn" : 54,
+            "charOffset" : 20189,
+            "charLength" : 23,
+            "byteOffset" : 20189,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/StandardTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 759,
+            "startColumn" : 31,
+            "endLine" : 759,
+            "endColumn" : 58,
+            "charOffset" : 22183,
+            "charLength" : 27,
+            "byteOffset" : 22183,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/TreeRangeSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 76,
+            "startColumn" : 31,
+            "endLine" : 76,
+            "endColumn" : 83,
+            "charOffset" : 2401,
+            "charLength" : 52,
+            "byteOffset" : 2401,
+            "byteLength" : 52
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/TreeRangeSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 83,
+            "startColumn" : 11,
+            "endLine" : 83,
+            "endColumn" : 94,
+            "charOffset" : 2622,
+            "charLength" : 83,
+            "byteOffset" : 2622,
+            "byteLength" : 83
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/TreeRangeSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 253,
+            "startColumn" : 31,
+            "endLine" : 253,
+            "endColumn" : 60,
+            "charOffset" : 8042,
+            "charLength" : 29,
+            "byteOffset" : 8042,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/hash/Hashing.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 427,
+            "startColumn" : 34,
+            "endLine" : 427,
+            "endColumn" : 53,
+            "charOffset" : 15632,
+            "charLength" : 19,
+            "byteOffset" : 15632,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/BaseEncoding.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 475,
+            "startColumn" : 52,
+            "endLine" : 475,
+            "endColumn" : 82,
+            "charOffset" : 17296,
+            "charLength" : 30,
+            "byteOffset" : 17296,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/BaseEncoding.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 828,
+            "startColumn" : 23,
+            "endLine" : 828,
+            "endColumn" : 60,
+            "charOffset" : 28822,
+            "charLength" : 37,
+            "byteOffset" : 28822,
+            "byteLength" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/BaseEncoding.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 856,
+            "startColumn" : 21,
+            "endLine" : 856,
+            "endColumn" : 46,
+            "charOffset" : 29848,
+            "charLength" : 25,
+            "byteOffset" : 29848,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/BigIntegerMath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 81,
+            "startColumn" : 45,
+            "endLine" : 81,
+            "endColumn" : 57,
+            "charOffset" : 2941,
+            "charLength" : 12,
+            "byteOffset" : 2941,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/BigIntegerMath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 103,
+            "startColumn" : 61,
+            "endLine" : 103,
+            "endColumn" : 73,
+            "charOffset" : 3715,
+            "charLength" : 12,
+            "byteOffset" : 3715,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/BigIntegerMath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 181,
+            "startColumn" : 48,
+            "endLine" : 181,
+            "endColumn" : 60,
+            "charOffset" : 6266,
+            "charLength" : 12,
+            "byteOffset" : 6266,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/BigIntegerMath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 189,
+            "startColumn" : 67,
+            "endLine" : 189,
+            "endColumn" : 79,
+            "charOffset" : 6611,
+            "charLength" : 12,
+            "byteOffset" : 6611,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/DoubleMath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 269,
+            "startColumn" : 24,
+            "endLine" : 269,
+            "endColumn" : 36,
+            "charOffset" : 9220,
+            "charLength" : 12,
+            "byteOffset" : 9220,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/DoubleUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 11,
+            "endLine" : 70,
+            "endColumn" : 20,
+            "charOffset" : 2226,
+            "charLength" : 9,
+            "byteOffset" : 2226,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/DoubleUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 71,
+            "startColumn" : 11,
+            "endLine" : 71,
+            "endColumn" : 30,
+            "charOffset" : 2246,
+            "charLength" : 19,
+            "byteOffset" : 2246,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/DoubleUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 122,
+            "startColumn" : 38,
+            "endLine" : 122,
+            "endColumn" : 53,
+            "charOffset" : 4294,
+            "charLength" : 15,
+            "byteOffset" : 4294,
+            "byteLength" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/IntMath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 331,
+            "startColumn" : 24,
+            "endLine" : 331,
+            "endColumn" : 36,
+            "charOffset" : 12115,
+            "charLength" : 12,
+            "byteOffset" : 12115,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/IntMath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 355,
+            "startColumn" : 37,
+            "endLine" : 355,
+            "endColumn" : 47,
+            "charOffset" : 12817,
+            "charLength" : 10,
+            "byteOffset" : 12817,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/IntMath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 464,
+            "startColumn" : 33,
+            "endLine" : 464,
+            "endColumn" : 39,
+            "charOffset" : 16639,
+            "charLength" : 6,
+            "byteOffset" : 16639,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/LongMath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 243,
+            "startColumn" : 36,
+            "endLine" : 243,
+            "endColumn" : 43,
+            "charOffset" : 8315,
+            "charLength" : 7,
+            "byteOffset" : 8315,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/LongMath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 246,
+            "startColumn" : 37,
+            "endLine" : 246,
+            "endColumn" : 44,
+            "charOffset" : 8414,
+            "charLength" : 7,
+            "byteOffset" : 8414,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/LongMath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 398,
+            "startColumn" : 24,
+            "endLine" : 398,
+            "endColumn" : 36,
+            "charOffset" : 13685,
+            "charLength" : 12,
+            "byteOffset" : 13685,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/LongMath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 449,
+            "startColumn" : 37,
+            "endLine" : 449,
+            "endColumn" : 47,
+            "charOffset" : 15099,
+            "charLength" : 10,
+            "byteOffset" : 15099,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/net/InetAddresses.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 263,
+            "startColumn" : 28,
+            "endLine" : 263,
+            "endColumn" : 45,
+            "charOffset" : 9876,
+            "charLength" : 17,
+            "byteOffset" : 9876,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Ints.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 336,
+            "startColumn" : 12,
+            "endLine" : 336,
+            "endColumn" : 20,
+            "charOffset" : 10989,
+            "charLength" : 8,
+            "byteOffset" : 10989,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Longs.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 307,
+            "startColumn" : 12,
+            "endLine" : 307,
+            "endColumn" : 30,
+            "charOffset" : 10288,
+            "charLength" : 18,
+            "byteOffset" : 10288,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Longs.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 308,
+            "startColumn" : 11,
+            "endLine" : 308,
+            "endColumn" : 29,
+            "charOffset" : 10317,
+            "charLength" : 18,
+            "byteOffset" : 10317,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Longs.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 309,
+            "startColumn" : 11,
+            "endLine" : 309,
+            "endColumn" : 29,
+            "charOffset" : 10346,
+            "charLength" : 18,
+            "byteOffset" : 10346,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Longs.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 310,
+            "startColumn" : 11,
+            "endLine" : 310,
+            "endColumn" : 29,
+            "charOffset" : 10375,
+            "charLength" : 18,
+            "byteOffset" : 10375,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Longs.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 311,
+            "startColumn" : 11,
+            "endLine" : 311,
+            "endColumn" : 29,
+            "charOffset" : 10404,
+            "charLength" : 18,
+            "byteOffset" : 10404,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Longs.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 312,
+            "startColumn" : 11,
+            "endLine" : 312,
+            "endColumn" : 29,
+            "charOffset" : 10433,
+            "charLength" : 18,
+            "byteOffset" : 10433,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Longs.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 313,
+            "startColumn" : 11,
+            "endLine" : 313,
+            "endColumn" : 28,
+            "charOffset" : 10462,
+            "charLength" : 17,
+            "byteOffset" : 10462,
+            "byteLength" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 357,
+            "startColumn" : 48,
+            "endLine" : 357,
+            "endColumn" : 82,
+            "charOffset" : 14371,
+            "charLength" : 34,
+            "byteOffset" : 14371,
+            "byteLength" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AtomicLongMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 289,
+            "startColumn" : 31,
+            "endLine" : 289,
+            "endColumn" : 52,
+            "charOffset" : 8936,
+            "charLength" : 21,
+            "byteOffset" : 8936,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Monitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 928,
+            "startColumn" : 11,
+            "endLine" : 929,
+            "endColumn" : 23,
+            "charOffset" : 32178,
+            "charLength" : 91,
+            "byteOffset" : 32178,
+            "byteLength" : 91
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Monitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 957,
+            "startColumn" : 40,
+            "endLine" : 957,
+            "endColumn" : 86,
+            "charOffset" : 33147,
+            "charLength" : 46,
+            "byteOffset" : 33147,
+            "byteLength" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/MoreExecutors.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 483,
+            "startColumn" : 11,
+            "endLine" : 485,
+            "endColumn" : 43,
+            "charOffset" : 18964,
+            "charLength" : 168,
+            "byteOffset" : 18964,
+            "byteLength" : 168
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/SmoothRateLimiter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 233,
+            "startColumn" : 15,
+            "endLine" : 233,
+            "endColumn" : 57,
+            "charOffset" : 13712,
+            "charLength" : 42,
+            "byteOffset" : 13712,
+            "byteLength" : 42
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/SmoothRateLimiter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 289,
+            "startColumn" : 15,
+            "endLine" : 289,
+            "endColumn" : 57,
+            "charOffset" : 16043,
+            "charLength" : 42,
+            "byteOffset" : 16043,
+            "byteLength" : 42
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Striped.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 295,
+            "startColumn" : 63,
+            "endLine" : 295,
+            "endColumn" : 92,
+            "charOffset" : 12450,
+            "charLength" : 29,
+            "byteOffset" : 12450,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Striped.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 349,
+            "startColumn" : 59,
+            "endLine" : 349,
+            "endColumn" : 67,
+            "charOffset" : 14220,
+            "charLength" : 8,
+            "byteOffset" : 14220,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Striped.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 417,
+            "startColumn" : 59,
+            "endLine" : 417,
+            "endColumn" : 67,
+            "charOffset" : 16893,
+            "charLength" : 8,
+            "byteOffset" : 16893,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

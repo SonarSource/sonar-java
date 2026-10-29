@@ -1,0 +1,522 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"logger\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/bean/EntityTestBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 19,
+            "endLine" : 50,
+            "endColumn" : 25,
+            "charOffset" : 1599,
+            "charLength" : 6,
+            "byteOffset" : 1599,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename the \"log\" logger to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/DeploymentDescriptorSession1Bean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 32,
+            "endLine" : 35,
+            "endColumn" : 35,
+            "charOffset" : 1366,
+            "charLength" : 3,
+            "byteOffset" : 1366,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename the \"log\" logger to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/DeploymentDescriptorSession2Bean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 32,
+            "endLine" : 32,
+            "endColumn" : 35,
+            "charOffset" : 1309,
+            "charLength" : 3,
+            "byteOffset" : 1309,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename the \"log\" logger to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/Session1Bean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 32,
+            "endLine" : 45,
+            "endColumn" : 35,
+            "charOffset" : 1717,
+            "charLength" : 3,
+            "byteOffset" : 1717,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename the \"log\" logger to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/Session2Bean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 32,
+            "endLine" : 39,
+            "endColumn" : 35,
+            "charOffset" : 1456,
+            "charLength" : 3,
+            "byteOffset" : 1456,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"logger\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:hibernate/src/org/jboss/tutorial/hibernate/bean/AnotherCustomerBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 26,
+            "endLine" : 48,
+            "endColumn" : 32,
+            "charOffset" : 1692,
+            "charLength" : 6,
+            "byteOffset" : 1692,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"logger\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:hibernate/src/org/jboss/tutorial/hibernate/bean/CustomerBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 26,
+            "endLine" : 48,
+            "endColumn" : 32,
+            "charOffset" : 1624,
+            "charLength" : 6,
+            "byteOffset" : 1624,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename the \"log\" logger to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:jca_inflow_quartz/src/org/jboss/tutorial/quartz/bean/AnnotatedQuartzMDBBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 32,
+            "endLine" : 43,
+            "endColumn" : 35,
+            "charOffset" : 1689,
+            "charLength" : 3,
+            "byteOffset" : 1689,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename the \"log\" logger to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:jca_inflow_quartz/src/org/jboss/tutorial/quartz/bean/QuartzMDBBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 32,
+            "endLine" : 36,
+            "endColumn" : 35,
+            "charOffset" : 1394,
+            "charLength" : 3,
+            "byteOffset" : 1394,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"logger\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:jndibinding/src/org/jboss/tutorial/jndibinding/bean/CustomerBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 19,
+            "endLine" : 46,
+            "endColumn" : 25,
+            "charOffset" : 1609,
+            "charLength" : 6,
+            "byteOffset" : 1609,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"logger\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/CompleteXMLDDBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 26,
+            "endLine" : 42,
+            "endColumn" : 32,
+            "charOffset" : 1437,
+            "charLength" : 6,
+            "byteOffset" : 1437,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"logger\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/ExternalCallbackListener.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 19,
+            "endLine" : 40,
+            "endColumn" : 25,
+            "charOffset" : 1350,
+            "charLength" : 6,
+            "byteOffset" : 1350,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"logger\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/FirstInterceptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 26,
+            "endLine" : 37,
+            "endColumn" : 32,
+            "charOffset" : 1314,
+            "charLength" : 6,
+            "byteOffset" : 1314,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"logger\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/PartialXMLDDBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 26,
+            "endLine" : 45,
+            "endColumn" : 32,
+            "charOffset" : 1533,
+            "charLength" : 6,
+            "byteOffset" : 1533,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"logger\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/bean/SecondInterceptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 26,
+            "endLine" : 38,
+            "endColumn" : 32,
+            "charOffset" : 1355,
+            "charLength" : 6,
+            "byteOffset" : 1355,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename the \"log\" logger to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:reference21_30/ejb21_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless2Bean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 32,
+            "endLine" : 36,
+            "endColumn" : 35,
+            "charOffset" : 1394,
+            "charLength" : 3,
+            "byteOffset" : 1394,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename the \"log\" logger to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:reference21_30/ejb3_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless3Bean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 32,
+            "endLine" : 47,
+            "endColumn" : 35,
+            "charOffset" : 1722,
+            "charLength" : 3,
+            "byteOffset" : 1722,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1312",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make the \"log\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "jboss-ejb3-tutorial:resource_ref/src/org/jboss/tutorial/resource_ref/bean/TestENCBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 41,
+            "startColumn" : 11,
+            "endLine" : 41,
+            "endColumn" : 14,
+            "charOffset" : 1478,
+            "charLength" : 3,
+            "byteOffset" : 1478,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

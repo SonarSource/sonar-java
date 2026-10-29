@@ -1,0 +1,410 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 514,
+            "startColumn" : 18,
+            "endLine" : 514,
+            "endColumn" : 30,
+            "charOffset" : 27027,
+            "charLength" : 12,
+            "byteOffset" : 27027,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/component/ws/SearchProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 515,
+            "startColumn" : 18,
+            "endLine" : 515,
+            "endColumn" : 30,
+            "charOffset" : 27089,
+            "charLength" : 12,
+            "byteOffset" : 27089,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/PersistTestsStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 267,
+            "startColumn" : 70,
+            "endLine" : 267,
+            "endColumn" : 86,
+            "charOffset" : 11619,
+            "charLength" : 16,
+            "byteOffset" : 11619,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/PersistTestsStepTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 271,
+            "startColumn" : 79,
+            "endLine" : 271,
+            "endColumn" : 95,
+            "charOffset" : 11792,
+            "charLength" : 16,
+            "byteOffset" : 11792,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/index/IssueIndexDebtTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 233,
+            "startColumn" : 19,
+            "endLine" : 233,
+            "endColumn" : 32,
+            "charOffset" : 11934,
+            "charLength" : 13,
+            "byteOffset" : 11934,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/index/IssueIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 786,
+            "startColumn" : 19,
+            "endLine" : 786,
+            "endColumn" : 32,
+            "charOffset" : 37700,
+            "charLength" : 13,
+            "byteOffset" : 37700,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/index/IssueIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 802,
+            "startColumn" : 19,
+            "endLine" : 802,
+            "endColumn" : 32,
+            "charOffset" : 38320,
+            "charLength" : 13,
+            "byteOffset" : 38320,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/index/IssueIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 819,
+            "startColumn" : 19,
+            "endLine" : 819,
+            "endColumn" : 32,
+            "charOffset" : 39029,
+            "charLength" : 13,
+            "byteOffset" : 39029,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/index/IssueIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 837,
+            "startColumn" : 19,
+            "endLine" : 837,
+            "endColumn" : 32,
+            "charOffset" : 39727,
+            "charLength" : 13,
+            "byteOffset" : 39727,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/index/IssueIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 868,
+            "startColumn" : 19,
+            "endLine" : 868,
+            "endColumn" : 32,
+            "charOffset" : 40997,
+            "charLength" : 13,
+            "byteOffset" : 40997,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/issue/index/IssueIndexTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 883,
+            "startColumn" : 19,
+            "endLine" : 883,
+            "endColumn" : 32,
+            "charOffset" : 41588,
+            "charLength" : 13,
+            "byteOffset" : 41588,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/project/ws/SearchMyProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 128,
+            "startColumn" : 18,
+            "endLine" : 128,
+            "endColumn" : 27,
+            "charOffset" : 5856,
+            "charLength" : 9,
+            "byteOffset" : 5856,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/project/ws/SearchMyProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 129,
+            "startColumn" : 18,
+            "endLine" : 129,
+            "endColumn" : 27,
+            "charOffset" : 6000,
+            "charLength" : 9,
+            "byteOffset" : 6000,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S117",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "sonarqube-6.5:src/test/java/org/sonar/server/project/ws/SearchMyProjectsActionTest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 130,
+            "startColumn" : 18,
+            "endLine" : 130,
+            "endColumn" : 27,
+            "charOffset" : 6144,
+            "charLength" : 9,
+            "byteOffset" : 6144,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

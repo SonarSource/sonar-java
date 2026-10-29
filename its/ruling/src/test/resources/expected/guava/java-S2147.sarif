@@ -1,0 +1,802 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 565, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Predicates.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 567,
+            "startColumn" : 16,
+            "endLine" : 567,
+            "endColumn" : 36,
+            "charOffset" : 17824,
+            "charLength" : 20,
+            "byteOffset" : 17824,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 110, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Collections2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 112,
+            "startColumn" : 14,
+            "endLine" : 112,
+            "endColumn" : 36,
+            "charOffset" : 4370,
+            "charLength" : 22,
+            "byteOffset" : 4370,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 126, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Collections2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 128,
+            "startColumn" : 14,
+            "endLine" : 128,
+            "endColumn" : 36,
+            "charOffset" : 4845,
+            "charLength" : 22,
+            "byteOffset" : 4845,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 139, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingSortedMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 141,
+            "startColumn" : 14,
+            "endLine" : 141,
+            "endColumn" : 38,
+            "charOffset" : 4566,
+            "charLength" : 24,
+            "byteOffset" : 4566,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 141, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingSortedMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 143,
+            "startColumn" : 14,
+            "endLine" : 143,
+            "endColumn" : 36,
+            "charOffset" : 4627,
+            "charLength" : 22,
+            "byteOffset" : 4627,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 120, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingSortedSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 122,
+            "startColumn" : 14,
+            "endLine" : 122,
+            "endColumn" : 38,
+            "charOffset" : 4081,
+            "charLength" : 24,
+            "byteOffset" : 4081,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 122, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingSortedSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 124,
+            "startColumn" : 14,
+            "endLine" : 124,
+            "endColumn" : 36,
+            "charOffset" : 4142,
+            "charLength" : 22,
+            "byteOffset" : 4142,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 151, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ForwardingSortedSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 153,
+            "startColumn" : 14,
+            "endLine" : 153,
+            "endColumn" : 36,
+            "charOffset" : 5023,
+            "charLength" : 22,
+            "byteOffset" : 5023,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 3439, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3441,
+            "startColumn" : 14,
+            "endLine" : 3441,
+            "endColumn" : 36,
+            "charOffset" : 124643,
+            "charLength" : 22,
+            "byteOffset" : 124643,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 3454, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3456,
+            "startColumn" : 14,
+            "endLine" : 3456,
+            "endColumn" : 36,
+            "charOffset" : 125045,
+            "charLength" : 22,
+            "byteOffset" : 125045,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 3469, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3471,
+            "startColumn" : 14,
+            "endLine" : 3471,
+            "endColumn" : 36,
+            "charOffset" : 125429,
+            "charLength" : 22,
+            "byteOffset" : 125429,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 121, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/RegularImmutableSortedSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 123,
+            "startColumn" : 14,
+            "endLine" : 123,
+            "endColumn" : 34,
+            "charOffset" : 3828,
+            "charLength" : 20,
+            "byteOffset" : 3828,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 171, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/RegularImmutableSortedSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 173,
+            "startColumn" : 16,
+            "endLine" : 173,
+            "endColumn" : 40,
+            "charOffset" : 5108,
+            "charLength" : 24,
+            "byteOffset" : 5108,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 1394, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Sets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1396,
+            "startColumn" : 16,
+            "endLine" : 1396,
+            "endColumn" : 42,
+            "charOffset" : 52719,
+            "charLength" : 26,
+            "byteOffset" : 52719,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 237, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/TreeMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 239,
+            "startColumn" : 14,
+            "endLine" : 239,
+            "endColumn" : 36,
+            "charOffset" : 8656,
+            "charLength" : 22,
+            "byteOffset" : 8656,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 281, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/TreeMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 283,
+            "startColumn" : 14,
+            "endLine" : 283,
+            "endColumn" : 36,
+            "charOffset" : 10075,
+            "charLength" : 22,
+            "byteOffset" : 10075,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 573, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/reflect/Types.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 575,
+            "startColumn" : 18,
+            "endLine" : 575,
+            "endColumn" : 42,
+            "charOffset" : 20527,
+            "charLength" : 24,
+            "byteOffset" : 20527,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 82, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractCheckedFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 14,
+            "endLine" : 84,
+            "endColumn" : 34,
+            "charOffset" : 3102,
+            "charLength" : 20,
+            "byteOffset" : 3102,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 111, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractCheckedFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 113,
+            "startColumn" : 14,
+            "endLine" : 113,
+            "endColumn" : 34,
+            "charOffset" : 4154,
+            "charLength" : 20,
+            "byteOffset" : 4154,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 1760, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Futures.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1763,
+            "startColumn" : 18,
+            "endLine" : 1763,
+            "endColumn" : 25,
+            "charOffset" : 75378,
+            "charLength" : 7,
+            "byteOffset" : 75378,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 277, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/FuturesGetChecked.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 279,
+            "startColumn" : 14,
+            "endLine" : 279,
+            "endColumn" : 38,
+            "charOffset" : 10402,
+            "charLength" : 24,
+            "byteOffset" : 10402,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 279, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/FuturesGetChecked.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 281,
+            "startColumn" : 14,
+            "endLine" : 281,
+            "endColumn" : 38,
+            "charOffset" : 10462,
+            "charLength" : 24,
+            "byteOffset" : 10462,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 281, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/FuturesGetChecked.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 283,
+            "startColumn" : 14,
+            "endLine" : 283,
+            "endColumn" : 41,
+            "charOffset" : 10522,
+            "charLength" : 27,
+            "byteOffset" : 10522,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 780, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/MoreExecutors.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 782,
+            "startColumn" : 14,
+            "endLine" : 782,
+            "endColumn" : 38,
+            "charOffset" : 29235,
+            "charLength" : 24,
+            "byteOffset" : 29235,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 782, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/MoreExecutors.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 784,
+            "startColumn" : 14,
+            "endLine" : 784,
+            "endColumn" : 37,
+            "charOffset" : 29374,
+            "charLength" : 23,
+            "byteOffset" : 29374,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 801, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/MoreExecutors.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 804,
+            "startColumn" : 14,
+            "endLine" : 804,
+            "endColumn" : 41,
+            "charOffset" : 30146,
+            "charLength" : 27,
+            "byteOffset" : 30146,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 804, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/MoreExecutors.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 807,
+            "startColumn" : 14,
+            "endLine" : 807,
+            "endColumn" : 38,
+            "charOffset" : 30297,
+            "charLength" : 24,
+            "byteOffset" : 30297,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2147",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Combine this catch with the one at line 807, which has the same body."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/MoreExecutors.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 810,
+            "startColumn" : 14,
+            "endLine" : 810,
+            "endColumn" : 37,
+            "charOffset" : 30446,
+            "charLength" : 23,
+            "byteOffset" : 30446,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

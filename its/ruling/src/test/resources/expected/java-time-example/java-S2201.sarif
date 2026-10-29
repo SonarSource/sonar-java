@@ -1,0 +1,2818 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 12,
+            "startColumn" : 15,
+            "endLine" : 12,
+            "endColumn" : 17,
+            "charOffset" : 227,
+            "charLength" : 2,
+            "byteOffset" : 227,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 15,
+            "endLine" : 13,
+            "endColumn" : 17,
+            "charOffset" : 258,
+            "charLength" : 2,
+            "byteOffset" : 258,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 14,
+            "startColumn" : 15,
+            "endLine" : 14,
+            "endColumn" : 17,
+            "charOffset" : 289,
+            "charLength" : 2,
+            "byteOffset" : 289,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 15,
+            "startColumn" : 15,
+            "endLine" : 15,
+            "endColumn" : 17,
+            "charOffset" : 320,
+            "charLength" : 2,
+            "byteOffset" : 320,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 16,
+            "startColumn" : 15,
+            "endLine" : 16,
+            "endColumn" : 17,
+            "charOffset" : 350,
+            "charLength" : 2,
+            "byteOffset" : 350,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 17,
+            "startColumn" : 15,
+            "endLine" : 17,
+            "endColumn" : 17,
+            "charOffset" : 388,
+            "charLength" : 2,
+            "byteOffset" : 388,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 18,
+            "startColumn" : 19,
+            "endLine" : 18,
+            "endColumn" : 21,
+            "charOffset" : 423,
+            "charLength" : 2,
+            "byteOffset" : 423,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 19,
+            "startColumn" : 19,
+            "endLine" : 19,
+            "endColumn" : 21,
+            "charOffset" : 464,
+            "charLength" : 2,
+            "byteOffset" : 464,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 20,
+            "startColumn" : 19,
+            "endLine" : 20,
+            "endColumn" : 21,
+            "charOffset" : 506,
+            "charLength" : 2,
+            "byteOffset" : 506,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 19,
+            "endLine" : 21,
+            "endColumn" : 21,
+            "charOffset" : 546,
+            "charLength" : 2,
+            "byteOffset" : 546,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 22,
+            "startColumn" : 19,
+            "endLine" : 22,
+            "endColumn" : 21,
+            "charOffset" : 589,
+            "charLength" : 2,
+            "byteOffset" : 589,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 19,
+            "endLine" : 23,
+            "endColumn" : 21,
+            "charOffset" : 643,
+            "charLength" : 2,
+            "byteOffset" : 643,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 15,
+            "endLine" : 24,
+            "endColumn" : 17,
+            "charOffset" : 682,
+            "charLength" : 2,
+            "byteOffset" : 682,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 15,
+            "endLine" : 25,
+            "endColumn" : 17,
+            "charOffset" : 709,
+            "charLength" : 2,
+            "byteOffset" : 709,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 15,
+            "endLine" : 26,
+            "endColumn" : 17,
+            "charOffset" : 736,
+            "charLength" : 2,
+            "byteOffset" : 736,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 15,
+            "endLine" : 27,
+            "endColumn" : 17,
+            "charOffset" : 763,
+            "charLength" : 2,
+            "byteOffset" : 763,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 15,
+            "endLine" : 28,
+            "endColumn" : 17,
+            "charOffset" : 804,
+            "charLength" : 2,
+            "byteOffset" : 804,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 14,
+            "endLine" : 29,
+            "endColumn" : 16,
+            "charOffset" : 831,
+            "charLength" : 2,
+            "byteOffset" : 831,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 14,
+            "endLine" : 30,
+            "endColumn" : 16,
+            "charOffset" : 854,
+            "charLength" : 2,
+            "byteOffset" : 854,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/AppointmentService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 14,
+            "endLine" : 31,
+            "endColumn" : 16,
+            "charOffset" : 878,
+            "charLength" : 2,
+            "byteOffset" : 878,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 15,
+            "endLine" : 13,
+            "endColumn" : 17,
+            "charOffset" : 249,
+            "charLength" : 2,
+            "byteOffset" : 249,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 14,
+            "startColumn" : 15,
+            "endLine" : 14,
+            "endColumn" : 17,
+            "charOffset" : 280,
+            "charLength" : 2,
+            "byteOffset" : 280,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 15,
+            "startColumn" : 15,
+            "endLine" : 15,
+            "endColumn" : 17,
+            "charOffset" : 310,
+            "charLength" : 2,
+            "byteOffset" : 310,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 16,
+            "startColumn" : 15,
+            "endLine" : 16,
+            "endColumn" : 17,
+            "charOffset" : 341,
+            "charLength" : 2,
+            "byteOffset" : 341,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 17,
+            "startColumn" : 15,
+            "endLine" : 17,
+            "endColumn" : 17,
+            "charOffset" : 371,
+            "charLength" : 2,
+            "byteOffset" : 371,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 18,
+            "startColumn" : 15,
+            "endLine" : 18,
+            "endColumn" : 17,
+            "charOffset" : 411,
+            "charLength" : 2,
+            "byteOffset" : 411,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 19,
+            "startColumn" : 19,
+            "endLine" : 19,
+            "endColumn" : 21,
+            "charOffset" : 446,
+            "charLength" : 2,
+            "byteOffset" : 446,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 20,
+            "startColumn" : 19,
+            "endLine" : 20,
+            "endColumn" : 21,
+            "charOffset" : 486,
+            "charLength" : 2,
+            "byteOffset" : 486,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 19,
+            "endLine" : 21,
+            "endColumn" : 21,
+            "charOffset" : 526,
+            "charLength" : 2,
+            "byteOffset" : 526,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 22,
+            "startColumn" : 19,
+            "endLine" : 22,
+            "endColumn" : 21,
+            "charOffset" : 570,
+            "charLength" : 2,
+            "byteOffset" : 570,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 19,
+            "endLine" : 23,
+            "endColumn" : 21,
+            "charOffset" : 614,
+            "charLength" : 2,
+            "byteOffset" : 614,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 19,
+            "endLine" : 24,
+            "endColumn" : 21,
+            "charOffset" : 670,
+            "charLength" : 2,
+            "byteOffset" : 670,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 15,
+            "endLine" : 25,
+            "endColumn" : 17,
+            "charOffset" : 707,
+            "charLength" : 2,
+            "byteOffset" : 707,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 15,
+            "endLine" : 26,
+            "endColumn" : 17,
+            "charOffset" : 734,
+            "charLength" : 2,
+            "byteOffset" : 734,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 15,
+            "endLine" : 27,
+            "endColumn" : 17,
+            "charOffset" : 761,
+            "charLength" : 2,
+            "byteOffset" : 761,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 15,
+            "endLine" : 28,
+            "endColumn" : 17,
+            "charOffset" : 788,
+            "charLength" : 2,
+            "byteOffset" : 788,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 14,
+            "endLine" : 29,
+            "endColumn" : 16,
+            "charOffset" : 826,
+            "charLength" : 2,
+            "byteOffset" : 826,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 14,
+            "endLine" : 30,
+            "endColumn" : 16,
+            "charOffset" : 850,
+            "charLength" : 2,
+            "byteOffset" : 850,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 15,
+            "endLine" : 32,
+            "endColumn" : 17,
+            "charOffset" : 912,
+            "charLength" : 2,
+            "byteOffset" : 912,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/CalendarUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 15,
+            "endLine" : 33,
+            "endColumn" : 17,
+            "charOffset" : 933,
+            "charLength" : 2,
+            "byteOffset" : 933,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 15,
+            "endLine" : 13,
+            "endColumn" : 17,
+            "charOffset" : 247,
+            "charLength" : 2,
+            "byteOffset" : 247,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 14,
+            "startColumn" : 15,
+            "endLine" : 14,
+            "endColumn" : 17,
+            "charOffset" : 278,
+            "charLength" : 2,
+            "byteOffset" : 278,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 15,
+            "startColumn" : 15,
+            "endLine" : 15,
+            "endColumn" : 17,
+            "charOffset" : 309,
+            "charLength" : 2,
+            "byteOffset" : 309,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 16,
+            "startColumn" : 15,
+            "endLine" : 16,
+            "endColumn" : 17,
+            "charOffset" : 340,
+            "charLength" : 2,
+            "byteOffset" : 340,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 17,
+            "startColumn" : 15,
+            "endLine" : 17,
+            "endColumn" : 17,
+            "charOffset" : 371,
+            "charLength" : 2,
+            "byteOffset" : 371,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 18,
+            "startColumn" : 15,
+            "endLine" : 18,
+            "endColumn" : 17,
+            "charOffset" : 413,
+            "charLength" : 2,
+            "byteOffset" : 413,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 19,
+            "startColumn" : 19,
+            "endLine" : 19,
+            "endColumn" : 21,
+            "charOffset" : 448,
+            "charLength" : 2,
+            "byteOffset" : 448,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 20,
+            "startColumn" : 19,
+            "endLine" : 20,
+            "endColumn" : 21,
+            "charOffset" : 488,
+            "charLength" : 2,
+            "byteOffset" : 488,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 19,
+            "endLine" : 21,
+            "endColumn" : 21,
+            "charOffset" : 528,
+            "charLength" : 2,
+            "byteOffset" : 528,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 22,
+            "startColumn" : 19,
+            "endLine" : 22,
+            "endColumn" : 21,
+            "charOffset" : 568,
+            "charLength" : 2,
+            "byteOffset" : 568,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 19,
+            "endLine" : 23,
+            "endColumn" : 21,
+            "charOffset" : 611,
+            "charLength" : 2,
+            "byteOffset" : 611,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 19,
+            "endLine" : 24,
+            "endColumn" : 21,
+            "charOffset" : 665,
+            "charLength" : 2,
+            "byteOffset" : 665,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 15,
+            "endLine" : 25,
+            "endColumn" : 17,
+            "charOffset" : 701,
+            "charLength" : 2,
+            "byteOffset" : 701,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 15,
+            "endLine" : 26,
+            "endColumn" : 17,
+            "charOffset" : 728,
+            "charLength" : 2,
+            "byteOffset" : 728,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 15,
+            "endLine" : 27,
+            "endColumn" : 17,
+            "charOffset" : 755,
+            "charLength" : 2,
+            "byteOffset" : 755,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 15,
+            "endLine" : 28,
+            "endColumn" : 17,
+            "charOffset" : 782,
+            "charLength" : 2,
+            "byteOffset" : 782,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 14,
+            "endLine" : 29,
+            "endColumn" : 16,
+            "charOffset" : 817,
+            "charLength" : 2,
+            "byteOffset" : 817,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 14,
+            "endLine" : 30,
+            "endColumn" : 16,
+            "charOffset" : 841,
+            "charLength" : 2,
+            "byteOffset" : 841,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 15,
+            "endLine" : 32,
+            "endColumn" : 17,
+            "charOffset" : 907,
+            "charLength" : 2,
+            "byteOffset" : 907,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/EventScheduler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 15,
+            "endLine" : 33,
+            "endColumn" : 17,
+            "charOffset" : 928,
+            "charLength" : 2,
+            "byteOffset" : 928,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 15,
+            "endLine" : 13,
+            "endColumn" : 17,
+            "charOffset" : 248,
+            "charLength" : 2,
+            "byteOffset" : 248,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 14,
+            "startColumn" : 15,
+            "endLine" : 14,
+            "endColumn" : 17,
+            "charOffset" : 278,
+            "charLength" : 2,
+            "byteOffset" : 278,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 15,
+            "startColumn" : 15,
+            "endLine" : 15,
+            "endColumn" : 17,
+            "charOffset" : 308,
+            "charLength" : 2,
+            "byteOffset" : 308,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 16,
+            "startColumn" : 15,
+            "endLine" : 16,
+            "endColumn" : 17,
+            "charOffset" : 339,
+            "charLength" : 2,
+            "byteOffset" : 339,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 17,
+            "startColumn" : 15,
+            "endLine" : 17,
+            "endColumn" : 17,
+            "charOffset" : 370,
+            "charLength" : 2,
+            "byteOffset" : 370,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 18,
+            "startColumn" : 15,
+            "endLine" : 18,
+            "endColumn" : 17,
+            "charOffset" : 410,
+            "charLength" : 2,
+            "byteOffset" : 410,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 19,
+            "startColumn" : 19,
+            "endLine" : 19,
+            "endColumn" : 21,
+            "charOffset" : 446,
+            "charLength" : 2,
+            "byteOffset" : 446,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 20,
+            "startColumn" : 19,
+            "endLine" : 20,
+            "endColumn" : 21,
+            "charOffset" : 486,
+            "charLength" : 2,
+            "byteOffset" : 486,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 19,
+            "endLine" : 21,
+            "endColumn" : 21,
+            "charOffset" : 527,
+            "charLength" : 2,
+            "byteOffset" : 527,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 22,
+            "startColumn" : 19,
+            "endLine" : 22,
+            "endColumn" : 21,
+            "charOffset" : 568,
+            "charLength" : 2,
+            "byteOffset" : 568,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 19,
+            "endLine" : 23,
+            "endColumn" : 21,
+            "charOffset" : 611,
+            "charLength" : 2,
+            "byteOffset" : 611,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 19,
+            "endLine" : 24,
+            "endColumn" : 21,
+            "charOffset" : 661,
+            "charLength" : 2,
+            "byteOffset" : 661,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 15,
+            "endLine" : 25,
+            "endColumn" : 17,
+            "charOffset" : 697,
+            "charLength" : 2,
+            "byteOffset" : 697,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 15,
+            "endLine" : 26,
+            "endColumn" : 17,
+            "charOffset" : 724,
+            "charLength" : 2,
+            "byteOffset" : 724,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 15,
+            "endLine" : 27,
+            "endColumn" : 17,
+            "charOffset" : 752,
+            "charLength" : 2,
+            "byteOffset" : 752,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 15,
+            "endLine" : 28,
+            "endColumn" : 17,
+            "charOffset" : 779,
+            "charLength" : 2,
+            "byteOffset" : 779,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 14,
+            "endLine" : 29,
+            "endColumn" : 16,
+            "charOffset" : 818,
+            "charLength" : 2,
+            "byteOffset" : 818,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 14,
+            "endLine" : 30,
+            "endColumn" : 16,
+            "charOffset" : 842,
+            "charLength" : 2,
+            "byteOffset" : 842,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 15,
+            "endLine" : 32,
+            "endColumn" : 17,
+            "charOffset" : 905,
+            "charLength" : 2,
+            "byteOffset" : 905,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/HolidayChecker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 15,
+            "endLine" : 33,
+            "endColumn" : 17,
+            "charOffset" : 926,
+            "charLength" : 2,
+            "byteOffset" : 926,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 13,
+            "startColumn" : 15,
+            "endLine" : 13,
+            "endColumn" : 17,
+            "charOffset" : 252,
+            "charLength" : 2,
+            "byteOffset" : 252,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 14,
+            "startColumn" : 15,
+            "endLine" : 14,
+            "endColumn" : 17,
+            "charOffset" : 283,
+            "charLength" : 2,
+            "byteOffset" : 283,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 15,
+            "startColumn" : 15,
+            "endLine" : 15,
+            "endColumn" : 17,
+            "charOffset" : 314,
+            "charLength" : 2,
+            "byteOffset" : 314,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 16,
+            "startColumn" : 15,
+            "endLine" : 16,
+            "endColumn" : 17,
+            "charOffset" : 345,
+            "charLength" : 2,
+            "byteOffset" : 345,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 17,
+            "startColumn" : 15,
+            "endLine" : 17,
+            "endColumn" : 17,
+            "charOffset" : 376,
+            "charLength" : 2,
+            "byteOffset" : 376,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 18,
+            "startColumn" : 15,
+            "endLine" : 18,
+            "endColumn" : 17,
+            "charOffset" : 420,
+            "charLength" : 2,
+            "byteOffset" : 420,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 19,
+            "startColumn" : 19,
+            "endLine" : 19,
+            "endColumn" : 21,
+            "charOffset" : 456,
+            "charLength" : 2,
+            "byteOffset" : 456,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 20,
+            "startColumn" : 19,
+            "endLine" : 20,
+            "endColumn" : 21,
+            "charOffset" : 499,
+            "charLength" : 2,
+            "byteOffset" : 499,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 19,
+            "endLine" : 21,
+            "endColumn" : 21,
+            "charOffset" : 542,
+            "charLength" : 2,
+            "byteOffset" : 542,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 22,
+            "startColumn" : 19,
+            "endLine" : 22,
+            "endColumn" : 21,
+            "charOffset" : 585,
+            "charLength" : 2,
+            "byteOffset" : 585,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 19,
+            "endLine" : 23,
+            "endColumn" : 21,
+            "charOffset" : 629,
+            "charLength" : 2,
+            "byteOffset" : 629,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 24,
+            "startColumn" : 19,
+            "endLine" : 24,
+            "endColumn" : 21,
+            "charOffset" : 681,
+            "charLength" : 2,
+            "byteOffset" : 681,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 25,
+            "startColumn" : 15,
+            "endLine" : 25,
+            "endColumn" : 17,
+            "charOffset" : 720,
+            "charLength" : 2,
+            "byteOffset" : 720,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 15,
+            "endLine" : 26,
+            "endColumn" : 17,
+            "charOffset" : 747,
+            "charLength" : 2,
+            "byteOffset" : 747,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 15,
+            "endLine" : 27,
+            "endColumn" : 17,
+            "charOffset" : 774,
+            "charLength" : 2,
+            "byteOffset" : 774,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 28,
+            "startColumn" : 15,
+            "endLine" : 28,
+            "endColumn" : 17,
+            "charOffset" : 802,
+            "charLength" : 2,
+            "byteOffset" : 802,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 14,
+            "endLine" : 29,
+            "endColumn" : 16,
+            "charOffset" : 838,
+            "charLength" : 2,
+            "byteOffset" : 838,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 14,
+            "endLine" : 30,
+            "endColumn" : 16,
+            "charOffset" : 863,
+            "charLength" : 2,
+            "byteOffset" : 863,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 15,
+            "endLine" : 32,
+            "endColumn" : 17,
+            "charOffset" : 926,
+            "charLength" : 2,
+            "byteOffset" : 926,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2201",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "The return value of \"of\" must be used."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "java-time-example:src/main/java/example/ReportGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 15,
+            "endLine" : 33,
+            "endColumn" : 17,
+            "charOffset" : 947,
+            "charLength" : 2,
+            "byteOffset" : 947,
+            "byteLength" : 2
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}
