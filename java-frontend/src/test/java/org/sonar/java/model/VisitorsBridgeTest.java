@@ -43,6 +43,7 @@ import org.sonar.java.checks.EndOfAnalysisVisitor;
 import org.sonar.java.checks.VisitorThatCanBeSkipped;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.InputFileScannerContext;
@@ -74,6 +75,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+@TestResourceScope.Scoped
 class VisitorsBridgeTest {
 
   @RegisterExtension
@@ -83,7 +85,7 @@ class VisitorsBridgeTest {
 
   private static final File FILE = new File("src/test/files/model/SimpleClass.java");
   private static final InputFile INPUT_FILE = TestUtils.inputFile(FILE);
-  private static final CompilationUnitTree COMPILATION_UNIT_TREE = JParserTestUtils.parse(FILE);
+  private final CompilationUnitTree COMPILATION_UNIT_TREE = JParserTestUtils.parse(FILE);
 
   private static final NullPointerException NPE = new NullPointerException("BimBadaboum");
 

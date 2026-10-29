@@ -26,6 +26,7 @@ import org.sonar.java.checks.helpers.SpringContextModelTestUtils;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.ProfileExpression;
 import org.sonar.java.model.springcontext.SpringContextModel;
+import org.sonar.java.test.TestResourceScope;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.helpers.SpringContextModelTestUtils.beanLocation;
@@ -33,6 +34,7 @@ import static org.sonar.java.checks.helpers.SpringContextModelTestUtils.buildMod
 import static org.sonar.java.checks.helpers.SpringContextModelTestUtils.dummyInputFile;
 import static org.sonar.java.checks.helpers.SpringContextModelTestUtils.indexBeanByType;
 
+@TestResourceScope.Scoped
 class AmbiguousDependencyCheckTest {
 
   private static final String BASE_PATH = "checks/spring/s9352/";

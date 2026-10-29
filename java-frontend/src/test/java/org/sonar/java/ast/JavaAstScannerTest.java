@@ -57,6 +57,7 @@ import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.telemetry.TelemetryKey;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -82,6 +83,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.sonar.java.model.EcjTestSupport.clearSymbol;
 
+@TestResourceScope.Scoped
 class JavaAstScannerTest {
 
   public static final InputFile TRIVIAL_COMPILATION_UNIT = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");

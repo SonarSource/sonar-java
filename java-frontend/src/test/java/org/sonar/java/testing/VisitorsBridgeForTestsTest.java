@@ -30,6 +30,7 @@ import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -38,6 +39,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+@TestResourceScope.Scoped
 class VisitorsBridgeForTestsTest {
 
   @Test

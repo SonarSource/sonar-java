@@ -26,6 +26,7 @@ import org.sonar.java.regex.RegexParserTestUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonar.java.reporting.FluentReporting;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.SourceMap;
@@ -44,6 +45,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@TestResourceScope.Scoped
 class DefaultJavaFileScannerContextTest extends DefaultInputFileScannerContextTest {
 
   @Test

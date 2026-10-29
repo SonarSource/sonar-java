@@ -120,8 +120,8 @@ public abstract class JParserConfig {
     public void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled,
       AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action) {
 
-      List<InputFile> inputs = StreamSupport.stream(inputFiles.spliterator(), false).map(input -> (InputFile) input).toList();
-      Set<InputFile> notYetAnalyzedFiles = new LinkedHashSet<>(inputs);
+      FrontendBatch inputs = FrontendBatch.from(inputFiles);
+      Set<InputFile> notYetAnalyzedFiles = new LinkedHashSet<>(inputs.inputs());
 
       ExecutionTimeReport executionTimeReport = new ExecutionTimeReport();
       ProgressMonitor monitor = new ProgressMonitor(isCanceled, analysisProgress);
@@ -145,7 +145,7 @@ public abstract class JParserConfig {
           analyzeDuration.stop();
         });
         if (!notYetAnalyzedFiles.isEmpty()) {
-          String message = String.format("%d/%d files were not analyzed by the batch mode", notYetAnalyzedFiles.size(), inputs.size());
+          String message = String.format("%d/%d files were not analyzed by the batch mode", notYetAnalyzedFiles.size(), inputs.inputs().size());
           throw new AnalysisException(message);
         }
       } catch (OperationCanceledException e) {

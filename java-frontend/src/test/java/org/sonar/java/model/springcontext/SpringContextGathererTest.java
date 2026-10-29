@@ -25,6 +25,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.caching.CacheContext;
@@ -36,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@TestResourceScope.Scoped
 abstract class SpringContextGathererTest {
 
   protected SpringContextModelGatherer gatherer;

@@ -21,6 +21,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -38,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
+@TestResourceScope.Scoped
 class AnalyzerMessageTest {
 
   @Test

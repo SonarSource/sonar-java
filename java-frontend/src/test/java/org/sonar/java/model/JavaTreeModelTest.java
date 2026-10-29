@@ -20,6 +20,7 @@ import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -88,6 +89,7 @@ import org.sonar.plugins.java.api.tree.YieldStatementTree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 
+@TestResourceScope.Scoped
 class JavaTreeModelTest {
 
   @Test

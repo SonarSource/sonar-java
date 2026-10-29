@@ -38,6 +38,7 @@ import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.FluentReporting;
 import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -45,6 +46,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@TestResourceScope.Scoped
 class JavaFileScannerContextForTestsTest {
 
   private static final JavaCheck CHECK = new DummyRule();

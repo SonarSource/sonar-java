@@ -27,6 +27,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.JParserTestUtils;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.test.TestResourceScope;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -46,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.regex.AbstractRegexCheck.getLiterals;
 
+@TestResourceScope.Scoped
 class AbstractRegexCheckTest {
 
   private static final String JAVA_CODE = """
