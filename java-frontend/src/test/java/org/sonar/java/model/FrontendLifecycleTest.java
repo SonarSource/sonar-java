@@ -30,8 +30,11 @@ import org.sonar.java.TestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class FrontendLifecycleTest {
 
@@ -42,13 +45,13 @@ class FrontendLifecycleTest {
   void cleanup_is_canonical_idempotent_and_attempts_every_resource() {
     List<String> calls = new ArrayList<>();
     RuntimeException first = new IllegalStateException("first");
-    Error second = new AssertionError("second");
+    RuntimeException second = new IllegalArgumentException("second");
     FrontendResources resources = new FrontendResources();
     Runnable raw = () -> calls.add("once");
     Runnable handle = resources.own(raw);
     assertThat(resources.own(raw)).isSameAs(handle).hasSameHashCodeAs(handle);
     assertThat(new FrontendResources().own(raw)).isEqualTo(handle);
-    assertThat(handle).isNotEqualTo(resources.own(() -> calls.add("other"))).isNotEqualTo(null).isNotEqualTo("other");
+    assertThat(handle).isNotEqualTo(resources.own(() -> calls.add("other"))).isNotNull().isNotEqualTo(raw);
     resources.own(() -> { calls.add("first"); throw first; });
     resources.own(() -> { calls.add("second"); throw second; });
     resources.own(() -> calls.add("last"));
@@ -61,9 +64,40 @@ class FrontendLifecycleTest {
   }
 
   @Test
+  void cleanup_attempts_every_resource_and_suppresses_errors() {
+    FrontendResources resources = new FrontendResources();
+    AtomicInteger cleaned = new AtomicInteger();
+    AssertionError failure = new AssertionError("cleanup");
+    IllegalStateException first = new IllegalStateException("first");
+    resources.own(() -> { throw first; });
+    resources.own(() -> { throw failure; });
+    resources.own(cleaned::incrementAndGet);
+
+    assertThatThrownBy(resources::close).isSameAs(first).hasSuppressedException(failure);
+    resources.close();
+    assertThat(cleaned).hasValue(1);
+  }
+
+  @Test
+  void cleanup_rethrows_first_error_after_attempting_every_resource() {
+    FrontendResources resources = new FrontendResources();
+    AtomicInteger cleaned = new AtomicInteger();
+    AssertionError first = new AssertionError("first");
+    IllegalStateException second = new IllegalStateException("second");
+    resources.own(() -> { throw first; });
+    resources.own(() -> { throw first; });
+    resources.own(() -> { throw second; });
+    resources.own(cleaned::incrementAndGet);
+
+    assertThatThrownBy(resources::close).isSameAs(first).hasSuppressedException(second);
+    resources.close();
+    assertThat(cleaned).hasValue(1);
+  }
+
+  @Test
   void parse_failure_preserves_primary_and_suppresses_cleanup_failure() {
     RuntimeException primary = new IllegalArgumentException("parse");
-    Error secondary = new AssertionError("cleanup");
+    RuntimeException secondary = new IllegalStateException("cleanup");
     StubSession session = new StubSession();
     session.failure = primary;
     session.own(() -> { throw secondary; });
@@ -72,6 +106,52 @@ class FrontendLifecycleTest {
     assertThat(session.closed).isEqualTo(1);
     session.close();
     assertThat(session.closed).isEqualTo(1);
+  }
+
+  @Test
+  void parse_failure_suppresses_cleanup_errors() {
+    StubSession session = new StubSession();
+    RuntimeException primary = new IllegalArgumentException("parse");
+    session.failure = primary;
+    AssertionError failure = new AssertionError("cleanup");
+    session.own(() -> { throw failure; });
+
+    assertThatThrownBy(() -> FrontendParser.parse(configuration -> session, CONFIGURATION, "A.java", ""))
+      .isSameAs(primary).hasSuppressedException(failure);
+    assertThat(session.closed).isEqualTo(1);
+  }
+
+  @Test
+  void parse_errors_close_the_session_before_propagating() {
+    StubSession session = new StubSession();
+    AssertionError failure = new AssertionError("parse");
+    session.failure = failure;
+    try (session) {
+      assertThatThrownBy(() -> FrontendParser.parse(configuration -> session, CONFIGURATION, "A.java", ""))
+        .isSameAs(failure).hasNoSuppressedExceptions();
+      assertThat(session.closed).isEqualTo(1);
+    }
+    assertThat(session.closed).isEqualTo(1);
+  }
+
+  @Test
+  void parse_errors_preserve_primary_and_suppress_cleanup_failures() {
+    for (boolean cleanupError : List.of(false, true)) {
+      StubSession session = new StubSession();
+      AssertionError primary = new AssertionError("parse");
+      session.failure = primary;
+      Throwable secondary = cleanupError ? new AssertionError("cleanup") : new IllegalStateException("cleanup");
+      session.own(() -> {
+        if (secondary instanceof Error error) {
+          throw error;
+        }
+        throw (RuntimeException) secondary;
+      });
+
+      assertThatThrownBy(() -> FrontendParser.parse(configuration -> session, CONFIGURATION, "A.java", ""))
+        .isSameAs(primary).hasSuppressedException(secondary);
+      assertThat(session.closed).isEqualTo(1);
+    }
   }
 
   @Test
@@ -171,9 +251,9 @@ class FrontendLifecycleTest {
       AtomicInteger cleaned = new AtomicInteger();
       org.sonar.java.AnalysisException primary = new org.sonar.java.AnalysisException("scan");
       IllegalStateException secondary = new IllegalStateException("cleanup");
-      VisitorsBridge visitor = org.mockito.Mockito.mock(VisitorsBridge.class);
+      VisitorsBridge visitor = mock(VisitorsBridge.class);
       if (!failModification) {
-        org.mockito.Mockito.doThrow(primary).when(visitor).visitFile(any(), org.mockito.ArgumentMatchers.anyBoolean());
+        doThrow(primary).when(visitor).visitFile(any(), org.mockito.ArgumentMatchers.anyBoolean());
       }
       var scanner = new org.sonar.java.ast.JavaAstScanner(null, new org.sonar.java.telemetry.NoOpTelemetry(),
         org.sonar.java.telemetry.TelemetryKey.JAVA_ANALYSIS_MAIN);
@@ -189,13 +269,13 @@ class FrontendLifecycleTest {
   @Test
   void batch_metadata_failures_propagate_before_opening_a_session_or_falling_back() {
     for (boolean failPath : List.of(false, true)) {
-      InputFile input = org.mockito.Mockito.mock(InputFile.class);
+      InputFile input = mock(InputFile.class);
       IllegalStateException failure = new IllegalStateException("input metadata");
       if (failPath) {
-        org.mockito.Mockito.when(input.absolutePath()).thenThrow(failure);
+        when(input.absolutePath()).thenThrow(failure);
       } else {
-        org.mockito.Mockito.when(input.absolutePath()).thenReturn("/tmp/A.java");
-        org.mockito.Mockito.when(input.charset()).thenThrow(failure);
+        when(input.absolutePath()).thenReturn("/tmp/A.java");
+        when(input.charset()).thenThrow(failure);
       }
       AtomicInteger opened = new AtomicInteger();
       assertThatThrownBy(() -> batch(configuration -> { opened.incrementAndGet(); return new StubSession(); })
@@ -215,7 +295,7 @@ class FrontendLifecycleTest {
   }
 
   private static final class StubSession extends FrontendSession {
-    private final JavaTree.CompilationUnitTreeImpl tree = org.mockito.Mockito.mock(JavaTree.CompilationUnitTreeImpl.class);
+    private final JavaTree.CompilationUnitTreeImpl tree = mock(JavaTree.CompilationUnitTreeImpl.class);
     private Throwable failure;
     private RuntimeException conversionFailure;
     private int closed;

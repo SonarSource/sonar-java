@@ -56,7 +56,7 @@ public final class TestResourceScope implements BeforeAllCallback, AfterAllCallb
       IllegalStateException failure = new IllegalStateException("Parser fixtures require @TestResourceScope.Scoped or an explicit scope");
       try {
         resource.close();
-      } catch (Exception | Error cleanupFailure) {
+      } catch (Exception cleanupFailure) {
         failure.addSuppressed(cleanupFailure);
       }
       throw failure;
@@ -85,6 +85,7 @@ public final class TestResourceScope implements BeforeAllCallback, AfterAllCallb
     private Scope() {
     }
 
+    /** Attempts every fixture even after errors, then rethrows the first failure with later failures suppressed. */
     @Override
     public void close() throws Exception {
       if (closed) {
@@ -99,22 +100,26 @@ public final class TestResourceScope implements BeforeAllCallback, AfterAllCallb
         SCOPES.remove();
       }
       Throwable failure = null;
-      while (!resources.isEmpty()) {
-        try {
-          resources.pop().close();
-        } catch (Exception | Error e) {
-          if (failure == null) {
-            failure = e;
-          } else if (failure != e) {
-            failure.addSuppressed(e);
+      try {
+        while (!resources.isEmpty()) {
+          try {
+            resources.pop().close();
+          } catch (Exception | Error e) {
+            if (failure == null) {
+              failure = e;
+            } else if (failure != e) {
+              failure.addSuppressed(e);
+            }
           }
         }
-      }
-      if (failure instanceof Exception exception) {
-        throw exception;
+      } finally {
+        resources.clear();
       }
       if (failure instanceof Error error) {
         throw error;
+      }
+      if (failure instanceof Exception exception) {
+        throw exception;
       }
     }
   }

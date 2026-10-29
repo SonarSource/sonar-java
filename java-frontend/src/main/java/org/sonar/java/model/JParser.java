@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -305,8 +306,7 @@ public class JParser {
     return parse(astParser, version, unitName, source, ast -> null);
   }
 
-  static JavaTree.CompilationUnitTreeImpl parse(ASTParser astParser, String version, String unitName, String source,
-    java.util.function.Function<CompilationUnit, Runnable> environmentOwner) {
+  static JavaTree.CompilationUnitTreeImpl parse(ASTParser astParser, String version, String unitName, String source, Function<CompilationUnit, Runnable> environmentOwner) {
     astParser.setUnitName(unitName);
     astParser.setSource(source.toCharArray());
 

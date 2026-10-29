@@ -85,7 +85,7 @@ class VisitorsBridgeTest {
 
   private static final File FILE = new File("src/test/files/model/SimpleClass.java");
   private static final InputFile INPUT_FILE = TestUtils.inputFile(FILE);
-  private final CompilationUnitTree COMPILATION_UNIT_TREE = JParserTestUtils.parse(FILE);
+  private final CompilationUnitTree compilationUnitTree = JParserTestUtils.parse(FILE);
 
   private static final NullPointerException NPE = new NullPointerException("BimBadaboum");
 
@@ -93,7 +93,7 @@ class VisitorsBridgeTest {
   void rethrow_exception_when_hidden_property_set_to_true_with_JavaFileScanner() {
     VisitorsBridge visitorsBridge = visitorsBridge(new JFS_ThrowingNPEJavaFileScanner(), true);
 
-    assertThatThrownBy(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
+    assertThatThrownBy(() -> visitorsBridge.visitFile(compilationUnitTree, false))
       .isInstanceOf(AnalysisException.class)
       .hasMessageContaining("Failing check")
       .hasCauseInstanceOf(CheckFailureException.class)
@@ -108,7 +108,7 @@ class VisitorsBridgeTest {
   void swallow_exception_when_hidden_property_set_to_false_with_JavaFileScanner() {
     assertThatCode(() ->
       visitorsBridge(new JFS_ThrowingNPEJavaFileScanner(), false)
-        .visitFile(COMPILATION_UNIT_TREE, false)
+        .visitFile(compilationUnitTree, false)
     )
       .withFailMessage("Exception should be swallowed when property is not set")
       .doesNotThrowAnyException();
@@ -122,7 +122,7 @@ class VisitorsBridgeTest {
   void rethrow_exception_when_hidden_property_set_to_true_with_SubscriptionVisitor() {
     VisitorsBridge visitorsBridge = visitorsBridge(new SV1_ThrowingNPEVisitingClass(), true);
 
-    assertThatThrownBy(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
+    assertThatThrownBy(() -> visitorsBridge.visitFile(compilationUnitTree, false))
       .isInstanceOf(AnalysisException.class)
       .hasMessageContaining("Failing check")
       .hasCauseInstanceOf(CheckFailureException.class)
@@ -142,7 +142,7 @@ class VisitorsBridgeTest {
           new SV3_ThrowingNPEVisitingToken(),
           new SV4_ThrowingNPEVisitingTrivia()),
         false)
-        .visitFile(COMPILATION_UNIT_TREE, false);
+        .visitFile(compilationUnitTree, false);
     })
       .withFailMessage("Exceptions should be swallowed when property is not set")
       .doesNotThrowAnyException();
@@ -163,7 +163,7 @@ class VisitorsBridgeTest {
           new IV1_ThrowingNPEVisitingClass(),
           new IV2_ThrowingNPELeavingClass()),
         false)
-        .visitFile(COMPILATION_UNIT_TREE, false);
+        .visitFile(compilationUnitTree, false);
     })
       .withFailMessage("Exceptions should be swallowed when property is not set")
       .doesNotThrowAnyException();
@@ -177,7 +177,7 @@ class VisitorsBridgeTest {
   void clear_state_when_leave_file_does_not_delegate() {
     StatefulVisitorWithoutLeaveFileDelegation visitor = new StatefulVisitorWithoutLeaveFileDelegation(false);
 
-    visitorsBridge(visitor, false).visitFile(COMPILATION_UNIT_TREE, false);
+    visitorsBridge(visitor, false).visitFile(compilationUnitTree, false);
 
     assertThat(visitor.state).isFalse();
     assertThat(visitor.leaveCalled).isTrue();
@@ -190,7 +190,7 @@ class VisitorsBridgeTest {
 
     VisitorsBridge visitorsBridge = visitorsBridge(visitor, true);
 
-    assertThatThrownBy(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
+    assertThatThrownBy(() -> visitorsBridge.visitFile(compilationUnitTree, false))
       .isInstanceOf(AnalysisException.class);
 
     assertThat(visitor.state).isFalse();
@@ -208,11 +208,11 @@ class VisitorsBridgeTest {
     VisitorsBridge visitorsBridge = visitorsBridge(List.of(firstVisitor, secondVisitor, lastVisitor), failOnException);
 
     if (failOnException) {
-      assertThatThrownBy(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
+      assertThatThrownBy(() -> visitorsBridge.visitFile(compilationUnitTree, false))
         .isInstanceOf(AnalysisException.class)
         .hasRootCause(firstFailure);
     } else {
-      assertThatCode(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false)).doesNotThrowAnyException();
+      assertThatCode(() -> visitorsBridge.visitFile(compilationUnitTree, false)).doesNotThrowAnyException();
     }
 
     assertThat(lastVisitor.state).isFalse();
@@ -230,7 +230,7 @@ class VisitorsBridgeTest {
     ThrowingCleanupVisitor cleanupVisitor = new ThrowingCleanupVisitor(new IllegalStateException("Cleanup failure"));
     VisitorsBridge visitorsBridge = visitorsBridge(List.of(failingVisitor, cleanupVisitor), true);
 
-    assertThatThrownBy(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
+    assertThatThrownBy(() -> visitorsBridge.visitFile(compilationUnitTree, false))
       .isInstanceOf(AnalysisException.class)
       .hasRootCause(NPE);
 
@@ -245,7 +245,7 @@ class VisitorsBridgeTest {
           new SV1_ThrowingNPEVisitingClass(),
           new IV1_ThrowingNPEVisitingClass()),
         false)
-        .visitFile(COMPILATION_UNIT_TREE, false);
+        .visitFile(compilationUnitTree, false);
     })
       .withFailMessage("Exceptions should be swallowed when property is not set")
       .doesNotThrowAnyException();
@@ -260,7 +260,7 @@ class VisitorsBridgeTest {
   @Test
   void no_log_when_filter_execute_fine() {
     VisitorsBridge visitorsBridge = visitorsBridge(Arrays.asList(), true);
-    assertThatCode(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
+    assertThatCode(() -> visitorsBridge.visitFile(compilationUnitTree, false))
       .doesNotThrowAnyException();
   }
 

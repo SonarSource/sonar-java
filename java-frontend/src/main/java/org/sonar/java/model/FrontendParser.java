@@ -30,6 +30,7 @@ public final class FrontendParser {
     return parse(config.backend(), config.configuration, unitName, source);
   }
 
+  /** Closes the session after parsing exceptions or errors, preserving the parsing failure and suppressing cleanup failures. */
   static ParsedFile parse(FrontendBackend backend, FrontendConfiguration configuration, String unitName, String source) {
     FrontendSession session = backend.open(configuration);
     try {
