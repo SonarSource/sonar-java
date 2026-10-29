@@ -16,7 +16,6 @@
  */
 package org.sonar.java.model;
 
-import java.util.List;
 import java.util.function.BiConsumer;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.ProgressMonitor;
@@ -31,7 +30,7 @@ abstract class FrontendSession implements AutoCloseable {
 
   abstract JavaTree.CompilationUnitTreeImpl parse(String unitName, String source);
 
-  abstract void parseBatch(List<? extends InputFile> inputs, ProgressMonitor monitor, BiConsumer<InputFile, ParsedUnit> action);
+  abstract void parseBatch(FrontendBatch inputs, ProgressMonitor monitor, BiConsumer<InputFile, ParsedUnit> action);
 
   @Override
   public void close() {

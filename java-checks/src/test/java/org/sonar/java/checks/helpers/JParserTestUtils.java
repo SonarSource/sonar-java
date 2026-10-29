@@ -22,8 +22,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.sonar.java.model.JParser;
+import org.sonar.java.model.FrontendParser;
 import org.sonar.java.model.JParserConfig;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -37,6 +38,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+@TestResourceScope.Scoped
 public abstract class JParserTestUtils {
 
   static IdentifierTree variableFromLastReturnStatement(List<StatementTree> statements) {
@@ -85,7 +87,7 @@ public abstract class JParserTestUtils {
   public static CompilationUnitTree parse(String source) {
     List<File> classpath = Arrays.asList(new File("target/test-classes"), new File("target/classes"));
     JavaVersion version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version.toString(), "test", source);
+    return TestResourceScope.retain(FrontendParser.parse(version, classpath, "test", source)).tree();
   }
 
 }

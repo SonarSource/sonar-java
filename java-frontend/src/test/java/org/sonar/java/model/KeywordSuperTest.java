@@ -17,6 +17,7 @@
 package org.sonar.java.model;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -26,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.model.EcjTestSupport.clearSymbol;
 import static org.sonar.java.model.EcjTestSupport.clearType;
 
+@TestResourceScope.Scoped
 class KeywordSuperTest {
 
   @Test

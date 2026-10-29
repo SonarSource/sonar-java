@@ -35,6 +35,7 @@ import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -59,6 +60,7 @@ import static org.sonar.java.model.JUtilsTest.firstClass;
 import static org.sonar.java.model.JUtilsTest.firstMethod;
 import static org.sonar.java.model.JUtilsTest.nthMethod;
 
+@TestResourceScope.Scoped
 class JMethodSymbolTest {
 
   @Test
@@ -66,15 +68,15 @@ class JMethodSymbolTest {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { C m(C p) throws Exception { return null; } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
-    JMethodSymbol symbol = sema(cu).methodSymbol(Objects.requireNonNull(methodBinding(m)));
+    Symbol.MethodSymbol symbol = m.symbol();
     assertThat(symbol.parameterTypes())
-      .containsOnly(sema(cu).type(Objects.requireNonNull(typeBinding(c))));
+      .containsOnly(c.symbol().type());
     assertThat(symbol.declarationParameters())
       .containsExactly(m.parameters().get(0).symbol());
     assertThat(symbol.returnType())
-      .isSameAs(sema(cu).typeSymbol(Objects.requireNonNull(typeBinding(c))));
+      .isSameAs(c.symbol());
     assertThat(symbol.thrownTypes())
-      .containsOnly(sema(cu).type(Objects.requireNonNull(sema(cu).resolveType("java.lang.Exception"))));
+      .containsOnly(cu.sema.getClassType("java.lang.Exception"));
   }
 
   @Test
@@ -83,7 +85,7 @@ class JMethodSymbolTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     Symbol.MethodSymbol declarationSymbol = m.symbol();
-    JType declarationParameterType = sema(cu).type(Objects.requireNonNull((methodBinding(m).getParameterTypes()[0])));
+    Type declarationParameterType = m.parameters().get(0).type().symbolType();
     assertThat(declarationSymbol.parameterTypes())
       .containsOnly(declarationParameterType);
     Symbol declarationParameterSymbol = m.parameters().get(0).symbol();

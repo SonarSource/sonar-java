@@ -24,6 +24,7 @@ import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.checks.helpers.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -33,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests an edge case of {@link AnnotationFieldReferenceFinder} that can not be covered with regular Java files by the tests in
  * {@link org.sonar.java.checks.unused.UnusedPrivateFieldCheckTest}.
  */
+@TestResourceScope.Scoped
 class AnnotationFieldReferenceFinderTest {
   @RegisterExtension
   private final LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.ERROR);

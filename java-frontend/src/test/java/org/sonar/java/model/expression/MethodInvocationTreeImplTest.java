@@ -18,6 +18,7 @@ package org.sonar.java.model.expression;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -29,6 +30,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestResourceScope.Scoped
 class MethodInvocationTreeImplTest {
 
   @Test

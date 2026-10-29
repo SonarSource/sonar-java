@@ -18,7 +18,6 @@ package org.sonar.java.model;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -83,15 +82,12 @@ final class EcjFrontendBackend implements FrontendBackend {
     }
 
     @Override
-    void parseBatch(List<? extends InputFile> inputs, ProgressMonitor monitor, BiConsumer<InputFile, ParsedUnit> action) {
-      Map<File, InputFile> byPath = new HashMap<>();
-      inputs.forEach(input -> byPath.put(new File(input.absolutePath()), input));
-      parser.createASTs(inputs.stream().map(InputFile::absolutePath).toArray(String[]::new),
-        inputs.stream().map(input -> input.charset().name()).toArray(String[]::new), new String[0], new FileASTRequestor() {
+    void parseBatch(FrontendBatch inputs, ProgressMonitor monitor, BiConsumer<InputFile, ParsedUnit> action) {
+      parser.createASTs(inputs.paths().toArray(String[]::new), inputs.encodings().toArray(String[]::new), new String[0], new FileASTRequestor() {
           @Override
           public void acceptAST(String sourceFilePath, CompilationUnit ast) {
             Runnable cleaner = own(ASTUtils.getEnvironmentCleaner(ast.getAST()));
-            InputFile input = byPath.get(new File(sourceFilePath));
+            InputFile input = inputs.byPath().get(new File(sourceFilePath));
             action.accept(input, () -> JParser.convert(configuration.sourceVersion(), input.filename(), input.contents(), ast, cleaner));
           }
         }, new EcjProgressMonitor(monitor));

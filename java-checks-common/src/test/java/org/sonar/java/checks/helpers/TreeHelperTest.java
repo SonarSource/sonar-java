@@ -24,6 +24,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.model.statement.BlockTreeImpl;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
@@ -36,6 +37,7 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestResourceScope.Scoped
 class TreeHelperTest extends JParserTestUtils {
 
   @Test

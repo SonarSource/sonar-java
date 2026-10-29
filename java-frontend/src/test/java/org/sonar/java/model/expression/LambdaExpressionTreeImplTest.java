@@ -22,6 +22,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph.Block;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -38,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.model.assertions.SymbolAssert.assertThat;
 import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 
+@TestResourceScope.Scoped
 class LambdaExpressionTreeImplTest {
 
   private static final String CLASS_WITH_METHOD_WITH_LAMBDA = """

@@ -18,6 +18,7 @@ package org.sonar.java.checks.helpers;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -25,6 +26,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@TestResourceScope.Scoped
 class ClassPatternsUtilsTest {
 
   @Test

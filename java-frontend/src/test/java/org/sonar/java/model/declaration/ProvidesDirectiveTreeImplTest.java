@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExportsDirectiveTree;
@@ -32,6 +33,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestResourceScope.Scoped
 class ProvidesDirectiveTreeImplTest {
 
   private static ProvidesDirectiveTree providesDirective(String exportsDirective) {

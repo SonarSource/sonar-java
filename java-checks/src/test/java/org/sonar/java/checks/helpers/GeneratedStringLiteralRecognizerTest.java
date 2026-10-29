@@ -19,11 +19,13 @@ package org.sonar.java.checks.helpers;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestResourceScope.Scoped
 class GeneratedStringLiteralRecognizerTest {
 
   @Test

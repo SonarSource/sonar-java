@@ -18,6 +18,7 @@ package org.sonar.java.model.expression;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -38,6 +39,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 
+@TestResourceScope.Scoped
 class InstanceOfTreeImplTest {
 
   private static final String CLASS_WITH_INSTANCE_OF = """

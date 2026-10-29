@@ -27,6 +27,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.TestUtils;
 import org.sonar.java.telemetry.NoOpTelemetry;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
@@ -39,6 +40,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@TestResourceScope.Scoped
 class ComponentScanPackageGathererTest extends SpringContextGathererTest {
 
   private static final String MODULE_KEY = "";

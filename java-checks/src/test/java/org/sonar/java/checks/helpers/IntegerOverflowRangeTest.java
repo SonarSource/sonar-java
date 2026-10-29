@@ -21,6 +21,7 @@ import java.math.BigInteger;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.helpers.IntegerOverflowRange.Range;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -28,6 +29,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestResourceScope.Scoped
 class IntegerOverflowRangeTest {
 
   private static final BigInteger INT_MIN = BigInteger.valueOf(Integer.MIN_VALUE);

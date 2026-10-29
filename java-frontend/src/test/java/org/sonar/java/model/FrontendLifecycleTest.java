@@ -186,6 +186,25 @@ class FrontendLifecycleTest {
     }
   }
 
+  @Test
+  void batch_metadata_failures_propagate_before_opening_a_session_or_falling_back() {
+    for (boolean failPath : List.of(false, true)) {
+      InputFile input = org.mockito.Mockito.mock(InputFile.class);
+      IllegalStateException failure = new IllegalStateException("input metadata");
+      if (failPath) {
+        org.mockito.Mockito.when(input.absolutePath()).thenThrow(failure);
+      } else {
+        org.mockito.Mockito.when(input.absolutePath()).thenReturn("/tmp/A.java");
+        org.mockito.Mockito.when(input.charset()).thenThrow(failure);
+      }
+      AtomicInteger opened = new AtomicInteger();
+      assertThatThrownBy(() -> batch(configuration -> { opened.incrementAndGet(); return new StubSession(); })
+        .parse(List.of(input), () -> false, new AnalysisProgress(1), (file, result) -> { throw new AssertionError("unexpected callback"); }))
+        .isSameAs(failure);
+      assertThat(opened).hasValue(0);
+    }
+  }
+
   private static JParserConfig batch(FrontendBackend backend) {
     return new JParserConfig.Batch(JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false) {
       @Override
@@ -212,9 +231,9 @@ class FrontendLifecycleTest {
     }
 
     @Override
-    void parseBatch(List<? extends InputFile> inputs, ProgressMonitor monitor, BiConsumer<InputFile, ParsedUnit> action) {
+    void parseBatch(FrontendBatch inputs, ProgressMonitor monitor, BiConsumer<InputFile, ParsedUnit> action) {
       failIfRequested();
-      inputs.forEach(input -> action.accept(input, () -> {
+      inputs.inputs().forEach(input -> action.accept(input, () -> {
         if (conversionFailure != null) {
           throw conversionFailure;
         }

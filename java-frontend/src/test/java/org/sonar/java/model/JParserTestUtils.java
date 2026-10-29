@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -81,7 +82,7 @@ public class JParserTestUtils {
   }
 
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath, JavaVersion version) {
-    return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version.toString(), unitName, source);
+    return TestResourceScope.retain(FrontendParser.parse(version, classpath, unitName, source)).tree();
   }
 
   public static List<File> checksTestClassPath() throws IOException {

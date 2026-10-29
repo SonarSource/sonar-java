@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.expression.LiteralTreeImpl;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -29,6 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@TestResourceScope.Scoped
 class JavaTextEditTest {
   private static final File JAVA_FILE = new File("src/test/files/api/JavaFileInternalJavaIssueBuilderTest.java");
   private static ClassTree classTree;

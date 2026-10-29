@@ -40,6 +40,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -56,6 +57,7 @@ import static org.mockito.Mockito.when;
  *
  */
 @ExtendWith(MockitoExtension.class)
+@TestResourceScope.Scoped
 class DefaultJavaFileScannerContextWithSensorContextTest {
 
   @Mock private FileLinesContextFactory fileLinesContextFactory;

@@ -29,6 +29,7 @@ import org.sonar.java.model.declaration.EnumConstantTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -57,6 +58,7 @@ import static org.sonar.java.model.EcjTestSupport.typeBinding;
 import static org.sonar.java.model.EcjTestSupport.variableBinding;
 import static org.sonar.java.model.assertions.SymbolAssert.assertThat;
 
+@TestResourceScope.Scoped
 class JSymbolTest {
 
   @Test
