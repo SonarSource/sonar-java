@@ -65,7 +65,7 @@ class DeadStoreCheckTest {
     @Override
     public void visitVariable(VariableTree tree) {
       if (tree instanceof VariableTreeImpl varImpl) {
-        varImpl.setSymbol(Symbol.UNKNOWN_SYMBOL);
+        varImpl.variableSymbol = null;
       }
       super.visitVariable(tree);
     }
