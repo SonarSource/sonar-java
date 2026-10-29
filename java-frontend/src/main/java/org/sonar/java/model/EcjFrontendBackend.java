@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ASTUtils;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.sonar.api.batch.fs.InputFile;
@@ -78,7 +79,7 @@ final class EcjFrontendBackend implements FrontendBackend {
 
     @Override
     JavaTree.CompilationUnitTreeImpl parse(String unitName, String source) {
-      return JParser.parse(parser, configuration.sourceVersion(), unitName, source);
+      return JParser.parse(parser, configuration.sourceVersion(), unitName, source, ast -> own(ASTUtils.getEnvironmentCleaner(ast.getAST())));
     }
 
     @Override
@@ -89,8 +90,9 @@ final class EcjFrontendBackend implements FrontendBackend {
         inputs.stream().map(input -> input.charset().name()).toArray(String[]::new), new String[0], new FileASTRequestor() {
           @Override
           public void acceptAST(String sourceFilePath, CompilationUnit ast) {
+            Runnable cleaner = own(ASTUtils.getEnvironmentCleaner(ast.getAST()));
             InputFile input = byPath.get(new File(sourceFilePath));
-            action.accept(input, () -> JParser.convert(configuration.sourceVersion(), input.filename(), input.contents(), ast));
+            action.accept(input, () -> JParser.convert(configuration.sourceVersion(), input.filename(), input.contents(), ast, cleaner));
           }
         }, new EcjProgressMonitor(monitor));
     }

@@ -23,12 +23,19 @@ import org.sonar.java.ProgressMonitor;
 
 abstract class FrontendSession implements AutoCloseable {
 
+  private final FrontendResources resources = new FrontendResources();
+
+  final Runnable own(Runnable cleaner) {
+    return resources.own(cleaner);
+  }
+
   abstract JavaTree.CompilationUnitTreeImpl parse(String unitName, String source);
 
   abstract void parseBatch(List<? extends InputFile> inputs, ProgressMonitor monitor, BiConsumer<InputFile, ParsedUnit> action);
 
   @Override
   public void close() {
+    resources.close();
   }
 
   @FunctionalInterface

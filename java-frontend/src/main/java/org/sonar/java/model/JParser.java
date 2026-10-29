@@ -302,6 +302,11 @@ public class JParser {
    * @throws RecognitionException in case of syntax errors
    */
   public static JavaTree.CompilationUnitTreeImpl parse(ASTParser astParser, String version, String unitName, String source) {
+    return parse(astParser, version, unitName, source, ast -> null);
+  }
+
+  static JavaTree.CompilationUnitTreeImpl parse(ASTParser astParser, String version, String unitName, String source,
+    java.util.function.Function<CompilationUnit, Runnable> environmentOwner) {
     astParser.setUnitName(unitName);
     astParser.setSource(source.toCharArray());
 
@@ -313,10 +318,15 @@ public class JParser {
       throw new RecognitionException(-1, "ECJ: Unable to parse file.", e);
     }
 
-    return convert(version, unitName, source, astNode);
+    return convert(version, unitName, source, astNode, environmentOwner.apply(astNode));
   }
 
   static JavaTree.CompilationUnitTreeImpl convert(String version, String unitName, String source, CompilationUnit astNode) {
+    return convert(version, unitName, source, astNode, null);
+  }
+
+  static JavaTree.CompilationUnitTreeImpl convert(String version, String unitName, String source, CompilationUnit astNode,
+    @Nullable Runnable environmentCleaner) {
     List<IProblem> errors = Stream.of(astNode.getProblems()).filter(IProblem::isError).toList();
     Optional<IProblem> possibleSyntaxError = errors.stream().filter(IS_SYNTAX_ERROR).findFirst();
     LineColumnConverter lineColumnConverter = new LineColumnConverter(source);
@@ -336,7 +346,7 @@ public class JParser {
       .collect(Collectors.toSet());
 
     JParser converter = new JParser();
-    converter.sema = new JSema(astNode.getAST());
+    converter.sema = new JSema(astNode.getAST(), environmentCleaner);
     converter.compilationUnit = astNode;
     converter.tokenManager = createTokenManager(version, unitName, source);
     converter.lineColumnConverter = lineColumnConverter;

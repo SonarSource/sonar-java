@@ -27,14 +27,20 @@ public final class FrontendParser {
 
   public static ParsedFile parse(JavaVersion version, List<File> classpath, String unitName, String source) {
     JParserConfig config = JParserConfig.Mode.FILE_BY_FILE.create(version, classpath);
-    FrontendSession session = config.openSession();
+    return parse(config.backend(), config.configuration, unitName, source);
+  }
+
+  static ParsedFile parse(FrontendBackend backend, FrontendConfiguration configuration, String unitName, String source) {
+    FrontendSession session = backend.open(configuration);
     try {
       return new ParsedFile(session.parse(unitName, source), session);
     } catch (RuntimeException | Error failure) {
       try {
         session.close();
       } catch (RuntimeException | Error cleanupFailure) {
-        failure.addSuppressed(cleanupFailure);
+        if (failure != cleanupFailure) {
+          failure.addSuppressed(cleanupFailure);
+        }
       }
       throw failure;
     }
