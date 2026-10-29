@@ -873,6 +873,7 @@ name = "semsitter-bridge"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "memmap2",
  "serde_json",
  "tempfile",
  "tree-sitter",
@@ -880,6 +881,7 @@ dependencies = [
  "udg-family-jvm",
  "udg-gen",
  "udg-lang-sdk",
+ "udg-semantic",
 ]
 
 [[package]]

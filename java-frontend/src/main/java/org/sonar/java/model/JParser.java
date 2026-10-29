@@ -61,7 +61,7 @@ public final class JParser {
       Path target = Path.of(System.getProperty("java.io.tmpdir"), "sonar-java", "semsitter-bridge");
       return BridgeExtractor.extract(target, new PlatformDetection().getPlatform());
     } catch (Exception failure) {
-      throw new RecognitionException(1, "SemSitter bridge is unavailable", failure);
+      throw new RecognitionException(1, "SemSitter bridge is unavailable: " + failure.getMessage(), failure);
     }
   }
 

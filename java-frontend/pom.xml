@@ -148,6 +148,18 @@
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>${maven.multiModuleProjectDirectory}/semsitter-bridge/prebuilt</directory>
+        <includes>
+          <include>bridge-*.xz</include>
+        </includes>
+        <targetPath>bridge</targetPath>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
