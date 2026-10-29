@@ -290,6 +290,10 @@
             <excludedGroups>com.sonarsource|org.sonarsource.java</excludedGroups>
             <licenseUrlReplacements>
                <licenseUrlReplacement>
+                    <regexp>https?://www\.apache\.org/licenses/LICENSE-2\.0(?:\.txt)?$</regexp>
+                    <replacement>${project.baseUri}/license-resources/apache.txt</replacement>
+                </licenseUrlReplacement>
+               <licenseUrlReplacement>
                     <regexp>http://www.gnu.org/licenses/lgpl.txt</regexp>
                     <replacement>${project.baseUri}/license-resources/lgpl.txt</replacement>
                 </licenseUrlReplacement>
