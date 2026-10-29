@@ -100,6 +100,19 @@ fn types_come_from_the_project_graph_and_the_jdk_table_with_their_supertypes() {
 }
 
 #[test]
+fn dump_json_writes_the_udg_the_semantic_dump_and_the_cst() {
+  let dir = tempfile::tempdir().unwrap();
+  let dump = tempfile::tempdir().unwrap();
+  let file = write(dir.path(), "A.java", "class A { int f; }");
+  semsitter_bridge::analyze_dumping(dir.path(), &[file], &[], Some(dump.path())).unwrap();
+  assert!(dump.path().join("udg.json").is_file());
+  let semdump = std::fs::read_to_string(dump.path().join("semdump/A.java.semdump.json")).unwrap();
+  assert!(semdump.contains("semantic-dump/1"), "{semdump}");
+  let cst = std::fs::read_to_string(dump.path().join("cst/A.java.json")).unwrap();
+  assert!(cst.contains("\"k\": \"program\""), "{cst}");
+}
+
+#[test]
 fn a_bom_is_neither_a_syntax_error_nor_a_column() {
   let cst = semsitter_bridge::parse_only(b"\xEF\xBB\xBFclass A {}").unwrap();
   assert_eq!(cst["hasError"], false);

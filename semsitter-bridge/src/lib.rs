@@ -17,14 +17,20 @@
 
 //! Java CST annotated with SemSitter semantics.
 //!
-//! [`analyze`] runs one SemSitter scan over a batch of Java files (with the project classpath),
-//! writes the `semantic-dump/1` of every file, and keeps the graph facts SonarJava needs on top
-//! of it (return types, supertypes, overrides, item kinds and modifiers).
+//! [`analyze`] runs one SemSitter scan over a batch of Java files (with the project classpath)
+//! and keeps each file's `semantic-dump/1` in memory, plus the graph facts SonarJava needs on
+//! top of it (return types, supertypes, overrides, item kinds and modifiers).
 //! [`Analysis::cst`] then parses a file with tree-sitter-java and attaches, by exact byte span,
 //! the symbols declared at a name (`decls`) and the resolved occurrences (`refs`).
+//!
+//! The scan's graph is the UDG. A dump symbol's id is that graph's FQN, and the CST only
+//! points at it by id. Transport of those documents lives in [`wire`] and [`shm`] so it can
+//! move into SemSitter later without the Java frontend knowing where the bytes were built.
 
 pub mod server;
+pub mod shm;
 pub mod types;
+pub mod wire;
 
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::io;
@@ -36,13 +42,13 @@ use serde_json::{Map, Value, json};
 use tree_sitter::{Node, Parser, Tree};
 use udg_gen::overlay_passes::overlay_registry;
 use udg_gen::scanner::{ScanOptions, scan_timed_with_registry};
-use udg_gen::semantic_dump::{Scanned, languages, run_with};
+use udg_gen::semantic_dump::languages;
 use udg_gen::udg_model::graph::{DependencyTarget, NodeTier, UdgDependencyKind, UdgGraph};
 use udg_gen::udg_model::source_provider::SourceProvider;
 use udg_family_jvm::external::classpath::LazyClasspath;
 use udg_lang_sdk::settings::ResolvedSettings;
+use udg_semantic::{DumpLanguage, DumpProject, GraphIds, language_of};
 
-const DUMP_SUFFIX: &str = ".semdump.json";
 const BOM: &[u8] = b"\xEF\xBB\xBF";
 const STACK_SIZE: usize = 512 * 1024 * 1024;
 const GRAPH_EDGES: &[(&str, &str)] = &[
@@ -105,9 +111,14 @@ impl SourceProvider for ListedSources {
 /// Scans `files` (Java sources) as one project rooted at `root`, resolving library types
 /// against `classpath` (jars, zips and class directories, declarations only).
 pub fn analyze(root: &Path, files: &[PathBuf], classpath: &[String]) -> Result<Analysis> {
+  analyze_dumping(root, files, classpath, None)
+}
+
+/// [`analyze`], and when `dump` is set writes `udg.json`, each `semantic-dump/1` document and
+/// the annotated CST as JSON under that directory. The scan itself stays in memory.
+pub fn analyze_dumping(root: &Path, files: &[PathBuf], classpath: &[String], dump: Option<&Path>) -> Result<Analysis> {
   let files: Vec<PathBuf> = files.iter().filter_map(|f| std::fs::canonicalize(f).ok()).collect();
   let root = project_root(root, &files);
-  let out = tempfile::tempdir()?;
   let mut opts = ScanOptions {
     src_dirs: vec![root.clone()],
     project_root: Some(root.clone()),
@@ -120,34 +131,34 @@ pub fn analyze(root: &Path, files: &[PathBuf], classpath: &[String]) -> Result<A
   opts.extras.override_edges = true;
   opts.extras.annotation_edges = true;
   opts.extras.field_reference_edges = true;
+  opts.extras.decl_location = true;
+  opts.extras.field_items = true;
   opts.extras.ucfg_classpath = classpath.to_vec();
 
+  let rel: Vec<String> = files.iter().filter_map(|f| f.strip_prefix(&root).ok()).map(to_slash).collect();
   let mut facts = HashMap::new();
   let mut calls = HashMap::new();
+  let mut raw_dumps: HashMap<String, String> = HashMap::new();
   if !files.is_empty() {
-    run_with(opts, out.path(), &languages(), |opts| {
-      let registry = overlay_registry();
-      let (graph, timings, _failures, _artefacts) = scan_timed_with_registry(opts, &registry)?;
-      facts = graph_facts(&graph);
-      calls = call_sites(&graph);
-      Ok(Scanned {
-        graph,
-        files: timings.into_iter().map(|t| t.path).collect(),
-        settings: registry.settings_report().unwrap_or_else(|| Arc::clone(ResolvedSettings::empty())),
-      })
-    })?;
+    let registry = overlay_registry();
+    let (graph, _timings, _failures, _artefacts) = scan_timed_with_registry(&opts, &registry)?;
+    facts = graph_facts(&graph);
+    calls = call_sites(&graph);
+    let settings = registry
+      .settings_report()
+      .unwrap_or_else(|| Arc::clone(ResolvedSettings::empty()));
+    raw_dumps = memory_dumps(&root, &rel, &graph, settings.as_ref())?;
+    if let Some(dir) = dump {
+      write_debug_bundle(dir, &graph, &raw_dumps)?;
+    }
   }
 
-  let rel: Vec<String> = files.iter().filter_map(|f| f.strip_prefix(&root).ok()).map(to_slash).collect();
-  let dumps = rel
+  let dumps = raw_dumps
     .iter()
-    .filter_map(|r| {
-      let text = std::fs::read_to_string(out.path().join(format!("{r}{DUMP_SUFFIX}"))).ok()?;
-      Some((r.clone(), serde_json::from_str(&text).ok()?))
-    })
+    .filter_map(|(path, text)| Some((path.clone(), serde_json::from_str(text).ok()?)))
     .collect();
   let project_types = types::ProjectTypes::new(&facts);
-  Ok(Analysis {
+  let analysis = Analysis {
     root,
     files: rel,
     dumps,
@@ -155,7 +166,78 @@ pub fn analyze(root: &Path, files: &[PathBuf], classpath: &[String]) -> Result<A
     calls,
     project_types,
     classpath: LazyClasspath::new(classpath.to_vec()),
-  })
+  };
+  if let Some(dir) = dump {
+    write_cst_json(&analysis, dir)?;
+  }
+  Ok(analysis)
+}
+
+fn memory_dumps(root: &Path, files: &[String], graph: &UdgGraph, settings: &ResolvedSettings) -> Result<HashMap<String, String>> {
+  let ids = GraphIds::of(graph);
+  let mut listed: Vec<&str> = files.iter().map(String::as_str).filter(|r| is_project_relative(r)).collect();
+  listed.sort_unstable();
+  listed.dedup();
+  let plain = languages();
+  let project = DumpProject {
+    graph,
+    root,
+    files: &listed,
+    settings,
+  };
+  let bound: Vec<Option<Box<dyn DumpLanguage>>> = plain.iter().map(|language| language.for_project(&project)).collect();
+  let bound_langs: Vec<&dyn DumpLanguage> = plain
+    .iter()
+    .zip(&bound)
+    .map(|(language, project_language)| project_language.as_deref().unwrap_or(*language))
+    .collect();
+  let mut dumps = HashMap::new();
+  for rel in listed {
+    let Some(language) = language_of(&bound_langs, rel) else {
+      continue;
+    };
+    let Ok(stored) = std::fs::read(root.join(rel)) else {
+      continue;
+    };
+    if let Some(document) = language.dump_stored(rel, stored, ids.file(rel)) {
+      dumps.insert(rel.to_string(), document);
+    }
+  }
+  Ok(dumps)
+}
+
+fn is_project_relative(rel: &str) -> bool {
+  let path = Path::new(rel);
+  !path.is_absolute()
+    && path.components().all(|c| matches!(c, std::path::Component::Normal(_) | std::path::Component::CurDir))
+}
+
+fn write_debug_bundle(dir: &Path, graph: &UdgGraph, dumps: &HashMap<String, String>) -> Result<()> {
+  std::fs::create_dir_all(dir)?;
+  let file = std::fs::File::create(dir.join("udg.json")).context("creating udg.json")?;
+  udg_gen::udg_graph_to_proto_json_writer(graph, udg_gen::EdgeFidelity::Full, file).context("writing udg.json")?;
+  for (rel, document) in dumps {
+    let target = dir.join("semdump").join(format!("{rel}.semdump.json"));
+    if let Some(parent) = target.parent() {
+      std::fs::create_dir_all(parent)?;
+    }
+    std::fs::write(target, document).with_context(|| format!("writing semdump {rel}"))?;
+  }
+  Ok(())
+}
+
+fn write_cst_json(analysis: &Analysis, dir: &Path) -> Result<()> {
+  use std::io::Write;
+  for file in analysis.files() {
+    let target = dir.join("cst").join(format!("{file}.json"));
+    if let Some(parent) = target.parent() {
+      std::fs::create_dir_all(parent)?;
+    }
+    let mut out = std::fs::File::create(&target).with_context(|| format!("creating {}", target.display()))?;
+    serde_json::to_writer_pretty(&mut out, &analysis.cst(file)?)?;
+    writeln!(out)?;
+  }
+  Ok(())
 }
 
 impl Analysis {
