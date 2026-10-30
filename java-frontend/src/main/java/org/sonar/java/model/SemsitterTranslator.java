@@ -1496,12 +1496,15 @@ final class SemsitterTranslator {
       if ("formal_parameters".equals(formals.k())) {
         parameters.addAll(parameters(formals));
       } else {
+        VariableTreeImpl previous = null;
         for (Node child : formals.children()) {
           if ("identifier".equals(child.k())) {
             IdentifierTreeImpl name = identifier(child);
-            VariableTreeImpl parameter = new VariableTreeImpl(name);
-            bindDeclaration(parameter, child, name);
-            parameters.add(parameter);
+            previous = new VariableTreeImpl(name);
+            bindDeclaration(previous, child, name);
+            parameters.add(previous);
+          } else if (",".equals(child.text()) && previous != null) {
+            previous.setEndToken(token(child));
           }
         }
       }
