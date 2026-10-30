@@ -19,7 +19,7 @@ docker_build() {
   docker run --rm --platform "$platform" \
     -v "$PWD:/src:ro" -v "$work/vendor:/vendor:ro" -v "$work/config.toml:/usr/local/cargo/config.toml:ro" -v "$work/out:/out" \
     -e CARGO_TARGET_DIR=/tmp/target "$image" \
-    sh -c "$setup && cd /src && cargo build --release --locked --offline $target && cp /tmp/target/${target:+${target#--target }/}release/semsitter-bridge* /out/$out"
+    sh -c "$setup && cd /src && cargo build --release --locked --offline $target && cp \$(ls /tmp/target/${target:+${target#--target }/}release/semsitter-bridge /tmp/target/${target:+${target#--target }/}release/semsitter-bridge.exe 2>/dev/null) /out/$out"
 }
 
 docker_build linux/amd64 rust:1-alpine "apk add --no-cache musl-dev" "" linux-x64
