@@ -24,6 +24,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
@@ -31,7 +32,8 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
   private final boolean parameter;
   private final boolean local;
   private boolean effectivelyFinal;
-  private Optional<Object> constant = Optional.empty();
+  @Nullable
+  private Optional<Object> constant;
 
   JVariableSymbol(JSema sema, @Nullable String id, String name, String dumpKind) {
     super(sema, Kind.VARIABLE, id, name);
@@ -62,7 +64,20 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
   @Override
   public Optional<Object> constantValue() {
+    if (constant == null) {
+      constant = Optional.ofNullable(declaredConstant());
+    }
     return constant;
+  }
+
+  @Nullable
+  private Object declaredConstant() {
+    VariableTree declaration = declaration();
+    if (declaration == null || !(declaration.initializer() instanceof LiteralTree literal)
+      || !(isFinal() || owner().isInterface() || isEnum())) {
+      return null;
+    }
+    return LiteralUtils.constantValue(literal);
   }
 
   @Override

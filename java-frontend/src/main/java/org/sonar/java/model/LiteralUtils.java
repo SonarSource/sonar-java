@@ -133,6 +133,23 @@ public class LiteralUtils {
     return value.substring(delimiterLength, value.length() - delimiterLength);
   }
 
+  /**
+   * The compile time value of {@code literal}, typed as the literal is: a {@link String} for text, a {@link Boolean}
+   * for booleans and an {@link Integer} for an int that fits. Anything else keeps its source spelling.
+   */
+  public static Object constantValue(LiteralTree literal) {
+    String value = literal.value();
+    return switch (literal.kind()) {
+      case STRING_LITERAL, TEXT_BLOCK -> trimQuotes(value);
+      case BOOLEAN_LITERAL -> Boolean.valueOf(value);
+      case INT_LITERAL -> {
+        Integer integer = intLiteralValue(literal);
+        yield integer == null ? value : integer;
+      }
+      default -> value;
+    };
+  }
+
   public static boolean isTextBlock(String value) {
     return value.startsWith("\"\"\"");
   }
