@@ -502,15 +502,88 @@ public final class JSema implements Sema {
     return method;
   }
 
-  /** The method {@code name} taking {@code arity} arguments that {@code ownerFqn} or one of its supertypes declares, if any. */
+  /**
+   * The method {@code name} of {@code ownerFqn} or of one of its supertypes that Java would pick for {@code arguments}:
+   * applicable by subtyping first, then with boxing, then as varargs, and the most specific of those.
+   */
   @Nullable
-  Symbol.MethodSymbol declaredMethod(String ownerFqn, String name, int arity) {
-    MemberId parsed = new MemberId(ownerFqn, name, Integer.toString(arity), true, arity);
-    JsonObject member = findMember(ownerFqn, parsed, new HashSet<>(), Match.ARITY);
-    if (member == null) {
-      member = findMember(ownerFqn, parsed, new HashSet<>(), Match.VARARGS);
+  Symbol.MethodSymbol declaredMethod(String ownerFqn, String name, List<Type> arguments) {
+    if (!declaresType(ownerFqn)) {
+      return null;
     }
-    return member != null && memberFromTypeInfo(typeSymbol(ownerFqn), member) instanceof Symbol.MethodSymbol method && !method.isUnknown() ? method : null;
+    List<Symbol.MethodSymbol> candidates = new ArrayList<>();
+    collectMethods(ownerFqn, name, new HashSet<>(), candidates);
+    for (int phase = 0; phase < 3; phase++) {
+      int current = phase;
+      List<Symbol.MethodSymbol> applicable = candidates.stream().filter(method -> applicable(method, arguments, current)).toList();
+      if (!applicable.isEmpty()) {
+        return applicable.stream().filter(method -> applicable.stream().allMatch(other -> moreSpecific(method, other))).findFirst().orElse(applicable.get(0));
+      }
+    }
+    return null;
+  }
+
+  private void collectMethods(String ownerFqn, String name, Set<String> seen, List<Symbol.MethodSymbol> found) {
+    if (!seen.add(ownerFqn) || !declaresType(ownerFqn)) {
+      return;
+    }
+    JsonObject info = typeInfos.get(ownerFqn);
+    JsonArray members = info.getAsJsonArray("members");
+    if (members != null) {
+      for (JsonElement element : members) {
+        JsonObject member = element.getAsJsonObject();
+        if (name.equals(text(member, "name")) && "m".equals(text(member, "k"))
+          && memberFromTypeInfo(typeSymbol(ownerFqn), member) instanceof Symbol.MethodSymbol method && !method.isUnknown()) {
+          found.add(method);
+        }
+      }
+    }
+    if (!"<init>".equals(name)) {
+      parents(info).forEach(parent -> collectMethods(erase(parent), name, seen, found));
+    }
+  }
+
+  private static boolean applicable(Symbol.MethodSymbol method, List<Type> arguments, int phase) {
+    List<Type> parameters = method.parameterTypes();
+    int count = parameters.size();
+    boolean varargs = phase == 2 && method.isVarArgsMethod();
+    if (varargs ? arguments.size() < count - 1 : arguments.size() != count) {
+      return false;
+    }
+    for (int i = 0; i < arguments.size(); i++) {
+      Type parameter = varargs && i >= count - 1 ? ((Type.ArrayType) parameters.get(count - 1)).elementType() : parameters.get(i);
+      if (!convertible(arguments.get(i), parameter, phase > 0)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static boolean convertible(Type argument, Type parameter, boolean boxing) {
+    Type target = parameter.erasure();
+    if (argument.isUnknown() || target.isUnknown() || target.isTypeVar() || argument.erasure().isSubtypeOf(target)) {
+      return true;
+    }
+    if (!boxing || argument.isPrimitive() == target.isPrimitive()) {
+      return false;
+    }
+    Type converted = argument.isPrimitive() ? argument.primitiveWrapperType() : argument.primitiveType();
+    return converted != null && converted.isSubtypeOf(target);
+  }
+
+  private static boolean moreSpecific(Symbol.MethodSymbol method, Symbol.MethodSymbol other) {
+    List<Type> mine = method.parameterTypes();
+    List<Type> theirs = other.parameterTypes();
+    if (mine.size() != theirs.size()) {
+      return true;
+    }
+    for (int i = 0; i < mine.size(); i++) {
+      Type target = theirs.get(i).erasure();
+      if (!target.isTypeVar() && !mine.get(i).erasure().isSubtypeOf(target)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @Nullable
