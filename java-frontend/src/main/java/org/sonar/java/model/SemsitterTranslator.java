@@ -780,6 +780,10 @@ final class SemsitterTranslator {
         }
         continue;
       }
+      if (",".equals(child.text())) {
+        (semicolons == 0 ? init : update).separators().add(token(child));
+        continue;
+      }
       if ("local_variable_declaration".equals(child.k()) && semicolons == 0) {
         init.addAll(variables(child));
         InternalSyntaxToken semi = optionalToken(child, ";");
