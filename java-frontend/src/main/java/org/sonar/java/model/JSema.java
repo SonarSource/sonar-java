@@ -22,6 +22,7 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -41,6 +42,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public final class JSema implements Sema {
 
   private static final Set<String> PRIMITIVES = Set.of("byte", "short", "int", "long", "char", "float", "double", "boolean", "void");
+  private static final Set<String> OBJECT_METHODS = Set.of("equals/1", "hashCode/0", "toString/0");
 
   private final Map<String, JsonObject> facts = new HashMap<>();
   private final Map<String, JsonObject> dumpSymbols = new HashMap<>();
@@ -622,6 +624,35 @@ public final class JSema implements Sema {
       }
     }
     return null;
+  }
+
+  /** The single abstract method of {@code type} when it is a functional interface, else null. */
+  @Nullable
+  JMethodSymbol functionalMethod(Type type) {
+    String fqn = type.erasure().fullyQualifiedName();
+    if (!type.isClass() || !type.symbol().isInterface() || !declaresType(fqn)) {
+      return null;
+    }
+    Map<String, JMethodSymbol> found = new LinkedHashMap<>();
+    collectAbstractMethods(fqn, new HashSet<>(), found);
+    return found.size() == 1 ? found.values().iterator().next() : null;
+  }
+
+  private void collectAbstractMethods(String ownerFqn, Set<String> seen, Map<String, JMethodSymbol> found) {
+    if (!seen.add(ownerFqn) || !declaresType(ownerFqn)) {
+      return;
+    }
+    JsonObject info = typeInfos.get(ownerFqn);
+    JsonArray members = info.getAsJsonArray("members");
+    if (members != null) {
+      for (JsonElement element : members) {
+        if (memberFromTypeInfo(typeSymbol(ownerFqn), element.getAsJsonObject()) instanceof JMethodSymbol method && !method.isUnknown() && method.isAbstract()
+          && !OBJECT_METHODS.contains(method.name() + "/" + method.parameterTypes().size())) {
+          found.putIfAbsent(method.name() + "/" + method.parameterTypes().size(), method);
+        }
+      }
+    }
+    parents(info).forEach(parent -> collectAbstractMethods(erase(parent), seen, found));
   }
 
   /** The field {@code name} that {@code ownerFqn} or one of its supertypes declares, if any. */
