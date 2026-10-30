@@ -109,7 +109,10 @@ import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -121,12 +124,14 @@ import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
 import org.sonar.plugins.java.api.tree.ModuleDirectiveTree;
 import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.YieldStatementTree;
 
 /**
  * Builds the SonarJava AST from one SemSitter CST document.
@@ -1011,8 +1016,43 @@ final class SemsitterTranslator {
       body == null ? List.of() : switchGroups(body, true),
       body == null ? synthetic("}") : token(required(body, "}")));
     switchExpression = previous;
-    ascribe(tree, Type.UNKNOWN);
+    ascribe(tree, switchResultType(tree));
     return tree;
+  }
+
+  private static Type switchResultType(SwitchExpressionTreeImpl tree) {
+    List<Type> results = new ArrayList<>();
+    for (CaseGroupTree group : tree.cases()) {
+      List<StatementTree> body = group.body();
+      if (group.labels().stream().noneMatch(CaseLabelTree::isFallThrough) && body.size() == 1 && body.get(0) instanceof ExpressionStatementTree statement) {
+        results.add(statement.expression().symbolType());
+      }
+      body.forEach(statement -> statement.accept(new BaseTreeVisitor() {
+        @Override
+        public void visitYieldStatement(YieldStatementTree yield) {
+          results.add(yield.expression().symbolType());
+        }
+
+        @Override
+        public void visitSwitchExpression(SwitchExpressionTree nested) {
+          // nested switch expressions yield their own results
+        }
+
+        @Override
+        public void visitLambdaExpression(LambdaExpressionTree lambda) {
+          // lambdas cannot yield to the enclosing switch
+        }
+
+        @Override
+        public void visitClass(ClassTree type) {
+          // classes cannot yield to the enclosing switch
+        }
+      }));
+    }
+    if (results.isEmpty() || results.stream().anyMatch(Type::isUnknown) || results.stream().distinct().count() != 1) {
+      return Type.UNKNOWN;
+    }
+    return results.get(0);
   }
 
   private List<CaseGroupTreeImpl> switchGroups(Node body, boolean expression) {
