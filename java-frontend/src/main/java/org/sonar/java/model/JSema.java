@@ -826,7 +826,7 @@ public final class JSema implements Sema {
     return typeInfos.containsKey(fqn);
   }
 
-  private Symbol packageSymbol(String name) {
+  Symbol packageSymbol(String name) {
     if (name == null || name.isEmpty()) {
       return Symbol.ROOT_PACKAGE;
     }
