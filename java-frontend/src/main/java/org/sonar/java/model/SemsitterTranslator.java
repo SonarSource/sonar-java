@@ -716,7 +716,7 @@ final class SemsitterTranslator {
   }
 
   private ForEachStatementImpl forEach(Node node) {
-    TypeTree type = type(requiredField(node, "type", firstType(node)));
+    TypeTree type = arrayType(type(requiredField(node, "type", firstType(node))), field(node, "dimensions"));
     IdentifierTreeImpl name = identifier(requiredField(node, "name", firstOf(node, "identifier")));
     VariableTreeImpl variable = new VariableTreeImpl(modifiers(node), type, name);
     bindDeclaration(variable, requiredField(node, "name", nameNode(node)), name);
