@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -105,6 +106,7 @@ import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierTree;
@@ -132,6 +134,10 @@ final class SemsitterTranslator {
   private InternalSyntaxToken eof = new InternalSyntaxToken(1, 0, "", List.of(), true);
   private boolean switchExpression;
   private String implicitClassName = "";
+  private String packageName = "";
+  private boolean naming;
+  private final Map<String, String> singleImports = new HashMap<>();
+  private final List<String> onDemandImports = new ArrayList<>();
 
   private SemsitterTranslator(JSema sema) {
     this.sema = sema;
@@ -323,22 +329,29 @@ final class SemsitterTranslator {
   }
 
   private JavaTree.PackageDeclarationTreeImpl packageDeclaration(Node node) {
-    return new JavaTree.PackageDeclarationTreeImpl(
-      annotations(node),
-      token(required(node, "package")),
-      expression(requiredField(node, "name", firstOf(node, "scoped_identifier", "identifier"))),
-      token(required(node, ";")));
+    naming = true;
+    ExpressionTree name = expression(requiredField(node, "name", firstOf(node, "scoped_identifier", "identifier")));
+    naming = false;
+    packageName = dottedName(name);
+    return new JavaTree.PackageDeclarationTreeImpl(annotations(node), token(required(node, "package")), name, token(required(node, ";")));
   }
 
   private JavaTree.ImportTreeImpl importDeclaration(Node node) {
     InternalSyntaxToken staticToken = optionalToken(node, "static");
+    naming = true;
     ExpressionTree name = expression(requiredField(node, "name", firstNamed(node)));
+    naming = false;
     if (keyword(node, "*") != null || keyword(node, "asterisk") != null) {
       Node star = keyword(node, "*");
       if (star == null) {
         star = keyword(node, "asterisk");
       }
-      name = new MemberSelectExpressionTreeImpl(name, token(required(node, ".")), new IdentifierTreeImpl(token(star)));
+      if (staticToken == null) {
+        onDemandImports.add(dottedName(name));
+      }
+      name = new MemberSelectExpressionTreeImpl(name, token(lastKeyword(node, ".")), new IdentifierTreeImpl(token(star)));
+    } else if (staticToken == null && name instanceof MemberSelectExpressionTree select) {
+      singleImports.put(select.identifier().name(), dottedName(name));
     }
     return new JavaTree.ImportTreeImpl(token(required(node, "import")), staticToken, optionalToken(node, "module"), name, token(required(node, ";")));
   }
@@ -1150,7 +1163,57 @@ final class SemsitterTranslator {
     }
     IdentifierTreeImpl identifier = identifier(node);
     bindUse(identifier, node);
+    if (!naming && identifier.symbol().isUnknown() && node.unresolved()) {
+      String type = importedType(identifier.name());
+      if (type != null) {
+        bindType(identifier, type);
+      }
+    }
     return identifier;
+  }
+
+  /** The type a simple name stands for when SemSitter left it unresolved: imported, in the package, or in java.lang. */
+  @Nullable
+  private String importedType(String name) {
+    List<String> candidates = new ArrayList<>();
+    if (singleImports.containsKey(name)) {
+      candidates.add(singleImports.get(name));
+    }
+    candidates.add(packageName.isEmpty() ? name : (packageName + "." + name));
+    onDemandImports.forEach(prefix -> candidates.add(prefix + "." + name));
+    candidates.add("java.lang." + name);
+    return candidates.stream().filter(sema::declaresType).findFirst().orElse(null);
+  }
+
+  private void resolveQualifiedType(ExpressionTree qualifier, IdentifierTreeImpl identifier) {
+    Symbol owner = qualifier instanceof MemberSelectExpressionTree select ? select.identifier().symbol() : (qualifier instanceof IdentifierTree name ? name.symbol() : Symbol.UNKNOWN_SYMBOL);
+    String candidate;
+    if (owner.isTypeSymbol() && !owner.isUnknown()) {
+      candidate = ((Symbol.TypeSymbol) owner).type().fullyQualifiedName() + "$" + identifier.name();
+    } else if (owner.isUnknown() || owner.isPackageSymbol()) {
+      String prefix = dottedName(qualifier);
+      candidate = prefix.isEmpty() ? null : (prefix + "." + identifier.name());
+    } else {
+      candidate = null;
+    }
+    if (candidate != null && sema.declaresType(candidate)) {
+      bindType(identifier, candidate);
+    }
+  }
+
+  private void bindType(IdentifierTreeImpl identifier, String fqn) {
+    Symbol symbol = sema.resolve(fqn);
+    identifier.symbol = symbol;
+    ascribe(identifier, symbol.type());
+    sema.use(fqn, identifier);
+  }
+
+  private static String dottedName(ExpressionTree tree) {
+    if (tree instanceof MemberSelectExpressionTree select) {
+      String qualifier = dottedName(select.expression());
+      return qualifier.isEmpty() ? "" : (qualifier + "." + select.identifier().name());
+    }
+    return tree instanceof IdentifierTree identifier ? identifier.name() : "";
   }
 
   private IdentifierTreeImpl identifier(Node node) {
@@ -1190,6 +1253,9 @@ final class SemsitterTranslator {
     Node nameNode = name == null ? lastNamed(node) : name;
     IdentifierTreeImpl identifier = identifier(nameNode);
     bindUse(identifier, name != null || nameNode.json.has("refs") ? nameNode : node);
+    if (!naming && identifier.symbol().isUnknown()) {
+      resolveQualifiedType(qualifier, identifier);
+    }
     List<AnnotationTree> annotations = node.children().stream().filter(SemsitterTranslator::isAnnotation).<AnnotationTree>map(this::annotation).toList();
     if (!annotations.isEmpty()) {
       identifier.complete(annotations);
@@ -2351,6 +2417,18 @@ final class SemsitterTranslator {
         ids.add(element.getAsString());
       }
       return ids;
+    }
+
+    private boolean unresolved() {
+      if (!json.has("refs")) {
+        return "type_identifier".equals(k());
+      }
+      for (JsonElement element : json.getAsJsonArray("refs")) {
+        if ("bound".equals(element.getAsJsonObject().get("outcome").getAsString())) {
+          return false;
+        }
+      }
+      return true;
     }
 
     @Nullable
