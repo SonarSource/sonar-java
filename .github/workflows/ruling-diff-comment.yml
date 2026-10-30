@@ -38,7 +38,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-          submodules: true
+          submodules: recursive
 
       - name: Install uv
         uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
@@ -47,7 +47,7 @@ jobs:
 
       # Use the action from the branch we just pushed
       - name: Post ruling diff comment
-        uses: SonarSource/core-languages-tooling-public/ruling-diff-comment@master
+        uses: SonarSource/core-languages-tooling-public/ruling-diff-comment@9383f76d4aef4667d5db2ef3699c3177833eccd5
         with:
           pr-number: ${{ inputs.pr-number || github.event.pull_request.number }}
           repository: ${{ github.repository }}
