@@ -18,6 +18,8 @@ package org.sonar.java.model;
 
 import com.google.gson.JsonObject;
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -184,7 +186,13 @@ public abstract class JParserConfig {
       JsonObject document = bridge.cst(inputFile.path().toAbsolutePath().toString());
       JSema sema = new JSema();
       sema.ingestDocument(document);
-      sema.ingestTypes(bridge.types(sema.referencedTypeNames()));
+      sema.loadTypes(names -> {
+        try {
+          return bridge.types(names);
+        } catch (IOException failure) {
+          throw new UncheckedIOException(failure);
+        }
+      });
       return new Result(SemsitterTranslator.translate(sema, document));
     } catch (Exception e) {
       return new Result(e);
