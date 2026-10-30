@@ -630,7 +630,9 @@ final class SemsitterTranslator {
     VariableTreeImpl tree = new VariableTreeImpl(name).completeModifiersAndType(modifiers, applyDimensions(type, node));
     Node value = field(node, "value");
     if (value != null) {
-      tree.completeTypeAndInitializer(tree.type(), token(required(node, "=")), expression(value));
+      ExpressionTree initializer = expression(value);
+      ascribeTarget(initializer, tree.type().symbolType());
+      tree.completeTypeAndInitializer(tree.type(), token(required(node, "=")), initializer);
     }
     bindDeclaration(tree, nameNode(node) == null ? node : nameNode(node), name);
     if (tree.symbol().type() != null && !tree.symbol().type().isUnknown()) {
@@ -1237,6 +1239,27 @@ final class SemsitterTranslator {
     return owners.stream().map(owner -> sema.declaredMethod(owner, name, arguments)).filter(Objects::nonNull).findFirst().orElse(null);
   }
 
+  /** Types a lambda, a method reference or an array initializer from the type its context expects. */
+  private static void ascribeTarget(ExpressionTree expression, Type target) {
+    boolean targetTyped = expression.is(Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.METHOD_REFERENCE) || (expression instanceof NewArrayTreeImpl array && array.type() == null);
+    if (targetTyped && expression.symbolType().isUnknown() && !target.isUnknown()) {
+      ascribe(expression, target);
+    }
+  }
+
+  private static void ascribeArguments(Symbol.MethodSymbol method, List<ExpressionTree> arguments) {
+    List<Type> parameters = method.parameterTypes();
+    for (int i = 0; i < arguments.size() && !parameters.isEmpty(); i++) {
+      Type parameter = parameters.get(Math.min(i, parameters.size() - 1));
+      if (method.isVarArgsMethod() && i >= parameters.size() - 1 && parameter.isArray() && arguments.size() != parameters.size()) {
+        parameter = ((Type.ArrayType) parameter).elementType();
+      }
+      if (i < parameters.size() || method.isVarArgsMethod()) {
+        ascribeTarget(arguments.get(i), parameter);
+      }
+    }
+  }
+
   private static List<Type> argumentTypes(List<ExpressionTree> arguments) {
     return arguments.stream().map(ExpressionTree::symbolType).toList();
   }
@@ -1381,6 +1404,7 @@ final class SemsitterTranslator {
       }
     }
     if (identifier.symbol instanceof JMethodSymbol method) {
+      ascribeArguments(method, tree.arguments());
       Type returned = sema.invocationReturn(method, receiver);
       JMethodSymbol view = method.withReturnType(returned);
       tree.methodSymbol = view;
@@ -1432,9 +1456,10 @@ final class SemsitterTranslator {
     String constructor = typeNode == null ? null : typeNode.valueTarget();
     if (constructor != null) {
       Symbol resolved = sema.resolve(constructor);
-      if (resolved instanceof Symbol.MethodSymbol) {
+      if (resolved instanceof Symbol.MethodSymbol method) {
         identifier.symbol = resolved;
         sema.use(constructor, identifier);
+        ascribeArguments(method, tree.arguments());
         return;
       }
     }
@@ -1443,6 +1468,7 @@ final class SemsitterTranslator {
     Symbol.MethodSymbol declared = type.isClass() ? sema.declaredMethod(owner, "<init>", argumentTypes(tree.arguments())) : null;
     if (declared != null) {
       identifier.symbol = declared;
+      ascribeArguments(declared, tree.arguments());
     } else if (!(identifier.symbol() instanceof Symbol.MethodSymbol)) {
       identifier.symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
     }
