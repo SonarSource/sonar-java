@@ -557,6 +557,7 @@ final class SemsitterTranslator {
     return switch (node.k()) {
       case "block" -> block(node);
       case "expression_statement" -> expressionStatement(node);
+      case "explicit_constructor_invocation" -> constructorInvocation(node);
       case "if_statement" -> ifStatement(node);
       case "while_statement" -> whileStatement(node);
       case "do_statement" -> doStatement(node);
@@ -589,6 +590,25 @@ final class SemsitterTranslator {
       }
     }
     return new ExpressionStatementTreeImpl(expression == null ? literal(Tree.Kind.NULL_LITERAL, synthetic("null"), sema.getClassType("<nulltype>")) : expression, semicolon);
+  }
+
+  private ExpressionStatementTreeImpl constructorInvocation(Node node) {
+    Node constructor = requiredField(node, "constructor", firstOf(node, "super", "this"));
+    IdentifierTreeImpl identifier = identifier(constructor);
+    bindUse(identifier, constructor);
+    Node object = field(node, "object");
+    ExpressionTree select = object == null
+      ? identifier
+      : new MemberSelectExpressionTreeImpl(expression(object), token(required(node, ".")), identifier);
+    Node typeArguments = field(node, "type_arguments");
+    MethodInvocationTreeImpl invocation = new MethodInvocationTreeImpl(select, typeArguments == null ? null : typeArguments(typeArguments),
+      arguments(requiredField(node, "arguments", childKind(node, "argument_list"))));
+    if (identifier.symbol instanceof Symbol.MethodSymbol method) {
+      invocation.methodSymbol = method;
+      ascribe(invocation, method.owner().type());
+      ascribe(identifier, Type.UNKNOWN);
+    }
+    return new ExpressionStatementTreeImpl(invocation, token(required(node, ";")));
   }
 
   private IfStatementTreeImpl ifStatement(Node node) {
