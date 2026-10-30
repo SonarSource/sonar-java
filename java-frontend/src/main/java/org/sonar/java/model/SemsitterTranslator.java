@@ -1326,8 +1326,14 @@ final class SemsitterTranslator {
     }
     Node typeArguments = field(node, "type_arguments");
     MethodInvocationTreeImpl tree = new MethodInvocationTreeImpl(select, typeArguments == null ? null : typeArguments(typeArguments), arguments(requiredField(node, "arguments", childKind(node, "argument_list"))));
+    Type receiver = qualifier == null ? currentType() : qualifier.symbolType();
+    if (identifier.symbol().isUnknown() && receiver.isClass()) {
+      Symbol.MethodSymbol method = sema.declaredMethod(receiver.erasure().fullyQualifiedName(), identifier.name(), tree.arguments().size());
+      if (method != null) {
+        identifier.symbol = method;
+      }
+    }
     if (identifier.symbol instanceof JMethodSymbol method) {
-      Type receiver = qualifier == null ? currentType() : qualifier.symbolType();
       Type returned = sema.invocationReturn(method, receiver);
       JMethodSymbol view = method.withReturnType(returned);
       tree.methodSymbol = view;
@@ -1367,13 +1373,13 @@ final class SemsitterTranslator {
     if (typeArguments != null) {
       tree.completeWithTypeArguments(typeArguments(typeArguments));
     }
-    bindConstructor(tree.getConstructorIdentifier(), typeNode);
+    bindConstructor(tree, typeNode);
     ascribe(tree, type.symbolType());
     return tree;
   }
 
-  private void bindConstructor(IdentifierTree constructorName, @Nullable Node typeNode) {
-    if (!(constructorName instanceof IdentifierTreeImpl identifier)) {
+  private void bindConstructor(NewClassTreeImpl tree, @Nullable Node typeNode) {
+    if (!(tree.getConstructorIdentifier() instanceof IdentifierTreeImpl identifier)) {
       return;
     }
     String constructor = typeNode == null ? null : typeNode.valueTarget();
@@ -1385,7 +1391,11 @@ final class SemsitterTranslator {
         return;
       }
     }
-    if (!(identifier.symbol() instanceof Symbol.MethodSymbol)) {
+    Type type = tree.identifier().symbolType();
+    Symbol.MethodSymbol declared = tree.classBody() == null && type.isClass() ? sema.declaredMethod(type.erasure().fullyQualifiedName(), "<init>", tree.arguments().size()) : null;
+    if (declared != null) {
+      identifier.symbol = declared;
+    } else if (!(identifier.symbol() instanceof Symbol.MethodSymbol)) {
       identifier.symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
     }
   }
