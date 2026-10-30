@@ -1324,6 +1324,13 @@ final class SemsitterTranslator {
       if (identifier.symbol().isUnknown()) {
         resolveQualifiedType(qualifier, identifier);
       }
+      if (identifier.symbol().isUnknown() && qualifier.symbolType().erasure().isClass()) {
+        Symbol.VariableSymbol field = sema.declaredField(qualifier.symbolType().erasure().fullyQualifiedName(), identifier.name());
+        if (field != null) {
+          identifier.symbol = field;
+          ascribe(identifier, field.type());
+        }
+      }
       bindQualifierPackages(qualifier, identifier);
     }
     List<AnnotationTree> annotations = node.children().stream().filter(SemsitterTranslator::isAnnotation).<AnnotationTree>map(this::annotation).toList();

@@ -528,6 +528,38 @@ public final class JSema implements Sema {
     return null;
   }
 
+  /** The field {@code name} that {@code ownerFqn} or one of its supertypes declares, if any. */
+  @Nullable
+  Symbol.VariableSymbol declaredField(String ownerFqn, String name) {
+    return declaredField(ownerFqn, name, new HashSet<>());
+  }
+
+  @Nullable
+  private Symbol.VariableSymbol declaredField(String ownerFqn, String name, Set<String> seen) {
+    if (!seen.add(ownerFqn) || !declaresType(ownerFqn)) {
+      return null;
+    }
+    JsonObject info = typeInfos.get(ownerFqn);
+    JsonArray members = info.getAsJsonArray("members");
+    if (members != null) {
+      for (JsonElement element : members) {
+        JsonObject member = element.getAsJsonObject();
+        MemberId id = member.has("id") ? parseMember(member.get("id").getAsString()) : null;
+        boolean named = id == null ? (name.equals(text(member, "name")) && "f".equals(text(member, "k"))) : (name.equals(id.name) && id.params == null);
+        if (named && memberFromTypeInfo(typeSymbol(ownerFqn), member) instanceof Symbol.VariableSymbol field && !field.isUnknown()) {
+          return field;
+        }
+      }
+    }
+    for (String parent : parents(info)) {
+      Symbol.VariableSymbol found = declaredField(erase(parent), name, seen);
+      if (found != null) {
+        return found;
+      }
+    }
+    return null;
+  }
+
   private void collectMethods(String ownerFqn, String name, Set<String> seen, List<Symbol.MethodSymbol> found) {
     if (!seen.add(ownerFqn) || !declaresType(ownerFqn)) {
       return;
