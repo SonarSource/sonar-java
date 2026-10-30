@@ -1898,7 +1898,9 @@ final class SemsitterTranslator {
     if (args != null) {
       arguments = arguments(args);
     }
-    return new AnnotationTreeImpl(token(required(node, "@")), type, arguments);
+    AnnotationTreeImpl tree = new AnnotationTreeImpl(token(required(node, "@")), type, arguments);
+    ascribe(tree, type.symbolType());
+    return tree;
   }
 
   private List<AnnotationTree> annotations(Node node) {
