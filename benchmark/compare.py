@@ -111,7 +111,23 @@ def java_tools(major: int) -> tuple[str, str]:
     return "java", "javac"
 
 
-def dump(checkout: Path, classpath: str, corpus: Path, files: list[Path], out: Path) -> None:
+def corpus_classpath(corpus: Path) -> str:
+    """Classpath the rule tests analyze the corpus with: its compiled classes and test-classpath.txt."""
+    entries = []
+    classes = corpus / "target" / "classes"
+    if classes.exists():
+        entries.append(str(classes))
+    listing = corpus / "target" / "test-classpath.txt"
+    if listing.exists():
+        repository = os.environ.get("M2_REPO") or str(Path.home() / ".m2" / "repository")
+        for entry in listing.read_text().split(":"):
+            entry = entry.strip()
+            if entry:
+                entries.append(entry.replace("M2_REPO", repository))
+    return os.pathsep.join(entries)
+
+
+def dump(checkout: Path, classpath: str, corpus: Path, files: list[Path], out: Path, corpus_cp: str) -> None:
     java, javac = java_tools(class_major(checkout))
     build = checkout / "java-frontend" / "target" / "ast-semantic-dump"
     build.mkdir(parents=True, exist_ok=True)
@@ -128,6 +144,8 @@ def dump(checkout: Path, classpath: str, corpus: Path, files: list[Path], out: P
         str(out),
         "--root",
         str(corpus),
+        "--classpath",
+        corpus_cp,
     ]
     command.extend(str(path) for path in files)
     subprocess.run(command, check=True)
@@ -539,12 +557,13 @@ def main() -> None:
     ecj_cp = tool_classpath(ecj)
     print(f"classpath {args.semsitter}", file=sys.stderr)
     sem_cp = tool_classpath(args.semsitter.resolve())
+    corpus_cp = corpus_classpath(corpus)
     ecj_dump = out / "ecj.jsonl"
     sem_dump = out / "semsitter.jsonl"
     print(f"dump ECJ ({len(files)} files)", file=sys.stderr)
-    dump(ecj.resolve(), ecj_cp, corpus, files, ecj_dump)
+    dump(ecj.resolve(), ecj_cp, corpus, files, ecj_dump, corpus_cp)
     print("dump SemSitter", file=sys.stderr)
-    dump(args.semsitter.resolve(), sem_cp, corpus, files, sem_dump)
+    dump(args.semsitter.resolve(), sem_cp, corpus, files, sem_dump, corpus_cp)
     summary = compare(
         ecj_dump,
         sem_dump,
