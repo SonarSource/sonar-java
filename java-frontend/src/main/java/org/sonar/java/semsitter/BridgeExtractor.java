@@ -43,22 +43,24 @@ public final class BridgeExtractor {
     }
     String bridgeName = bridgeName(platform);
     Path bridgePath = targetDir.resolve(bridgeName);
-    if (!Files.exists(bridgePath)) {
-      String archiveName = archiveName(platform);
-      String resourcePath = "/bridge/" + archiveName;
-      InputStream resource = BridgeExtractor.class.getResourceAsStream(resourcePath);
-      if (resource == null) {
-        Path archive = findPrebuilt(archiveName);
-        if (archive == null) {
-          throw new IllegalStateException("Bridge resource not found");
-        }
-        resource = Files.newInputStream(archive);
-      }
-      try (InputStream stream = resource) {
-        extractArchive(targetDir, bridgePath, stream, resourcePath, bridgeName);
-      }
+    String archiveName = archiveName(platform);
+    Path prebuilt = findPrebuilt(archiveName);
+    if (Files.exists(bridgePath) && !prebuiltIsNewer(prebuilt, bridgePath)) {
+      return bridgePath;
+    }
+    String resourcePath = "/bridge/" + archiveName;
+    InputStream resource = prebuilt != null ? Files.newInputStream(prebuilt) : BridgeExtractor.class.getResourceAsStream(resourcePath);
+    if (resource == null) {
+      throw new IllegalStateException("Bridge resource not found");
+    }
+    try (InputStream stream = resource) {
+      extractArchive(targetDir, bridgePath, stream, resourcePath, bridgeName);
     }
     return bridgePath;
+  }
+
+  private static boolean prebuiltIsNewer(Path prebuilt, Path bridgePath) throws IOException {
+    return prebuilt != null && Files.getLastModifiedTime(prebuilt).compareTo(Files.getLastModifiedTime(bridgePath)) > 0;
   }
 
   private static Path findPrebuilt(String archiveName) {
@@ -121,6 +123,7 @@ public final class BridgeExtractor {
         Files.createDirectories(target);
         Files.copy(tarStream, stagingPath, StandardCopyOption.REPLACE_EXISTING);
       }
+      Files.deleteIfExists(bridgePath);
       Files.move(stagingPath, bridgePath, StandardCopyOption.ATOMIC_MOVE);
       PosixFileAttributeView view = Files.getFileAttributeView(bridgePath, PosixFileAttributeView.class);
       if (view != null) {
