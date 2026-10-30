@@ -458,9 +458,15 @@ final class SemsitterTranslator {
       tree.completePermittedTypes(token(required(permits, "permits")), separatedTypes(permits));
     }
     bindDeclaration(tree, nameNode(node), name);
-    if (tree.superClass() != null && tree.symbol() instanceof JTypeSymbol declared
-      && tree.superClass().symbolType().symbol() instanceof JTypeSymbol parent && parent.id != null && !parent.equals(declared)) {
-      declared.superName(parent.id);
+    if (tree.symbol() instanceof JTypeSymbol declared) {
+      if (tree.superClass() != null
+        && tree.superClass().symbolType().symbol() instanceof JTypeSymbol parent && parent.id != null && !parent.equals(declared)) {
+        declared.superName(parent.id);
+      } else if (kind == Tree.Kind.RECORD) {
+        declared.superName("java.lang.Record");
+      } else if (kind == Tree.Kind.ENUM) {
+        declared.superName("java.lang.Enum");
+      }
     }
     return tree;
   }
