@@ -157,7 +157,10 @@ final class SemsitterTranslator {
     }
     int line = 1;
     int column = 0;
-    if (!leaves.isEmpty()) {
+    if (root.json.has("p")) {
+      line = root.json.getAsJsonArray("p").get(2).getAsInt();
+      column = root.json.getAsJsonArray("p").get(3).getAsInt();
+    } else if (!leaves.isEmpty()) {
       Node last = leaves.get(leaves.size() - 1);
       line = last.json.getAsJsonArray("p").get(2).getAsInt();
       column = last.json.getAsJsonArray("p").get(3).getAsInt();
