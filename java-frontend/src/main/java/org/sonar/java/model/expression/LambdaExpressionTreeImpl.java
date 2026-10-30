@@ -17,7 +17,6 @@
 package org.sonar.java.model.expression;
 
 import java.util.Arrays;
-import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.sonar.java.cfg.CFG;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
@@ -44,9 +43,6 @@ public class LambdaExpressionTreeImpl extends AssessableExpressionTree implement
   private final InternalSyntaxToken arrowToken;
   private final Tree body;
   private CFG cfg;
-
-  @Nullable
-  public IMethodBinding methodBinding;
 
   public LambdaExpressionTreeImpl(@Nullable InternalSyntaxToken openParenToken, List<VariableTree> parameters, @Nullable InternalSyntaxToken closeParenToken,
     InternalSyntaxToken arrowToken, Tree body) {
@@ -91,9 +87,7 @@ public class LambdaExpressionTreeImpl extends AssessableExpressionTree implement
 
   @Override
   public Symbol.MethodSymbol symbol() {
-    return methodBinding != null
-      ? root.sema.methodSymbol(methodBinding)
-      : Symbol.MethodSymbol.UNKNOWN_METHOD;
+    return Symbol.MethodSymbol.UNKNOWN_METHOD;
   }
 
   @Override

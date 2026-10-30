@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -38,9 +37,6 @@ public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree
   @Nullable
   private final SyntaxToken extendsToken;
   private final QualifiedIdentifierListTreeImpl bounds;
-
-  @Nullable
-  ITypeBinding typeBinding;
 
   public TypeParameterTreeImpl(IdentifierTreeImpl identifier) {
     this(identifier, null, QualifiedIdentifierListTreeImpl.emptyList());
@@ -90,8 +86,6 @@ public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree
   }
 
   public Symbol symbol() {
-    return typeBinding != null
-      ? root.sema.typeSymbol(typeBinding)
-      : Symbol.UNKNOWN_SYMBOL;
+    return Symbol.UNKNOWN_SYMBOL;
   }
 }

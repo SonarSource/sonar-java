@@ -1,0 +1,29 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "sample",
+      "camelcase": "Sample",
+      "scope": "source.sample",
+      "path": ".",
+      "file-types": ["sample"],
+      "injection-regex": "^sample$"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "SSAL",
+    "description": "Single-rule sample grammar for the semsitter PoC",
+    "links": {
+      "repository": "https://github.com/SonarSource/sonar-java"
+    }
+  },
+  "bindings": {
+    "c": true,
+    "go": false,
+    "node": false,
+    "python": false,
+    "rust": true,
+    "swift": false
+  }
+}

@@ -14,16 +14,12 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.eclipse.jdt.core.dom;
 
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertNull;
-
-class ASTUtilsTest {
-
-  @Test
-  void type_resolution_should_recover() {
-    assertNull(ASTUtils.resolveType(/* causes NPE */null, "Unknown"));
-  }
+fn main() {
+    let src_dir = std::path::Path::new("src");
+    let mut c_config = cc::Build::new();
+    c_config.std("c11").include(src_dir);
+    c_config.file(src_dir.join("parser.c"));
+    println!("cargo:rerun-if-changed=src/parser.c");
+    c_config.compile("tree-sitter-sample");
 }

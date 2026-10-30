@@ -21,8 +21,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.compiler.IProblem;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 
@@ -80,12 +78,12 @@ public class JProblem {
   }
 
   public enum Type {
-    UNDEFINED_TYPE(IProblem.UndefinedType),
-    PREVIEW_FEATURE_USED(IProblem.PreviewFeatureUsed),
-    UNUSED_IMPORT(IProblem.UnusedImport, JavaCore.COMPILER_PB_UNUSED_IMPORT, Tree.Kind.IMPORT),
-    REDUNDANT_CAST(IProblem.UnnecessaryCast, JavaCore.COMPILER_PB_UNNECESSARY_TYPE_CHECK, Tree.Kind.TYPE_CAST, Tree.Kind.PARENTHESIZED_EXPRESSION),
-    ASSIGNMENT_HAS_NO_EFFECT(IProblem.AssignmentHasNoEffect, JavaCore.COMPILER_PB_NO_EFFECT_ASSIGNMENT, Tree.Kind.ASSIGNMENT),
-    MASKED_CATCH(IProblem.MaskedCatch, JavaCore.COMPILER_PB_HIDDEN_CATCH_BLOCK, Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT);
+    UNDEFINED_TYPE(16777218),
+    PREVIEW_FEATURE_USED(4195408),
+    UNUSED_IMPORT(268435844, "org.eclipse.jdt.core.compiler.problem.unusedImport", Tree.Kind.IMPORT),
+    REDUNDANT_CAST(553648309, "org.eclipse.jdt.core.compiler.problem.unnecessaryTypeCheck", Tree.Kind.TYPE_CAST, Tree.Kind.PARENTHESIZED_EXPRESSION),
+    ASSIGNMENT_HAS_NO_EFFECT(536871090, "org.eclipse.jdt.core.compiler.problem.noEffectAssignment", Tree.Kind.ASSIGNMENT),
+    MASKED_CATCH(16777381, "org.eclipse.jdt.core.compiler.problem.hiddenCatchBlock", Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT);
 
     private final int warningID;
     private final String compilerOptionKey;
@@ -105,8 +103,8 @@ public class JProblem {
       this.kinds = SetUtils.immutableSetOf(kinds);
     }
 
-    boolean matches(IProblem warning) {
-      return warning.getID() == warningID;
+    boolean matches(int problemId) {
+      return problemId == warningID;
     }
 
     public static Set<String> compilerOptions() {

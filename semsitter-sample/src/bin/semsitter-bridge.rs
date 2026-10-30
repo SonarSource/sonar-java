@@ -14,4 +14,25 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.eclipse.jdt.core.dom;
+
+use std::io::{BufRead, BufReader, Write};
+
+fn main() {
+    let stdin = BufReader::new(std::io::stdin());
+    let mut stdout = std::io::BufWriter::new(std::io::stdout());
+    for line in stdin.lines() {
+        let Ok(line) = line else {
+            break;
+        };
+        if line.is_empty() {
+            continue;
+        }
+        let (response, quit) = semsitter_sample::handle_line(&line);
+        if writeln!(stdout, "{response}").is_err() || stdout.flush().is_err() {
+            break;
+        }
+        if quit {
+            break;
+        }
+    }
+}
