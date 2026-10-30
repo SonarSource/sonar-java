@@ -1414,7 +1414,7 @@ final class SemsitterTranslator {
       tree.completeWithTypeArguments(typeArguments(typeArguments));
     }
     bindConstructor(tree, typeNode);
-    ascribe(tree, type.symbolType());
+    ascribe(tree, classBody != null && !classBody.symbol().isUnknown() ? classBody.symbol().type() : type.symbolType());
     return tree;
   }
 
@@ -2033,6 +2033,14 @@ final class SemsitterTranslator {
     if (id != null && sema.resolve(id) instanceof Symbol.TypeSymbol typeSymbol) {
       tree.typeSymbol = typeSymbol;
       sema.declare(id, tree);
+      return;
+    }
+    for (Tree member : tree.members()) {
+      Symbol symbol = member instanceof MethodTree method ? method.symbol() : (member instanceof VariableTree variable ? variable.symbol() : null);
+      if (symbol != null && !symbol.isUnknown() && symbol.owner() instanceof Symbol.TypeSymbol owner) {
+        tree.typeSymbol = owner;
+        return;
+      }
     }
   }
 

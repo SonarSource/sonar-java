@@ -400,8 +400,9 @@ public final class JSema implements Sema {
     }
     JsonObject fact = facts.get(id);
     String ownerId = text(dump, "owner");
-    if (ownerId == null && symbol instanceof JMethodSymbol) {
-      ownerId = text(fact, "parent");
+    String parent = text(fact, "parent");
+    if ((ownerId == null && symbol instanceof JMethodSymbol) || (ownerId != null && parent != null && !parent.contains("::") && !facts.containsKey(ownerId) && !dumpSymbols.containsKey(ownerId))) {
+      ownerId = parent;
     }
     if (ownerId != null) {
       symbol.owner(resolve(ownerId));
