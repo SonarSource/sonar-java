@@ -322,6 +322,102 @@ public final class JSema implements Sema {
     return declared == null ? Type.UNKNOWN : declared;
   }
 
+  /**
+   * The parameter types of {@code method} at one invocation: type variables of the owner are replaced by
+   * the receiver's type arguments, and type variables of the method by the boxed type of the first argument
+   * they are inferred from.
+   */
+  List<Type> invocationParameters(JMethodSymbol method, @Nullable Type receiver, List<Type> arguments) {
+    List<Type> parameters = method.parameterTypes();
+    List<String> variables = parameterVariables(method);
+    if (variables.size() != parameters.size()) {
+      return parameters;
+    }
+    List<Type> result = new ArrayList<>(parameters);
+    for (int i = 0; i < variables.size(); i++) {
+      String variable = variables.get(i);
+      if (variable.isEmpty()) {
+        continue;
+      }
+      String base = variable.replace("[]", "");
+      Type bound = base.charAt(0) == 'c'
+        ? classArgument(method, receiver, Integer.parseInt(base.substring(1)))
+        : methodArgument(variables, base, arguments);
+      if (bound != null) {
+        JType type = asJType(bound);
+        for (int dims = (variable.length() - base.length()) / 2; dims > 0; dims--) {
+          type = JType.array(this, type);
+        }
+        result.set(i, type);
+      }
+    }
+    return result;
+  }
+
+  @Nullable
+  private static Type classArgument(JMethodSymbol method, @Nullable Type receiver, int index) {
+    if (receiver == null || !receiver.isParameterized() || receiver.typeArguments().size() <= index
+      || !receiver.erasure().equals(method.owner().type().erasure())) {
+      return null;
+    }
+    return receiver.typeArguments().get(index);
+  }
+
+  @Nullable
+  private static Type methodArgument(List<String> variables, String base, List<Type> arguments) {
+    for (int i = 0; i < variables.size() && i < arguments.size(); i++) {
+      String variable = variables.get(i);
+      if (!variable.replace("[]", "").equals(base)) {
+        continue;
+      }
+      Type argument = arguments.get(i);
+      if (!variable.equals(base)) {
+        boolean last = i == variables.size() - 1;
+        if (arguments.size() == variables.size() && argument.isArray()) {
+          argument = ((Type.ArrayType) argument).elementType();
+        } else if (!last) {
+          continue;
+        }
+      }
+      if (!argument.isUnknown() && !argument.isNullType()) {
+        return argument.isPrimitive() ? argument.primitiveWrapperType() : argument;
+      }
+    }
+    return null;
+  }
+
+  private List<String> parameterVariables(JMethodSymbol method) {
+    List<String> cached = method.parameterVariables();
+    if (cached == null) {
+      cached = lookupParameterVariables(method);
+      method.parameterVariables(cached);
+    }
+    return cached;
+  }
+
+  private List<String> lookupParameterVariables(JMethodSymbol method) {
+    String ownerFqn = method.owner().type().erasure().fullyQualifiedName();
+    if (!declaresType(ownerFqn)) {
+      return List.of();
+    }
+    JsonArray members = typeInfos.get(ownerFqn).getAsJsonArray("members");
+    if (members == null) {
+      return List.of();
+    }
+    List<String> erased = method.parameterTypes().stream().map(t -> t.erasure().fullyQualifiedName()).toList();
+    for (JsonElement element : members) {
+      JsonObject member = element.getAsJsonObject();
+      String descriptor = text(member, "desc");
+      if (method.name().equals(text(member, "name")) && descriptor != null && member.has("paramVars") && member.get("paramVars").isJsonArray()
+        && parameterTypesOf(descriptor).stream().map(t -> t.erasure().fullyQualifiedName()).toList().equals(erased)) {
+        List<String> variables = new ArrayList<>();
+        member.getAsJsonArray("paramVars").forEach(v -> variables.add(v.getAsString()));
+        return variables;
+      }
+    }
+    return List.of();
+  }
+
   Symbol memberFromTypeInfo(JTypeSymbol owner, JsonObject member) {
     if (member.has("id") && !member.get("id").isJsonNull()) {
       return resolve(member.get("id").getAsString());
