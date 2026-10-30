@@ -502,6 +502,17 @@ public final class JSema implements Sema {
     return method;
   }
 
+  /** The method {@code name} taking {@code arity} arguments that {@code ownerFqn} or one of its supertypes declares, if any. */
+  @Nullable
+  Symbol.MethodSymbol declaredMethod(String ownerFqn, String name, int arity) {
+    MemberId parsed = new MemberId(ownerFqn, name, Integer.toString(arity), true, arity);
+    JsonObject member = findMember(ownerFqn, parsed, new HashSet<>(), Match.ARITY);
+    if (member == null) {
+      member = findMember(ownerFqn, parsed, new HashSet<>(), Match.VARARGS);
+    }
+    return member != null && memberFromTypeInfo(typeSymbol(ownerFqn), member) instanceof Symbol.MethodSymbol method && !method.isUnknown() ? method : null;
+  }
+
   @Nullable
   private JsonObject findMember(String ownerFqn, MemberId parsed, Set<String> seen, Match match) {
     if (!seen.add(ownerFqn)) {
