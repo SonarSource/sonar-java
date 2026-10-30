@@ -166,7 +166,7 @@ public class JavaAstScanner {
       modifyCompilationUnit.accept(ast);
       visitor.visitFile(ast, sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile));
       String path = inputFile.toString();
-      Set<JProblem> undefinedTypes = ast.sema.undefinedTypes();
+      Set<JProblem> undefinedTypes = ast.undefinedTypes();
       collectUndefinedTypes(path, undefinedTypes);
       cleanUp.accept(ast);
       telemetryAnalysisKeys = javaAnalysisKeys.success();

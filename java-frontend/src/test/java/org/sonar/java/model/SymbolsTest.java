@@ -17,7 +17,6 @@
 package org.sonar.java.model;
 
 import java.io.File;
-import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -36,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.sonar.java.model.EcjTestSupport.sema;
 
 class SymbolsTest {
 
@@ -44,6 +44,7 @@ class SymbolsTest {
     Type unknownType = Type.UNKNOWN;
 
     assertThat(unknownType.isUnknown()).isTrue();
+    assertThat(unknownType.directSuperTypes()).isEmpty();
     assertThat(unknownType).isEqualTo(Type.UNKNOWN);
 
     assertThat(unknownType.is("!Unknown!")).isFalse();
@@ -104,7 +105,7 @@ class SymbolsTest {
     Tree unsupportedDeclaration = mock(Tree.class);
     Symbol symbol = spy(Symbol.UNKNOWN_SYMBOL);
     when(symbol.declaration()).thenReturn(unsupportedDeclaration);
-    SymbolMetadata metadata = new JSymbolMetadata(JUtilsTest.SEMA, symbol, new IAnnotationBinding[0]);
+    SymbolMetadata metadata = new JSymbolMetadata(symbol, java.util.List.of());
     assertThat(metadata.findAnnotationTree(mock(AnnotationInstance.class))).isNull();
     assertThat(metadata.nullabilityData().type()).isEqualTo(NullabilityType.UNKNOWN);
     assertThat(metadata.nullabilityData(NullabilityTarget.METHOD).type()).isEqualTo(NullabilityType.UNKNOWN);
@@ -203,7 +204,7 @@ class SymbolsTest {
 
   @Test
   void testIsAnnotation() {
-    JSema sema = ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("")).sema;
+    JSema sema = sema(((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("")));
     Type objectType = sema.type(sema.resolveType("java.lang.Object"));
     JavaTree.CompilationUnitTreeImpl cu = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("@interface Anno { Unknown u; }");
     ClassTreeImpl anno = (ClassTreeImpl) cu.types().get(0);

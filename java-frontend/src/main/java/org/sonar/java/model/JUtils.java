@@ -16,7 +16,6 @@
  */
 package org.sonar.java.model;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -26,7 +25,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -67,19 +65,7 @@ public final class JUtils {
   }
 
   public static boolean isIntersectionType(Type type) {
-    return !type.isUnknown() && ((JType) type).typeBinding.isIntersectionType();
-  }
-
-  public static void collectSuperTypes(Set<Type> result, JSema sema, ITypeBinding typeBinding) {
-    ITypeBinding s = typeBinding.getSuperclass();
-    if (s != null) {
-      result.add(sema.type(s));
-      collectSuperTypes(result, sema, s);
-    }
-    Arrays.stream(typeBinding.getInterfaces()).forEach(i -> {
-      result.add(sema.type(i));
-      collectSuperTypes(result, sema, i);
-    });
+    return !type.isUnknown() && type.isIntersectionType();
   }
 
   public static Symbol getPackage(Symbol symbol) {
@@ -94,7 +80,7 @@ public final class JUtils {
     if (method.isUnknown()) {
       return null;
     }
-    return ((JMethodSymbol) method).methodBinding().getDefaultValue();
+    return method.defaultValue();
   }
 
   /**
@@ -161,16 +147,7 @@ public final class JUtils {
     if (type.isUnknown()) {
       return Collections.emptySet();
     }
-    Set<Type> result = new HashSet<>();
-    JType t = (JType) type;
-    ITypeBinding superclass = t.typeBinding.getSuperclass();
-    if (superclass != null) {
-      result.add(t.sema.type(superclass));
-    }
-    Arrays.stream(t.typeBinding.getInterfaces())
-      .map(t.sema::type)
-      .forEach(result::add);
-    return result;
+    return type.directSuperTypes();
   }
 
   @Nullable

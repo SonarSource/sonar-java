@@ -17,9 +17,11 @@
 package org.sonar.java.model;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeSet;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -61,6 +63,19 @@ final class JType implements Type, Type.ArrayType {
     this.sema = Objects.requireNonNull(sema);
     this.typeBinding = Objects.requireNonNull(typeBinding);
     this.fullyQualifiedName = fullyQualifiedName(typeBinding);
+  }
+
+  @Override
+  public Set<Type> directSuperTypes() {
+    Set<Type> result = new HashSet<>();
+    ITypeBinding superclass = typeBinding.getSuperclass();
+    if (superclass != null) {
+      result.add(sema.type(superclass));
+    }
+    Arrays.stream(typeBinding.getInterfaces())
+      .map(sema::type)
+      .forEach(result::add);
+    return result;
   }
 
   @Override

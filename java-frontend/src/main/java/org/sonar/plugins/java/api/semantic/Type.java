@@ -17,6 +17,7 @@
 package org.sonar.plugins.java.api.semantic;
 
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.java.model.Symbols;
 
@@ -29,6 +30,14 @@ public interface Type {
    * Instance of {@link Type} representing an unknown type
    */
   Type UNKNOWN = new Symbols.UnknownType();
+
+  /**
+   * Returns the immediate superclass and interfaces, preserving generic substitutions. Unknown types have
+   * no direct supertypes. Interfaces do not acquire an implicit {@code java.lang.Object} superclass.
+   */
+  default Set<Type> directSuperTypes() {
+    return java.util.Collections.emptySet();
+  }
 
   /**
    * Primitive java types.

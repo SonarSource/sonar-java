@@ -19,10 +19,9 @@ package org.sonar.java.model;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTUtils;
@@ -41,18 +40,39 @@ import org.sonar.plugins.java.api.tree.Tree;
 public final class JSema implements Sema {
 
   private final AST ast;
-  final Set<JProblem> undefinedTypes = new HashSet<>();
   final Map<IBinding, Tree> declarations = new HashMap<>();
   final Map<IBinding, List<IdentifierTree>> usages = new HashMap<>();
   private final Map<ITypeBinding, JType> types = new HashMap<>();
   private final Map<IBinding, JSymbol> symbols = new HashMap<>();
   private final Map<Symbol.TypeSymbol, JInitializerBlockSymbol> initializerBlockSymbols = new HashMap<>();
   private final Map<Symbol.TypeSymbol, JInitializerBlockSymbol> staticInitializerBlockSymbols = new HashMap<>();
-  private final Map<IAnnotationBinding, JSymbolMetadata.JAnnotationInstance> annotations = new HashMap<>();
+  private final Map<IAnnotationBinding, EcjSymbolMetadata.JAnnotationInstance> annotations = new HashMap<>();
   private final Map<String, Type> nameToTypeCache = new HashMap<>();
 
   JSema(AST ast) {
     this.ast = ast;
+  }
+
+  Supplier<Type> typeSupplier(@Nullable ITypeBinding binding) {
+    return binding == null ? SemanticValues.UNKNOWN_TYPE : new EcjSemanticAttachment<>(binding, this::type);
+  }
+
+  Supplier<Symbol.MethodSymbol> methodSupplier(@Nullable IMethodBinding binding) {
+    return binding == null ? SemanticValues.UNKNOWN_METHOD : new EcjSemanticAttachment<>(binding, this::methodSymbol);
+  }
+
+  Supplier<Symbol> symbolSupplier(@Nullable IBinding binding) {
+    return binding == null ? SemanticValues.UNKNOWN_SYMBOL : new EcjSemanticAttachment<>(binding, this::symbol);
+  }
+
+  private Symbol symbol(IBinding binding) {
+    return switch (binding.getKind()) {
+      case IBinding.TYPE -> typeSymbol((ITypeBinding) binding);
+      case IBinding.METHOD -> methodSymbol((IMethodBinding) binding);
+      case IBinding.VARIABLE -> variableSymbol((IVariableBinding) binding);
+      case IBinding.PACKAGE -> packageSymbol((IPackageBinding) binding);
+      default -> Symbol.UNKNOWN_SYMBOL;
+    };
   }
 
   public JType type(ITypeBinding typeBinding) {
@@ -126,12 +146,12 @@ public final class JSema implements Sema {
     return (JVariableSymbol) symbols.computeIfAbsent(variableBinding, k -> new JVariableSymbol(this, (IVariableBinding) k));
   }
 
-  JSymbolMetadata.JAnnotationInstance annotation(IAnnotationBinding annotationBinding) {
-    JSymbolMetadata.JAnnotationInstance cached = annotations.get(annotationBinding);
+  EcjSymbolMetadata.JAnnotationInstance annotation(IAnnotationBinding annotationBinding) {
+    EcjSymbolMetadata.JAnnotationInstance cached = annotations.get(annotationBinding);
     if (cached != null) {
       return cached;
     }
-    return annotations.computeIfAbsent(annotationBinding, k -> new JSymbolMetadata.JAnnotationInstance(this, k));
+    return annotations.computeIfAbsent(annotationBinding, k -> new EcjSymbolMetadata.JAnnotationInstance(this, k));
   }
 
   static IBinding declarationBinding(IBinding binding) {
@@ -183,11 +203,9 @@ public final class JSema implements Sema {
     return ASTUtils.resolvePackageAnnotations(ast, packageName);
   }
 
+  @Override
   public Runnable getEnvironmentCleaner() {
     return ASTUtils.getEnvironmentCleaner(ast);
   }
 
-  public Set<JProblem> undefinedTypes() {
-    return Collections.unmodifiableSet(undefinedTypes);
-  }
 }
