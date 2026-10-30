@@ -91,7 +91,7 @@ public final class AstSemanticDump {
       inputFiles.add(input);
       names.put(input, relative);
     }
-    JParserConfig config = JParserConfig.Mode.BATCH.create(JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION, entries);
+    JParserConfig config = JParserConfig.Mode.FILE_BY_FILE.create(JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION, entries);
     Map<String, Tree> trees = new HashMap<>();
     Map<String, String> errors = new HashMap<>();
     config.parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), (input, result) -> {
