@@ -1208,6 +1208,33 @@ final class SemsitterTranslator {
     sema.use(fqn, identifier);
   }
 
+  private void bindQualifierPackages(ExpressionTree qualifier, IdentifierTree identifier) {
+    if (identifier.symbol() instanceof Symbol.TypeSymbol type && !type.isUnknown()) {
+      Symbol owner = type.owner();
+      while (owner != null && !owner.isPackageSymbol()) {
+        owner = owner.owner();
+      }
+      if (owner != null && dottedName(qualifier).equals(owner.name())) {
+        bindPackage(qualifier, owner.name());
+      }
+    }
+  }
+
+  private void bindPackage(ExpressionTree tree, String name) {
+    ExpressionTree last = tree;
+    if (tree instanceof MemberSelectExpressionTree select) {
+      int dot = name.lastIndexOf('.');
+      if (dot < 0) {
+        return;
+      }
+      bindPackage(select.expression(), name.substring(0, dot));
+      last = select.identifier();
+    }
+    if (last instanceof IdentifierTreeImpl identifier && identifier.symbol().isUnknown()) {
+      identifier.symbol = sema.packageSymbol(name);
+    }
+  }
+
   private static String dottedName(ExpressionTree tree) {
     if (tree instanceof MemberSelectExpressionTree select) {
       String qualifier = dottedName(select.expression());
@@ -1253,8 +1280,11 @@ final class SemsitterTranslator {
     Node nameNode = name == null ? lastNamed(node) : name;
     IdentifierTreeImpl identifier = identifier(nameNode);
     bindUse(identifier, name != null || nameNode.json.has("refs") ? nameNode : node);
-    if (!naming && identifier.symbol().isUnknown()) {
-      resolveQualifiedType(qualifier, identifier);
+    if (!naming) {
+      if (identifier.symbol().isUnknown()) {
+        resolveQualifiedType(qualifier, identifier);
+      }
+      bindQualifierPackages(qualifier, identifier);
     }
     List<AnnotationTree> annotations = node.children().stream().filter(SemsitterTranslator::isAnnotation).<AnnotationTree>map(this::annotation).toList();
     if (!annotations.isEmpty()) {
