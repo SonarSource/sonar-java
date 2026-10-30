@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -43,6 +44,7 @@ public final class JSema implements Sema {
 
   private static final Set<String> PRIMITIVES = Set.of("byte", "short", "int", "long", "char", "float", "double", "boolean", "void");
   private static final Set<String> OBJECT_METHODS = Set.of("equals/1", "hashCode/0", "toString/0");
+  private static final Pattern LAMBDA_SEGMENTS = Pattern.compile("^(\\$lambda\\$[^$()]*\\(\\))+");
 
   private final Map<String, JsonObject> facts = new HashMap<>();
   private final Map<String, JsonObject> dumpSymbols = new HashMap<>();
@@ -50,6 +52,8 @@ public final class JSema implements Sema {
   private final Map<String, JSymbol> symbols = new HashMap<>();
   private final Map<String, JTypeSymbol> typesByName = new HashMap<>();
   private final Map<String, JType> rawTypes = new HashMap<>();
+  private final Map<String, String> binaryNames = new HashMap<>();
+  private final Map<String, String> sourceNames = new HashMap<>();
   final Map<String, Tree> declarations = new HashMap<>();
   final Map<String, List<IdentifierTree>> usages = new HashMap<>();
   private final Set<JProblem> undefinedTypes = new HashSet<>();
@@ -82,6 +86,9 @@ public final class JSema implements Sema {
         String id = text(symbol, "id");
         if (id != null) {
           dumpSymbols.put(id, symbol);
+          if ("type".equals(text(symbol, "kind")) && id.indexOf('<') < 0) {
+            binaryName(erase(id));
+          }
         }
       }
     }
@@ -91,6 +98,46 @@ public final class JSema implements Sema {
     for (String id : new ArrayList<>(dumpSymbols.keySet())) {
       linkDumpSymbol(id);
     }
+  }
+
+  /**
+   * The binary name Java gives the type SemSitter names {@code id}: a local class {@code p.C#f()$Local} becomes
+   * {@code p.C$1Local}, numbered by the first index not yet taken in its enclosing class, in declaration order.
+   */
+  private String binaryName(String id) {
+    String known = binaryNames.get(id);
+    if (known != null) {
+      return known;
+    }
+    int hash = id.lastIndexOf('#');
+    int open = id.indexOf('(', hash);
+    int close = open < 0 ? -1 : id.indexOf(')', open);
+    String rest = close < 0 ? "" : LAMBDA_SEGMENTS.matcher(id.substring(close + 1)).replaceFirst("");
+    if (hash < 0 || !rest.startsWith("$") || rest.length() == 1) {
+      return id;
+    }
+    int nested = rest.indexOf('$', 1);
+    String name = nested < 0 ? rest.substring(1) : rest.substring(1, nested);
+    String localId = id.substring(0, close + 1) + "$" + name;
+    String local = binaryNames.get(localId);
+    if (local == null) {
+      String enclosing = binaryName(id.substring(0, hash));
+      int index = 1;
+      while (sourceNames.containsKey(enclosing + "$" + index + name)) {
+        index++;
+      }
+      local = enclosing + "$" + index + name;
+      binaryNames.put(localId, local);
+      sourceNames.put(local, localId);
+    }
+    String binary = nested < 0 ? local : local + rest.substring(nested);
+    binaryNames.put(id, binary);
+    sourceNames.put(binary, id);
+    return binary;
+  }
+
+  private String sourceName(String fqn) {
+    return sourceNames.getOrDefault(fqn, fqn);
   }
 
   /**
@@ -230,7 +277,8 @@ public final class JSema implements Sema {
     return symbol instanceof Symbol.TypeSymbol typeSymbol ? typeSymbol : Symbol.TypeSymbol.UNKNOWN_TYPE;
   }
 
-  JTypeSymbol typeSymbol(String fqn) {
+  JTypeSymbol typeSymbol(String name) {
+    String fqn = sourceName(name);
     JTypeSymbol found = typesByName.get(fqn);
     if (found != null) {
       return found;
@@ -402,7 +450,7 @@ public final class JSema implements Sema {
     if (!declaresType(ownerFqn)) {
       return List.of();
     }
-    JsonArray members = typeInfos.get(ownerFqn).getAsJsonArray("members");
+    JsonArray members = typeInfos.get(sourceName(ownerFqn)).getAsJsonArray("members");
     if (members == null) {
       return List.of();
     }
@@ -642,7 +690,7 @@ public final class JSema implements Sema {
     if (!seen.add(ownerFqn) || !declaresType(ownerFqn)) {
       return;
     }
-    JsonObject info = typeInfos.get(ownerFqn);
+    JsonObject info = typeInfos.get(sourceName(ownerFqn));
     JsonArray members = info.getAsJsonArray("members");
     if (members != null) {
       for (JsonElement element : members) {
@@ -666,7 +714,7 @@ public final class JSema implements Sema {
     if (!seen.add(ownerFqn) || !declaresType(ownerFqn)) {
       return null;
     }
-    JsonObject info = typeInfos.get(ownerFqn);
+    JsonObject info = typeInfos.get(sourceName(ownerFqn));
     JsonArray members = info.getAsJsonArray("members");
     if (members != null) {
       for (JsonElement element : members) {
@@ -691,7 +739,7 @@ public final class JSema implements Sema {
     if (!seen.add(ownerFqn) || !declaresType(ownerFqn)) {
       return;
     }
-    JsonObject info = typeInfos.get(ownerFqn);
+    JsonObject info = typeInfos.get(sourceName(ownerFqn));
     JsonArray members = info.getAsJsonArray("members");
     if (members != null) {
       for (JsonElement element : members) {
@@ -756,12 +804,12 @@ public final class JSema implements Sema {
     if (!seen.add(ownerFqn)) {
       return null;
     }
-    JsonObject info = typeInfos.get(ownerFqn);
+    JsonObject info = typeInfos.get(sourceName(ownerFqn));
     JsonObject found = matchMembers(info == null ? null : info.getAsJsonArray("members"), parsed, match);
     if (found != null) {
       return found;
     }
-    JTypeSymbol type = typesByName.get(ownerFqn);
+    JTypeSymbol type = typesByName.get(sourceName(ownerFqn));
     if (type != null) {
       for (JsonObject member : type.memberFacts()) {
         if (matches(member, parsed, match)) {
@@ -1022,7 +1070,7 @@ public final class JSema implements Sema {
   }
 
   private JType rawNamed(String fqn) {
-    return rawTypes.computeIfAbsent(fqn, name -> JType.named(this, name, List.of()));
+    return rawTypes.computeIfAbsent(sourceName(fqn), name -> JType.named(this, binaryNames.getOrDefault(name, name), List.of()));
   }
 
   private List<Type> parameterTypesOf(String descriptor) {
@@ -1068,7 +1116,8 @@ public final class JSema implements Sema {
   }
 
   /** Whether the project, the classpath or the JDK declares the type {@code fqn}. */
-  boolean declaresType(String fqn) {
+  boolean declaresType(String name) {
+    String fqn = sourceName(name);
     if (!typeInfos.containsKey(fqn) && typesLoaded && requestedTypes.add(fqn)) {
       ingestTypes(typeLoader.apply(Set.of(fqn)));
     }
