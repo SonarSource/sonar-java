@@ -32,6 +32,8 @@ import javax.annotation.Nullable;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.InitializerListTreeImpl;
+import org.sonar.java.ast.parser.ModuleNameListTreeImpl;
+import org.sonar.java.ast.parser.ModuleNameTreeImpl;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.ResourceListTreeImpl;
 import org.sonar.java.ast.parser.StatementListTreeImpl;
@@ -39,9 +41,15 @@ import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.EnumConstantTreeImpl;
+import org.sonar.java.model.declaration.ExportsDirectiveTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifierKeywordTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.java.model.declaration.ModuleDeclarationTreeImpl;
+import org.sonar.java.model.declaration.OpensDirectiveTreeImpl;
+import org.sonar.java.model.declaration.ProvidesDirectiveTreeImpl;
+import org.sonar.java.model.declaration.RequiresDirectiveTreeImpl;
+import org.sonar.java.model.declaration.UsesDirectiveTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
@@ -100,6 +108,8 @@ import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierTree;
+import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
+import org.sonar.plugins.java.api.tree.ModuleDirectiveTree;
 import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -189,10 +199,12 @@ final class SemsitterTranslator {
     List<ImportClauseTree> imports = new ArrayList<>();
     List<Tree> types = new ArrayList<>();
     List<Tree> compactMembers = new ArrayList<>();
+    ModuleDeclarationTree module = null;
     boolean compact = false;
     for (Node child : program.children()) {
       switch (child.k()) {
         case "package_declaration" -> packageDeclaration = packageDeclaration(child);
+        case "module_declaration" -> module = moduleDeclaration(child);
         case "import_declaration" -> imports.add(importDeclaration(child));
         case ";" -> {
           EmptyStatementTreeImpl empty = new EmptyStatementTreeImpl(token(child));
@@ -224,7 +236,90 @@ final class SemsitterTranslator {
       bindImplicitClass(implicitClass, compactMembers);
       types.add(implicitClass);
     }
-    return new JavaTree.CompilationUnitTreeImpl(packageDeclaration, imports, types, null, eof);
+    return new JavaTree.CompilationUnitTreeImpl(packageDeclaration, imports, types, module, eof);
+  }
+
+  private ModuleDeclarationTreeImpl moduleDeclaration(Node node) {
+    Node body = requiredField(node, "body", childKind(node, "module_body"));
+    List<ModuleDirectiveTree> directives = new ArrayList<>();
+    for (Node child : body.children()) {
+      if (child.k().endsWith("_module_directive")) {
+        directives.add(moduleDirective(child));
+      }
+    }
+    return new ModuleDeclarationTreeImpl(
+      node.children().stream().filter(SemsitterTranslator::isAnnotation).<AnnotationTree>map(this::annotation).toList(),
+      optionalToken(node, "open"),
+      token(required(node, "module")),
+      moduleName(requiredField(node, "name", firstNamed(node))),
+      token(required(body, "{")),
+      directives,
+      token(required(body, "}")));
+  }
+
+  private ModuleDirectiveTree moduleDirective(Node node) {
+    InternalSyntaxToken keyword = token(node.children().get(0));
+    InternalSyntaxToken semicolon = token(required(node, ";"));
+    return switch (node.k()) {
+      case "requires_module_directive" -> new RequiresDirectiveTreeImpl(keyword, requiresModifiers(node), moduleName(requiredField(node, "module", lastNamed(node))), semicolon);
+      case "exports_module_directive" -> new ExportsDirectiveTreeImpl(keyword, expression(requiredField(node, "package", firstNamed(node))), optionalToken(node, "to"), moduleNames(node), semicolon);
+      case "opens_module_directive" -> new OpensDirectiveTreeImpl(keyword, expression(requiredField(node, "package", firstNamed(node))), optionalToken(node, "to"), moduleNames(node), semicolon);
+      case "uses_module_directive" -> new UsesDirectiveTreeImpl(keyword, (TypeTree) expression(requiredField(node, "type", firstNamed(node))), semicolon);
+      default -> new ProvidesDirectiveTreeImpl(keyword, (TypeTree) expression(requiredField(node, "provided", firstNamed(node))), token(required(node, "with")), providers(node), semicolon);
+    };
+  }
+
+  private ModifiersTreeImpl requiresModifiers(Node node) {
+    List<ModifierTree> modifiers = new ArrayList<>();
+    for (Node child : node.children()) {
+      if ("requires_modifier".equals(child.k())) {
+        Node keyword = child.children().get(0);
+        modifiers.add(new ModifierKeywordTreeImpl("static".equals(keyword.text()) ? Modifier.STATIC : Modifier.TRANSITIVE, token(keyword)));
+      }
+    }
+    return new ModifiersTreeImpl(modifiers);
+  }
+
+  private ModuleNameListTreeImpl moduleNames(Node node) {
+    ModuleNameListTreeImpl names = ModuleNameListTreeImpl.emptyList();
+    for (Node child : node.children()) {
+      if ("modules".equals(child.f())) {
+        names.add(moduleName(child));
+      } else if (",".equals(child.text())) {
+        names.separators().add(token(child));
+      }
+    }
+    return names;
+  }
+
+  private QualifiedIdentifierListTreeImpl providers(Node node) {
+    QualifiedIdentifierListTreeImpl providers = QualifiedIdentifierListTreeImpl.emptyList();
+    boolean afterWith = false;
+    for (Node child : node.children()) {
+      if ("with".equals(child.text())) {
+        afterWith = true;
+      } else if (",".equals(child.text())) {
+        providers.separators().add(token(child));
+      } else if (afterWith && !";".equals(child.text())) {
+        providers.add((TypeTree) expression(child));
+      }
+    }
+    return providers;
+  }
+
+  private ModuleNameTreeImpl moduleName(Node node) {
+    ModuleNameTreeImpl name = ModuleNameTreeImpl.emptyList();
+    addModuleName(name, node);
+    return name;
+  }
+
+  private void addModuleName(ModuleNameTreeImpl name, Node node) {
+    if ("scoped_identifier".equals(node.k())) {
+      addModuleName(name, requiredField(node, "scope", firstNamed(node)));
+      name.add(new IdentifierTreeImpl(token(requiredField(node, "name", lastNamed(node)))));
+    } else {
+      name.add(new IdentifierTreeImpl(token(node)));
+    }
   }
 
   private JavaTree.PackageDeclarationTreeImpl packageDeclaration(Node node) {
