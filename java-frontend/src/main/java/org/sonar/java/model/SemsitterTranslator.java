@@ -437,16 +437,17 @@ final class SemsitterTranslator {
   private List<Tree> membersOf(Node body) {
     List<Tree> members = new ArrayList<>();
     List<Node> children = body.children();
-    boolean semicolonTaken = false;
     for (int i = 0; i < children.size(); i++) {
       Node child = children.get(i);
       if ("enum_constant".equals(child.k())) {
-        Node separator = enumSeparator(children, i);
-        semicolonTaken = separator != null && ";".equals(separator.text());
-        members.add(enumConstant(child, separator));
+        members.add(enumConstant(child, enumSeparator(children, i)));
       } else if ("enum_body_declarations".equals(child.k())) {
         List<Node> declarations = child.children();
-        for (int j = semicolonTaken ? 1 : 0; j < declarations.size(); j++) {
+        int j = 0;
+        while (childKind(body, "enum_constant") != null && j < declarations.size() && ";".equals(declarations.get(j).text())) {
+          j++;
+        }
+        for (; j < declarations.size(); j++) {
           addMember(members, declarations.get(j));
         }
       } else {
