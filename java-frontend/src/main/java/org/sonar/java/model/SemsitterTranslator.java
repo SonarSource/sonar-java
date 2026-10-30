@@ -1227,7 +1227,6 @@ final class SemsitterTranslator {
     } else {
       qualifier = superQualifier(node, object);
       select = new MemberSelectExpressionTreeImpl(qualifier, token(lastKeyword(node, ".")), identifier);
-      ascribe((AbstractTypedTree) select, identifier.symbolType());
     }
     Node typeArguments = field(node, "type_arguments");
     MethodInvocationTreeImpl tree = new MethodInvocationTreeImpl(select, typeArguments == null ? null : typeArguments(typeArguments), arguments(requiredField(node, "arguments", childKind(node, "argument_list"))));
@@ -1237,6 +1236,7 @@ final class SemsitterTranslator {
       JMethodSymbol view = method.withReturnType(returned);
       tree.methodSymbol = view;
       identifier.symbol = view;
+      ascribe(identifier, returned);
       ascribe(tree, returned);
     }
     return tree;
@@ -1832,7 +1832,7 @@ final class SemsitterTranslator {
       }
     }
     identifier.symbol = symbol;
-    ascribe(identifier, symbol.type());
+    ascribe(identifier, identifierType(symbol));
     if (tree instanceof ClassTreeImpl classTree && symbol instanceof Symbol.TypeSymbol typeSymbol) {
       classTree.typeSymbol = typeSymbol;
     } else if (tree instanceof MethodTreeImpl method && symbol instanceof Symbol.MethodSymbol methodSymbol) {
@@ -1891,7 +1891,7 @@ final class SemsitterTranslator {
       symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
     }
     identifier.symbol = symbol;
-    ascribe(identifier, symbol.type());
+    ascribe(identifier, identifierType(symbol));
     sema.use(target, identifier);
   }
 
@@ -2115,6 +2115,10 @@ final class SemsitterTranslator {
   private InternalSyntaxToken optionalToken(Node node, String text) {
     Node found = keyword(node, text);
     return found == null ? null : token(found);
+  }
+
+  private static Type identifierType(Symbol symbol) {
+    return symbol instanceof Symbol.MethodSymbol method && !method.isUnknown() ? method.returnType().type() : symbol.type();
   }
 
   private static void ascribe(Tree tree, Type type) {
