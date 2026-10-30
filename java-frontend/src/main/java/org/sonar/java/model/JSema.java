@@ -315,6 +315,9 @@ public final class JSema implements Sema {
     if (index != null && receiver != null && receiver.isParameterized() && receiver.typeArguments().size() > index) {
       return receiver.typeArguments().get(index);
     }
+    if (method.returnsSelf() && receiver != null && receiver.isClass()) {
+      return receiver;
+    }
     Type declared = method.returnType().type();
     return declared == null ? Type.UNKNOWN : declared;
   }
@@ -357,6 +360,7 @@ public final class JSema implements Sema {
     if (member.has("retParam") && !member.get("retParam").isJsonNull()) {
       method.returnTypeParameter(member.get("retParam").getAsInt());
     }
+    method.returnsSelf(member.has("retSelf") && member.get("retSelf").getAsBoolean());
     symbols.put(id, method);
     return method;
   }
