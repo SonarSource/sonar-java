@@ -818,6 +818,14 @@ public final class JSema implements Sema {
     return type;
   }
 
+  /** Whether the project, the classpath or the JDK declares the type {@code fqn}. */
+  boolean declaresType(String fqn) {
+    if (!typeInfos.containsKey(fqn) && typesLoaded && requestedTypes.add(fqn)) {
+      ingestTypes(typeLoader.apply(Set.of(fqn)));
+    }
+    return typeInfos.containsKey(fqn);
+  }
+
   private Symbol packageSymbol(String name) {
     if (name == null || name.isEmpty()) {
       return Symbol.ROOT_PACKAGE;
