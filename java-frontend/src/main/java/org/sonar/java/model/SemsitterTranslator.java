@@ -921,7 +921,7 @@ final class SemsitterTranslator {
       if ("->".equals(child.text()) || ":".equals(child.text())) {
         continue;
       }
-      if (expression && "expression_statement".equals(child.k()) && "switch_rule".equals(node.k())) {
+      if ("expression_statement".equals(child.k()) && "switch_rule".equals(node.k())) {
         ExpressionStatementTreeImpl statement = expressionStatement(child);
         body.add(new YieldStatementTreeImpl(null, statement.expression(), (InternalSyntaxToken) statement.semicolonToken()));
       } else if (expression && !isStatementKind(child.k())) {
