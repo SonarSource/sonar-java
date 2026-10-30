@@ -536,8 +536,9 @@ public final class JSema implements Sema {
     if (members != null) {
       for (JsonElement element : members) {
         JsonObject member = element.getAsJsonObject();
-        if (name.equals(text(member, "name")) && "m".equals(text(member, "k"))
-          && memberFromTypeInfo(typeSymbol(ownerFqn), member) instanceof Symbol.MethodSymbol method && !method.isUnknown()) {
+        MemberId id = member.has("id") ? parseMember(member.get("id").getAsString()) : null;
+        boolean named = id == null ? (name.equals(text(member, "name")) && "m".equals(text(member, "k"))) : (name.equals(id.name) && id.params != null);
+        if (named && memberFromTypeInfo(typeSymbol(ownerFqn), member) instanceof Symbol.MethodSymbol method && !method.isUnknown()) {
           found.add(method);
         }
       }
