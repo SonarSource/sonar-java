@@ -1116,7 +1116,7 @@ final class SemsitterTranslator {
       case "lambda_expression" -> lambda(node);
       case "method_reference" -> methodReference(node);
       case "switch_expression" -> switchExpression(node);
-      case "generic_type", "array_type", "integral_type", "floating_point_type", "boolean_type", "void_type", "wildcard" -> typeExpression(node);
+      case "generic_type", "array_type", "integral_type", "floating_point_type", "boolean_type", "void_type", "wildcard", "annotated_type" -> typeExpression(node);
       default -> primary(node);
     };
     return tree;
@@ -1249,7 +1249,7 @@ final class SemsitterTranslator {
 
   private NewClassTreeImpl creation(Node node) {
     Node typeNode = field(node, "type");
-    TypeTree type = type(typeNode == null ? firstType(node) : typeNode);
+    TypeTree type = annotate(type(typeNode == null ? firstType(node) : typeNode), node);
     Node arguments = field(node, "arguments");
     ArgumentListTreeImpl args = arguments == null ? ArgumentListTreeImpl.emptyList().complete(synthetic("("), synthetic(")")) : arguments(arguments);
     Node body = field(node, "body");
@@ -1305,7 +1305,7 @@ final class SemsitterTranslator {
     }
     InitializerListTreeImpl initializers = initializer == null ? InitializerListTreeImpl.emptyList() : initializers(initializer);
     NewArrayTreeImpl tree = new NewArrayTreeImpl(dims, initializers)
-      .complete(type(requiredField(node, "type", firstType(node))))
+      .complete(annotate(type(requiredField(node, "type", firstType(node))), node))
       .completeWithNewKeyword(token(required(node, "new")));
     if (initializer != null) {
       tree.completeWithCurlyBraces(token(required(initializer, "{")), token(required(initializer, "}")));
@@ -1563,14 +1563,12 @@ final class SemsitterTranslator {
   }
 
   private TypeTree annotatedType(Node node) {
-    TypeTree type = type(firstType(node));
-    List<AnnotationTree> annotations = new ArrayList<>();
-    for (Node child : node.children()) {
-      if (isAnnotation(child)) {
-        annotations.add(annotation(child));
-      }
-    }
-    if (type instanceof JavaTree.AnnotatedTypeTree annotated) {
+    return annotate(type(firstType(node)), node);
+  }
+
+  private TypeTree annotate(TypeTree type, Node node) {
+    List<AnnotationTree> annotations = node.children().stream().filter(SemsitterTranslator::isAnnotation).<AnnotationTree>map(this::annotation).toList();
+    if (!annotations.isEmpty() && type instanceof JavaTree.AnnotatedTypeTree annotated) {
       annotated.complete(annotations);
     }
     return type;
