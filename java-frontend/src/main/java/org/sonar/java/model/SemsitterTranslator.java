@@ -1528,14 +1528,20 @@ final class SemsitterTranslator {
 
   private QualifiedIdentifierListTreeImpl separatedTypes(Node node) {
     QualifiedIdentifierListTreeImpl list = QualifiedIdentifierListTreeImpl.emptyList();
+    addSeparatedTypes(list, node);
+    return list;
+  }
+
+  private void addSeparatedTypes(QualifiedIdentifierListTreeImpl list, Node node) {
     for (Node child : node.children()) {
-      if (isTypeKind(child.k())) {
+      if ("type_list".equals(child.k())) {
+        addSeparatedTypes(list, child);
+      } else if (isTypeKind(child.k())) {
         list.add(type(child));
       } else if (",".equals(child.text()) || "&".equals(child.text())) {
         list.separators().add(token(child));
       }
     }
-    return list;
   }
 
   private ArgumentListTreeImpl arguments(Node node) {
