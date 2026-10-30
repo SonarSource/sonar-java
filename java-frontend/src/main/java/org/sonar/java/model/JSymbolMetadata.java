@@ -323,12 +323,28 @@ final class JSymbolMetadata implements SymbolMetadata {
       List<AnnotationValue> values = new ArrayList<>();
       for (ExpressionTree argument : tree.arguments()) {
         if (argument instanceof AssignmentExpressionTree assignment) {
-          values.add(new AnnotationValueImpl(assignment.variable().toString(), literal(assignment.expression())));
+          String name = assignment.variable().toString();
+          values.add(new AnnotationValueImpl(name, value(name, assignment.expression())));
         } else {
-          values.add(new AnnotationValueImpl("value", literal(argument)));
+          values.add(new AnnotationValueImpl("value", value("value", argument)));
         }
       }
       return values;
+    }
+
+    /**
+     * The value of the member {@code name}, wrapped in an array when the member is array typed, as the value of an
+     * array typed member is always an array no matter how many elements the annotation spells out.
+     */
+    private Object value(String name, ExpressionTree expression) {
+      Object value = literal(expression);
+      return value instanceof Object[] || !isArrayTyped(name) ? value : new Object[] {value};
+    }
+
+    private boolean isArrayTyped(String name) {
+      return symbol() instanceof Symbol.TypeSymbol annotation
+        && annotation.lookupSymbols(name).stream()
+          .anyMatch(member -> member instanceof Symbol.MethodSymbol method && method.returnType().type().isArray());
     }
 
     private Object literal(ExpressionTree expression) {
