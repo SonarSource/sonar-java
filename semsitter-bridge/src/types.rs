@@ -23,7 +23,7 @@ use std::collections::{BTreeSet, HashMap, VecDeque};
 
 use serde_json::{Map, Value, json};
 use udg_family_jvm::external::classpath::{ClasspathIndex, ClasspathType};
-use udg_family_jvm::external::jdk_table::{JdkMemberKind, JdkType, jdk_type};
+use udg_family_jvm::external::jdk_table::{JdkMemberKind, JdkType, jdk_type, parameter_type_variables};
 
 const ACC_STATIC: u16 = 0x0008;
 const ACC_FINAL: u16 = 0x0010;
@@ -163,6 +163,7 @@ fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
         "vis": "public",
         "retParam": returned,
         "retSelf": returned.is_some_and(|index| parameters[index].1 == name),
+        "paramVars": m.signature.as_deref().map(|s| parameter_variables(s, &parameters)),
       })
     })
     .collect();
@@ -247,6 +248,34 @@ fn erased_class(signature: &str) -> String {
     .unwrap_or_default()
 }
 
+/// Per parameter of a method signature, the type variable it is: `c1` for the owner's second type
+/// parameter, `m0[]` for an array of the method's first one, or empty.
+fn parameter_variables(signature: &str, parameters: &[(String, String)]) -> Vec<String> {
+  let own = type_parameters(signature);
+  let bytes = signature.as_bytes();
+  let Some(open) = signature.find('(') else {
+    return Vec::new();
+  };
+  let mut out = Vec::new();
+  let mut i = open + 1;
+  while i < bytes.len() && bytes[i] != b')' {
+    let end = skip_type(bytes, i);
+    let parameter = &signature[i..end];
+    let element = parameter.trim_start_matches('[');
+    let array = "[]".repeat(parameter.len() - element.len());
+    let variable = element.strip_prefix('T').and_then(|v| v.strip_suffix(';'));
+    out.push(match variable {
+      Some(name) => match own.iter().position(|(p, _)| p == name) {
+        Some(index) => format!("m{index}{array}"),
+        None => parameters.iter().position(|(p, _)| p == name).map_or_else(String::new, |index| format!("c{index}{array}")),
+      },
+      None => String::new(),
+    });
+    i = end;
+  }
+  out
+}
+
 /// Index of the class type parameter a method signature returns, when it returns one directly.
 fn class_return_parameter(signature: &str, parameters: &[(String, String)]) -> Option<usize> {
   let returned = signature[signature.rfind(')')? + 1..].strip_prefix('T')?;
@@ -283,6 +312,12 @@ fn jdk_type_info(ty: &JdkType) -> Value {
         "abstract": m.is_abstract,
         "vis": format!("{:?}", m.visibility).to_lowercase(),
         "retParam": m.return_type_class_param_index,
+        "paramVars": m.parameter_type_variables.map(|slots| {
+          parameter_type_variables(slots)
+            .into_iter()
+            .map(|slot| slot.map_or_else(String::new, |(index, array)| format!("c{index}{array}")))
+            .collect::<Vec<_>>()
+        }),
       })
     })
     .collect();
