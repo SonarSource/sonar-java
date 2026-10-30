@@ -1686,11 +1686,8 @@ final class SemsitterTranslator {
 
   private List<AnnotationTree> annotations(Node node) {
     Node modifiers = childKind(node, "modifiers");
-    if (modifiers == null) {
-      return List.of();
-    }
     List<AnnotationTree> annotations = new ArrayList<>();
-    for (Node child : modifiers.children()) {
+    for (Node child : (modifiers == null ? node : modifiers).children()) {
       if (isAnnotation(child)) {
         annotations.add(annotation(child));
       }
