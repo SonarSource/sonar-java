@@ -68,6 +68,8 @@ import org.sonar.java.model.JProblem;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaIssue;
+import org.sonar.java.telemetry.Telemetry;
+import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.java.utils.ModuleMetadataUtils;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -250,6 +252,13 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   public NewHighlighting highlightableFor(InputFile inputFile) {
     Objects.requireNonNull(context);
     return context.newHighlighting().onFile(inputFile);
+  }
+
+  public void recordClasspathTelemetry(Telemetry telemetry) {
+    if (javaClasspath != null) {
+      javaClasspath.recordTelemetry(telemetry, TelemetryKey.JAVA_CLASSPATH_MAIN);
+    }
+    javaTestClasspath.recordTelemetry(telemetry, TelemetryKey.JAVA_CLASSPATH_TEST);
   }
 
   public List<File> getJavaClasspath() {

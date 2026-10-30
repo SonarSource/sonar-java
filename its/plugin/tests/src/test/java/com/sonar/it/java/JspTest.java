@@ -94,15 +94,47 @@ public class JspTest {
     // size of the generated files varies depending on the environment line endings
     assertThat(extractTelemetryLogs(buildResult))
       .matches(patternWithLiteralDot("""
+        Telemetry java.analysis.generated.semantic.files_evaluated: 4
+        Telemetry java.analysis.generated.semantic.files_with_resolution_errors: 0
+        Telemetry java.analysis.generated.semantic.modules_evaluated: 1
+        Telemetry java.analysis.generated.semantic.modules_with_resolution_errors: 0
+        Telemetry java.analysis.generated.semantic.resolution_error_count: 0
+        Telemetry java.analysis.generated.success.file_count: 4
         Telemetry java.analysis.generated.success.size_chars: \\d{5}
         Telemetry java.analysis.generated.success.time_ms: \\d+
         Telemetry java.analysis.generated.success.type_error_count: 0
+        Telemetry java.analysis.main.semantic.files_evaluated: 1
+        Telemetry java.analysis.main.semantic.files_with_resolution_errors: 0
+        Telemetry java.analysis.main.semantic.modules_evaluated: 1
+        Telemetry java.analysis.main.semantic.modules_with_resolution_errors: 0
+        Telemetry java.analysis.main.semantic.resolution_error_count: 0
+        Telemetry java.analysis.main.success.file_count: 1
         Telemetry java.analysis.main.success.size_chars: 969
         Telemetry java.analysis.main.success.time_ms: \\d+
         Telemetry java.analysis.main.success.type_error_count: 0
+        Telemetry java.analysis.test.semantic.files_evaluated: 1
+        Telemetry java.analysis.test.semantic.files_with_resolution_errors: 0
+        Telemetry java.analysis.test.semantic.modules_evaluated: 1
+        Telemetry java.analysis.test.semantic.modules_with_resolution_errors: 0
+        Telemetry java.analysis.test.semantic.resolution_error_count: 0
+        Telemetry java.analysis.test.success.file_count: 1
         Telemetry java.analysis.test.success.size_chars: 20
         Telemetry java.analysis.test.success.time_ms: \\d+
         Telemetry java.analysis.test.success.type_error_count: 0
+        Telemetry java.classpath.main.module_count: 1
+        Telemetry java.classpath.main.modules_missing_binaries: 0
+        Telemetry java.classpath.main.modules_missing_libraries: 0
+        Telemetry java.classpath.main.modules_with_invalid_jdk: 0
+        Telemetry java.classpath.main.modules_with_unmatched_entries: 0
+        Telemetry java.classpath.main.modules_without_binary_entries: 0
+        Telemetry java.classpath.main.modules_without_library_entries: 0
+        Telemetry java.classpath.test.module_count: 1
+        Telemetry java.classpath.test.modules_missing_binaries: 0
+        Telemetry java.classpath.test.modules_missing_libraries: 0
+        Telemetry java.classpath.test.modules_with_invalid_jdk: 0
+        Telemetry java.classpath.test.modules_with_unmatched_entries: 0
+        Telemetry java.classpath.test.modules_without_binary_entries: 0
+        Telemetry java.classpath.test.modules_without_library_entries: 0
         Telemetry java.dependency.lombok: absent
         Telemetry java.dependency.spring-boot: absent
         Telemetry java.dependency.spring-web: absent
