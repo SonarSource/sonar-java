@@ -254,7 +254,7 @@ final class SemsitterTranslator {
       case "class_declaration", "interface_declaration", "enum_declaration", "record_declaration", "annotation_type_declaration" -> members.add(typeDeclaration(node));
       case "static_initializer" -> members.add(staticInitializer(node));
       case "block" -> members.add(initializer(node));
-      case "enum_constant" -> members.add(enumConstant(node));
+      case "enum_constant" -> members.add(enumConstant(node, null));
       case ";" -> members.add(new EmptyStatementTreeImpl(token(node)));
       case "{", "}" -> {
         // punctuation of the body
@@ -339,13 +339,45 @@ final class SemsitterTranslator {
 
   private List<Tree> membersOf(Node body) {
     List<Tree> members = new ArrayList<>();
-    for (Node child : body.children()) {
-      addMember(members, child);
+    List<Node> children = body.children();
+    boolean semicolonTaken = false;
+    for (int i = 0; i < children.size(); i++) {
+      Node child = children.get(i);
+      if ("enum_constant".equals(child.k())) {
+        Node separator = enumSeparator(children, i);
+        semicolonTaken = separator != null && ";".equals(separator.text());
+        members.add(enumConstant(child, separator));
+      } else if ("enum_body_declarations".equals(child.k())) {
+        List<Node> declarations = child.children();
+        for (int j = semicolonTaken ? 1 : 0; j < declarations.size(); j++) {
+          addMember(members, declarations.get(j));
+        }
+      } else {
+        addMember(members, child);
+      }
     }
     return members;
   }
 
-  private EnumConstantTreeImpl enumConstant(Node node) {
+  @Nullable
+  private static Node enumSeparator(List<Node> siblings, int index) {
+    if (index + 1 >= siblings.size()) {
+      return null;
+    }
+    Node next = siblings.get(index + 1);
+    if (",".equals(next.text())) {
+      return next;
+    }
+    if ("enum_body_declarations".equals(next.k())) {
+      List<Node> declarations = next.children();
+      if (!declarations.isEmpty() && ";".equals(declarations.get(0).text())) {
+        return declarations.get(0);
+      }
+    }
+    return null;
+  }
+
+  private EnumConstantTreeImpl enumConstant(Node node, @Nullable Node separatorNode) {
     IdentifierTreeImpl name = identifier(requiredField(node, "name", firstOf(node, "identifier")));
     Node arguments = field(node, "arguments");
     ArgumentListTreeImpl args = arguments == null ? ArgumentListTreeImpl.emptyList() : arguments(arguments);
@@ -355,10 +387,7 @@ final class SemsitterTranslator {
       classBody = new ClassTreeImpl(Tree.Kind.CLASS, token(required(body, "{")), membersOf(body), token(required(body, "}")));
       bindType(classBody, body);
     }
-    InternalSyntaxToken separator = optionalToken(node, ",");
-    if (separator == null) {
-      separator = optionalToken(node, ";");
-    }
+    InternalSyntaxToken separator = separatorNode == null ? null : token(separatorNode);
     EnumConstantTreeImpl tree = new EnumConstantTreeImpl(modifiers(node), name, new NewClassTreeImpl(name, args, classBody), separator);
     bindDeclaration(tree, nameNode(node), name);
     return tree;
