@@ -82,7 +82,8 @@ public final class AstSemanticDump {
     for (Path file : files) {
       String relative = relative(root, file);
       String source = Files.readString(file);
-      InputFile input = new TestInputFileBuilder("bench", file.getParent().toFile(), file.toFile())
+      File base = root == null ? file.getParent().toFile() : root.toFile();
+      InputFile input = new TestInputFileBuilder("bench", base, file.toFile())
         .setCharset(StandardCharsets.UTF_8)
         .setLanguage("java")
         .setContents(source)
