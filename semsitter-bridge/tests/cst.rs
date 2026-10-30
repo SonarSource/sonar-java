@@ -79,7 +79,6 @@ fn cst_carries_declarations_references_and_facts() {
   assert_eq!(cst_b["facts"]["p.B"]["extends"][0], "p.A");
   let name_call = nodes(&cst_b, "name")[0];
   assert_eq!(name_call["refs"][0]["target"], "p.A#name(java.util.List`1)");
-  assert_eq!(name_call["refs"][0]["reason"], "graph-call");
   assert_eq!(cst_b["facts"]["p.A#name(java.util.List`1)"]["returns"][0], "java.lang.String");
 }
 

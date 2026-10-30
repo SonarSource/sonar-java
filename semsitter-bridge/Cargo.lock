@@ -330,7 +330,7 @@ checksum = "77ce24cb58228fbb8aa041425bb1050850ac19177686ea6e0f41a70416f56fdb"
 [[package]]
 name = "fswatch"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=d606e04b766dc4f506c20c3c37f26d1511b5f065#d606e04b766dc4f506c20c3c37f26d1511b5f065"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
 dependencies = [
  "anyhow",
  "ignore",
@@ -1193,7 +1193,7 @@ checksum = "b6f5e870be6c3b371b77fe0ee0bafb859fa4964b4404c27de1d380043c4dda20"
 [[package]]
 name = "udg-buffer"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=d606e04b766dc4f506c20c3c37f26d1511b5f065#d606e04b766dc4f506c20c3c37f26d1511b5f065"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
 dependencies = [
  "rustc-hash",
  "tracing",
@@ -1204,7 +1204,7 @@ dependencies = [
 [[package]]
 name = "udg-embed"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=d606e04b766dc4f506c20c3c37f26d1511b5f065#d606e04b766dc4f506c20c3c37f26d1511b5f065"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
 dependencies = [
  "anyhow",
  "clap",
@@ -1222,7 +1222,7 @@ dependencies = [
 [[package]]
 name = "udg-engine"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=d606e04b766dc4f506c20c3c37f26d1511b5f065#d606e04b766dc4f506c20c3c37f26d1511b5f065"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
 dependencies = [
  "anyhow",
  "ignore",
@@ -1238,16 +1238,28 @@ dependencies = [
  "udg-lang-sdk",
  "udg-model",
  "udg-sdk-tree-sitter",
- "zip",
+]
+
+[[package]]
+name = "udg-engine-plugins"
+version = "0.1.0"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
+dependencies = [
+ "rayon",
+ "tree-sitter",
+ "udg-engine",
+ "udg-lang-sdk",
 ]
 
 [[package]]
 name = "udg-family-jvm"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=d606e04b766dc4f506c20c3c37f26d1511b5f065#d606e04b766dc4f506c20c3c37f26d1511b5f065"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
 dependencies = [
  "anyhow",
+ "globset",
  "rustc-hash",
+ "serde",
  "tracing",
  "udg-lang-sdk",
  "udg-model",
@@ -1258,7 +1270,7 @@ dependencies = [
 [[package]]
 name = "udg-gen"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=d606e04b766dc4f506c20c3c37f26d1511b5f065#d606e04b766dc4f506c20c3c37f26d1511b5f065"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
 dependencies = [
  "anyhow",
  "clap",
@@ -1274,6 +1286,8 @@ dependencies = [
  "tree-sitter-java",
  "udg-embed",
  "udg-engine",
+ "udg-engine-plugins",
+ "udg-family-jvm",
  "udg-lang-java",
  "udg-lang-sdk",
  "udg-live",
@@ -1288,7 +1302,7 @@ dependencies = [
 [[package]]
 name = "udg-lang-java"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=d606e04b766dc4f506c20c3c37f26d1511b5f065#d606e04b766dc4f506c20c3c37f26d1511b5f065"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
 dependencies = [
  "anyhow",
  "rustc-hash",
@@ -1302,12 +1316,13 @@ dependencies = [
  "udg-model",
  "udg-packed-table",
  "udg-sdk-tree-sitter",
+ "udg-semantic-core",
 ]
 
 [[package]]
 name = "udg-lang-sdk"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=d606e04b766dc4f506c20c3c37f26d1511b5f065#d606e04b766dc4f506c20c3c37f26d1511b5f065"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
 dependencies = [
  "encoding_rs",
  "rustc-hash",
@@ -1318,7 +1333,7 @@ dependencies = [
 [[package]]
 name = "udg-live"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=d606e04b766dc4f506c20c3c37f26d1511b5f065#d606e04b766dc4f506c20c3c37f26d1511b5f065"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
 dependencies = [
  "anyhow",
  "clap",
@@ -1335,7 +1350,7 @@ dependencies = [
 [[package]]
 name = "udg-live-serve"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=d606e04b766dc4f506c20c3c37f26d1511b5f065#d606e04b766dc4f506c20c3c37f26d1511b5f065"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
 dependencies = [
  "anyhow",
  "fswatch",
@@ -1356,7 +1371,7 @@ dependencies = [
 [[package]]
 name = "udg-model"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=d606e04b766dc4f506c20c3c37f26d1511b5f065#d606e04b766dc4f506c20c3c37f26d1511b5f065"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
 dependencies = [
  "clap",
  "rustc-hash",
@@ -1370,7 +1385,7 @@ dependencies = [
 [[package]]
 name = "udg-packed-table"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=d606e04b766dc4f506c20c3c37f26d1511b5f065#d606e04b766dc4f506c20c3c37f26d1511b5f065"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
 dependencies = [
  "flate2",
 ]
@@ -1378,9 +1393,10 @@ dependencies = [
 [[package]]
 name = "udg-sdk-tree-sitter"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=d606e04b766dc4f506c20c3c37f26d1511b5f065#d606e04b766dc4f506c20c3c37f26d1511b5f065"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
 dependencies = [
  "anyhow",
+ "serde_json",
  "tree-sitter",
  "udg-lang-sdk",
  "udg-model",
@@ -1389,37 +1405,44 @@ dependencies = [
 [[package]]
 name = "udg-semantic"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=d606e04b766dc4f506c20c3c37f26d1511b5f065#d606e04b766dc4f506c20c3c37f26d1511b5f065"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
+dependencies = [
+ "udg-lang-sdk",
+ "udg-model",
+ "udg-semantic-core",
+ "udg-store",
+]
+
+[[package]]
+name = "udg-semantic-core"
+version = "0.1.0"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
 dependencies = [
  "serde_json",
  "udg-lang-sdk",
  "udg-model",
- "udg-store",
 ]
 
 [[package]]
 name = "udg-semantic-session"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=d606e04b766dc4f506c20c3c37f26d1511b5f065#d606e04b766dc4f506c20c3c37f26d1511b5f065"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
 dependencies = [
  "anyhow",
  "rayon",
  "tracing",
  "tree-sitter",
- "tree-sitter-java",
  "udg-engine",
  "udg-lang-java",
  "udg-lang-sdk",
  "udg-model",
- "udg-sdk-tree-sitter",
  "udg-semantic",
- "udg-store",
 ]
 
 [[package]]
 name = "udg-store"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=d606e04b766dc4f506c20c3c37f26d1511b5f065#d606e04b766dc4f506c20c3c37f26d1511b5f065"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
 dependencies = [
  "anyhow",
  "clap",
@@ -1439,7 +1462,7 @@ dependencies = [
 [[package]]
 name = "udg-ucfg"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=d606e04b766dc4f506c20c3c37f26d1511b5f065#d606e04b766dc4f506c20c3c37f26d1511b5f065"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=bb88640752a431310a24a1d66a5e27119dd01e1a#bb88640752a431310a24a1d66a5e27119dd01e1a"
 dependencies = [
  "anyhow",
  "clap",
