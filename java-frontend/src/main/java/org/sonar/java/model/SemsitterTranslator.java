@@ -1399,6 +1399,7 @@ final class SemsitterTranslator {
     IdentifierTreeImpl identifier = identifier(nameNode);
     bindUse(identifier, name != null || nameNode.json.has("refs") ? nameNode : node);
     if (!naming) {
+      bindQualifiedReceiver(qualifier, identifier);
       if (identifier.symbol().isUnknown()) {
         resolveQualifiedType(qualifier, identifier);
       }
@@ -1426,7 +1427,20 @@ final class SemsitterTranslator {
     if (superNode == null || same(superNode, object)) {
       return qualifier;
     }
-    return new MemberSelectExpressionTreeImpl(qualifier, token(required(node, ".")), new IdentifierTreeImpl(token(superNode)));
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl(token(superNode));
+    bindQualifiedReceiver(qualifier, identifier);
+    return new MemberSelectExpressionTreeImpl(qualifier, token(required(node, ".")), identifier);
+  }
+
+  private void bindQualifiedReceiver(ExpressionTree qualifier, IdentifierTreeImpl identifier) {
+    boolean isThis = "this".equals(identifier.name());
+    if (!identifier.symbol().isUnknown() || (!isThis && !"super".equals(identifier.name()))
+      || !(qualifier.symbolType().symbol() instanceof Symbol.TypeSymbol owner) || owner.isUnknown()) {
+      return;
+    }
+    Type type = isThis || owner.isInterface() || owner.superClass() == null ? owner.type() : owner.superClass();
+    identifier.symbol = sema.receiverSymbol(owner, identifier.name(), type);
+    ascribe(identifier, type);
   }
 
   private static boolean compoundName(Node node) {
