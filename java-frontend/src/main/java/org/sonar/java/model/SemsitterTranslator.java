@@ -551,6 +551,12 @@ final class SemsitterTranslator {
       statements.add(new EmptyStatementTreeImpl(token(node)));
       return;
     }
+    Node switchNode = childKind(node, "switch_expression");
+    if ("expression_statement".equals(node.k()) && switchNode != null) {
+      statements.add(switchStatement(switchNode));
+      statements.add(new EmptyStatementTreeImpl(token(required(node, ";"))));
+      return;
+    }
     statements.add(statement(node));
   }
 
