@@ -1421,8 +1421,9 @@ final class SemsitterTranslator {
         return;
       }
     }
-    Type type = tree.identifier().symbolType();
-    Symbol.MethodSymbol declared = tree.classBody() == null && type.isClass() ? sema.declaredMethod(type.erasure().fullyQualifiedName(), "<init>", argumentTypes(tree.arguments())) : null;
+    Type type = tree.identifier().symbolType().erasure();
+    String owner = tree.classBody() != null && type.symbol().isInterface() ? "java.lang.Object" : type.fullyQualifiedName();
+    Symbol.MethodSymbol declared = type.isClass() ? sema.declaredMethod(owner, "<init>", argumentTypes(tree.arguments())) : null;
     if (declared != null) {
       identifier.symbol = declared;
     } else if (!(identifier.symbol() instanceof Symbol.MethodSymbol)) {
