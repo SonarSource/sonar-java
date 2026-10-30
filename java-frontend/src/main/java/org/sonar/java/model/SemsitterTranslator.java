@@ -755,7 +755,7 @@ final class SemsitterTranslator {
       condition.open,
       condition.expr,
       condition.close,
-      token(required(node, ";")));
+      token(lastKeyword(node, ";")));
   }
 
   private ForStatementTreeImpl forStatement(Node node) {
