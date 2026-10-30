@@ -28,6 +28,7 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
@@ -138,6 +139,8 @@ final class SemsitterTranslator {
   private boolean naming;
   private final Map<String, String> singleImports = new HashMap<>();
   private final List<String> onDemandImports = new ArrayList<>();
+  private final Map<String, String> staticImports = new HashMap<>();
+  private final List<String> staticOnDemandImports = new ArrayList<>();
 
   private SemsitterTranslator(JSema sema) {
     this.sema = sema;
@@ -347,12 +350,14 @@ final class SemsitterTranslator {
       if (star == null) {
         star = keyword(node, "asterisk");
       }
-      if (staticToken == null) {
-        onDemandImports.add(dottedName(name));
-      }
+      (staticToken == null ? onDemandImports : staticOnDemandImports).add(dottedName(name));
       name = new MemberSelectExpressionTreeImpl(name, token(lastKeyword(node, ".")), new IdentifierTreeImpl(token(star)));
-    } else if (staticToken == null && name instanceof MemberSelectExpressionTree select) {
-      singleImports.put(select.identifier().name(), dottedName(name));
+    } else if (name instanceof MemberSelectExpressionTree select) {
+      if (staticToken == null) {
+        singleImports.put(select.identifier().name(), dottedName(name));
+      } else {
+        staticImports.put(select.identifier().name(), dottedName(select.expression()));
+      }
     }
     return new JavaTree.ImportTreeImpl(token(required(node, "import")), staticToken, optionalToken(node, "module"), name, token(required(node, ";")));
   }
@@ -1202,6 +1207,25 @@ final class SemsitterTranslator {
     }
   }
 
+  /** The method SemSitter left unresolved, looked up in the receiver type, or in the enclosing types and static imports of an unqualified call. */
+  @Nullable
+  private Symbol.MethodSymbol libraryMethod(@Nullable ExpressionTree qualifier, String name, List<Type> arguments) {
+    List<String> owners = new ArrayList<>();
+    if (qualifier != null) {
+      Type receiver = qualifier.symbolType().erasure();
+      if (receiver.isClass()) {
+        owners.add(receiver.fullyQualifiedName());
+      }
+    } else {
+      types.stream().filter(type -> !type.isUnknown()).forEach(type -> owners.add(type.type().fullyQualifiedName()));
+      if (staticImports.containsKey(name)) {
+        owners.add(staticImports.get(name));
+      }
+      owners.addAll(staticOnDemandImports);
+    }
+    return owners.stream().map(owner -> sema.declaredMethod(owner, name, arguments)).filter(Objects::nonNull).findFirst().orElse(null);
+  }
+
   private static List<Type> argumentTypes(List<ExpressionTree> arguments) {
     return arguments.stream().map(ExpressionTree::symbolType).toList();
   }
@@ -1332,8 +1356,8 @@ final class SemsitterTranslator {
     Node typeArguments = field(node, "type_arguments");
     MethodInvocationTreeImpl tree = new MethodInvocationTreeImpl(select, typeArguments == null ? null : typeArguments(typeArguments), arguments(requiredField(node, "arguments", childKind(node, "argument_list"))));
     Type receiver = qualifier == null ? currentType() : qualifier.symbolType();
-    if (identifier.symbol().isUnknown() && receiver.isClass()) {
-      Symbol.MethodSymbol method = sema.declaredMethod(receiver.erasure().fullyQualifiedName(), identifier.name(), argumentTypes(tree.arguments()));
+    if (identifier.symbol().isUnknown()) {
+      Symbol.MethodSymbol method = libraryMethod(qualifier, identifier.name(), argumentTypes(tree.arguments()));
       if (method != null) {
         identifier.symbol = method;
       }
