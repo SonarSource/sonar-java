@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -51,6 +52,8 @@ public final class JSema implements Sema {
   final Map<String, List<IdentifierTree>> usages = new HashMap<>();
   private final Set<JProblem> undefinedTypes = new HashSet<>();
   private final Set<String> creating = new HashSet<>();
+  private final Set<String> requestedTypes = new HashSet<>();
+  private Function<Set<String>, JsonObject> typeLoader = names -> new JsonObject();
   private boolean typesLoaded;
   private final JSymbol unknownSymbol = new JVariableSymbol(this, null, "", "local");
 
@@ -86,6 +89,17 @@ public final class JSema implements Sema {
     for (String id : new ArrayList<>(dumpSymbols.keySet())) {
       linkDumpSymbol(id);
     }
+  }
+
+  /**
+   * Loads the declarations of every type the document references, then keeps {@code loader} to
+   * fetch the types reached later, like the return type of a library method.
+   */
+  public void loadTypes(Function<Set<String>, JsonObject> loader) {
+    typeLoader = loader;
+    Set<String> names = referencedTypeNames();
+    requestedTypes.addAll(names);
+    ingestTypes(loader.apply(names));
   }
 
   public void ingestTypes(JsonObject types) {
@@ -225,6 +239,12 @@ public final class JSema implements Sema {
     typesByName.put(fqn, created);
     symbols.putIfAbsent(fqn, created);
     JsonObject info = typeInfos.get(fqn);
+    if (info == null && typesLoaded && requestedTypes.add(fqn)) {
+      ingestTypes(typeLoader.apply(Set.of(fqn)));
+      if (typeInfos.containsKey(fqn)) {
+        return created;
+      }
+    }
     if (info != null) {
       applyTypeInfo(created, info);
     } else if (typesLoaded && !isWellKnown(fqn)) {
