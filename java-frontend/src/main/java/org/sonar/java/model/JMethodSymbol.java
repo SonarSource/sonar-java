@@ -38,6 +38,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   private final String signature;
   @Nullable
   private Integer returnTypeParameter;
+  private boolean returnsSelf;
   private List<MethodSymbol> overridden;
 
   JMethodSymbol(JSema sema, @Nullable String id, String name) {
@@ -78,6 +79,14 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     return returnTypeParameter;
   }
 
+  void returnsSelf(boolean returnsSelf) {
+    this.returnsSelf = returnsSelf;
+  }
+
+  boolean returnsSelf() {
+    return returnsSelf;
+  }
+
   /**
    * A per-invocation view with a substituted return type. Equality stays on the SemSitter id,
    * so the view still denotes the same method as the declaration.
@@ -92,6 +101,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     view.lambda = lambda;
     view.parametrized = parametrized || !returnType.equals(returnTypeSymbol.type());
     view.returnTypeParameter = returnTypeParameter;
+    view.returnsSelf = returnsSelf;
     view.unknown(isUnknown());
     return view;
   }

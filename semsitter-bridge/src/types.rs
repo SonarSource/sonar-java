@@ -94,7 +94,7 @@ pub fn lookup(
       continue;
     }
     let info = project_type(&name, project, facts)
-      .or_else(|| classpath.get(&name).map(classpath_type))
+      .or_else(|| classpath.get(&name).map(|ty| classpath_type(&name, ty)))
       .or_else(|| jdk_type(&name).map(jdk_type_info));
     let Some(info) = info else {
       continue;
@@ -146,11 +146,13 @@ fn project_type(name: &str, project: &ProjectTypes, facts: &HashMap<String, Valu
   }))
 }
 
-fn classpath_type(ty: &ClasspathType) -> Value {
+fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
+  let parameters = ty.signature.as_deref().map(type_parameters).unwrap_or_default();
   let mut members: Vec<Value> = ty
     .methods
     .iter()
     .map(|m| {
+      let returned = m.signature.as_deref().and_then(|s| class_return_parameter(s, &parameters));
       json!({
         "k": "m",
         "name": m.name,
@@ -159,6 +161,8 @@ fn classpath_type(ty: &ClasspathType) -> Value {
         "abstract": m.is_abstract,
         "varargs": m.is_varargs,
         "vis": "public",
+        "retParam": returned,
+        "retSelf": returned.is_some_and(|index| parameters[index].1 == name),
       })
     })
     .collect();
@@ -179,8 +183,78 @@ fn classpath_type(ty: &ClasspathType) -> Value {
     "kind": serde_json::to_value(ty.kind).unwrap_or(Value::Null),
     "super": ty.super_class,
     "interfaces": ty.interfaces,
+    "typeParameters": parameters.len(),
     "members": members,
   })
+}
+
+/// Type parameters of a generic signature, `<K:Ljava/lang/Object;V:...>...`, with the erased dotted
+/// class of their first bound.
+fn type_parameters(signature: &str) -> Vec<(String, String)> {
+  let bytes = signature.as_bytes();
+  let mut out = Vec::new();
+  if bytes.first() != Some(&b'<') {
+    return out;
+  }
+  let mut i = 1;
+  while i < bytes.len() && bytes[i] != b'>' {
+    let start = i;
+    while i < bytes.len() && bytes[i] != b':' {
+      i += 1;
+    }
+    let name = signature[start..i].to_string();
+    let mut bound = String::new();
+    while i < bytes.len() && bytes[i] == b':' {
+      i += 1;
+      if i < bytes.len() && bytes[i] != b':' && bytes[i] != b'>' {
+        let begin = i;
+        i = skip_type(bytes, i);
+        if bound.is_empty() {
+          bound = erased_class(&signature[begin..i]);
+        }
+      }
+    }
+    out.push((name, bound));
+  }
+  out
+}
+
+fn skip_type(bytes: &[u8], mut i: usize) -> usize {
+  match bytes.get(i) {
+    Some(b'[') => skip_type(bytes, i + 1),
+    Some(b'L') => {
+      let mut depth = 0;
+      while i < bytes.len() {
+        match bytes[i] {
+          b'<' => depth += 1,
+          b'>' => depth -= 1,
+          b';' if depth == 0 => return i + 1,
+          _ => {}
+        }
+        i += 1;
+      }
+      i
+    }
+    Some(b'T') => bytes[i..].iter().position(|&b| b == b';').map_or(bytes.len(), |end| i + end + 1),
+    _ => i + 1,
+  }
+}
+
+fn erased_class(signature: &str) -> String {
+  signature
+    .strip_prefix('L')
+    .map(|rest| rest.split(['<', ';']).next().unwrap_or_default().replace('/', "."))
+    .unwrap_or_default()
+}
+
+/// Index of the class type parameter a method signature returns, when it returns one directly.
+fn class_return_parameter(signature: &str, parameters: &[(String, String)]) -> Option<usize> {
+  let returned = signature[signature.rfind(')')? + 1..].strip_prefix('T')?;
+  let name = &returned[..returned.find(';')?];
+  if type_parameters(signature).iter().any(|(own, _)| own == name) {
+    return None;
+  }
+  parameters.iter().position(|(parameter, _)| parameter == name)
 }
 
 fn access_visibility(flags: u16) -> &'static str {
