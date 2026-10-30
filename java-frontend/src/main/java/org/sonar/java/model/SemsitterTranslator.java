@@ -251,7 +251,8 @@ final class SemsitterTranslator {
   private void addMember(List<Tree> members, Node node) {
     switch (node.k()) {
       case "field_declaration", "constant_declaration", "local_variable_declaration" -> members.addAll(variables(node));
-      case "method_declaration", "constructor_declaration", "compact_constructor_declaration", "annotation_type_element_declaration" -> members.add(method(node));
+      case "method_declaration", "constructor_declaration", "compact_constructor_declaration" -> members.add(method(node));
+      case "annotation_type_element_declaration" -> members.add(annotationElement(node));
       case "class_declaration", "interface_declaration", "enum_declaration", "record_declaration", "annotation_type_declaration" -> members.add(typeDeclaration(node));
       case "static_initializer" -> members.add(staticInitializer(node));
       case "block" -> members.add(initializer(node));
@@ -390,6 +391,17 @@ final class SemsitterTranslator {
     }
     InternalSyntaxToken separator = separatorNode == null ? null : token(separatorNode);
     EnumConstantTreeImpl tree = new EnumConstantTreeImpl(modifiers(node), name, new NewClassTreeImpl(name, args, classBody), separator);
+    bindDeclaration(tree, nameNode(node), name);
+    return tree;
+  }
+
+  private MethodTreeImpl annotationElement(Node node) {
+    FormalParametersListTreeImpl formals = new FormalParametersListTreeImpl(token(required(node, "(")), token(required(node, ")")));
+    Node value = field(node, "value");
+    IdentifierTreeImpl name = identifier(requiredField(node, "name", firstOf(node, "identifier")));
+    MethodTreeImpl tree = new MethodTreeImpl(formals, value == null ? null : token(required(node, "default")), value == null ? null : expression(value))
+      .complete(arrayType(type(requiredField(node, "type", firstType(node))), field(node, "dimensions")), name, token(required(node, ";")))
+      .completeWithModifiers(modifiers(node));
     bindDeclaration(tree, nameNode(node), name);
     return tree;
   }
