@@ -1,0 +1,20 @@
+{
+"sonar-server:src/main/java/org/sonar/server/debt/DebtModelXMLExporter.java": [
+132
+],
+"sonar-server:src/main/java/org/sonar/server/debt/DebtRulesXMLImporter.java": [
+100
+],
+"sonar-server:src/main/java/org/sonar/server/permission/PermissionTemplateService.java": [
+215
+],
+"sonar-server:src/main/java/org/sonar/server/permission/ws/template/DeleteTemplateAction.java": [
+118
+],
+"sonar-server:src/main/java/org/sonar/server/permission/ws/template/SearchTemplatesAction.java": [
+72
+],
+"sonar-server:src/main/java/org/sonar/server/platform/ServerLogging.java": [
+60
+]
+}

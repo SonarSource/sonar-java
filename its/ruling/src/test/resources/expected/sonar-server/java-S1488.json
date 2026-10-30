@@ -1,0 +1,17 @@
+{
+"sonar-server:src/test/java/org/sonar/server/component/ComponentServiceUpdateKeyTest.java": [
+207
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/scm/ScmInfoImplTest.java": [
+132
+],
+"sonar-server:src/test/java/org/sonar/server/issue/ws/AssignActionTest.java": [
+268
+],
+"sonar-server:src/test/java/org/sonar/server/notification/email/AlertsEmailTemplateTest.java": [
+120
+],
+"sonar-server:src/test/java/org/sonar/server/permission/ws/template/SearchTemplatesActionTest.java": [
+65
+]
+}

@@ -1,0 +1,105 @@
+{
+"sonar-server:src/main/java/org/sonar/server/component/ComponentService.java": [
+46,
+56
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/SourceSimilarity.java": [
+27
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/BaseIssuesLoader.java": [
+59,
+62
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/CloseIssuesOnRemovedComponentsVisitor.java": [
+63
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/DebtCalculator.java": [
+52,
+57
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IntegrateIssuesVisitor.java": [
+107,
+109
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IssueCounter.java": [
+121
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/NewEffortCalculator.java": [
+81
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/CommentDensityRule.java": [
+85
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/LineCoverageRule.java": [
+42
+],
+"sonar-server:src/main/java/org/sonar/server/es/BulkIndexer.java": [
+120
+],
+"sonar-server:src/main/java/org/sonar/server/es/EsClient.java": [
+172
+],
+"sonar-server:src/main/java/org/sonar/server/es/Facets.java": [
+98
+],
+"sonar-server:src/main/java/org/sonar/server/issue/Result.java": [
+84
+],
+"sonar-server:src/main/java/org/sonar/server/issue/index/IssueIndex.java": [
+131,
+132
+],
+"sonar-server:src/main/java/org/sonar/server/issue/ws/SearchResponseLoader.java": [
+250
+],
+"sonar-server:src/main/java/org/sonar/server/notification/email/EmailNotificationChannel.java": [
+153
+],
+"sonar-server:src/main/java/org/sonar/server/permission/ws/GroupsAction.java": [
+102
+],
+"sonar-server:src/main/java/org/sonar/server/platform/platformlevel/PlatformLevelStartup.java": [
+65
+],
+"sonar-server:src/main/java/org/sonar/server/qualityprofile/BuiltInQProfileInsertImpl.java": [
+93
+],
+"sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfileExporters.java": [
+122
+],
+"sonar-server:src/main/java/org/sonar/server/qualityprofile/RuleActivator.java": [
+494
+],
+"sonar-server:src/main/java/org/sonar/server/setting/ThreadLocalSettings.java": [
+70
+],
+"sonar-server:src/test/java/org/sonar/server/issue/notification/MyNewIssuesEmailTemplateTest.java": [
+97,
+125
+],
+"sonar-server:src/test/java/org/sonar/server/issue/notification/NewIssuesEmailTemplateTest.java": [
+114,
+125
+],
+"sonar-server:src/test/java/org/sonar/server/qualitygate/ws/QualityGatesWsTest.java": [
+52
+],
+"sonar-server:src/test/java/org/sonar/server/qualityprofile/BuiltInQProfileInsertImplTest.java": [
+165,
+166
+],
+"sonar-server:src/test/java/org/sonar/server/qualityprofile/QProfileFactoryImplTest.java": [
+320,
+330
+],
+"sonar-server:src/test/java/org/sonar/server/qualityprofile/RegisterQualityProfilesMediumTest.java": [
+55,
+111
+],
+"sonar-server:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java": [
+66
+],
+"sonar-server:src/test/java/org/sonar/server/rule/RegisterRulesTest.java": [
+225
+]
+}
