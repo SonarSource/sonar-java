@@ -508,6 +508,16 @@ final class SemsitterTranslator {
     InternalSyntaxToken separator = separatorNode == null ? null : token(separatorNode);
     EnumConstantTreeImpl tree = new EnumConstantTreeImpl(modifiers(node), name, new NewClassTreeImpl(name, args, classBody), separator);
     bindDeclaration(tree, nameNode(node), name);
+    Symbol.TypeSymbol enumType = types.peek();
+    if (enumType != null && !enumType.isUnknown()) {
+      String owner = enumType.type().fullyQualifiedName();
+      Symbol.MethodSymbol constructor = sema.declaredMethod(owner, "<init>", argumentTypes(args));
+      name.symbol = constructor != null || !args.isEmpty() ? constructor : sema.resolve(owner + "#<init>()");
+      ascribe(name, enumType.type());
+      if (tree.symbol() instanceof JSymbol field && field.type().isUnknown()) {
+        field.type(enumType.type());
+      }
+    }
     return tree;
   }
 
