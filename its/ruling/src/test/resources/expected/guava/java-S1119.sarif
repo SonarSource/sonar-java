@@ -1,0 +1,494 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1119",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code to remove this label and the need for it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/CharMatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 648,
+            "startColumn" : 5,
+            "endLine" : 648,
+            "endColumn" : 8,
+            "charOffset" : 22970,
+            "charLength" : 3,
+            "byteOffset" : 22970,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1119",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code to remove this label and the need for it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Splitter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 187,
+            "startColumn" : 17,
+            "endLine" : 187,
+            "endColumn" : 26,
+            "charOffset" : 7111,
+            "charLength" : 9,
+            "byteOffset" : 7111,
+            "byteLength" : 9
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1119",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code to remove this label and the need for it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ComputingConcurrentHashMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 9,
+            "endLine" : 78,
+            "endColumn" : 14,
+            "charOffset" : 2786,
+            "charLength" : 5,
+            "byteOffset" : 2786,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1119",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code to remove this label and the need for it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Booleans.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 152,
+            "startColumn" : 5,
+            "endLine" : 152,
+            "endColumn" : 10,
+            "charOffset" : 5284,
+            "charLength" : 5,
+            "byteOffset" : 5284,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1119",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code to remove this label and the need for it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Bytes.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 128,
+            "startColumn" : 5,
+            "endLine" : 128,
+            "endColumn" : 10,
+            "charOffset" : 4171,
+            "charLength" : 5,
+            "byteOffset" : 4171,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1119",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code to remove this label and the need for it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Chars.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 185,
+            "startColumn" : 5,
+            "endLine" : 185,
+            "endColumn" : 10,
+            "charOffset" : 6195,
+            "charLength" : 5,
+            "byteOffset" : 6195,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1119",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code to remove this label and the need for it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Doubles.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 177,
+            "startColumn" : 5,
+            "endLine" : 177,
+            "endColumn" : 10,
+            "charOffset" : 6157,
+            "charLength" : 5,
+            "byteOffset" : 6157,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1119",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code to remove this label and the need for it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Floats.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 173,
+            "startColumn" : 5,
+            "endLine" : 173,
+            "endColumn" : 10,
+            "charOffset" : 5857,
+            "charLength" : 5,
+            "byteOffset" : 5857,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1119",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code to remove this label and the need for it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Ints.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 192,
+            "startColumn" : 5,
+            "endLine" : 192,
+            "endColumn" : 10,
+            "charOffset" : 6283,
+            "charLength" : 5,
+            "byteOffset" : 6283,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1119",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code to remove this label and the need for it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Longs.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 161,
+            "startColumn" : 5,
+            "endLine" : 161,
+            "endColumn" : 10,
+            "charOffset" : 5317,
+            "charLength" : 5,
+            "byteOffset" : 5317,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1119",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code to remove this label and the need for it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Shorts.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 191,
+            "startColumn" : 5,
+            "endLine" : 191,
+            "endColumn" : 10,
+            "charOffset" : 6266,
+            "charLength" : 5,
+            "byteOffset" : 6266,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1119",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code to remove this label and the need for it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 188,
+            "startColumn" : 5,
+            "endLine" : 188,
+            "endColumn" : 12,
+            "charOffset" : 7844,
+            "charLength" : 7,
+            "byteOffset" : 7844,
+            "byteLength" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1119",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code to remove this label and the need for it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 358,
+            "startColumn" : 5,
+            "endLine" : 358,
+            "endColumn" : 19,
+            "charOffset" : 14415,
+            "charLength" : 14,
+            "byteOffset" : 14415,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1119",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code to remove this label and the need for it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AtomicLongMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 106,
+            "startColumn" : 5,
+            "endLine" : 106,
+            "endColumn" : 10,
+            "charOffset" : 3674,
+            "charLength" : 5,
+            "byteOffset" : 3674,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1119",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code to remove this label and the need for it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AtomicLongMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 155,
+            "startColumn" : 5,
+            "endLine" : 155,
+            "endColumn" : 10,
+            "charOffset" : 4956,
+            "charLength" : 5,
+            "byteOffset" : 4956,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1119",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code to remove this label and the need for it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AtomicLongMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 190,
+            "startColumn" : 5,
+            "endLine" : 190,
+            "endColumn" : 10,
+            "charOffset" : 5916,
+            "charLength" : 5,
+            "byteOffset" : 5916,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1119",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Refactor the code to remove this label and the need for it."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Monitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 499,
+            "startColumn" : 2,
+            "endLine" : 499,
+            "endColumn" : 8,
+            "charOffset" : 18540,
+            "charLength" : 6,
+            "byteOffset" : 18540,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,578 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"newValue\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2331,
+            "startColumn" : 28,
+            "endLine" : 2331,
+            "endColumn" : 96,
+            "charOffset" : 69726,
+            "charLength" : 68,
+            "byteOffset" : 69726,
+            "byteLength" : 68
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"newCount\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2844,
+            "startColumn" : 20,
+            "endLine" : 2844,
+            "endColumn" : 36,
+            "charOffset" : 85648,
+            "charLength" : 16,
+            "byteOffset" : 85648,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"newCount\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2997,
+            "startColumn" : 30,
+            "endLine" : 2997,
+            "endColumn" : 46,
+            "charOffset" : 91654,
+            "charLength" : 16,
+            "byteOffset" : 91654,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"newCount\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3050,
+            "startColumn" : 30,
+            "endLine" : 3050,
+            "endColumn" : 46,
+            "charOffset" : 93555,
+            "charLength" : 16,
+            "byteOffset" : 93555,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"newCount\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3083,
+            "startColumn" : 22,
+            "endLine" : 3083,
+            "endColumn" : 38,
+            "charOffset" : 94462,
+            "charLength" : 16,
+            "byteOffset" : 94462,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"newCount\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3188,
+            "startColumn" : 22,
+            "endLine" : 3188,
+            "endColumn" : 38,
+            "charOffset" : 98192,
+            "charLength" : 16,
+            "byteOffset" : 98192,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"newCount\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3306,
+            "startColumn" : 22,
+            "endLine" : 3306,
+            "endColumn" : 33,
+            "charOffset" : 102004,
+            "charLength" : 11,
+            "byteOffset" : 102004,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"newCount\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3336,
+            "startColumn" : 22,
+            "endLine" : 3336,
+            "endColumn" : 38,
+            "charOffset" : 102967,
+            "charLength" : 16,
+            "byteOffset" : 102967,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"newCount\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3402,
+            "startColumn" : 20,
+            "endLine" : 3402,
+            "endColumn" : 36,
+            "charOffset" : 105298,
+            "charLength" : 16,
+            "byteOffset" : 105298,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"result\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableSortedMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 818,
+            "startColumn" : 23,
+            "endLine" : 818,
+            "endColumn" : 72,
+            "charOffset" : 28737,
+            "charLength" : 49,
+            "byteOffset" : 28737,
+            "byteLength" : 49
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"result\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableSortedMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 820,
+            "startColumn" : 23,
+            "endLine" : 821,
+            "endColumn" : 94,
+            "charOffset" : 28825,
+            "charLength" : 125,
+            "byteOffset" : 28825,
+            "byteLength" : 125
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"keyList\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/LinkedListMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 232,
+            "startColumn" : 39,
+            "endLine" : 232,
+            "endColumn" : 64,
+            "charOffset" : 8469,
+            "charLength" : 25,
+            "byteOffset" : 8469,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"newCount\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MapMakerInternalMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2658,
+            "startColumn" : 30,
+            "endLine" : 2658,
+            "endColumn" : 46,
+            "charOffset" : 79836,
+            "charLength" : 16,
+            "byteOffset" : 79836,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"newCount\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MapMakerInternalMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2709,
+            "startColumn" : 30,
+            "endLine" : 2709,
+            "endColumn" : 46,
+            "charOffset" : 81697,
+            "charLength" : 16,
+            "byteOffset" : 81697,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"newCount\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MapMakerInternalMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2739,
+            "startColumn" : 22,
+            "endLine" : 2739,
+            "endColumn" : 38,
+            "charOffset" : 82513,
+            "charLength" : 16,
+            "byteOffset" : 82513,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"newCount\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MapMakerInternalMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2782,
+            "startColumn" : 22,
+            "endLine" : 2782,
+            "endColumn" : 38,
+            "charOffset" : 83918,
+            "charLength" : 16,
+            "byteOffset" : 83918,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"newCount\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MapMakerInternalMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2896,
+            "startColumn" : 22,
+            "endLine" : 2896,
+            "endColumn" : 33,
+            "charOffset" : 87838,
+            "charLength" : 11,
+            "byteOffset" : 87838,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"newCount\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MapMakerInternalMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2927,
+            "startColumn" : 22,
+            "endLine" : 2927,
+            "endColumn" : 38,
+            "charOffset" : 88835,
+            "charLength" : 16,
+            "byteOffset" : 88835,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"newCount\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MapMakerInternalMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2992,
+            "startColumn" : 20,
+            "endLine" : 2992,
+            "endColumn" : 36,
+            "charOffset" : 91114,
+            "charLength" : 16,
+            "byteOffset" : 91114,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"productBits\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/math/BigIntegerMath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 358,
+            "startColumn" : 21,
+            "endLine" : 358,
+            "endColumn" : 24,
+            "charOffset" : 13459,
+            "charLength" : 3,
+            "byteOffset" : 13459,
+            "byteLength" : 3
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

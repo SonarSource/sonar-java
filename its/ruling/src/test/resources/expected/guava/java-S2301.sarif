@@ -1,0 +1,102 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S2301",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide multiple methods instead of using \"swallowIOException\" to determine which action to take."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/Closeables.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 73,
+            "startColumn" : 22,
+            "endLine" : 73,
+            "endColumn" : 27,
+            "charOffset" : 2451,
+            "charLength" : 5,
+            "byteOffset" : 2451,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2301",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide multiple methods instead of using \"swallowIOException\" to determine which action to take."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/Flushables.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 22,
+            "endLine" : 53,
+            "endColumn" : 27,
+            "charOffset" : 1668,
+            "charLength" : 5,
+            "byteOffset" : 1668,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2301",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Provide multiple methods instead of using \"value\" to determine which action to take."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/Booleans.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 21,
+            "endLine" : 62,
+            "endColumn" : 29,
+            "charOffset" : 1994,
+            "charLength" : 8,
+            "byteOffset" : 1994,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

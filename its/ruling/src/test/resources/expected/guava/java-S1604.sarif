@@ -1,0 +1,2370 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Converter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 180,
+            "startColumn" : 16,
+            "endLine" : 180,
+            "endColumn" : 27,
+            "charOffset" : 7083,
+            "charLength" : 11,
+            "byteOffset" : 7083,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Optional.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 297,
+            "startColumn" : 16,
+            "endLine" : 297,
+            "endColumn" : 27,
+            "charOffset" : 12301,
+            "charLength" : 11,
+            "byteOffset" : 12301,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Splitter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 148,
+            "startColumn" : 13,
+            "endLine" : 148,
+            "endColumn" : 21,
+            "charOffset" : 5671,
+            "charLength" : 8,
+            "byteOffset" : 5671,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Splitter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 179,
+            "startColumn" : 13,
+            "endLine" : 179,
+            "endColumn" : 21,
+            "charOffset" : 6777,
+            "charLength" : 8,
+            "byteOffset" : 6777,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Splitter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 230,
+            "startColumn" : 13,
+            "endLine" : 230,
+            "endColumn" : 21,
+            "charOffset" : 8697,
+            "charLength" : 8,
+            "byteOffset" : 8697,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Splitter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 294,
+            "startColumn" : 13,
+            "endLine" : 294,
+            "endColumn" : 21,
+            "charOffset" : 11430,
+            "charLength" : 8,
+            "byteOffset" : 11430,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/CacheBuilder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 183,
+            "startColumn" : 11,
+            "endLine" : 183,
+            "endColumn" : 33,
+            "charOffset" : 8285,
+            "charLength" : 22,
+            "byteOffset" : 8285,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2327,
+            "startColumn" : 15,
+            "endLine" : 2327,
+            "endColumn" : 23,
+            "charOffset" : 69612,
+            "charLength" : 8,
+            "byteOffset" : 69612,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3547,
+            "startColumn" : 48,
+            "endLine" : 3547,
+            "endColumn" : 62,
+            "charOffset" : 109618,
+            "charLength" : 14,
+            "byteOffset" : 109618,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LongAddables.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 22,
+            "endLine" : 38,
+            "endColumn" : 43,
+            "charOffset" : 1193,
+            "charLength" : 21,
+            "byteOffset" : 1193,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LongAddables.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 22,
+            "endLine" : 45,
+            "endColumn" : 43,
+            "charOffset" : 1414,
+            "charLength" : 21,
+            "byteOffset" : 1414,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/RemovalListeners.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 16,
+            "endLine" : 45,
+            "endColumn" : 37,
+            "charOffset" : 1382,
+            "charLength" : 21,
+            "byteOffset" : 1382,
+            "byteLength" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/RemovalListeners.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 30,
+            "endLine" : 48,
+            "endColumn" : 38,
+            "charOffset" : 1529,
+            "charLength" : 8,
+            "byteOffset" : 1529,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Collections2.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 303,
+            "startColumn" : 17,
+            "endLine" : 303,
+            "endColumn" : 41,
+            "charOffset" : 10322,
+            "charLength" : 24,
+            "byteOffset" : 10322,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/FilteredEntryMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 398,
+            "startColumn" : 23,
+            "endLine" : 398,
+            "endColumn" : 61,
+            "charOffset" : 11405,
+            "charLength" : 38,
+            "byteOffset" : 11405,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Interners.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 16,
+            "endLine" : 46,
+            "endColumn" : 27,
+            "charOffset" : 1729,
+            "charLength" : 11,
+            "byteOffset" : 1729,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Iterables.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1014,
+            "startColumn" : 16,
+            "endLine" : 1014,
+            "endColumn" : 70,
+            "charOffset" : 37526,
+            "charLength" : 54,
+            "byteOffset" : 37526,
+            "byteLength" : 54
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Iterators.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1296,
+            "startColumn" : 15,
+            "endLine" : 1296,
+            "endColumn" : 45,
+            "charOffset" : 45151,
+            "charLength" : 30,
+            "byteOffset" : 45151,
+            "byteLength" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MapConstraints.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 227,
+            "startColumn" : 35,
+            "endLine" : 227,
+            "endColumn" : 48,
+            "charOffset" : 8449,
+            "charLength" : 13,
+            "byteOffset" : 8449,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MapConstraints.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 485,
+            "startColumn" : 34,
+            "endLine" : 485,
+            "endColumn" : 47,
+            "charOffset" : 17879,
+            "charLength" : 13,
+            "byteOffset" : 17879,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1863,
+            "startColumn" : 16,
+            "endLine" : 1863,
+            "endColumn" : 43,
+            "charOffset" : 68128,
+            "charLength" : 27,
+            "byteOffset" : 68128,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1874,
+            "startColumn" : 16,
+            "endLine" : 1874,
+            "endColumn" : 32,
+            "charOffset" : 68470,
+            "charLength" : 16,
+            "byteOffset" : 68470,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1888,
+            "startColumn" : 16,
+            "endLine" : 1888,
+            "endColumn" : 42,
+            "charOffset" : 68899,
+            "charLength" : 26,
+            "byteOffset" : 68899,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1922,
+            "startColumn" : 16,
+            "endLine" : 1922,
+            "endColumn" : 52,
+            "charOffset" : 69929,
+            "charLength" : 36,
+            "byteOffset" : 69929,
+            "byteLength" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Maps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3098,
+            "startColumn" : 18,
+            "endLine" : 3098,
+            "endColumn" : 40,
+            "charOffset" : 114589,
+            "charLength" : 22,
+            "byteOffset" : 114589,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Multimaps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 519,
+            "startColumn" : 56,
+            "endLine" : 519,
+            "endColumn" : 94,
+            "charOffset" : 20656,
+            "charLength" : 38,
+            "byteOffset" : 20656,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Multimaps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1202,
+            "startColumn" : 15,
+            "endLine" : 1202,
+            "endColumn" : 66,
+            "charOffset" : 44562,
+            "charLength" : 51,
+            "byteOffset" : 44562,
+            "byteLength" : 51
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Multimaps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1702,
+            "startColumn" : 63,
+            "endLine" : 1702,
+            "endColumn" : 89,
+            "charOffset" : 62159,
+            "charLength" : 26,
+            "byteOffset" : 62159,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Multisets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 305,
+            "startColumn" : 53,
+            "endLine" : 305,
+            "endColumn" : 72,
+            "charOffset" : 10526,
+            "charLength" : 19,
+            "byteOffset" : 10526,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MutableClassToInstanceMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 13,
+            "endLine" : 64,
+            "endColumn" : 44,
+            "charOffset" : 2253,
+            "charLength" : 31,
+            "byteOffset" : 2253,
+            "byteLength" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Range.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 117,
+            "startColumn" : 66,
+            "endLine" : 117,
+            "endColumn" : 86,
+            "charOffset" : 5863,
+            "charLength" : 20,
+            "byteOffset" : 5875,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Range.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 129,
+            "startColumn" : 66,
+            "endLine" : 129,
+            "endColumn" : 86,
+            "charOffset" : 6201,
+            "charLength" : 20,
+            "byteOffset" : 6213,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/RegularImmutableTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 50,
+            "endLine" : 114,
+            "endColumn" : 75,
+            "charOffset" : 3459,
+            "charLength" : 25,
+            "byteOffset" : 3459,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/StandardTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 721,
+            "startColumn" : 65,
+            "endLine" : 721,
+            "endColumn" : 87,
+            "charOffset" : 21116,
+            "charLength" : 22,
+            "byteOffset" : 21116,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/StandardTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 794,
+            "startColumn" : 60,
+            "endLine" : 794,
+            "endColumn" : 82,
+            "charOffset" : 23274,
+            "charLength" : 22,
+            "byteOffset" : 23274,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Tables.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 240,
+            "startColumn" : 13,
+            "endLine" : 240,
+            "endColumn" : 51,
+            "charOffset" : 6897,
+            "charLength" : 38,
+            "byteOffset" : 6897,
+            "byteLength" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Tables.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 390,
+            "startColumn" : 18,
+            "endLine" : 390,
+            "endColumn" : 58,
+            "charOffset" : 13055,
+            "charLength" : 40,
+            "byteOffset" : 13055,
+            "byteLength" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Tables.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 419,
+            "startColumn" : 15,
+            "endLine" : 419,
+            "endColumn" : 47,
+            "charOffset" : 13895,
+            "charLength" : 32,
+            "byteOffset" : 13895,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Tables.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 429,
+            "startColumn" : 15,
+            "endLine" : 429,
+            "endColumn" : 47,
+            "charOffset" : 14280,
+            "charLength" : 32,
+            "byteOffset" : 14280,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Tables.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 592,
+            "startColumn" : 11,
+            "endLine" : 592,
+            "endColumn" : 61,
+            "charOffset" : 19971,
+            "charLength" : 50,
+            "byteOffset" : 19971,
+            "byteLength" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/TreeBasedTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 321,
+            "startColumn" : 17,
+            "endLine" : 321,
+            "endColumn" : 49,
+            "charOffset" : 10459,
+            "charLength" : 32,
+            "byteOffset" : 10459,
+            "byteLength" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/escape/Escaper.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 11,
+            "endLine" : 90,
+            "endColumn" : 35,
+            "charOffset" : 4409,
+            "charLength" : 24,
+            "byteOffset" : 4409,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/eventbus/Subscriber.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 76,
+            "startColumn" : 26,
+            "endLine" : 76,
+            "endColumn" : 34,
+            "charOffset" : 2376,
+            "charLength" : 8,
+            "byteOffset" : 2376,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/CharSource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 442,
+            "startColumn" : 18,
+            "endLine" : 442,
+            "endColumn" : 34,
+            "charOffset" : 16051,
+            "charLength" : 16,
+            "byteOffset" : 16051,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/net/MediaType.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 406,
+            "startColumn" : 13,
+            "endLine" : 406,
+            "endColumn" : 68,
+            "charOffset" : 20211,
+            "charLength" : 55,
+            "byteOffset" : 20211,
+            "byteLength" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/net/MediaType.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 744,
+            "startColumn" : 15,
+            "endLine" : 744,
+            "endColumn" : 39,
+            "charOffset" : 32827,
+            "charLength" : 24,
+            "byteOffset" : 32827,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/reflect/ClassPath.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 64,
+            "endLine" : 64,
+            "endColumn" : 84,
+            "charOffset" : 2141,
+            "charLength" : 20,
+            "byteOffset" : 2141,
+            "byteLength" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/reflect/MutableTypeToInstanceMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 124,
+            "startColumn" : 47,
+            "endLine" : 124,
+            "endColumn" : 81,
+            "charOffset" : 3984,
+            "charLength" : 34,
+            "byteOffset" : 3984,
+            "byteLength" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/reflect/TypeToken.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 701,
+            "startColumn" : 23,
+            "endLine" : 701,
+            "endColumn" : 42,
+            "charOffset" : 27623,
+            "charLength" : 19,
+            "byteOffset" : 27623,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/reflect/Types.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 11,
+            "endLine" : 61,
+            "endColumn" : 33,
+            "charOffset" : 2112,
+            "charLength" : 22,
+            "byteOffset" : 2112,
+            "byteLength" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractExecutionThreadService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 75,
+            "endLine" : 45,
+            "endColumn" : 91,
+            "charOffset" : 1649,
+            "charLength" : 16,
+            "byteOffset" : 1649,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractExecutionThreadService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 28,
+            "endLine" : 50,
+            "endColumn" : 36,
+            "charOffset" : 1789,
+            "charLength" : 8,
+            "byteOffset" : 1789,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractExecutionThreadService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 145,
+            "startColumn" : 16,
+            "endLine" : 145,
+            "endColumn" : 24,
+            "charOffset" : 4837,
+            "charLength" : 8,
+            "byteOffset" : 4837,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractIdleService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 59,
+            "endLine" : 40,
+            "endColumn" : 75,
+            "charOffset" : 1385,
+            "charLength" : 16,
+            "byteOffset" : 1385,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractIdleService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 24,
+            "endLine" : 50,
+            "endColumn" : 32,
+            "charOffset" : 1746,
+            "charLength" : 8,
+            "byteOffset" : 1746,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractIdleService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 24,
+            "endLine" : 64,
+            "endColumn" : 32,
+            "charOffset" : 2142,
+            "charLength" : 8,
+            "byteOffset" : 2142,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractIdleService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 95,
+            "startColumn" : 16,
+            "endLine" : 95,
+            "endColumn" : 24,
+            "charOffset" : 3124,
+            "charLength" : 8,
+            "byteOffset" : 3124,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractScheduledService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 205,
+            "startColumn" : 73,
+            "endLine" : 205,
+            "endColumn" : 89,
+            "charOffset" : 8455,
+            "charLength" : 16,
+            "byteOffset" : 8455,
+            "byteLength" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractScheduledService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 210,
+            "startColumn" : 35,
+            "endLine" : 210,
+            "endColumn" : 43,
+            "charOffset" : 8618,
+            "charLength" : 8,
+            "byteOffset" : 8618,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractScheduledService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 232,
+            "startColumn" : 35,
+            "endLine" : 232,
+            "endColumn" : 43,
+            "charOffset" : 9258,
+            "charLength" : 8,
+            "byteOffset" : 9258,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractScheduledService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 304,
+            "startColumn" : 13,
+            "endLine" : 304,
+            "endColumn" : 26,
+            "charOffset" : 12088,
+            "charLength" : 13,
+            "byteOffset" : 12088,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AggregateFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 138,
+            "startColumn" : 38,
+            "endLine" : 138,
+            "endColumn" : 46,
+            "charOffset" : 5337,
+            "charLength" : 8,
+            "byteOffset" : 5337,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AtomicLongMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 294,
+            "startColumn" : 39,
+            "endLine" : 294,
+            "endColumn" : 65,
+            "charOffset" : 9090,
+            "charLength" : 26,
+            "byteOffset" : 9090,
+            "byteLength" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Callables.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 16,
+            "endLine" : 44,
+            "endColumn" : 27,
+            "charOffset" : 1339,
+            "charLength" : 11,
+            "byteOffset" : 1339,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Callables.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 94,
+            "startColumn" : 16,
+            "endLine" : 94,
+            "endColumn" : 24,
+            "charOffset" : 2990,
+            "charLength" : 8,
+            "byteOffset" : 2990,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Futures.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1168,
+            "startColumn" : 32,
+            "endLine" : 1168,
+            "endColumn" : 40,
+            "charOffset" : 50842,
+            "charLength" : 8,
+            "byteOffset" : 50842,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Futures.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1494,
+            "startColumn" : 11,
+            "endLine" : 1494,
+            "endColumn" : 58,
+            "charOffset" : 64277,
+            "charLength" : 47,
+            "byteOffset" : 64277,
+            "byteLength" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Futures.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1569,
+            "startColumn" : 32,
+            "endLine" : 1569,
+            "endColumn" : 40,
+            "charOffset" : 66987,
+            "charLength" : 8,
+            "byteOffset" : 66987,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Futures.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1662,
+            "startColumn" : 30,
+            "endLine" : 1662,
+            "endColumn" : 38,
+            "charOffset" : 71509,
+            "charLength" : 8,
+            "byteOffset" : 71509,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Futures.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1749,
+            "startColumn" : 37,
+            "endLine" : 1749,
+            "endColumn" : 45,
+            "charOffset" : 74928,
+            "charLength" : 8,
+            "byteOffset" : 74928,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/FuturesGetChecked.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 253,
+            "startColumn" : 19,
+            "endLine" : 253,
+            "endColumn" : 52,
+            "charOffset" : 9485,
+            "charLength" : 33,
+            "byteOffset" : 9485,
+            "byteLength" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/JdkFutureAdapters.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 160,
+            "startColumn" : 37,
+            "endLine" : 160,
+            "endColumn" : 45,
+            "charOffset" : 6348,
+            "charLength" : 8,
+            "byteOffset" : 6348,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/MoreExecutors.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 204,
+            "startColumn" : 89,
+            "endLine" : 204,
+            "endColumn" : 97,
+            "charOffset" : 8370,
+            "charLength" : 8,
+            "byteOffset" : 8370,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/MoreExecutors.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 754,
+            "startColumn" : 28,
+            "endLine" : 754,
+            "endColumn" : 36,
+            "charOffset" : 28346,
+            "charLength" : 8,
+            "byteOffset" : 28346,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/MoreExecutors.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 856,
+            "startColumn" : 16,
+            "endLine" : 856,
+            "endColumn" : 24,
+            "charOffset" : 32194,
+            "charLength" : 8,
+            "byteOffset" : 32194,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Runnables.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 54,
+            "endLine" : 31,
+            "endColumn" : 62,
+            "charOffset" : 946,
+            "charLength" : 8,
+            "byteOffset" : 946,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/ServiceManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 598,
+            "startColumn" : 27,
+            "endLine" : 598,
+            "endColumn" : 63,
+            "charOffset" : 24097,
+            "charLength" : 36,
+            "byteOffset" : 24097,
+            "byteLength" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Striped.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 199,
+            "startColumn" : 50,
+            "endLine" : 199,
+            "endColumn" : 64,
+            "charOffset" : 9021,
+            "charLength" : 14,
+            "byteOffset" : 9021,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Striped.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 214,
+            "startColumn" : 30,
+            "endLine" : 214,
+            "endColumn" : 44,
+            "charOffset" : 9459,
+            "charLength" : 14,
+            "byteOffset" : 9459,
+            "byteLength" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Striped.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 236,
+            "startColumn" : 55,
+            "endLine" : 236,
+            "endColumn" : 74,
+            "charOffset" : 10273,
+            "charLength" : 19,
+            "byteOffset" : 10273,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Striped.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 252,
+            "startColumn" : 30,
+            "endLine" : 252,
+            "endColumn" : 49,
+            "charOffset" : 10855,
+            "charLength" : 19,
+            "byteOffset" : 10855,
+            "byteLength" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Striped.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 283,
+            "startColumn" : 11,
+            "endLine" : 283,
+            "endColumn" : 34,
+            "charOffset" : 11984,
+            "charLength" : 23,
+            "byteOffset" : 11984,
+            "byteLength" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/ThreadFactoryBuilder.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 161,
+            "startColumn" : 16,
+            "endLine" : 161,
+            "endColumn" : 29,
+            "charOffset" : 6082,
+            "charLength" : 13,
+            "byteOffset" : 6082,
+            "byteLength" : 13
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1604",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this anonymous inner class a lambda"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/WrappingExecutorService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 16,
+            "endLine" : 67,
+            "endColumn" : 24,
+            "charOffset" : 2346,
+            "charLength" : 8,
+            "byteOffset" : 2346,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

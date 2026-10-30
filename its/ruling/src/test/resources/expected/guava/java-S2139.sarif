@@ -1,0 +1,46 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S2139",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Either log this exception and handle it, or rethrow it with some contextual information."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/ListenerCallQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 87,
+            "startColumn" : 16,
+            "endLine" : 87,
+            "endColumn" : 34,
+            "charOffset" : 2824,
+            "charLength" : 18,
+            "byteOffset" : 2824,
+            "byteLength" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

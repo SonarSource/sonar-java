@@ -1,0 +1,578 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"equals()\" and should therefore also override \"hashCode()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Converter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 382,
+            "startColumn" : 18,
+            "endLine" : 382,
+            "endColumn" : 24,
+            "charOffset" : 13005,
+            "charLength" : 6,
+            "byteOffset" : 13005,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"equals()\" and should therefore also override \"hashCode()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/AbstractListMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 126,
+            "startColumn" : 18,
+            "endLine" : 126,
+            "endColumn" : 24,
+            "charOffset" : 3661,
+            "charLength" : 6,
+            "byteOffset" : 3661,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"equals()\" and should therefore also override \"hashCode()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/AbstractSetMultimap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 139,
+            "startColumn" : 18,
+            "endLine" : 139,
+            "endColumn" : 24,
+            "charOffset" : 4060,
+            "charLength" : 6,
+            "byteOffset" : 4060,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"equals()\" and should therefore also override \"hashCode()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Cut.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 93,
+            "startColumn" : 18,
+            "endLine" : 93,
+            "endColumn" : 24,
+            "charOffset" : 2907,
+            "charLength" : 6,
+            "byteOffset" : 2907,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"hashCode()\" and should therefore also override \"equals()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Cut.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 358,
+            "startColumn" : 16,
+            "endLine" : 358,
+            "endColumn" : 24,
+            "charOffset" : 9400,
+            "charLength" : 8,
+            "byteOffset" : 9400,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"hashCode()\" and should therefore also override \"equals()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Cut.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 447,
+            "startColumn" : 16,
+            "endLine" : 447,
+            "endColumn" : 24,
+            "charOffset" : 11528,
+            "charLength" : 8,
+            "byteOffset" : 11528,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"equals()\" and should therefore also override \"hashCode()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/HashBasedTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 142,
+            "startColumn" : 18,
+            "endLine" : 142,
+            "endColumn" : 24,
+            "charOffset" : 4688,
+            "charLength" : 6,
+            "byteOffset" : 4688,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"equals()\" and should therefore also override \"hashCode()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableEnumMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 77,
+            "startColumn" : 18,
+            "endLine" : 77,
+            "endColumn" : 24,
+            "charOffset" : 2242,
+            "charLength" : 6,
+            "byteOffset" : 2242,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"hashCode()\" and should therefore also override \"equals()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 561,
+            "startColumn" : 16,
+            "endLine" : 561,
+            "endColumn" : 24,
+            "charOffset" : 18343,
+            "charLength" : 8,
+            "byteOffset" : 18343,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"hashCode()\" and should therefore also override \"equals()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableMapEntrySet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 92,
+            "startColumn" : 14,
+            "endLine" : 92,
+            "endColumn" : 22,
+            "charOffset" : 2397,
+            "charLength" : 8,
+            "byteOffset" : 2397,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"hashCode()\" and should therefore also override \"equals()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 351,
+            "startColumn" : 16,
+            "endLine" : 351,
+            "endColumn" : 24,
+            "charOffset" : 10504,
+            "charLength" : 8,
+            "byteOffset" : 10504,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"hashCode()\" and should therefore also override \"equals()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Multimaps.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1059,
+            "startColumn" : 26,
+            "endLine" : 1059,
+            "endColumn" : 34,
+            "charOffset" : 37985,
+            "charLength" : 8,
+            "byteOffset" : 37985,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"hashCode()\" and should therefore also override \"equals()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/RegularImmutableBiMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 147,
+            "startColumn" : 14,
+            "endLine" : 147,
+            "endColumn" : 22,
+            "charOffset" : 5596,
+            "charLength" : 8,
+            "byteOffset" : 5596,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"hashCode()\" and should therefore also override \"equals()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/RegularImmutableBiMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 217,
+            "startColumn" : 18,
+            "endLine" : 217,
+            "endColumn" : 26,
+            "charOffset" : 7121,
+            "charLength" : 8,
+            "byteOffset" : 7121,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"hashCode()\" and should therefore also override \"equals()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/RegularImmutableMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 172,
+            "startColumn" : 14,
+            "endLine" : 172,
+            "endColumn" : 22,
+            "charOffset" : 5249,
+            "charLength" : 8,
+            "byteOffset" : 5249,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"hashCode()\" and should therefore also override \"equals()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/RegularImmutableSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 93,
+            "startColumn" : 24,
+            "endLine" : 93,
+            "endColumn" : 32,
+            "charOffset" : 2767,
+            "charLength" : 8,
+            "byteOffset" : 2767,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"equals()\" and should therefore also override \"hashCode()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/RegularImmutableSortedSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 143,
+            "startColumn" : 28,
+            "endLine" : 143,
+            "endColumn" : 34,
+            "charOffset" : 4272,
+            "charLength" : 6,
+            "byteOffset" : 4272,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"hashCode()\" and should therefore also override \"equals()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/SingletonImmutableSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 75,
+            "startColumn" : 30,
+            "endLine" : 75,
+            "endColumn" : 38,
+            "charOffset" : 2265,
+            "charLength" : 8,
+            "byteOffset" : 2265,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"equals()\" and should therefore also override \"hashCode()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/StandardTable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 361,
+            "startColumn" : 28,
+            "endLine" : 361,
+            "endColumn" : 34,
+            "charOffset" : 10888,
+            "charLength" : 6,
+            "byteOffset" : 10888,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1206",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This class overrides \"equals()\" and should therefore also override \"hashCode()\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/Synchronized.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 887,
+            "startColumn" : 30,
+            "endLine" : 887,
+            "endColumn" : 36,
+            "charOffset" : 23357,
+            "charLength" : 6,
+            "byteOffset" : 23357,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

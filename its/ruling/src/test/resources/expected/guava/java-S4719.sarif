@@ -1,0 +1,382 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S4719",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace \"com.google.common.base.Charsets.US_ASCII\" with \"StandardCharsets.US_ASCII\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Charsets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 31,
+            "endLine" : 49,
+            "endColumn" : 39,
+            "charOffset" : 1658,
+            "charLength" : 8,
+            "byteOffset" : 1658,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4719",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace Charset.forName() call with StandardCharsets.US_ASCII"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Charsets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 42,
+            "endLine" : 49,
+            "endColumn" : 69,
+            "charOffset" : 1669,
+            "charLength" : 27,
+            "byteOffset" : 1669,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4719",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace \"com.google.common.base.Charsets.ISO_8859_1\" with \"StandardCharsets.ISO_8859_1\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Charsets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 31,
+            "endLine" : 59,
+            "endColumn" : 41,
+            "charOffset" : 2011,
+            "charLength" : 10,
+            "byteOffset" : 2011,
+            "byteLength" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4719",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace Charset.forName() call with StandardCharsets.ISO_8859_1"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Charsets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 59,
+            "startColumn" : 44,
+            "endLine" : 59,
+            "endColumn" : 73,
+            "charOffset" : 2024,
+            "charLength" : 29,
+            "byteOffset" : 2024,
+            "byteLength" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4719",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace \"com.google.common.base.Charsets.UTF_8\" with \"StandardCharsets.UTF_8\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Charsets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 31,
+            "endLine" : 68,
+            "endColumn" : 36,
+            "charOffset" : 2312,
+            "charLength" : 5,
+            "byteOffset" : 2312,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4719",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace Charset.forName() call with StandardCharsets.UTF_8"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Charsets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 39,
+            "endLine" : 68,
+            "endColumn" : 63,
+            "charOffset" : 2320,
+            "charLength" : 24,
+            "byteOffset" : 2320,
+            "byteLength" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4719",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace \"com.google.common.base.Charsets.UTF_16BE\" with \"StandardCharsets.UTF_16BE\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Charsets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 31,
+            "endLine" : 78,
+            "endColumn" : 39,
+            "charOffset" : 2674,
+            "charLength" : 8,
+            "byteOffset" : 2674,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4719",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace Charset.forName() call with StandardCharsets.UTF_16BE"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Charsets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 42,
+            "endLine" : 78,
+            "endColumn" : 69,
+            "charOffset" : 2685,
+            "charLength" : 27,
+            "byteOffset" : 2685,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4719",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace \"com.google.common.base.Charsets.UTF_16LE\" with \"StandardCharsets.UTF_16LE\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Charsets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 88,
+            "startColumn" : 31,
+            "endLine" : 88,
+            "endColumn" : 39,
+            "charOffset" : 3045,
+            "charLength" : 8,
+            "byteOffset" : 3045,
+            "byteLength" : 8
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4719",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace Charset.forName() call with StandardCharsets.UTF_16LE"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Charsets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 88,
+            "startColumn" : 42,
+            "endLine" : 88,
+            "endColumn" : 69,
+            "charOffset" : 3056,
+            "charLength" : 27,
+            "byteOffset" : 3056,
+            "byteLength" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4719",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace \"com.google.common.base.Charsets.UTF_16\" with \"StandardCharsets.UTF_16\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Charsets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 99,
+            "startColumn" : 31,
+            "endLine" : 99,
+            "endColumn" : 37,
+            "charOffset" : 3445,
+            "charLength" : 6,
+            "byteOffset" : 3445,
+            "byteLength" : 6
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4719",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace Charset.forName() call with StandardCharsets.UTF_16"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Charsets.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 99,
+            "startColumn" : 40,
+            "endLine" : 99,
+            "endColumn" : 65,
+            "charOffset" : 3454,
+            "charLength" : 25,
+            "byteOffset" : 3454,
+            "byteLength" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S4719",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace \"com.google.common.base.Charsets.UTF_8\" with \"StandardCharsets.UTF_8\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/net/MediaType.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 86,
+            "startColumn" : 69,
+            "endLine" : 86,
+            "endColumn" : 74,
+            "charOffset" : 3842,
+            "charLength" : 5,
+            "byteOffset" : 3842,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

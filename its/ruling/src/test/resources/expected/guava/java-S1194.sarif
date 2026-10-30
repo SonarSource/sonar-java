@@ -1,0 +1,46 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1194",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Extend \"java.lang.Exception\" or one of its subclasses."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/ExecutionError.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 37,
+            "endLine" : 36,
+            "endColumn" : 42,
+            "charOffset" : 1318,
+            "charLength" : 5,
+            "byteOffset" : 1318,
+            "byteLength" : 5
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

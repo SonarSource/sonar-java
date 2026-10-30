@@ -1,0 +1,74 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S6541",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "A \"Brain Method\" was detected. Refactor it to reduce at least one of the following metrics: LOC from 82 to 64, Complexity from 29 to 14, Nesting Level from 7 to 2, Number of Variables from 19 to 6."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/Striped64.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 193,
+            "startColumn" : 16,
+            "endLine" : 193,
+            "endColumn" : 27,
+            "charOffset" : 7577,
+            "charLength" : 11,
+            "byteOffset" : 7577,
+            "byteLength" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S6541",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "A \"Brain Method\" was detected. Refactor it to reduce at least one of the following metrics: LOC from 77 to 64, Complexity from 18 to 14, Nesting Level from 8 to 2, Number of Variables from 15 to 6."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ComputingConcurrentHashMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 75,
+            "startColumn" : 7,
+            "endLine" : 75,
+            "endColumn" : 19,
+            "charOffset" : 2648,
+            "charLength" : 12,
+            "byteOffset" : 2648,
+            "byteLength" : 12
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}
