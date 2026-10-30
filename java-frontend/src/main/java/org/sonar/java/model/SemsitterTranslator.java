@@ -1055,6 +1055,9 @@ final class SemsitterTranslator {
     Node arguments = field(node, "arguments");
     ArgumentListTreeImpl args = arguments == null ? ArgumentListTreeImpl.emptyList().complete(synthetic("("), synthetic(")")) : arguments(arguments);
     Node body = field(node, "body");
+    if (body == null) {
+      body = childKind(node, "class_body");
+    }
     ClassTreeImpl classBody = null;
     if (body != null) {
       classBody = new ClassTreeImpl(Tree.Kind.CLASS, token(required(body, "{")), membersOf(body), token(required(body, "}")));
