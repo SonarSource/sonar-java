@@ -333,6 +333,7 @@ final class SemsitterTranslator {
     ExpressionTree name = expression(requiredField(node, "name", firstOf(node, "scoped_identifier", "identifier")));
     naming = false;
     packageName = dottedName(name);
+    bindPackage(name, packageName);
     return new JavaTree.PackageDeclarationTreeImpl(annotations(node), token(required(node, "package")), name, token(required(node, ";")));
   }
 
