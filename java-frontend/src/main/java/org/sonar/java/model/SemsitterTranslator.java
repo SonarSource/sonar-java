@@ -1821,14 +1821,18 @@ final class SemsitterTranslator {
   }
 
   private TypeParameterTree typeParameter(Node node) {
-    IdentifierTreeImpl name = identifier(firstOf(node, "type_identifier", "identifier"));
-    bindUse(name, firstOf(node, "type_identifier", "identifier"));
+    Node nameNode = firstOf(node, "type_identifier", "identifier");
+    IdentifierTreeImpl name = identifier(nameNode);
+    bindUse(name, nameNode);
     Node bound = childKind(node, "type_bound");
     TypeParameterTreeImpl tree;
     if (bound == null) {
       tree = new TypeParameterTreeImpl(name);
     } else {
       tree = new TypeParameterTreeImpl(name, token(required(bound, "extends")), separatedTypes(bound));
+    }
+    if (name.symbol().isUnknown()) {
+      bindDeclaration(tree, nameNode, name);
     }
     if (name.symbol instanceof Symbol.TypeSymbol typeSymbol) {
       tree.typeSymbol = typeSymbol;
