@@ -27,6 +27,7 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
@@ -858,6 +859,7 @@ final class SemsitterTranslator {
   private List<CaseGroupTreeImpl> switchGroups(Node body, boolean expression) {
     List<CaseGroupTreeImpl> groups = new ArrayList<>();
     List<CaseLabelTreeImpl> labels = new ArrayList<>();
+    List<CaseLabelTreeImpl> carried = new ArrayList<>();
     StatementListTreeImpl statements = StatementListTreeImpl.emptyList();
     List<Node> children = body.children();
     for (int i = 0; i < children.size(); i++) {
@@ -879,7 +881,13 @@ final class SemsitterTranslator {
             i++;
           }
         } else {
-          groups.add(switchArm(child, expression));
+          CaseGroupTreeImpl group = switchArm(child, expression, carried);
+          if (group.body().isEmpty() && "switch_block_statement_group".equals(child.k()) && nextIsGroup(children, i)) {
+            carried = group.labels().stream().map(CaseLabelTreeImpl.class::cast).collect(Collectors.toCollection(ArrayList::new));
+          } else {
+            groups.add(group);
+            carried = new ArrayList<>();
+          }
         }
       } else if (!labels.isEmpty()) {
         addStatement(statements, child);
@@ -891,8 +899,12 @@ final class SemsitterTranslator {
     return groups;
   }
 
-  private CaseGroupTreeImpl switchArm(Node node, boolean expression) {
-    List<CaseLabelTreeImpl> labels = new ArrayList<>();
+  private static boolean nextIsGroup(List<Node> siblings, int index) {
+    return index + 1 < siblings.size() && "switch_block_statement_group".equals(siblings.get(index + 1).k());
+  }
+
+  private CaseGroupTreeImpl switchArm(Node node, boolean expression, List<CaseLabelTreeImpl> carried) {
+    List<CaseLabelTreeImpl> labels = new ArrayList<>(carried);
     StatementListTreeImpl body = StatementListTreeImpl.emptyList();
     List<Node> children = node.children();
     for (int i = 0; i < children.size(); i++) {
