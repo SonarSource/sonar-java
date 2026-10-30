@@ -1263,9 +1263,16 @@ final class SemsitterTranslator {
     if (functional == null || functional.parameterTypes().size() != lambda.parameters().size()) {
       return;
     }
+    List<Type> substituted = sema.invocationParameters(functional, target, List.of());
     List<Type> types = new ArrayList<>();
     for (int i = 0; i < lambda.parameters().size(); i++) {
-      Type type = lambda.parameters().get(i).symbol().type();
+      VariableTree parameter = lambda.parameters().get(i);
+      Type type = parameter.symbol().type();
+      if ((type == null || type.isUnknown()) && parameter.symbol() instanceof JVariableSymbol symbol && !substituted.get(i).isUnknown()) {
+        type = substituted.get(i);
+        symbol.type(type);
+        ascribe((IdentifierTreeImpl) parameter.simpleName(), type);
+      }
       types.add(type == null || type.isUnknown() ? functional.parameterTypes().get(i) : type);
     }
     JMethodSymbol view = functional.withSignature(types, sema.invocationReturn(functional, target));
