@@ -1987,6 +1987,9 @@ final class SemsitterTranslator {
     if (id == null) {
       return;
     }
+    if (id.contains("#<init>(")) {
+      id = name.decls().stream().filter(extra -> !extra.contains("(")).findFirst().orElse(id);
+    }
     Symbol symbol = sema.resolve(id);
     sema.declare(id, tree);
     for (String extra : name.decls()) {
