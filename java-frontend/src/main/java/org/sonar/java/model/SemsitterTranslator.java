@@ -1163,9 +1163,14 @@ final class SemsitterTranslator {
   }
 
   private NewArrayTreeImpl arrayCreation(Node node) {
-    Node dimensions = field(node, "dimensions");
-    List<ArrayDimensionTree> dims = dimensions == null ? List.of() : dimensions(dimensions);
     Node initializer = field(node, "value");
+    String dimensionsKind = initializer == null ? "dimensions_expr" : "dimensions";
+    List<ArrayDimensionTree> dims = new ArrayList<>();
+    for (Node child : node.children()) {
+      if (dimensionsKind.equals(child.k())) {
+        dims.addAll(dimensions(child));
+      }
+    }
     InitializerListTreeImpl initializers = initializer == null ? InitializerListTreeImpl.emptyList() : initializers(initializer);
     NewArrayTreeImpl tree = new NewArrayTreeImpl(dims, initializers)
       .complete(type(requiredField(node, "type", firstType(node))))
@@ -1426,7 +1431,7 @@ final class SemsitterTranslator {
     TypeTree type = type(firstType(node));
     List<AnnotationTree> annotations = new ArrayList<>();
     for (Node child : node.children()) {
-      if ("annotation".equals(child.k()) || "marker_annotation".equals(child.k())) {
+      if (isAnnotation(child)) {
         annotations.add(annotation(child));
       }
     }
@@ -1474,12 +1479,16 @@ final class SemsitterTranslator {
       return element;
     }
     TypeTree current = element;
+    List<AnnotationTreeImpl> annotations = new ArrayList<>();
     List<Node> children = dimensions.children();
     for (int i = 0; i < children.size(); i++) {
       if ("[".equals(children.get(i).text())) {
         InternalSyntaxToken close = i + 1 < children.size() ? token(children.get(i + 1)) : synthetic("]");
-        current = new JavaTree.ArrayTypeTreeImpl(current, List.of(), token(children.get(i)), close);
+        current = new JavaTree.ArrayTypeTreeImpl(current, annotations, token(children.get(i)), close);
+        annotations = new ArrayList<>();
         ascribe((AbstractTypedTree) current, JType.array(sema, (JType) (element.symbolType() instanceof JType j ? j : JType.unknown(sema))));
+      } else if (isAnnotation(children.get(i))) {
+        annotations.add(annotation(children.get(i)));
       }
     }
     return current;
@@ -1609,6 +1618,7 @@ final class SemsitterTranslator {
 
   private List<ArrayDimensionTree> dimensions(Node node) {
     List<ArrayDimensionTree> dims = new ArrayList<>();
+    List<AnnotationTree> annotations = new ArrayList<>();
     ExpressionTree index = null;
     InternalSyntaxToken open = null;
     for (Node child : node.children()) {
@@ -1616,10 +1626,13 @@ final class SemsitterTranslator {
         open = token(child);
         index = null;
       } else if ("]".equals(child.text()) && open != null) {
-        dims.add(new ArrayDimensionTreeImpl(open, index, token(child)));
+        dims.add(new ArrayDimensionTreeImpl(open, index, token(child)).completeAnnotations(annotations));
+        annotations = new ArrayList<>();
         open = null;
       } else if (open != null) {
         index = expression(child);
+      } else if (isAnnotation(child)) {
+        annotations.add(annotation(child));
       }
     }
     return dims;
@@ -1641,7 +1654,7 @@ final class SemsitterTranslator {
 
   @Nullable
   private ModifierTree modifier(Node node) {
-    if ("marker_annotation".equals(node.k()) || "annotation".equals(node.k())) {
+    if (isAnnotation(node)) {
       return annotation(node);
     }
     Modifier modifier = modifierKeyword(node.text());
@@ -1666,7 +1679,7 @@ final class SemsitterTranslator {
     }
     List<AnnotationTree> annotations = new ArrayList<>();
     for (Node child : modifiers.children()) {
-      if ("marker_annotation".equals(child.k()) || "annotation".equals(child.k())) {
+      if (isAnnotation(child)) {
         annotations.add(annotation(child));
       }
     }
@@ -2066,6 +2079,10 @@ final class SemsitterTranslator {
   }
 
   @Nullable
+  private static boolean isAnnotation(Node node) {
+    return "annotation".equals(node.k()) || "marker_annotation".equals(node.k());
+  }
+
   private static Node lastNamed(Node node) {
     List<Node> children = node.children();
     for (int i = children.size() - 1; i >= 0; i--) {
