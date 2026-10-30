@@ -2,6 +2,9 @@
 "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java": [
 544
 ],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpMethod.java": [
+159
+],
 "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpURI.java": [
 393
 ],

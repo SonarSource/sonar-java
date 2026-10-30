@@ -6,6 +6,9 @@
 47,
 51
 ],
+"mall:mall-demo/src/main/java/com/macro/mall/demo/config/SecurityConfig.java": [
+34
+],
 "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpCategoryExample.java": [
 88,
 95,
@@ -394,5 +397,11 @@
 88,
 95,
 102
+],
+"mall:mall-security/src/main/java/com/macro/mall/security/aspect/RedisCacheAspect.java": [
+32
+],
+"mall:mall-security/src/main/java/com/macro/mall/security/config/SecurityConfig.java": [
+40
 ]
 }

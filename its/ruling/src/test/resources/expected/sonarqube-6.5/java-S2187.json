@@ -1,4 +1,10 @@
 {
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/BranchCoverageRuleTest.java": [
+26
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/LineCoverageRuleTest.java": [
+26
+],
 "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionMediumTest.java": [
 22
 ]

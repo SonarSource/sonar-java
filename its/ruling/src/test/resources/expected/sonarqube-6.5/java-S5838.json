@@ -42,10 +42,6 @@
 "sonarqube-6.5:src/test/java/org/sonar/server/authentication/OAuthCsrfVerifierTest.java": [
 86
 ],
-"sonarqube-6.5:src/test/java/org/sonar/server/authentication/event/AuthenticationEventSourceTest.java": [
-186,
-188
-],
 "sonarqube-6.5:src/test/java/org/sonar/server/ce/ws/ActivityActionTest.java": [
 138
 ],
@@ -97,11 +93,6 @@
 112,
 113,
 120
-],
-"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/MeasureComputerDefinitionImplTest.java": [
-161,
-162,
-172
 ],
 "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/api/posttask/CeTaskImplTest.java": [
 61
@@ -209,8 +200,7 @@
 52
 ],
 "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitygate/ConditionStatusTest.java": [
-77,
-78
+77
 ],
 "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitygate/ConditionTest.java": [
 76
@@ -223,9 +213,6 @@
 134,
 135,
 136
-],
-"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/scm/ScmInfoImplTest.java": [
-109
 ],
 "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/source/ComputeFileSourceDataTest.java": [
 78
@@ -661,9 +648,6 @@
 "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/SearchActionTest.java": [
 151,
 153
-],
-"sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/ShowActionTest.java": [
-221
 ],
 "sonarqube-6.5:src/test/java/org/sonar/server/rule/ws/UpdateActionTest.java": [
 232

@@ -6,9 +6,7 @@
 "mall:mall-admin/src/main/java/com/macro/mall/controller/MinioController.java": [
 47,
 57,
-58,
 65,
-69,
 76,
 107
 ],
@@ -696,6 +694,9 @@
 21,
 30
 ],
+"mall:mall-portal/src/main/java/com/macro/mall/portal/config/JacksonConfig.java": [
+23
+],
 "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/MemberAttentionController.java": [
 61
 ],
@@ -726,7 +727,8 @@
 165
 ],
 "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/MemberAttentionServiceImpl.java": [
-36
+36,
+45
 ],
 "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/MemberCollectionServiceImpl.java": [
 34
@@ -736,7 +738,6 @@
 ],
 "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java": [
 71,
-88,
 385,
 401,
 440,
@@ -762,7 +763,8 @@
 161,
 195,
 229,
-240
+240,
+243
 ],
 "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalProductServiceImpl.java": [
 86,
@@ -798,15 +800,11 @@
 ],
 "mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java": [
 49,
-67,
 78,
 95,
 100,
-128,
 150,
-165,
 170,
-197,
 202,
 216,
 228,
@@ -814,16 +812,12 @@
 246,
 252,
 260,
-269,
-279
+269
 ],
 "mall:mall-security/src/main/java/com/macro/mall/security/aspect/RedisCacheAspect.java": [
 33,
 34,
 35
-],
-"mall:mall-security/src/main/java/com/macro/mall/security/component/DynamicAuthorizationManager.java": [
-59
 ],
 "mall:mall-security/src/main/java/com/macro/mall/security/component/JwtAuthenticationTokenFilter.java": [
 42,

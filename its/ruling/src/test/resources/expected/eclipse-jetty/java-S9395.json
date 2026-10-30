@@ -5,6 +5,9 @@
 763,
 768
 ],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/statistic/SampleStatistic.java": [
+113
+],
 "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/MultiExceptionTest.java": [
 201
 ]

@@ -1,5 +1,8 @@
 {
 "mall:mall-admin/src/main/java/com/macro/mall/service/impl/OssServiceImpl.java": [
 59
+],
+"mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java": [
+331
 ]
 }

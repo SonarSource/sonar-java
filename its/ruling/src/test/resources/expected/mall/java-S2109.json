@@ -1,0 +1,8 @@
+{
+"mall:mall-common/src/main/java/com/macro/mall/common/log/WebLogAspect.java": [
+66
+],
+"mall:mall-security/src/main/java/com/macro/mall/security/aspect/RedisCacheAspect.java": [
+41
+]
+}
