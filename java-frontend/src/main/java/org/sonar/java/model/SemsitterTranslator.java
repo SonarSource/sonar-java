@@ -414,7 +414,7 @@ final class SemsitterTranslator {
     Node body = field(node, "body");
     BlockTreeImpl block = body == null ? null : block(body);
     Node typeNode = field(node, "type");
-    TypeTree returnType = typeNode == null || "constructor_declaration".equals(node.k()) ? null : type(typeNode);
+    TypeTree returnType = typeNode == null || "constructor_declaration".equals(node.k()) ? null : arrayType(type(typeNode), field(node, "dimensions"));
     IdentifierTreeImpl name = identifier(requiredField(node, "name", firstOf(node, "identifier")));
     Node thrown = childKind(node, "throws");
     MethodTreeImpl tree = new MethodTreeImpl(
