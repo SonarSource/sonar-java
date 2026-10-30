@@ -1415,7 +1415,7 @@ final class SemsitterTranslator {
     if (identifier.symbol instanceof JMethodSymbol method) {
       ascribeArguments(method, tree.arguments());
       Type returned = sema.invocationReturn(method, receiver);
-      JMethodSymbol view = method.withReturnType(returned);
+      JMethodSymbol view = method.withSignature(sema.invocationParameters(method, receiver, argumentTypes(tree.arguments())), returned);
       tree.methodSymbol = view;
       identifier.symbol = view;
       ascribe(identifier, returned);
