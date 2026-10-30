@@ -133,7 +133,6 @@ pub fn analyze_dumping(root: &Path, files: &[PathBuf], classpath: &[String], dum
   opts.extras.field_reference_edges = true;
   opts.extras.decl_location = true;
   opts.extras.field_items = true;
-  opts.extras.ucfg_classpath = classpath.to_vec();
 
   let rel: Vec<String> = files.iter().filter_map(|f| f.strip_prefix(&root).ok()).map(to_slash).collect();
   let mut facts = HashMap::new();
@@ -184,6 +183,7 @@ fn memory_dumps(root: &Path, files: &[String], graph: &UdgGraph, settings: &Reso
     root,
     files: &listed,
     settings,
+    expressions: false,
   };
   let bound: Vec<Option<Box<dyn DumpLanguage>>> = plain.iter().map(|language| language.for_project(&project)).collect();
   let bound_langs: Vec<&dyn DumpLanguage> = plain
