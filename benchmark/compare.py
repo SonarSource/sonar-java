@@ -6,6 +6,9 @@ is this branch. Both must already have java-frontend/target/classes.
 
     benchmark/compare.py --ecj ~/Documents/sonar-java
     benchmark/compare.py --ecj ~/Documents/sonar-java --corpus path/to/java --out benchmark/out
+
+Per-file unified diffs are written to <out>/diffs/, mirroring the corpus path:
+<out>/diffs/src/main/java/Example.java.diff. The minus side is ECJ, the plus side is SemSitter.
 """
 
 from __future__ import annotations
@@ -13,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
 from collections import defaultdict
@@ -132,7 +136,7 @@ def dump(checkout: Path, classpath: str, corpus: Path, files: list[Path], out: P
 def load(path: Path) -> tuple[dict[str, dict[str, dict]], dict[str, str]]:
     nodes: dict[str, dict[str, dict]] = defaultdict(dict)
     errors: dict[str, str] = {}
-    for line in path.read_text().splitlines():
+    for line in path.read_text().split("\n"):
         if not line.strip():
             continue
         record = json.loads(line)
@@ -197,6 +201,162 @@ def show(record: dict | None) -> str:
     if "type" in record:
         bits.append("type " + record.get("typeFull", record["type"]))
     return " ".join(bits)
+
+
+def one_line(text: str) -> str:
+    return (
+        text.replace("\r\n", "\\n")
+        .replace("\n", "\\n")
+        .replace("\r", "\\r")
+        .replace("\u0085", "\\u0085")
+        .replace("\u2028", "\\u2028")
+        .replace("\u2029", "\\u2029")
+    )
+
+
+def position(record: dict | None) -> tuple[int, int]:
+    if record is None:
+        return (10**9, 10**9)
+    return (record.get("sl", 10**9), record.get("sc", 10**9))
+
+
+def write_diffs(
+    directory: Path,
+    ecj_nodes: dict[str, dict[str, dict]],
+    sem_nodes: dict[str, dict[str, dict]],
+    ecj_errors: dict[str, str],
+    sem_errors: dict[str, str],
+    only_ecj_roots: list[tuple[str, str]],
+    only_sem_roots: list[tuple[str, str]],
+    spans: list[tuple[str, str]],
+    semantic: list[tuple[str, str, str]],
+) -> int:
+    if directory.exists():
+        shutil.rmtree(directory)
+    roots_ecj: dict[str, list[str]] = defaultdict(list)
+    roots_sem: dict[str, list[str]] = defaultdict(list)
+    span_paths: dict[str, list[str]] = defaultdict(list)
+    semantic_paths: dict[str, list[tuple[str, str]]] = defaultdict(list)
+    for name, path in only_ecj_roots:
+        roots_ecj[name].append(path)
+    for name, path in only_sem_roots:
+        roots_sem[name].append(path)
+    for name, path in spans:
+        span_paths[name].append(path)
+    for name, path, kind in semantic:
+        semantic_paths[name].append((path, kind))
+    names = sorted(
+        set(roots_ecj)
+        | set(roots_sem)
+        | set(span_paths)
+        | set(semantic_paths)
+        | set(ecj_errors)
+        | set(sem_errors)
+    )
+    written = 0
+    for name in names:
+        left = ecj_nodes.get(name, {})
+        right = sem_nodes.get(name, {})
+        text = file_diff(
+            name,
+            left,
+            right,
+            ecj_errors.get(name),
+            sem_errors.get(name),
+            roots_ecj.get(name, []),
+            roots_sem.get(name, []),
+            span_paths.get(name, []),
+            semantic_paths.get(name, []),
+        )
+        if text is None:
+            continue
+        destination = directory / (name + ".diff")
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(text)
+        written += 1
+    return written
+
+
+def file_diff(
+    name: str,
+    left: dict[str, dict],
+    right: dict[str, dict],
+    ecj_error: str | None,
+    sem_error: str | None,
+    ecj_roots: list[str],
+    sem_roots: list[str],
+    span_paths: list[str],
+    semantic_paths: list[tuple[str, str]],
+) -> str | None:
+    whole_file = (ecj_error is not None and not left) or (sem_error is not None and not right)
+    hunks: list[tuple[tuple[int, int, str], list[str]]] = []
+    if ecj_error is not None or sem_error is not None:
+        left_status = ecj_error if ecj_error is not None else f"parsed, {len(left)} nodes"
+        right_status = sem_error if sem_error is not None else f"parsed, {len(right)} nodes"
+        hunks.append(((0, 0, ""), [
+            "@@ -1 +1 @@ parse",
+            "-" + one_line(left_status),
+            "+" + one_line(right_status),
+        ]))
+    if not whole_file:
+        for path in ecj_roots:
+            record = left[path]
+            hunks.append(((*position(record), path), [
+                f"@@ -1 +0,0 @@ ast_only_ecj {path}",
+                "-" + one_line(show(record)),
+            ]))
+        for path in sem_roots:
+            record = right[path]
+            hunks.append(((*position(record), path), [
+                f"@@ -0,0 +1 @@ ast_only_semsitter {path}",
+                "+" + one_line(show(record)),
+            ]))
+        for path in span_paths:
+            hunks.append(((*position(left[path]), path), [
+                f"@@ -1 +1 @@ span {path}",
+                "-" + one_line(show(left[path])),
+                "+" + one_line(show(right[path])),
+            ]))
+        for path, kind in semantic_paths:
+            hunks.append(((*position(left[path]), path), [
+                f"@@ -1 +1 @@ {kind} {path}",
+                "-" + one_line(show(left[path])),
+                "+" + one_line(show(right[path])),
+            ]))
+    if not hunks:
+        return None
+    hunks.sort(key=lambda item: item[0])
+    ecj_only = sum(1 for path in left if path not in right) if not whole_file else 0
+    sem_only = sum(1 for path in right if path not in left) if not whole_file else 0
+    union = len(left) + sem_only
+    ast_mismatches = ecj_only + sem_only + (0 if whole_file else len(span_paths))
+    compared = 0
+    if not whole_file:
+        for path in set(left) & set(right):
+            node = left[path]
+            other = right[path]
+            if "symbol" in node or "symbol" in other or "type" in node or "type" in other:
+                compared += 1
+    semantic_n = 0 if whole_file else len(semantic_paths)
+    semantic_proportion = (semantic_n / compared) if compared else 0.0
+    ast_proportion = (ast_mismatches / union) if union else 0.0
+    if whole_file:
+        ast_line = "# AST mismatches: one side did not parse this file"
+    else:
+        ast_line = f"# AST mismatches {ast_mismatches} ({pct(ast_proportion)} of ECJ nodes plus SemSitter-only nodes)"
+    header = [
+        f"# {name}",
+        f"# ECJ nodes {len(left)}   SemSitter nodes {len(right)}",
+        ast_line,
+        f"# Semantic mismatches {semantic_n} of {compared} compared ({pct(semantic_proportion)})",
+        "# AST hunks are the outermost missing node.",
+        f"--- ecj/{name}",
+        f"+++ semsitter/{name}",
+    ]
+    body = []
+    for _, lines in hunks:
+        body.extend(lines)
+    return "\n".join(header + body) + "\n"
 
 
 def compare(ecj_path: Path, sem_path: Path, summary_path: Path, text_path: Path, jsonl_path: Path, meta: dict) -> dict:
@@ -268,6 +428,19 @@ def compare(ecj_path: Path, sem_path: Path, summary_path: Path, text_path: Path,
         },
         "parse_failures": {"ecj": len(ecj_errors), "semsitter": len(sem_errors)},
     }
+    diff_dir = summary_path.parent / "diffs"
+    summary["diffs"] = str(diff_dir)
+    summary["diff_files"] = write_diffs(
+        diff_dir,
+        ecj_nodes,
+        sem_nodes,
+        ecj_errors,
+        sem_errors,
+        only_ecj_roots,
+        only_sem_roots,
+        spans,
+        semantic,
+    )
     summary_path.write_text(json.dumps(summary, indent=2) + "\n")
     lines = [render(summary)]
     lines.append("")
@@ -341,6 +514,7 @@ def render(summary: dict) -> str:
         f"  Mismatches                        {sem['mismatches']}  ({pct(sem['mismatch_proportion'])} of compared nodes)",
         "",
         f"Parse failures   ECJ {summary['parse_failures']['ecj']}   SemSitter {summary['parse_failures']['semsitter']}",
+        f"Diff files       {summary.get('diff_files', 0)}   {summary.get('diffs', '')}",
     ])
 
 
