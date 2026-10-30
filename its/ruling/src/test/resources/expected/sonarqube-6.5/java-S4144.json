@@ -20,12 +20,6 @@
 "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/component/FileAttributesTest.java": [
 43
 ],
-"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ReportPostOrderDepthTraversalTypeAwareCrawlerTest.java": [
-159
-],
-"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ReportPreOrderDepthTraversalTypeAwareCrawlerTest.java": [
-160
-],
 "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ReportVisitorsCrawlerWithPostOrderTypeAwareVisitorTest.java": [
 180
 ],

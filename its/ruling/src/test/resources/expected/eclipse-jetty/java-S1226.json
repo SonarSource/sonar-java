@@ -1,0 +1,316 @@
+{
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCookie.java": [
+519
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpField.java": [
+156
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java": [
+562
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpURI.java": [
+802,
+806,
+812,
+816,
+820,
+825,
+832,
+836,
+852,
+857,
+863,
+870,
+876,
+882,
+898,
+908,
+915,
+921,
+933,
+939,
+949,
+970,
+975,
+995,
+1001,
+1012,
+1017,
+1022,
+1045,
+1051,
+1056,
+1074
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/ServletPathSpec.java": [
+185,
+187,
+189,
+191,
+198,
+200
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ArrayByteBufferPool.java": [
+94,
+96,
+98
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnector.java": [
+225
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SelectorManager.java": [
+97
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/WriteFlusher.java": [
+277,
+447,
+461
+],
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
+918
+],
+"eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MBeanContainer.java": [
+306,
+412
+],
+"eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java": [
+235,
+242,
+424
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnectionFactory.java": [
+121
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java": [
+189,
+193,
+221
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncRequestLogWriter.java": [
+53
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Cookies.java": [
+66
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
+597,
+629,
+841
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Dispatcher.java": [
+87,
+89,
+144,
+146
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/EncodingHttpWriter.java": [
+59,
+60
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java": [
+636,
+778,
+844
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelOverHttp.java": [
+362
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java": [
+900
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java": [
+800,
+801,
+848
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpWriter.java": [
+68,
+69
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Iso88591HttpWriter.java": [
+66,
+67
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java": [
+67
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java": [
+188,
+1248,
+1262
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/RequestLogWriter.java": [
+79,
+81
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java": [
+515,
+522,
+531,
+596,
+646,
+1096,
+1393
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResponseWriter.java": [
+311,
+425,
+481
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Utf8HttpWriter.java": [
+178,
+179
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+1241,
+1248,
+1253,
+1258,
+1478,
+1616,
+1621,
+1627,
+1909,
+1993,
+1999,
+2028,
+2033,
+2035,
+2229,
+2231
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ErrorHandler.java": [
+359,
+527
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ResourceHandler.java": [
+157
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTernaryTrie.java": [
+277,
+340,
+355,
+391,
+406,
+434,
+449
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTrie.java": [
+289,
+299,
+327,
+337,
+366,
+376
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayUtil.java": [
+89,
+117
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Attributes.java": [
+54,
+71
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java": [
+837,
+860,
+874,
+877,
+900,
+914,
+917,
+940,
+1143
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/DeprecationWarning.java": [
+73
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java": [
+161,
+205,
+463,
+464,
+468
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/LazyList.java": [
+152,
+168
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java": [
+161,
+165,
+173,
+175
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/StringUtil.java": [
+887
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java": [
+357,
+388,
+568
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/URIUtil.java": [
+120,
+126,
+424
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java": [
+98,
+182,
+545,
+868
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/Dumpable.java": [
+152,
+154
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java": [
+265
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
+483,
+883
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/URLResource.java": [
+295
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java": [
+51
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Credential.java": [
+161,
+196,
+211
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Password.java": [
+174
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/UnixCrypt.java": [
+364,
+383,
+417
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java": [
+1119
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/X509.java": [
+106,
+136
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java": [
+141
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/SerializedExecutor.java": [
+77,
+87
+],
+"eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
+530,
+804,
+818,
+824,
+836,
+870
+]
+}

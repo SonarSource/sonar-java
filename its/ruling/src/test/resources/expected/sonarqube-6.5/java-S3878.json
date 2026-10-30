@@ -1,0 +1,11 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/ce/http/CeHttpClient.java": [
+106
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/ce/ws/ActivityAction.java": [
+242
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/platformlevel/PlatformLevel.java": [
+171
+]
+}

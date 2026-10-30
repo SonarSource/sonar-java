@@ -9,10 +9,6 @@
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
 723
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Dispatcher.java": [
-300,
-433
-],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandlerCollection.java": [
 344
 ],
@@ -27,9 +23,6 @@
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java": [
 835
-],
-"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java": [
-406
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SocketAddressResolver.java": [
 67,

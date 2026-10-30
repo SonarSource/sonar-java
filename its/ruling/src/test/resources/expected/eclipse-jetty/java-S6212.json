@@ -22,8 +22,7 @@
 ],
 "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCompliance.java": [
 150,
-158,
-164
+158
 ],
 "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCookie.java": [
 241,
@@ -209,11 +208,6 @@
 176
 ],
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java": [
-69,
-126,
-190,
-286,
-300,
 411,
 436,
 489
@@ -246,21 +240,10 @@
 325
 ],
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/CyclicTimeout.java": [
-93,
 97,
-133,
 135,
-155,
-211,
 221,
-224,
 232
-],
-"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/FillInterest.java": [
-102,
-123,
-137,
-150
 ],
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
 97,
@@ -283,10 +266,6 @@
 1067
 ],
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/MappedByteBufferPool.java": [
-116,
-144,
-167,
-177,
 226
 ],
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/NegotiatingClientConnection.java": [
@@ -296,25 +275,17 @@
 57
 ],
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SelectorManager.java": [
-214,
 237
 ],
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SocketChannelEndPoint.java": [
-136,
-137,
 189
 ],
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/WriteFlusher.java": [
-234,
 283,
-314,
-364,
 373,
 418,
 431,
-441,
-484,
-577
+441
 ],
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslClientConnectionFactory.java": [
 106,
@@ -324,8 +295,6 @@
 158
 ],
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
-309,
-312,
 409,
 549,
 617,
@@ -352,15 +321,13 @@
 245
 ],
 "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MBeanContainer.java": [
-183,
 201,
 226,
 245,
 249,
 351,
 360,
-379,
-416
+379
 ],
 "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java": [
 205,
@@ -391,12 +358,8 @@
 346,
 354,
 356,
-379,
-398,
 542,
-700,
-752,
-782
+700
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncContextEvent.java": [
 98,
@@ -457,11 +420,9 @@
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DetectorConnectionFactory.java": [
 83,
-86,
 112,
 168,
 237,
-240,
 248
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Dispatcher.java": [
@@ -504,8 +465,7 @@
 398,
 399,
 462,
-472,
-872
+472
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelOverHttp.java": [
 101,
@@ -547,19 +507,13 @@
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java": [
 173,
 205,
-255,
 279,
 340,
 398,
-575,
-590,
 623,
 838,
 949,
 1041,
-1111,
-1126,
-1141,
 1345,
 1359,
 1726
@@ -649,17 +603,12 @@
 642,
 647
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyCustomizer.java": [
-58,
-61
-],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/PushBuilderImpl.java": [
 170,
 191
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java": [
 258,
-357,
 367,
 534,
 553,
@@ -692,7 +641,6 @@
 2238,
 2241,
 2243,
-2277,
 2283
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceContentFactory.java": [
@@ -721,13 +669,9 @@
 845
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java": [
-216,
-244,
 275,
 319,
 320,
-734,
-810,
 822,
 1154,
 1158,
@@ -826,13 +770,9 @@
 546,
 549,
 550,
-744,
-786,
-805,
 950,
 987,
 988,
-1051,
 1124,
 1179,
 1224,
@@ -841,7 +781,6 @@
 1311,
 1324,
 1343,
-1419,
 1481,
 1491,
 1816,
@@ -862,7 +801,6 @@
 3011
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandlerCollection.java": [
-85,
 105,
 117,
 118,
@@ -895,13 +833,8 @@
 501
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HandlerCollection.java": [
-75,
-137,
-178,
 179,
-193,
 194,
-204,
 207
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HandlerList.java": [
@@ -915,7 +848,6 @@
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HotSwapHandler.java": [
 59,
-72,
 99,
 109,
 119
@@ -932,8 +864,7 @@
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ResourceHandler.java": [
 86,
-89,
-100
+89
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/SecuredRedirectHandler.java": [
 44,
@@ -947,14 +878,10 @@
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/StatisticsHandler.java": [
 95,
 97,
-109,
 143,
 154,
-196,
 208,
-572,
-613,
-622
+572
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ThreadLimitHandler.java": [
 179,
@@ -978,12 +905,6 @@
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/jmx/AbstractHandlerMBean.java": [
 58
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/jmx/ContextHandlerMBean.java": [
-43,
-55,
-62,
-69
-],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/jmx/AbstractConnectorMBean.java": [
 40
 ],
@@ -993,7 +914,6 @@
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCache.java": [
 347,
-369,
 647,
 756,
 835
@@ -1007,9 +927,6 @@
 283
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DefaultSessionCache.java": [
-96,
-104,
-125,
 139,
 180,
 187
@@ -1087,7 +1004,6 @@
 143,
 144,
 147,
-151,
 506
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java": [
@@ -1130,7 +1046,6 @@
 ],
 "eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/JettyLoggerFactory.java": [
 43,
-122,
 165,
 170
 ],
@@ -1182,9 +1097,7 @@
 1139,
 1232,
 1274,
-1330,
-1372,
-1382
+1330
 ],
 "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSON.java": [
 134,
@@ -1195,7 +1108,6 @@
 396,
 506,
 517,
-583,
 629,
 633,
 760,
@@ -1302,7 +1214,6 @@
 184
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ClassLoadingObjectInputStream.java": [
-77,
 93,
 96,
 99,
@@ -1318,12 +1229,10 @@
 238
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/DecoratedObjectFactory.java": [
-92,
 138
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Fields.java": [
-145,
-170
+145
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/FutureCallback.java": [
 158
@@ -1435,7 +1344,6 @@
 934,
 990,
 1110,
-1172,
 1184,
 1198,
 1199,
@@ -1451,8 +1359,6 @@
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Pool.java": [
 167,
-186,
-213,
 237,
 460,
 462,
@@ -1507,11 +1413,7 @@
 212,
 213,
 364,
-386,
-729,
-745,
-756,
-783
+386
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SearchPattern.java": [
 78,
@@ -1696,8 +1598,7 @@
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/ContainerLifeCycle.java": [
 198,
 346,
-657,
-881
+657
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/Dumpable.java": [
 62,
@@ -1711,11 +1612,7 @@
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/Graceful.java": [
 127,
-160,
 169
-],
-"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/compression/CompressionPool.java": [
-120
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/AbstractLeakPreventer.java": [
 45
@@ -1727,14 +1624,11 @@
 47
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/JarFileResource.java": [
-144,
 168,
 193,
 207,
 308,
-328,
 338,
-390,
 396
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/JarResource.java": [
@@ -1934,7 +1828,6 @@
 265,
 281,
 316,
-331,
 363
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java": [
@@ -1964,9 +1857,6 @@
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/SerializedExecutor.java": [
 46
 ],
-"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/Sweeper.java": [
-170
-],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ThreadPoolBudget.java": [
 115,
 169
@@ -1993,7 +1883,6 @@
 174,
 178,
 184,
-211,
 366,
 377,
 378,

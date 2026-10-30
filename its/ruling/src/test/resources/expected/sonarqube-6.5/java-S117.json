@@ -3,6 +3,21 @@
 514,
 515
 ],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/source/LastCommitVisitorTest.java": [
+77,
+79,
+81,
+138,
+139,
+140,
+141,
+142,
+143,
+144,
+145,
+147,
+148
+],
 "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/PersistTestsStepTest.java": [
 267,
 271

@@ -3,19 +3,10 @@
 738
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java": [
-674,
-726,
-735
+726
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncRequestLogWriter.java": [
 82
-],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/LocalConnector.java": [
-279,
-305
-],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
-493
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ShutdownHandler.java": [
 207
@@ -48,7 +39,6 @@
 916
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ReservedThreadExecutor.java": [
-281,
 318
 ]
 }

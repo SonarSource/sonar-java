@@ -1,20 +1,56 @@
 {
+"sonarqube-6.5:src/main/java/org/sonar/server/app/ServerProcessLogging.java": [
+40
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/component/index/ComponentIndexer.java": [
+58
+],
 "sonarqube-6.5:src/main/java/org/sonar/server/debt/DebtModelXMLExporter.java": [
 132
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/debt/DebtRulesXMLImporter.java": [
 100
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/permission/PermissionTemplateService.java": [
-215
+"sonarqube-6.5:src/main/java/org/sonar/server/es/EsUtils.java": [
+91
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/DeleteTemplateAction.java": [
-118
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/IssueQuery.java": [
+52
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/SearchTemplatesAction.java": [
-72
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/index/IssueIndexer.java": [
+68
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/custom/ws/CustomMeasureJsonWriter.java": [
+53
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/index/ProjectMeasuresIndexer.java": [
+58
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/ComponentTreeSort.java": [
+58
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/metric/ws/MetricJsonWriter.java": [
+43
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/platform/ServerLogging.java": [
 60
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/BuiltInQProfileInsertImpl.java": [
+218
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/index/ActiveRuleIndexer.java": [
+86
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/test/index/TestIndexer.java": [
+76
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/user/index/UserIndexer.java": [
+63
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/user/ws/UserJsonWriter.java": [
+48
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/view/index/ViewIndexer.java": [
+52
 ]
 }

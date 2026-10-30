@@ -1,4 +1,10 @@
 {
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/BuiltInQProfileUpdateImpl.java": [
+47
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/usergroups/DefaultGroupCreatorImpl.java": [
+39
+],
 "sonarqube-6.5:src/test/java/org/sonar/server/platform/web/WebPagesFilterTest.java": [
 170,
 174
