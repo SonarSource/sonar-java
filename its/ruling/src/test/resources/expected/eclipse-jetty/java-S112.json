@@ -6,16 +6,31 @@
 173
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/LocalConnector.java": [
-359
+139,
+187,
+328,
+342
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
 213
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
-938
+920,
+938,
+978,
+1014
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ShutdownHandler.java": [
+237
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCache.java": [
+335,
+400,
+771
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStore.java": [
 67,
+73,
 86,
 96,
 105
@@ -26,12 +41,17 @@
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java": [
 136,
 252,
+357,
 603
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/HouseKeeper.java": [
+143,
+180
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java": [
 454,
 475,
-722,
+629,
 766
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java": [
@@ -58,9 +78,11 @@
 26
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java": [
-942
+942,
+1332
 ],
 "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java": [
+300,
 308
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IteratingCallback.java": [
@@ -72,7 +94,10 @@
 189
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PatternMatcher.java": [
-28
+28,
+31,
+65,
+95
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/QuotedStringTokenizer.java": [
 66
@@ -89,6 +114,10 @@
 65,
 73
 ],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/ContainerLifeCycle.java": [
+172,
+183
+],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/Graceful.java": [
 190
 ],
@@ -101,12 +130,42 @@
 61
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java": [
+270,
+1099,
+1112,
+1136,
 1141,
-1199
+1171,
+1199,
+1883
 ],
 "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/ConfigurationProcessor.java": [
 42,
 44
+],
+"eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
+307,
+321,
+428,
+506,
+777,
+800,
+858,
+939,
+997,
+1017,
+1072,
+1127,
+1178,
+1231,
+1277,
+1431,
+1510,
+1515,
+1520,
+1548,
+1553,
+1596
 ],
 "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java": [
 128

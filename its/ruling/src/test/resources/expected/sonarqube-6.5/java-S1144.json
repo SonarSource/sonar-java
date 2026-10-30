@@ -1,15 +1,110 @@
 {
+"sonarqube-6.5:src/main/java/org/sonar/server/authentication/OAuth2CallbackFilter.java": [
+124
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/component/ws/ComponentDtoToWsComponent.java": [
+57
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/MeasureComputerContextImpl.java": [
+110
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/api/posttask/ConditionToCondition.java": [
+78
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/component/PathAwareCrawler.java": [
+155
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewMaintainabilityMeasuresVisitor.java": [
+147
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/CustomMeasuresCopyStep.java": [
+66
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/DuplicationDataMeasuresStep.java": [
+128
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LoadDuplicationsFromReportStep.java": [
+84,
+92
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LoadQualityGateStep.java": [
+73
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistComponentsStep.java": [
+316,
+333,
+348,
+408
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PurgeDatastoresStep.java": [
+75
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/QualityGateEventsStep.java": [
+77
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/QualityGateMeasuresStep.java": [
+110
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/QualityProfileEventsStep.java": [
+83
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/UnitTestMeasuresStep.java": [
+101
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/EsUtils.java": [
+132,
+174
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/Result.java": [
+40
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/index/ProjectMeasuresIndexer.java": [
+104
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/QProfileBackuperImpl.java": [
+138
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/QProfileExporters.java": [
+146
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/ce/ws/TaskActionTest.java": [
+352
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/batch/BatchReportReaderRule.java": [
+70
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/component/TreeComponentProvider.java": [
+36
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/formula/ViewsFormulaExecutorComponentVisitorTest.java": [
+364
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureRepositoryRule.java": [
+268
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/period/PeriodHolderRule.java": [
+44
+],
 "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ComputeQProfileMeasureStepTest.java": [
 153
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/CustomMeasuresCopyStepTest.java": [
+247
 ],
 "sonarqube-6.5:src/test/java/org/sonar/server/issue/IssueServiceMediumTest.java": [
 175
 ],
-"sonarqube-6.5:src/test/java/org/sonar/server/permission/ws/RemoveGroupActionTest.java": [
-288
+"sonarqube-6.5:src/test/java/org/sonar/server/notification/NotificationDaemonTest.java": [
+251
 ],
 "sonarqube-6.5:src/test/java/org/sonar/server/platform/web/WebPagesFilterTest.java": [
 143
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/projectanalysis/ws/SearchActionTest.java": [
+352
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/RegisterQualityProfilesNotificationTest.java": [
+304
 ],
 "sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/BackupActionTest.java": [
 170

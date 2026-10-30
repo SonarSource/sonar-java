@@ -1,10 +1,4 @@
 {
-"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java": [
-1594
-],
-"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/PreEncodedHttpField.java": [
-55
-],
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractConnection.java": [
 221,
 249
@@ -19,7 +13,6 @@
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
 176,
 206,
-335,
 399,
 412,
 539,
@@ -63,8 +56,6 @@
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
 540,
 775,
-802,
-885,
 930,
 951,
 1124,
@@ -97,22 +88,22 @@
 674,
 735
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncRequestLogWriter.java": [
-86
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
+346
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DetectorConnectionFactory.java": [
 216
 ],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ForwardedRequestCustomizer.java": [
+394
+],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java": [
-414,
 427,
-516,
 551,
 569,
 649,
 787,
 820,
-878,
 999,
 1016,
 1032
@@ -124,7 +115,6 @@
 1006
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java": [
-596,
 705,
 859,
 934,
@@ -134,9 +124,6 @@
 1456,
 1466,
 1552
-],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java": [
-627
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java": [
 200,
@@ -154,10 +141,7 @@
 152
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
-405,
 431,
-442,
-451,
 493,
 509,
 520
@@ -201,6 +185,9 @@
 46,
 76
 ],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IteratingCallback.java": [
+239
+],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/JavaVersion.java": [
 49
 ],
@@ -233,6 +220,9 @@
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SocketAddressResolver.java": [
 77,
 189
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java": [
+622
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/AbstractLifeCycle.java": [
 110,

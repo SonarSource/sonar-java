@@ -30,9 +30,6 @@
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HotSwapHandler.java": [
 36
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/StatisticsHandler.java": [
-51
-],
 "eclipse-jetty:jetty-slf4j-impl/src/main/java/org/eclipse/jetty/logging/Timestamp.java": [
 43
 ],

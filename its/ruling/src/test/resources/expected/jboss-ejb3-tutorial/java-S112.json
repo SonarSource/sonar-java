@@ -20,8 +20,20 @@
 35,
 37
 ],
+"jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/DeploymentDescriptorSession1Bean.java": [
+44
+],
+"jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/bean/Session1Bean.java": [
+54
+],
+"jboss-ejb3-tutorial:ejb21_client_adaptors/src/org/jboss/tutorial/ejb21_client_adaptors/client/Client.java": [
+38,
+50
+],
 "jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/client/Client.java": [
-41
+41,
+46,
+66
 ],
 "jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsMDB.java": [
 54
@@ -43,6 +55,9 @@
 ],
 "jboss-ejb3-tutorial:reference21_30/ejb3_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless3.java": [
 30
+],
+"jboss-ejb3-tutorial:reference21_30/ejb3_app/src/main/java/org/jboss/tutorial/reference21_30/bean/Stateless3Bean.java": [
+52
 ],
 "jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/bean/EntityTest.java": [
 34,

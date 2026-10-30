@@ -1,0 +1,20 @@
+{
+"mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java": [
+558,
+571,
+584,
+616,
+617,
+719,
+759,
+760
+],
+"mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPromotionServiceImpl.java": [
+245
+],
+"mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCouponServiceImpl.java": [
+217,
+227,
+238
+]
+}
