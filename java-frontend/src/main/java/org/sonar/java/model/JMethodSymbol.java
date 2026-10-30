@@ -39,6 +39,8 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   @Nullable
   private Integer returnTypeParameter;
   private boolean returnsSelf;
+  @Nullable
+  private List<String> parameterVariables;
   private List<MethodSymbol> overridden;
 
   JMethodSymbol(JSema sema, @Nullable String id, String name) {
@@ -87,19 +89,29 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     return returnsSelf;
   }
 
+  void parameterVariables(List<String> parameterVariables) {
+    this.parameterVariables = parameterVariables;
+  }
+
+  @Nullable
+  List<String> parameterVariables() {
+    return parameterVariables;
+  }
+
   /**
-   * A per-invocation view with a substituted return type. Equality stays on the SemSitter id,
+   * A per-invocation view with substituted parameter and return types. Equality stays on the SemSitter id,
    * so the view still denotes the same method as the declaration.
    */
-  JMethodSymbol withReturnType(Type returnType) {
+  JMethodSymbol withSignature(List<Type> parameterTypes, Type returnType) {
     JMethodSymbol view = new JMethodSymbol(sema, id, name());
     view.owner(owner());
     view.addModifiers(modifiersCopy());
-    view.parameterTypes = parameterTypes;
+    view.parameterTypes = List.copyOf(parameterTypes);
+    view.parameterVariables = parameterVariables;
     view.returnTypeSymbol = returnType.symbol();
     view.varArgs = varArgs;
     view.lambda = lambda;
-    view.parametrized = parametrized || !returnType.equals(returnTypeSymbol.type());
+    view.parametrized = parametrized || !returnType.equals(returnTypeSymbol.type()) || !view.parameterTypes.equals(this.parameterTypes);
     view.returnTypeParameter = returnTypeParameter;
     view.returnsSelf = returnsSelf;
     view.unknown(isUnknown());
