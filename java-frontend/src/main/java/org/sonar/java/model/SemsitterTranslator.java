@@ -1929,6 +1929,10 @@ final class SemsitterTranslator {
         sema.declare(extra, tree);
       }
     }
+    if (tree instanceof VariableTreeImpl variable && symbol instanceof JSymbol variableSymbol && symbol.isVariableSymbol() && symbol.type().isUnknown()
+      && variable.type() != null && !variable.type().symbolType().isUnknown()) {
+      variableSymbol.type(variable.type().symbolType());
+    }
     identifier.symbol = symbol;
     ascribe(identifier, identifierType(symbol));
     if (tree instanceof ClassTreeImpl classTree && symbol instanceof Symbol.TypeSymbol typeSymbol) {
