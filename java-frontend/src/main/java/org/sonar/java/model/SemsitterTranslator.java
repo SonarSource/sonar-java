@@ -105,6 +105,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -1939,6 +1940,16 @@ final class SemsitterTranslator {
     }
     AnnotationTreeImpl tree = new AnnotationTreeImpl(token(required(node, "@")), type, arguments);
     ascribe(tree, type.symbolType());
+    for (ExpressionTree argument : arguments) {
+      if (argument instanceof AssignmentExpressionTree assignment && assignment.variable() instanceof IdentifierTreeImpl element && element.symbol().isUnknown()
+        && type.symbolType().isClass()) {
+        Symbol.MethodSymbol method = sema.declaredMethod(type.symbolType().fullyQualifiedName(), element.name(), List.of());
+        if (method != null) {
+          element.symbol = method;
+          ascribe(element, method.returnType().type());
+        }
+      }
+    }
     return tree;
   }
 
