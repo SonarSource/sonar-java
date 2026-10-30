@@ -25,6 +25,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.checks.helpers.JParserTestUtils;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -32,6 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
+@TestResourceScope.Scoped
 class ImportDeclarationOrderCheckTest {
   @Test
   @DisplayName("No issues with properly ordered imports including modules")

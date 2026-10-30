@@ -59,6 +59,7 @@ import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.StaticInitializerTreeImpl;
 import org.sonar.java.model.statement.SwitchExpressionTreeImpl;
 import org.sonar.java.model.statement.YieldStatementTreeImpl;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -109,6 +110,7 @@ import static org.sonar.java.model.EcjTestSupport.variableBinding;
 import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 
+@TestResourceScope.Scoped
 class JParserSemanticTest {
 
   @Test

@@ -30,6 +30,7 @@ import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
@@ -55,6 +56,7 @@ import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityType
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityType.UNKNOWN;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityType.WEAK_NULLABLE;
 
+@TestResourceScope.Scoped
 class JSymbolMetadataTest {
 
   @Test
@@ -83,12 +85,11 @@ class JSymbolMetadataTest {
 
   @Test
   void should_convert_annotation_values() {
-    JavaTree.CompilationUnitTreeImpl cu = test("import java.lang.annotation.*; @Target({ElementType.TYPE, ElementType.METHOD}) @interface A { }");
-    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
-    Object[] value = (Object[]) c.symbol().metadata().annotations().get(0).values().get(0).value();
+    SemanticFixture fixture = SemanticFixture.scoped("import java.lang.annotation.*; @Target({ElementType.TYPE, ElementType.METHOD}) @interface A { }");
+    Object[] value = (Object[]) fixture.annotations(fixture.declaration(0).symbol()).get(0).values().get(0).value();
     assertThat(value).hasSize(2);
-    assertThat(((JVariableSymbol) value[0]).isEnum()).isTrue();
-    assertThat(((JVariableSymbol) value[1]).isEnum()).isTrue();
+    assertThat(((Symbol.VariableSymbol) value[0]).isEnum()).isTrue();
+    assertThat(((Symbol.VariableSymbol) value[1]).isEnum()).isTrue();
   }
 
   @Test

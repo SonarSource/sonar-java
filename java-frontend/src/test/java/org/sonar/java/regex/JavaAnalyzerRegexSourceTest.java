@@ -20,6 +20,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
+import org.sonar.java.test.TestResourceScope;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonarsource.analyzer.commons.regex.RegexParser;
 import org.sonarsource.analyzer.commons.regex.RegexSource;
@@ -38,6 +39,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 
+@TestResourceScope.Scoped
 class JavaAnalyzerRegexSourceTest {
 
   @Test

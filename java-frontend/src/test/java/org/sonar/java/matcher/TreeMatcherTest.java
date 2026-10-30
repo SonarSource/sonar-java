@@ -19,6 +19,7 @@ package org.sonar.java.matcher;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -53,6 +54,7 @@ import static org.sonar.java.matcher.TreeMatcher.withArgument;
 import static org.sonar.java.matcher.TreeMatcher.withBody;
 import static org.sonar.java.matcher.TreeMatcher.withExpression;
 
+@TestResourceScope.Scoped
 class TreeMatcherTest {
 
   @Test

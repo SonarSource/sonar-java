@@ -27,6 +27,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -57,6 +58,7 @@ import static org.sonar.java.model.ExpressionUtils.isInvocationOnVariable;
 import static org.sonar.java.model.ExpressionUtils.skipParenthesesUpwards;
 import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 
+@TestResourceScope.Scoped
 class ExpressionUtilsTest {
 
   @Test

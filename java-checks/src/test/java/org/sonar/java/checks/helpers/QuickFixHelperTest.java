@@ -31,6 +31,7 @@ import org.sonar.java.checks.helpers.QuickFixHelper.ImportSupplier;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -48,6 +49,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@TestResourceScope.Scoped
 class QuickFixHelperTest {
 
   private static void requireSingleParameter(ParameterDeclarations parameterDeclarations) {

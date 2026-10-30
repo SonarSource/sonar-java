@@ -20,6 +20,7 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.*;
 
@@ -27,6 +28,7 @@ import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestResourceScope.Scoped
 class ReassignmentFinderTest extends JParserTestUtils {
 
   @Test

@@ -40,6 +40,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 public final class JSema implements Sema {
 
   private final AST ast;
+  @Nullable
+  private Runnable environmentCleaner;
   final Map<IBinding, Tree> declarations = new HashMap<>();
   final Map<IBinding, List<IdentifierTree>> usages = new HashMap<>();
   private final Map<ITypeBinding, JType> types = new HashMap<>();
@@ -50,7 +52,12 @@ public final class JSema implements Sema {
   private final Map<String, Type> nameToTypeCache = new HashMap<>();
 
   JSema(AST ast) {
+    this(ast, null);
+  }
+
+  JSema(AST ast, @Nullable Runnable environmentCleaner) {
     this.ast = ast;
+    this.environmentCleaner = environmentCleaner;
   }
 
   Supplier<Type> typeSupplier(@Nullable ITypeBinding binding) {
@@ -205,7 +212,10 @@ public final class JSema implements Sema {
 
   @Override
   public Runnable getEnvironmentCleaner() {
-    return ASTUtils.getEnvironmentCleaner(ast);
+    if (environmentCleaner == null) {
+      environmentCleaner = FrontendResources.idempotent(ASTUtils.getEnvironmentCleaner(ast));
+    }
+    return environmentCleaner;
   }
 
 }

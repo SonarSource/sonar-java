@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
+import org.sonar.java.test.TestResourceScope;
 import org.sonarsource.analyzer.commons.regex.ast.CharacterTree;
 import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
 import org.sonarsource.analyzer.commons.regex.ast.RegexTree;
@@ -29,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.regex.RegexParserTestUtils.assertKind;
 import static org.sonar.java.regex.RegexParserTestUtils.assertSuccessfulParse;
 
+@TestResourceScope.Scoped
 class RegexCheckTest implements RegexCheck {
 
   @Test

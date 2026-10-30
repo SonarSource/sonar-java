@@ -27,6 +27,7 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.springcontext.InjectionPoint;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -38,6 +39,7 @@ import static org.sonar.java.model.springcontext.ProfileExpression.or;
 import static org.sonar.java.model.springcontext.ProfileExpression.profile;
 import static org.assertj.core.api.Assertions.tuple;
 
+@TestResourceScope.Scoped
 class SpringUtilsTest {
 
   @Test

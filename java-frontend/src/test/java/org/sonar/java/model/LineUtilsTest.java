@@ -18,6 +18,7 @@ package org.sonar.java.model;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -28,6 +29,7 @@ import static org.sonar.java.model.LineUtils.endLine;
 import static org.sonar.java.model.LineUtils.splitLines;
 import static org.sonar.java.model.LineUtils.startLine;
 
+@TestResourceScope.Scoped
 class LineUtilsTest {
 
   private static CompilationUnitTree tree;

@@ -28,6 +28,7 @@ import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -46,6 +47,7 @@ import static org.sonar.java.model.EcjTestSupport.sema;
 import static org.sonar.java.model.EcjTestSupport.typeBinding;
 import static org.sonar.java.model.EcjTestSupport.variableBinding;
 
+@TestResourceScope.Scoped
 class JUtilsTest {
 
   static final JSema SEMA = sema(test(""));

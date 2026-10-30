@@ -59,6 +59,7 @@ import org.sonar.java.AnalysisProgress;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.location.Range;
@@ -106,6 +107,7 @@ import static org.sonar.java.model.JParserConfig.Mode.FILE_BY_FILE;
 import static org.sonar.java.model.JParserTestUtils.DEFAULT_CLASSPATH;
 import static org.sonar.java.model.JParserTestUtils.parse;
 
+@TestResourceScope.Scoped
 class JParserTest {
 
   @RegisterExtension

@@ -20,7 +20,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,6 +39,7 @@ import org.sonar.java.classpath.DependencyVersionInference;
 import org.sonar.java.collections.CollectionUtils;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
+import org.sonar.java.model.FrontendResources;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.telemetry.Telemetry;
@@ -236,23 +236,22 @@ public class JavaFrontend {
 
   private <T extends InputFile> void scanBatch(BatchModeContext context, List<T> batchFiles, AnalysisProgress analysisProgress) {
     analysisProgress.startBatch(batchFiles.size());
-    Set<Runnable> environmentsCleaners = new HashSet<>();
-    JParserConfig.Mode.BATCH
-      .create(javaVersion, context.getClasspath(), sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage())
-      .parse(batchFiles, sonarComponents::analysisCancelled, analysisProgress, (input, result) -> scanAsBatchCallback(input, result, context, environmentsCleaners));
-    // Due to a bug in ECJ, JAR files remain locked after the analysis on Windows, we unlock them manually, at the end of each batches. See SONARJAVA-3609.
-    environmentsCleaners.forEach(Runnable::run);
+    try (FrontendResources environmentsCleaners = new FrontendResources()) {
+      JParserConfig.Mode.BATCH
+        .create(javaVersion, context.getClasspath(), sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage())
+        .parse(batchFiles, sonarComponents::analysisCancelled, analysisProgress, (input, result) -> scanAsBatchCallback(input, result, context, environmentsCleaners));
+    }
     analysisProgress.endBatch();
   }
 
-  private static void scanAsBatchCallback(InputFile inputFile, JParserConfig.Result result, BatchModeContext context, Set<Runnable> environmentsCleaners) {
+  private static void scanAsBatchCallback(InputFile inputFile, JParserConfig.Result result, BatchModeContext context, FrontendResources environmentsCleaners) {
     JavaAstScanner scanner = context.selectScanner(inputFile);
     Duration duration = PerformanceMeasure.start(context.descriptor(inputFile));
-    scanner.simpleScan(inputFile, result, ast ->
-      // In batch mode, we delay the cleaning of the environment as it will be used in later processing.
-      environmentsCleaners.add(ast.sema.getEnvironmentCleaner())
-    );
-    duration.stop();
+    try {
+      scanner.simpleScan(inputFile, result, ast -> environmentsCleaners.own(ast.sema.getEnvironmentCleaner()));
+    } finally {
+      duration.stop();
+    }
   }
 
   interface BatchModeContext {

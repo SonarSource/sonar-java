@@ -18,8 +18,6 @@ package org.sonar.java.model;
 
 import java.util.Objects;
 import java.util.stream.Stream;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +32,7 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -46,6 +45,7 @@ import static org.sonar.java.model.EcjTestSupport.sema;
 import static org.sonar.java.model.EcjTestSupport.typeBinding;
 import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 
+@TestResourceScope.Scoped
 class JTypeTest {
 
   @RegisterExtension
@@ -276,7 +276,7 @@ class JTypeTest {
 
   @Test
   void elementType() {
-    assertThat(type("int[][]").elementType())
+    assertThat(((Type.ArrayType) type("int[][]")).elementType())
       .isSameAs(type("int[]"));
   }
 
@@ -327,7 +327,7 @@ class JTypeTest {
 
   @Test
   void is_subtype_of_should_not_throw_NPE() {
-    JType objectType = type("java.lang.Object");
+    Type objectType = type("java.lang.Object");
     ITypeBinding brokenStringBinding = spy(Objects.requireNonNull(sema.resolveType("java.lang.String")));
     // simulate the NullPointerException described in SONARJAVA-4390
     when(brokenStringBinding.isSubTypeCompatible(any()))
@@ -363,27 +363,17 @@ class JTypeTest {
     return (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source);
   }
 
-  private JType type(String name) {
-    ITypeBinding typeBinding = Objects.requireNonNull(sema.resolveType(name));
-    return sema.type(typeBinding);
+  private Type type(String name) {
+    return fixture.type(name);
   }
 
   private JSema sema;
+  private SemanticFixture fixture;
 
   @BeforeEach
   void setup() {
-    ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
-    astParser.setEnvironment(
-      new String[]{},
-      new String[]{},
-      new String[]{},
-      true
-    );
-    astParser.setResolveBindings(true);
-    astParser.setUnitName("File.java");
-    astParser.setSource("".toCharArray());
-    AST ast = astParser.createAST(null).getAST();
-    sema = new JSema(ast);
+    fixture = SemanticFixture.scoped("", java.util.List.of());
+    sema = sema(fixture.tree());
   }
 
 }
