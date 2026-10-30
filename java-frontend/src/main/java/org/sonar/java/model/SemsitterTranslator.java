@@ -767,7 +767,8 @@ final class SemsitterTranslator {
     IdentifierTreeImpl name = identifier(firstOf(node, "identifier"));
     JLabelSymbol symbol = new JLabelSymbol(name.name());
     labels.push(symbol);
-    LabeledStatementTreeImpl tree = new LabeledStatementTreeImpl(name, token(required(node, ":")), statement(lastNamed(node)));
+    List<Node> children = node.children();
+    LabeledStatementTreeImpl tree = new LabeledStatementTreeImpl(name, token(required(node, ":")), statement(children.get(children.size() - 1)));
     labels.pop();
     symbol.declaration = tree;
     tree.labelSymbol = symbol;
