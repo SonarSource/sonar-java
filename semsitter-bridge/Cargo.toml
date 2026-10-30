@@ -15,10 +15,10 @@ memmap2 = "0.9"
 serde_json = "1"
 tree-sitter = "0.27"
 tree-sitter-java = "0.23.5"
-udg-gen = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "d606e04b766dc4f506c20c3c37f26d1511b5f065", default-features = false, features = ["lang-java"] }
-udg-family-jvm = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "d606e04b766dc4f506c20c3c37f26d1511b5f065" }
-udg-lang-sdk = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "d606e04b766dc4f506c20c3c37f26d1511b5f065", features = ["unstable-sdk"] }
-udg-semantic = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "d606e04b766dc4f506c20c3c37f26d1511b5f065" }
+udg-gen = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "bb88640752a431310a24a1d66a5e27119dd01e1a", default-features = false, features = ["lang-java"] }
+udg-family-jvm = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "bb88640752a431310a24a1d66a5e27119dd01e1a" }
+udg-lang-sdk = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "bb88640752a431310a24a1d66a5e27119dd01e1a", features = ["unstable-sdk"] }
+udg-semantic = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "bb88640752a431310a24a1d66a5e27119dd01e1a" }
 
 [dev-dependencies]
 tempfile = "3"
