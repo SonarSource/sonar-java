@@ -108,8 +108,11 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -1245,14 +1248,54 @@ final class SemsitterTranslator {
   }
 
   /** Types a lambda, a method reference or an array initializer from the type its context expects. */
-  private static void ascribeTarget(ExpressionTree expression, Type target) {
+  private void ascribeTarget(ExpressionTree expression, Type target) {
     boolean targetTyped = expression.is(Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.METHOD_REFERENCE) || (expression instanceof NewArrayTreeImpl array && array.type() == null);
     if (targetTyped && expression.symbolType().isUnknown() && !target.isUnknown()) {
       ascribe(expression, target);
     }
+    if (expression instanceof LambdaExpressionTreeImpl lambda) {
+      bindLambdaParameterOwner(lambda, lambda.symbolType());
+    }
   }
 
-  private static void ascribeArguments(Symbol.MethodSymbol method, List<ExpressionTree> arguments) {
+  private void bindLambdaParameterOwner(LambdaExpressionTreeImpl lambda, Type target) {
+    JMethodSymbol functional = sema.functionalMethod(target);
+    if (functional == null || functional.parameterTypes().size() != lambda.parameters().size()) {
+      return;
+    }
+    List<Type> types = new ArrayList<>();
+    for (int i = 0; i < lambda.parameters().size(); i++) {
+      Type type = lambda.parameters().get(i).symbol().type();
+      types.add(type == null || type.isUnknown() ? functional.parameterTypes().get(i) : type);
+    }
+    JMethodSymbol view = functional.withSignature(types, sema.invocationReturn(functional, target));
+    for (VariableTree parameter : lambda.parameters()) {
+      if (parameter.symbol() instanceof JVariableSymbol symbol) {
+        symbol.owner(view);
+      }
+    }
+    lambda.body().accept(new BaseTreeVisitor() {
+      @Override
+      public void visitVariable(VariableTree tree) {
+        if (tree.symbol() instanceof JVariableSymbol symbol && symbol.owner() instanceof JSymbol owner && owner.id != null && owner.id.contains("$lambda$")) {
+          symbol.owner(view);
+        }
+        super.visitVariable(tree);
+      }
+
+      @Override
+      public void visitLambdaExpression(LambdaExpressionTree tree) {
+        // nested lambdas own their variables
+      }
+
+      @Override
+      public void visitClass(ClassTree tree) {
+        // local and anonymous classes own their variables
+      }
+    });
+  }
+
+  private void ascribeArguments(Symbol.MethodSymbol method, List<ExpressionTree> arguments) {
     List<Type> parameters = method.parameterTypes();
     for (int i = 0; i < arguments.size() && !parameters.isEmpty(); i++) {
       Type parameter = parameters.get(Math.min(i, parameters.size() - 1));
