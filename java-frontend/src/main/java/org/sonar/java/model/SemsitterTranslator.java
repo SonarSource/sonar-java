@@ -1084,13 +1084,22 @@ final class SemsitterTranslator {
       name = field(node, "field");
     }
     Node scope = object == null ? firstNamed(node) : object;
-    ExpressionTree qualifier = object == null && compoundName(scope) ? typeExpression(scope) : (object == null ? primary(scope) : expression(object));
+    ExpressionTree qualifier = object == null && compoundName(scope) ? typeExpression(scope) : (object == null ? primary(scope) : superQualifier(node, object));
     Node nameNode = name == null ? lastNamed(node) : name;
     IdentifierTreeImpl identifier = identifier(nameNode);
     bindUse(identifier, name != null || nameNode.json.has("refs") ? nameNode : node);
-    MemberSelectExpressionTreeImpl tree = new MemberSelectExpressionTreeImpl(qualifier, token(required(node, ".")), identifier);
+    MemberSelectExpressionTreeImpl tree = new MemberSelectExpressionTreeImpl(qualifier, token(lastKeyword(node, ".")), identifier);
     ascribe(tree, identifier.symbolType());
     return tree;
+  }
+
+  private ExpressionTree superQualifier(Node node, Node object) {
+    ExpressionTree qualifier = expression(object);
+    Node superNode = keyword(node, "super");
+    if (superNode == null || same(superNode, object)) {
+      return qualifier;
+    }
+    return new MemberSelectExpressionTreeImpl(qualifier, token(required(node, ".")), new IdentifierTreeImpl(token(superNode)));
   }
 
   private static boolean compoundName(Node node) {
@@ -1110,8 +1119,8 @@ final class SemsitterTranslator {
     if (object == null) {
       select = identifier;
     } else {
-      qualifier = expression(object);
-      select = new MemberSelectExpressionTreeImpl(qualifier, token(required(node, ".")), identifier);
+      qualifier = superQualifier(node, object);
+      select = new MemberSelectExpressionTreeImpl(qualifier, token(lastKeyword(node, ".")), identifier);
       ascribe((AbstractTypedTree) select, identifier.symbolType());
     }
     Node typeArguments = field(node, "type_arguments");
@@ -2010,6 +2019,16 @@ final class SemsitterTranslator {
       }
     }
     return null;
+  }
+
+  private static Node lastKeyword(Node node, String text) {
+    List<Node> children = node.children();
+    for (int i = children.size() - 1; i >= 0; i--) {
+      if (text.equals(children.get(i).text())) {
+        return children.get(i);
+      }
+    }
+    return node;
   }
 
   private static boolean same(@Nullable Node left, @Nullable Node right) {
