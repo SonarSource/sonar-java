@@ -349,7 +349,7 @@ final class JSymbolMetadata implements SymbolMetadata {
 
     private Object literal(ExpressionTree expression) {
       if (expression instanceof LiteralTree literal) {
-        return literalValue(literal);
+        return LiteralUtils.constantValue(literal);
       }
       if (expression instanceof AnnotationTree annotation) {
         return new TreeAnnotation(sema, annotation);
@@ -368,18 +368,6 @@ final class JSymbolMetadata implements SymbolMetadata {
       return expression.toString();
     }
 
-    private static Object literalValue(LiteralTree literal) {
-      String value = literal.value();
-      return switch (literal.kind()) {
-        case STRING_LITERAL, TEXT_BLOCK -> LiteralUtils.trimQuotes(value);
-        case BOOLEAN_LITERAL -> Boolean.valueOf(value);
-        case INT_LITERAL -> {
-          Integer integer = LiteralUtils.intLiteralValue(literal);
-          yield integer == null ? value : integer;
-        }
-        default -> value;
-      };
-    }
   }
 
   private static final class FactAnnotation implements AnnotationInstance {
