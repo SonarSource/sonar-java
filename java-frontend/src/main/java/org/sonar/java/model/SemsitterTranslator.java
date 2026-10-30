@@ -1088,6 +1088,10 @@ final class SemsitterTranslator {
     Node nameNode = name == null ? lastNamed(node) : name;
     IdentifierTreeImpl identifier = identifier(nameNode);
     bindUse(identifier, name != null || nameNode.json.has("refs") ? nameNode : node);
+    List<AnnotationTree> annotations = node.children().stream().filter(SemsitterTranslator::isAnnotation).<AnnotationTree>map(this::annotation).toList();
+    if (!annotations.isEmpty()) {
+      identifier.complete(annotations);
+    }
     MemberSelectExpressionTreeImpl tree = new MemberSelectExpressionTreeImpl(qualifier, token(lastKeyword(node, ".")), identifier);
     ascribe(tree, identifier.symbolType());
     return tree;
