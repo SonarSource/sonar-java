@@ -72,6 +72,7 @@ import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
 import org.sonar.java.model.expression.VarTypeTreeImpl;
+import org.sonar.java.model.pattern.AbstractPatternTree;
 import org.sonar.java.model.pattern.DefaultPatternTreeImpl;
 import org.sonar.java.model.pattern.GuardedPatternTreeImpl;
 import org.sonar.java.model.pattern.NullPatternTreeImpl;
@@ -1107,7 +1108,9 @@ final class SemsitterTranslator {
       } else if ("pattern".equals(child.k()) || "record_pattern".equals(child.k()) || "type_pattern".equals(child.k())) {
         expressions.add(pattern(child));
       } else if ("guard".equals(child.k()) && !expressions.isEmpty() && expressions.get(expressions.size() - 1) instanceof PatternTree guarded) {
-        expressions.set(expressions.size() - 1, new GuardedPatternTreeImpl(guarded, token(required(child, "when")), expression(firstNamed(child))));
+        GuardedPatternTreeImpl pattern = new GuardedPatternTreeImpl(guarded, token(required(child, "when")), expression(firstNamed(child)));
+        ascribe(pattern, guarded.symbolType());
+        expressions.set(expressions.size() - 1, pattern);
       } else if ("null_literal".equals(child.k())) {
         expressions.add(new NullPatternTreeImpl((LiteralTreeImpl) expression(child)));
       } else {
@@ -1628,7 +1631,9 @@ final class SemsitterTranslator {
     } else if (name != null && right != null) {
       VariableTreeImpl variable = new VariableTreeImpl(modifiers(node), type(right), identifier(name));
       bindDeclaration(variable, name, identifier(name));
-      tree = new InstanceOfTreeImpl(left, token(required(node, "instanceof")), new TypePatternTreeImpl(variable));
+      TypePatternTreeImpl pattern = new TypePatternTreeImpl(variable);
+      ascribe(pattern, variable.symbol().type().isUnknown() ? variable.type().symbolType() : variable.symbol().type());
+      tree = new InstanceOfTreeImpl(left, token(required(node, "instanceof")), pattern);
     } else {
       tree = new InstanceOfTreeImpl(left, token(required(node, "instanceof")), type(right == null ? firstType(node) : right));
     }
@@ -1653,7 +1658,9 @@ final class SemsitterTranslator {
     if (variable.symbol().type() != null && !variable.symbol().type().isUnknown()) {
       ascribe(variable.type(), variable.symbol().type());
     }
-    return new TypePatternTreeImpl(variable);
+    TypePatternTreeImpl tree = new TypePatternTreeImpl(variable);
+    ascribe(tree, variable.symbol().type().isUnknown() ? variable.type().symbolType() : variable.symbol().type());
+    return tree;
   }
 
   private RecordPatternTreeImpl recordPattern(Node node) {
@@ -2339,6 +2346,8 @@ final class SemsitterTranslator {
   private static void ascribe(Tree tree, Type type) {
     if (tree instanceof AbstractTypedTree typed && type != null) {
       typed.type = type;
+    } else if (tree instanceof AbstractPatternTree pattern && type != null) {
+      pattern.type = type;
     }
   }
 
