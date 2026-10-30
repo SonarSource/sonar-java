@@ -903,7 +903,9 @@ final class SemsitterTranslator {
     Node resourceNode = field(node, "resources");
     if (resourceNode != null) {
       for (Node child : resourceNode.children()) {
-        if ("resource".equals(child.k()) || "local_variable_declaration".equals(child.k())) {
+        if ("resource".equals(child.k()) && field(child, "name") == null) {
+          resources.add(expression(firstNamed(child)));
+        } else if ("resource".equals(child.k()) || "local_variable_declaration".equals(child.k())) {
           resources.addAll(variables(child));
         } else if (";".equals(child.text())) {
           resources.separators().add(token(child));
