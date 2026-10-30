@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
@@ -130,6 +131,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
  */
 final class SemsitterTranslator {
 
+  private static final Pattern ARITY_ONLY = Pattern.compile("[^#]+#[^#(]+\\(\\d+\\)");
   private final JSema sema;
   private final Map<JsonObject, InternalSyntaxToken> tokens = new IdentityHashMap<>();
   private final Deque<JLabelSymbol> labels = new ArrayDeque<>();
@@ -1400,8 +1402,12 @@ final class SemsitterTranslator {
     Node typeArguments = field(node, "type_arguments");
     MethodInvocationTreeImpl tree = new MethodInvocationTreeImpl(select, typeArguments == null ? null : typeArguments(typeArguments), arguments(requiredField(node, "arguments", childKind(node, "argument_list"))));
     Type receiver = qualifier == null ? currentType() : qualifier.symbolType();
-    if (identifier.symbol().isUnknown()) {
-      Symbol.MethodSymbol method = libraryMethod(qualifier, identifier.name(), argumentTypes(tree.arguments()));
+    String target = (name == null ? node : name).valueTarget();
+    boolean arityOnly = target != null && ARITY_ONLY.matcher(target).matches();
+    if (identifier.symbol().isUnknown() || arityOnly) {
+      Symbol.MethodSymbol method = arityOnly
+        ? sema.declaredMethod(JSema.erase(target.substring(0, target.indexOf('#'))), identifier.name(), argumentTypes(tree.arguments()))
+        : libraryMethod(qualifier, identifier.name(), argumentTypes(tree.arguments()));
       if (method != null) {
         identifier.symbol = method;
       }
