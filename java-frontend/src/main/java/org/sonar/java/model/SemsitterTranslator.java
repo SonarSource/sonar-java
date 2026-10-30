@@ -1202,6 +1202,10 @@ final class SemsitterTranslator {
     }
   }
 
+  private static List<Type> argumentTypes(List<ExpressionTree> arguments) {
+    return arguments.stream().map(ExpressionTree::symbolType).toList();
+  }
+
   private void bindType(IdentifierTreeImpl identifier, String fqn) {
     Symbol symbol = sema.resolve(fqn);
     identifier.symbol = symbol;
@@ -1329,7 +1333,7 @@ final class SemsitterTranslator {
     MethodInvocationTreeImpl tree = new MethodInvocationTreeImpl(select, typeArguments == null ? null : typeArguments(typeArguments), arguments(requiredField(node, "arguments", childKind(node, "argument_list"))));
     Type receiver = qualifier == null ? currentType() : qualifier.symbolType();
     if (identifier.symbol().isUnknown() && receiver.isClass()) {
-      Symbol.MethodSymbol method = sema.declaredMethod(receiver.erasure().fullyQualifiedName(), identifier.name(), tree.arguments().size());
+      Symbol.MethodSymbol method = sema.declaredMethod(receiver.erasure().fullyQualifiedName(), identifier.name(), argumentTypes(tree.arguments()));
       if (method != null) {
         identifier.symbol = method;
       }
@@ -1393,7 +1397,7 @@ final class SemsitterTranslator {
       }
     }
     Type type = tree.identifier().symbolType();
-    Symbol.MethodSymbol declared = tree.classBody() == null && type.isClass() ? sema.declaredMethod(type.erasure().fullyQualifiedName(), "<init>", tree.arguments().size()) : null;
+    Symbol.MethodSymbol declared = tree.classBody() == null && type.isClass() ? sema.declaredMethod(type.erasure().fullyQualifiedName(), "<init>", argumentTypes(tree.arguments())) : null;
     if (declared != null) {
       identifier.symbol = declared;
     } else if (!(identifier.symbol() instanceof Symbol.MethodSymbol)) {
