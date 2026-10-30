@@ -1998,6 +1998,10 @@ final class SemsitterTranslator {
       && variable.type() != null && !variable.type().symbolType().isUnknown()) {
       variableSymbol.type(variable.type().symbolType());
     }
+    if (tree instanceof MethodTreeImpl method && symbol instanceof JMethodSymbol methodSymbol && method.returnType() != null
+      && methodSymbol.returnType().type().isUnknown() && !method.returnType().symbolType().isUnknown()) {
+      methodSymbol.returnTypeSymbol(method.returnType().symbolType().symbol());
+    }
     identifier.symbol = symbol;
     ascribe(identifier, identifierType(symbol));
     if (tree instanceof ClassTreeImpl classTree && symbol instanceof Symbol.TypeSymbol typeSymbol) {
