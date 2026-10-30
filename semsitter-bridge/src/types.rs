@@ -248,6 +248,23 @@ fn erased_class(signature: &str) -> String {
     .unwrap_or_default()
 }
 
+/// The JDK table's class and method parameter type variables, in the shape of [`parameter_variables`].
+fn jdk_parameter_variables(class: Option<&str>, method: Option<&str>) -> Option<Vec<String>> {
+  if class.is_none() && method.is_none() {
+    return None;
+  }
+  let class = class.map(parameter_type_variables).unwrap_or_default();
+  let method = method.map(parameter_type_variables).unwrap_or_default();
+  let slot = |prefix: char, slots: &[Option<(usize, &str)>], i: usize| {
+    slots.get(i).copied().flatten().map(|(index, array)| format!("{prefix}{index}{array}"))
+  };
+  Some(
+    (0..class.len().max(method.len()))
+      .map(|i| slot('c', &class, i).or_else(|| slot('m', &method, i)).unwrap_or_default())
+      .collect(),
+  )
+}
+
 /// Per parameter of a method signature, the type variable it is: `c1` for the owner's second type
 /// parameter, `m0[]` for an array of the method's first one, or empty.
 fn parameter_variables(signature: &str, parameters: &[(String, String)]) -> Vec<String> {
@@ -312,12 +329,7 @@ fn jdk_type_info(ty: &JdkType) -> Value {
         "abstract": m.is_abstract,
         "vis": format!("{:?}", m.visibility).to_lowercase(),
         "retParam": m.return_type_class_param_index,
-        "paramVars": m.parameter_type_variables.map(|slots| {
-          parameter_type_variables(slots)
-            .into_iter()
-            .map(|slot| slot.map_or_else(String::new, |(index, array)| format!("c{index}{array}")))
-            .collect::<Vec<_>>()
-        }),
+        "paramVars": jdk_parameter_variables(m.parameter_type_variables, m.parameter_method_type_variables),
       })
     })
     .collect();
