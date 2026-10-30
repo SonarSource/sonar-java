@@ -1260,6 +1260,11 @@ final class SemsitterTranslator {
       bindType(classBody, body);
     }
     NewClassTreeImpl tree = new NewClassTreeImpl(type, args, classBody).completeWithNewKeyword(token(required(node, "new")));
+    Node enclosing = node.children().get(0);
+    if (!"new".equals(enclosing.text())) {
+      tree.completeWithEnclosingExpression(expression(enclosing));
+      tree.completeWithDotToken(token(required(node, ".")));
+    }
     Node typeArguments = field(node, "type_arguments");
     if (typeArguments != null) {
       tree.completeWithTypeArguments(typeArguments(typeArguments));
