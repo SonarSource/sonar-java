@@ -99,7 +99,7 @@ public final class AstSemanticDump {
       try {
         trees.put(name, result.get());
       } catch (Exception failure) {
-        errors.put(name, failure.getMessage() == null ? failure.toString() : failure.getMessage());
+        errors.put(name, describe(failure));
       }
     });
     StringBuilder body = new StringBuilder();
@@ -127,6 +127,25 @@ public final class AstSemanticDump {
       Files.createDirectories(out.getParent());
     }
     Files.writeString(out, body.toString());
+  }
+
+  private static String describe(Throwable failure) {
+    String message = failure.getMessage() == null ? failure.toString() : failure.getMessage();
+    Throwable root = failure;
+    while (root.getCause() != null && root.getCause() != root) {
+      root = root.getCause();
+    }
+    if (root == failure) {
+      return message;
+    }
+    StringBuilder cause = new StringBuilder(message).append(": ").append(root);
+    for (StackTraceElement frame : root.getStackTrace()) {
+      if (frame.getClassName().startsWith("org.sonar")) {
+        cause.append(" at ").append(frame.getClassName()).append('.').append(frame.getMethodName()).append(':').append(frame.getLineNumber());
+        break;
+      }
+    }
+    return cause.toString();
   }
 
   private static List<File> classpathEntries(String classpath) {
