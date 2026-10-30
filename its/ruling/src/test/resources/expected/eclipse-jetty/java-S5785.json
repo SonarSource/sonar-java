@@ -10,10 +10,8 @@
 422,
 477
 ],
-"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/ArrayUtilTest.java": [
-49,
-78,
-100
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ResourceCacheTest.java": [
+213
 ],
 "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java": [
 297,
@@ -70,16 +68,8 @@
 111
 ],
 "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/security/CredentialTest.java": [
-44,
-45,
-46,
-47,
-48,
 49,
 50,
-60,
-61,
-62,
 71
 ]
 }

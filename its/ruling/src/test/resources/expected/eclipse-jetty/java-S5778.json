@@ -44,8 +44,7 @@
 531
 ],
 "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/Utf8AppendableTest.java": [
-78,
-286
+78
 ],
 "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/FileSystemResourceTest.java": [
 218,

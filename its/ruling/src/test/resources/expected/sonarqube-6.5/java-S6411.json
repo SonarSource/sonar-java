@@ -11,7 +11,9 @@
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/component/VisitorsCrawler.java": [
 44,
-60
+60,
+169,
+176
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/FormulaExecutorComponentVisitor.java": [
 220
@@ -23,6 +25,9 @@
 140,
 149,
 163
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitygate/EvaluationResultTextConverterImpl.java": [
+42
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitygate/MutableQualityGateStatusHolder.java": [
 32
@@ -53,6 +58,9 @@
 "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/QualityGateMeasuresStep.java": [
 156,
 157
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/notification/NewIssuesStatistics.java": [
+85
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/ComponentAction.java": [
 161

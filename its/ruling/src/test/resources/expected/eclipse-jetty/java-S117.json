@@ -4,6 +4,9 @@
 155,
 171
 ],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/GZIPContentDecoderTest.java": [
+372
+],
 "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpFieldsTest.java": [
 393,
 404
@@ -22,14 +25,49 @@
 95,
 148,
 149,
+150,
 151,
 152,
 153,
 154,
 155
 ],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java": [
+226,
+227
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java": [
+647,
+788,
+789,
+790,
+791
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+1344
+],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DebugHandler.java": [
-54
+54,
+56
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/IdleTimeoutHandler.java": [
+81
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpManyWaysToAsyncCommitTest.java": [
+58,
+59,
+60,
+61
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestBase.java": [
+1578
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/RequestTest.java": [
+597
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
+569,
+570
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/UnixCrypt.java": [
 397,
@@ -41,5 +79,24 @@
 434,
 470,
 511
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/BlockingArrayQueueTest.java": [
+216,
+217
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/URIUtilTest.java": [
+669
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/statistic/CounterStatisticTest.java": [
+83,
+84
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/ReservedThreadExecutorTest.java": [
+167,
+279
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/strategy/ExecutionStrategyTest.java": [
+114,
+152
 ]
 }

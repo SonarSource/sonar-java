@@ -1,0 +1,92 @@
+{
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/CookieCutterLenientTest.java": [
+37
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpGeneratorServerHTTPTest.java": [
+38
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpURIParseTest.java": [
+35
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/ServletPathSpecMatchListTest.java": [
+36
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/ServletPathSpecOrderTest.java": [
+35
+],
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/UriTemplatePathSpecBadSpecsTest.java": [
+32
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncCompletionTest.java": [
+71
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/DelayedServerTest.java": [
+33
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpManyWaysToAsyncCommitTest.java": [
+51
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpManyWaysToCommitTest.java": [
+45
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartCaptureTest.java": [
+59
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyConnectionTest.java": [
+40
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ServerConnectorAsyncContextTest.java": [
+26
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ServerConnectorCloseTest.java": [
+24
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ServerConnectorHttpServerTest.java": [
+26
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ThreadStarvationTest.java": [
+62
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/AllowSymLinkAliasCheckerTest.java": [
+52
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/InetAccessHandlerTest.java": [
+47
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/NcsaRequestLogTest.java": [
+61
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/resource/RangeWriterTest.java": [
+50
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SslSelectChannelTimeoutTest.java": [
+33
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/HostPortTest.java": [
+32
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/PoolTest.java": [
+41
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/TrieTest.java": [
+37
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/URIUtilCanonicalPathTest.java": [
+31
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/Utf8AppendableTest.java": [
+43
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/FileSystemResourceTest.java": [
+78
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/ExecutorThreadPoolTest.java": [
+23
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/SchedulerTest.java": [
+40
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/strategy/ExecutionStrategyTest.java": [
+45
+]
+}

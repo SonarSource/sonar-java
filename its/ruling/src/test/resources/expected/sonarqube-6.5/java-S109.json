@@ -240,6 +240,14 @@
 155,
 191
 ],
+"sonarqube-6.5:src/main/java/org/sonar/server/organization/OrganizationValidation.java": [
+26,
+27,
+28,
+29,
+30,
+31
+],
 "sonarqube-6.5:src/main/java/org/sonar/server/organization/ws/SearchAction.java": [
 69
 ],
