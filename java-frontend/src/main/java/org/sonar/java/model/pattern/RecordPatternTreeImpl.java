@@ -38,7 +38,7 @@ public class RecordPatternTreeImpl extends AbstractPatternTree implements Record
   private final InternalSyntaxToken closeParenToken;
 
   public RecordPatternTreeImpl(TypeTree type, InternalSyntaxToken openParenToken, List<PatternTree> patterns, InternalSyntaxToken closeParenToken) {
-    super(Kind.RECORD_PATTERN, null);
+    super(Kind.RECORD_PATTERN);
     this.type = type;
     this.openParenToken = openParenToken;
     this.patterns = patterns;

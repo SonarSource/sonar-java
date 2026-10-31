@@ -18,7 +18,6 @@ package org.sonar.java.model.declaration;
 
 import java.util.Arrays;
 import java.util.List;
-import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -49,8 +48,8 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   private ExpressionTree initializer;
   @Nullable
   private SyntaxToken endToken;
-
-  public IVariableBinding variableBinding;
+  @Nullable
+  public Symbol.VariableSymbol variableSymbol;
 
   public VariableTreeImpl(
     ModifiersTree modifiers,
@@ -131,9 +130,7 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
 
   @Override
   public Symbol symbol() {
-    return variableBinding != null
-      ? root.sema.variableSymbol(variableBinding)
-      : Symbol.UNKNOWN_SYMBOL;
+    return variableSymbol != null ? variableSymbol : Symbol.UNKNOWN_SYMBOL;
   }
 
   @Override

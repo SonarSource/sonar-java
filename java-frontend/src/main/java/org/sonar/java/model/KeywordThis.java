@@ -16,25 +16,18 @@
  */
 package org.sonar.java.model;
 
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
-import javax.annotation.Nullable;
-
 final class KeywordThis extends IdentifierTreeImpl {
 
-  KeywordThis(InternalSyntaxToken token, @Nullable ITypeBinding typeBinding) {
+  KeywordThis(InternalSyntaxToken token) {
     super(token);
-    this.typeBinding = typeBinding;
   }
 
   @Override
   public Symbol symbol() {
-    if (typeBinding == null) {
-      return Symbol.UNKNOWN_SYMBOL;
-    }
-    return root.sema.typeSymbol(typeBinding).thisSymbol;
+    return symbol != null ? symbol : Symbol.UNKNOWN_SYMBOL;
   }
 
 }

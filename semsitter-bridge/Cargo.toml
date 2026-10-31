@@ -1,0 +1,29 @@
+[package]
+name = "semsitter-bridge"
+version = "0.1.0"
+edition = "2024"
+publish = false
+description = "Java CST with SemSitter semantics, served over JSONL to the SonarJava frontend."
+
+[[bin]]
+name = "semsitter-bridge"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+memmap2 = "0.9"
+serde_json = "1"
+tree-sitter = "0.27"
+tree-sitter-java = { git = "https://github.com/rombirli/tree-sitter-java", rev = "324af3f22ee0a4579a1d5c1a8bc588631ec4d17c" }
+udg-gen = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "36d0616be5fe86d3daa3175090791549308794b8", default-features = false, features = ["lang-java"] }
+udg-family-jvm = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "36d0616be5fe86d3daa3175090791549308794b8" }
+udg-lang-sdk = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "36d0616be5fe86d3daa3175090791549308794b8", features = ["unstable-sdk"] }
+udg-semantic = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "36d0616be5fe86d3daa3175090791549308794b8" }
+
+[dev-dependencies]
+tempfile = "3"
+
+[profile.release]
+lto = "thin"
+codegen-units = 4
+strip = true

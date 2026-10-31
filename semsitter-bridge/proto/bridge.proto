@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+// Contract between the Rust bridge and the Java frontend. Field numbers are the wire format
+// implemented by hand in src/wire.rs and BridgeFrames.java, so this file can move into
+// SemSitter with the CST builder without a protocol change.
+//
+// The CST is protobuf. Semantic-dump symbols and the open `facts` object on an occurrence stay
+// JSON bytes: that schema is SemSitter's semantic-dump/1. Graph facts projected for SonarJava
+// are protobuf. Type declarations are one JSON object, same reason.
+
+message Request {
+  uint32 id = 1;
+  AnalyzeRequest analyze = 2;
+  CstRequest cst = 3;
+  TypesRequest types = 4;
+  ParseRequest parse = 5;
+  bool quit = 6;
+}
+
+message AnalyzeRequest {
+  string root = 1;
+  repeated string files = 2;
+  repeated string classpath = 3;
+}
+
+message CstRequest {
+  string path = 1;
+}
+
+message TypesRequest {
+  repeated string names = 1;
+}
+
+message ParseRequest {
+  string source = 1;
+}
+
+message Response {
+  uint32 id = 1;
+  bool ok = 2;
+  string error = 3;
+  AnalyzeResult analyze = 4;
+  Document document = 5;
+  string types_json = 6;
+}
+
+message AnalyzeResult {
+  string root = 1;
+  repeated string files = 2;
+}
+
+message Document {
+  bool has_error = 1;
+  Node tree = 2;
+  string path = 3;
+  bool semantic = 4;
+  string symbols_json = 5;
+  repeated FactEntry facts = 6;
+}
+
+message FactEntry {
+  string key = 1;
+  Fact value = 2;
+}
+
+message Fact {
+  string kind = 1;
+  string tier = 2;
+  string parent = 3;
+  repeated Prop props = 4;
+  repeated string extends = 5;
+  repeated string implements = 6;
+  repeated string permits = 7;
+  repeated string returns = 8;
+  repeated string type = 9;
+  repeated string params = 10;
+  repeated string overrides = 11;
+  repeated string annotations = 12;
+}
+
+message Prop {
+  string name = 1;
+  repeated string values = 2;
+}
+
+message Node {
+  string kind = 1;
+  bool named = 2;
+  string field = 3;
+  bool missing = 4;
+  uint32 start_line = 5;
+  uint32 start_col = 6;
+  uint32 end_line = 7;
+  uint32 end_col = 8;
+  uint32 start_byte = 9;
+  uint32 end_byte = 10;
+  string text = 11;
+  repeated Node children = 12;
+  repeated string decls = 13;
+  repeated Ref refs = 14;
+}
+
+message Ref {
+  string access = 1;
+  string outcome = 2;
+  string target = 3;
+  string reason = 4;
+  bool bounded = 5;
+  string facts_json = 6;
+}

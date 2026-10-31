@@ -19,12 +19,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>jdt-package</artifactId>
-      <version>1.9.0.1840</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.sonarsource.api.plugin</groupId>
       <artifactId>sonar-plugin-api</artifactId>
       <scope>provided</scope>
@@ -92,6 +86,16 @@
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+      <version>1.27.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.tukaani</groupId>
+      <artifactId>xz</artifactId>
+      <version>1.10</version>
+    </dependency>
 
     <dependency>
       <groupId>org.sonarsource.java</groupId>
@@ -144,6 +148,18 @@
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>${maven.multiModuleProjectDirectory}/semsitter-bridge/prebuilt</directory>
+        <includes>
+          <include>bridge-*.xz</include>
+        </includes>
+        <targetPath>bridge</targetPath>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

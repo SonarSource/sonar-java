@@ -19,11 +19,7 @@ package org.sonar.java.model.expression;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import org.eclipse.jdt.core.dom.IBinding;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.IPackageBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.IVariableBinding;
+import javax.annotation.Nullable;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JLabelSymbol;
 import org.sonar.java.model.JavaTree;
@@ -41,8 +37,10 @@ public class IdentifierTreeImpl extends AssessableExpressionTree implements Iden
   private final boolean isUnnamedVariable;
   private List<AnnotationTree> annotations;
 
-  public IBinding binding;
   public JLabelSymbol labelSymbol;
+
+  @Nullable
+  public Symbol symbol;
 
   public IdentifierTreeImpl(InternalSyntaxToken nameToken) {
     this(nameToken, false);
@@ -81,17 +79,8 @@ public class IdentifierTreeImpl extends AssessableExpressionTree implements Iden
 
   @Override
   public Symbol symbol() {
-    if (binding != null && !isUnnamedVariable) {
-      switch (binding.getKind()) {
-        case IBinding.TYPE:
-          return root.sema.typeSymbol((ITypeBinding) binding);
-        case IBinding.METHOD:
-          return root.sema.methodSymbol((IMethodBinding) binding);
-        case IBinding.VARIABLE:
-          return root.sema.variableSymbol((IVariableBinding) binding);
-        case IBinding.PACKAGE:
-          return root.sema.packageSymbol((IPackageBinding) binding);
-      }
+    if (symbol != null && !isUnnamedVariable) {
+      return symbol;
     }
     if (labelSymbol != null) {
       return labelSymbol;
