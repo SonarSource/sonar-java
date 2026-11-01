@@ -1243,6 +1243,15 @@ public final class JSema implements Sema {
     return typeInfos.containsKey(fqn);
   }
 
+  /** The unknown type a written name stands for when nothing declares it. */
+  JTypeSymbol recoveredType(String name) {
+    JTypeSymbol recovered = typeSymbol(name);
+    if (!recovered.isUnknown() && !declaresType(name)) {
+      recovered.unknown(true);
+    }
+    return recovered;
+  }
+
   Symbol packageSymbol(String name) {
     if (name == null || name.isEmpty()) {
       return Symbol.ROOT_PACKAGE;

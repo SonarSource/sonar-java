@@ -1251,7 +1251,19 @@ final class SemsitterTranslator {
         bindType(identifier, type);
       }
     }
+    if (!naming && "type_identifier".equals(node.k())) {
+      recoverType(identifier);
+    }
     return identifier;
+  }
+
+  /** An unresolved type name keeps its written name, as a recovered binding does, so checks can match on the simple name. */
+  private void recoverType(IdentifierTreeImpl identifier) {
+    if (identifier.symbol().isUnknown()) {
+      JTypeSymbol recovered = sema.recoveredType(identifier.name());
+      identifier.symbol = recovered;
+      ascribe(identifier, recovered.type());
+    }
   }
 
   /** The type a simple name stands for when SemSitter left it unresolved: imported, in the package, or in java.lang. */
@@ -2113,13 +2125,16 @@ final class SemsitterTranslator {
   private AnnotationTreeImpl annotation(Node node) {
     Node name = field(node, "name");
     TypeTree type = name == null ? (TypeTree) primary(firstOf(node, "identifier", "scoped_identifier", "type_identifier")) : (TypeTree) expression(name);
+    if (type instanceof IdentifierTreeImpl identifier && !naming) {
+      recoverType(identifier);
+    }
     ArgumentListTreeImpl arguments = ArgumentListTreeImpl.emptyList();
     Node args = field(node, "arguments");
     if (args != null) {
       arguments = arguments(args);
     }
     AnnotationTreeImpl tree = new AnnotationTreeImpl(token(required(node, "@")), type, arguments);
-    ascribe(tree, type.symbolType());
+    ascribe(tree, type.symbolType().isUnknown() && !naming && !dottedName((ExpressionTree) type).isEmpty() ? sema.recoveredType(dottedName((ExpressionTree) type)).type() : type.symbolType());
     for (ExpressionTree argument : arguments) {
       if (argument instanceof AssignmentExpressionTree assignment && assignment.variable() instanceof IdentifierTreeImpl element && element.symbol().isUnknown()
         && type.symbolType().isClass()) {
@@ -2168,11 +2183,11 @@ final class SemsitterTranslator {
       declaredSymbol.addModifiers(FINAL_MODIFIER);
     }
     if (tree instanceof VariableTreeImpl variable && symbol instanceof JSymbol variableSymbol && symbol.isVariableSymbol() && symbol.type().isUnknown()
-      && variable.type() != null && !variable.type().symbolType().isUnknown()) {
+      && variable.type() != null && isKnownOrRecovered(variable.type().symbolType())) {
       variableSymbol.type(variable.type().symbolType());
     }
     if (tree instanceof MethodTreeImpl method && symbol instanceof JMethodSymbol methodSymbol && method.returnType() != null
-      && methodSymbol.returnType().type().isUnknown() && !method.returnType().symbolType().isUnknown()) {
+      && methodSymbol.returnType().type().isUnknown() && isKnownOrRecovered(method.returnType().symbolType())) {
       methodSymbol.returnTypeSymbol(method.returnType().symbolType().symbol());
     }
     identifier.symbol = symbol;
@@ -2471,6 +2486,11 @@ final class SemsitterTranslator {
 
   private static Type identifierType(Symbol symbol) {
     return symbol instanceof Symbol.MethodSymbol method && !method.isUnknown() ? method.returnType().type() : symbol.type();
+  }
+
+  /** A resolved type, or an unresolved one that still carries its written name. */
+  private static boolean isKnownOrRecovered(Type type) {
+    return !type.isUnknown() || !"!Unknown!".equals(type.fullyQualifiedName());
   }
 
   private static void ascribe(Tree tree, Type type) {
