@@ -571,7 +571,7 @@ final class SemsitterTranslator {
     Node body = field(node, "body");
     BlockTreeImpl block = body == null ? null : block(body);
     Node typeNode = field(node, "type");
-    TypeTree returnType = typeNode == null || "constructor_declaration".equals(node.k()) ? null : arrayType(type(typeNode), field(node, "dimensions"));
+    TypeTree returnType = typeNode == null || "constructor_declaration".equals(node.k()) ? null : arrayType(recoverQualifiedType(type(typeNode)), field(node, "dimensions"));
     IdentifierTreeImpl name = identifier(requiredField(node, "name", firstOf(node, "identifier")));
     Node thrown = childKind(node, "throws");
     MethodTreeImpl tree = new MethodTreeImpl(
@@ -611,6 +611,9 @@ final class SemsitterTranslator {
     TypeTree type;
     if (typeNode != null) {
       type = type(typeNode);
+      if ("field_declaration".equals(declaration.k()) || "constant_declaration".equals(declaration.k())) {
+        type = recoverQualifiedType(type);
+      }
     } else if ("spread_parameter".equals(declaration.k())) {
       type = spreadType(declaration);
     } else {
@@ -1256,6 +1259,21 @@ final class SemsitterTranslator {
     return identifier;
   }
 
+  /** An unresolved qualified type name keeps its written name where the compiler's recovery does. */
+  private TypeTree recoverQualifiedType(TypeTree type) {
+    if (!naming && type instanceof MemberSelectExpressionTreeImpl select && select.symbolType().isUnknown()
+      && select.identifier() instanceof IdentifierTreeImpl identifier && identifier.symbol().isUnknown()) {
+      String name = dottedName(select);
+      if (!name.isEmpty()) {
+        JTypeSymbol recovered = sema.recoveredType(name);
+        identifier.symbol = recovered;
+        ascribe(identifier, recovered.type());
+        ascribe(select, recovered.type());
+      }
+    }
+    return type;
+  }
+
   /** An unresolved type name keeps its written name, as a recovered binding does, so checks can match on the simple name. */
   private void recoverType(IdentifierTreeImpl identifier) {
     if (identifier.symbol().isUnknown()) {
@@ -1561,7 +1579,7 @@ final class SemsitterTranslator {
 
   private NewClassTreeImpl creation(Node node) {
     Node typeNode = field(node, "type");
-    TypeTree type = annotate(type(typeNode == null ? firstType(node) : typeNode), node);
+    TypeTree type = annotate(recoverQualifiedType(type(typeNode == null ? firstType(node) : typeNode)), node);
     Node arguments = field(node, "arguments");
     ArgumentListTreeImpl args = arguments == null ? ArgumentListTreeImpl.emptyList().complete(synthetic("("), synthetic(")")) : arguments(arguments);
     Node body = field(node, "body");

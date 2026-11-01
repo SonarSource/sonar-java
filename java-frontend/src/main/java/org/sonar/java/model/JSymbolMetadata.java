@@ -315,6 +315,10 @@ final class JSymbolMetadata implements SymbolMetadata {
     @Override
     public Symbol symbol() {
       Type type = tree.annotationType().symbolType();
+      if (type.isUnknown() && tree.symbolType().isUnknown() && !"!Unknown!".equals(tree.symbolType().fullyQualifiedName())) {
+        // an unresolved annotation still carries its written name
+        type = tree.symbolType();
+      }
       return type.symbol();
     }
 
