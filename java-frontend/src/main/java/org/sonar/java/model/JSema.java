@@ -1254,8 +1254,7 @@ public final class JSema implements Sema {
     }
     JPackageSymbol pkg = new JPackageSymbol(this, name);
     symbols.put(key, pkg);
-    int dot = name.lastIndexOf('.');
-    pkg.owner(dot < 0 ? Symbol.ROOT_PACKAGE : packageSymbol(name.substring(0, dot)));
+    pkg.owner(Symbol.ROOT_PACKAGE);
     return pkg;
   }
 
