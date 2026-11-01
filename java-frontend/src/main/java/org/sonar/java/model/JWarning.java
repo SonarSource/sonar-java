@@ -49,6 +49,13 @@ public final class JWarning extends JProblem {
     this.end = InternalPosition.atOffset(endLine, endColumnOffset);
   }
 
+  JWarning(String message, Type type, Tree syntaxTree) {
+    super(message, type);
+    this.start = startOf(syntaxTree);
+    this.end = endOf(syntaxTree);
+    this.syntaxTree = syntaxTree;
+  }
+
   public Tree syntaxTree() {
     return syntaxTree;
   }
