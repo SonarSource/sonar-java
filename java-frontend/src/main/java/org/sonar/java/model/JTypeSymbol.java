@@ -201,9 +201,22 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
       for (JsonObject member : memberFacts) {
         resolved.add(sema.memberFromTypeInfo(this, member));
       }
+      addImplicitConstructor(resolved);
       members = resolved;
     }
     return members;
+  }
+
+  /** A class of this file that declares no constructor still has the default one as a member. */
+  private void addImplicitConstructor(List<Symbol> resolved) {
+    if (id == null || isUnknown() || isTypeParameter() || isInterface() || declaration() == null
+      || resolved.stream().anyMatch(member -> member.isMethodSymbol() && "<init>".equals(member.name()))) {
+      return;
+    }
+    Symbol constructor = sema.resolve(id + "#<init>()");
+    if (!constructor.isUnknown()) {
+      resolved.add(constructor);
+    }
   }
 
   @Override
