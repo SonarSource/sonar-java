@@ -17,6 +17,9 @@
 "sonarqube-6.5:src/main/java/org/sonar/server/platform/web/MasterServletFilter.java": [
 67
 ],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/index/RuleDoc.java": [
+179
+],
 "sonarqube-6.5:src/main/java/org/sonar/server/rule/ws/SearchAction.java": [
 500,
 512

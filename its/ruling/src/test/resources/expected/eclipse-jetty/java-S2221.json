@@ -1,7 +1,4 @@
 {
-"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/CookieCutter.java": [
-208
-],
 "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java": [
 84,
 100
@@ -13,7 +10,6 @@
 487
 ],
 "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java": [
-252,
 432
 ],
 "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java": [
@@ -42,9 +38,6 @@
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DetectorConnectionFactory.java": [
 263
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelListeners.java": [
-124
-],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelOverHttp.java": [
 90
 ],
@@ -52,8 +45,7 @@
 244
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/LocalConnector.java": [
-279,
-305
+279
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java": [
 453,
@@ -105,10 +97,19 @@
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ThreadLimitHandler.java": [
 140
 ],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCache.java": [
+739,
+842
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/CachingSessionDataStore.java": [
+96,
+169
+],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DefaultSessionCache.java": [
 152
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DefaultSessionIdManager.java": [
+306,
 366
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java": [
@@ -123,9 +124,15 @@
 885
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java": [
+365,
+387,
 904,
 924,
+930,
+1138,
+1150,
 1199,
+1214,
 1249,
 1255
 ],
@@ -179,6 +186,9 @@
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java": [
 74
 ],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/StopLifeCycle.java": [
+51
+],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/DOMLeakPreventer.java": [
 45
 ],
@@ -213,6 +223,9 @@
 636,
 714,
 1952
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ShutdownThread.java": [
+151
 ],
 "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
 190,

@@ -1,0 +1,15 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewMaintainabilityMeasuresVisitor.java": [
+134
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ComputeMeasureVariationsStep.java": [
+138,
+140
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/UnitTestMeasuresStep.java": [
+115
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/source/SourceService.java": [
+72
+]
+}

@@ -18,9 +18,6 @@
 105,
 158
 ],
-"eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/JettyLoggerTest.java": [
-221
-],
 "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/SearchPatternTest.java": [
 224
 ],
