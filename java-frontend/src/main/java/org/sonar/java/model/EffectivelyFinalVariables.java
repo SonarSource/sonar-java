@@ -68,19 +68,19 @@ final class EffectivelyFinalVariables extends BaseTreeVisitor {
 
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    record(tree.variable(), tree.is(Tree.Kind.ASSIGNMENT) ? 0 : 1);
+    countAssignment(tree.variable(), tree.is(Tree.Kind.ASSIGNMENT) ? 0 : 1);
     super.visitAssignmentExpression(tree);
   }
 
   @Override
   public void visitUnaryExpression(UnaryExpressionTree tree) {
     if (tree.is(Tree.Kind.PREFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.POSTFIX_DECREMENT)) {
-      record(tree.expression(), 1);
+      countAssignment(tree.expression(), 1);
     }
     super.visitUnaryExpression(tree);
   }
 
-  private void record(ExpressionTree target, int slot) {
+  private void countAssignment(ExpressionTree target, int slot) {
     ExpressionTree expression = target;
     while (expression instanceof org.sonar.plugins.java.api.tree.ParenthesizedTree parenthesized) {
       expression = parenthesized.expression();
