@@ -41,6 +41,12 @@ import org.sonar.plugins.java.api.tree.Tree;
  * {@code types} response (project graph, classpath declarations, embedded JDK table).
  */
 public final class JSema implements Sema {
+  private static final String ANNOTATIONS = "annotations";
+  private static final String STATIC = "static";
+  private static final String ABSTRACT = "abstract";
+  private static final String RECORD = "record";
+  private static final String ARRAY = "array";
+
 
   private static final Set<String> PRIMITIVES = Set.of("byte", "short", "int", "long", "char", "float", "double", "boolean", "void");
   private static final Set<String> OBJECT_METHODS = Set.of("equals/1", "hashCode/0", "toString/0");
@@ -340,13 +346,13 @@ public final class JSema implements Sema {
       return List.of();
     }
     JsonObject fact = facts.get(id);
-    List<String> annotations = fact == null ? List.of() : strings(fact, "annotations");
+    List<String> annotations = fact == null ? List.of() : strings(fact, ANNOTATIONS);
     return annotations.isEmpty() ? libraryAnnotations.getOrDefault(id, List.of()) : annotations;
   }
 
   /** Annotations and deprecation a {@code types} answer gives a library type or member. */
   private void libraryAnnotations(JSymbol symbol, String id, JsonObject info) {
-    List<String> annotations = strings(info, "annotations");
+    List<String> annotations = strings(info, ANNOTATIONS);
     if (annotations.isEmpty()) {
       return;
     }
@@ -519,7 +525,7 @@ public final class JSema implements Sema {
       method.returnTypeSymbol(readDescriptor(descriptor, new int[] {descriptor.indexOf(')') + 1}).symbol());
     }
     applyMemberFlags(method, member);
-    if (owner.isInterface() && !truth(member, "abstract") && !truth(member, "static") && !"private".equals(text(member, "vis"))) {
+    if (owner.isInterface() && !truth(member, ABSTRACT) && !truth(member, STATIC) && !"private".equals(text(member, "vis"))) {
       method.addModifiers(List.of("default"));
     }
     libraryAnnotations(method, id, member);
@@ -604,7 +610,7 @@ public final class JSema implements Sema {
   /** Flags, annotations and thrown types the {@code types} answer gives a library member the dump names. */
   private void applyLibraryMember(JSymbol symbol, String id) {
     MemberId parsed = parseMember(id);
-    if (parsed == null || parsed.arityOnly || "array".equals(parsed.owner)) {
+    if (parsed == null || parsed.arityOnly || ARRAY.equals(parsed.owner)) {
       return;
     }
     String ownerName = erase(parsed.owner);
@@ -646,7 +652,7 @@ public final class JSema implements Sema {
     if (parsed == null) {
       return typeSymbol(erase(id));
     }
-    if ("array".equals(parsed.owner) && "length".equals(parsed.name)) {
+    if (ARRAY.equals(parsed.owner) && "length".equals(parsed.name)) {
       JVariableSymbol length = new JVariableSymbol(this, id, "length", "field");
       length.addModifiers(List.of("public", "final"));
       length.type(primitiveType("int"));
@@ -1006,14 +1012,14 @@ public final class JSema implements Sema {
     if (symbol instanceof JTypeSymbol) {
       symbol.addModifiers(implicitTypeModifiers(kind, text(fact, "parent")));
     }
-    for (String annotation : strings(fact, "annotations")) {
+    for (String annotation : strings(fact, ANNOTATIONS)) {
       if ("java.lang.Deprecated".equals(erase(annotation))) {
         symbol.deprecated(true);
       }
     }
     if (symbol.isVariableSymbol() && ("enum".equals(kind) || "enum_member".equals(kind))) {
       symbol.enumSymbol(true);
-      symbol.addModifiers(List.of("public", "static", "final"));
+      symbol.addModifiers(List.of("public", STATIC, "final"));
     }
   }
 
@@ -1025,10 +1031,10 @@ public final class JSema implements Sema {
     List<String> implied = new ArrayList<>();
     boolean member = parent != null && !parent.endsWith("::<module>") && facts.get(parent) != null
       && isTypeFact(facts.get(parent));
-    if (member && ("interface".equals(kind) || "enum".equals(kind) || "record".equals(kind) || "annotation".equals(kind))) {
-      implied.add("static");
+    if (member && ("interface".equals(kind) || "enum".equals(kind) || RECORD.equals(kind) || "annotation".equals(kind))) {
+      implied.add(STATIC);
     }
-    if ("enum".equals(kind) || "record".equals(kind)) {
+    if ("enum".equals(kind) || RECORD.equals(kind)) {
       implied.add("final");
     }
     return implied;
@@ -1036,7 +1042,7 @@ public final class JSema implements Sema {
 
   private static boolean isTypeFact(JsonObject fact) {
     String kind = text(fact, "kind");
-    return "class".equals(kind) || "interface".equals(kind) || "enum".equals(kind) || "record".equals(kind)
+    return "class".equals(kind) || "interface".equals(kind) || "enum".equals(kind) || RECORD.equals(kind)
       || "annotation".equals(kind) || "exception".equals(kind);
   }
 
@@ -1055,7 +1061,7 @@ public final class JSema implements Sema {
       symbol.interfaceNames(strings(info, "interfaces"));
     }
     symbol.genericSupertypes(
-      info.has("superType") && info.get("superType").isJsonObject() ? info.getAsJsonObject("superType") : null,
+      info.get("superType") instanceof JsonObject superType ? superType : null,
       objects(info, "interfaceTypes"));
     symbol.addModifiers(flat(info, "modifiers"));
     libraryAnnotations(symbol, symbol.id == null ? symbol.name() : symbol.id, info);
@@ -1074,14 +1080,14 @@ public final class JSema implements Sema {
 
   private static void applyMemberFlags(JSymbol symbol, JsonObject member) {
     List<String> modifiers = new ArrayList<>();
-    if (truth(member, "static")) {
-      modifiers.add("static");
+    if (truth(member, STATIC)) {
+      modifiers.add(STATIC);
     }
     if (truth(member, "final")) {
       modifiers.add("final");
     }
-    if (truth(member, "abstract")) {
-      modifiers.add("abstract");
+    if (truth(member, ABSTRACT)) {
+      modifiers.add(ABSTRACT);
     }
     String visibility = text(member, "vis");
     if (visibility != null && !"package".equals(visibility)) {
@@ -1103,7 +1109,7 @@ public final class JSema implements Sema {
 
   private JType typeFromFact(JsonObject fact) {
     String kind = text(fact, "kind");
-    if ("array".equals(kind) && fact.getAsJsonObject("elem") != null) {
+    if (ARRAY.equals(kind) && fact.getAsJsonObject("elem") != null) {
       return JType.array(this, typeFromFact(fact.getAsJsonObject("elem")));
     }
     if ("typevar".equals(kind)) {
