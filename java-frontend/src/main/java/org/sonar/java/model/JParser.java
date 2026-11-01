@@ -22,8 +22,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -54,7 +56,7 @@ public final class JParser {
     Path directory = null;
     try {
       SemsitterBridge bridge = unitBridge();
-      directory = Files.createTempDirectory("sonar-java-unit");
+      directory = privateTempDirectory();
       Path file = directory.resolve(Path.of(unitName.endsWith(".java") ? unitName : (unitName + ".java")).getFileName().toString());
       Files.writeString(file, source, StandardCharsets.UTF_8);
       JsonObject document;
@@ -108,10 +110,26 @@ public final class JParser {
       return;
     }
     try (Stream<Path> paths = Files.walk(directory)) {
-      paths.sorted(Comparator.reverseOrder()).forEach(path -> path.toFile().delete());
-    } catch (IOException ignored) {
-      directory.toFile().deleteOnExit();
+      paths.sorted(Comparator.reverseOrder()).forEach(JParser::deleteIfPresent);
+    } catch (IOException | UncheckedIOException ignored) {
+      // A leftover temporary file does not affect the analysis.
     }
+  }
+
+  private static void deleteIfPresent(Path path) {
+    try {
+      Files.deleteIfExists(path);
+    } catch (IOException failure) {
+      throw new UncheckedIOException(failure);
+    }
+  }
+
+  /** A temporary directory only the current user can read, where the file system supports it. */
+  private static Path privateTempDirectory() throws IOException {
+    if (FileSystems.getDefault().supportedFileAttributeViews().contains("posix")) {
+      return Files.createTempDirectory("sonar-java-unit", PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------")));
+    }
+    return Files.createTempDirectory("sonar-java-unit");
   }
 
   static Path bridgePath() {
