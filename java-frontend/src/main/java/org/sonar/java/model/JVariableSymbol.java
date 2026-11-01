@@ -23,8 +23,10 @@ import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
@@ -70,14 +72,47 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
     return constant;
   }
 
+  /** A constant is a static final field with a compile time value, typed as its declaration. */
   @Nullable
   private Object declaredConstant() {
     VariableTree declaration = declaration();
-    if (declaration == null || !(declaration.initializer() instanceof LiteralTree literal)
-      || !(isFinal() || owner().isInterface() || isEnum())) {
+    if (declaration == null || declaration.initializer() == null || declaration.type() == null || !isFinal() && !owner().isInterface() && !isEnum()
+      || !isStatic() && !owner().isInterface()) {
       return null;
     }
-    return LiteralUtils.constantValue(literal);
+    ExpressionTree initializer = declaration.initializer();
+    Object value = initializer.is(Tree.Kind.LONG_LITERAL, Tree.Kind.FLOAT_LITERAL, Tree.Kind.DOUBLE_LITERAL)
+      ? literalNumber((LiteralTree) initializer)
+      : ExpressionUtils.resolveAsConstant(initializer);
+    return convert(value, declaration.type().symbolType());
+  }
+
+  @Nullable
+  private static Object literalNumber(LiteralTree literal) {
+    String text = literal.value().replace("_", "");
+    try {
+      return switch (literal.kind()) {
+        case LONG_LITERAL -> LiteralUtils.longLiteralValue(literal);
+        case FLOAT_LITERAL -> Float.valueOf(text);
+        default -> Double.valueOf(text);
+      };
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
+
+  @Nullable
+  private static Object convert(@Nullable Object value, Type type) {
+    if (value instanceof Number number) {
+      if (type.is("long")) {
+        return number.longValue();
+      } else if (type.is("double")) {
+        return number.doubleValue();
+      } else if (type.is("float")) {
+        return number.floatValue();
+      }
+    }
+    return value;
   }
 
   @Override
