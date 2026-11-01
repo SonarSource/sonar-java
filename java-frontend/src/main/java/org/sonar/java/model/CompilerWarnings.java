@@ -167,7 +167,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
       return false;
     }
     String qualifier = name.endsWith(".*") ? name.substring(0, name.length() - 2) : name.substring(0, Math.max(0, name.lastIndexOf('.')));
-    return qualifier.equals(currentPackage) && !name.endsWith(".*") || name.equals(currentPackage + ".*");
+    return (qualifier.equals(currentPackage) && !name.endsWith(".*")) || name.equals(currentPackage + ".*");
   }
 
   private boolean isUsed(ImportTree importTree, String name) {
@@ -176,23 +176,29 @@ final class CompilerWarnings extends BaseTreeVisitor {
     }
     boolean onDemand = name.endsWith(".*");
     String qualifier = onDemand ? name.substring(0, name.length() - 2) : name.substring(0, Math.max(0, name.lastIndexOf('.')));
-    String simple = name.substring(name.lastIndexOf('.') + 1);
     for (IdentifierTree identifier : identifiers) {
       Symbol symbol = identifier.symbol();
-      if (!symbol.isUnknown() && symbol.declaration() != null) {
-        // found in the scope of the file, the import is not consulted
-        continue;
-      }
-      if (onDemand) {
-        if (declaredIn(symbol, qualifier, importTree.isStatic())) {
-          return true;
-        }
-      } else if (identifier.name().equals(simple)
-        && (symbol.isUnknown() || (importTree.isStatic() ? isMemberOf(symbol, qualifier) : denotesType(symbol, name)))) {
+      // a symbol found in the scope of the file does not consult the import
+      boolean inScope = !symbol.isUnknown() && symbol.declaration() != null;
+      if (!inScope && uses(importTree, name, qualifier, identifier)) {
         return true;
       }
     }
     return false;
+  }
+
+  private boolean uses(ImportTree importTree, String name, String qualifier, IdentifierTree identifier) {
+    Symbol symbol = identifier.symbol();
+    if (name.endsWith(".*")) {
+      return declaredIn(symbol, qualifier, importTree.isStatic());
+    }
+    if (!identifier.name().equals(name.substring(name.lastIndexOf('.') + 1))) {
+      return false;
+    }
+    if (symbol.isUnknown()) {
+      return true;
+    }
+    return importTree.isStatic() ? isMemberOf(symbol, qualifier) : denotesType(symbol, name);
   }
 
   /** A static import also brings in the members the named type inherits. */
@@ -221,12 +227,15 @@ final class CompilerWarnings extends BaseTreeVisitor {
     if (isStatic) {
       return symbol.owner() instanceof Symbol.TypeSymbol owner && dottedType(owner).equals(qualifier);
     }
-    Symbol type = symbol.isTypeSymbol() ? symbol : ("<init>".equals(symbol.name()) ? symbol.owner() : null);
-    return type instanceof Symbol.TypeSymbol && !type.isUnknown() && dottedType(type).startsWith(qualifier + ".");
+    Symbol type = symbol;
+    if ("<init>".equals(symbol.name())) {
+      type = symbol.owner();
+    }
+    return type.isTypeSymbol() && !type.isUnknown() && dottedType(type).startsWith(qualifier + ".");
   }
 
   private static String dottedType(Symbol symbol) {
-    return ((Symbol.TypeSymbol) symbol).type().fullyQualifiedName().replace('$', '.');
+    return symbol.type().fullyQualifiedName().replace('$', '.');
   }
 
   private static String dotted(Tree tree) {
