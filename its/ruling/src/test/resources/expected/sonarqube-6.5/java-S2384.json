@@ -26,11 +26,6 @@
 32,
 41
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/component/index/ComponentIndexQuery.java": [
-50,
-58,
-74
-],
 "sonarqube-6.5:src/main/java/org/sonar/server/component/ws/ComponentsWs.java": [
 32
 ],
@@ -50,16 +45,10 @@
 33,
 39
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/FileSimilarity.java": [
-46
-],
 "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/ScoreMatrix.java": [
 33,
 34,
 35
-],
-"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/ComponentIssuesRepositoryImpl.java": [
-51
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/ComponentsWithUnprocessedIssues.java": [
 47
@@ -347,9 +336,6 @@
 "sonarqube-6.5:src/main/java/org/sonar/server/plugins/ws/PluginsWs.java": [
 31
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/project/Visibility.java": [
-68
-],
 "sonarqube-6.5:src/main/java/org/sonar/server/project/ws/ProjectsWs.java": [
 32
 ],
@@ -363,8 +349,7 @@
 29
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/projectanalysis/ws/SearchData.java": [
-91,
-108
+91
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/projectlink/ws/ProjectLinksWs.java": [
 29
@@ -419,8 +404,7 @@
 186
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/ChangelogLoader.java": [
-155,
-193
+155
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/CreateAction.java": [
 73

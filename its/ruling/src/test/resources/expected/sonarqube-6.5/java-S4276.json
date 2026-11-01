@@ -1,5 +1,23 @@
 {
+"sonarqube-6.5:src/main/java/org/sonar/server/component/ws/SearchProjectsAction.java": [
+307
+],
 "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/component/ComponentRootBuilder.java": [
 79
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/IndexType.java": [
+54
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/StickyFacetBuilder.java": [
+83,
+91,
+117,
+139
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/SearchAction.java": [
+181
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/index/RuleIndex.java": [
+382
 ]
 }

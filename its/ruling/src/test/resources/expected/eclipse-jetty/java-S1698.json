@@ -1,4 +1,20 @@
 {
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java": [
+115,
+135,
+165,
+194,
+262,
+375,
+463,
+677,
+1243,
+1473,
+1483
+],
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/PathMappings.java": [
+131
+],
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
 763
 ]
