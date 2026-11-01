@@ -70,7 +70,7 @@ pub struct Analysis {
   facts: HashMap<String, Value>,
   calls: HashMap<String, Vec<CallSite>>,
   project_types: types::ProjectTypes,
-  classpath: LazyClasspath,
+  classpath: Arc<LazyClasspath>,
 }
 
 #[derive(Debug)]
@@ -164,12 +164,27 @@ pub fn analyze_dumping(root: &Path, files: &[PathBuf], classpath: &[String], dum
     facts,
     calls,
     project_types,
-    classpath: LazyClasspath::new(classpath.to_vec()),
+    classpath: shared_classpath(classpath),
   };
   if let Some(dir) = dump {
     write_cst_json(&analysis, dir)?;
   }
   Ok(analysis)
+}
+
+/// The classpath of the previous analysis when it lists the same entries, so a client that analyzes
+/// one file at a time lists and parses each jar once.
+fn shared_classpath(entries: &[String]) -> Arc<LazyClasspath> {
+  static LAST: std::sync::Mutex<Option<(Vec<String>, Arc<LazyClasspath>)>> = std::sync::Mutex::new(None);
+  let mut last = LAST.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+  if let Some((listed, classpath)) = last.as_ref()
+    && listed.as_slice() == entries
+  {
+    return Arc::clone(classpath);
+  }
+  let classpath = Arc::new(LazyClasspath::new(entries.to_vec()));
+  *last = Some((entries.to_vec(), Arc::clone(&classpath)));
+  classpath
 }
 
 fn memory_dumps(root: &Path, files: &[String], graph: &UdgGraph, settings: &ResolvedSettings) -> Result<HashMap<String, String>> {
