@@ -36,6 +36,9 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
   @Nullable
   private String superName;
   private List<String> interfaceNames = List.of();
+  @Nullable
+  private JsonObject superTypeFact;
+  private List<JsonObject> interfaceTypeFacts = List.of();
   private List<JsonObject> memberFacts = List.of();
   @Nullable
   private String elementFqn;
@@ -66,6 +69,12 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     this.interfaceNames = interfaceNames;
   }
 
+  /** Supertypes with their type arguments, used when they name the same classes as the erased ones. */
+  void genericSupertypes(@Nullable JsonObject superType, List<JsonObject> interfaceTypes) {
+    this.superTypeFact = superType;
+    this.interfaceTypeFacts = interfaceTypes;
+  }
+
   void memberFacts(List<JsonObject> memberFacts) {
     this.memberFacts = memberFacts;
     this.members = null;
@@ -92,8 +101,16 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     if ("java.lang.Object".equals(erased)) {
       return null;
     }
-    if (superName == null || superName.isEmpty() || inheritsFrom(erased)) {
+    boolean noSuper = superName == null || superName.isEmpty();
+    if (isEnum() && superTypeFact == null && (noSuper || "java.lang.Enum".equals(JSema.erase(superName))) && type() instanceof JType self) {
+      sema.getClassType("java.lang.Enum");
+      return JType.named(sema, "java.lang.Enum", List.of(self));
+    }
+    if (noSuper || inheritsFrom(erased)) {
       return sema.getClassType("java.lang.Object");
+    }
+    if (namesSameClass(superTypeFact, superName)) {
+      return sema.supertypeFromFact(superTypeFact);
     }
     return sema.getClassType(JSema.erase(superName));
   }
@@ -119,13 +136,21 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
       return List.of(sema.getClassType("java.lang.Cloneable"), sema.getClassType("java.io.Serializable"));
     }
     if (interfaceNames.isEmpty()) {
-      return Collections.emptyList();
+      return isAnnotation() ? List.of(sema.getClassType("java.lang.annotation.Annotation")) : Collections.emptyList();
     }
+    boolean generic = interfaceTypeFacts.size() == interfaceNames.size();
     List<Type> types = new ArrayList<>();
-    for (String name : interfaceNames) {
-      types.add(sema.getClassType(JSema.erase(name)));
+    for (int i = 0; i < interfaceNames.size(); i++) {
+      String name = interfaceNames.get(i);
+      JsonObject fact = generic ? interfaceTypeFacts.get(i) : null;
+      types.add(namesSameClass(fact, name) ? sema.supertypeFromFact(fact) : sema.getClassType(JSema.erase(name)));
     }
     return types;
+  }
+
+  private static boolean namesSameClass(@Nullable JsonObject fact, String name) {
+    return fact != null && fact.has("id") && fact.get("id").isJsonPrimitive()
+      && JSema.erase(fact.get("id").getAsString()).equals(JSema.erase(name));
   }
 
   @Override
