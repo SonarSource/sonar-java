@@ -31,6 +31,8 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 
 final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
+  private static final String ENUM = "java.lang.Enum";
+
   private final boolean typeParameter;
   private int typeParameterCount;
   @Nullable
@@ -133,9 +135,9 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
       return null;
     }
     boolean noSuper = superName == null || superName.isEmpty();
-    if (isEnum() && superTypeFact == null && (noSuper || "java.lang.Enum".equals(JSema.erase(superName))) && type() instanceof JType self) {
-      sema.getClassType("java.lang.Enum");
-      return JType.named(sema, "java.lang.Enum", List.of(self));
+    if (isEnum() && superTypeFact == null && (noSuper || ENUM.equals(JSema.erase(superName))) && type() instanceof JType self) {
+      sema.getClassType(ENUM);
+      return JType.named(sema, ENUM, List.of(self));
     }
     if (noSuper || inheritsFrom(erased)) {
       return sema.getClassType("java.lang.Object");
