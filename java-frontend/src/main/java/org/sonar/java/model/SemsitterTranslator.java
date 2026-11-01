@@ -146,6 +146,7 @@ final class SemsitterTranslator {
   private final Deque<Symbol.TypeSymbol> types = new ArrayDeque<>();
   private InternalSyntaxToken eof = new InternalSyntaxToken(1, 0, "", List.of(), true);
   private boolean switchExpression;
+  private static final List<String> FINAL_MODIFIER = List.of("final");
   private String implicitClassName = "";
   private String packageName = "";
   private boolean naming;
@@ -958,7 +959,7 @@ final class SemsitterTranslator {
           for (VariableTreeImpl resource : variables(child)) {
             // A resource variable is implicitly final.
             if (resource.symbol() instanceof JSymbol symbol) {
-              symbol.addModifiers(List.of("final"));
+              symbol.addModifiers(FINAL_MODIFIER);
             }
             resources.add(resource);
           }
@@ -2162,7 +2163,7 @@ final class SemsitterTranslator {
     // The scan records no modifiers for locals and parameters.
     if (tree instanceof VariableTreeImpl declared && symbol instanceof JSymbol declaredSymbol && symbol.isVariableSymbol()
       && ModifiersUtils.hasModifier(declared.modifiers(), Modifier.FINAL)) {
-      declaredSymbol.addModifiers(List.of("final"));
+      declaredSymbol.addModifiers(FINAL_MODIFIER);
     }
     if (tree instanceof VariableTreeImpl variable && symbol instanceof JSymbol variableSymbol && symbol.isVariableSymbol() && symbol.type().isUnknown()
       && variable.type() != null && !variable.type().symbolType().isUnknown()) {

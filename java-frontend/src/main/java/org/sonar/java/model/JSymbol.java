@@ -52,6 +52,7 @@ abstract class JSymbol implements Symbol {
   private boolean annotationSymbol;
   private boolean receiver;
   private boolean deprecated;
+  private static final String PRIVATE = "private";
   private final Set<String> modifiers = new HashSet<>();
   private SymbolMetadata metadata;
   private int hash;
@@ -186,7 +187,7 @@ abstract class JSymbol implements Symbol {
 
   /** Whether this is a member of an interface or annotation type, which gives it implicit modifiers. */
   private boolean inInterface() {
-    return owner instanceof JSymbol type && type.isTypeSymbol() && type.interfaceSymbol
+    return owner instanceof JSymbol ownerType && ownerType.isTypeSymbol() && ownerType.interfaceSymbol
       && !(this instanceof JTypeSymbol typeSymbol && typeSymbol.isTypeParameter());
   }
 
@@ -196,7 +197,7 @@ abstract class JSymbol implements Symbol {
 
   /** Enum constructors are private whatever they declare. */
   private boolean enumConstructor() {
-    return isMethodSymbol() && "<init>".equals(name) && owner instanceof JSymbol type && type.isTypeSymbol() && type.enumSymbol;
+    return isMethodSymbol() && "<init>".equals(name) && owner instanceof JSymbol ownerType && ownerType.isTypeSymbol() && ownerType.enumSymbol;
   }
 
   @Override
@@ -215,17 +216,17 @@ abstract class JSymbol implements Symbol {
       return false;
     }
     return hasModifier("abstract")
-      || (inInterface() && isMethodSymbol() && !hasModifier("default") && !hasModifier("static") && !hasModifier("private"));
+      || (inInterface() && isMethodSymbol() && !hasModifier("default") && !hasModifier("static") && !hasModifier(PRIVATE));
   }
 
   @Override
   public final boolean isPublic() {
-    return hasModifier("public") || (inInterface() && !hasModifier("private")) || enumConstant();
+    return hasModifier("public") || (inInterface() && !hasModifier(PRIVATE)) || enumConstant();
   }
 
   @Override
   public final boolean isPrivate() {
-    return hasModifier("private") || enumConstructor();
+    return hasModifier(PRIVATE) || enumConstructor();
   }
 
   @Override
