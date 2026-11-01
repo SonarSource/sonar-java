@@ -174,6 +174,7 @@ final class SemsitterTranslator {
     unit.sema = sema;
     setParents(unit);
     CompilerWarnings.addTo(unit);
+    EffectivelyFinalVariables.mark(unit);
     return unit;
   }
 
