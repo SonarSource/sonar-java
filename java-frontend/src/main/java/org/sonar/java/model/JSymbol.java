@@ -50,6 +50,7 @@ abstract class JSymbol implements Symbol {
   private boolean enumSymbol;
   private boolean interfaceSymbol;
   private boolean annotationSymbol;
+  private boolean receiver;
   private boolean deprecated;
   private final Set<String> modifiers = new HashSet<>();
   private SymbolMetadata metadata;
@@ -88,6 +89,11 @@ abstract class JSymbol implements Symbol {
 
   boolean isAnnotationSymbol() {
     return annotationSymbol;
+  }
+
+  /** {@code this} and {@code super}, which have no visibility. */
+  void receiver(boolean receiver) {
+    this.receiver = receiver;
   }
 
   void deprecated(boolean deprecated) {
@@ -180,12 +186,27 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final boolean isStatic() {
-    return hasModifier("static");
+    return hasModifier("static") || (inInterface() && (isVariableSymbol() || isTypeSymbol())) || enumConstant();
   }
 
   @Override
   public final boolean isFinal() {
-    return hasModifier("final");
+    return hasModifier("final") || (inInterface() && isVariableSymbol()) || enumConstant();
+  }
+
+  /** Whether this is a member of an interface or annotation type, which gives it implicit modifiers. */
+  private boolean inInterface() {
+    return owner instanceof JSymbol type && type.isTypeSymbol() && type.interfaceSymbol
+      && !(this instanceof JTypeSymbol typeSymbol && typeSymbol.isTypeParameter());
+  }
+
+  private boolean enumConstant() {
+    return isVariableSymbol() && enumSymbol;
+  }
+
+  /** Enum constructors are private whatever they declare. */
+  private boolean enumConstructor() {
+    return isMethodSymbol() && "<init>".equals(name) && owner instanceof JSymbol type && type.isTypeSymbol() && type.enumSymbol;
   }
 
   @Override
@@ -200,17 +221,21 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final boolean isAbstract() {
-    return hasModifier("abstract") || (interfaceSymbol && isMethodSymbol() && !hasModifier("default") && !hasModifier("static"));
+    if (interfaceSymbol && isTypeSymbol()) {
+      return false;
+    }
+    return hasModifier("abstract")
+      || (inInterface() && isMethodSymbol() && !hasModifier("default") && !hasModifier("static") && !hasModifier("private"));
   }
 
   @Override
   public final boolean isPublic() {
-    return hasModifier("public") || interfaceSymbol;
+    return hasModifier("public") || (inInterface() && !hasModifier("private")) || enumConstant();
   }
 
   @Override
   public final boolean isPrivate() {
-    return hasModifier("private");
+    return hasModifier("private") || enumConstructor();
   }
 
   @Override
@@ -220,7 +245,7 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final boolean isPackageVisibility() {
-    return !isPublic() && !isPrivate() && !isProtected();
+    return !receiver && !isPublic() && !isPrivate() && !isProtected();
   }
 
   @Override
