@@ -121,6 +121,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     view.returnsSelf = returnsSelf;
     view.thrownTypes = thrownTypes;
     view.unknown(isUnknown());
+    view.deprecated(isDeprecated());
     view.descriptorSignature = signature();
     return view;
   }
