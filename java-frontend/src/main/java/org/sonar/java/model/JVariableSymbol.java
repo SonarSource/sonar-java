@@ -76,8 +76,7 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
   @Nullable
   private Object declaredConstant() {
     VariableTree declaration = declaration();
-    if (declaration == null || declaration.initializer() == null || declaration.type() == null || !isFinal() && !owner().isInterface() && !isEnum()
-      || !isStatic() && !owner().isInterface()) {
+    if (declaration == null || declaration.initializer() == null || declaration.type() == null || !isStaticFinalOrInterfaceMember()) {
       return null;
     }
     ExpressionTree initializer = declaration.initializer();
@@ -85,6 +84,11 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
       ? literalNumber((LiteralTree) initializer)
       : ExpressionUtils.resolveAsConstant(initializer);
     return convert(value, declaration.type().symbolType());
+  }
+
+  private boolean isStaticFinalOrInterfaceMember() {
+    boolean constantKind = isFinal() || owner().isInterface() || isEnum();
+    return constantKind && (isStatic() || owner().isInterface());
   }
 
   @Nullable

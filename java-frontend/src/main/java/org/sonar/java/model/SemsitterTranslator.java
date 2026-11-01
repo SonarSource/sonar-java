@@ -1277,6 +1277,15 @@ final class SemsitterTranslator {
     return type;
   }
 
+  /** The type of an annotation: an unresolved one keeps its written, possibly qualified, name. */
+  private Type annotationType(TypeTree type) {
+    String name = type instanceof ExpressionTree expression ? dottedName(expression) : "";
+    if (type.symbolType().isUnknown() && !naming && !name.isEmpty()) {
+      return sema.recoveredType(name).type();
+    }
+    return type.symbolType();
+  }
+
   /** An unresolved type name keeps its written name, as a recovered binding does, so checks can match on the simple name. */
   private void recoverType(IdentifierTreeImpl identifier) {
     if (identifier.symbol().isUnknown()) {
@@ -1582,7 +1591,7 @@ final class SemsitterTranslator {
 
   private NewClassTreeImpl creation(Node node) {
     Node typeNode = field(node, "type");
-    TypeTree type = annotate(recoverQualifiedType(type(typeNode == null ? firstType(node) : typeNode)), node);
+    TypeTree type = annotate(recoverQualifiedType(type(Objects.requireNonNull(typeNode == null ? firstType(node) : typeNode))), node);
     Node arguments = field(node, "arguments");
     ArgumentListTreeImpl args = arguments == null ? ArgumentListTreeImpl.emptyList().complete(synthetic("("), synthetic(")")) : arguments(arguments);
     Node body = field(node, "body");
@@ -2154,7 +2163,7 @@ final class SemsitterTranslator {
       arguments = arguments(args);
     }
     AnnotationTreeImpl tree = new AnnotationTreeImpl(token(required(node, "@")), type, arguments);
-    ascribe(tree, type.symbolType().isUnknown() && !naming && !dottedName((ExpressionTree) type).isEmpty() ? sema.recoveredType(dottedName((ExpressionTree) type)).type() : type.symbolType());
+    ascribe(tree, annotationType(type));
     for (ExpressionTree argument : arguments) {
       if (argument instanceof AssignmentExpressionTree assignment && assignment.variable() instanceof IdentifierTreeImpl element && element.symbol().isUnknown()
         && type.symbolType().isClass()) {
