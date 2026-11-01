@@ -26,6 +26,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
@@ -42,6 +43,10 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   @Nullable
   private List<String> parameterVariables;
   private List<MethodSymbol> overridden;
+  @Nullable
+  private List<Type> thrownTypes;
+  @Nullable
+  private String descriptorSignature;
 
   JMethodSymbol(JSema sema, @Nullable String id, String name) {
     super(sema, Kind.METHOD, id, name);
@@ -114,7 +119,9 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     view.parametrized = parametrized || !returnType.equals(returnTypeSymbol.type()) || !view.parameterTypes.equals(this.parameterTypes);
     view.returnTypeParameter = returnTypeParameter;
     view.returnsSelf = returnsSelf;
+    view.thrownTypes = thrownTypes;
     view.unknown(isUnknown());
+    view.descriptorSignature = signature();
     return view;
   }
 
@@ -172,9 +179,20 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     return returnTypeSymbol;
   }
 
+  void thrownTypes(List<Type> thrownTypes) {
+    this.thrownTypes = List.copyOf(thrownTypes);
+  }
+
   @Override
   public List<Type> thrownTypes() {
-    return Collections.emptyList();
+    if (thrownTypes != null) {
+      return thrownTypes;
+    }
+    MethodTree method = declaration();
+    if (method == null) {
+      return Collections.emptyList();
+    }
+    return method.throwsClauses().stream().map(TypeTree::symbolType).toList();
   }
 
   @Override
@@ -236,9 +254,54 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     return true;
   }
 
+  /**
+   * The ECJ form, {@code binaryOwner#name(descriptors)returnDescriptor}, from the erased parameter and return
+   * types. Falls back to the SemSitter id when the owner is not a type.
+   */
   @Override
   public String signature() {
-    return signature;
+    if (descriptorSignature == null) {
+      descriptorSignature = descriptorSignature();
+    }
+    return descriptorSignature;
+  }
+
+  private String descriptorSignature() {
+    Symbol owner = owner();
+    if (!(owner instanceof TypeSymbol ownerType) || isUnknown()) {
+      return signature;
+    }
+    StringBuilder out = new StringBuilder(ownerType.type().fullyQualifiedName()).append('#').append(name()).append('(');
+    parameterTypes.forEach(parameter -> out.append(descriptor(parameter)));
+    out.append(')');
+    if ("<init>".equals(name())) {
+      out.append('V');
+    } else {
+      out.append(descriptor(returnTypeSymbol.type()));
+    }
+    return out.toString();
+  }
+
+  private static String descriptor(@Nullable Type type) {
+    if (type == null || type.isUnknown()) {
+      return "Ljava/lang/Object;";
+    }
+    Type erased = type.erasure();
+    if (erased.isArray()) {
+      return "[" + descriptor(((Type.ArrayType) erased).elementType());
+    }
+    return switch (erased.fullyQualifiedName()) {
+      case "byte" -> "B";
+      case "char" -> "C";
+      case "double" -> "D";
+      case "float" -> "F";
+      case "int" -> "I";
+      case "long" -> "J";
+      case "short" -> "S";
+      case "boolean" -> "Z";
+      case "void" -> "V";
+      default -> "L" + erased.fullyQualifiedName().replace('.', '/') + ";";
+    };
   }
 
   @Override

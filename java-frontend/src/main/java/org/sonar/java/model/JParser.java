@@ -18,8 +18,17 @@ package org.sonar.java.model;
 
 import com.google.gson.JsonObject;
 import com.sonar.sslr.api.RecognitionException;
+import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import org.sonar.java.semsitter.BridgeExtractor;
 import org.sonar.java.semsitter.PlatformDetection;
 import org.sonar.java.semsitter.SemsitterBridge;
@@ -30,22 +39,78 @@ public final class JParser {
   }
 
   /**
-   * Parses one compilation unit without project-wide symbols. Batch analysis goes through
-   * {@link JParserConfig}, which scans every file before translating so references resolve.
+   * Parses and attributes one compilation unit on its own, against the running JDK only. Batch analysis goes
+   * through {@link JParserConfig}, which scans every file of the project before translating.
    */
   public static JavaTree.CompilationUnitTreeImpl parse(String version, String unitName, String source) {
+    return parse(version, unitName, source, List.of());
+  }
+
+  /** {@link #parse(String, String, String)} with a classpath, as ECJ attributed single sources. */
+  public static JavaTree.CompilationUnitTreeImpl parse(String version, String unitName, String source, List<File> classpath) {
     Objects.requireNonNull(version);
     Objects.requireNonNull(unitName);
     Objects.requireNonNull(source);
-    try (SemsitterBridge bridge = SemsitterBridge.start(bridgePath())) {
-      JsonObject document = bridge.parse(source);
+    Path directory = null;
+    try {
+      SemsitterBridge bridge = unitBridge();
+      directory = Files.createTempDirectory("sonar-java-unit");
+      Path file = directory.resolve(Path.of(unitName.endsWith(".java") ? unitName : (unitName + ".java")).getFileName().toString());
+      Files.writeString(file, source, StandardCharsets.UTF_8);
+      JsonObject document;
+      synchronized (bridge) {
+        bridge.analyze(directory, List.of(file), JParserConfig.bridgeClasspath(classpath));
+        document = bridge.cst(file.toString());
+      }
       JSema sema = new JSema();
       sema.ingestDocument(document);
+      // Types load lazily while rules run, so the bridge outlives this call.
+      sema.loadTypes(names -> {
+        try {
+          return bridge.types(names);
+        } catch (IOException failure) {
+          throw new UncheckedIOException(failure);
+        }
+      });
       return SemsitterTranslator.translate(sema, document);
     } catch (RecognitionException syntaxError) {
       throw syntaxError;
     } catch (Exception failure) {
+      discardUnitBridge();
       throw new RecognitionException(1, "SemSitter: unable to parse " + unitName, failure);
+    } finally {
+      deleteQuietly(directory);
+    }
+  }
+
+  @Nullable
+  private static SemsitterBridge unitBridge;
+
+  /** One bridge per JVM for single-source parses, stopped at shutdown. */
+  private static synchronized SemsitterBridge unitBridge() throws IOException {
+    if (unitBridge == null) {
+      SemsitterBridge started = SemsitterBridge.start(bridgePath());
+      Runtime.getRuntime().addShutdownHook(new Thread(started::close));
+      unitBridge = started;
+    }
+    return unitBridge;
+  }
+
+  private static synchronized void discardUnitBridge() {
+    if (unitBridge != null) {
+      unitBridge.close();
+      unitBridge = null;
+    }
+  }
+
+  private static void deleteQuietly(@Nullable Path directory) {
+    if (directory == null) {
+      return;
+    }
+    try (Stream<Path> paths = Files.walk(directory)) {
+      paths.sorted(Comparator.reverseOrder()).forEach(path -> path.toFile().delete());
+    } catch (IOException ignored) {
+      directory.toFile().deleteOnExit();
     }
   }
 

@@ -957,7 +957,13 @@ final class SemsitterTranslator {
         if ("resource".equals(child.k()) && field(child, "name") == null) {
           resources.add(expression(firstNamed(child)));
         } else if ("resource".equals(child.k()) || "local_variable_declaration".equals(child.k())) {
-          resources.addAll(variables(child));
+          for (VariableTreeImpl resource : variables(child)) {
+            // A resource variable is implicitly final.
+            if (resource.symbol() instanceof JSymbol symbol) {
+              symbol.addModifiers(List.of("final"));
+            }
+            resources.add(resource);
+          }
         } else if (";".equals(child.text())) {
           resources.separators().add(token(child));
         } else if (!"(".equals(child.text()) && !")".equals(child.text())) {
@@ -2154,6 +2160,11 @@ final class SemsitterTranslator {
       if (!extra.equals(id)) {
         sema.declare(extra, tree);
       }
+    }
+    // The scan records no modifiers for locals and parameters.
+    if (tree instanceof VariableTreeImpl declared && symbol instanceof JSymbol declaredSymbol && symbol.isVariableSymbol()
+      && ModifiersUtils.hasModifier(declared.modifiers(), Modifier.FINAL)) {
+      declaredSymbol.addModifiers(List.of("final"));
     }
     if (tree instanceof VariableTreeImpl variable && symbol instanceof JSymbol variableSymbol && symbol.isVariableSymbol() && symbol.type().isUnknown()
       && variable.type() != null && !variable.type().symbolType().isUnknown()) {
