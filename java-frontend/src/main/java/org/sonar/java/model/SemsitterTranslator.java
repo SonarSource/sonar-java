@@ -173,6 +173,7 @@ final class SemsitterTranslator {
     JavaTree.CompilationUnitTreeImpl unit = translator.compilationUnit(root);
     unit.sema = sema;
     setParents(unit);
+    CompilerWarnings.addTo(unit);
     return unit;
   }
 
