@@ -31,11 +31,6 @@
 "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/source/RangeOffsetConverter.java": [
 63
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/es/DefaultIndexSettingsElement.java": [
-311,
-315,
-323
-],
 "sonarqube-6.5:src/main/java/org/sonar/server/es/EsClient.java": [
 85,
 89,

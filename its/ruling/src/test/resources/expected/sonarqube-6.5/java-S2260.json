@@ -1,0 +1,20 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/app/ProcessCommandWrapperImpl.java": [
+63
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/scm/ScmInfoRepositoryImpl.java": [
+115
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/BulkIndexer.java": [
+202
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/DefaultIndexSettingsElement.java": [
+54
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/textsearch/ComponentTextSearchFeatureRepertoire.java": [
+46
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/index/ProjectsTextSearchQueryFactory.java": [
+57
+]
+}

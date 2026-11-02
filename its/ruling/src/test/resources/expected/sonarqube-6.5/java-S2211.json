@@ -50,9 +50,6 @@
 "sonarqube-6.5:src/main/java/org/sonar/server/es/NewIndex.java": [
 270
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/es/textsearch/ComponentTextSearchFeatureRepertoire.java": [
-137
-],
 "sonarqube-6.5:src/main/java/org/sonar/server/favorite/ws/AddAction.java": [
 72
 ],
@@ -102,9 +99,6 @@
 134,
 237,
 287
-],
-"sonarqube-6.5:src/main/java/org/sonar/server/measure/index/ProjectsTextSearchQueryFactory.java": [
-112
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/ComponentTreeDataLoader.java": [
 195,

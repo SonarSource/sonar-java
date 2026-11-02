@@ -8,5 +8,8 @@
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/issue/AbstractChangeTagsAction.java": [
 58
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/organization/ws/UpdateAction.java": [
+120
 ]
 }

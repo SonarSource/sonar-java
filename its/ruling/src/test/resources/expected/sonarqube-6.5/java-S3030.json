@@ -149,14 +149,8 @@
 "sonarqube-6.5:src/main/java/org/sonar/server/debt/DebtRulesXMLImporter.java": [
 46
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/es/DefaultIndexSettingsElement.java": [
-29
-],
 "sonarqube-6.5:src/main/java/org/sonar/server/es/NewIndex.java": [
 39
-],
-"sonarqube-6.5:src/main/java/org/sonar/server/es/textsearch/ComponentTextSearchFeatureRepertoire.java": [
-36
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/favorite/ws/SearchAction.java": [
 43
@@ -220,9 +214,6 @@
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/measure/index/ProjectMeasuresIndex.java": [
 53
-],
-"sonarqube-6.5:src/main/java/org/sonar/server/measure/index/ProjectsTextSearchQueryFactory.java": [
-32
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/ComponentAction.java": [
 57

@@ -100,9 +100,6 @@
 "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/QualityGateMeasuresStep.java": [
 261
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/es/BulkIndexer.java": [
-227
-],
 "sonarqube-6.5:src/main/java/org/sonar/server/issue/IssuesFinderSort.java": [
 183
 ],

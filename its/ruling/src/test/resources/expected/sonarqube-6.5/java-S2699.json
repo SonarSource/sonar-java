@@ -25,12 +25,10 @@
 ],
 "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MapBasedRawMeasureRepositoryTest.java": [
 173,
-201,
 219
 ],
 "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureRepositoryImplTest.java": [
 230,
-258,
 276
 ],
 "sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadReportAnalysisMetadataHolderStepTest.java": [

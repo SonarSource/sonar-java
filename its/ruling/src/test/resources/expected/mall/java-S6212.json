@@ -726,7 +726,8 @@
 165
 ],
 "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/MemberAttentionServiceImpl.java": [
-36
+36,
+45
 ],
 "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/MemberCollectionServiceImpl.java": [
 34
@@ -762,7 +763,8 @@
 161,
 195,
 229,
-240
+240,
+243
 ],
 "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalProductServiceImpl.java": [
 86,

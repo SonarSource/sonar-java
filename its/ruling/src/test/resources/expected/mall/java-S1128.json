@@ -59,6 +59,11 @@
 "mall:mall-portal/src/main/java/com/macro/mall/portal/component/OrderTimeOutCancelTask.java": [
 8
 ],
+"mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java": [
+4,
+10,
+27
+],
 "mall:mall-search/src/test/java/com/macro/mall/search/MallSearchApplicationTests.java": [
 10
 ]

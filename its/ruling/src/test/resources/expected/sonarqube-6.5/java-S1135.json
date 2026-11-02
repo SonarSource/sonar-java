@@ -33,9 +33,6 @@
 "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/LineCoverageRule.java": [
 42
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/es/BulkIndexer.java": [
-120
-],
 "sonarqube-6.5:src/main/java/org/sonar/server/es/EsClient.java": [
 172
 ],

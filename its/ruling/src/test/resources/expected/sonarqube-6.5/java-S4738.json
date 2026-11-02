@@ -242,11 +242,6 @@
 57,
 61
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/scm/ScmInfoRepositoryImpl.java": [
-64,
-78,
-80
-],
 "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/source/DuplicationLineReader.java": [
 49
 ],

@@ -1,20 +1,326 @@
 {
+"sonarqube-6.5:src/main/java/org/sonar/server/batch/IssuesAction.java": [
+89,
+96
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/batch/ProjectAction.java": [
+111,
+136
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/ce/ws/ActivityAction.java": [
+262
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/ce/ws/TaskAction.java": [
+92
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/ce/ws/TaskFormatter.java": [
+78,
+114,
+139
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/component/ws/ComponentDtoToWsComponent.java": [
+49,
+57,
+58,
+79
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/component/ws/SearchAction.java": [
+178
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/component/ws/SearchProjectsAction.java": [
+362,
+384
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/component/ws/TreeAction.java": [
+219,
+221
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/component/ComponentRootBuilder.java": [
+201
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/TrackerRawInputFactory.java": [
+141,
+147,
+169,
+178,
+184,
+185
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/scm/ReportScmInfo.java": [
+98
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/source/ComputeFileSourceData.java": [
+57,
+70
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/source/CoverageLineReader.java": [
+39,
+47
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/source/DuplicationLineReader.java": [
+48
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/source/HighlightingLineReader.java": [
+73,
+85,
+99
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/source/LineReader.java": [
+26
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/source/ScmLineReader.java": [
+38
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/source/SymbolsLineReader.java": [
+65,
+77
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistTestsStep.java": [
+118,
+119,
+119,
+151,
+152,
+152,
+162,
+163,
+163,
+165,
+166,
+166,
+168,
+168,
+178,
+179,
+184,
+208,
+208,
+209,
+209,
+215,
+223,
+224,
+224,
+226,
+226,
+229,
+229
+],
 "sonarqube-6.5:src/main/java/org/sonar/server/debt/DebtModelXMLExporter.java": [
 132
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/debt/DebtRulesXMLImporter.java": [
 100
 ],
+"sonarqube-6.5:src/main/java/org/sonar/server/duplication/ws/ShowResponseBuilder.java": [
+63,
+64,
+93
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/ChangelogAction.java": [
+135
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/SearchResponseFormat.java": [
+218,
+224,
+225,
+285,
+286,
+332,
+333,
+341,
+342,
+343,
+355,
+356,
+363
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/license/ws/ListAction.java": [
+118,
+137,
+147,
+154,
+166,
+176,
+183
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/ComponentDtoToWsComponent.java": [
+44
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/ComponentTreeAction.java": [
+243,
+314,
+316,
+322
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/MeasureDtoToWsMeasure.java": [
+50
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/SnapshotDtoToWsPeriods.java": [
+50
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/organization/ws/OrganizationsWsSupport.java": [
+107
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/organization/ws/SearchAction.java": [
+90
+],
 "sonarqube-6.5:src/main/java/org/sonar/server/permission/PermissionTemplateService.java": [
 215
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/UsersAction.java": [
+148
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/DeleteTemplateAction.java": [
 118
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/SearchTemplatesAction.java": [
-72
+72,
+85
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/TemplateGroupsAction.java": [
+124,
+127
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/TemplateUsersAction.java": [
+131
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/platform/ServerLogging.java": [
 60
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/ws/QualityGateDetailsFormatter.java": [
+39,
+69,
+102,
+115,
+122,
+129,
+136,
+144,
+153,
+160
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/CreateAction.java": [
+149
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/root/ws/SearchAction.java": [
+73,
+74,
+79
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/ws/ActiveRuleCompleter.java": [
+84,
+115,
+117,
+164,
+170,
+170,
+180,
+181,
+209
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/ws/ListAction.java": [
+55
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/ws/RuleMapper.java": [
+83,
+89,
+96,
+96,
+121,
+127,
+133,
+141,
+148,
+173,
+199,
+205,
+211,
+217,
+223,
+232,
+238,
+260,
+272,
+278,
+284,
+290,
+298,
+304,
+347,
+351,
+352,
+352
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/ws/SearchAction.java": [
+395,
+396,
+424,
+426
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/setting/ws/ListDefinitionsAction.java": [
+125,
+147
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/setting/ws/ValuesAction.java": [
+182,
+200,
+207,
+211,
+219,
+235,
+257,
+262,
+263
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/test/index/TestResultSetIterator.java": [
+120
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/test/ws/CoveredFilesAction.java": [
+86,
+89,
+89
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/test/ws/ListAction.java": [
+147,
+155
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/user/ws/CreateAction.java": [
+136
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/user/ws/IdentityProvidersAction.java": [
+69
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/usergroups/ws/CreateAction.java": [
+106
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/usergroups/ws/GroupWsSupport.java": [
+159,
+160
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/usergroups/ws/UpdateAction.java": [
+131
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/usertoken/ws/SearchAction.java": [
+91
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/webhook/ws/WebhookDeliveriesAction.java": [
+133,
+134
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/webhook/ws/WebhookDeliveryAction.java": [
+105,
+106
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/webhook/ws/WebhookWsSupport.java": [
+34,
+34,
+53,
+53
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/ws/WsResponseCommonFormat.java": [
+38,
+45,
+46
 ]
 }

@@ -28,9 +28,6 @@
 "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistEventsStep.java": [
 97
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/es/BulkIndexer.java": [
-267
-],
 "sonarqube-6.5:src/main/java/org/sonar/server/es/IndexingResult.java": [
 27
 ],

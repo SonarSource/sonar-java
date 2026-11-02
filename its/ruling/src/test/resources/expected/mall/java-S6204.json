@@ -1,6 +1,19 @@
 {
+"mall:mall-admin/src/main/java/com/macro/mall/bo/AdminUserDetails.java": [
+33
+],
 "mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminCacheServiceImpl.java": [
+65,
+77,
 87
+],
+"mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsMenuServiceImpl.java": [
+82,
+102
+],
+"mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalProductServiceImpl.java": [
+80,
+140
 ],
 "mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java": [
 156,
