@@ -31,6 +31,7 @@ const ACC_PUBLIC: u16 = 0x0001;
 const ACC_PRIVATE: u16 = 0x0002;
 const ACC_PROTECTED: u16 = 0x0004;
 const ACC_ENUM: u16 = 0x4000;
+const ACC_ABSTRACT: u16 = 0x0400;
 
 /// Strips the generic arity suffix of a graph id segment: ``java.util.List`1`` is `java.util.List`.
 pub fn erase(id: &str) -> String {
@@ -188,6 +189,7 @@ fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
     "kind": classpath_kind(ty),
     "super": ty.super_class,
     "interfaces": ty.interfaces,
+    "modifiers": classpath_modifiers(ty.access_flags),
     "typeParameters": parameters.len(),
     "typeVars": parameters.iter().map(|(name, _)| name).collect::<Vec<_>>(),
     "members": members,
@@ -198,6 +200,28 @@ fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
     object.insert("interfaceTypes".into(), json!(interfaces));
   }
   info
+}
+
+/// Class-file access flags as the modifier names `JSema` already applies to JDK types.
+fn classpath_modifiers(flags: u16) -> Vec<&'static str> {
+  let mut modifiers = Vec::new();
+  if flags & ACC_PUBLIC != 0 {
+    modifiers.push("public");
+  } else if flags & ACC_PROTECTED != 0 {
+    modifiers.push("protected");
+  } else if flags & ACC_PRIVATE != 0 {
+    modifiers.push("private");
+  }
+  if flags & ACC_STATIC != 0 {
+    modifiers.push("static");
+  }
+  if flags & ACC_FINAL != 0 {
+    modifiers.push("final");
+  }
+  if flags & ACC_ABSTRACT != 0 {
+    modifiers.push("abstract");
+  }
+  modifiers
 }
 
 /// The classfile reader only distinguishes classes from interfaces. A record is a class whose superclass is `java.lang.Record`.
