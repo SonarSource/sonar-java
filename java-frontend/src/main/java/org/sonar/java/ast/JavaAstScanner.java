@@ -37,6 +37,7 @@ import org.sonar.java.AnalysisException;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.model.FrontendResources;
 import org.sonar.java.model.InputFileUtils;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.JProblem;
@@ -163,12 +164,14 @@ public class JavaAstScanner {
     var telemetryAnalysisKeys = javaAnalysisKeys.exceptions();
     try {
       JavaTree.CompilationUnitTreeImpl ast = result.get();
-      modifyCompilationUnit.accept(ast);
-      visitor.visitFile(ast, sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile));
-      String path = inputFile.toString();
-      Set<JProblem> undefinedTypes = ast.undefinedTypes();
-      collectUndefinedTypes(path, undefinedTypes);
-      cleanUp.accept(ast);
+      Set<JProblem> undefinedTypes;
+      try (FrontendResources resources = new FrontendResources()) {
+        resources.own(() -> cleanUp.accept(ast));
+        modifyCompilationUnit.accept(ast);
+        visitor.visitFile(ast, sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile));
+        undefinedTypes = ast.undefinedTypes();
+        collectUndefinedTypes(inputFile.toString(), undefinedTypes);
+      }
       telemetryAnalysisKeys = javaAnalysisKeys.success();
       telemetry.aggregateAsCounter(javaAnalysisKeys.success().typeErrorCountKey(), undefinedTypes.size());
     } catch (RecognitionException e) {
