@@ -94,6 +94,16 @@ abstract class JSymbol implements Symbol {
     this.deprecated = deprecated;
   }
 
+  void copyStateFrom(JSymbol other) {
+    owner = other.owner;
+    unknown = other.unknown;
+    enumSymbol = other.enumSymbol;
+    interfaceSymbol = other.interfaceSymbol;
+    annotationSymbol = other.annotationSymbol;
+    deprecated = other.deprecated;
+    modifiers.addAll(other.modifiers);
+  }
+
   void addModifiers(Collection<String> values) {
     for (String value : values) {
       for (String part : value.split(",")) {
