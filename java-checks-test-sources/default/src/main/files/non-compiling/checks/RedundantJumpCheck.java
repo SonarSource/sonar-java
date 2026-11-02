@@ -1,3 +1,6 @@
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
+
 abstract class A {
 
   public void reproducer() {
@@ -328,5 +331,103 @@ abstract class A {
     } finally {
       foo();
     }
+  }
+
+  Runnable emptyLambda = () -> {};
+
+  Runnable expressionLambda = () -> System.out.println("expression");
+
+  Supplier<Runnable> expressionReturningLambda = () -> () -> {
+    return; // Noncompliant {{Remove this redundant jump.}}
+//  ^^^^^^^
+  };
+
+  Runnable fieldInitializer = () -> {
+    System.out.println("field");
+    return; // Noncompliant {{Remove this redundant jump.}}
+//  ^^^^^^^
+  };
+
+  void immediatelyInvokedLambda(int x) {
+    Runnable r = () -> {
+      System.out.println(x);
+      return; // Noncompliant {{Remove this redundant jump.}}
+//    ^^^^^^^
+    };
+    r.run();
+    System.out.println("after lambda");
+  }
+
+  Runnable conditionalReturns(int x) {
+    return () -> {
+      if (x < 0) {
+        return;
+      }
+      System.out.println(x);
+      if (x == 0) {
+        return; // Noncompliant {{Remove this redundant jump.}}
+//      ^^^^^^^
+      }
+    };
+  }
+
+  IntSupplier valueReturningLambda(int x) {
+    return () -> {
+      System.out.println(x);
+      return x;
+    };
+  }
+
+  Runnable nestedLambdas(int x) {
+    return () -> {
+      Runnable inner = () -> {
+        System.out.println(x);
+        return; // Noncompliant {{Remove this redundant jump.}}
+//      ^^^^^^^
+      };
+      inner.run();
+      System.out.println("after inner lambda");
+    };
+  }
+
+  Runnable loopJumps(int x) {
+    return () -> {
+      for (int i = 0; i < x; i++) {
+        if (i == 1) {
+          continue;
+        }
+        if (i == 2) {
+          return;
+        }
+        System.out.println(i);
+        continue; // Noncompliant {{Remove this redundant jump.}}
+//      ^^^^^^^^^
+      }
+    };
+  }
+
+  Runnable returnThroughFinally(int x) {
+    return () -> {
+      try {
+        System.out.println(x);
+        return; // Noncompliant {{Remove this redundant jump.}}
+//      ^^^^^^^
+      } finally {
+        System.out.println("cleanup");
+      }
+    };
+  }
+
+  Runnable earlyReturnThroughFinally(int x) {
+    return () -> {
+      try {
+        if (x < 0) {
+          return;
+        }
+      } finally {
+        System.out.println("cleanup");
+      }
+      System.out.println(x);
+    };
   }
 }
