@@ -160,9 +160,7 @@ final class SemsitterTranslator {
   }
 
   static JavaTree.CompilationUnitTreeImpl translate(JSema sema, JsonObject document) {
-    if (document.has("hasError") && document.get("hasError").getAsBoolean()) {
-      throw new RecognitionException(1, "SemSitter: syntax error");
-    }
+    boolean broken = document.has("hasError") && document.get("hasError").getAsBoolean();
     SemsitterTranslator translator = new SemsitterTranslator(sema);
     if (document.has("path") && document.get("path").isJsonPrimitive()) {
       String fileName = Path.of(document.get("path").getAsString()).getFileName().toString();
@@ -175,6 +173,9 @@ final class SemsitterTranslator {
     setParents(unit);
     CompilerWarnings.addTo(unit);
     EffectivelyFinalVariables.mark(unit);
+    if (broken && unit.types().isEmpty() && unit.imports().isEmpty() && unit.moduleDeclaration() == null) {
+      throw new RecognitionException(1, "SemSitter: syntax error");
+    }
     return unit;
   }
 
@@ -224,43 +225,70 @@ final class SemsitterTranslator {
     List<Tree> types = new ArrayList<>();
     List<Tree> compactMembers = new ArrayList<>();
     ModuleDeclarationTree module = null;
-    boolean compact = false;
+    boolean[] compact = {false};
     for (Node child : program.children()) {
-      switch (child.k()) {
-        case "package_declaration" -> packageDeclaration = packageDeclaration(child);
-        case "module_declaration" -> module = moduleDeclaration(child);
-        case "import_declaration" -> imports.add(importDeclaration(child));
-        case ";" -> {
-          EmptyStatementTreeImpl empty = new EmptyStatementTreeImpl(token(child));
-          if (compact) {
-            compactMembers.add(empty);
-          } else if (types.isEmpty()) {
-            imports.add(empty);
-          } else {
-            types.add(empty);
-          }
-        }
-        case "class_declaration", "interface_declaration", "enum_declaration", "record_declaration", "annotation_type_declaration" ->
-          addMember(compact ? compactMembers : types, child);
-        case "method_declaration", "constructor_declaration", "field_declaration", "constant_declaration", "local_variable_declaration", "static_initializer", "block" -> {
-          if (!compact) {
-            compact = true;
-            compactMembers.addAll(types);
-            types.clear();
-          }
-          addMember(compactMembers, child);
-        }
-        default -> {
-          // skipped construct
-        }
-      }
+      TopLevel collected = addTopLevel(child, imports, types, compactMembers, compact[0]);
+      packageDeclaration = collected.packageDeclaration == null ? packageDeclaration : collected.packageDeclaration;
+      module = collected.module == null ? module : collected.module;
+      compact[0] = collected.compact;
     }
-    if (compact) {
+    if (compact[0]) {
       ClassTreeImpl implicitClass = new ClassTreeImpl(Tree.Kind.IMPLICIT_CLASS, null, compactMembers, null);
       bindImplicitClass(implicitClass, compactMembers);
       types.add(implicitClass);
     }
     return new JavaTree.CompilationUnitTreeImpl(packageDeclaration, imports, types, module, eof);
+  }
+
+  /** One top-level construct. Children of an error node are kept, so a syntax error does not drop the rest of the file. */
+  private TopLevel addTopLevel(Node child, List<ImportClauseTree> imports, List<Tree> types, List<Tree> compactMembers, boolean compact) {
+    if ("ERROR".equals(child.k())) {
+      JavaTree.PackageDeclarationTreeImpl packageDeclaration = null;
+      ModuleDeclarationTree module = null;
+      for (Node nested : child.children()) {
+        TopLevel collected = addTopLevel(nested, imports, types, compactMembers, compact);
+        packageDeclaration = collected.packageDeclaration == null ? packageDeclaration : collected.packageDeclaration;
+        module = collected.module == null ? module : collected.module;
+        compact = collected.compact;
+      }
+      return new TopLevel(packageDeclaration, module, compact);
+    }
+    return switch (child.k()) {
+      case "package_declaration" -> new TopLevel(packageDeclaration(child), null, compact);
+      case "module_declaration" -> new TopLevel(null, moduleDeclaration(child), compact);
+      case "import_declaration" -> {
+        imports.add(importDeclaration(child));
+        yield new TopLevel(null, null, compact);
+      }
+      case ";" -> {
+        EmptyStatementTreeImpl empty = new EmptyStatementTreeImpl(token(child));
+        if (compact) {
+          compactMembers.add(empty);
+        } else if (types.isEmpty()) {
+          imports.add(empty);
+        } else {
+          types.add(empty);
+        }
+        yield new TopLevel(null, null, compact);
+      }
+      case "class_declaration", "interface_declaration", "enum_declaration", "record_declaration", "annotation_type_declaration" -> {
+        addMember(compact ? compactMembers : types, child);
+        yield new TopLevel(null, null, compact);
+      }
+      case "method_declaration", "constructor_declaration", "field_declaration", "constant_declaration", "local_variable_declaration", "static_initializer", "block" -> {
+        if (!compact) {
+          compact = true;
+          compactMembers.addAll(types);
+          types.clear();
+        }
+        addMember(compactMembers, child);
+        yield new TopLevel(null, null, compact);
+      }
+      default -> new TopLevel(null, null, compact);
+    };
+  }
+
+  private record TopLevel(@Nullable JavaTree.PackageDeclarationTreeImpl packageDeclaration, @Nullable ModuleDeclarationTree module, boolean compact) {
   }
 
   private ModuleDeclarationTreeImpl moduleDeclaration(Node node) {
@@ -389,6 +417,11 @@ final class SemsitterTranslator {
       case ";" -> members.add(new EmptyStatementTreeImpl(token(node)));
       case "{", "}" -> {
         // punctuation of the body
+      }
+      case "ERROR" -> {
+        for (Node nested : node.children()) {
+          addMember(members, nested);
+        }
       }
       default -> {
         // skipped construct
@@ -708,6 +741,15 @@ final class SemsitterTranslator {
   }
 
   private void addStatement(List<StatementTree> statements, Node node) {
+    if ("ERROR".equals(node.k())) {
+      for (Node nested : node.children()) {
+        if (nested.children().isEmpty() && nested.text().equals(nested.k())) {
+          continue;
+        }
+        addStatement(statements, nested);
+      }
+      return;
+    }
     if ("local_variable_declaration".equals(node.k())) {
       statements.addAll(variables(node));
       return;
@@ -747,6 +789,7 @@ final class SemsitterTranslator {
       case "switch_statement", "switch_expression" -> switchStatement(node);
       case "local_variable_declaration" -> variables(node).get(0);
       case "class_declaration", "interface_declaration", "enum_declaration", "record_declaration" -> typeDeclaration(node);
+      case "ERROR" -> recoveredStatement(node);
       default -> new EmptyStatementTreeImpl(";".equals(node.text()) ? token(node) : token(required(node, ";")));
     };
   }
@@ -1217,9 +1260,36 @@ final class SemsitterTranslator {
       case "method_reference" -> methodReference(node);
       case "switch_expression" -> switchExpression(node);
       case "generic_type", "array_type", "integral_type", "floating_point_type", "boolean_type", "void_type", "wildcard", "annotated_type" -> typeExpression(node);
+      case "ERROR" -> recoveredExpression(node);
       default -> primary(node);
     };
     return tree;
+  }
+
+  /** The first recognizable expression inside a syntax error, so the surrounding code keeps a tree. */
+  private ExpressionTree recoveredExpression(Node node) {
+    for (Node child : node.children()) {
+      String kind = child.k();
+      if ("ERROR".equals(kind) || kind.endsWith("_expression") || kind.endsWith("_literal") || kind.endsWith("_identifier")
+        || "identifier".equals(kind) || "array_creation_expression".equals(kind) || "object_creation_expression".equals(kind)
+        || "method_invocation".equals(kind) || "field_access".equals(kind) || "array_access".equals(kind)
+        || "lambda_expression".equals(kind) || "method_reference".equals(kind) || "class_literal".equals(kind)
+        || "array_initializer".equals(kind) || "this".equals(kind) || "super".equals(kind)) {
+        return expression(child);
+      }
+    }
+    return literal(Tree.Kind.NULL_LITERAL, synthetic("null"), JType.nullType(sema));
+  }
+
+  /** The first recognizable statement inside a syntax error. */
+  private StatementTree recoveredStatement(Node node) {
+    for (Node child : node.children()) {
+      String kind = child.k();
+      if ("ERROR".equals(kind) || kind.endsWith("_statement") || "block".equals(kind) || kind.endsWith("_declaration")) {
+        return statement(child);
+      }
+    }
+    return new EmptyStatementTreeImpl(synthetic(";"));
   }
 
   private ExpressionTree primary(Node node) {
