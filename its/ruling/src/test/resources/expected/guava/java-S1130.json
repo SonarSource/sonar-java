@@ -1,8 +1,116 @@
 {
+"guava:src/com/google/common/base/Joiner.java": [
+107,
+365
+],
+"guava:src/com/google/common/cache/LocalCache.java": [
+2345
+],
+"guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+3949,
+3971,
+3971
+],
+"guava:src/com/google/common/collect/Queues.java": [
+261
+],
+"guava:src/com/google/common/collect/Serialization.java": [
+46,
+59,
+83,
+83,
+102,
+129,
+129,
+149,
+178,
+178
+],
+"guava:src/com/google/common/hash/BloomFilter.java": [
+487
+],
+"guava:src/com/google/common/io/BaseEncoding.java": [
+620
+],
+"guava:src/com/google/common/io/ByteSource.java": [
+236,
+492
+],
+"guava:src/com/google/common/io/ByteStreams.java": [
+93,
+119,
+734,
+771
+],
+"guava:src/com/google/common/io/CharSource.java": [
+154
+],
+"guava:src/com/google/common/io/CharStreams.java": [
+63,
+116,
+137
+],
+"guava:src/com/google/common/io/Closer.java": [
+145,
+167,
+191
+],
+"guava:src/com/google/common/io/FileBackedOutputStream.java": [
+131,
+194
+],
 "guava:src/com/google/common/io/Files.java": [
-678
+83,
+100,
+172,
+259,
+273,
+284,
+295,
+312,
+329,
+360,
+375,
+384,
+522,
+573,
+589,
+603,
+678,
+695
+],
+"guava:src/com/google/common/io/LineReader.java": [
+71
 ],
 "guava:src/com/google/common/io/LittleEndianDataInputStream.java": [
 222
+],
+"guava:src/com/google/common/io/Resources.java": [
+98,
+112,
+128,
+174
+],
+"guava:src/com/google/common/net/InetAddresses.java": [
+961
+],
+"guava:src/com/google/common/reflect/ClassPath.java": [
+411
+],
+"guava:src/com/google/common/util/concurrent/Monitor.java": [
+378,
+417,
+636,
+684,
+1079,
+1113
+],
+"guava:src/com/google/common/util/concurrent/MoreExecutors.java": [
+678
+],
+"guava:src/com/google/common/util/concurrent/Uninterruptibles.java": [
+138,
+171,
+171
 ]
 }

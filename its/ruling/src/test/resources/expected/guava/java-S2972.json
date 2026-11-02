@@ -77,7 +77,6 @@
 "guava:src/com/google/common/cache/LocalCache.java": [
 372,
 442,
-687,
 851,
 926,
 1064,
@@ -141,7 +140,6 @@
 604
 ],
 "guava:src/com/google/common/collect/ComparisonChain.java": [
-78,
 135
 ],
 "guava:src/com/google/common/collect/ComputingConcurrentHashMap.java": [
@@ -182,7 +180,9 @@
 "guava:src/com/google/common/collect/HashBiMap.java": [
 390,
 435,
-526
+477,
+526,
+634
 ],
 "guava:src/com/google/common/collect/ImmutableBiMap.java": [
 121
@@ -248,7 +248,6 @@
 67
 ],
 "guava:src/com/google/common/collect/Iterators.java": [
-74,
 1154,
 1287
 ],
@@ -425,7 +424,6 @@
 "guava:src/com/google/common/collect/TreeRangeMap.java": [
 68,
 216,
-268,
 326
 ],
 "guava:src/com/google/common/collect/TreeRangeSet.java": [
@@ -450,8 +448,6 @@
 85
 ],
 "guava:src/com/google/common/hash/BloomFilterStrategies.java": [
-44,
-92,
 142
 ],
 "guava:src/com/google/common/hash/Crc32cHashFunction.java": [
@@ -577,18 +573,11 @@
 456,
 531
 ],
-"guava:src/com/google/common/util/concurrent/AbstractExecutionThreadService.java": [
-43
-],
 "guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
 857
 ],
-"guava:src/com/google/common/util/concurrent/AbstractIdleService.java": [
-47
-],
 "guava:src/com/google/common/util/concurrent/AbstractScheduledService.java": [
 112,
-164,
 414
 ],
 "guava:src/com/google/common/util/concurrent/AbstractService.java": [

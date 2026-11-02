@@ -4,6 +4,18 @@
 4230,
 4239
 ],
+"guava:src/com/google/common/collect/DenseImmutableTable.java": [
+41
+],
+"guava:src/com/google/common/collect/ImmutableSetMultimap.java": [
+434
+],
+"guava:src/com/google/common/collect/ImmutableSortedMap.java": [
+505
+],
+"guava:src/com/google/common/collect/Iterables.java": [
+85
+],
 "guava:src/com/google/common/collect/MapMakerInternalMap.java": [
 1241,
 1499,
@@ -13,5 +25,8 @@
 "guava:src/com/google/common/collect/Maps.java": [
 3384,
 3395
+],
+"guava:src/com/google/common/util/concurrent/WrappingScheduledExecutorService.java": [
+33
 ]
 }

@@ -39,6 +39,12 @@
 "guava:src/com/google/common/collect/TreeMultimap.java": [
 130
 ],
+"guava:src/com/google/common/reflect/TypeParameter.java": [
+47
+],
+"guava:src/com/google/common/reflect/TypeToken.java": [
+112
+],
 "guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java": [
 529,
 534,

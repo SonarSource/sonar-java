@@ -1,0 +1,14 @@
+{
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java": [
+82
+],
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverter.java": [
+48
+],
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/DecimalLocaleConverter.java": [
+47
+],
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/StringLocaleConverter.java": [
+50
+]
+}

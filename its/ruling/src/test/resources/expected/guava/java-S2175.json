@@ -1,0 +1,76 @@
+{
+"guava:src/com/google/common/cache/AbstractCache.java": [
+69
+],
+"guava:src/com/google/common/collect/AbstractBiMap.java": [
+153,
+159
+],
+"guava:src/com/google/common/collect/AbstractMapBasedMultimap.java": [
+186,
+258,
+547,
+570,
+1304
+],
+"guava:src/com/google/common/collect/AbstractMapBasedMultiset.java": [
+243,
+255
+],
+"guava:src/com/google/common/collect/AbstractMultimap.java": [
+48,
+59,
+65
+],
+"guava:src/com/google/common/collect/AbstractTable.java": [
+60
+],
+"guava:src/com/google/common/collect/Collections2.java": [
+193
+],
+"guava:src/com/google/common/collect/ImmutableList.java": [
+354,
+530,
+536
+],
+"guava:src/com/google/common/collect/ImmutableMap.java": [
+441,
+546,
+551
+],
+"guava:src/com/google/common/collect/LinkedListMultimap.java": [
+459,
+473,
+572
+],
+"guava:src/com/google/common/collect/Maps.java": [
+1947,
+1953,
+1954,
+1962,
+1963,
+2652,
+2652,
+2656,
+2665,
+2738,
+2800,
+3016,
+3021,
+3031
+],
+"guava:src/com/google/common/collect/Multimaps.java": [
+945,
+950,
+1022,
+1025
+],
+"guava:src/com/google/common/collect/StandardTable.java": [
+155,
+157,
+711
+],
+"guava:src/com/google/common/collect/Synchronized.java": [
+1164
+]
+}

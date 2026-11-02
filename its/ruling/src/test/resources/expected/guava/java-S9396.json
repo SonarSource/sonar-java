@@ -1,2 +1,206 @@
 {
+"guava:src/com/google/common/cache/LocalCache.java": [
+4262,
+4263,
+4264,
+4265,
+4266,
+4267,
+4268,
+4394,
+4395,
+4450,
+4495
+],
+"guava:src/com/google/common/collect/AbstractBiMap.java": [
+243,
+281
+],
+"guava:src/com/google/common/collect/AbstractMapBasedMultimap.java": [
+356,
+357,
+358,
+359,
+460,
+461,
+1148,
+1149,
+1150,
+1151,
+1263,
+1377,
+1378,
+1441
+],
+"guava:src/com/google/common/collect/AbstractMapBasedMultiset.java": [
+161,
+162,
+163,
+164
+],
+"guava:src/com/google/common/collect/ArrayTable.java": [
+588,
+678
+],
+"guava:src/com/google/common/collect/BinaryTreeTraverser.java": [
+100,
+135,
+136,
+180,
+181
+],
+"guava:src/com/google/common/collect/DenseImmutableTable.java": [
+139,
+163
+],
+"guava:src/com/google/common/collect/FilteredEntryMultimap.java": [
+76
+],
+"guava:src/com/google/common/collect/HashBiMap.java": [
+391,
+392,
+393,
+478,
+635
+],
+"guava:src/com/google/common/collect/ImmutableList.java": [
+392,
+393
+],
+"guava:src/com/google/common/collect/ImmutableMultimap.java": [
+563,
+564,
+565
+],
+"guava:src/com/google/common/collect/ImmutableRangeSet.java": [
+199,
+202,
+204,
+391,
+398
+],
+"guava:src/com/google/common/collect/LinkedHashMultimap.java": [
+311,
+312,
+313,
+314,
+318,
+319
+],
+"guava:src/com/google/common/collect/LinkedListMultimap.java": [
+318,
+319,
+320,
+321,
+322,
+412,
+413,
+414,
+415,
+450,
+451,
+452,
+453,
+454
+],
+"guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+3594,
+3595,
+3596,
+3597,
+3598,
+3599,
+3600,
+3725,
+3726
+],
+"guava:src/com/google/common/collect/MinMaxPriorityQueue.java": [
+504,
+505,
+764,
+765,
+766,
+767,
+768,
+769
+],
+"guava:src/com/google/common/collect/StandardTable.java": [
+229,
+231,
+232,
+262,
+268,
+388,
+484,
+656,
+657,
+658
+],
+"guava:src/com/google/common/collect/TreeBasedTable.java": [
+181,
+182,
+248
+],
+"guava:src/com/google/common/collect/TreeRangeMap.java": [
+218,
+328
+],
+"guava:src/com/google/common/collect/TreeRangeSet.java": [
+89,
+805
+],
+"guava:src/com/google/common/collect/TreeTraverser.java": [
+85,
+145,
+191
+],
+"guava:src/com/google/common/hash/AbstractNonStreamingHashFunction.java": [
+83
+],
+"guava:src/com/google/common/hash/ChecksumHashFunction.java": [
+61
+],
+"guava:src/com/google/common/io/ByteSink.java": [
+140
+],
+"guava:src/com/google/common/io/ByteSource.java": [
+450,
+472,
+473
+],
+"guava:src/com/google/common/reflect/TypeToken.java": [
+630,
+673,
+674,
+722
+],
+"guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
+259
+],
+"guava:src/com/google/common/util/concurrent/AbstractScheduledService.java": [
+422,
+425,
+431,
+438,
+442
+],
+"guava:src/com/google/common/util/concurrent/AggregateFuture.java": [
+90,
+91,
+92
+],
+"guava:src/com/google/common/util/concurrent/CollectionFuture.java": [
+38
+],
+"guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java": [
+791,
+871,
+872,
+874,
+912,
+974
+],
+"guava:src/com/google/common/util/concurrent/TrustedListenableFutureTask.java": [
+96
+]
 }

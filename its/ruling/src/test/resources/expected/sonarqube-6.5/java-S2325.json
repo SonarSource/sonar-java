@@ -6,11 +6,11 @@
 68,
 76
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/CommentDensityRule.java": [
-66
-],
 "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitygate/ConditionEvaluator.java": [
 36
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/scm/ScmInfoRepositoryImpl.java": [
+140
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/es/IndexDefinitionHash.java": [
 86
@@ -22,28 +22,19 @@
 155
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/SearchAction.java": [
-421,
 433
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/SearchResponseFormat.java": [
-122,
-354
-],
-"sonarqube-6.5:src/main/java/org/sonar/server/measure/custom/ws/CustomMeasureJsonWriter.java": [
-85
+"sonarqube-6.5:src/main/java/org/sonar/server/permission/index/PermissionIndexer.java": [
+139
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/platform/web/PlatformServletContextListener.java": [
 56
-],
-"sonarqube-6.5:src/main/java/org/sonar/server/projectanalysis/ws/SearchData.java": [
-50
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/QProfileCopier.java": [
 80
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/rule/RegisterRules.java": [
 199,
-279,
 307,
 375
 ],

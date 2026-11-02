@@ -1,6 +1,7 @@
 {
 "guava:src/com/google/common/math/DoubleMath.java": [
-446
+446,
+450
 ],
 "guava:src/com/google/common/math/DoubleUtils.java": [
 97
@@ -11,5 +12,10 @@
 "guava:src/com/google/common/primitives/UnsignedInteger.java": [
 201,
 210
+],
+"guava:src/com/google/common/util/concurrent/SmoothRateLimiter.java": [
+260,
+334,
+343
 ]
 }

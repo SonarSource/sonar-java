@@ -128,6 +128,9 @@
 "guava:src/com/google/common/collect/ImmutableEnumMap.java": [
 107
 ],
+"guava:src/com/google/common/collect/ImmutableEnumSet.java": [
+132
+],
 "guava:src/com/google/common/collect/ImmutableList.java": [
 588
 ],

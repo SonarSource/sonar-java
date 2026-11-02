@@ -70,9 +70,6 @@
 1902,
 2844
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HandlerCollection.java": [
-150
-],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/resource/SeekableByteChannelRangeWriter.java": [
 154,
 160

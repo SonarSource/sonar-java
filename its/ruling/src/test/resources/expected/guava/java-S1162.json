@@ -87,12 +87,6 @@
 "guava:src/com/google/common/util/concurrent/Futures.java": [
 1339
 ],
-"guava:src/com/google/common/util/concurrent/FuturesGetChecked.java": [
-59,
-77,
-79,
-207
-],
 "guava:src/com/google/common/util/concurrent/Monitor.java": [
 503,
 774

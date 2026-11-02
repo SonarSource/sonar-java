@@ -1,5 +1,9 @@
 {
 "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira157TestCase.java": [
+19,
 24
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira509TestCase.java": [
+30
 ]
 }

@@ -3,6 +3,14 @@
 59,
 64
 ],
+"jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/bean/Customer.java": [
+82,
+87
+],
+"jboss-ejb3-tutorial:entity/src/org/jboss/tutorial/entity/bean/Order.java": [
+81,
+86
+],
 "jboss-ejb3-tutorial:injection/src/org/jboss/tutorial/injection/bean/ShoppingCartBean.java": [
 66
 ],
