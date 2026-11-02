@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -66,8 +65,7 @@ final class JSymbolMetadata implements SymbolMetadata {
     this(symbol, () -> annotations, new JSymbolMetadata[0], false);
   }
 
-  JSymbolMetadata(Symbol symbol, Supplier<List<AnnotationInstance>> annotations,
-    JSymbolMetadata[] parameterMetas, boolean isTypeArgMetadata) {
+  JSymbolMetadata(Symbol symbol, Supplier<List<AnnotationInstance>> annotations, JSymbolMetadata[] parameterMetas, boolean isTypeArgMetadata) {
     this.symbol = symbol;
     this.annotationSource = annotations;
     this.parameterMetas = parameterMetas;

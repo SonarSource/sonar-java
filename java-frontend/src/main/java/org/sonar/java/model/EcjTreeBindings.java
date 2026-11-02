@@ -74,17 +74,14 @@ final class EcjTreeBindings {
   static void setType(JSema sema, JavaTree tree, @Nullable ITypeBinding binding) {
     switch (tree) {
       case AbstractTypedTree t -> t.type = sema.typeSupplier(binding);
-      case ClassTreeImpl t -> t.typeSymbol = binding == null ? SemanticValues.UNKNOWN_TYPE_SYMBOL
-        : new EcjSemanticAttachment<>(binding, sema::typeSymbol);
+      case ClassTreeImpl t -> t.typeSymbol = binding == null ? SemanticValues.UNKNOWN_TYPE_SYMBOL : new EcjSemanticAttachment<>(binding, sema::typeSymbol);
       case TypeParameterTreeImpl t -> t.typeSymbol = sema.symbolSupplier(binding);
       default -> throw new IllegalArgumentException("No type attachment: " + tree.getClass());
     }
     if (tree instanceof KeywordThis t) {
-      t.symbolSupplier = binding == null ? SemanticValues.UNKNOWN_SYMBOL
-        : new EcjSemanticAttachment<>(binding, b -> sema.typeSymbol(b).thisSymbol);
+      t.symbolSupplier = binding == null ? SemanticValues.UNKNOWN_SYMBOL : new EcjSemanticAttachment<>(binding, b -> sema.typeSymbol(b).thisSymbol);
     } else if (tree instanceof KeywordSuper t) {
-      t.symbolSupplier = binding == null ? SemanticValues.UNKNOWN_SYMBOL
-        : new EcjSemanticAttachment<>(binding, b -> sema.typeSymbol(b).superSymbol);
+      t.symbolSupplier = binding == null ? SemanticValues.UNKNOWN_SYMBOL : new EcjSemanticAttachment<>(binding, b -> sema.typeSymbol(b).superSymbol);
     }
   }
 
@@ -95,8 +92,9 @@ final class EcjTreeBindings {
       case LambdaExpressionTreeImpl t -> t.methodSymbol = sema.methodSupplier((IMethodBinding) binding);
       case VariableTreeImpl t -> t.variableSymbol = sema.symbolSupplier(binding);
       case IdentifierTreeImpl t -> t.symbolSupplier = sema.symbolSupplier(binding);
-      case JavaTree.ImportTreeImpl t -> t.symbolSupplier = binding == null || binding.getKind() == IBinding.PACKAGE
-        || binding.getKind() == IBinding.MODULE ? () -> null : sema.symbolSupplier(binding);
+      case JavaTree.ImportTreeImpl t -> t.symbolSupplier = (binding == null || binding.getKind() == IBinding.PACKAGE || binding.getKind() == IBinding.MODULE)
+        ? () -> null
+        : sema.symbolSupplier(binding);
       default -> throw new IllegalArgumentException("No symbol attachment: " + tree.getClass());
     }
   }

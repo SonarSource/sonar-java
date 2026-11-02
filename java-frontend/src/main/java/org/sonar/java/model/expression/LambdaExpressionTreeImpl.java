@@ -17,23 +17,22 @@
 package org.sonar.java.model.expression;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Supplier;
+import javax.annotation.Nullable;
 import org.sonar.java.cfg.CFG;
-import org.sonar.java.model.SemanticValues;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.SemanticValues;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Supplier;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 public class LambdaExpressionTreeImpl extends AssessableExpressionTree implements LambdaExpressionTree {
 

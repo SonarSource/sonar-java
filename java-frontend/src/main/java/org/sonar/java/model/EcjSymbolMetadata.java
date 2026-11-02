@@ -55,8 +55,7 @@ final class EcjSymbolMetadata {
     return metadata(sema, owner, symbolAnnotations, parameterMetaDatas, true);
   }
 
-  private static JSymbolMetadata metadata(JSema sema, Symbol owner, IAnnotationBinding[] bindings,
-    JSymbolMetadata[] parameters, boolean typeArgument) {
+  private static JSymbolMetadata metadata(JSema sema, Symbol owner, IAnnotationBinding[] bindings, JSymbolMetadata[] parameters, boolean typeArgument) {
     return new JSymbolMetadata(owner, () -> Arrays.stream(bindings).map(sema::annotation).collect(Collectors.toList()), parameters, typeArgument);
   }
 

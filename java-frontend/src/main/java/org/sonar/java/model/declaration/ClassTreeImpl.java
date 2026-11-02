@@ -16,12 +16,15 @@
  */
 package org.sonar.java.model.declaration;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Supplier;
+import javax.annotation.Nullable;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
-import org.sonar.java.model.SemanticValues;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.SemanticValues;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -35,11 +38,7 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Supplier;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 public class ClassTreeImpl extends JavaTree implements ClassTree {
 

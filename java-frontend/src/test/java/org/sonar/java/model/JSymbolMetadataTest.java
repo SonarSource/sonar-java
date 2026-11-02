@@ -57,6 +57,15 @@ import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityType
 
 class JSymbolMetadataTest {
 
+  private static final Path NULLABILITY_SOURCE_DIR = JParserTestUtils.CHECKS_TEST_DIR
+    .resolve(Paths.get("src", "main", "java", "annotations", "nullability"));
+
+  private static final Pattern NULLABILITY_ID_PATTERN = Pattern.compile("id\\d++" +
+    "_type_(?<type>NO_ANNOTATION|UNKNOWN|STRONG_NULLABLE|WEAK_NULLABLE|NON_NULL)" +
+    "(?:_level_(?<level>UNKNOWN|PACKAGE|CLASS|METHOD|VARIABLE))?" +
+    "(?<meta>_meta)?" +
+    "(?:_line_(?<line>empty|\\d++))?");
+
   @Test
   void flattened_annotations_are_independent_of_exposed_metadata_collections() {
     Symbol owner = mock(Symbol.class);
@@ -71,15 +80,6 @@ class JSymbolMetadataTest {
     parameters[0] = new JSymbolMetadata(owner, List.of());
     assertThat(outer.annotations()).containsExactly(outerAnnotation, argumentAnnotation);
   }
-
-  private static final Path NULLABILITY_SOURCE_DIR = JParserTestUtils.CHECKS_TEST_DIR
-    .resolve(Paths.get("src", "main", "java", "annotations", "nullability"));
-
-  private static final Pattern NULLABILITY_ID_PATTERN = Pattern.compile("id\\d++" +
-    "_type_(?<type>NO_ANNOTATION|UNKNOWN|STRONG_NULLABLE|WEAK_NULLABLE|NON_NULL)" +
-    "(?:_level_(?<level>UNKNOWN|PACKAGE|CLASS|METHOD|VARIABLE))?" +
-    "(?<meta>_meta)?" +
-    "(?:_line_(?<line>empty|\\d++))?");
 
   @Test
   void should_convert_annotation_values() {
