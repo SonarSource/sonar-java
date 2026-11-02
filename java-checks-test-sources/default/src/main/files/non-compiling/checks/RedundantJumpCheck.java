@@ -1,4 +1,5 @@
 import java.util.function.IntSupplier;
+import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 
 abstract class A {
@@ -428,6 +429,19 @@ abstract class A {
         System.out.println("cleanup");
       }
       System.out.println(x);
+    };
+  }
+
+  IntUnaryOperator continueInSwitchExpressionLambda() {
+    return x -> switch (x) {
+      default -> {
+        for (int i = 0; i < x; i++) {
+          System.out.println(i);
+          continue; // Noncompliant {{Remove this redundant jump.}}
+//        ^^^^^^^^^
+        }
+        yield x;
+      }
     };
   }
 }

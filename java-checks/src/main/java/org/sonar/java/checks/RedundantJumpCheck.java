@@ -42,15 +42,16 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    Tree body;
+    CFG cfg = null;
     if (tree instanceof MethodTree methodTree) {
-      body = methodTree.block();
+      if (methodTree.block() != null) {
+        cfg = (CFG) methodTree.cfg();
+      }
     } else {
-      LambdaExpressionTree lambdaExpressionTree = (LambdaExpressionTree) tree;
-      body = lambdaExpressionTree.body();
+      // Expression-bodied lambdas can contain redundant continue statements in loops inside switch expressions.
+      cfg = (CFG) ((LambdaExpressionTree) tree).cfg();
     }
-    if (body != null) {
-      CFG cfg = tree instanceof MethodTree methodTree ? (CFG) methodTree.cfg() : (CFG) ((LambdaExpressionTree) tree).cfg();
+    if (cfg != null) {
       cfg.blocks().forEach(this::checkBlock);
     }
   }
