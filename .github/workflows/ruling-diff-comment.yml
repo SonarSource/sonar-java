@@ -45,7 +45,7 @@ jobs:
           enable-cache: true
 
       - name: Post ruling diff comment
-        uses: SonarSource/core-languages-tooling-public/ruling-diff-comment@ec8eabc301ba683bc325e725127b0ab79a50a099
+        uses: SonarSource/core-languages-tooling-public/ruling-diff-comment@master
         with:
           pr-number: ${{ inputs.pr-number || github.event.pull_request.number }}
           repository: ${{ github.repository }}
