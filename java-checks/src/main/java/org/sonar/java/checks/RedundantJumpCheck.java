@@ -24,6 +24,7 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.cfg.CFGUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -35,14 +36,21 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
   public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(
       Tree.Kind.METHOD,
-      Tree.Kind.CONSTRUCTOR);
+      Tree.Kind.CONSTRUCTOR,
+      Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    MethodTree methodTree = (MethodTree) tree;
-    if (methodTree.block() != null) {
-      CFG cfg = (CFG) methodTree.cfg();
+    Tree body;
+    if (tree instanceof MethodTree methodTree) {
+      body = methodTree.block();
+    } else {
+      LambdaExpressionTree lambdaExpressionTree = (LambdaExpressionTree) tree;
+      body = lambdaExpressionTree.body();
+    }
+    if (body != null) {
+      CFG cfg = tree instanceof MethodTree methodTree ? (CFG) methodTree.cfg() : (CFG) ((LambdaExpressionTree) tree).cfg();
       cfg.blocks().forEach(this::checkBlock);
     }
   }
