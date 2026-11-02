@@ -165,6 +165,8 @@ fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
         "retParam": returned,
         "retSelf": returned.is_some_and(|index| parameters[index].1 == name),
         "paramVars": m.signature.as_deref().map(|s| parameter_variables(s, &parameters)),
+        "paramTypes": m.signature.as_deref().map(parameter_types),
+        "typeVars": m.signature.as_deref().map(|s| type_parameters(s).into_iter().map(|(name, _)| name).collect::<Vec<_>>()),
       })
     })
     .collect();
@@ -187,6 +189,7 @@ fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
     "super": ty.super_class,
     "interfaces": ty.interfaces,
     "typeParameters": parameters.len(),
+    "typeVars": parameters.iter().map(|(name, _)| name).collect::<Vec<_>>(),
     "members": members,
   });
   if let (Some(signature), Some(object)) = (ty.signature.as_deref(), info.as_object_mut()) {
@@ -403,6 +406,21 @@ fn parameter_variables(signature: &str, parameters: &[(String, String)]) -> Vec<
       None => String::new(),
     });
     i = end;
+  }
+  out
+}
+
+/// The declared parameter types of a method `Signature`, as type facts keeping the type variables
+/// they are written in terms of, so that the caller can substitute them for the receiver's arguments.
+fn parameter_types(signature: &str) -> Vec<Value> {
+  let bytes = signature.as_bytes();
+  let Some(open) = signature.find('(') else {
+    return Vec::new();
+  };
+  let mut i = open + 1;
+  let mut out = Vec::new();
+  while i < bytes.len() && bytes[i] != b')' {
+    out.push(signature_type(signature, &mut i));
   }
   out
 }

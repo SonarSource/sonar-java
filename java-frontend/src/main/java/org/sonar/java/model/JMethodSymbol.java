@@ -16,6 +16,7 @@
  */
 package org.sonar.java.model;
 
+import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -42,6 +43,8 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   private boolean returnsSelf;
   @Nullable
   private List<String> parameterVariables;
+  @Nullable
+  private List<JsonObject> declaredParameters;
   private List<MethodSymbol> overridden;
   @Nullable
   private List<Type> thrownTypes;
@@ -103,6 +106,15 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     return parameterVariables;
   }
 
+  void declaredParameters(List<JsonObject> declaredParameters) {
+    this.declaredParameters = declaredParameters;
+  }
+
+  @Nullable
+  List<JsonObject> declaredParameters() {
+    return declaredParameters;
+  }
+
   /**
    * A per-invocation view with substituted parameter and return types. Equality stays on the SemSitter id,
    * so the view still denotes the same method as the declaration.
@@ -113,6 +125,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     view.addModifiers(modifiersCopy());
     view.parameterTypes = List.copyOf(parameterTypes);
     view.parameterVariables = parameterVariables;
+    view.declaredParameters = declaredParameters;
     view.returnTypeSymbol = returnType.symbol();
     view.varArgs = varArgs;
     view.lambda = lambda;

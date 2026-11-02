@@ -422,7 +422,83 @@ public final class JSema implements Sema {
         result.set(i, type);
       }
     }
+    substituteDeclaredParameters(method, receiver, variables, result);
     return result;
+  }
+
+  /**
+   * Fills in the parameters that are not a type variable on their own but are written in terms of one,
+   * such as {@code Consumer<T>}. Their declared form is substituted for the arguments the receiver gives
+   * the declaring type, which may be a supertype of the receiver's own type.
+   */
+  private void substituteDeclaredParameters(JMethodSymbol method, @Nullable Type receiver, List<String> variables, List<Type> result) {
+    List<JsonObject> declared = declaredParameters(method);
+    if (declared.size() != result.size() || receiver == null) {
+      return;
+    }
+    Map<String, Type> substitution = classSubstitution(method, receiver);
+    if (substitution.isEmpty()) {
+      return;
+    }
+    for (int i = 0; i < declared.size(); i++) {
+      if (variables.isEmpty() || variables.get(i).isEmpty()) {
+        result.set(i, typeFromFact(declared.get(i), substitution));
+      }
+    }
+  }
+
+  /** Maps the type variables of the type declaring {@code method} to the arguments {@code receiver} gives them. */
+  private Map<String, Type> classSubstitution(JMethodSymbol method, Type receiver) {
+    String ownerFqn = method.owner().type().erasure().fullyQualifiedName();
+    JsonObject info = typeInfos.get(sourceName(ownerFqn));
+    List<String> names = info == null ? List.of() : strings(info, "typeVars");
+    if (names.isEmpty()) {
+      return Map.of();
+    }
+    Type declaring = asSuperType(receiver, ownerFqn, new HashSet<>());
+    if (declaring == null || !declaring.isParameterized()) {
+      return Map.of();
+    }
+    List<Type> arguments = declaring.typeArguments();
+    Map<String, Type> substitution = new HashMap<>();
+    for (int i = 0; i < names.size() && i < arguments.size(); i++) {
+      substitution.put(names.get(i), arguments.get(i));
+    }
+    return substitution;
+  }
+
+  /** The instantiation of {@code targetFqn} reached from {@code from}, which is itself or one of its supertypes. */
+  @Nullable
+  private Type asSuperType(Type from, String targetFqn, Set<String> visited) {
+    if (from.erasure().fullyQualifiedName().equals(targetFqn)) {
+      return from;
+    }
+    Symbol.TypeSymbol symbol = from.symbol();
+    if (symbol.isUnknown() || !visited.add(from.erasure().fullyQualifiedName())) {
+      return null;
+    }
+    List<Type> supertypes = new ArrayList<>(symbol.interfaces());
+    Type superClass = symbol.superClass();
+    if (superClass != null) {
+      supertypes.add(0, superClass);
+    }
+    for (Type supertype : supertypes) {
+      Type found = asSuperType(supertype, targetFqn, visited);
+      if (found != null) {
+        return found;
+      }
+    }
+    return null;
+  }
+
+  private List<JsonObject> declaredParameters(JMethodSymbol method) {
+    List<JsonObject> cached = method.declaredParameters();
+    if (cached == null) {
+      JsonObject member = lookupGenericMember(method);
+      cached = member == null ? List.of() : objects(member, "paramTypes");
+      method.declaredParameters(cached);
+    }
+    return cached;
   }
 
   @Nullable
@@ -467,13 +543,25 @@ public final class JSema implements Sema {
   }
 
   private List<String> lookupParameterVariables(JMethodSymbol method) {
+    JsonObject member = lookupGenericMember(method);
+    if (member == null) {
+      return List.of();
+    }
+    List<String> variables = new ArrayList<>();
+    member.getAsJsonArray("paramVars").forEach(v -> variables.add(v.getAsString()));
+    return variables;
+  }
+
+  /** The loaded declaration of {@code method}, when its declaring type is known and carries a generic signature. */
+  @Nullable
+  private JsonObject lookupGenericMember(JMethodSymbol method) {
     String ownerFqn = method.owner().type().erasure().fullyQualifiedName();
     if (!declaresType(ownerFqn)) {
-      return List.of();
+      return null;
     }
     JsonArray members = typeInfos.get(sourceName(ownerFqn)).getAsJsonArray("members");
     if (members == null) {
-      return List.of();
+      return null;
     }
     List<String> erased = method.parameterTypes().stream().map(t -> t.erasure().fullyQualifiedName()).toList();
     for (JsonElement element : members) {
@@ -481,12 +569,10 @@ public final class JSema implements Sema {
       String descriptor = text(member, "desc");
       if (method.name().equals(text(member, "name")) && descriptor != null && member.has("paramVars") && member.get("paramVars").isJsonArray()
         && parameterTypesOf(descriptor).stream().map(t -> t.erasure().fullyQualifiedName()).toList().equals(erased)) {
-        List<String> variables = new ArrayList<>();
-        member.getAsJsonArray("paramVars").forEach(v -> variables.add(v.getAsString()));
-        return variables;
+        return member;
       }
     }
-    return List.of();
+    return null;
   }
 
   Symbol memberFromTypeInfo(JTypeSymbol owner, JsonObject member) {
@@ -1111,12 +1197,20 @@ public final class JSema implements Sema {
   }
 
   private JType typeFromFact(JsonObject fact) {
+    return typeFromFact(fact, Map.of());
+  }
+
+  private JType typeFromFact(JsonObject fact, Map<String, Type> substitution) {
     String kind = text(fact, "kind");
     if (ARRAY.equals(kind) && fact.getAsJsonObject("elem") != null) {
-      return JType.array(this, typeFromFact(fact.getAsJsonObject("elem")));
+      return JType.array(this, typeFromFact(fact.getAsJsonObject("elem"), substitution));
     }
     if ("typevar".equals(kind)) {
       String id = text(fact, "id");
+      Type substituted = substitution.get(id);
+      if (substituted != null) {
+        return asJType(substituted);
+      }
       int open = id == null ? -1 : id.lastIndexOf('<');
       String name = open >= 0 && id.endsWith(">") ? id.substring(open + 1, id.length() - 1) : id;
       return JType.typeVar(this, name == null ? "" : name, id);
@@ -1132,7 +1226,7 @@ public final class JSema implements Sema {
     if (fact.has("args")) {
       for (JsonElement arg : fact.getAsJsonArray("args")) {
         if (arg.isJsonObject()) {
-          args.add(typeFromFact(arg.getAsJsonObject()));
+          args.add(typeFromFact(arg.getAsJsonObject(), substitution));
         }
       }
     }
