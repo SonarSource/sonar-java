@@ -26,7 +26,6 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
-import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -230,7 +229,7 @@ abstract class JSymbol implements Symbol {
         case CLASS,
              RECORD,
              ENUM:
-          JTypeSymbol typeSymbol = sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
+          JTypeSymbol typeSymbol = sema.typeSymbol(EcjTreeBindings.typeBinding(node));
           if (initializerBlock) {
             return sema.initializerBlockSymbol(typeSymbol);
           }
@@ -460,7 +459,7 @@ abstract class JSymbol implements Symbol {
              ENUM:
           // variable declaration in a static or instance initializer
           // or local variable declaration in recovered method
-          return sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
+          return sema.typeSymbol(EcjTreeBindings.typeBinding(node));
         default:
           // continue exploring parent
           break;

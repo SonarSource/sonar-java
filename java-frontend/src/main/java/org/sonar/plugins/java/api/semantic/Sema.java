@@ -20,4 +20,12 @@ public interface Sema {
 
   Type getClassType(String fullyQualifiedName);
 
+  /**
+   * Returns an operation that releases owned semantic resources. Run it only after all lazy
+   * queries have finished. The default implementation owns no resources.
+   */
+  default Runnable getEnvironmentCleaner() {
+    return () -> {};
+  }
+
 }

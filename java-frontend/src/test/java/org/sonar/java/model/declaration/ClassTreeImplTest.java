@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.model.EcjTestSupport.clearType;
 import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 
 class ClassTreeImplTest {
@@ -37,7 +38,7 @@ class ClassTreeImplTest {
   void get_symbol_return_unknown_when_type_binding_is_null() {
     var classTree = (ClassTreeImpl) JParserTestUtils.parse("class A {}").types().get(0);
     // simulate source code with type binding problems
-    classTree.typeBinding = null;
+    clearType(classTree);
     assertThat(classTree.symbol().isUnknown()).isTrue();
   }
 
