@@ -14,6 +14,42 @@ class DoubleCheckedLockingCheckSample {
     return helper;
   }
 
+  public Helper classicCaseNegated() {
+    if (!(helper != null))
+//      ^^^^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
+        if (helper == null)
+//          ^^^^^^^^^^^^^^<
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper classicCaseInnerNegated() {
+    if (helper == null)
+//      ^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
+        if (!(helper != null))
+//          ^^^^^^^^^^^^^^^^^<
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper classicCaseRepeatedNegations() {
+    if (((!!(helper == null))))
+//      ^^^^^^^^^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
+        if (!(!(!(helper != null))))
+//          ^^^^^^^^^^^^^^^^^^^^^^^<
+          helper = new Helper();
+      }
+    return helper;
+  }
+
   public Helper fieldIsNotActuallyInitializedHere() {
     if (helper == null)
       synchronized (this) { // Compliant - field is not initialized in this method actually
@@ -245,6 +281,24 @@ class DoubleCheckedLockingCheckSampleCompliant {
     if (helper == null)
       synchronized (this) { // Compliant
         if (helper == null)
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper negatedNullEqualityOuter() {
+    if (!(helper == null))
+      synchronized (this) { // Compliant
+        if (helper == null)
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper doubleNegatedNotEqualInner() {
+    if (helper == null)
+      synchronized (this) {
+        if (!!(helper != null))
           helper = new Helper();
       }
     return helper;
