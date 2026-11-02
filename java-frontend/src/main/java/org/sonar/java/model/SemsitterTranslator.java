@@ -1399,7 +1399,11 @@ final class SemsitterTranslator {
   }
 
   private void ascribeArguments(Symbol.MethodSymbol method, List<ExpressionTree> arguments) {
-    List<Type> parameters = method.parameterTypes();
+    ascribeArguments(method, method.parameterTypes(), arguments);
+  }
+
+  /** Types the arguments from the declared parameters, substituted for the receiver's type arguments when the call is generic. */
+  private void ascribeArguments(Symbol.MethodSymbol method, List<Type> parameters, List<ExpressionTree> arguments) {
     for (int i = 0; i < arguments.size() && !parameters.isEmpty(); i++) {
       Type parameter = parameters.get(Math.min(i, parameters.size() - 1));
       if (method.isVarArgsMethod() && i >= parameters.size() - 1 && parameter.isArray() && arguments.size() != parameters.size()) {
@@ -1573,9 +1577,10 @@ final class SemsitterTranslator {
       }
     }
     if (identifier.symbol instanceof JMethodSymbol method) {
-      ascribeArguments(method, tree.arguments());
+      List<Type> parameters = sema.invocationParameters(method, receiver, argumentTypes(tree.arguments()));
+      ascribeArguments(method, parameters, tree.arguments());
       Type returned = sema.invocationReturn(method, receiver);
-      JMethodSymbol view = method.withSignature(sema.invocationParameters(method, receiver, argumentTypes(tree.arguments())), returned);
+      JMethodSymbol view = method.withSignature(parameters, returned);
       tree.methodSymbol = view;
       identifier.symbol = view;
       ascribe(identifier, returned);
