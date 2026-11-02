@@ -467,6 +467,8 @@ final class SemsitterTranslator {
       } else if (kind == Tree.Kind.ENUM) {
         declared.superName("java.lang.Enum");
       }
+      declared.declaredSupertypes(tree.superClass() == null ? null : tree.superClass().symbolType(),
+        tree.superInterfaces().stream().map(TypeTree::symbolType).toList());
     }
     return tree;
   }

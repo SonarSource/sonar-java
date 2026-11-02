@@ -40,10 +40,39 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
   @Nullable
   private String elementFqn;
   private Collection<Symbol> members;
+  @Nullable
+  private Type declaredSuperClass;
+  private List<Type> declaredInterfaces = List.of();
+  @Nullable
+  private JTypeSymbol generic;
 
   JTypeSymbol(JSema sema, @Nullable String id, String name, boolean typeParameter) {
     super(sema, Kind.TYPE, id, name);
     this.typeParameter = typeParameter;
+  }
+
+  /**
+   * A view of this generic type symbol whose {@link #type()} is the given parameterization,
+   * so that {@code type.symbol().type()} keeps the type arguments.
+   */
+  JTypeSymbol parameterizedAs(JType parameterized) {
+    JTypeSymbol view = new JTypeSymbol(sema, id, name(), typeParameter);
+    view.copyStateFrom(this);
+    view.type(parameterized);
+    view.typeParameterCount = typeParameterCount;
+    view.superName = superName;
+    view.interfaceNames = interfaceNames;
+    view.memberFacts = memberFacts;
+    view.elementFqn = elementFqn;
+    view.declaredSuperClass = declaredSuperClass;
+    view.declaredInterfaces = declaredInterfaces;
+    view.generic = this;
+    return view;
+  }
+
+  void declaredSupertypes(@Nullable Type superClass, List<Type> interfaces) {
+    this.declaredSuperClass = superClass;
+    this.declaredInterfaces = List.copyOf(interfaces);
   }
 
   boolean isTypeParameter() {
@@ -95,7 +124,11 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     if (superName == null || superName.isEmpty() || inheritsFrom(erased)) {
       return sema.getClassType("java.lang.Object");
     }
-    return sema.getClassType(JSema.erase(superName));
+    return withDeclaredArguments(sema.getClassType(JSema.erase(superName)), declaredSuperClass == null ? List.of() : List.of(declaredSuperClass));
+  }
+
+  private static Type withDeclaredArguments(Type erased, List<Type> declared) {
+    return declared.stream().filter(type -> type.isParameterized() && type.erasure().equals(erased)).findFirst().orElse(erased);
   }
 
   private boolean inheritsFrom(String erasedSelf) {
@@ -123,13 +156,16 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     }
     List<Type> types = new ArrayList<>();
     for (String name : interfaceNames) {
-      types.add(sema.getClassType(JSema.erase(name)));
+      types.add(withDeclaredArguments(sema.getClassType(JSema.erase(name)), declaredInterfaces));
     }
     return types;
   }
 
   @Override
   public Collection<Symbol> memberSymbols() {
+    if (generic != null) {
+      return generic.memberSymbols();
+    }
     if (members == null) {
       List<Symbol> resolved = new ArrayList<>();
       for (JsonObject member : memberFacts) {

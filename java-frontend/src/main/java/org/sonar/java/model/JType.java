@@ -127,7 +127,7 @@ final class JType implements Type, Type.ArrayType {
     if (isPrimitive() || superType.isPrimitive() || isTypeVar()) {
       return false;
     }
-    Symbol.TypeSymbol owner = symbol();
+    Symbol.TypeSymbol owner = declaredSymbol();
     if (owner.isUnknown()) {
       return false;
     }
@@ -236,7 +236,7 @@ final class JType implements Type, Type.ArrayType {
     if (kind != Kind.NAMED || isUnknown()) {
       return false;
     }
-    Symbol.TypeSymbol owner = symbol();
+    Symbol.TypeSymbol owner = declaredSymbol();
     return owner instanceof JTypeSymbol typeSymbol && typeSymbol.typeParameterCount() > 0 && args.isEmpty();
   }
 
@@ -254,7 +254,7 @@ final class JType implements Type, Type.ArrayType {
       return true;
     }
     if (kind == Kind.NAMED) {
-      Symbol.TypeSymbol owner = symbol();
+      Symbol.TypeSymbol owner = declaredSymbol();
       return owner.isUnknown();
     }
     return false;
@@ -289,6 +289,11 @@ final class JType implements Type, Type.ArrayType {
 
   @Override
   public Symbol.TypeSymbol symbol() {
+    Symbol.TypeSymbol declared = declaredSymbol();
+    return !args.isEmpty() && declared instanceof JTypeSymbol generic ? generic.parameterizedAs(this) : declared;
+  }
+
+  private Symbol.TypeSymbol declaredSymbol() {
     return switch (kind) {
       case ARRAY -> sema.arraySymbol(element);
       case PRIMITIVE, VOID -> sema.primitiveSymbol(fqn);
