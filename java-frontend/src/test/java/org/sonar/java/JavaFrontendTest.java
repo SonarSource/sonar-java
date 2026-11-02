@@ -612,6 +612,22 @@ class JavaFrontendTest {
     "sonar.java.experimental.batchModeSizeInKB,1000",
     "sonar.internal.analysis.autoscan,true"
   })
+  void visitor_cancellation_does_not_retry_a_batch_callback(String propertyName, String propertyValue) {
+    mainCodeIssueScannerAndFilter.exceptionDuringScan = new OperationCanceledException("cancelled during visit");
+    MapSettings settings = new MapSettings();
+    settings.setProperty(propertyName, propertyValue);
+    assertThatThrownBy(() -> scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B {}"))
+      .isInstanceOf(AnalysisException.class).hasMessage("Analysis cancelled").hasCauseInstanceOf(OperationCanceledException.class);
+    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
+    assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
+    assertThat(logTester.logs(Level.WARN)).noneMatch(message -> message.contains("Fallback to file by file"));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "sonar.java.experimental.batchModeSizeInKB,1000",
+    "sonar.internal.analysis.autoscan,true"
+  })
   void should_handle_compilation_error_in_batch_mode(String propertyName, String propertyValue) throws IOException {
     MapSettings settings = new MapSettings();
     settings.setProperty(propertyName, propertyValue);
@@ -854,6 +870,8 @@ class JavaFrontendTest {
       this.scannerContext = scannerContext;
       scanFileInvocationCount++;
       lastScannedTree = scannerContext.getTree();
+      String expectedSema = "JSema";
+      assertThat(((org.sonar.java.model.JavaTree.CompilationUnitTreeImpl) lastScannedTree).sema.getClass().getSimpleName()).isEqualTo(expectedSema);
       if (isCancelled) {
         sensorContext.setCancelled(true);
       }

@@ -24,8 +24,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.stream.StreamSupport;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jdt.core.dom.ASTParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
@@ -97,12 +97,8 @@ public abstract class JParserConfig {
     }
   }
 
-  public ASTParser astParser() {
-    return EcjFrontendBackend.newParser(configuration);
-  }
-
   FrontendBackend backend() {
-    return new EcjFrontendBackend(this::astParser);
+    return new PsiFrontendBackend();
   }
 
   final FrontendSession openSession() {
@@ -133,6 +129,8 @@ public abstract class JParserConfig {
           Result result;
           try {
             result = new Result(unit.convert());
+          } catch (OperationCanceledException e) {
+            throw e;
           } catch (Exception e) {
             result = new Result(e);
           }
@@ -151,6 +149,9 @@ public abstract class JParserConfig {
       } catch (OperationCanceledException e) {
         throw e;
       } catch (RuntimeException e) {
+        if (Thread.currentThread().isInterrupted() || ExceptionUtils.getThrowableList(e).stream().anyMatch(OperationCanceledException.class::isInstance)) {
+          throw e;
+        }
         LOG.warn("Unexpected {}: {}", e.getClass().getSimpleName(), e.getMessage());
         if (!notYetAnalyzedFiles.isEmpty()) {
           fallbackToFileByFileMode(notYetAnalyzedFiles.stream().toList(), isCanceled, action);
@@ -166,6 +167,9 @@ public abstract class JParserConfig {
     private void fallbackToFileByFileMode(List<InputFile> inputFiles, BooleanSupplier isCanceled, BiConsumer<InputFile, Result> action) {
       LOG.warn("Fallback to file by file analysis for {} files", inputFiles.size());
       for (InputFile inputFile : inputFiles) {
+        if (Thread.currentThread().isInterrupted()) {
+          throw new OperationCanceledException("Java analysis interrupted");
+        }
         if (isCanceled.getAsBoolean()) {
           break;
         }
@@ -197,6 +201,9 @@ public abstract class JParserConfig {
       progressReport.start(filesNames);
       try {
         for (InputFile inputFile : inputFiles) {
+          if (Thread.currentThread().isInterrupted()) {
+            throw new OperationCanceledException("Java analysis interrupted");
+          }
           if (isCanceled.getAsBoolean()) {
             cancelled = true;
             break;
@@ -224,6 +231,8 @@ public abstract class JParserConfig {
       PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
       try {
         result = new Result(session.parse(inputFile.filename(), inputFile.contents()));
+      } catch (OperationCanceledException e) {
+        throw e;
       } catch (Exception e) {
         result = new Result(e);
       } finally {

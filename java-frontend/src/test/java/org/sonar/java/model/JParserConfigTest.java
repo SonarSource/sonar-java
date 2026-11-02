@@ -23,11 +23,29 @@ import org.slf4j.event.Level;
 import org.sonar.java.testing.ThreadLocalLogTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.sonar.java.model.JParserConfig.shouldEnablePreviewFlag;
 
 class JParserConfigTest {
   @RegisterExtension
   public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.INFO);
+
+  @Test
+  void psi_is_the_only_frontend_even_with_legacy_selection_properties() {
+    String previous = System.getProperty("sonar.java.frontend");
+    try {
+      for (String value : java.util.List.of("ecj", "psi", "invalid")) {
+        System.setProperty("sonar.java.frontend", value);
+        assertThat(JParserConfig.Mode.BATCH.create(new JavaVersionImpl(21), Collections.emptyList()).backend()).isInstanceOf(PsiFrontendBackend.class);
+      }
+    } finally {
+      if (previous == null) {
+        System.clearProperty("sonar.java.frontend");
+      } else {
+        System.setProperty("sonar.java.frontend", previous);
+      }
+    }
+  }
 
   @Test
   void should_enable_preview() {

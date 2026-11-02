@@ -16,156 +16,134 @@
  */
 package org.sonar.java.model;
 
-import java.util.Collections;
-import java.util.List;
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.JavaTokenType;
+import com.intellij.psi.PsiAssignmentExpression;
+import com.intellij.psi.PsiClassInitializer;
+import com.intellij.psi.PsiField;
+import com.intellij.psi.PsiLambdaExpression;
+import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiParameter;
+import com.intellij.psi.PsiPostfixExpression;
+import com.intellij.psi.PsiPrefixExpression;
+import com.intellij.psi.PsiReferenceExpression;
+import com.intellij.psi.PsiResourceVariable;
+import com.intellij.psi.PsiSubstitutor;
+import com.intellij.psi.PsiVariable;
+import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.psi.util.PsiUtil;
 import java.util.Optional;
-import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
+  private final PsiVariable variable;
+  final PsiSubstitutor substitutor;
 
-  // cache for this.constantValue()
-  private boolean constantValueComputed = false;
-  private Optional<Object> constantValue;
-
-  JVariableSymbol(JSema sema, IVariableBinding variableBinding) {
-    super(sema, variableBinding);
+  JVariableSymbol(JSema sema, PsiVariable variable, PsiSubstitutor substitutor, String key) {
+    super(sema, variable, key);
+    this.variable = variable;
+    this.substitutor = substitutor;
   }
 
-  @Nullable
+  @Override
+  public Type type() {
+    return sema.read(() -> {
+      var type = sema.type(substitutor.substitute(variable.getType()));
+      var original = variable.getContainingFile().getOriginalFile();
+      boolean resource = variable instanceof PsiResourceVariable || original != variable.getContainingFile()
+        && PsiTreeUtil.getParentOfType(original.findElementAt(variable.getTextRange().getStartOffset()), PsiResourceVariable.class) != null;
+      return resource && !type.isUnknown() && !type.isSubtypeOf("java.lang.AutoCloseable") ? Type.UNKNOWN : type;
+    });
+  }
+
+  @Override
+  public Symbol owner() {
+    return sema.read(() -> {
+      if (variable instanceof PsiField field) {
+        var cls = field.getContainingClass();
+        return PsiUtil.isArrayClass(cls) ? Symbol.UNKNOWN_SYMBOL
+          : sema.type(JavaPsiFacade.getElementFactory(sema.project).createType(cls, substitutor)).symbol();
+      }
+      return super.owner();
+    });
+  }
+
   @Override
   public VariableTree declaration() {
     return (VariableTree) super.declaration();
   }
 
   @Override
-  public boolean isEffectivelyFinal() {
-    return ((IVariableBinding)binding).isEffectivelyFinal();
-  }
-
-  @Override
-  public Optional<Object> constantValue() {
-    if (!constantValueComputed) {
-      constantValueComputed = true;
-      if (!isFinal() || !isStatic()) {
-        constantValue = Optional.empty();
-      } else {
-        Object c = ((IVariableBinding) binding).getConstantValue();
-        if (c instanceof Short shortValue) {
-          c = Integer.valueOf(shortValue);
-        } else if (c instanceof Byte byteValue) {
-          c = Integer.valueOf(byteValue);
-        } else if (c instanceof Character characterValue) {
-          c = Integer.valueOf(characterValue);
-        }
-        constantValue = Optional.ofNullable(c);
-      }
-    }
-    return constantValue;
+  public TypeSymbol enclosingClass() {
+    return variable instanceof PsiField ? owner() instanceof TypeSymbol cls ? cls : TypeSymbol.UNKNOWN_TYPE : super.enclosingClass();
   }
 
   @Override
   public boolean isLocalVariable() {
-    Symbol owner = owner();
-    return owner != null && owner.isMethodSymbol();
+    return !isPlaceholder() && owner() instanceof Symbol.MethodSymbol;
   }
 
   @Override
   public boolean isParameter() {
-    return ((IVariableBinding) binding).isParameter();
+    return variable instanceof PsiParameter;
   }
 
+  private boolean isPlaceholder() {
+    return sema.read(() -> variable instanceof PsiParameter parameter && parameter.getDeclarationScope() instanceof PsiMethod
+      && !sema.declarations.containsKey(sema.key(variable)));
+  }
 
-  static class ParameterPlaceholderSymbol extends Symbols.DefaultSymbol implements Symbol.VariableSymbol {
-    private final String name;
-    private final Symbol owner;
-    private final Type type;
-    private final SymbolMetadata metadata;
+  @Override
+  public String name() {
+    return isPlaceholder() ? sema.read(() -> "arg" + ((PsiMethod) ((PsiParameter) variable).getDeclarationScope()).getParameterList().getParameterIndex((PsiParameter) variable)) : super.name();
+  }
 
-    ParameterPlaceholderSymbol(int index, JSema sema, IMethodBinding owner, ITypeBinding typeBinding) {
-      this.name = "arg" + index;
-      this.owner = sema.methodSymbol(owner);
-      this.type = sema.type(typeBinding);
-      this.metadata = EcjSymbolMetadata.of(sema, this, typeBinding, owner.getParameterAnnotations(index));
-    }
+  @Override
+  public boolean isFinal() {
+    return !isPlaceholder() && super.isFinal();
+  }
 
-    @Override
-    public String name() {
-      return name;
-    }
+  @Override
+  public boolean isEffectivelyFinal() {
+    return sema.read(() -> {
+      if (isPlaceholder() || isFinal() || variable instanceof PsiField) {
+        return false;
+      }
+      var scope = PsiTreeUtil.getParentOfType(variable, PsiMethod.class, PsiLambdaExpression.class, PsiClassInitializer.class);
+      if (scope == null) {
+        return false;
+      }
+      int assignments = 0;
+      for (var reference : PsiTreeUtil.findChildrenOfType(scope, PsiReferenceExpression.class)) {
+        if (reference.resolve() == variable) {
+          var parent = reference.getParent();
+          if (parent instanceof PsiAssignmentExpression assignment && assignment.getLExpression() == reference) {
+            assignments++;
+          } else if (parent instanceof PsiPostfixExpression || parent instanceof PsiPrefixExpression prefix
+            && (prefix.getOperationTokenType() == JavaTokenType.PLUSPLUS || prefix.getOperationTokenType() == JavaTokenType.MINUSMINUS)) {
+            return false;
+          }
+        }
+      }
+      return assignments == 0 || variable.getInitializer() == null && !(variable instanceof PsiParameter) && assignments == 1;
+    });
+  }
 
-    @Override
-    public Symbol owner() {
-      return owner;
-    }
-
-    @Override
-    public Type type() {
-      return type;
-    }
-
-    @Override
-    public boolean isUnknown() {
-      return false;
-    }
-
-    @Override
-    public TypeSymbol enclosingClass() {
-      return owner.enclosingClass();
-    }
-
-    @Override
-    public List<IdentifierTree> usages() {
-      return Collections.emptyList();
-    }
-
-    @Override
-    public VariableTree declaration() {
-      return null;
-    }
-
-    @Override
-    public boolean isEffectivelyFinal() {
-      return false;
-    }
-
-    @Override
-    public Optional<Object> constantValue() {
-      return Optional.empty();
-    }
-
-    @Override
-    public boolean isLocalVariable() {
-      return false;
-    }
-
-    @Override
-    public boolean isParameter() {
-      return true;
-    }
-
-    @Override
-    public SymbolMetadata metadata() {
-      return metadata;
-    }
-
-    @Override
-    public boolean isVariableSymbol() {
-      return true;
-    }
-
-    @Override
-    public boolean isFinal() {
-      // From a caller perspective, it is not useful (and even not possible) to know if the parameter is final.
-      return false;
-    }
-
+  @Override
+  public Optional<Object> constantValue() {
+    return sema.read(() -> {
+      if (!isStatic() || !isFinal()) {
+        return Optional.empty();
+      }
+      Object value = variable.computeConstantValue();
+      if (value instanceof Byte || value instanceof Short) {
+        value = ((Number) value).intValue();
+      } else if (value instanceof Character character) {
+        value = (int) character;
+      }
+      return Optional.ofNullable(value);
+    });
   }
 }

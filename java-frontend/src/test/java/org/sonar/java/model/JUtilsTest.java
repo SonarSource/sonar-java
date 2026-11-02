@@ -42,16 +42,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.model.EcjTestSupport.methodBinding;
-import static org.sonar.java.model.EcjTestSupport.sema;
-import static org.sonar.java.model.EcjTestSupport.typeBinding;
-import static org.sonar.java.model.EcjTestSupport.variableBinding;
 
 @TestResourceScope.Scoped
 class JUtilsTest {
 
-  static final JSema SEMA = sema(test(""));
-  private static final Type OBJECT_TYPE = SEMA.type(SEMA.resolveType("java.lang.Object"));
+  final org.sonar.plugins.java.api.semantic.Sema SEMA = test("").sema;
+  private final Type OBJECT_TYPE = SEMA.getClassType("java.lang.Object");
 
   @Test
   void semantic_helpers_use_the_existing_api_interfaces() {
@@ -74,7 +70,7 @@ class JUtilsTest {
   class PrimitiveType {
     @Test
     void java_lang_Byte() {
-      Type wrapperType = SEMA.type(SEMA.resolveType("java.lang.Byte"));
+      Type wrapperType = SEMA.getClassType("java.lang.Byte");
       Type primitiveType = wrapperType.primitiveType();
 
       assertThat(primitiveType).isNotNull();
@@ -91,7 +87,7 @@ class JUtilsTest {
   class PrimitiveWrapperType {
     @Test
     void java_lang_Byte() {
-      Type primitiveType = SEMA.type(SEMA.resolveType("byte"));
+      Type primitiveType = SEMA.getClassType("byte");
       Type wrapperType = primitiveType.primitiveWrapperType();
 
       assertThat(wrapperType).isNotNull();
@@ -106,7 +102,7 @@ class JUtilsTest {
 
   @Nested
   class IsPrimitiveWrapper {
-    private final Type primitiveType = SEMA.type(SEMA.resolveType("byte"));
+    private final Type primitiveType = SEMA.getClassType("byte");
 
     @Test
     void wrapper() {
@@ -123,7 +119,7 @@ class JUtilsTest {
 
     @Test
     void not_a_class() {
-      Type objectArrayType = SEMA.type(SEMA.resolveType("java.lang.Object[]"));
+      Type objectArrayType = SEMA.getClassType("java.lang.Object[]");
       assertThat(objectArrayType.isPrimitiveWrapper()).isFalse();
     }
   }
@@ -132,7 +128,7 @@ class JUtilsTest {
   class WrapTypeIfPrimitiveTest {
     @Test
     void prim_to_wrapped() {
-      Type primitiveType = SEMA.type(SEMA.resolveType("byte"));
+      Type primitiveType = SEMA.getClassType("byte");
       Type wrappedType = JUtils.wrapTypeIfPrimitive(primitiveType);
       assertThat(wrappedType).isNotNull();
       assertThat(wrappedType.isPrimitive()).isFalse();
@@ -141,7 +137,7 @@ class JUtilsTest {
 
     @Test
     void already_wrapped() {
-      Type boxedType = SEMA.type(SEMA.resolveType("java.lang.Byte"));
+      Type boxedType = SEMA.getClassType("java.lang.Byte");
       Type wrappedType = JUtils.wrapTypeIfPrimitive(boxedType);
       assertThat(wrappedType).isNotNull();
       assertThat(wrappedType.isPrimitive()).isFalse();
@@ -150,7 +146,7 @@ class JUtilsTest {
 
     @Test
     void unrelated() {
-      Type otherType = SEMA.type(SEMA.resolveType("java.lang.Object"));
+      Type otherType = SEMA.getClassType("java.lang.Object");
       Type wrappedType = JUtils.wrapTypeIfPrimitive(otherType);
       assertThat(wrappedType).isNotNull();
       assertThat(wrappedType.isPrimitive()).isFalse();
@@ -167,14 +163,14 @@ class JUtilsTest {
     void nullType() {
       ReturnStatementTreeImpl s = (ReturnStatementTreeImpl) m1.block().body().get(0);
       AbstractTypedTree e = (AbstractTypedTree) s.expression();
-      assertThat(sema(cu).type(typeBinding(e)).isNullType())
+      assertThat(SemanticTestSupport.type(e).isNullType())
         .isEqualTo(e.symbolType().isNullType())
         .isTrue();
     }
 
     @Test
     void a_non_null_type_is_not_null_type() {
-      assertThat(sema(cu).type(methodBinding(m1).getReturnType()).isNullType())
+      assertThat((SemanticTestSupport.method(m1).returnType().type()).isNullType())
         .isEqualTo(m1.returnType().symbolType().isNullType())
         .isFalse();
     }
@@ -182,7 +178,7 @@ class JUtilsTest {
     @Test
     void unresolved_type_is_not_null_type() {
       MethodTreeImpl m2 = nthMethod(c, 1);
-      assertThat(sema(cu).type(methodBinding(m2).getReturnType()).isNullType())
+      assertThat((SemanticTestSupport.method(m2).returnType().type()).isNullType())
         .isEqualTo(m2.returnType().symbolType().isNullType())
         .isFalse();
     }
@@ -205,14 +201,14 @@ class JUtilsTest {
     @Test
     void intersection_type() {
       TypeCastExpressionTreeImpl e = (TypeCastExpressionTreeImpl) f.initializer();
-      assertThat(JUtils.isIntersectionType(sema(cu).type(typeBinding(e))))
+      assertThat(JUtils.isIntersectionType(SemanticTestSupport.type(e)))
         .isEqualTo(JUtils.isIntersectionType(e.symbolType()))
         .isTrue();
     }
 
     @Test
     void non_intersection_type() {
-      assertThat(JUtils.isIntersectionType(sema(cu).type(variableBinding(f).getType())))
+      assertThat(JUtils.isIntersectionType((SemanticTestSupport.symbol(f).type())))
         .isEqualTo(JUtils.isIntersectionType(f.symbol().type()))
         .isFalse();
     }
@@ -220,7 +216,7 @@ class JUtilsTest {
     @Test
     void unresolved_type_is_not_an_intersection_type() {
       VariableTreeImpl u = nthField(c, 1);
-      assertThat(JUtils.isIntersectionType(sema(cu).type(variableBinding(u).getType())))
+      assertThat(JUtils.isIntersectionType((SemanticTestSupport.symbol(u).type())))
         .isEqualTo(JUtils.isIntersectionType(u.symbol().type()))
         .isFalse();
     }
@@ -234,7 +230,7 @@ class JUtilsTest {
     @Test
     void type_var() {
       VariableTreeImpl t = firstField(c);
-      assertThat(sema(cu).type(variableBinding(t).getType()).isTypeVar())
+      assertThat((SemanticTestSupport.symbol(t).type()).isTypeVar())
         .isEqualTo(t.symbol().type().isTypeVar())
         .isTrue();
     }
@@ -247,7 +243,7 @@ class JUtilsTest {
     @Test
     void unresolved_type_is_not_a_type_var() {
       VariableTreeImpl u = nthField(c, 1);
-      assertThat(sema(cu).type(variableBinding(u).getType()).isTypeVar())
+      assertThat((SemanticTestSupport.symbol(u).type()).isTypeVar())
         .isEqualTo(u.symbol().type().isTypeVar())
         .isFalse();
     }
@@ -411,22 +407,22 @@ class JUtilsTest {
       JavaTree.CompilationUnitTreeImpl specificCu = test("interface I { short SHORT = 42; char CHAR = 42; byte BYTE = 42; boolean BOOLEAN = false; }");
       ClassTreeImpl specificC = firstClass(specificCu);
 
-      Symbol.VariableSymbol shortConstant = sema(specificCu).variableSymbol(variableBinding(firstField(specificC)));
+      Symbol.VariableSymbol shortConstant = SemanticTestSupport.symbol(firstField(specificC));
       assertThat(shortConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
-      Symbol.VariableSymbol charConstant = sema(specificCu).variableSymbol(variableBinding(nthField(specificC, 1)));
+      Symbol.VariableSymbol charConstant = SemanticTestSupport.symbol(nthField(specificC, 1));
       assertThat(charConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
-      Symbol.VariableSymbol byteConstant = sema(specificCu).variableSymbol(variableBinding(nthField(specificC, 2)));
+      Symbol.VariableSymbol byteConstant = SemanticTestSupport.symbol(nthField(specificC, 2));
       assertThat(byteConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
-      Symbol.VariableSymbol booleanConstant = sema(specificCu).variableSymbol(variableBinding(nthField(specificC, 3)));
+      Symbol.VariableSymbol booleanConstant = SemanticTestSupport.symbol(nthField(specificC, 3));
       assertThat(booleanConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Boolean.class)
         .isEqualTo(Boolean.FALSE);
@@ -732,13 +728,13 @@ class JUtilsTest {
       ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) m.block().body().get(0);
       MethodInvocationTreeImpl methodInvocation = (MethodInvocationTreeImpl) s.expression();
 
-      assertThat(sema(cu).methodSymbol(methodBinding(m)).isParametrizedMethod())
+      assertThat(SemanticTestSupport.method(m).isParametrizedMethod())
         .isEqualTo(m.symbol().isParametrizedMethod())
-        .isEqualTo(methodBinding(m).isGenericMethod())
+        .isEqualTo(SemanticTestSupport.method(m).isParametrizedMethod())
         .isTrue();
-      assertThat(sema(cu).methodSymbol(methodBinding(methodInvocation)).isParametrizedMethod())
+      assertThat(SemanticTestSupport.method(methodInvocation).isParametrizedMethod())
         .isEqualTo(methodInvocation.methodSymbol().isParametrizedMethod())
-        .isEqualTo(methodBinding(methodInvocation).isParameterizedMethod())
+        .isEqualTo(SemanticTestSupport.method(methodInvocation).isParametrizedMethod())
         .isTrue();
     }
 

@@ -91,27 +91,27 @@ class ClassesLayoutTest {
 
   @Test
   void type() {
-    assertThat(countFields(JType.class)).isEqualTo(7);
+    assertThat(countFields(JType.class)).isEqualTo(3);
   }
 
   @Test
   void symbol_type() {
-    assertThat(countFields(JTypeSymbol.class)).isEqualTo(11);
+    assertThat(countFields(JTypeSymbol.class)).isEqualTo(7);
   }
 
   @Test
   void symbol_method() {
-    assertThat(countFields(JMethodSymbol.class)).isEqualTo(11);
+    assertThat(countFields(JMethodSymbol.class)).isEqualTo(7);
   }
 
   @Test
   void symbol_variable() {
-    assertThat(countFields(JVariableSymbol.class)).isEqualTo(7);
+    assertThat(countFields(JVariableSymbol.class)).isEqualTo(6);
   }
 
   @Test
-  void annotation() {
-    assertThat(countFields(EcjSymbolMetadata.JAnnotationInstance.class)).isEqualTo(3);
+  void annotation() throws Exception {
+    assertThat(countFields(Class.forName("org.sonar.java.model.JSymbolMetadata$Annotation"))).isEqualTo(2);
   }
 
   /** Count number of fields in instances, including inherited fields. */

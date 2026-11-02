@@ -16,11 +16,6 @@
  */
 package org.sonar.java.model;
 
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.IBinding;
-import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -47,15 +42,11 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.model.EcjTestSupport.methodBinding;
-import static org.sonar.java.model.EcjTestSupport.sema;
-import static org.sonar.java.model.EcjTestSupport.typeBinding;
-import static org.sonar.java.model.EcjTestSupport.variableBinding;
 import static org.sonar.java.model.assertions.SymbolAssert.assertThat;
 
 @TestResourceScope.Scoped
@@ -68,13 +59,13 @@ class JSymbolTest {
     MethodTreeImpl constructor = (MethodTreeImpl) c.members().get(0);
     MethodTreeImpl method = (MethodTreeImpl) c.members().get(1);
 
-    assertThat(sema(cu).typeSymbol(typeBinding(c)))
+    assertThat(SemanticTestSupport.type(c).symbol())
       .hasSameNameAs(c.symbol())
       .hasName("C");
-    assertThat(sema(cu).methodSymbol(methodBinding(constructor)))
+    assertThat(SemanticTestSupport.method(constructor))
       .hasSameNameAs(constructor.symbol())
       .hasName("<init>");
-    assertThat(sema(cu).methodSymbol(methodBinding(method)))
+    assertThat(SemanticTestSupport.method(method))
       .hasSameNameAs(method.symbol())
       .hasName("m");
   }
@@ -90,39 +81,39 @@ class JSymbolTest {
     ClassTreeImpl c3 = (ClassTreeImpl) m.block().body().get(0);
     VariableTreeImpl u = (VariableTreeImpl) c3.members().get(0);
 
-    assertThat(sema(cu).typeSymbol(typeBinding(c1)))
+    assertThat(SemanticTestSupport.type(c1).symbol())
       .as("of top-level class")
-      .hasOwner(sema(cu).packageSymbol(typeBinding(c1).getPackage()));
+      .hasOwner(SemanticTestSupport.type(c1).symbol().owner());
 
-    assertThat(sema(cu).typeSymbol(typeBinding(c2)))
+    assertThat(SemanticTestSupport.type(c2).symbol())
       .as("of nested class")
-      .hasOwner(sema(cu).typeSymbol(typeBinding(c1)));
+      .hasOwner(SemanticTestSupport.type(c1).symbol());
 
-    assertThat(sema(cu).typeSymbol(typeBinding(c3)))
+    assertThat(SemanticTestSupport.type(c3).symbol())
       .as("of local class")
-      .hasOwner(sema(cu).methodSymbol(methodBinding(m)));
+      .hasOwner(SemanticTestSupport.method(m));
 
-    assertThat(sema(cu).methodSymbol(methodBinding(m)))
+    assertThat(SemanticTestSupport.method(m))
       .as("of method")
-      .hasOwner(sema(cu).typeSymbol(typeBinding(c1)));
+      .hasOwner(SemanticTestSupport.type(c1).symbol());
 
-    assertThat(sema(cu).variableSymbol(variableBinding(f)))
+    assertThat(SemanticTestSupport.symbol(f))
       .as("of field")
-      .hasOwner(sema(cu).typeSymbol(typeBinding(c1)));
+      .hasOwner(SemanticTestSupport.type(c1).symbol());
 
-    assertThat(sema(cu).variableSymbol(variableBinding(p)))
+    assertThat(SemanticTestSupport.symbol(p))
       .as("of method parameter")
-      .hasOwner(sema(cu).methodSymbol(methodBinding(m)));
+      .hasOwner(SemanticTestSupport.method(m));
 
-    assertThat(sema(cu).typeSymbol(variableBinding(p).getType()))
+    assertThat((SemanticTestSupport.symbol(p).type()).symbol())
       .as("of type int")
       .hasOwner(Symbol.ROOT_PACKAGE)
       .hasSameHashCodeAs(p.type().symbolType().symbol().hashCode());
 
-    assertThat(sema(cu).packageSymbol(null))
+    assertThat(SemanticTestSupport.type(c1).symbol().owner().owner())
       .isEqualTo(Symbol.ROOT_PACKAGE);
 
-    JType uType = sema(cu).type(variableBinding(u).getType());
+    Type uType = (SemanticTestSupport.symbol(u).type());
     Symbol.TypeSymbol uTypeSymbol = uType.symbol();
     assertThat(uType.isUnknown()).isTrue();
     assertThat(uTypeSymbol.isUnknown()).isTrue();
@@ -167,13 +158,13 @@ class JSymbolTest {
     ClassTreeImpl r = (ClassTreeImpl) m.block().body().get(0);
     VariableTreeImpl p = (VariableTreeImpl) r.recordComponents().get(0);
 
-    assertThat(sema(cu).variableSymbol(variableBinding(p)))
+    assertThat(SemanticTestSupport.symbol(p))
       .as("of record component")
-      .hasOwner(sema(cu).typeSymbol(typeBinding(r)));
+      .hasOwner(SemanticTestSupport.type(r).symbol());
 
-    assertThat(sema(cu).methodSymbol(methodBinding(m)))
+    assertThat(SemanticTestSupport.method(m))
       .as("of method")
-      .hasOwner(sema(cu).typeSymbol(typeBinding(c1)));
+      .hasOwner(SemanticTestSupport.type(c1).symbol());
   }
 
   @Test
@@ -188,7 +179,7 @@ class JSymbolTest {
     var lambda = (LambdaExpressionTree) ((VariableTree) classTree.members().get(0)).initializer();
     var i = (IdentifierTree) lambda.body();
     Symbol owner = i.symbol().owner();
-    assertTrue(owner instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda());
+    assertTrue(SemanticTestSupport.isLambda(owner));
   }
 
   @Test
@@ -207,7 +198,7 @@ class JSymbolTest {
     LambdaExpressionTree lambda = (LambdaExpressionTree) bindingInsideMethod.initializer();
     VariableTree l = lambda.parameters().get(0);
     Symbol owner = l.symbol().owner();
-    assertTrue(owner instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda());
+    assertTrue(SemanticTestSupport.isLambda(owner));
   }
 
   @Test
@@ -216,8 +207,8 @@ class JSymbolTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     VariableTreeImpl uField = (VariableTreeImpl) c.members().get(0);
     VariableTreeImpl vField = (VariableTreeImpl) c.members().get(1);
-    assertThat(sema(cu).typeSymbol(variableBinding(uField).getType()))
-      .hasSameHashCodeAs(sema(cu).typeSymbol(variableBinding(vField).getType()));
+    assertThat((SemanticTestSupport.symbol(uField).type()).symbol())
+      .hasSameHashCodeAs((SemanticTestSupport.symbol(vField).type()).symbol());
   }
 
   @Test
@@ -230,29 +221,29 @@ class JSymbolTest {
     VariableTreeImpl p = (VariableTreeImpl) m.parameters().get(0);
     ClassTreeImpl c3 = (ClassTreeImpl) m.block().body().get(0);
 
-    assertThat(sema(cu).typeSymbol(typeBinding(c1)))
+    assertThat(SemanticTestSupport.type(c1).symbol())
       .as("of top-level class")
-      .hasEnclosingClass(sema(cu).typeSymbol(typeBinding(c1)));
+      .hasEnclosingClass(SemanticTestSupport.type(c1).symbol());
 
-    assertThat(sema(cu).typeSymbol(typeBinding(c2)))
+    assertThat(SemanticTestSupport.type(c2).symbol())
       .as("of nested class")
-      .hasEnclosingClass(sema(cu).typeSymbol(typeBinding(c1)));
+      .hasEnclosingClass(SemanticTestSupport.type(c1).symbol());
 
-    assertThat(sema(cu).typeSymbol(typeBinding(c3)))
+    assertThat(SemanticTestSupport.type(c3).symbol())
       .as("of local class")
-      .hasEnclosingClass(sema(cu).typeSymbol(typeBinding(c1)));
+      .hasEnclosingClass(SemanticTestSupport.type(c1).symbol());
 
-    assertThat(sema(cu).methodSymbol(methodBinding(m)))
+    assertThat(SemanticTestSupport.method(m))
       .as("of method")
-      .hasEnclosingClass(sema(cu).typeSymbol(typeBinding(c1)));
+      .hasEnclosingClass(SemanticTestSupport.type(c1).symbol());
 
-    assertThat(sema(cu).variableSymbol(variableBinding(f)))
+    assertThat(SemanticTestSupport.symbol(f))
       .as("of field")
-      .hasEnclosingClass(sema(cu).typeSymbol(typeBinding(c1)));
+      .hasEnclosingClass(SemanticTestSupport.type(c1).symbol());
 
-    assertThat(sema(cu).variableSymbol(variableBinding(p)))
+    assertThat(SemanticTestSupport.symbol(p))
       .as("of method parameter")
-      .hasEnclosingClass(sema(cu).typeSymbol(typeBinding(c1)));
+      .hasEnclosingClass(SemanticTestSupport.type(c1).symbol());
   }
 
   @Test
@@ -263,13 +254,13 @@ class JSymbolTest {
     ClassTreeImpl c2 = (ClassTreeImpl) c1.members().get(0);
     VariableTreeImpl p = (VariableTreeImpl) c2.recordComponents().get(0);
 
-    assertThat(sema(cu).variableSymbol(variableBinding(f)))
+    assertThat(SemanticTestSupport.symbol(f))
       .as("of field")
-      .hasEnclosingClass(sema(cu).typeSymbol(typeBinding(c1)));
+      .hasEnclosingClass(SemanticTestSupport.type(c1).symbol());
 
-    assertThat(sema(cu).variableSymbol(variableBinding(p)))
+    assertThat(SemanticTestSupport.symbol(p))
       .as("of method parameter")
-      .hasEnclosingClass(sema(cu).typeSymbol(typeBinding(c2)));
+      .hasEnclosingClass(SemanticTestSupport.type(c2).symbol());
   }
 
   @Test
@@ -296,16 +287,16 @@ class JSymbolTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     BlockTreeImpl b = (BlockTreeImpl) c.members().get(1);
     VariableTreeImpl v = (VariableTreeImpl) b.body().get(0);
-    Symbol.TypeSymbol t = sema(cu).typeSymbol(typeBinding(c));
+    Symbol.TypeSymbol t = SemanticTestSupport.type(c).symbol();
 
-    JVariableSymbol variableSymbol = sema(cu).variableSymbol(variableBinding(v));
+    Symbol.VariableSymbol variableSymbol = SemanticTestSupport.symbol(v);
     assertThat(variableSymbol).isSameAs(v.symbol());
     JInitializerBlockSymbol initializerBlock = (JInitializerBlockSymbol) variableSymbol.owner();
 
     if (isStatic) {
-      assertThat(initializerBlock).isSameAs(sema(cu).staticInitializerBlockSymbol((JTypeSymbol) c.symbol()));
+      assertThat(initializerBlock).isSameAs(SemanticTestSupport.initializer(c.symbol(), true));
     } else {
-      assertThat(initializerBlock).isSameAs(sema(cu).initializerBlockSymbol((JTypeSymbol) c.symbol()));
+      assertThat(initializerBlock).isSameAs(SemanticTestSupport.initializer(c.symbol(), false));
     }
 
     assertThat(variableSymbol).hasEnclosingClass(t);
@@ -363,17 +354,17 @@ class JSymbolTest {
     VariableTreeImpl field = (VariableTreeImpl) c.members().get(0);
     MethodTreeImpl method = (MethodTreeImpl) c.members().get(1);
 
-    assertThat(sema(cu).typeSymbol(typeBinding(c)).owner())
+    assertThat(SemanticTestSupport.type(c).symbol().owner())
       .isOfSameTypeAs(c.symbol().owner())
       .isOfUnknownType();
 
-    assertThat(sema(cu).typeSymbol(typeBinding(c)))
-      .isOfType(sema(cu).type(typeBinding(c)));
+    assertThat(SemanticTestSupport.type(c).symbol())
+      .isOfType(SemanticTestSupport.type(c));
 
-    assertThat(sema(cu).variableSymbol(variableBinding(field)))
-      .isOfType(sema(cu).type(variableBinding(field).getType()));
+    assertThat(SemanticTestSupport.symbol(field))
+      .isOfType((SemanticTestSupport.symbol(field).type()));
 
-    assertThat(sema(cu).methodSymbol(methodBinding(method))).isOfUnknownType();
+    assertThat(SemanticTestSupport.method(method)).isOfUnknownType();
   }
 
   @Test
@@ -403,8 +394,8 @@ class JSymbolTest {
     assertThat(variable.symbol())
       .isOfType("java.util.ArrayList");
 
-    assertThat(sema(cu).variableSymbol(variableBinding(variable)))
-      .isOfType(sema(cu).type(variableBinding(variable).getType()));
+    assertThat(SemanticTestSupport.symbol(variable))
+      .isOfType((SemanticTestSupport.symbol(variable).type()));
   }
 
   @Test
@@ -438,14 +429,12 @@ class JSymbolTest {
 
   @Test
   void test_with_type_null() {
-    ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
-    astParser.setSource("class C { void m(String p) { } }".toCharArray());
-    CompilationUnit cu = (CompilationUnit) astParser.createAST(null);
-    JSema jSema = new JSema(cu.getAST());
-    IVariableBinding mock = mock(IVariableBinding.class);
-    when(mock.getKind()).thenReturn(IBinding.VARIABLE);
-    JVariableSymbol jVariableSymbol = new JVariableSymbol(jSema, mock);
-    assertThat(jVariableSymbol.metadata()).isNotNull();
+    var cu = test("class C { void m(String p) { } }");
+    var variable = mock(com.intellij.psi.PsiVariable.class);
+    when(variable.getType()).thenReturn(null);
+    when(variable.getAnnotations()).thenReturn(new com.intellij.psi.PsiAnnotation[0]);
+    var symbol = new JVariableSymbol((JSema) cu.sema, variable, com.intellij.psi.PsiSubstitutor.EMPTY, "broken");
+    assertThat(symbol.metadata()).isNotNull();
   }
 
   @Nested
@@ -466,30 +455,30 @@ class JSymbolTest {
 
     @Test
     void isPackageSymbol() {
-      JTypeSymbol c1Symbol = sema(cu).typeSymbol(typeBinding(c1));
+      Symbol.TypeSymbol c1Symbol = SemanticTestSupport.type(c1).symbol();
       assertThat(c1Symbol.isPackageSymbol()).isFalse();
       assertThat(c1Symbol.owner().isPackageSymbol()).isTrue();
     }
 
     @Test
     void isTypeSymbol() {
-      assertThat(sema(cu).typeSymbol(typeBinding(c1)).isTypeSymbol()).isTrue();
-      assertThat(sema(cu).methodSymbol(methodBinding(foo)).isTypeSymbol()).isFalse();
-      assertThat(sema(cu).variableSymbol(variableBinding(f)).isTypeSymbol()).isFalse();
+      assertThat(SemanticTestSupport.type(c1).symbol().isTypeSymbol()).isTrue();
+      assertThat(SemanticTestSupport.method(foo).isTypeSymbol()).isFalse();
+      assertThat(SemanticTestSupport.symbol(f).isTypeSymbol()).isFalse();
     }
 
     @Test
     void isMethodSymbol() {
-      assertThat(sema(cu).typeSymbol(typeBinding(c1)).isMethodSymbol()).isFalse();
-      assertThat(sema(cu).methodSymbol(methodBinding(foo)).isMethodSymbol()).isTrue();
-      assertThat(sema(cu).variableSymbol(variableBinding(f)).isMethodSymbol()).isFalse();
+      assertThat(SemanticTestSupport.type(c1).symbol().isMethodSymbol()).isFalse();
+      assertThat(SemanticTestSupport.method(foo).isMethodSymbol()).isTrue();
+      assertThat(SemanticTestSupport.symbol(f).isMethodSymbol()).isFalse();
     }
 
     @Test
     void isVariableSymbol() {
-      assertThat(sema(cu).typeSymbol(typeBinding(c1)).isVariableSymbol()).isFalse();
-      assertThat(sema(cu).methodSymbol(methodBinding(foo)).isVariableSymbol()).isFalse();
-      assertThat(sema(cu).variableSymbol(variableBinding(f)).isVariableSymbol()).isTrue();
+      assertThat(SemanticTestSupport.type(c1).symbol().isVariableSymbol()).isFalse();
+      assertThat(SemanticTestSupport.method(foo).isVariableSymbol()).isFalse();
+      assertThat(SemanticTestSupport.symbol(f).isVariableSymbol()).isTrue();
     }
   }
 
@@ -591,10 +580,10 @@ class JSymbolTest {
         + "  int b;"
         + "}");
 
-      JVariableSymbol a = variable(cu, 0);
+      Symbol.VariableSymbol a = variable(cu, 0);
       assertThat(a.isVolatile()).isTrue();
 
-      JVariableSymbol b = variable(cu, 1);
+      Symbol.VariableSymbol b = variable(cu, 1);
       assertThat(b.isVolatile()).isFalse();
     }
 
@@ -604,8 +593,8 @@ class JSymbolTest {
         "interface I1 { } "
           + "class C1 { }");
 
-      assertThat(sema(cu).typeSymbol(typeBinding(((ClassTreeImpl) cu.types().get(0)))).isInterface()).isTrue();
-      assertThat(sema(cu).typeSymbol(typeBinding(((ClassTreeImpl) cu.types().get(1)))).isInterface()).isFalse();
+      assertThat(SemanticTestSupport.type(((ClassTreeImpl) cu.types().get(0))).symbol().isInterface()).isTrue();
+      assertThat(SemanticTestSupport.type(((ClassTreeImpl) cu.types().get(1))).symbol().isInterface()).isFalse();
     }
 
     @Test
@@ -613,39 +602,39 @@ class JSymbolTest {
       JavaTree.CompilationUnitTreeImpl cu = test("class C1 { int a; void foo() { }} enum E1 { ACONST; }");
 
       ClassTreeImpl c1 = (ClassTreeImpl) cu.types().get(0);
-      JTypeSymbol c1Symbol = sema(cu).typeSymbol(typeBinding(c1));
+      Symbol.TypeSymbol c1Symbol = SemanticTestSupport.type(c1).symbol();
       assertThat(c1Symbol.isEnum()).isFalse();
 
-      JVariableSymbol a = sema(cu).variableSymbol(variableBinding(((VariableTreeImpl) c1.members().get(0))));
+      Symbol.VariableSymbol a = SemanticTestSupport.symbol(((VariableTreeImpl) c1.members().get(0)));
       assertThat(a.isEnum()).isFalse();
 
-      JMethodSymbol foo = sema(cu).methodSymbol(methodBinding(((MethodTreeImpl) c1.members().get(1))));
+      Symbol.MethodSymbol foo = SemanticTestSupport.method(((MethodTreeImpl) c1.members().get(1)));
       assertThat(foo.isEnum()).isFalse();
 
       ClassTreeImpl e1 = (ClassTreeImpl) cu.types().get(1);
-      JTypeSymbol e1Symbol = sema(cu).typeSymbol(typeBinding(e1));
+      Symbol.TypeSymbol e1Symbol = SemanticTestSupport.type(e1).symbol();
       assertThat(e1Symbol.isEnum()).isTrue();
 
-      JVariableSymbol aconst = sema(cu).variableSymbol(variableBinding(((EnumConstantTreeImpl) e1.members().get(0))));
+      Symbol.VariableSymbol aconst = SemanticTestSupport.symbol(((EnumConstantTreeImpl) e1.members().get(0)));
       assertThat(aconst.isEnum()).isTrue();
     }
 
-    private JMethodSymbol foo(JavaTree.CompilationUnitTreeImpl cu) {
+    private Symbol.MethodSymbol foo(JavaTree.CompilationUnitTreeImpl cu) {
       return method(cu, 0);
     }
 
-    private JMethodSymbol bar(JavaTree.CompilationUnitTreeImpl cu) {
+    private Symbol.MethodSymbol bar(JavaTree.CompilationUnitTreeImpl cu) {
       return method(cu, 1);
     }
 
-    private JMethodSymbol method(JavaTree.CompilationUnitTreeImpl cu, int memberIndex) {
+    private Symbol.MethodSymbol method(JavaTree.CompilationUnitTreeImpl cu, int memberIndex) {
       ClassTreeImpl c1 = (ClassTreeImpl) cu.types().get(0);
-      return sema(cu).methodSymbol(methodBinding(((MethodTreeImpl) c1.members().get(memberIndex))));
+      return SemanticTestSupport.method(((MethodTreeImpl) c1.members().get(memberIndex)));
     }
 
-    private JVariableSymbol variable(JavaTree.CompilationUnitTreeImpl cu, int memberIndex) {
+    private Symbol.VariableSymbol variable(JavaTree.CompilationUnitTreeImpl cu, int memberIndex) {
       ClassTreeImpl c1 = (ClassTreeImpl) cu.types().get(0);
-      return sema(cu).variableSymbol(variableBinding(((VariableTreeImpl) c1.members().get(memberIndex))));
+      return SemanticTestSupport.symbol(((VariableTreeImpl) c1.members().get(memberIndex)));
     }
   }
 
@@ -758,10 +747,10 @@ class JSymbolTest {
       """);
 
     ClassTree cClassTree = (ClassTree) cu.types().get(0);
-    JSymbol cSymbol = (JSymbol) cClassTree.symbol();
+    Symbol cSymbol = cClassTree.symbol();
 
     MethodTree f = (MethodTree) cClassTree.members().get(0);
-    JSymbol fSymbol = (JSymbol) f.symbol();
+    Symbol fSymbol = f.symbol();
     assertNotEquals(fSymbol, cSymbol);
 
     // Symmetric case

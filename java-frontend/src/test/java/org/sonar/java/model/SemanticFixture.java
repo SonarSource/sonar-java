@@ -29,10 +29,12 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 /** Backend-aware source fixtures expose Sonar declarations and retain the parser through lazy queries. */
 final class SemanticFixture implements AutoCloseable {
 
-  private final FrontendParser.ParsedFile parsed;
+  private final JavaTree.CompilationUnitTreeImpl tree;
+  private final Runnable cleaner;
 
   private SemanticFixture(FrontendParser.ParsedFile parsed) {
-    this.parsed = parsed;
+    tree = parsed.tree();
+    cleaner = parsed::close;
   }
 
   static SemanticFixture scoped(String source) {
@@ -48,7 +50,7 @@ final class SemanticFixture implements AutoCloseable {
   }
 
   JavaTree.CompilationUnitTreeImpl tree() {
-    return parsed.tree();
+    return tree;
   }
 
   ClassTree declaration(int index) {
@@ -73,6 +75,6 @@ final class SemanticFixture implements AutoCloseable {
 
   @Override
   public void close() {
-    parsed.close();
+    cleaner.run();
   }
 }

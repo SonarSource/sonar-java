@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -81,7 +82,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.model.EcjTestSupport.clearSymbol;
+import static org.sonar.java.model.SemanticTestSupport.clearSymbol;
 
 @TestResourceScope.Scoped
 class JavaAstScannerTest {
@@ -228,7 +229,8 @@ class JavaAstScannerTest {
   @ValueSource(classes = {
     InterruptedException.class,
     InterruptedIOException.class,
-    CancellationException.class})
+    CancellationException.class,
+    OperationCanceledException.class})
   void should_interrupt_analysis_when_specific_exception_are_thrown(Class<? extends Exception> exceptionClass) throws Exception {
     List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java"));
     List<JavaFileScanner> visitors = Collections.singletonList(new CheckThrowingException(
@@ -246,7 +248,8 @@ class JavaAstScannerTest {
   @ValueSource(classes = {
     InterruptedException.class,
     InterruptedIOException.class,
-    CancellationException.class})
+    CancellationException.class,
+    OperationCanceledException.class})
   void should_interrupt_analysis_when_specific_exception_are_thrown_as_batch(Class<? extends Exception> exceptionClass) throws Exception {
     List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java"));
     List<JavaFileScanner> visitors = Collections.singletonList(new CheckThrowingException(
@@ -258,6 +261,17 @@ class JavaAstScannerTest {
     assertThat(e)
       .hasMessage("Analysis cancelled")
       .hasCauseInstanceOf(RecognitionException.class);
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {false, true})
+  void should_interrupt_analysis_when_cancellation_has_a_nested_cause(boolean batch) {
+    var canceled = new OperationCanceledException("cancelled");
+    canceled.initCause(new IllegalStateException("cancellation context"));
+    var visitors = List.<JavaFileScanner>of(new CheckThrowingException(new RecognitionException(42, "interrupted", canceled)));
+    var files = List.of(TestUtils.inputFile("src/test/files/metrics/NoSonar.java"));
+    assertThatThrownBy(() -> scanFilesWithVisitors(files, visitors, -1, false, batch))
+      .isInstanceOf(AnalysisException.class).hasMessage("Analysis cancelled").hasCauseInstanceOf(RecognitionException.class);
   }
 
   @Test

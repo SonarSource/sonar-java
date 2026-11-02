@@ -24,8 +24,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.model.EcjTestSupport.clearSymbol;
-import static org.sonar.java.model.EcjTestSupport.clearType;
+import static org.sonar.java.model.SemanticTestSupport.clearSymbol;
+import static org.sonar.java.model.SemanticTestSupport.clearType;
 
 @TestResourceScope.Scoped
 class KeywordThisTest {

@@ -18,7 +18,6 @@ package org.sonar.java.model;
 
 import java.util.Objects;
 import java.util.stream.Stream;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -41,8 +40,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.model.EcjTestSupport.sema;
-import static org.sonar.java.model.EcjTestSupport.typeBinding;
 import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 
 @TestResourceScope.Scoped
@@ -97,7 +94,7 @@ class JTypeTest {
     ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
 
-    assertThat(sema(cu).type(typeBinding(e)).isParameterized())
+    assertThat(SemanticTestSupport.type(e).isParameterized())
       .isEqualTo(e.symbolType().isParameterized())
       .isTrue();
   }
@@ -110,11 +107,11 @@ class JTypeTest {
     ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
 
-    assertThat(sema(cu).type(typeBinding(e)).typeArguments())
+    assertThat(SemanticTestSupport.type(e).typeArguments())
       .hasToString(e.symbolType().typeArguments().toString())
       .hasToString("[Integer, String]");
 
-    assertThat(sema(cu).type(typeBinding(c)).typeArguments())
+    assertThat(SemanticTestSupport.type(c).typeArguments())
       .isEqualTo(c.symbol().type().typeArguments())
       .isEmpty();
   }
@@ -168,27 +165,20 @@ class JTypeTest {
 
   @Test
   void primitiveWrapperType_returns_null_when_semantic_cannot_resolve_wrapper_type() {
-    // Sema that can resolve primitives, but fails to resolve wrapper types, which can happen when the classpath is not correctly set up
-    var brokenSema = spy(sema);
-    when(brokenSema.resolveType("java.lang.Byte")).thenReturn(null);
-
-    var primitiveBinding = sema.resolveType("byte");
-    var primitiveType = new JType(brokenSema, primitiveBinding);
-
-    assertThat(primitiveType.primitiveWrapperType()).isNull();
+    var original = (JSema) test("class C {}").sema;
+    var broken = spy(original);
+    when(broken.getClassType("java.lang.Byte")).thenReturn(Type.UNKNOWN);
+    var primitive = (JType) original.getClassType("byte");
+    assertThat(new JType(broken, primitive.psi, primitive.key).primitiveWrapperType()).isNull();
   }
 
   @Test
   void primitiveType_returns_null_when_semantic_cannot_resolve_primitive_type() {
-    // Sema that can resolve wrapper types, but fails to resolve a primitive, this should never happen in practice,
-    // but we want to make sure it doesn't throw an exception and returns null instead
-    var brokenSema = spy(sema);
-    when(brokenSema.resolveType("byte")).thenReturn(null);
-
-    var wrapperBinding = sema.resolveType("java.lang.Byte");
-    var wrapperType = new JType(brokenSema, wrapperBinding);
-
-    assertThat(wrapperType.primitiveType()).isNull();
+    var original = (JSema) test("class C {}").sema;
+    var broken = spy(original);
+    when(broken.getClassType("byte")).thenReturn(Type.UNKNOWN);
+    var wrapper = (JType) original.getClassType("java.lang.Byte");
+    assertThat(new JType(broken, wrapper.psi, wrapper.key).primitiveType()).isNull();
   }
 
   @Test
@@ -237,11 +227,11 @@ class JTypeTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) m.returnType());
-    JType parameterizedType = sema(cu).type(Objects.requireNonNull(typeBinding(e)));
+    Type parameterizedType = Objects.requireNonNull(SemanticTestSupport.type(e));
 
     assertThat(parameterizedType)
       .hasSameNameAs(e.symbolType())
-      .hasSameNameAs(sema(cu).typeSymbol(typeBinding(e)).type())
+      .hasSameNameAs(SemanticTestSupport.type(e).symbol().type())
       .is("java.util.List")
       .hasName("List");
   }
@@ -252,10 +242,10 @@ class JTypeTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) m.returnType());
-    JType typeVariable = sema(cu).type(Objects.requireNonNull(typeBinding(e)));
+    Type typeVariable = Objects.requireNonNull(SemanticTestSupport.type(e));
     assertThat(typeVariable)
       .hasSameNameAs(e.symbolType())
-      .hasSameNameAs(sema(cu).typeSymbol(typeBinding(e)).type())
+      .hasSameNameAs(SemanticTestSupport.type(e).symbol().type())
       .hasName("T")
       .is(e.symbolType().fullyQualifiedName())
       .is("T");
@@ -263,9 +253,9 @@ class JTypeTest {
 
   @Test
   void symbol() {
-    ITypeBinding typeBinding = Objects.requireNonNull(sema.resolveType("java.lang.Object"));
-    assertThat(sema.type(typeBinding).symbol())
-      .isSameAs(sema.typeSymbol(typeBinding));
+    Type typeBinding = sema.getClassType("java.lang.Object");
+    assertThat(typeBinding.symbol())
+      .isSameAs(sema.getClassType("java.lang.Object").symbol());
   }
 
   @Test
@@ -310,10 +300,10 @@ class JTypeTest {
     AbstractTypedTree primitive = (AbstractTypedTree) m.parameters().get(0).type();
     AbstractTypedTree array = (AbstractTypedTree) m.parameters().get(1).type();
 
-    JType nullType = sema(cu).type(Objects.requireNonNull(typeBinding(e)));
-    JType classType = sema(cu).type(Objects.requireNonNull(typeBinding(c)));
-    JType primitiveType = sema(cu).type(Objects.requireNonNull(typeBinding(primitive)));
-    JType arrayType = sema(cu).type(Objects.requireNonNull(typeBinding(array)));
+    Type nullType = Objects.requireNonNull(SemanticTestSupport.type(e));
+    Type classType = Objects.requireNonNull(SemanticTestSupport.type(c));
+    Type primitiveType = Objects.requireNonNull(SemanticTestSupport.type(primitive));
+    Type arrayType = Objects.requireNonNull(SemanticTestSupport.type(array));
 
     assertThat(nullType)
       .hasSameNameAs(e.symbolType())
@@ -327,18 +317,13 @@ class JTypeTest {
 
   @Test
   void is_subtype_of_should_not_throw_NPE() {
-    Type objectType = type("java.lang.Object");
-    ITypeBinding brokenStringBinding = spy(Objects.requireNonNull(sema.resolveType("java.lang.String")));
-    // simulate the NullPointerException described in SONARJAVA-4390
-    when(brokenStringBinding.isSubTypeCompatible(any()))
-      .thenThrow(new NullPointerException("test NPE"));
-
-    JType stringType = new JType(sema, brokenStringBinding);
-    // should catch the NullPointerException
-    assertThat(stringType.isSubtypeOf(objectType)).isFalse();
-
-    assertThat(logTester.logs(Level.DEBUG))
-      .containsExactly("NullPointerException while resolving isSubTypeCompatible()");
+    var original = (JSema) test("class C {}").sema;
+    var string = (JType) original.getClassType("java.lang.String");
+    var broken = spy((com.intellij.psi.PsiClassType) string.psi);
+    when(broken.resolveGenerics()).thenThrow(new NullPointerException("test NPE"));
+    var stringType = new JType(original, broken, string.key);
+    assertThat(stringType.isSubtypeOf(original.getClassType("java.lang.Object"))).isFalse();
+    assertThat(logTester.logs(Level.DEBUG)).containsExactly("NullPointerException while resolving isSubTypeCompatible()");
   }
 
   @Test
@@ -350,9 +335,9 @@ class JTypeTest {
     JavaTree.WildcardTreeImpl w1 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(0);
     JavaTree.WildcardTreeImpl w2 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(1);
     JavaTree.WildcardTreeImpl w3 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(2);
-    JType wildcardType1 = sema(cu).type(Objects.requireNonNull(typeBinding(w1)));
-    JType wildcardType2 = sema(cu).type(Objects.requireNonNull(typeBinding(w2)));
-    JType wildcardType3 = sema(cu).type(Objects.requireNonNull(typeBinding(w3)));
+    Type wildcardType1 = Objects.requireNonNull(SemanticTestSupport.type(w1));
+    Type wildcardType2 = Objects.requireNonNull(SemanticTestSupport.type(w2));
+    Type wildcardType3 = Objects.requireNonNull(SemanticTestSupport.type(w3));
 
     assertThat(wildcardType1)
       .isEqualTo(wildcardType2)
@@ -367,13 +352,13 @@ class JTypeTest {
     return fixture.type(name);
   }
 
-  private JSema sema;
+  private org.sonar.plugins.java.api.semantic.Sema sema;
   private SemanticFixture fixture;
 
   @BeforeEach
   void setup() {
     fixture = SemanticFixture.scoped("", java.util.List.of());
-    sema = sema(fixture.tree());
+    sema = fixture.tree().sema;
   }
 
 }

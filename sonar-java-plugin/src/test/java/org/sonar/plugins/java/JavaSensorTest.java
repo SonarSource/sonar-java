@@ -443,6 +443,8 @@ class JavaSensorTest {
     ArgumentCaptor<JavaFileScannerContext> scannerContext = ArgumentCaptor.forClass(JavaFileScannerContext.class);
     verify(testCodeVisitor, times(1)).scanFile(scannerContext.capture());
     assertThat(scannerContext.getValue().getInputFile()).isSameAs(generatedFile);
+    String expectedSema = "JSema";
+    assertThat(scannerContext.getValue().getSemanticModel().getClass().getSimpleName()).isEqualTo(expectedSema);
 
     // normal visitors are not invoked on generated files
     verify(javaFileScanner, never()).scanFile(any());

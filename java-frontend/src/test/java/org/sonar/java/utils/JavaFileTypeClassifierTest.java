@@ -22,7 +22,8 @@ import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
 import org.sonar.java.TestUtils;
-import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -32,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@TestResourceScope.Scoped
 class JavaFileTypeClassifierTest {
 
   /**
@@ -157,7 +159,9 @@ class JavaFileTypeClassifierTest {
     var bridge = new VisitorsBridgeForTests.Builder(List.of())
       .enableSemanticWithProjectClasspath(classpath)
       .build();
-    JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile(filePath), bridge);
+    bridge.setCurrentFile(TestUtils.inputFile(filePath));
+    bridge.visitFile(JParserTestUtils.parse(new java.io.File(filePath), classpath), false);
+    bridge.endOfAnalysis();
     return bridge.testContexts().get(0);
   }
 

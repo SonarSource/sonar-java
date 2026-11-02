@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.model.EcjTestSupport.clearType;
+import static org.sonar.java.model.SemanticTestSupport.clearType;
 import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 
 @TestResourceScope.Scoped

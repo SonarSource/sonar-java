@@ -214,8 +214,8 @@ class FrontendLifecycleTest {
   }
 
   @Test
-  void ecj_registers_environment_before_syntax_conversion_failure() {
-    FrontendSession session = spy(new EcjFrontendBackend(() -> EcjFrontendBackend.newParser(CONFIGURATION)).open(CONFIGURATION));
+  void psi_registers_environment_before_syntax_conversion_failure() {
+    FrontendSession session = spy(new PsiFrontendBackend().open(CONFIGURATION));
     try (session) {
       assertThatThrownBy(() -> session.parse("A.java", "class A { void m( }"))
         .isInstanceOf(com.sonar.sslr.api.RecognitionException.class);

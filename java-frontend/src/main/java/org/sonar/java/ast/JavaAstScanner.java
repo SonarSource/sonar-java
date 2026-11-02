@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
@@ -116,7 +117,6 @@ public class JavaAstScanner {
           this::analysisCancelled,
           analysisProgress,
           (i, r) -> simpleScan(i, r,
-            // Due to a bug in ECJ, JAR files remain locked after the analysis on Windows, we unlock them manually. See SONARJAVA-3609.
             JavaAstScanner::cleanUpAst,
             modifyCompilationUnit));
     } finally {
@@ -229,7 +229,9 @@ public class JavaAstScanner {
 
   public void checkInterrupted(Exception e) {
     Throwable cause = ExceptionUtils.getRootCause(e);
-    if (cause instanceof InterruptedException
+    if (Thread.currentThread().isInterrupted()
+      || ExceptionUtils.getThrowableList(e).stream().anyMatch(OperationCanceledException.class::isInstance)
+      || cause instanceof InterruptedException
       || cause instanceof InterruptedIOException
       || cause instanceof CancellationException
       || analysisCancelled()) {

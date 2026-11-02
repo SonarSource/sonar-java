@@ -16,19 +16,20 @@
  */
 package org.sonar.java.model;
 
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiClassType;
+import com.intellij.psi.PsiSubstitutor;
+import com.intellij.psi.PsiTypeParameter;
+import com.intellij.psi.impl.light.LightDefaultConstructor;
+import com.intellij.psi.util.PsiTreeUtil;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -36,222 +37,216 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
+  private final JType type;
+  final SpecialField thisSymbol = new SpecialField(false);
+  final SpecialField superSymbol = new SpecialField(true);
 
-  /**
-   * Cache for {@link #superClass()}.
-   */
-  private Type superclass = Type.UNKNOWN;
+  JTypeSymbol(JSema sema, JType type, String key) {
+    super(sema, type.resolvedClass(), key);
+    this.type = type;
+  }
 
-  /**
-   * Cache for {@link #interfaces()}.
-   */
-  private List<Type> interfaces;
+  @Override
+  public Type type() {
+    return type;
+  }
 
-  /**
-   * Cache for {@link #memberSymbols()}.
-   */
-  private Collection<Symbol> memberSymbols;
+  @Override
+  public String name() {
+    return type.name();
+  }
 
-  /**
-   * Cache for {@link #superTypes()}.
-   */
-  private Set<Type> superTypes;
+  @Override
+  public boolean isUnknown() {
+    return type.isUnknown();
+  }
 
-  final SpecialField superSymbol = new SpecialField() {
-    @Override
-    public String name() {
-      return "super";
-    }
-
-    @Override
-    public Type type() {
-      if (typeBinding().isInterface()) {
-        // JLS § 15.12.1:
-        // for "T.super.foo()", if T is an interface, 'super' keyword is used to access method of the interface itself
-        return JTypeSymbol.this.type();
+  @Override
+  public Symbol owner() {
+    return sema.read(() -> {
+      if (isUnknown()) {
+        return Symbol.UNKNOWN_SYMBOL;
       }
-      Type superClass = JTypeSymbol.this.superClass();
-      return superClass == null ? Type.UNKNOWN : superClass;
-    }
-  };
-
-  final SpecialField thisSymbol = new SpecialField() {
-    @Override
-    public String name() {
-      return "this";
-    }
-
-    @Override
-    public Type type() {
-      return JTypeSymbol.this.type();
-    }
-  };
-
-  JTypeSymbol(JSema sema, ITypeBinding typeBinding) {
-    super(sema, typeBinding);
-  }
-
-  ITypeBinding typeBinding() {
-    return (ITypeBinding) binding;
-  }
-
-  @CheckForNull
-  @Override
-  public Type superClass() {
-    if (superclass == Type.UNKNOWN) {
-      superclass = convertSuperClass();
-    }
-    return superclass;
-  }
-
-  @CheckForNull
-  private Type convertSuperClass() {
-    if (typeBinding().isInterface() || typeBinding().isArray()) {
-      ITypeBinding objectBinding = sema.resolveType("java.lang.Object");
-      return objectBinding != null ? sema.type(objectBinding) : Type.UNKNOWN;
-    } else if (typeBinding().getSuperclass() == null) {
-      // java.lang.Object
-      return null;
-    } else {
-      return sema.type(typeBinding().getSuperclass());
-    }
+      if (element instanceof PsiClass cls && cls.getContainingClass() != null && !isStatic()) {
+        var substitution = ((PsiClassType) type.psi).resolveGenerics().getSubstitutor();
+        return sema.type(JavaPsiFacade.getElementFactory(sema.project).createType(cls.getContainingClass(), substitution)).symbol();
+      }
+      return element == null ? Symbol.ROOT_PACKAGE : super.owner();
+    });
   }
 
   @Override
-  public List<Type> interfaces() {
-    if (interfaces == null) {
-      interfaces = sema.types(typeBinding().getInterfaces());
-    }
-    return interfaces;
+  public TypeSymbol enclosingClass() {
+    return sema.read(() -> {
+      var enclosing = element == null ? null : PsiTreeUtil.getParentOfType(element, PsiClass.class);
+      return enclosing == null ? this : (TypeSymbol) sema.symbol(enclosing);
+    });
   }
 
-  @Override
-  public Collection<Symbol> memberSymbols() {
-    if (memberSymbols == null) {
-      memberSymbols = convertMemberSymbols();
-    }
-    return memberSymbols;
-  }
-
-  private Collection<Symbol> convertMemberSymbols() {
-    return Stream.concat(
-      Stream.concat(
-        Arrays.stream(typeBinding().getDeclaredTypes()).map(sema::typeSymbol),
-        Arrays.stream(typeBinding().getDeclaredFields()).map(sema::variableSymbol)),
-      Arrays.stream(typeBinding().getDeclaredMethods()).map(sema::methodSymbol))
-      .collect(Collectors.toCollection(ArrayList::new));
-  }
-
-  @Override
-  public Collection<Symbol> lookupSymbols(String name) {
-    return memberSymbols().stream()
-      .filter(m -> name.equals(m.name()))
-      .collect(Collectors.toSet());
-  }
-
-  @Nullable
   @Override
   public ClassTree declaration() {
     return (ClassTree) super.declaration();
   }
 
   @Override
-  public Set<Type> superTypes() {
-    if (superTypes == null) {
-      if (isUnknown()) {
-        superTypes = Collections.emptySet();
-      } else {
-        superTypes = new HashSet<>();
-        collectSuperTypes(superTypes, sema, typeBinding());
-      }
-    }
-    return superTypes;
+  public boolean isAnnotation() {
+    return sema.read(() -> element instanceof PsiClass cls && cls.isAnnotationType());
   }
 
-  private static void collectSuperTypes(Set<Type> result, JSema sema, ITypeBinding typeBinding) {
-    ITypeBinding s = typeBinding.getSuperclass();
-    if (s != null) {
-      result.add(sema.type(s));
-      collectSuperTypes(result, sema, s);
-    }
-    Arrays.stream(typeBinding.getInterfaces()).forEach(i -> {
-      result.add(sema.type(i));
-      collectSuperTypes(result, sema, i);
+  @Override
+  public Type superClass() {
+    return sema.read(() -> {
+      if (type.isArray() || isInterface()) {
+        return sema.getClassType("java.lang.Object");
+      }
+      if (!(element instanceof PsiClass cls)) {
+        return null;
+      }
+      if (cls instanceof PsiTypeParameter) {
+        var supers = type.directSuperTypes();
+        return supers.stream().filter(t -> !t.symbol().isInterface()).findFirst().orElse(sema.getClassType("java.lang.Object"));
+      }
+      var parents = cls.getExtendsListTypes();
+      if (parents.length != 0) {
+        var substitution = ((PsiClassType) type.psi).resolveGenerics().getSubstitutor();
+        return sema.type(substitution.substitute(parents[0]));
+      }
+      var parent = cls.getSuperClass();
+      return parent == null ? null : sema.type(cls.getSuperTypes()[0]);
     });
   }
 
   @Override
-  @Nullable
-  public TypeSymbol outermostClass() {
-    Symbol symbol = this;
-    Symbol result = null;
-    while (symbol != null && !symbol.isPackageSymbol()) {
-      result = symbol;
-      symbol = symbol.owner();
-    }
-    return (Symbol.TypeSymbol) result;
+  public List<Type> interfaces() {
+    return sema.read(() -> {
+      if (element instanceof PsiClass cls && !(cls instanceof PsiTypeParameter)) {
+        var parents = cls.isInterface() ? cls.getExtendsListTypes() : cls.getImplementsListTypes();
+        var substitution = ((PsiClassType) type.psi).resolveGenerics().getSubstitutor();
+        return java.util.Arrays.stream(parents).map(parent -> sema.type(substitution.substitute(parent))).toList();
+      }
+      return type.directSuperTypes().stream().filter(t -> t.isUnknown() || t.symbol().isInterface()).toList();
+    });
   }
 
   @Override
-  public boolean isAnnotation() {
-    return !isUnknown() && typeBinding().isAnnotation();
+  public Collection<Symbol> memberSymbols() {
+    return sema.read(() -> {
+      List<Symbol> result = new ArrayList<>();
+      if (element instanceof PsiClass cls) {
+        for (var child : cls.getInnerClasses()) {
+          result.add(sema.symbol(child));
+        }
+        var substitution = type.psi instanceof PsiClassType classType ? classType.resolveGenerics().getSubstitutor() : PsiSubstitutor.EMPTY;
+        for (var field : cls.getFields()) {
+          result.add(sema.variable(field, substitution));
+        }
+        for (var method : cls.getMethods()) {
+          result.add(sema.method(method, substitution));
+        }
+        var constructor = LightDefaultConstructor.create(cls);
+        if (constructor != null) {
+          result.add(sema.method(constructor, substitution));
+        }
+      }
+      return result;
+    });
   }
 
-  abstract class SpecialField extends Symbols.DefaultSymbol implements Symbol.VariableSymbol {
+  @Override
+  public Collection<Symbol> lookupSymbols(String name) {
+    return memberSymbols().stream().filter(symbol -> symbol.name().equals(name)).collect(Collectors.toSet());
+  }
+
+  @Override
+  public Set<Type> superTypes() {
+    return sema.read(() -> {
+      Set<Type> result = new HashSet<>();
+      collect(type, result);
+      return result;
+    });
+  }
+
+  private static void collect(Type type, Set<Type> result) {
+    for (var parent : type.directSuperTypes()) {
+      if (result.add(parent)) {
+        collect(parent, result);
+      }
+    }
+  }
+
+  @Override
+  public TypeSymbol outermostClass() {
+    Symbol current = this;
+    TypeSymbol result = this;
+    while (current != null && !current.isPackageSymbol() && !current.isUnknown()) {
+      if (current instanceof TypeSymbol cls) {
+        result = cls;
+      }
+      current = current.owner();
+    }
+    return result;
+  }
+
+  final class SpecialField extends Symbols.DefaultSymbol implements VariableSymbol {
+    private final boolean isSuper;
+
+    SpecialField(boolean isSuper) {
+      this.isSuper = isSuper;
+    }
+
     @Override
-    public final Symbol owner() {
+    public String name() {
+      return isSuper ? "super" : "this";
+    }
+
+    @Override
+    public Symbol owner() {
       return JTypeSymbol.this;
     }
 
     @Override
-    public final boolean isVariableSymbol() {
+    public Type type() {
+      return isSuper && !JTypeSymbol.this.isInterface() ? Optional.ofNullable(superClass()).orElse(Type.UNKNOWN) : type;
+    }
+
+    @Override
+    public boolean isVariableSymbol() {
       return true;
     }
 
     @Override
-    public final boolean isFinal() {
+    public boolean isFinal() {
       return true;
     }
 
     @Override
-    public final boolean isUnknown() {
+    public boolean isUnknown() {
       return false;
     }
 
     @Override
-    public final TypeSymbol enclosingClass() {
+    public TypeSymbol enclosingClass() {
       return JTypeSymbol.this;
     }
 
     @Override
-    public final List<IdentifierTree> usages() {
-      return Collections.emptyList();
+    public List<IdentifierTree> usages() {
+      return List.of();
     }
 
-    @Nullable
     @Override
-    public final VariableTree declaration() {
+    public VariableTree declaration() {
       return null;
     }
 
     @Override
-    public final boolean isEffectivelyFinal(){
+    public boolean isEffectivelyFinal() {
       return false;
     }
+
     @Override
-    public final Optional<Object> constantValue() {
+    public Optional<Object> constantValue() {
       return Optional.empty();
     }
-
-    @Override
-    public final boolean isLocalVariable() {
-      return false;
-    }
-
-    @Override
-    public final boolean isParameter() {
-      return false;
-    }
   }
-
 }

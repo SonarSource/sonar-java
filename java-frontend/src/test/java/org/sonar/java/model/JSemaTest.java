@@ -16,8 +16,6 @@
  */
 package org.sonar.java.model;
 
-import java.util.Objects;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.test.TestResourceScope;
@@ -39,44 +37,42 @@ class JSemaTest {
 
   @Test
   void type() {
-    ITypeBinding typeBinding = Objects.requireNonNull(sema.resolveType("int"));
-    assertThat(sema.type(typeBinding))
-      .isNotNull()
-      .isSameAs(sema.type(typeBinding));
+    Type type = sema.getClassType("int");
+    assertThat(type).isNotNull().isSameAs(sema.getClassType("int"));
   }
 
   @Test
   void resolveType() {
     assertAll(
       () ->
-        assertThat(sema.resolveType("Nonexistent"))
-          .isNull(),
+        assertThat(sema.getClassType("Nonexistent"))
+          .isSameAs(Type.UNKNOWN),
       () ->
-        assertThat(sema.resolveType("void"))
-          .isNotNull(),
+        assertThat(sema.getClassType("void"))
+          .isNotSameAs(Type.UNKNOWN),
       () ->
-        assertThat(sema.resolveType("java.util.Map"))
-          .isNotNull(),
+        assertThat(sema.getClassType("java.util.Map"))
+          .isNotSameAs(Type.UNKNOWN),
       () ->
-        assertThat(sema.resolveType("java.util.Map$Entry"))
-          .isNotNull(),
+        assertThat(sema.getClassType("java.util.Map$Entry"))
+          .isNotSameAs(Type.UNKNOWN),
       () ->
-        assertThat(sema.resolveType("java.util.Map$Entry[][]"))
-          .isNotNull()
+        assertThat(sema.getClassType("java.util.Map$Entry[][]"))
+          .isNotSameAs(Type.UNKNOWN)
     );
   }
 
   @Test
   void resolvePackageAnnotations() {
-    assertThat(sema.resolvePackageAnnotations("org.sonar.java.resolve.targets"))
+    assertThat(sema.getClassType("org.sonar.java.resolve.targets.ClassWithConstants").symbol().owner().metadata().annotations())
       .hasSize(1);
   }
 
-  private JSema sema;
+  private org.sonar.plugins.java.api.semantic.Sema sema;
 
   @BeforeEach
   void setup() {
-    sema = EcjTestSupport.sema(SemanticFixture.scoped("", java.util.List.of(new java.io.File("target/test-classes"))).tree());
+    sema = SemanticFixture.scoped("", java.util.List.of(new java.io.File("target/test-classes"))).tree().sema;
   }
 
 }

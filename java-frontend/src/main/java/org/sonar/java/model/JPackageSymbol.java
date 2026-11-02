@@ -16,12 +16,29 @@
  */
 package org.sonar.java.model;
 
-import org.eclipse.jdt.core.dom.IPackageBinding;
+import com.intellij.psi.PsiPackage;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 final class JPackageSymbol extends JSymbol {
+  private final PsiPackage pkg;
 
-  JPackageSymbol(JSema sema, IPackageBinding binding) {
-    super(sema, binding);
+  JPackageSymbol(JSema sema, PsiPackage pkg, String key) {
+    super(sema, pkg, key);
+    this.pkg = pkg;
   }
 
+  @Override
+  public String name() {
+    return sema.read(pkg::getQualifiedName);
+  }
+
+  @Override
+  public Symbol owner() {
+    return Symbol.ROOT_PACKAGE;
+  }
+
+  @Override
+  public Symbol.TypeSymbol enclosingClass() {
+    return null;
+  }
 }

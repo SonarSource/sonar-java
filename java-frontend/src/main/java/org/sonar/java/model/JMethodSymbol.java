@@ -16,208 +16,181 @@
  */
 package org.sonar.java.model;
 
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiAnnotationMethod;
+import com.intellij.psi.PsiArrayType;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiClassType;
+import com.intellij.psi.PsiLambdaExpression;
+import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiModifier;
+import com.intellij.psi.PsiSubstitutor;
+import com.intellij.psi.PsiTypes;
+import com.intellij.psi.util.MethodSignatureUtil;
+import com.intellij.psi.util.TypeConversionUtil;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
-import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.ASTUtils;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.Modifier;
-import org.sonar.java.annotations.VisibleForTesting;
+import java.util.stream.Collectors;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
+  final PsiMethod method;
+  final PsiSubstitutor substitutor;
+  private final PsiLambdaExpression lambda;
 
-  /**
-   * Cache for {@link #parameterTypes()}.
-   */
-  private List<Type> parameterTypes;
-
-  private List<Symbol> parameters;
-
-  /**
-   * Cache for {@link #returnType()}.
-   */
-  private TypeSymbol returnType;
-
-  /**
-   * Cache for {@link #thrownTypes()}.
-   */
-  private List<Type> thrownTypes;
-
-  /**
-   * Cache for {@link #overriddenSymbols()}.
-   */
-  private List<MethodSymbol> overriddenSymbols;
-
-  private final String signature;
-
-  JMethodSymbol(JSema sema, IMethodBinding methodBinding) {
-    super(sema, methodBinding);
-    this.signature = methodBinding().getDeclaringClass().getBinaryName()
-      + "#" + name()
-      + ASTUtils.signature(methodBinding().getMethodDeclaration());
+  JMethodSymbol(JSema sema, PsiMethod method, PsiSubstitutor substitutor, PsiLambdaExpression lambda, String key) {
+    super(sema, lambda == null ? method : lambda, key);
+    this.method = method;
+    this.substitutor = substitutor;
+    this.lambda = lambda;
   }
 
-  IMethodBinding methodBinding() {
-    return (IMethodBinding) binding;
+  boolean isLambda() { return lambda != null; }
+
+  @Override
+  public String name() {
+    return sema.read(() -> method.isConstructor() ? "<init>" : method.getName());
   }
 
   @Override
-  @Nullable
-  public Object defaultValue() {
-    return EcjSymbolMetadata.convertAnnotationValue(sema, methodBinding().getDefaultValue());
+  public Symbol owner() {
+    return sema.read(() -> sema.type(JavaPsiFacade.getElementFactory(sema.project).createType(method.getContainingClass(), substitutor)).symbol());
   }
 
-  public boolean isLambda() {
-    return methodBinding().getDeclaringMember() != null;
+  @Override
+  public TypeSymbol enclosingClass() {
+    return (TypeSymbol) owner();
   }
 
   @Override
   public List<Type> parameterTypes() {
-    if (parameterTypes == null) {
-      parameterTypes = sema.types(methodBinding().getParameterTypes());
-    }
-    return parameterTypes;
+    return sema.read(() -> Arrays.stream(method.getParameterList().getParameters()).map(p -> sema.type(substitutor.substitute(p.getType()))).toList());
   }
 
   @Override
-  public List<Symbol> declarationParameters() {
-    if (parameters == null) {
-      MethodTree declaration = declaration();
-      if (declaration != null && !isCompactConstructor(declaration)) {
-        parameters = declaration.parameters().stream().map(VariableTree::symbol).toList();
-      } else {
-        parameters = new ArrayList<>();
-        IMethodBinding methodBinding = methodBinding();
-        ITypeBinding[] parameterTypeBindings = methodBinding.getParameterTypes();
-        for (int i = 0; i < parameterTypeBindings.length; i++) {
-          parameters.add(new JVariableSymbol.ParameterPlaceholderSymbol(i, sema, methodBinding.getMethodDeclaration(), parameterTypeBindings[i]));
-        }
-      }
-    }
-    return parameters;
-  }
-
-  private static boolean isCompactConstructor(MethodTree methodTree) {
-    return methodTree.closeParenToken() == null;
-  }
-
-  /**
-   * @since 6.0 returns void type for constructors instead of {@code null}
-   */
-  @Override
-  public TypeSymbol returnType() {
-    if (returnType == null) {
-      ITypeBinding methodBindingReturnType = methodBinding().getReturnType();
-      // In rare circumstances, when the semantic information is incomplete, methodBindingReturnType can be null.
-      if (methodBindingReturnType == null) {
-        return TypeSymbol.UNKNOWN_TYPE;
-      }
-      this.returnType = sema.typeSymbol(methodBindingReturnType);
-    }
-    return returnType;
+  public Symbol.TypeSymbol returnType() {
+    return sema.read(() -> sema.type(method.isConstructor() ? PsiTypes.voidType() : substitutor.substitute(method.getReturnType())).symbol());
   }
 
   @Override
   public List<Type> thrownTypes() {
-    if (thrownTypes == null) {
-      thrownTypes = sema.types(methodBinding().getExceptionTypes());
-    }
-    return thrownTypes;
+    return sema.read(() -> Arrays.stream(method.getThrowsList().getReferencedTypes()).map(t -> sema.type(substitutor.substitute(t))).toList());
+  }
+
+  @Override
+  public MethodTree declaration() {
+    return lambda == null ? (MethodTree) super.declaration() : null;
+  }
+
+  @Override
+  public boolean isParametrizedMethod() {
+    return sema.read(() -> method.hasTypeParameters());
+  }
+
+  @Override
+  public boolean isDefaultMethod() {
+    return modifier(PsiModifier.DEFAULT);
+  }
+
+  @Override
+  public boolean isSynchronizedMethod() {
+    return modifier(PsiModifier.SYNCHRONIZED);
+  }
+
+  @Override
+  public boolean isNativeMethod() {
+    return modifier(PsiModifier.NATIVE);
+  }
+
+  @Override
+  public boolean isVarArgsMethod() {
+    return sema.read(method::isVarArgs);
+  }
+
+  @Override
+  public boolean isOverridable() {
+    return !isPrivate() && !isStatic() && !isFinal() && !owner().isFinal();
+  }
+
+  @Override
+  public List<Symbol> declarationParameters() {
+    return sema.read(() -> Arrays.stream(lambda == null ? method.getParameterList().getParameters() : lambda.getParameterList().getParameters())
+      .map(sema::symbol).toList());
+  }
+
+  @Override
+  public Object defaultValue() {
+    return sema.read(() -> method instanceof PsiAnnotationMethod annotation ? JSymbolMetadata.value(sema, annotation.getDefaultValue()) : null);
   }
 
   @Override
   public List<MethodSymbol> overriddenSymbols() {
-    if (overriddenSymbols == null) {
-      overriddenSymbols = findOverriddenSymbols();
-    }
-    return overriddenSymbols;
-  }
-
-  private List<MethodSymbol> findOverriddenSymbols() {
-    Set<MethodSymbol> results = new LinkedHashSet<>();
-    IMethodBinding methodBinding = methodBinding();
-    findOverridesInParentTypes(results, methodBinding::overrides, methodBinding.getDeclaringClass());
-    return new ArrayList<>(results);
-  }
-
-  @VisibleForTesting
-  void findOverridesInParentTypes(Collection<MethodSymbol> accumulator, Predicate<IMethodBinding> overridesCondition, ITypeBinding type) {
-    if (type.isInterface()) {
-      // check Object for interfaces forcing overrides from Object
-      findOverridesInTypes(accumulator, overridesCondition, sema.resolveType("java.lang.Object"));
-    } else if (!"java.lang.Object".equals(type.getQualifiedName())) {
-      findOverridesInTypes(accumulator, overridesCondition, type.getSuperclass());
-    }
-    findOverridesInTypes(accumulator, overridesCondition, type.getInterfaces());
-  }
-
-  private void findOverridesInTypes(Collection<MethodSymbol> accumulator, Predicate<IMethodBinding> overridesCondition, ITypeBinding... types) {
-    for (ITypeBinding type : types) {
-      if (type != null) {
-        for (IMethodBinding declaredMethod : type.getDeclaredMethods()) {
-          if (overridesCondition.test(declaredMethod)) {
-            accumulator.add(sema.methodSymbol(declaredMethod));
-            break;
-          }
-        }
-        findOverridesInParentTypes(accumulator, overridesCondition, type);
+    return sema.read(() -> {
+      Set<MethodSymbol> result = new LinkedHashSet<>();
+      if (!method.isConstructor() && !isStatic() && !isPrivate()) {
+        collectOverrides(method.getContainingClass(), PsiSubstitutor.EMPTY, result, new HashSet<>());
       }
+      return List.copyOf(result);
+    });
+  }
+
+  private void collectOverrides(PsiClass current, PsiSubstitutor substitution, Set<MethodSymbol> result, Set<String> seen) {
+    var parents = new ArrayList<>(Arrays.asList(current.getSuperTypes()));
+    if (current.isInterface()) {
+      var object = sema.resolveType("java.lang.Object");
+      if (object instanceof PsiClassType objectType) {
+        parents.addFirst(objectType);
+      }
+    }
+    for (var type : parents) {
+      if (!(substitution.substitute(type) instanceof PsiClassType parentType)) {
+        continue;
+      }
+      var resolved = parentType.resolveGenerics();
+      var cls = resolved.getElement();
+      if (cls == null || !seen.add(sema.key(cls))) {
+        continue;
+      }
+      for (var parent : cls.findMethodsByName(method.getName(), false)) {
+        if (!parent.hasModifierProperty(PsiModifier.PRIVATE) && !parent.hasModifierProperty(PsiModifier.STATIC)
+          && MethodSignatureUtil.isSubsignature(parent.getSignature(resolved.getSubstitutor()), method.getSignature(PsiSubstitutor.EMPTY))) {
+          result.add(sema.method(parent, resolved.getSubstitutor()));
+          break;
+        }
+      }
+      collectOverrides(cls, resolved.getSubstitutor(), result, seen);
     }
   }
 
   @Override
   public String signature() {
-    return signature;
+    return sema.read(() -> sema.binaryName(method.getContainingClass()) + "#" + name() + "("
+      + Arrays.stream(method.getParameterList().getParameters()).map(p -> descriptor(p.getType())).collect(Collectors.joining())
+      + ")" + descriptor(method.isConstructor() ? PsiTypes.voidType() : method.getReturnType()));
   }
 
-  @Override
-  public boolean isOverridable() {
-    return !isUnknown() && !(isPrivate() || isStatic() || isFinal() || owner().isFinal());
-  }
-
-  @Override
-  public boolean isParametrizedMethod() {
-    return !isUnknown() && (methodBinding().isParameterizedMethod() || methodBinding().isGenericMethod());
-  }
-
-  @Override
-  public boolean isDefaultMethod() {
-    return !isUnknown() && Modifier.isDefault(binding.getModifiers());
-  }
-
-  @Override
-  public boolean isSynchronizedMethod() {
-    return !isUnknown() && Modifier.isSynchronized(binding.getModifiers());
-  }
-
-  @Override
-  public boolean isVarArgsMethod() {
-    return !isUnknown() && methodBinding().isVarargs();
-  }
-
-  @Nullable
-  @Override
-  public MethodTree declaration() {
-    return (MethodTree) super.declaration();
-  }
-
-  @Override
-  public boolean isNativeMethod() {
-    return !isUnknown() && Modifier.isNative(binding.getModifiers());
-  }
-
-  /** This is for debugging and doesn't follow a guaranteed format. */
-  @Override
-  public String toString() {
-    return binding.getKey();
+  private String descriptor(com.intellij.psi.PsiType type) {
+    var erased = TypeConversionUtil.erasure(type);
+    if (erased instanceof PsiArrayType array) {
+      return "[" + descriptor(array.getComponentType());
+    }
+    return switch (erased.getCanonicalText(false)) {
+      case "void" -> "V";
+      case "boolean" -> "Z";
+      case "byte" -> "B";
+      case "char" -> "C";
+      case "short" -> "S";
+      case "int" -> "I";
+      case "long" -> "J";
+      case "float" -> "F";
+      case "double" -> "D";
+      default -> "L" + sema.type(erased).fullyQualifiedName().replace('.', '/') + ";";
+    };
   }
 }

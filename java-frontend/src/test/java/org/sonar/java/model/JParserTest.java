@@ -40,13 +40,6 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.internal.compiler.parser.TerminalToken;
-import org.eclipse.jdt.internal.formatter.Token;
-import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
@@ -99,8 +92,6 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.model.JParser.convertTokenTypeToCommentKind;
-import static org.sonar.java.model.JParser.isComment;
 import static org.sonar.java.model.JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
 import static org.sonar.java.model.JParserConfig.Mode.BATCH;
 import static org.sonar.java.model.JParserConfig.Mode.FILE_BY_FILE;
@@ -132,8 +123,7 @@ class JParserTest {
   void should_recover_if_parser_fails() {
     String version = "12";
     List<File> classpath = Collections.singletonList(new File("unknownFile"));
-    ASTParser astParser = FILE_BY_FILE.create(JavaVersionImpl.fromString(version), classpath).astParser();
-    assertThrows(RecognitionException.class, () -> JParser.parse(astParser, version, "A", "class A { }"));
+    assertThrows(RecognitionException.class, () -> FrontendParser.parse(JavaVersionImpl.fromString(version), classpath, "A", "class A {"));
   }
 
   @Test
@@ -507,25 +497,12 @@ class JParserTest {
   }
 
   @Test
-  void test_first_index_of_tokens_in_eclipse_ast() {
-    String version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION.effectiveJavaVersionAsString();
-    String unitName = "C.java";
-    String source = "class C { }";
-
-    ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
-    JavaCore.setComplianceOptions(version, JavaCore.getOptions());
-    astParser.setResolveBindings(true);
-    astParser.setUnitName(unitName);
-    astParser.setSource(source.toCharArray());
-    CompilationUnit compilationUnit = (CompilationUnit) astParser.createAST(null);
-    TokenManager tokenManager = JParser.createTokenManager(version, unitName, source);
-
-    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameIdentifier, TerminalToken.TokenNameLBRACE)).isEqualTo(1);
-    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameLBRACE, TerminalToken.TokenNameIdentifier)).isEqualTo(1);
-    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameRBRACE, TerminalToken.TokenNameLBRACE)).isEqualTo(2);
-    assertThatThrownBy(() -> JParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNamebreak, TerminalToken.TokenNameconst))
-      .isInstanceOf(IllegalStateException.class)
-      .hasMessage("Failed to find token TokenNamebreak or TokenNameconst in the tokens of a org.eclipse.jdt.core.dom.CompilationUnit");
+  void test_token_search_in_psi_index() {
+    var tokens = new PsiTokenIndex("class C { }");
+    assertThat(tokens.find(0, 11, "C", false)).isSameAs(tokens.lexemes().get(1).token());
+    assertThat(tokens.find(0, 11, "{", false)).isSameAs(tokens.lexemes().get(2).token());
+    assertThat(tokens.find(0, 11, "}", true)).isSameAs(tokens.lexemes().get(3).token());
+    assertThatThrownBy(() -> tokens.find(0, 11, "break", false)).isInstanceOf(IllegalArgumentException.class).hasMessage("Missing token 'break' in [0, 11)");
   }
 
   @Test
@@ -544,46 +521,21 @@ class JParserTest {
         void foo() {}
       }
       """;
-    TokenManager tokens = JParser.createTokenManager(version, unitName, source);
-
-    assertThat(tokens.size()).isEqualTo(15);
-
-    Token token0 = tokens.get(0);
-    assertThat(token0.toString(source)).isEqualTo("class");
-    assertThat(token0.isComment()).isFalse();
-    assertThat(isComment(token0)).isFalse();
-    assertThatThrownBy(() -> convertTokenTypeToCommentKind(token0))
-      .isInstanceOf(IllegalStateException.class)
-      .hasMessage("Unexpected value: TokenNameclass");
-
-    Token token3 = tokens.get(3);
-    assertThat(token3.toString(source)).isEqualTo("// line comment");
-    assertThat(token3.isComment()).isTrue();
-    assertThat(isComment(token3)).isTrue();
-    assertThat(convertTokenTypeToCommentKind(token3)).isEqualTo(CommentKind.LINE);
-
-    Token token4 = tokens.get(4);
-    assertThat(token4.toString(source)).isEqualTo("/* block comment */");
-    assertThat(token4.isComment()).isTrue();
-    assertThat(isComment(token4)).isTrue();
-    assertThat(convertTokenTypeToCommentKind(token4)).isEqualTo(CommentKind.BLOCK);
-
-    Token token5 = tokens.get(5);
-    assertThat(token5.toString(source)).isEqualTo("/// markdown comment 1\n  /// markdown comment 2");
-    assertThat(token5.isComment()).isTrue();
-    assertThat(isComment(token5)).isTrue();
-    assertThat(convertTokenTypeToCommentKind(token5)).isEqualTo(CommentKind.MARKDOWN);
-
-    Token token6 = tokens.get(6);
-    assertThat(token6.toString(source)).isEqualTo("/**\n    * javadoc comment\n    */");
-    assertThat(token6.isComment()).isTrue();
-    assertThat(isComment(token6)).isTrue();
-    assertThat(convertTokenTypeToCommentKind(token6)).isEqualTo(CommentKind.JAVADOC);
-
-    Token token7 = tokens.get(7);
-    assertThat(token7.toString(source)).isEqualTo("void");
-    assertThat(token7.isComment()).isFalse();
-    assertThat(isComment(token7)).isFalse();
+    var tokens = new PsiTokenIndex(source).lexemes();
+    assertThat(tokens).hasSize(11);
+    assertThat(tokens.getFirst().token().text()).isEqualTo("class");
+    assertThat(tokens.getFirst().token().trivias()).isEmpty();
+    var comments = tokens.get(3).token().trivias();
+    assertThat(comments).hasSize(4);
+    assertThat(comments.get(0).comment()).isEqualTo("// line comment");
+    assertThat(comments.get(0).commentKind()).isEqualTo(CommentKind.LINE);
+    assertThat(comments.get(1).comment()).isEqualTo("/* block comment */");
+    assertThat(comments.get(1).commentKind()).isEqualTo(CommentKind.BLOCK);
+    assertThat(comments.get(2).comment()).isEqualTo("/// markdown comment 1\n  /// markdown comment 2");
+    assertThat(comments.get(2).commentKind()).isEqualTo(CommentKind.MARKDOWN);
+    assertThat(comments.get(3).comment()).isEqualTo("/**\n    * javadoc comment\n    */");
+    assertThat(comments.get(3).commentKind()).isEqualTo(CommentKind.JAVADOC);
+    assertThat(tokens.get(3).token().text()).isEqualTo("void");
   }
 
   @Test
@@ -702,11 +654,27 @@ class JParserTest {
       TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
     BiConsumer<InputFile, JParserConfig.Result> doNothingAction = (inputFile, result) -> {};
-    JParserConfig config = spy(JParserConfig.Mode.BATCH
-      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false));
-    // Return a lazy ASTParser that do nothing to ensure that we have not analyzed files
-    ASTParser astParser = mock(ASTParser.class);
-    when(config.astParser()).thenReturn(astParser);
+    JParserConfig config = new JParserConfig.Batch(MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false) {
+      @Override
+      FrontendBackend backend() {
+        FrontendBackend delegate = super.backend();
+        return configuration -> new FrontendSession() {
+          private final FrontendSession session = delegate.open(configuration);
+          {
+            own(session::close);
+          }
+
+          @Override
+          JavaTree.CompilationUnitTreeImpl parse(String unitName, String source) {
+            return session.parse(unitName, source);
+          }
+
+          @Override
+          void parseBatch(FrontendBatch inputs, org.sonar.java.ProgressMonitor monitor, BiConsumer<InputFile, ParsedUnit> action) {
+          }
+        };
+      }
+    };
 
     config.parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), doNothingAction);
 
@@ -830,11 +798,11 @@ class JParserTest {
     }
 
     @Override
-    public ASTParser astParser() {
+    FrontendBackend backend() {
       if (!exceptions.isEmpty()) {
         throw exceptions.pop();
       }
-      return super.astParser();
+      return super.backend();
     }
 
   }

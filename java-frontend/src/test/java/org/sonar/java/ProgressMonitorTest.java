@@ -19,7 +19,6 @@ package org.sonar.java;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -218,7 +217,7 @@ class ProgressMonitorTest {
     analysisProgress.startBatch(125);
     ProgressMonitor report = new ProgressMonitor(() -> false, logger, TimeUnit.MILLISECONDS.toMillis(250), analysisProgress);
 
-    report.beginTask("taskName", IProgressMonitor.UNKNOWN);
+    report.beginTask("taskName", -1);
 
     waitForMessage(logger);
     report.worked(250);

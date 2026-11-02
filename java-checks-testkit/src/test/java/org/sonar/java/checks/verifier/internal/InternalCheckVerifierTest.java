@@ -74,6 +74,18 @@ import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.TES
 
 class InternalCheckVerifierTest {
 
+  @Test
+  void normal_scanner_uses_selected_backend() {
+    CheckVerifier.newVerifier().onFile(TEST_FILE).withCheck(new JavaFileScanner() {
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        var tree = (org.sonar.java.model.JavaTree.CompilationUnitTreeImpl) context.getTree();
+        String expected = "JSema";
+        assertThat(tree.sema.getClass().getSimpleName()).isEqualTo(expected);
+      }
+    }).verifyNoIssues();
+  }
+
   @Nested
   class TestingCheckVerifierInitialConfiguration {
 

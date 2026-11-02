@@ -16,6 +16,25 @@
  */
 package org.sonar.java.model;
 
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiAnnotation;
+import com.intellij.psi.PsiAnnotationMemberValue;
+import com.intellij.psi.PsiArrayInitializerMemberValue;
+import com.intellij.psi.PsiArrayType;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiClassObjectAccessExpression;
+import com.intellij.psi.PsiClassType;
+import com.intellij.psi.PsiCompiledElement;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiEnumConstant;
+import com.intellij.psi.PsiJavaFile;
+import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiModifierListOwner;
+import com.intellij.psi.PsiPackage;
+import com.intellij.psi.PsiReferenceExpression;
+import com.intellij.psi.PsiVariable;
+import com.intellij.psi.impl.file.impl.JavaFileManager;
+import com.intellij.psi.search.GlobalSearchScope;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -338,4 +357,94 @@ final class JSymbolMetadata implements SymbolMetadata {
     }
   }
 
+  static JSymbolMetadata of(JSema sema, Symbol owner, PsiElement element) {
+    var annotations = element instanceof PsiPackage pkg ? packageAnnotations(sema, pkg)
+      : element instanceof PsiModifierListOwner declaration ? declaration.getAnnotations() : new PsiAnnotation[0];
+    com.intellij.psi.PsiType type = element instanceof PsiVariable variable ? variable.getType()
+      : element instanceof PsiMethod method ? method.getReturnType() : null;
+    if (type != null) {
+      type = owner instanceof JMethodSymbol method ? method.substitutor.substitute(type)
+        : owner instanceof JVariableSymbol variable ? variable.substitutor.substitute(type) : type;
+    }
+    return metadata(sema, owner, annotations, type, false);
+  }
+
+  private static PsiAnnotation[] packageAnnotations(JSema sema, PsiPackage pkg) {
+    var name = pkg.getQualifiedName();
+    var classes = JavaFileManager.getInstance(sema.project).findClasses(name.isEmpty() ? "package-info" : name + ".package-info",
+      GlobalSearchScope.allScope(sema.project));
+    var binary = Arrays.stream(classes).filter(PsiCompiledElement.class::isInstance).findFirst().orElse(null);
+    var statement = binary == null ? null : ((PsiJavaFile) binary.getContainingFile()).getPackageStatement();
+    return statement == null || statement.getAnnotationList() == null ? new PsiAnnotation[0] : statement.getAnnotationList().getAnnotations();
+  }
+
+  private static JSymbolMetadata metadata(JSema sema, Symbol owner, PsiAnnotation[] declarations, com.intellij.psi.PsiType type, boolean argument) {
+    List<PsiAnnotation> annotations = new ArrayList<>(Arrays.asList(declarations));
+    if (type != null) {
+      for (var annotation : type.getAnnotations()) {
+        if (!annotations.contains(annotation)) {
+          annotations.add(annotation);
+        }
+      }
+    }
+    var parameters = type instanceof PsiClassType cls ? Arrays.stream(cls.getParameters())
+      .map(t -> metadata(sema, owner, new PsiAnnotation[0], t, true)).toArray(JSymbolMetadata[]::new) : new JSymbolMetadata[0];
+    return new JSymbolMetadata(owner, () -> sema.read(() -> annotations.stream()
+      .filter(a -> a.getNameReferenceElement() == null || !(a.getNameReferenceElement().resolve() instanceof PsiClass cls) || cls.isAnnotationType())
+      .map(a -> (SymbolMetadata.AnnotationInstance) new Annotation(sema, a)).toList()), parameters, argument);
+  }
+
+  static Object value(JSema sema, PsiAnnotationMemberValue value) {
+    if (value instanceof PsiAnnotation annotation) {
+      return new Annotation(sema, annotation);
+    }
+    if (value instanceof PsiArrayInitializerMemberValue array) {
+      return Arrays.stream(array.getInitializers()).map(v -> value(sema, v)).toArray();
+    }
+    if (value instanceof PsiClassObjectAccessExpression cls) {
+      return sema.type(cls.getOperand().getType()).symbol();
+    }
+    if (value instanceof PsiReferenceExpression reference && reference.resolve() instanceof PsiEnumConstant constant) {
+      return sema.symbol(constant);
+    }
+    return value == null ? null : JavaPsiFacade.getInstance(sema.project).getConstantEvaluationHelper().computeConstantExpression(value);
+  }
+
+  static Object value(JSema sema, PsiAnnotationMemberValue value, com.intellij.psi.PsiType expectedType) {
+    var result = value(sema, value);
+    return result != null && expectedType instanceof PsiArrayType && !(result instanceof Object[]) ? new Object[] {result} : result;
+  }
+
+  private static final class Annotation implements SymbolMetadata.AnnotationInstance {
+    private final JSema sema;
+    private final PsiAnnotation annotation;
+
+    Annotation(JSema sema, PsiAnnotation annotation) {
+      this.sema = sema;
+      this.annotation = annotation;
+    }
+
+    @Override
+    public Symbol symbol() {
+      return sema.read(() -> {
+        var cls = annotation.resolveAnnotationType();
+        return cls == null ? annotation.getNameReferenceElement() == null ? Symbol.UNKNOWN_SYMBOL
+          : sema.type(JavaPsiFacade.getElementFactory(sema.project).createTypeByFQClassName(annotation.getQualifiedName(), annotation.getResolveScope())).symbol()
+          : sema.symbol(cls);
+      });
+    }
+
+    @Override
+    public List<SymbolMetadata.AnnotationValue> values() {
+      return sema.read(() -> {
+        var declaration = annotation.resolveAnnotationType();
+        return Arrays.stream(annotation.getParameterList().getAttributes()).map(attribute -> {
+          var name = attribute.getName() == null ? "value" : attribute.getName();
+          var methods = declaration == null ? new PsiMethod[0] : declaration.findMethodsByName(name, false);
+          var expectedType = methods.length == 0 ? null : methods[0].getReturnType();
+          return (SymbolMetadata.AnnotationValue) new AnnotationValueImpl(name, value(sema, attribute.getValue(), expectedType));
+        }).toList();
+      });
+    }
+  }
 }

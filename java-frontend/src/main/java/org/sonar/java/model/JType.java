@@ -16,314 +16,282 @@
  */
 package org.sonar.java.model;
 
+import com.intellij.psi.PsiArrayType;
+import com.intellij.psi.PsiCapturedWildcardType;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiClassType;
+import com.intellij.psi.PsiIntersectionType;
+import com.intellij.psi.PsiPrimitiveType;
+import com.intellij.psi.PsiReferenceList;
+import com.intellij.psi.impl.source.PsiClassReferenceType;
+import com.intellij.psi.PsiTypeParameter;
+import com.intellij.psi.PsiTypes;
+import com.intellij.psi.PsiWildcardType;
+import com.intellij.psi.util.TypeConversionUtil;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.stream.IntStream;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
 final class JType implements Type, Type.ArrayType {
-
-  private static final Logger LOG = LoggerFactory.getLogger(JType.class);
-
   final JSema sema;
-  final ITypeBinding typeBinding;
+  final com.intellij.psi.PsiType psi;
+  final String key;
 
-  private final String fullyQualifiedName;
+  JType(JSema sema, com.intellij.psi.PsiType psi, String key) {
+    this.sema = sema;
+    this.psi = psi;
+    this.key = key;
+  }
 
-  /**
-   * Cache for {@link #primitiveWrapperType()}.
-   */
-  private Type primitiveWrapperType;
-
-  /**
-   * Cache for {@link #primitiveType()}.
-   */
-  private Type primitiveType;
-
-  /**
-   * Cache for {@link #declaringType()}.
-   */
-  private Type declaringType;
-
-  /**
-   * Cache for {@link #typeArguments()}.
-   */
-  private List<Type> typeArguments;
-
-  JType(JSema sema, ITypeBinding typeBinding) {
-    this.sema = Objects.requireNonNull(sema);
-    this.typeBinding = Objects.requireNonNull(typeBinding);
-    this.fullyQualifiedName = fullyQualifiedName(typeBinding);
+  PsiClass resolvedClass() {
+    return psi instanceof PsiClassType cls ? cls.resolve() : null;
   }
 
   @Override
   public Set<Type> directSuperTypes() {
-    Set<Type> result = new HashSet<>();
-    ITypeBinding superclass = typeBinding.getSuperclass();
-    if (superclass != null) {
-      result.add(sema.type(superclass));
-    }
-    Arrays.stream(typeBinding.getInterfaces())
-      .map(sema::type)
-      .forEach(result::add);
-    return result;
+    return sema.read(() -> {
+      Set<Type> result = new HashSet<>();
+      if (!isUnknown()) {
+        for (var parent : psi.getSuperTypes()) {
+          if (!(resolvedClass() != null && resolvedClass().isInterface() && parent.equalsToText("java.lang.Object"))) {
+            result.add(sema.type(parent));
+          }
+        }
+      }
+      return result;
+    });
   }
 
   @Override
-  public boolean is(String fullyQualifiedName) {
-    return fullyQualifiedName.equals(this.fullyQualifiedName());
+  public boolean is(String name) {
+    return fullyQualifiedName().equals(name);
   }
 
   @Override
-  public boolean isSubtypeOf(String fullyQualifiedName) {
-    return isSubtypeOf(sema.getClassType(fullyQualifiedName));
+  public boolean isSubtypeOf(String name) {
+    return isSubtypeOf(sema.getClassType(name).erasure());
   }
 
   @Override
-  public boolean isSubtypeOf(Type superType) {
-    return !superType.isUnknown()
-      && isSubtype(this.typeBinding, ((JType) superType).typeBinding);
-  }
-
-  private static boolean isSubtype(ITypeBinding left, ITypeBinding right) {
-    if (left.isRecovered()) {
-      return false;
-    }
-    if (left.isNullType()) {
-      return !right.isPrimitive();
-    }
-    try {
-      return left.isSubTypeCompatible(right);
-    } catch (NullPointerException ex) {
-      // In rare circumstances, ECJ may produce a NPE while calling isSubTypeCompatible(), see SONARJAVA-4390
-      LOG.debug("NullPointerException while resolving isSubTypeCompatible()", ex);
-      return false;
-    }
+  public boolean isSubtypeOf(Type other) {
+    return sema.read(() -> {
+      if (!(other instanceof JType target) || isUnknown() || target.isUnknown()) {
+        return false;
+      }
+      if (isNullType()) {
+        return !target.isPrimitive() && !target.isVoid();
+      }
+      if (isPrimitive() || target.isPrimitive() || isVoid() || target.isVoid()) {
+        return equals(target);
+      }
+      try {
+        return TypeConversionUtil.isAssignable(target.psi, psi, false);
+      } catch (NullPointerException e) {
+        org.slf4j.LoggerFactory.getLogger(JType.class).debug("NullPointerException while resolving isSubTypeCompatible()");
+        return false;
+      }
+    });
   }
 
   @Override
   public boolean isArray() {
-    return typeBinding.isArray();
-  }
-
-  @Override
-  public boolean isClass() {
-    return typeBinding.isClass()
-      || typeBinding.isInterface()
-      || typeBinding.isEnum();
+    return psi instanceof PsiArrayType;
   }
 
   @Override
   public boolean isVoid() {
-    return "void".equals(fullyQualifiedName());
+    return PsiTypes.voidType().equals(psi);
   }
 
   @Override
   public boolean isPrimitive() {
-    return typeBinding.isPrimitive()
-      && !isVoid();
+    return psi instanceof PsiPrimitiveType && !isVoid() && !isNullType();
   }
 
   @Override
   public boolean isPrimitive(Primitives primitive) {
-    // TODO suboptimal
-    return primitive.name().toLowerCase(Locale.ROOT).equals(fullyQualifiedName());
-  }
-
-  @Override
-  public boolean isPrimitiveWrapper() {
-    return isClass() && JUtils.WRAPPER_TO_PRIMITIVE.containsKey(fullyQualifiedName());
-  }
-
-  @Nullable
-  @Override
-  public Type primitiveWrapperType() {
-    if (primitiveWrapperType == null) {
-      String name = JUtils.PRIMITIVE_TO_WRAPPER.get(fullyQualifiedName());
-      if (name == null) {
-        return null;
-      }
-      ITypeBinding resolvedType = sema.resolveType(name);
-      if (resolvedType == null) {
-        return null;
-      }
-      primitiveWrapperType = sema.type(resolvedType);
-    }
-    return primitiveWrapperType;
-  }
-
-  @Nullable
-  @Override
-  public Type primitiveType() {
-    if (primitiveType == null) {
-      String name = JUtils.WRAPPER_TO_PRIMITIVE.get(fullyQualifiedName());
-      if (name == null) {
-        return null;
-      }
-      ITypeBinding resolvedType = sema.resolveType(name);
-      if (resolvedType == null) {
-        return null;
-      }
-      primitiveType = sema.type(resolvedType);
-    }
-    return primitiveType;
+    return is(primitive.name().toLowerCase(Locale.ROOT));
   }
 
   @Override
   public boolean isNullType() {
-    return !isUnknown() && typeBinding.isNullType();
+    return PsiTypes.nullType().equals(psi);
   }
 
   @Override
-  public boolean isTypeVar() {
-    return !isUnknown() && typeBinding.isTypeVariable();
-  }
-
-  @Override
-  public boolean isRawType() {
-    if (isUnknown()) {
-      return false;
-    }
-    return typeBinding.isRawType();
-  }
-
-  @Override
-  public Type declaringType() {
-    if (declaringType == null) {
-      if (isUnknown()) {
-        return this;
-      }
-      declaringType = sema.type(typeBinding.getTypeDeclaration());
-    }
-    return declaringType;
-  }
-
-  @Override
-  public boolean isUnknown() {
-    return typeBinding.isRecovered();
+  public boolean isPrimitiveWrapper() {
+    return JUtils.WRAPPER_TO_PRIMITIVE.containsKey(fullyQualifiedName());
   }
 
   @Override
   public boolean isNumerical() {
-    switch (fullyQualifiedName()) {
-      case "byte",
-        "char",
-        "short",
-        "int",
-        "long",
-        "float",
-        "double":
-        return true;
-      default:
-        return false;
-    }
-  }
-
-  @Override
-  public String fullyQualifiedName() {
-    return fullyQualifiedName;
-  }
-
-  private static String fullyQualifiedName(ITypeBinding typeBinding) {
-    String qualifiedName;
-    if (typeBinding.isNullType()) {
-      qualifiedName = "<nulltype>";
-    } else if (typeBinding.isPrimitive()) {
-      qualifiedName = typeBinding.getName();
-    } else if (typeBinding.isArray()) {
-      qualifiedName = fullyQualifiedName(typeBinding.getComponentType()) + "[]";
-    } else if (typeBinding.isCapture()) {
-      qualifiedName = "!capture!";
-    } else if (typeBinding.isTypeVariable()) {
-      qualifiedName = typeBinding.getName();
-    } else {
-      qualifiedName = typeBinding.getBinaryName();
-      if (qualifiedName == null) {
-        // e.g. anonymous class in unreachable code
-        qualifiedName = typeBinding.getKey();
-      }
-    }
-    if (typeBinding.isIntersectionType()) {
-      TreeSet<String> intersectionTypes = new TreeSet<>();
-      intersectionTypes.add(qualifiedName);
-      for (ITypeBinding typeBound : typeBinding.getTypeBounds()) {
-        intersectionTypes.add(fullyQualifiedName(typeBound));
-      }
-      qualifiedName = String.join(" & ", intersectionTypes);
-    }
-    return qualifiedName;
+    return Set.of("byte", "char", "short", "int", "long", "float", "double").contains(fullyQualifiedName());
   }
 
   @Override
   public boolean isIntersectionType() {
-    return typeBinding.isIntersectionType();
+    return psi instanceof PsiIntersectionType;
   }
 
   @Override
-  public Type[] getIntersectionTypes() {
-    if (!isIntersectionType()) {
-      return new Type[] { this };
-    }
-    ITypeBinding[] bounds = typeBinding.getTypeBounds();
-    Type[] types = new Type[bounds.length];
-    for (int i = 0; i < bounds.length; i++) {
-      types[i] = sema.type(bounds[i]);
-    }
-    return types;
+  public boolean isClass() {
+    return sema.read(() -> psi instanceof PsiClassType && !(resolvedClass() instanceof PsiTypeParameter));
   }
 
-  /**
-   * @see JSymbol#name()
-   */
+  @Override
+  public boolean isTypeVar() {
+    return sema.read(() -> resolvedClass() instanceof PsiTypeParameter);
+  }
+
+  @Override
+  public boolean isRawType() {
+    return sema.read(() -> psi instanceof PsiClassType cls && cls.isRaw());
+  }
+
+  @Override
+  public boolean isUnknown() {
+    return sema.read(() -> unresolved(psi));
+  }
+
+  private static boolean unresolved(com.intellij.psi.PsiType type) {
+    if (type instanceof PsiArrayType array) {
+      return unresolved(array.getComponentType());
+    }
+    if (type instanceof PsiWildcardType wildcard && wildcard.getBound() != null) {
+      return unresolved(wildcard.getBound());
+    }
+    return type instanceof PsiClassType cls && (cls.resolve() == null || Arrays.stream(cls.getParameters()).anyMatch(JType::unresolved));
+  }
+
+  @Override
+  public Type primitiveWrapperType() {
+    String name = JUtils.PRIMITIVE_TO_WRAPPER.get(fullyQualifiedName());
+    Type value = name == null ? null : sema.getClassType(name);
+    return value == Type.UNKNOWN ? null : value;
+  }
+
+  @Override
+  public Type primitiveType() {
+    String name = JUtils.WRAPPER_TO_PRIMITIVE.get(fullyQualifiedName());
+    Type value = name == null ? null : sema.getClassType(name);
+    return value == Type.UNKNOWN ? null : value;
+  }
+
+  @Override
+  public Type declaringType() {
+    return sema.read(() -> {
+      var cls = resolvedClass();
+      return cls == null ? this : sema.type(sema.declarationType(cls));
+    });
+  }
+
+  @Override
+  public String fullyQualifiedName() {
+    return sema.read(() -> qualifiedName(psi));
+  }
+
+  private String qualifiedName(com.intellij.psi.PsiType type) {
+    if (type instanceof PsiArrayType array) {
+      return qualifiedName(array.getComponentType()) + "[]";
+    }
+    if (type instanceof PsiCapturedWildcardType) {
+      return "!capture!";
+    }
+    if (type instanceof PsiWildcardType wildcard) {
+      return wildcard.getCanonicalText(false);
+    }
+    if (type instanceof PsiIntersectionType intersection) {
+      Set<String> names = new TreeSet<>();
+      Arrays.stream(intersection.getConjuncts()).map(this::qualifiedName).forEach(names::add);
+      return String.join(" & ", names);
+    }
+    if (type instanceof PsiClassType cls) {
+      var resolved = cls.resolve();
+      if (resolved instanceof PsiTypeParameter parameter) {
+        return parameter.getName();
+      }
+      if (resolved != null) {
+        return sema.binaryName(resolved);
+      }
+      String name = cls.rawType().getCanonicalText(false);
+      return (cls instanceof PsiClassReferenceType reference && reference.getReference().getParent() instanceof PsiReferenceList)
+        || sema.explicitRuntime || sema.getClassType("java.lang.Object").isUnknown() ? "Recovered#typeBindingL" + name.replace('.', '/') + ";0" : name;
+    }
+    return PsiTypes.nullType().equals(type) ? "<nulltype>" : type.getCanonicalText(false);
+  }
+
   @Override
   public String name() {
-    if (typeBinding.isNullType()) {
-      return "<nulltype>";
-    } else if (typeBinding.isParameterizedType()) {
-      // without names of parameters
-      return typeBinding.getErasure().getName();
-    }
-    return typeBinding.getName();
-  }
-
-  @Override
-  public String toString() {
-    return name();
+    return sema.read(() -> {
+      if (psi instanceof PsiArrayType array) {
+        return sema.type(array.getComponentType()).name() + "[]";
+      }
+      var cls = resolvedClass();
+      if (cls != null) {
+        return cls.getName() == null ? "" : cls.getName();
+      }
+      if (psi instanceof PsiClassType classType) {
+        return classType.getClassName();
+      }
+      return fullyQualifiedName();
+    });
   }
 
   @Override
   public Symbol.TypeSymbol symbol() {
-    return sema.typeSymbol(typeBinding);
+    return sema.read(() -> sema.typeSymbol(this));
   }
 
   @Override
   public Type erasure() {
-    return sema.type(typeBinding.getErasure());
+    return sema.read(() -> sema.type(TypeConversionUtil.erasure(psi)));
   }
 
   @Override
   public Type elementType() {
-    return sema.type(typeBinding.getComponentType());
+    return sema.read(() -> psi instanceof PsiArrayType array ? sema.type(array.getComponentType()) : Type.UNKNOWN);
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj instanceof JType other) {
-      return areEqual(this.typeBinding, other.typeBinding);
-    }
-    return false;
+  public boolean isParameterized() {
+    return sema.read(() -> psi instanceof PsiClassType cls && !cls.isRaw() && !typeArguments().isEmpty()
+      && !typeArguments().equals(declaringType().typeArguments()));
+  }
+
+  @Override
+  public List<Type> typeArguments() {
+    return sema.read(() -> {
+      if (!(psi instanceof PsiClassType cls) || cls.isRaw()) {
+        return List.of();
+      }
+      var resolved = cls.resolveGenerics();
+      if (resolved.getElement() == null) {
+        return List.of();
+      }
+      var arguments = Arrays.stream(resolved.getElement().getTypeParameters()).map(p -> resolved.getSubstitutor().substitute(p)).toArray(com.intellij.psi.PsiType[]::new);
+      if (IntStream.range(0, arguments.length).allMatch(i -> arguments[i] instanceof PsiClassType argument
+        && argument.resolve() == resolved.getElement().getTypeParameters()[i])) {
+        return List.of();
+      }
+      return sema.types(arguments);
+    });
+  }
+
+  @Override
+  public Type[] getIntersectionTypes() {
+    return sema.read(() -> psi instanceof PsiIntersectionType intersection
+      ? sema.types(intersection.getConjuncts()).toArray(Type[]::new) : new Type[] {this});
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    return other instanceof JType type && key.equals(type.key);
   }
 
   @Override
@@ -331,51 +299,8 @@ final class JType implements Type, Type.ArrayType {
     return fullyQualifiedName().hashCode();
   }
 
-  static boolean areEqual(@Nullable ITypeBinding binding1, @Nullable ITypeBinding binding2) {
-    if (binding1 == null || binding2 == null) {
-      return binding1 == binding2;
-    }
-    if (binding1.isWildcardType()) {
-      return binding2.isWildcardType()
-        && binding1.isUpperbound() == binding2.isUpperbound()
-        && areEqual(binding1.getBound(), binding2.getBound());
-    }
-    // TODO compare declaring class, method, member
-    return binding1.getTypeDeclaration().equals(binding2.getTypeDeclaration())
-      && isParameterizedOrGeneric(binding1) == isParameterizedOrGeneric(binding2)
-      && binding1.isRawType() == binding2.isRawType()
-      && Arrays.equals(binding1.getTypeParameters(), binding2.getTypeParameters())
-      && Arrays.equals(binding1.getTypeArguments(), binding2.getTypeArguments());
-  }
-
-  static ITypeBinding normalize(ITypeBinding typeBinding) {
-    ITypeBinding typeDeclaration = typeBinding.getTypeDeclaration();
-    if (typeBinding.isLocal()) {
-      return typeDeclaration;
-    }
-    return typeBinding.isParameterizedType() && Arrays.equals(typeDeclaration.getTypeParameters(), typeBinding.getTypeArguments())
-      ? typeDeclaration
-      : typeBinding;
-  }
-
-  private static boolean isParameterizedOrGeneric(ITypeBinding typeBinding) {
-    return typeBinding.isParameterizedType() || typeBinding.isGenericType();
-  }
-
   @Override
-  public boolean isParameterized() {
-    return typeBinding.isParameterizedType()
-      // when diamond operator is not fully resolved by ECJ, there is 0 typeArguments, while ECJ
-      // knows it is a Parameterized Type
-      && !typeArguments().isEmpty();
+  public String toString() {
+    return name();
   }
-
-  @Override
-  public List<Type> typeArguments() {
-    if (typeArguments == null) {
-      typeArguments = sema.types(typeBinding.getTypeArguments());
-    }
-    return typeArguments;
-  }
-
 }
