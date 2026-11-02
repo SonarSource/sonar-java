@@ -24,6 +24,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -31,6 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestResourceScope.Scoped
 class JavadocTest {
   private static CompilationUnitTree tree;
   private static Javadoc fooJavadoc;

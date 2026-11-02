@@ -19,6 +19,7 @@ package org.sonar.java.regex;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -29,6 +30,7 @@ import org.sonarsource.analyzer.commons.regex.ast.FlagSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestResourceScope.Scoped
 class RegexCacheTest {
 
   @Test

@@ -19,6 +19,7 @@ package org.sonar.java.model;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -27,6 +28,7 @@ import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestResourceScope.Scoped
 class TypeUtilsTest {
 
   @Test

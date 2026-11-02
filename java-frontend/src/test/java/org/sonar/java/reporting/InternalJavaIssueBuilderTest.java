@@ -52,6 +52,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -75,6 +76,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+@TestResourceScope.Scoped
 class InternalJavaIssueBuilderTest {
 
   @RegisterExtension

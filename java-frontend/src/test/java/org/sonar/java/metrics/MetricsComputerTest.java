@@ -18,12 +18,14 @@ package org.sonar.java.metrics;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestResourceScope.Scoped
 class MetricsComputerTest implements MetricsScannerContext {
 
   MetricsComputer mc = new MetricsComputer();

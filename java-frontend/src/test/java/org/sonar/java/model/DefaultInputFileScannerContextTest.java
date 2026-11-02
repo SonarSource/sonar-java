@@ -26,6 +26,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
@@ -41,6 +42,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@TestResourceScope.Scoped
 class DefaultInputFileScannerContextTest {
 
   protected static final File JAVA_FILE = new File("src/test/files/api/JavaFileScannerContext.java");

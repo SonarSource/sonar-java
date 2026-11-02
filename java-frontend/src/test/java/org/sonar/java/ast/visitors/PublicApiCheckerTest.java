@@ -31,6 +31,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -40,6 +41,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestResourceScope.Scoped
 class PublicApiCheckerTest {
 
   @Test

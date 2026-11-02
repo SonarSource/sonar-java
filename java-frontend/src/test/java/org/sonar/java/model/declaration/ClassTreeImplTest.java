@@ -21,6 +21,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -32,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.model.EcjTestSupport.clearType;
 import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 
+@TestResourceScope.Scoped
 class ClassTreeImplTest {
 
   @Test

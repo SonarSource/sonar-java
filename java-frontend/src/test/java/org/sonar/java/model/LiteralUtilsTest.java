@@ -24,6 +24,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -38,6 +39,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestResourceScope.Scoped
 class LiteralUtilsTest {
 
   static List<VariableTree> variables;

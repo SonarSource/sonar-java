@@ -21,6 +21,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.expression.LiteralTreeImpl;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -43,6 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.sonar.java.checks.helpers.MethodTreeUtils.lamdaArgumentAt;
 import static org.sonar.java.checks.helpers.MethodTreeUtils.parentMethodInvocationOfArgumentAtPos;
 
+@TestResourceScope.Scoped
 class MethodTreeUtilsTest {
 
   @Test

@@ -20,6 +20,7 @@ import java.io.File;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
@@ -37,6 +38,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.sonar.java.model.EcjTestSupport.sema;
 
+@TestResourceScope.Scoped
 class SymbolsTest {
 
   @Test
