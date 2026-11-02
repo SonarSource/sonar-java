@@ -70,6 +70,12 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     return (IMethodBinding) binding;
   }
 
+  @Override
+  @Nullable
+  public Object defaultValue() {
+    return EcjSymbolMetadata.convertAnnotationValue(sema, methodBinding().getDefaultValue());
+  }
+
   public boolean isLambda() {
     return methodBinding().getDeclaringMember() != null;
   }
