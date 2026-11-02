@@ -687,6 +687,9 @@ public final class JSema implements Sema {
       symbols.put(id, lambda);
       return lambda;
     }
+    if (parsed.params == null && parsed.name.contains(")$")) {
+      return createTypeInMethodBody(id, parsed);
+    }
     if (parsed.params == null) {
       JVariableSymbol field = new JVariableSymbol(this, id, parsed.name, "field");
       field.owner(owner);
@@ -1268,6 +1271,28 @@ public final class JSema implements Sema {
   }
 
   @Nullable
+  /**
+   * Local and anonymous classes are identified as members of their enclosing type, with the declaring
+   * method embedded in the member name, as in {@code com.acme.Owner#create()$Local$1}. They carry no
+   * declaration of their own, so the symbol is rebuilt from the identifier and owned by whatever
+   * declares it, which is the method for a local class and the local class for a nested anonymous one.
+   */
+  private JSymbol createTypeInMethodBody(String id, MemberId parsed) {
+    int lastSegment = parsed.name.lastIndexOf('$');
+    String simpleName = parsed.name.substring(lastSegment + 1);
+    boolean anonymous = simpleName.chars().allMatch(Character::isDigit);
+    JTypeSymbol symbol = new JTypeSymbol(this, id, anonymous ? "" : simpleName, false);
+    symbols.put(id, symbol);
+    typesByName.putIfAbsent(id, symbol);
+    symbol.owner(resolve(parsed.owner + "#" + parsed.name.substring(0, lastSegment)));
+    symbol.type(rawNamed(id));
+    JsonObject fact = facts.get(id);
+    if (fact != null) {
+      applyFact(symbol, fact);
+    }
+    return symbol;
+  }
+
   private static MemberId parseMember(String id) {
     int hash = id.indexOf('#');
     if (hash < 0) {
