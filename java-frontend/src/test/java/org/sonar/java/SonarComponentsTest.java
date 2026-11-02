@@ -83,6 +83,7 @@ import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -117,6 +118,7 @@ import static org.mockito.Mockito.when;
 import static org.sonar.java.TestUtils.computeLineEndOffsets;
 
 @ExtendWith(MockitoExtension.class)
+@TestResourceScope.Scoped
 class SonarComponentsTest {
 
   private static final Version V8_9 = Version.create(8, 9);

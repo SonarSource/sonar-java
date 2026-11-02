@@ -19,6 +19,7 @@ package org.sonar.java.cfg;
 import java.util.Comparator;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.cfg.CFG.Block;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestResourceScope.Scoped
 class CFGLoopTest {
 
   private static final CFGTestLoader loader = new CFGTestLoader("src/test/files/cfg/CFGLoopTest.java");

@@ -26,6 +26,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -52,6 +53,7 @@ import static org.sonar.java.model.assertions.SymbolAssert.assertThat;
 import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 
+@TestResourceScope.Scoped
 class AbstractPatternTreeTest {
 
   private static final String BASE_SOURCE_CODE = """

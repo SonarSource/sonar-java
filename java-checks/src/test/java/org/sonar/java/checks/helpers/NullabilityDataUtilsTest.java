@@ -18,6 +18,7 @@ package org.sonar.java.checks.helpers;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -25,6 +26,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.helpers.NullabilityDataUtils.nullabilityAsString;
 
+@TestResourceScope.Scoped
 class NullabilityDataUtilsTest {
 
   @Test

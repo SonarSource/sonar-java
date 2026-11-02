@@ -28,7 +28,7 @@ import java.util.function.UnaryOperator;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.verifier.TestUtils;
-import org.sonar.java.model.JParser;
+import org.sonar.java.model.FrontendParser;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.model.springcontext.BeanDefinitionGatherer;
@@ -44,7 +44,6 @@ import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 /**
  * Builds a {@link SpringContextModel} for the tests of rules that consume one instead of visiting an AST, either
@@ -145,9 +144,10 @@ public final class SpringContextModelTestUtils {
     VisitorsBridge visitorsBridge = new VisitorsBridge(gatherers, classpath, sonarComponents);
     for (String filePath : filePaths) {
       File file = new File(filePath);
-      CompilationUnitTree compilationUnit = parse(file, classpath);
-      visitorsBridge.setCurrentFile(inputFile(file));
-      visitorsBridge.visitFile(compilationUnit, false);
+      try (FrontendParser.ParsedFile parsed = parse(file, classpath)) {
+        visitorsBridge.setCurrentFile(inputFile(file));
+        visitorsBridge.visitFile(parsed.tree(), false);
+      }
     }
     visitorsBridge.endOfAnalysis();
     return SpringContextModel.of(gatheringModel);
@@ -166,7 +166,7 @@ public final class SpringContextModelTestUtils {
     }
   }
 
-  private static CompilationUnitTree parse(File file, List<File> classpath) {
+  private static FrontendParser.ParsedFile parse(File file, List<File> classpath) {
     String source;
     try {
       source = Files.readString(file.toPath(), StandardCharsets.UTF_8);
@@ -174,6 +174,6 @@ public final class SpringContextModelTestUtils {
       throw new IllegalStateException("Unable to read file '" + file.getAbsolutePath() + "'", e);
     }
     JavaVersion version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version.toString(), file.getName(), source);
+    return FrontendParser.parse(version, classpath, file.getName(), source);
   }
 }

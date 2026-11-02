@@ -34,6 +34,7 @@ import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.telemetry.DefaultTelemetry;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.telemetry.Telemetry;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -43,6 +44,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+@TestResourceScope.Scoped
 class SpringContextModelGathererTest {
 
   private static final String GATHERING_TIME_KEY = "java.spring.context_model_gathering_time_ms";

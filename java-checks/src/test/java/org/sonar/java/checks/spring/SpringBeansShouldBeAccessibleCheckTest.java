@@ -24,6 +24,7 @@ import org.sonar.java.model.springcontext.BeanDefinitionKind;
 import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.test.TestResourceScope;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.helpers.SpringContextModelTestUtils.beanLocation;
@@ -31,6 +32,7 @@ import static org.sonar.java.checks.helpers.SpringContextModelTestUtils.buildMod
 import static org.sonar.java.checks.helpers.SpringContextModelTestUtils.dummyInputFile;
 import static org.sonar.java.checks.helpers.SpringContextModelTestUtils.registerBean;
 
+@TestResourceScope.Scoped
 class SpringBeansShouldBeAccessibleCheckTest {
 
   private static final String BASE_PATH = "checks/spring/s4605/";

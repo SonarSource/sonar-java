@@ -29,6 +29,7 @@ import org.slf4j.event.Level;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -101,6 +102,7 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.VARIABLE;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.WHILE_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.YIELD_STATEMENT;
 
+@TestResourceScope.Scoped
 class CFGTest {
 
   @RegisterExtension

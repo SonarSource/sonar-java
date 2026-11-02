@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.helpers.JParserTestUtils;
 import org.sonar.java.checks.tests.AssertionTypesCheck.Argument;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.when;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
+@TestResourceScope.Scoped
 class AssertionTypesCheckTest {
 
   @Test

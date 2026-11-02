@@ -18,12 +18,14 @@ package org.sonar.java.cfg;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.cfg.CFG.Block;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@TestResourceScope.Scoped
 class CFGUtilsTest {
 
   @Test

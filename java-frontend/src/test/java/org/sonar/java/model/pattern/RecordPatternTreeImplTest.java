@@ -19,12 +19,14 @@ package org.sonar.java.model.pattern;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.location.InternalPosition;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@TestResourceScope.Scoped
 class RecordPatternTreeImplTest {
 
   @Test

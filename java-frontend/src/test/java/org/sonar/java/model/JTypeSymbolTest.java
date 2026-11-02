@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,35 +34,22 @@ import static org.sonar.java.model.EcjTestSupport.sema;
 import static org.sonar.java.model.EcjTestSupport.typeBinding;
 import static org.sonar.java.model.EcjTestSupport.variableBinding;
 
+@TestResourceScope.Scoped
 class JTypeSymbolTest {
 
   @Test
   void superClass() {
-    JavaTree.CompilationUnitTreeImpl cu = test("interface I { } class C implements I { } class C2 extends C { }");
-    ITypeBinding javaLangObject = Objects.requireNonNull(sema(cu).resolveType("java.lang.Object"));
-    ITypeBinding i = Objects.requireNonNull(typeBinding(((ClassTreeImpl) cu.types().get(0))));
-    ITypeBinding c = Objects.requireNonNull(typeBinding(((ClassTreeImpl) cu.types().get(1))));
-    ITypeBinding c2 = Objects.requireNonNull(typeBinding(((ClassTreeImpl) cu.types().get(2))));
+    SemanticFixture fixture = SemanticFixture.scoped("interface I { } class C implements I { } class C2 extends C { }");
+    Type javaLangObject = fixture.type("java.lang.Object");
+    var i = fixture.declaration(0).symbol();
+    var c = fixture.declaration(1).symbol();
+    var c2 = fixture.declaration(2).symbol();
     assertAll(
-      // for java.lang.Object
-      () ->
-        assertThat(sema(cu).typeSymbol(javaLangObject).superClass())
-          .isNull(),
-      // for interfaces
-      () ->
-        assertThat(sema(cu).typeSymbol(i).superClass())
-          .isSameAs(sema(cu).type(javaLangObject)),
-      // for classes
-      () ->
-        assertThat(sema(cu).typeSymbol(c).superClass())
-          .isSameAs(sema(cu).type(javaLangObject)),
-      () ->
-        assertThat(sema(cu).typeSymbol(c2).superClass())
-          .isSameAs(sema(cu).type(c)),
-      // for arrays
-      () ->
-        assertThat(sema(cu).typeSymbol(javaLangObject.createArrayType(1)).superClass())
-          .isSameAs(sema(cu).type(javaLangObject))
+      () -> assertThat(javaLangObject.symbol().superClass()).isNull(),
+      () -> assertThat(i.superClass()).isSameAs(javaLangObject),
+      () -> assertThat(c.superClass()).isSameAs(javaLangObject),
+      () -> assertThat(c2.superClass()).isSameAs(c.type()),
+      () -> assertThat(fixture.type("java.lang.Object[]").symbol().superClass()).isSameAs(javaLangObject)
     );
   }
 
@@ -78,13 +66,11 @@ class JTypeSymbolTest {
 
   @Test
   void interfaces() {
-    JavaTree.CompilationUnitTreeImpl cu = test("interface I { } class C implements I { }");
-    ITypeBinding i = Objects.requireNonNull(typeBinding(((ClassTreeImpl) cu.types().get(0))));
-    ITypeBinding c = Objects.requireNonNull(typeBinding(((ClassTreeImpl) cu.types().get(1))));
-    assertThat(sema(cu).typeSymbol(i).interfaces())
-      .isEmpty();
-    assertThat(sema(cu).typeSymbol(c).interfaces())
-      .containsOnly(sema(cu).type(i));
+    SemanticFixture fixture = SemanticFixture.scoped("interface I { } class C implements I { }");
+    var i = fixture.declaration(0).symbol();
+    var c = fixture.declaration(1).symbol();
+    assertThat(i.interfaces()).isEmpty();
+    assertThat(c.interfaces()).containsOnly(i.type());
   }
 
   @Test
