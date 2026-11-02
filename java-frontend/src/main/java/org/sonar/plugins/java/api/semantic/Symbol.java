@@ -228,6 +228,15 @@ public interface Symbol {
     MethodSymbol UNKNOWN_METHOD = new Symbols.UnknownMethodSymbol();
 
     /**
+     * Returns the annotation member's default value, or {@code null} when none is available. Values use the
+     * same representation as {@link SymbolMetadata.AnnotationValue#value()}.
+     */
+    @Nullable
+    default Object defaultValue() {
+      return null;
+    }
+
+    /**
      * Type of parameters declared by this method.
      * In case of generic types of method invocations, this list of types is more specialized than declarationParameters().stream().map(Symbol::type).
      * For example it could be String instead of T.
