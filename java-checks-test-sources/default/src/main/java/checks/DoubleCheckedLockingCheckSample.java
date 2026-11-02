@@ -14,11 +14,165 @@ class DoubleCheckedLockingCheckSample {
     return helper;
   }
 
+  public Helper classicCaseNegated() {
+    if (!(helper != null))
+//      ^^^^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
+        if (helper == null)
+//          ^^^^^^^^^^^^^^<
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper classicCaseInnerNegated() {
+    if (helper == null)
+//      ^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
+        if (!(helper != null))
+//          ^^^^^^^^^^^^^^^^^<
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper classicCaseBothNegated() {
+    if (!(helper != null))
+//      ^^^^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
+        if (!(helper != null))
+//          ^^^^^^^^^^^^^^^^^<
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper classicCaseOuterDoubleNegated() {
+    if (!!(helper == null))
+//      ^^^^^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
+        if (helper == null)
+//          ^^^^^^^^^^^^^^<
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper classicCaseInnerDoubleNegated() {
+    if (helper == null)
+//      ^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
+        if (!!(helper == null))
+//          ^^^^^^^^^^^^^^^^^^<
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper classicCaseOuterTripleNegated() {
+    if (!!!(helper != null))
+//      ^^^^^^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
+        if (helper == null)
+//          ^^^^^^^^^^^^^^<
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper classicCaseInnerTripleNegated() {
+    if (helper == null)
+//      ^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
+        if (!!!(helper != null))
+//          ^^^^^^^^^^^^^^^^^^^<
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper classicCaseNestedParentheses() {
+    if (((!(!((helper == null))))))
+//      ^^^^^^^^^^^^^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
+        if (!((!((!(helper != null))))))
+//          ^^^^^^^^^^^^^^^^^^^^^^^^^^^<
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper memberSelectConditionNegated() {
+    if (!(this.helper != null))
+//      ^^^^^^^^^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
+        if (helper == null)
+//          ^^^^^^^^^^^^^^<
+          this.helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper memberSelectCondition2Negated() {
+    if (helper == null)
+//      ^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
+        if (!(this.helper != null))
+//          ^^^^^^^^^^^^^^^^^^^^^^<
+          this.helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper memberSelectCondition3Negated() {
+    if (!(this.helper != null))
+//      ^^^^^^^^^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
+        if (!(this.helper != null))
+//          ^^^^^^^^^^^^^^^^^^^^^^<
+          this.helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper invertedConditionsNegated() {
+    if (!(null != this.helper))
+//      ^^^^^^^^^^^^^^^^^^^^^^>
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
+        if (!(null != helper))
+//          ^^^^^^^^^^^^^^^^^<
+          this.helper = new Helper();
+      }
+    return helper;
+  }
+
   public Helper fieldIsNotActuallyInitializedHere() {
     if (helper == null)
       synchronized (this) { // Compliant - field is not initialized in this method actually
         if (helper == null) {
           System.out.println("haha!"); // Nelson
+        }
+      }
+    return helper;
+  }
+
+  public Helper fieldIsNotActuallyInitializedHereNegated() {
+    if (!(helper != null))
+      synchronized (this) { // Compliant - field is not initialized in this method actually
+        if (!(helper != null)) {
+          System.out.println("haha!");
         }
       }
     return helper;
@@ -129,6 +283,15 @@ class DoubleCheckedLockingCheckSampleVolatile {
     return helper;
   }
 
+  public Helper classicCaseNegated() {
+    if (!(helper != null))
+      synchronized (this) { // Compliant because field is volatile
+        if (!(helper != null))
+          helper = new Helper();
+      }
+    return helper;
+  }
+
   static class Helper { }
 }
 
@@ -148,6 +311,25 @@ class DoubleCheckedLockingCheckSampleNestedIfs {
           doSomethingElse();
           if (null == helper)
 //            ^^^^^^^^^^^^^^<
+            helper = new Helper();
+        }
+      }
+    }
+    return helper;
+  }
+
+  public Helper unrelatedNestedIfsNegated() {
+    if (!(null != helper)) {
+//      ^^^^^^^^^^^^^^^^^>
+      if (sunIsUp) {
+        doSomething();
+      }
+      synchronized (this) { // Noncompliant {{Remove this dangerous instance of double-checked locking.}}
+//    ^^^^^^^^^^^^
+        if (sunIsDown) {
+          doSomethingElse();
+          if (!(null != helper))
+//            ^^^^^^^^^^^^^^^^^<
             helper = new Helper();
         }
       }
@@ -245,6 +427,69 @@ class DoubleCheckedLockingCheckSampleCompliant {
     if (helper == null)
       synchronized (this) { // Compliant
         if (helper == null)
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public synchronized Helper synchronizedClassicCaseNegated() {
+    if (!(helper != null))
+      synchronized (this) { // Compliant
+        if (!(helper != null))
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper negatedNullEqualityOuter() {
+    if (!(helper == null))
+      synchronized (this) { // Compliant
+        if (helper == null)
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper negatedNullEqualityInner() {
+    if (helper == null)
+      synchronized (this) { // Compliant
+        if (!(helper == null))
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper doubleNegatedNotEqualOuter() {
+    if (!!(helper != null))
+      synchronized (this) {
+        if (helper == null)
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper doubleNegatedNotEqualInner() {
+    if (helper == null)
+      synchronized (this) {
+        if (!!(helper != null))
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper tripleNegatedEqualOuter() {
+    if (!!!(helper == null))
+      synchronized (this) {
+        if (helper == null)
+          helper = new Helper();
+      }
+    return helper;
+  }
+
+  public Helper tripleNegatedEqualInner() {
+    if (helper == null)
+      synchronized (this) {
+        if (!!!(helper == null))
           helper = new Helper();
       }
     return helper;
