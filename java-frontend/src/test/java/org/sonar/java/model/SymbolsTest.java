@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.sonar.java.model.EcjTestSupport.sema;
 
 class SymbolsTest {
 
@@ -203,7 +204,7 @@ class SymbolsTest {
 
   @Test
   void testIsAnnotation() {
-    JSema sema = ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("")).sema;
+    JSema sema = sema(((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("")));
     Type objectType = sema.type(sema.resolveType("java.lang.Object"));
     JavaTree.CompilationUnitTreeImpl cu = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("@interface Anno { Unknown u; }");
     ClassTreeImpl anno = (ClassTreeImpl) cu.types().get(0);
