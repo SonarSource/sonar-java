@@ -47,12 +47,9 @@ class ParsingErrorCheckTest {
     assertThat(issue.getMessage()).isEqualTo("Parse error");
   }
 
-  /**
-   * Related to SONARJAVA-3486: discrepancies between JLS, javac (more tolerant than JLS) and ECJ (strict to JLS).
-   * According to JLS (§7.3 Compilation Units), empty statements are not allowed in import section.
-   */
+  /** An empty statement among the imports is kept and the file is still analyzed. */
   @Test
-  void javacEmptyStatementsInImportsBug() {
+  void empty_statement_in_imports_is_analyzed() {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.inputFileContents(any())).thenCallRealMethod();
 
@@ -60,10 +57,6 @@ class ParsingErrorCheckTest {
       .withSonarComponents(sonarComponents)
       .build();
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/files/checks/parsing/EmptyStatementsInImportsBug.java"), visitorsBridge);
-    Set<AnalyzerMessage> issues = visitorsBridge.testContexts().get(0).getIssues();
-    assertThat(issues).hasSize(1);
-    AnalyzerMessage issue = issues.iterator().next();
-    assertThat(issue.getLine()).isEqualTo(3);
-    assertThat(issue.getMessage()).isEqualTo("Parse error");
+    assertThat(visitorsBridge.testContexts().get(0).getIssues()).isEmpty();
   }
 }
