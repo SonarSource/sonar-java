@@ -1,0 +1,10 @@
+{
+"guava:src/com/google/common/collect/SingletonImmutableBiMap.java": [
+52,
+61,
+65
+],
+"guava:src/com/google/common/collect/SingletonImmutableSet.java": [
+58
+]
+}

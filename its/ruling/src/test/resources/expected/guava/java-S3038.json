@@ -10,10 +10,19 @@
 32,
 79
 ],
+"guava:src/com/google/common/collect/ImmutableBiMap.java": [
+295
+],
+"guava:src/com/google/common/collect/ImmutableSortedMultiset.java": [
+293,
+338,
+352
+],
+"guava:src/com/google/common/collect/ImmutableTable.java": [
+290,
+317
+],
 "guava:src/com/google/common/collect/MapMakerInternalMap.java": [
 3608
-],
-"guava:src/com/google/common/hash/Hashing.java": [
-320
 ]
 }

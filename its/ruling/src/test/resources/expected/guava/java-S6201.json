@@ -29,6 +29,9 @@
 "guava:src/com/google/common/collect/ImmutableClassToInstanceMap.java": [
 150
 ],
+"guava:src/com/google/common/collect/ImmutableEnumSet.java": [
+82
+],
 "guava:src/com/google/common/collect/ImmutableSet.java": [
 243
 ],
@@ -220,6 +223,7 @@
 "guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
 470,
 472,
+519,
 569,
 692
 ],

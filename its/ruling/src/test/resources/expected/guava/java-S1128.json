@@ -1,20 +1,40 @@
 {
+"guava:src/com/google/common/cache/CacheLoader.java": [
+31
+],
 "guava:src/com/google/common/cache/LocalCache.java": [
-67
+31
 ],
-"guava:src/com/google/common/collect/ArrayTable.java": [
-36
+"guava:src/com/google/common/collect/StandardTable.java": [
+28
 ],
-"guava:src/com/google/common/collect/DenseImmutableTable.java": [
+"guava:src/com/google/common/collect/TreeBasedTable.java": [
 24
 ],
-"guava:src/com/google/common/collect/ImmutableMultiset.java": [
-23
+"guava:src/com/google/common/net/MediaType.java": [
+30
 ],
-"guava:src/com/google/common/collect/RegularImmutableTable.java": [
+"guava:src/com/google/common/reflect/MutableTypeToInstanceMap.java": [
+22
+],
+"guava:src/com/google/common/util/concurrent/AbstractExecutionThreadService.java": [
 20
 ],
 "guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
-26
+26,
+30
+],
+"guava:src/com/google/common/util/concurrent/AbstractScheduledService.java": [
+24,
+32
+],
+"guava:src/com/google/common/util/concurrent/AtomicLongMap.java": [
+22
+],
+"guava:src/com/google/common/util/concurrent/FuturesGetChecked.java": [
+22
+],
+"guava:src/com/google/common/util/concurrent/ServiceManager.java": [
+35
 ]
 }

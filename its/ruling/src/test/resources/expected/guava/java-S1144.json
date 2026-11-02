@@ -1,0 +1,166 @@
+{
+"guava:src/com/google/common/base/CaseFormat.java": [
+125
+],
+"guava:src/com/google/common/base/Converter.java": [
+413
+],
+"guava:src/com/google/common/base/Functions.java": [
+267,
+358
+],
+"guava:src/com/google/common/base/Predicates.java": [
+366,
+408,
+450,
+557,
+599
+],
+"guava:src/com/google/common/base/StandardSystemProperty.java": [
+122
+],
+"guava:src/com/google/common/cache/LocalCache.java": [
+4736
+],
+"guava:src/com/google/common/collect/AbstractBiMap.java": [
+395
+],
+"guava:src/com/google/common/collect/ArrayListMultimap.java": [
+115
+],
+"guava:src/com/google/common/collect/ArrayTable.java": [
+167,
+172
+],
+"guava:src/com/google/common/collect/BinaryTreeTraverser.java": [
+207
+],
+"guava:src/com/google/common/collect/CartesianList.java": [
+67
+],
+"guava:src/com/google/common/collect/Constraints.java": [
+281,
+332
+],
+"guava:src/com/google/common/collect/EnumBiMap.java": [
+76
+],
+"guava:src/com/google/common/collect/EnumHashBiMap.java": [
+75
+],
+"guava:src/com/google/common/collect/EnumMultiset.java": [
+78
+],
+"guava:src/com/google/common/collect/EvictingQueue.java": [
+52
+],
+"guava:src/com/google/common/collect/FilteredEntryMultimap.java": [
+71
+],
+"guava:src/com/google/common/collect/HashBiMap.java": [
+116
+],
+"guava:src/com/google/common/collect/HashMultimap.java": [
+91,
+97
+],
+"guava:src/com/google/common/collect/HashMultiset.java": [
+74
+],
+"guava:src/com/google/common/collect/ImmutableEnumMap.java": [
+51
+],
+"guava:src/com/google/common/collect/ImmutableSortedMap.java": [
+105
+],
+"guava:src/com/google/common/collect/Iterables.java": [
+87,
+506
+],
+"guava:src/com/google/common/collect/LinkedHashMultimap.java": [
+144,
+148
+],
+"guava:src/com/google/common/collect/LinkedHashMultiset.java": [
+86
+],
+"guava:src/com/google/common/collect/LinkedListMultimap.java": [
+204,
+208,
+310
+],
+"guava:src/com/google/common/collect/MapConstraints.java": [
+190,
+216,
+250,
+268,
+770,
+780
+],
+"guava:src/com/google/common/collect/Maps.java": [
+455,
+550,
+3114
+],
+"guava:src/com/google/common/collect/MinMaxPriorityQueue.java": [
+241
+],
+"guava:src/com/google/common/collect/Multimaps.java": [
+826,
+847,
+2051
+],
+"guava:src/com/google/common/collect/MutableClassToInstanceMap.java": [
+59
+],
+"guava:src/com/google/common/collect/Serialization.java": [
+207
+],
+"guava:src/com/google/common/collect/Sets.java": [
+1191
+],
+"guava:src/com/google/common/collect/StandardRowSortedTable.java": [
+63
+],
+"guava:src/com/google/common/collect/Synchronized.java": [
+830,
+1113
+],
+"guava:src/com/google/common/collect/TreeRangeMap.java": [
+532
+],
+"guava:src/com/google/common/collect/TreeRangeSet.java": [
+66,
+272
+],
+"guava:src/com/google/common/collect/WellBehavedMap.java": [
+42
+],
+"guava:src/com/google/common/eventbus/SubscriberRegistry.java": [
+184
+],
+"guava:src/com/google/common/hash/BloomFilter.java": [
+112
+],
+"guava:src/com/google/common/hash/Hashing.java": [
+316
+],
+"guava:src/com/google/common/io/FileBackedOutputStream.java": [
+131
+],
+"guava:src/com/google/common/net/MediaType.java": [
+754
+],
+"guava:src/com/google/common/reflect/TypeResolver.java": [
+205
+],
+"guava:src/com/google/common/util/concurrent/AtomicLongMap.java": [
+58
+],
+"guava:src/com/google/common/util/concurrent/Striped.java": [
+316
+],
+"guava:src/com/google/thirdparty/publicsuffix/PublicSuffixType.java": [
+38
+]
+}

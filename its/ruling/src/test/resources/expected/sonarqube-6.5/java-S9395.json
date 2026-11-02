@@ -3,6 +3,12 @@
 120,
 121
 ],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewMaintainabilityMeasuresVisitor.java": [
+134
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ComputeMeasureVariationsStep.java": [
+140
+],
 "sonarqube-6.5:src/main/java/org/sonar/server/measure/custom/ws/CustomMeasureValidator.java": [
 83
 ]

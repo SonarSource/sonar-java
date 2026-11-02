@@ -12,9 +12,6 @@
 990,
 1000
 ],
-"guava:src/com/google/common/collect/ConcurrentHashMultiset.java": [
-579
-],
 "guava:src/com/google/common/collect/MapMakerInternalMap.java": [
 1182,
 1439,
@@ -25,12 +22,5 @@
 ],
 "guava:src/com/google/common/io/BaseEncoding.java": [
 870
-],
-"guava:src/com/google/common/util/concurrent/AbstractExecutionThreadService.java": [
-58
-],
-"guava:src/com/google/common/util/concurrent/AbstractScheduledService.java": [
-207,
-237
 ]
 }

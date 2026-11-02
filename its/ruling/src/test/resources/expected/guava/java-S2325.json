@@ -1,12 +1,26 @@
 {
+"guava:src/com/google/common/base/Splitter.java": [
+459
+],
 "guava:src/com/google/common/cache/LocalCache.java": [
-1964
+1964,
+3515
+],
+"guava:src/com/google/common/collect/FilteredEntryMultimap.java": [
+395
 ],
 "guava:src/com/google/common/collect/HashBiMap.java": [
 358
 ],
 "guava:src/com/google/common/collect/MapMakerInternalMap.java": [
 1975
+],
+"guava:src/com/google/common/collect/TreeRangeMap.java": [
+263
+],
+"guava:src/com/google/common/hash/BloomFilterStrategies.java": [
+130,
+135
 ],
 "guava:src/com/google/common/io/ByteSource.java": [
 213,
@@ -15,7 +29,17 @@
 "guava:src/com/google/common/io/CharSource.java": [
 154
 ],
+"guava:src/com/google/common/math/LongMath.java": [
+810,
+817
+],
+"guava:src/com/google/common/reflect/Invokable.java": [
+147
+],
 "guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java": [
 773
+],
+"guava:src/com/google/common/util/concurrent/Futures.java": [
+1335
 ]
 }
