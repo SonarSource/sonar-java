@@ -344,7 +344,23 @@ public final class AstSemanticDump {
         return "unknown";
       }
       String name = type.fullyQualifiedName();
-      return erase ? erase(name) : name;
+      return erase ? erase(name) : withArguments(type, 0);
+    }
+
+    private static String withArguments(Type type, int depth) {
+      if (type.isUnknown()) {
+        return "unknown";
+      }
+      String name = erase(type.fullyQualifiedName());
+      if (depth > 3 || !type.isParameterized()) {
+        return name;
+      }
+      StringBuilder out = new StringBuilder(name).append('<');
+      List<Type> arguments = type.typeArguments();
+      for (int i = 0; i < arguments.size(); i++) {
+        out.append(i == 0 ? "" : ",").append(withArguments(arguments.get(i), depth + 1));
+      }
+      return out.append('>').toString();
     }
 
     private static String erase(String name) {
