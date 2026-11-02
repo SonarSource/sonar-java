@@ -75,6 +75,30 @@
             "index" : -1
           },
           "region" : {
+            "startLine" : 42,
+            "startColumn" : 5,
+            "endLine" : 42,
+            "endColumn" : 7
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S9438",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this private field \"final\", it is never reassigned."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
             "startLine" : 53,
             "startColumn" : 5,
             "endLine" : 53,

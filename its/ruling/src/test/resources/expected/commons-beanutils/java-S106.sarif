@@ -35,31 +35,8 @@
         }
       } ],
       "rank" : -1.0
-    }, {
-      "ruleId" : "java:S106",
-      "ruleIndex" : -1,
-      "kind" : "fail",
-      "level" : "warning",
-      "message" : {
-        "text" : "Replace this use of System.out by a logger."
-      },
-      "locations" : [ {
-        "id" : -1,
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
-            "index" : -1
-          },
-          "region" : {
-            "startLine" : 866,
-            "startColumn" : 9,
-            "endLine" : 866,
-            "endColumn" : 19
-          }
-        }
-      } ],
-      "rank" : -1.0
-    } ],
+    }
+    ],
     "newlineSequences" : [ "\r\n", "\n" ],
     "columnKind" : "utf16CodeUnits"
   } ]
