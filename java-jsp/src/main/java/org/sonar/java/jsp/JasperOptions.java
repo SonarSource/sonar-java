@@ -155,7 +155,7 @@ class JasperOptions implements Options {
 
   @Override
   public String getCompilerClassName() {
-    return null;
+    return JasperCompiler.class.getName();
   }
 
   @Override
