@@ -83,6 +83,7 @@
     <license.title>SonarQube Java</license.title>
 
     <jdk.min.version>21</jdk.min.version>
+    <intellij.version>262.10968.63</intellij.version>
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
@@ -129,6 +130,66 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.codehaus.woodstox</groupId>
+        <artifactId>stax2-api</artifactId>
+        <version>4.3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.jetbrains.intellij.java</groupId>
+        <artifactId>java-psi</artifactId>
+        <version>${intellij.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.jetbrains.intellij.java</groupId>
+        <artifactId>java-psi-impl</artifactId>
+        <version>${intellij.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.jetbrains.intellij.java</groupId>
+        <artifactId>java-syntax</artifactId>
+        <version>${intellij.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.jetbrains.intellij.platform</groupId>
+        <artifactId>core</artifactId>
+        <version>${intellij.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.jetbrains.intellij.platform</groupId>
+        <artifactId>core-impl</artifactId>
+        <version>${intellij.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.jetbrains.intellij.java</groupId>
+        <artifactId>java-frontback-psi</artifactId>
+        <version>${intellij.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.jetbrains.intellij.java</groupId>
+        <artifactId>java-frontback-psi-impl</artifactId>
+        <version>${intellij.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.jetbrains.intellij.platform</groupId>
+        <artifactId>syntax-psi</artifactId>
+        <version>${intellij.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.jetbrains.intellij.platform</groupId>
+        <artifactId>util</artifactId>
+        <version>${intellij.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.jetbrains.intellij.platform</groupId>
+        <artifactId>util-base</artifactId>
+        <version>${intellij.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.jetbrains.intellij.platform</groupId>
+        <artifactId>extensions</artifactId>
+        <version>${intellij.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.sonarsource.api.plugin</groupId>
         <artifactId>sonar-plugin-api</artifactId>

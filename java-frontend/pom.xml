@@ -14,14 +14,79 @@
   <description>Code Analyzer for Java :: Front-end (Java Parser)</description>
 
   <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+    <maven.compiler.testRelease>21</maven.compiler.testRelease>
+    <psi.test.repositoryRoot>${project.basedir}/..</psi.test.repositoryRoot>
     <commons-collections.version>3.2.1</commons-collections.version>
   </properties>
+
+  <repositories>
+    <repository>
+      <id>sonarsource</id>
+      <url>https://repox.jfrog.io/artifactory/sonarsource</url>
+    </repository>
+  </repositories>
 
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>jdt-package</artifactId>
       <version>1.9.0.1840</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.java</groupId>
+      <artifactId>java-psi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.java</groupId>
+      <artifactId>java-psi-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.java</groupId>
+      <artifactId>java-syntax</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.platform</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.platform</groupId>
+      <artifactId>core-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.java</groupId>
+      <artifactId>java-frontback-psi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.java</groupId>
+      <artifactId>java-frontback-psi-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.platform</groupId>
+      <artifactId>syntax-psi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.platform</groupId>
+      <artifactId>util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.platform</groupId>
+      <artifactId>util-base</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.platform</groupId>
+      <artifactId>extensions</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.equinox.common</artifactId>
+      <version>3.20.400</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.osgi</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -145,6 +210,17 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-Xmx512m -Dnet.bytebuddy.experimental=true -javaagent:"${test-java-agent-directory}/${jacoco-agent-jar}=destfile=${project.build.directory}/jacoco.exec" -javaagent:"${test-java-agent-directory}/${mockito-agent-jar}"</argLine>
+          <systemPropertyVariables>
+            <java.awt.headless>true</java.awt.headless>
+            <psi.test.repositoryRoot>${psi.test.repositoryRoot}</psi.test.repositoryRoot>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>

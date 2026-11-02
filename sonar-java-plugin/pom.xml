@@ -30,6 +30,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.21.0</version>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>java-surefire</artifactId>
       <version>${project.version}</version>
@@ -123,7 +128,6 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.sonarsource.java</groupId>
@@ -160,6 +164,7 @@
         <configuration>
           <pluginName>Java Code Quality and Security</pluginName>
           <skipDependenciesPackaging>true</skipDependenciesPackaging>
+          <useChildFirstClassLoader>true</useChildFirstClassLoader>
           <pluginClass>org.sonar.plugins.java.JavaPlugin</pluginClass>
           <requiredForLanguages>java,jsp,kotlin</requiredForLanguages>
           <sonarLintSupported>true</sonarLintSupported>
@@ -184,8 +189,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>21500000</maxsize>
-                  <minsize>19000000</minsize>
+                  <maxsize>65000000</maxsize>
+                  <minsize>46000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>
@@ -209,7 +214,278 @@
               <shadedArtifactAttached>false</shadedArtifactAttached>
               <createDependencyReducedPom>false</createDependencyReducedPom>
               <minimizeJar>true</minimizeJar>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              </transformers>
               <filters>
+                <filter>
+                  <artifact>at.yawk.lz4:lz4-java</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.fasterxml:aalto-xml</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.google.guava:failureaccess</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.google.guava:guava</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.java:java-frontback-psi</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.java:java-frontback-psi-impl</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.java:java-psi</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.java:java-psi-impl</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.java:java-syntax</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:bazel-runfiles</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:core</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:core-impl</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:diagnostic</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:diagnostic-telemetry</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:eel</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:eel-nio-fs</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:extensions</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:icons-api</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:icons-api-rendering</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:plugin-system-parser-impl</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:syntax</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:syntax-extensions</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:syntax-i18-n</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:syntax-psi</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:syntax-util</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:test-integration</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:util</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:util-base</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:util-base-multiplatform</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:util-class-loader</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:util-coroutines</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:util-diff</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:util-jdom</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:util-multiplatform</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:util-progress</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:util-rt</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:util-rt-java8</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.jetbrains.intellij.platform:util-xml-dom</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>commons-codec:commons-codec</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>commons-io:commons-io</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>dk.brics:automaton</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>io.opentelemetry:opentelemetry-api</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>io.opentelemetry:opentelemetry-context</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>io.opentelemetry:opentelemetry-sdk</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>io.opentelemetry:opentelemetry-sdk-common</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>io.opentelemetry:opentelemetry-sdk-logs</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>io.opentelemetry:opentelemetry-sdk-metrics</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>io.opentelemetry:opentelemetry-sdk-trace</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>io.opentelemetry.semconv:opentelemetry-semconv</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>jaxen:jaxen</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>net.java.dev.jna:jna</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>net.java.dev.jna:jna-platform</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>one.util:streamex</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>org.apache.commons:commons-compress</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>org.apache.commons:commons-lang3</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>org.codehaus.woodstox:stax2-api</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>org.jetbrains:annotations</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>org.jetbrains.intellij.deps:asm-all</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>org.jetbrains.intellij.deps.fastutil:intellij-deps-fastutil</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>org.jetbrains.intellij.deps.kotlinx:kotlinx-coroutines-core-jvm</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>org.jetbrains.intellij.deps.kotlinx:kotlinx-coroutines-debug</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>org.jetbrains.kotlin:kotlin-stdlib</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>org.jetbrains.kotlinx:kotlinx-serialization-core-jvm</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>org.jetbrains.kotlinx:kotlinx-serialization-json-jvm</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>org.slf4j:log4j-over-slf4j</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>oro:oro</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
                 <filter>
                   <artifact>*:*</artifact>
                   <excludes>
@@ -285,6 +561,7 @@
           <version>2.7.1</version>
           <configuration>
             <errorRemedy>xmlOutput</errorRemedy>
+            <licensesConfigFile>${project.basedir}/license-resources/psi-licenses.xml</licensesConfigFile>
             <writeVersions>false</writeVersions>
             <socketTimeout>20000</socketTimeout>
             <licensesOutputDirectory>${project.build.directory}/temp-licenses/THIRD_PARTY_LICENSES</licensesOutputDirectory>
@@ -292,6 +569,18 @@
             <organizeLicensesByDependencies>true</organizeLicensesByDependencies>
             <excludedGroups>com.sonarsource|org.sonarsource.java</excludedGroups>
             <licenseUrlReplacements>
+                <licenseUrlReplacement>
+                    <regexp>https://asm\.ow2\.io/license\.html</regexp>
+                    <replacement>${project.baseUri}/license-resources/asm.txt</replacement>
+                </licenseUrlReplacement>
+                <licenseUrlReplacement>
+                    <regexp>https://www\.apache\.org/licenses/LICENSE-1\.1</regexp>
+                    <replacement>${project.baseUri}/license-resources/oro.txt</replacement>
+                </licenseUrlReplacement>
+               <licenseUrlReplacement>
+                    <regexp>https?://www\.apache\.org/licenses/LICENSE-2\.0(?:\.txt)?$</regexp>
+                    <replacement>${project.baseUri}/license-resources/apache.txt</replacement>
+                </licenseUrlReplacement>
                <licenseUrlReplacement>
                     <regexp>http://www.gnu.org/licenses/lgpl.txt</regexp>
                     <replacement>${project.baseUri}/license-resources/lgpl.txt</replacement>

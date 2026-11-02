@@ -1,0 +1,233 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<licenseSummary>
+  <dependencies>
+    <dependency>
+      <groupId>\Qcom.jetbrains.intellij.java\E</groupId>
+      <artifactId>\Qjava-frontback-psi\E</artifactId>
+      <version>\Q262.10968.63\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qcom.jetbrains.intellij.java\E</groupId>
+      <artifactId>\Qjava-frontback-psi-impl\E</artifactId>
+      <version>\Q262.10968.63\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qcom.jetbrains.intellij.java\E</groupId>
+      <artifactId>\Qjava-psi\E</artifactId>
+      <version>\Q262.10968.63\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qcom.jetbrains.intellij.java\E</groupId>
+      <artifactId>\Qjava-psi-impl\E</artifactId>
+      <version>\Q262.10968.63\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qcom.jetbrains.intellij.java\E</groupId>
+      <artifactId>\Qjava-syntax\E</artifactId>
+      <version>\Q262.10968.63\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qcom.jetbrains.intellij.platform\E</groupId>
+      <artifactId>\Qcore\E</artifactId>
+      <version>\Q262.10968.63\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qcom.jetbrains.intellij.platform\E</groupId>
+      <artifactId>\Qcore-impl\E</artifactId>
+      <version>\Q262.10968.63\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qcom.jetbrains.intellij.platform\E</groupId>
+      <artifactId>\Qextensions\E</artifactId>
+      <version>\Q262.10968.63\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qcom.jetbrains.intellij.platform\E</groupId>
+      <artifactId>\Qsyntax\E</artifactId>
+      <version>\Q262.10968.63\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qcom.jetbrains.intellij.platform\E</groupId>
+      <artifactId>\Qsyntax-psi\E</artifactId>
+      <version>\Q262.10968.63\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qcom.jetbrains.intellij.platform\E</groupId>
+      <artifactId>\Qtest-integration\E</artifactId>
+      <version>\Q262.10968.63\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qcom.jetbrains.intellij.platform\E</groupId>
+      <artifactId>\Qutil\E</artifactId>
+      <version>\Q262.10968.63\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qcom.jetbrains.intellij.platform\E</groupId>
+      <artifactId>\Qutil-base\E</artifactId>
+      <version>\Q262.10968.63\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qcom.jetbrains.intellij.platform\E</groupId>
+      <artifactId>\Qutil-base-multiplatform\E</artifactId>
+      <version>\Q262.10968.63\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qcom.jetbrains.intellij.platform\E</groupId>
+      <artifactId>\Qutil-multiplatform\E</artifactId>
+      <version>\Q262.10968.63\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qcom.jetbrains.intellij.platform\E</groupId>
+      <artifactId>\Qutil-rt\E</artifactId>
+      <version>\Q262.10968.63\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qorg.jetbrains.intellij.deps\E</groupId>
+      <artifactId>\Qasm-all\E</artifactId>
+      <version>\Q9.6.1\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>BSD 3-Clause License</name>
+          <url>https://asm.ow2.io/license.html</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qorg.jetbrains.intellij.deps.fastutil\E</groupId>
+      <artifactId>\Qintellij-deps-fastutil\E</artifactId>
+      <version>\Q8.5.18-jb1\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache License, Version 2.0</name>
+          <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+      </licenses>
+    </dependency>
+    <dependency>
+      <groupId>\Qoro\E</groupId>
+      <artifactId>\Qoro\E</artifactId>
+      <version>\Q2.0.8\E</version>
+      <matchLicenses />
+      <licenses>
+        <license>
+          <name>Apache Software License, Version 1.1</name>
+          <url>https://www.apache.org/licenses/LICENSE-1.1</url>
+        </license>
+      </licenses>
+    </dependency>
+  </dependencies>
+</licenseSummary>
