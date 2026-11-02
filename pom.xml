@@ -449,6 +449,33 @@
 
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>ban-jdt-compiler</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <excludes>
+                    <exclude>org.sonarsource.java:jdt-package</exclude>
+                    <exclude>org.eclipse.jdt:ecj</exclude>
+                    <exclude>org.eclipse.jdt:org.eclipse.jdt.core</exclude>
+                    <exclude>org.eclipse.jdt.core:*</exclude>
+                    <exclude>org.eclipse.jdt.core.compiler:*</exclude>
+                  </excludes>
+                  <message>Java source analysis uses PSI. ECJ and JDT core must stay outside the current reactor.</message>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>de.thetaphi</groupId>
         <artifactId>forbiddenapis</artifactId>
         <executions>

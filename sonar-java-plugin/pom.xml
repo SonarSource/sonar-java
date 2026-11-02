@@ -189,7 +189,7 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>65000000</maxsize>
+                  <maxsize>52000000</maxsize>
                   <minsize>46000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
@@ -634,6 +634,21 @@
                   <argument>${project.basedir}/src/main/build/ProfileJsonGenerator.java</argument>
                   <argument>${project.basedir}</argument>
                   <argument>${project.build.directory}/generated-resources/profiles</argument>
+                </arguments>
+                <useMavenLogger>true</useMavenLogger>
+              </configuration>
+            </execution>
+            <execution>
+              <id>validate-frontend-dependencies</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>exec</goal>
+              </goals>
+              <configuration>
+                <executable>java</executable>
+                <arguments>
+                  <argument>${project.basedir}/../build-support/FrontendDependencyValidator.java</argument>
+                  <argument>${project.build.directory}/${project.build.finalName}.jar</argument>
                 </arguments>
                 <useMavenLogger>true</useMavenLogger>
               </configuration>
