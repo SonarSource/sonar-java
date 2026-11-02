@@ -90,7 +90,7 @@ class ClassesLayoutTest {
 
   @Test
   void annotation() {
-    assertThat(countFields(JSymbolMetadata.JAnnotationInstance.class)).isEqualTo(3);
+    assertThat(countFields(EcjSymbolMetadata.JAnnotationInstance.class)).isEqualTo(3);
   }
 
   /** Count number of fields in instances, including inherited fields. */
