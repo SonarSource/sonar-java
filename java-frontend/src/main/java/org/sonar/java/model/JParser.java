@@ -319,7 +319,7 @@ public class JParser {
 
     JavaTree.CompilationUnitTreeImpl tree = converter.convertCompilationUnit(astNode);
     tree.sema = converter.sema;
-    JWarning.Mapper.warningsFor(astNode, converter.lineColumnConverter).mappedInto(tree);
+    JWarning.Mapper.warningsFor(EcjDiagnosticProvider.warnings(astNode, converter.lineColumnConverter)).mappedInto(tree);
 
     ASTUtils.mayTolerateMissingType(astNode.getAST());
 
