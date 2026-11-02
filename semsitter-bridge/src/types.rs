@@ -22,9 +22,7 @@
 use std::collections::{BTreeSet, HashMap, VecDeque};
 
 use serde_json::{Map, Value, json};
-use udg_family_jvm::external::classpath::{
-  ClasspathDeclaration, ClasspathIndex, ClasspathType, MemberDeclaration,
-};
+use udg_family_jvm::external::classpath::{ClasspathIndex, ClasspathType};
 use udg_family_jvm::external::jdk_table::{JdkMemberKind, JdkType, jdk_type, parameter_type_variables};
 
 const ACC_STATIC: u16 = 0x0008;
@@ -32,9 +30,6 @@ const ACC_FINAL: u16 = 0x0010;
 const ACC_PUBLIC: u16 = 0x0001;
 const ACC_PRIVATE: u16 = 0x0002;
 const ACC_PROTECTED: u16 = 0x0004;
-const ACC_INTERFACE: u16 = 0x0200;
-const ACC_ABSTRACT: u16 = 0x0400;
-const ACC_ANNOTATION: u16 = 0x2000;
 const ACC_ENUM: u16 = 0x4000;
 
 /// Strips the generic arity suffix of a graph id segment: ``java.util.List`1`` is `java.util.List`.
@@ -100,7 +95,7 @@ pub fn lookup(
       continue;
     }
     let info = project_type(&name, project, facts)
-      .or_else(|| classpath.get(&name).map(|ty| classpath_type(&name, ty, classpath.declaration(&name))))
+      .or_else(|| classpath.get(&name).map(|ty| classpath_type(&name, ty)))
       .or_else(|| jdk_type(&name).map(jdk_type_info));
     let Some(info) = info else {
       continue;
@@ -152,62 +147,48 @@ fn project_type(name: &str, project: &ProjectTypes, facts: &HashMap<String, Valu
   }))
 }
 
-fn classpath_type(name: &str, ty: &ClasspathType, declaration: Option<&ClasspathDeclaration>) -> Value {
+fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
   let parameters = ty.signature.as_deref().map(type_parameters).unwrap_or_default();
-  let no_member = MemberDeclaration::default();
   let mut members: Vec<Value> = ty
     .methods
     .iter()
     .map(|m| {
       let returned = m.signature.as_deref().and_then(|s| class_return_parameter(s, &parameters));
-      let facts = declaration
-        .and_then(|d| d.methods.get(&(m.name.clone(), m.descriptor.clone())))
-        .unwrap_or(&no_member);
-      let mut member = json!({
+      json!({
         "k": "m",
         "name": m.name,
         "desc": m.descriptor,
         "static": m.is_static,
-        "final": facts.access_flags & ACC_FINAL != 0,
         "abstract": m.is_abstract,
         "varargs": m.is_varargs,
-        "vis": if declaration.is_some() { access_visibility(facts.access_flags) } else { "public" },
+        "vis": "public",
         "retParam": returned,
         "retSelf": returned.is_some_and(|index| parameters[index].1 == name),
         "paramVars": m.signature.as_deref().map(|s| parameter_variables(s, &parameters)),
-      });
-      add_member_facts(&mut member, facts);
-      member
+      })
     })
     .collect();
   members.extend(ty.fields.iter().filter_map(|f| {
     let desc = f.declared_type.as_ref()?;
-    let facts = declaration.and_then(|d| d.fields.get(&f.name)).unwrap_or(&no_member);
-    let mut member = json!({
+    Some(json!({
       "k": "f",
       "name": f.name,
-      "desc": if facts.descriptor.is_empty() { desc } else { &facts.descriptor },
+      "desc": desc,
       "static": f.access_flags & ACC_STATIC != 0,
       "final": f.access_flags & ACC_FINAL != 0,
       "enum": f.access_flags & ACC_ENUM != 0,
       "vis": access_visibility(f.access_flags),
       "constant": f.constant_string,
-    });
-    add_member_facts(&mut member, facts);
-    Some(member)
+    }))
   }));
   let mut info = json!({
     "origin": "classpath",
-    "kind": classpath_kind(ty, declaration),
+    "kind": classpath_kind(ty),
     "super": ty.super_class,
     "interfaces": ty.interfaces,
     "typeParameters": parameters.len(),
     "members": members,
   });
-  if let (Some(declaration), Some(object)) = (declaration, info.as_object_mut()) {
-    object.insert("modifiers".into(), json!(class_modifiers(declaration.access_flags)));
-    object.insert("annotations".into(), json!(declaration.annotations));
-  }
   if let (Some(signature), Some(object)) = (ty.signature.as_deref(), info.as_object_mut()) {
     let (superclass, interfaces) = signature_supertypes(signature);
     object.insert("superType".into(), json!(superclass));
@@ -216,53 +197,12 @@ fn classpath_type(name: &str, ty: &ClasspathType, declaration: Option<&Classpath
   info
 }
 
-/// The source-level kind: the reader only tells classes from interfaces.
-fn classpath_kind(ty: &ClasspathType, declaration: Option<&ClasspathDeclaration>) -> Value {
-  let flags = declaration.map_or(0, |d| d.access_flags);
-  if flags & ACC_ANNOTATION != 0 {
-    return json!("annotation");
-  }
-  if flags & ACC_ENUM != 0 {
-    return json!("enum");
-  }
+/// The classfile reader only distinguishes classes from interfaces. A record is a class whose superclass is `java.lang.Record`.
+fn classpath_kind(ty: &ClasspathType) -> Value {
   if ty.super_class.as_deref() == Some("java.lang.Record") {
     return json!("record");
   }
   serde_json::to_value(ty.kind).unwrap_or(Value::Null)
-}
-
-fn class_modifiers(flags: u16) -> Vec<&'static str> {
-  let mut modifiers = Vec::new();
-  let visibility = access_visibility(flags);
-  if visibility != "package" {
-    modifiers.push(visibility);
-  }
-  if flags & ACC_STATIC != 0 {
-    modifiers.push("static");
-  }
-  if flags & ACC_FINAL != 0 {
-    modifiers.push("final");
-  }
-  if flags & ACC_ABSTRACT != 0 && flags & ACC_INTERFACE == 0 {
-    modifiers.push("abstract");
-  }
-  modifiers
-}
-
-/// Annotations, thrown types and parameter annotations of a member, when the jar has any.
-fn add_member_facts(member: &mut Value, facts: &MemberDeclaration) {
-  let Some(object) = member.as_object_mut() else {
-    return;
-  };
-  if !facts.annotations.is_empty() {
-    object.insert("annotations".into(), json!(facts.annotations));
-  }
-  if !facts.exceptions.is_empty() {
-    object.insert("throws".into(), json!(facts.exceptions));
-  }
-  if facts.parameter_annotations.iter().any(|a| !a.is_empty()) {
-    object.insert("paramAnnotations".into(), json!(facts.parameter_annotations));
-  }
 }
 
 /// Type parameters of a generic signature, `<K:Ljava/lang/Object;V:...>...`, with the erased dotted
