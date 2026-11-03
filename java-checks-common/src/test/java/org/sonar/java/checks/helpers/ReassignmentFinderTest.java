@@ -18,7 +18,6 @@ package org.sonar.java.checks.helpers;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.sonar.java.test.TestResourceScope;
 import org.sonar.plugins.java.api.semantic.Symbol;

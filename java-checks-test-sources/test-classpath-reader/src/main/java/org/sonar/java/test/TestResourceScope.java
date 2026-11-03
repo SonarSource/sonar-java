@@ -30,7 +30,9 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
-/** Retains lazy fixtures through instance initialization, nested tests and all assertions in a test class. */
+/**
+ * Retains lazy fixtures through instance initialization, nested tests and all assertions in a test class.
+ */
 public final class TestResourceScope implements BeforeAllCallback, AfterAllCallback {
 
   private static final ThreadLocal<Deque<Scope>> SCOPES = ThreadLocal.withInitial(ArrayDeque::new);
@@ -85,7 +87,9 @@ public final class TestResourceScope implements BeforeAllCallback, AfterAllCallb
     private Scope() {
     }
 
-    /** Attempts every fixture even after errors, then rethrows the first failure with later failures suppressed. */
+    /**
+     * Attempts every fixture even after errors, then rethrows the first failure with later failures suppressed.
+     */
     @Override
     public void close() throws Exception {
       if (closed) {

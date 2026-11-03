@@ -46,8 +46,14 @@ class TestResourceScopeTest {
     IllegalStateException first = new IllegalStateException("first");
     Exception second = new Exception("second");
     TestResourceScope.retain(() -> calls.add("last"));
-    TestResourceScope.retain(() -> { calls.add("second"); throw second; });
-    TestResourceScope.retain(() -> { calls.add("first"); throw first; });
+    TestResourceScope.retain(() -> {
+      calls.add("second");
+      throw second;
+    });
+    TestResourceScope.retain(() -> {
+      calls.add("first");
+      throw first;
+    });
     assertThatThrownBy(scope::close).isSameAs(first).hasSuppressedException(second);
     scope.close();
     assertThat(calls).containsExactly("first", "second", "last");
@@ -59,9 +65,13 @@ class TestResourceScopeTest {
     List<String> calls = new ArrayList<>();
     AssertionError failure = new AssertionError("cleanup");
     TestResourceScope.retain(() -> calls.add("last"));
-    TestResourceScope.retain(() -> { throw failure; });
+    TestResourceScope.retain(() -> {
+      throw failure;
+    });
     Exception first = new Exception("first");
-    TestResourceScope.retain(() -> { throw first; });
+    TestResourceScope.retain(() -> {
+      throw first;
+    });
 
     assertThatThrownBy(scope::close).isSameAs(first).hasSuppressedException(failure);
     scope.close();
@@ -79,9 +89,15 @@ class TestResourceScopeTest {
     AssertionError first = new AssertionError("first");
     Exception second = new Exception("second");
     TestResourceScope.retain(() -> calls.add("last"));
-    TestResourceScope.retain(() -> { throw second; });
-    TestResourceScope.retain(() -> { throw first; });
-    TestResourceScope.retain(() -> { throw first; });
+    TestResourceScope.retain(() -> {
+      throw second;
+    });
+    TestResourceScope.retain(() -> {
+      throw first;
+    });
+    TestResourceScope.retain(() -> {
+      throw first;
+    });
 
     assertThatThrownBy(scope::close).isSameAs(first).hasSuppressedException(second);
     scope.close();
@@ -99,7 +115,9 @@ class TestResourceScopeTest {
   @Test
   void missing_scope_preserves_cleanup_exceptions_as_suppressed() {
     Exception failure = new Exception("cleanup failed");
-    assertThatThrownBy(() -> TestResourceScope.retain(() -> { throw failure; }))
+    assertThatThrownBy(() -> TestResourceScope.retain(() -> {
+      throw failure;
+    }))
       .isInstanceOf(IllegalStateException.class)
       .hasMessageContaining("@TestResourceScope.Scoped")
       .hasSuppressedException(failure);
@@ -108,7 +126,9 @@ class TestResourceScopeTest {
   @Test
   void missing_scope_propagates_cleanup_errors() {
     AssertionError failure = new AssertionError("cleanup failed");
-    assertThatThrownBy(() -> TestResourceScope.retain(() -> { throw failure; }))
+    assertThatThrownBy(() -> TestResourceScope.retain(() -> {
+      throw failure;
+    }))
       .isSameAs(failure);
   }
 }

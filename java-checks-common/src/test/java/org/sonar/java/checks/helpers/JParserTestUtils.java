@@ -17,13 +17,11 @@
 package org.sonar.java.checks.helpers;
 
 import com.google.common.io.Files;
-
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.sonar.java.model.FrontendParser;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.test.TestResourceScope;
