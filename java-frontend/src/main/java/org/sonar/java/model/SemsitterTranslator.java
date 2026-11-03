@@ -1734,7 +1734,11 @@ final class SemsitterTranslator {
     if (initializer != null) {
       tree.completeWithCurlyBraces(token(required(initializer, "{")), token(required(initializer, "}")));
     }
-    ascribe(tree, arrayTypeOf(tree.type(), dims.size() + (initializer == null ? 0 : 1)));
+    int rank = dims.size();
+    if (rank == 0 && initializer != null) {
+      rank = 1;
+    }
+    ascribe(tree, arrayTypeOf(tree.type(), rank));
     return tree;
   }
 
