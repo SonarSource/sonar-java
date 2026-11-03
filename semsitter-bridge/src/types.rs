@@ -16,12 +16,13 @@
  */
 
 //! Type declarations by erased binary name (`java.util.Map$Entry`), from the first source that
-//! knows the type: the scanned project graph, the classpath index (declarations only), then the
-//! JDK table SemSitter embeds.
+//! knows the type: the scanned project graph, the classpath index (jars and the JDK runtime
+//! image), then the JDK table SemSitter embeds.
 
 use std::collections::{BTreeSet, HashMap, VecDeque};
 
 use serde_json::{Map, Value, json};
+use udg_family_jvm::external::classpath::classfile::{Annotation, Element};
 use udg_family_jvm::external::classpath::{ClasspathIndex, ClasspathType};
 use udg_family_jvm::external::jdk_table::{JdkMemberKind, JdkType, jdk_type, parameter_type_variables};
 
@@ -168,6 +169,7 @@ fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
         "paramVars": m.signature.as_deref().map(|s| parameter_variables(s, &parameters)),
         "paramTypes": m.signature.as_deref().map(parameter_types),
         "typeVars": m.signature.as_deref().map(|s| type_parameters(s).into_iter().map(|(name, _)| name).collect::<Vec<_>>()),
+        "annotations": annotations_json(&m.annotations),
       })
     })
     .collect();
@@ -182,6 +184,7 @@ fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
       "enum": f.access_flags & ACC_ENUM != 0,
       "vis": access_visibility(f.access_flags),
       "constant": f.constant_string,
+      "annotations": annotations_json(&f.annotations),
     }))
   }));
   let mut info = json!({
@@ -190,6 +193,7 @@ fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
     "super": ty.super_class,
     "interfaces": ty.interfaces,
     "modifiers": classpath_modifiers(ty.access_flags),
+    "annotations": annotations_json(&ty.annotations),
     "typeParameters": parameters.len(),
     "typeVars": parameters.iter().map(|(name, _)| name).collect::<Vec<_>>(),
     "members": members,
@@ -200,6 +204,39 @@ fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
     object.insert("interfaceTypes".into(), json!(interfaces));
   }
   info
+}
+
+fn annotations_json(annotations: &[Annotation]) -> Value {
+  Value::Array(annotations.iter().map(annotation_json).collect())
+}
+
+fn annotation_json(annotation: &Annotation) -> Value {
+  json!({
+    "name": annotation.name,
+    "values": annotation.pairs.iter().map(|(name, value)| element_json(name, value)).collect::<Vec<_>>(),
+  })
+}
+
+fn element_json(name: &str, value: &Element) -> Value {
+  match value {
+    Element::Boolean(value) => json!({"name": name, "kind": "boolean", "value": value}),
+    Element::Byte(value) => json!({"name": name, "kind": "byte", "value": value}),
+    Element::Char(value) => json!({"name": name, "kind": "char", "value": value}),
+    Element::Short(value) => json!({"name": name, "kind": "short", "value": value}),
+    Element::Int(value) => json!({"name": name, "kind": "int", "value": value}),
+    Element::Long(value) => json!({"name": name, "kind": "long", "value": value}),
+    Element::Float(bits) => json!({"name": name, "kind": "float", "value": f32::from_bits(*bits)}),
+    Element::Double(bits) => json!({"name": name, "kind": "double", "value": f64::from_bits(*bits)}),
+    Element::String(value) => json!({"name": name, "kind": "string", "value": value}),
+    Element::Class(value) => json!({"name": name, "kind": "class", "value": value}),
+    Element::Enum { type_name, const_name } => json!({"name": name, "kind": "enum", "type": type_name, "const": const_name}),
+    Element::Annotation(annotation) => json!({"name": name, "kind": "annotation", "value": annotation_json(annotation)}),
+    Element::Array(items) => json!({
+      "name": name,
+      "kind": "array",
+      "value": items.iter().map(|item| element_json("value", item)).collect::<Vec<_>>(),
+    }),
+  }
 }
 
 /// Class-file access flags as the modifier names `JSema` already applies to JDK types.
