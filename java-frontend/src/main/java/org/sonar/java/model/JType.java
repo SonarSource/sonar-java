@@ -246,6 +246,15 @@ final class JType implements Type, Type.ArrayType {
     if (isUnknown() || kind != Kind.NAMED) {
       return this;
     }
+    if (isRawType()) {
+      Symbol.TypeSymbol owner = declaredSymbol();
+      int count = owner instanceof JTypeSymbol typeSymbol ? typeSymbol.typeParameterCount() : 0;
+      List<JType> variables = new java.util.ArrayList<>();
+      for (int i = 0; i < count; i++) {
+        variables.add(typeVar(sema, "T" + i, fqn + "<" + i + ">"));
+      }
+      return named(sema, fqn, variables);
+    }
     return sema.getClassType(fqn);
   }
 
