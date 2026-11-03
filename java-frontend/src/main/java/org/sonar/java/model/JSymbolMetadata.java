@@ -97,8 +97,8 @@ final class JSymbolMetadata implements SymbolMetadata {
       return fromTree;
     }
     List<AnnotationInstance> fromFacts = new ArrayList<>();
-    for (String name : symbol.sema.annotationNames(symbol.id)) {
-      fromFacts.add(new FactAnnotation(symbol.sema, JSema.erase(name)));
+    for (JSema.DeclaredAnnotation annotation : symbol.sema.declaredAnnotations(symbol.id)) {
+      fromFacts.add(new FactAnnotation(symbol.sema, JSema.erase(annotation.name()), annotation.values()));
     }
     return fromFacts;
   }
@@ -118,7 +118,7 @@ final class JSymbolMetadata implements SymbolMetadata {
   public List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
     for (AnnotationInstance annotation : annotations()) {
       if (annotation.symbol().type().is(fullyQualifiedNameOfAnnotation)) {
-        return annotation instanceof FactAnnotation ? null : annotation.values();
+        return annotation.values();
       }
     }
     return null;
@@ -377,9 +377,11 @@ final class JSymbolMetadata implements SymbolMetadata {
   private static final class FactAnnotation implements AnnotationInstance {
 
     private final Symbol symbol;
+    private final List<AnnotationValue> values;
 
-    private FactAnnotation(JSema sema, String fqn) {
+    private FactAnnotation(JSema sema, String fqn, List<AnnotationValue> values) {
       this.symbol = sema.typeSymbol(fqn);
+      this.values = values;
     }
 
     @Override
@@ -389,7 +391,7 @@ final class JSymbolMetadata implements SymbolMetadata {
 
     @Override
     public List<AnnotationValue> values() {
-      return List.of();
+      return values;
     }
   }
 }
