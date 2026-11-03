@@ -180,8 +180,10 @@ public abstract class JParserConfig {
           options.put(SystemReleaseClasspath.OPTION_JAVA_HOME, jdkHome.get().getAbsolutePath());
           return classpath.stream().filter(f -> !f.equals(runtimeImage)).toList();
         }
-        LOG.debug("The API of Java {} is not served from the JDK '{}': using the API of that JDK as is.",
-          javaVersion.effectiveJavaVersionAsString(), jdkHome.get());
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("The API of Java {} is not served from the JDK '{}': using the API of that JDK as is.",
+            javaVersion.effectiveJavaVersionAsString(), jdkHome.get());
+        }
         return classpath;
       }
     }
