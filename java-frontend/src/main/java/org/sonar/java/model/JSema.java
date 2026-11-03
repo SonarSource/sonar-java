@@ -19,6 +19,7 @@ package org.sonar.java.model;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -351,11 +352,38 @@ public final class JSema implements Sema {
       return List.of();
     }
     JsonObject fact = facts.get(id);
+    List<DeclaredAnnotation> fromValues = fact == null ? List.of() : annotationValues(fact);
+    if (!fromValues.isEmpty()) {
+      return fromValues;
+    }
     List<String> fromFact = fact == null ? List.of() : strings(fact, ANNOTATIONS);
     if (!fromFact.isEmpty()) {
+      List<DeclaredAnnotation> library = libraryAnnotations.getOrDefault(id, List.of());
+      if (!library.isEmpty()) {
+        return library;
+      }
       return fromFact.stream().map(name -> new DeclaredAnnotation(erase(name), List.of())).toList();
     }
     return libraryAnnotations.getOrDefault(id, List.of());
+  }
+
+  private List<DeclaredAnnotation> annotationValues(JsonObject fact) {
+    if (!fact.has("props") || !fact.get("props").isJsonObject()) {
+      return List.of();
+    }
+    List<DeclaredAnnotation> annotations = new ArrayList<>();
+    for (String encoded : strings(fact.getAsJsonObject("props"), "annotationValues")) {
+      JsonElement parsed = JsonParser.parseString(encoded);
+      if (!parsed.isJsonObject()) {
+        continue;
+      }
+      JsonObject annotation = parsed.getAsJsonObject();
+      String name = text(annotation, "name");
+      if (name != null) {
+        annotations.add(new DeclaredAnnotation(erase(name), readAnnotationValues(annotation.get("values"))));
+      }
+    }
+    return annotations;
   }
 
   /** Annotations and deprecation a {@code types} answer gives a library type or member. */
@@ -421,7 +449,7 @@ public final class JSema implements Sema {
       case "double" -> raw == null || !raw.isJsonPrimitive() ? null : Double.valueOf(raw.getAsDouble());
       case "char" -> raw == null || !raw.isJsonPrimitive() ? null : Character.valueOf((char) raw.getAsInt());
       case "string", "class" -> raw == null || !raw.isJsonPrimitive() ? null : raw.getAsString();
-      case "enum" -> text(value, "const");
+      case "enum" -> enumConstant(text(value, "type"), text(value, "const"));
       case "array" -> readAnnotationArray(raw);
       case "annotation" -> raw != null && raw.isJsonObject() ? text(raw.getAsJsonObject(), "name") : null;
       default -> null;
@@ -437,6 +465,27 @@ public final class JSema implements Sema {
       values.add(item.isJsonObject() ? readAnnotationElement(item.getAsJsonObject()) : null);
     }
     return values.toArray();
+  }
+
+  @Nullable
+  private Symbol.VariableSymbol enumConstant(@Nullable String typeName, @Nullable String constName) {
+    if (constName == null) {
+      return null;
+    }
+    String ownerName = typeName == null || typeName.isBlank() ? "" : erase(typeName);
+    String id = (ownerName.isEmpty() ? "enum" : ownerName) + "#" + constName;
+    if (symbols.get(id) instanceof Symbol.VariableSymbol variable) {
+      return variable;
+    }
+    JTypeSymbol type = ownerName.isEmpty() ? null : typeSymbol(ownerName);
+    JVariableSymbol created = new JVariableSymbol(this, id, constName, "enum_member");
+    if (type != null) {
+      created.owner(type);
+      created.type(type.type());
+    }
+    created.addModifiers(List.of("public", "static", "final"));
+    symbols.put(id, created);
+    return created;
   }
 
   /**
