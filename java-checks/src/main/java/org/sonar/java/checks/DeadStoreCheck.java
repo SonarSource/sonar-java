@@ -158,7 +158,6 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
       Symbol symbol = ((IdentifierTree) lhs).symbol();
       if (symbol.isLocalVariable()
         && !out.contains(symbol)
-        && isExpressionValueDiscarded(element)
         && !UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(symbol.name())) {
         createIssue(element.operatorToken(), element.expression(), symbol);
       }
@@ -169,16 +168,6 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
         out.add(symbol);
       }
     }
-  }
-
-  private static boolean isExpressionValueDiscarded(Tree element) {
-    Tree parent = element.parent();
-    return parent.is(Tree.Kind.EXPRESSION_STATEMENT) || isVoidLambda(parent);
-  }
-
-  private static boolean isVoidLambda(Tree tree) {
-    // A void expression lambda discards its body's value without an enclosing expression statement.
-    return tree instanceof LambdaExpressionTree lambda && lambda.symbol().returnType().type().isVoid();
   }
 
   private static void handleIdentifier(Set<Symbol> out, Set<Tree> assignmentLHS, IdentifierTree element) {
@@ -239,7 +228,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
   private void handlePrefixExpression(Set<Symbol> out, UnaryExpressionTree element) {
     // within each block, each produced value is consumed or by following elements or by terminator
     ExpressionTree expression = element.expression();
-    if (isExpressionValueDiscarded(element) && expression.is(Tree.Kind.IDENTIFIER)) {
+    if (expression.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) expression).symbol();
       if (symbol.isLocalVariable() && !out.contains(symbol)) {
         createIssue(element, symbol);

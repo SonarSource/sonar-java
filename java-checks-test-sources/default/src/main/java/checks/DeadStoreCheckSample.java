@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
 import java.util.function.IntUnaryOperator;
@@ -35,6 +36,14 @@ class DeadStoreCheckSample {
     a = null; // Noncompliant
 //    ^^^^^^
     return 0;
+  }
+
+  void dead_store_in_condition(BufferedReader reader) throws IOException {
+    String line;
+    if ((line = reader.readLine()) != null) { // Noncompliant {{Remove this useless assignment to local variable "line".}}
+//            ^^^^^^^^^^^^^^^^^^^
+      System.out.println("Line available");
+    }
   }
 
   void fields() {
@@ -78,7 +87,8 @@ class DeadStoreCheckSample {
 
   IntFunction<Integer> assignment_result_used_in_block_lambda() {
     return x -> {
-      int y = x = x + 1; // Compliant (The assignment result is used)
+      int y = x = x + 1; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//              ^^^^^^^
       return y;
     };
   }
@@ -109,11 +119,13 @@ class DeadStoreCheckSample {
 //    ^^^^
   };
 
-  IntUnaryOperator prefix_increment_result_lambda = x -> ++x;
-  IntUnaryOperator compound_assignment_result_lambda = x -> x += 2;
-  IntUnaryOperator assignment_result_lambda = x -> x = x + 1; // Compliant (The assignment result is used)
-  IntUnaryOperator assignment_result_lambda2 = x -> {
-    return x = x + 1; // Compliant (The assignment result is used)
+  IntUnaryOperator prefix_increment_result_lambda = x -> ++x; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+  IntUnaryOperator compound_assignment_result_lambda = x -> x += 2; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+  IntUnaryOperator assignment_result_lambda = x -> x = x + 1; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//                                                   ^^^^^^^
+  IntUnaryOperator assignment_result_block_lambda = x -> {
+    return x = x + 1; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//           ^^^^^^^
   };
 
   Runnable prefix_increment_field_lambda = () -> ++var;
@@ -345,15 +357,15 @@ class DeadStoreCheckSample {
     ++b; // Noncompliant
 //  ^^^
     int c = 0;
-    foo(++c); // compliant not last element of block
+    foo(++c); // Noncompliant {{Remove this useless assignment to local variable "c".}}
     int j = -1;
-    while ((j = foo(++j)) != -1) {
+    while ((j = foo(++j)) != -1) { // Noncompliant {{Remove this useless assignment to local variable "j".}}
       System.out.println("");
     }
     if(i != 0) {
       return i++; // Noncompliant
     } else {
-      return ++i;
+      return ++i; // Noncompliant
     }
   }
 
@@ -434,7 +446,7 @@ class DeadStoreCheckSample {
       n = 2;
       n += 12; // Noncompliant
       int order = 0;
-      return (short) (order &= 12);
+      return (short) (order &= 12); // Noncompliant
     }
   }
 
