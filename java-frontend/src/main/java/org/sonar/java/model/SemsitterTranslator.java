@@ -568,6 +568,9 @@ final class SemsitterTranslator {
       String owner = enumType.type().fullyQualifiedName();
       Symbol.MethodSymbol constructor = sema.declaredMethod(owner, "<init>", argumentTypes(args));
       name.symbol = constructor != null || !args.isEmpty() ? constructor : sema.resolve(owner + "#<init>()");
+      if (name.symbol instanceof Symbol.MethodSymbol method && !method.isUnknown()) {
+        recordUse(method, name);
+      }
       ascribe(name, enumType.type());
       if (tree.symbol() instanceof JSymbol field && field.type().isUnknown()) {
         field.type(enumType.type());
@@ -1705,7 +1708,7 @@ final class SemsitterTranslator {
       Symbol resolved = sema.resolve(constructor);
       if (resolved instanceof Symbol.MethodSymbol method) {
         identifier.symbol = resolved;
-        sema.use(constructor, identifier);
+        recordUse(resolved, identifier);
         ascribeArguments(method, tree.arguments());
         return;
       }
@@ -1715,6 +1718,7 @@ final class SemsitterTranslator {
     Symbol.MethodSymbol declared = type.isClass() ? sema.declaredMethod(owner, "<init>", argumentTypes(tree.arguments())) : null;
     if (declared != null) {
       identifier.symbol = declared;
+      recordUse(declared, identifier);
       ascribeArguments(declared, tree.arguments());
     } else if (!(identifier.symbol() instanceof Symbol.MethodSymbol)) {
       identifier.symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
@@ -2370,7 +2374,25 @@ final class SemsitterTranslator {
     }
     identifier.symbol = symbol;
     ascribe(identifier, identifierType(symbol));
-    sema.use(target, identifier);
+    sema.use(usageId(symbol, target), identifier);
+  }
+
+  /** Usages are stored under the symbol's own id, which can differ from the fact key that resolved it. */
+  private static String usageId(Symbol symbol, String target) {
+    if (symbol instanceof JSymbol jSymbol && !jSymbol.isUnknown()) {
+      String id = jSymbol.toString();
+      if (id != null && !id.equals(jSymbol.name())) {
+        return id;
+      }
+    }
+    return target;
+  }
+
+  private void recordUse(Symbol symbol, IdentifierTree identifier) {
+    String id = usageId(symbol, "");
+    if (!id.isEmpty()) {
+      sema.use(id, identifier);
+    }
   }
 
   @Nullable
