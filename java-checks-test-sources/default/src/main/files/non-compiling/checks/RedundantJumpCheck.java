@@ -339,20 +339,20 @@ abstract class A {
   Runnable expressionLambda = () -> System.out.println("expression");
 
   Supplier<Runnable> expressionReturningLambda = () -> () -> {
-    return; // Noncompliant {{Remove this redundant jump.}}
+    return; // Noncompliant {{Remove this redundant return.}}
 //  ^^^^^^^
   };
 
   Runnable fieldInitializer = () -> {
     System.out.println("field");
-    return; // Noncompliant {{Remove this redundant jump.}}
+    return; // Noncompliant {{Remove this redundant return.}}
 //  ^^^^^^^
   };
 
   void immediatelyInvokedLambda(int x) {
     Runnable r = () -> {
       System.out.println(x);
-      return; // Noncompliant {{Remove this redundant jump.}}
+      return; // Noncompliant {{Remove this redundant return.}}
 //    ^^^^^^^
     };
     r.run();
@@ -366,7 +366,7 @@ abstract class A {
       }
       System.out.println(x);
       if (x == 0) {
-        return; // Noncompliant {{Remove this redundant jump.}}
+        return; // Noncompliant {{Remove this redundant return.}}
 //      ^^^^^^^
       }
     };
@@ -383,7 +383,7 @@ abstract class A {
     return () -> {
       Runnable inner = () -> {
         System.out.println(x);
-        return; // Noncompliant {{Remove this redundant jump.}}
+        return; // Noncompliant {{Remove this redundant return.}}
 //      ^^^^^^^
       };
       inner.run();
@@ -401,7 +401,7 @@ abstract class A {
           return;
         }
         System.out.println(i);
-        continue; // Noncompliant {{Remove this redundant jump.}}
+        continue; // Noncompliant {{Remove this redundant continue.}}
 //      ^^^^^^^^^
       }
     };
@@ -411,7 +411,7 @@ abstract class A {
     return () -> {
       try {
         System.out.println(x);
-        return; // Noncompliant {{Remove this redundant jump.}}
+        return; // Noncompliant {{Remove this redundant return.}}
 //      ^^^^^^^
       } finally {
         System.out.println("cleanup");
@@ -437,7 +437,7 @@ abstract class A {
       default -> {
         for (int i = 0; i < x; i++) {
           System.out.println(i);
-          continue; // Noncompliant {{Remove this redundant jump.}}
+          continue; // Noncompliant {{Remove this redundant continue.}}
 //        ^^^^^^^^^
         }
         yield x;

@@ -73,7 +73,8 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
         Block successor = CFGUtils.nonEmptySuccessor(successors.next());
         if (successor.equals(successorWithoutJump)
           && !CFGUtils.isJumpThroughFinallyWithDistinctContinuation(terminator, successor)) {
-          reportIssue(terminator, "Remove this redundant jump.");
+          String jump = terminator.is(Tree.Kind.RETURN_STATEMENT) ? "return" : "continue";
+          reportIssue(terminator, "Remove this redundant %s.".formatted(jump));
         }
       }
     }
