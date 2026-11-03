@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.sonar.java.Preconditions;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
@@ -73,8 +72,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   @Nullable
   private CFG cfg;
 
-  @Nullable
-  public IMethodBinding methodBinding;
+  private Symbol.MethodSymbol symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
 
   /**
    * Cache for {@link #isOverriding()}.
@@ -216,11 +214,13 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     return defaultValue;
   }
 
+  public void setSymbol(Symbol.MethodSymbol symbol) {
+    this.symbol = Objects.requireNonNull(symbol);
+  }
+
   @Override
   public Symbol.MethodSymbol symbol() {
-    return methodBinding != null
-      ? root.sema.methodSymbol(methodBinding)
-      : Symbol.MethodSymbol.UNKNOWN_METHOD;
+    return symbol;
   }
 
   @Override

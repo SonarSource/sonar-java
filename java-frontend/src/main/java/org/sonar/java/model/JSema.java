@@ -19,10 +19,8 @@ package org.sonar.java.model;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTUtils;
@@ -41,7 +39,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 public final class JSema implements Sema {
 
   private final AST ast;
-  final Set<JProblem> undefinedTypes = new HashSet<>();
   final Map<IBinding, Tree> declarations = new HashMap<>();
   final Map<IBinding, List<IdentifierTree>> usages = new HashMap<>();
   private final Map<ITypeBinding, JType> types = new HashMap<>();
@@ -53,6 +50,51 @@ public final class JSema implements Sema {
 
   JSema(AST ast) {
     this.ast = ast;
+  }
+
+  Type typeOrUnknown(@Nullable ITypeBinding binding) {
+    return binding == null ? Type.UNKNOWN : type(binding);
+  }
+
+  Symbol.TypeSymbol typeSymbolOrUnknown(@Nullable ITypeBinding binding) {
+    return binding == null ? Symbol.TypeSymbol.UNKNOWN_TYPE : typeSymbol(binding);
+  }
+
+  Symbol.MethodSymbol methodSymbolOrUnknown(@Nullable IMethodBinding binding) {
+    return binding == null ? Symbol.MethodSymbol.UNKNOWN_METHOD : methodSymbol(binding);
+  }
+
+  Symbol variableSymbolOrUnknown(@Nullable IVariableBinding binding) {
+    return binding == null ? Symbol.UNKNOWN_SYMBOL : variableSymbol(binding);
+  }
+
+  Symbol symbolOrUnknown(@Nullable IBinding binding) {
+    if (binding == null) {
+      return Symbol.UNKNOWN_SYMBOL;
+    }
+    return switch (binding.getKind()) {
+      case IBinding.TYPE -> typeSymbol((ITypeBinding) binding);
+      case IBinding.METHOD -> methodSymbol((IMethodBinding) binding);
+      case IBinding.VARIABLE -> variableSymbol((IVariableBinding) binding);
+      case IBinding.PACKAGE -> packageSymbol((IPackageBinding) binding);
+      default -> Symbol.UNKNOWN_SYMBOL;
+    };
+  }
+
+  @Nullable
+  Symbol importSymbolOrUnknown(@Nullable IBinding binding) {
+    if (binding == null || (binding.getKind() != IBinding.TYPE && binding.getKind() != IBinding.METHOD && binding.getKind() != IBinding.VARIABLE)) {
+      return null;
+    }
+    return symbolOrUnknown(binding);
+  }
+
+  Symbol thisSymbolOrUnknown(@Nullable ITypeBinding binding) {
+    return binding == null ? Symbol.UNKNOWN_SYMBOL : typeSymbol(binding).thisSymbol;
+  }
+
+  Symbol superSymbolOrUnknown(@Nullable ITypeBinding binding) {
+    return binding == null ? Symbol.UNKNOWN_SYMBOL : typeSymbol(binding).superSymbol;
   }
 
   public JType type(ITypeBinding typeBinding) {
@@ -116,7 +158,6 @@ public final class JSema implements Sema {
     }
     return staticInitializerBlockSymbols.computeIfAbsent(owner, k -> new JInitializerBlockSymbol(k, true));
   }
-
 
   public JVariableSymbol variableSymbol(IVariableBinding variableBinding) {
     JVariableSymbol cached = (JVariableSymbol) symbols.get(variableBinding);
@@ -187,7 +228,4 @@ public final class JSema implements Sema {
     return ASTUtils.getEnvironmentCleaner(ast);
   }
 
-  public Set<JProblem> undefinedTypes() {
-    return Collections.unmodifiableSet(undefinedTypes);
-  }
 }

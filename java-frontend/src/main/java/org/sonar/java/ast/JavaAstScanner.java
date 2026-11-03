@@ -102,7 +102,6 @@ public class JavaAstScanner {
     scan(inputFiles, modifyCompilationUnit);
   }
 
-
   private void scan(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit) {
     List<? extends InputFile> filesNames = filterModuleInfo(inputFiles).toList();
     AnalysisProgress analysisProgress = new AnalysisProgress(filesNames.size());
@@ -166,7 +165,7 @@ public class JavaAstScanner {
       modifyCompilationUnit.accept(ast);
       visitor.visitFile(ast, sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile));
       String path = inputFile.toString();
-      Set<JProblem> undefinedTypes = ast.sema.undefinedTypes();
+      Set<JProblem> undefinedTypes = ast.undefinedTypes();
       collectUndefinedTypes(path, undefinedTypes);
       cleanUp.accept(ast);
       telemetryAnalysisKeys = javaAnalysisKeys.success();
@@ -196,7 +195,7 @@ public class JavaAstScanner {
 
   private static void cleanUpAst(JavaTree.CompilationUnitTreeImpl ast) {
     // release environment used for semantic resolution
-    ast.sema.getEnvironmentCleaner().run();
+    ast.getEnvironmentCleaner().run();
   }
 
   private void collectUndefinedTypes(String path, Set<JProblem> undefinedTypes) {

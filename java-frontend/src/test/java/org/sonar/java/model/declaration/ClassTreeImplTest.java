@@ -21,6 +21,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -37,7 +38,7 @@ class ClassTreeImplTest {
   void get_symbol_return_unknown_when_type_binding_is_null() {
     var classTree = (ClassTreeImpl) JParserTestUtils.parse("class A {}").types().get(0);
     // simulate source code with type binding problems
-    classTree.typeBinding = null;
+    classTree.setSymbol(Symbol.TypeSymbol.UNKNOWN_TYPE);
     assertThat(classTree.symbol().isUnknown()).isTrue();
   }
 
