@@ -693,7 +693,10 @@ final class SemsitterTranslator {
       tree.completeTypeAndInitializer(tree.type(), token(required(node, "=")), initializer);
     }
     bindDeclaration(tree, nameNode(node) == null ? node : nameNode(node), name);
-    if (tree.symbol().type() != null && !tree.symbol().type().isUnknown()) {
+    Type declared = tree.type().symbolType();
+    if (declared.isParameterized() && tree.symbol() instanceof JSymbol symbol) {
+      symbol.type(declared);
+    } else if (tree.symbol().type() != null && !tree.symbol().type().isUnknown()) {
       ascribe(tree.type(), tree.symbol().type());
     }
     return tree;
