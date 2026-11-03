@@ -15,6 +15,33 @@ class DeadStoreCheckSample {
 
   int var;
 
+  class ConstructorDeadStores {
+    ConstructorDeadStores(int value) {
+      int x = compute(); // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//          ^^^^^^^^^^^
+      x = 3;
+      value = compute(); // Noncompliant {{Remove this useless assignment to local variable "value".}}
+//          ^^^^^^^^^^^
+      value = x;
+      var = value;
+    }
+  }
+
+  class ConstructorWithLambdaCapture {
+    ConstructorWithLambdaCapture(boolean condition) {
+      int captured = compute();
+      if (condition) {
+        System.out.println("branch");
+      }
+      Runnable runnable = () -> {
+        int unused = compute(); // Noncompliant {{Remove this useless assignment to local variable "unused".}}
+//                 ^^^^^^^^^^^
+        System.out.println(captured);
+      };
+      runnable.run();
+    }
+  }
+
   void singleAssignment(){
     int z = 10; // Noncompliant
   }
