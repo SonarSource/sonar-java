@@ -1,0 +1,1890 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"newElementType\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 667,
+            "startColumn" : 28,
+            "endLine" : 667,
+            "endColumn" : 48
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"myCost\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 974,
+            "startColumn" : 22,
+            "endLine" : 974,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"name\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 353,
+            "startColumn" : 31,
+            "endLine" : 353,
+            "endColumn" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"loader\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 106,
+            "startColumn" : 16,
+            "endLine" : 106,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"myClass\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 107,
+            "startColumn" : 17,
+            "endLine" : 107,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"loader\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 153,
+            "startColumn" : 16,
+            "endLine" : 153,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"test\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 154,
+            "startColumn" : 14,
+            "endLine" : 154,
+            "endColumn" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"loader\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 234,
+            "startColumn" : 16,
+            "endLine" : 234,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"thread\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 236,
+            "startColumn" : 16,
+            "endLine" : 236,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 146,
+            "startColumn" : 19,
+            "endLine" : 147,
+            "endColumn" : 73
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 537,
+            "startColumn" : 19,
+            "endLine" : 539,
+            "endColumn" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 548,
+            "startColumn" : 19,
+            "endLine" : 550,
+            "endColumn" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 559,
+            "startColumn" : 19,
+            "endLine" : 561,
+            "endColumn" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 570,
+            "startColumn" : 19,
+            "endLine" : 572,
+            "endColumn" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 581,
+            "startColumn" : 19,
+            "endLine" : 583,
+            "endColumn" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 592,
+            "startColumn" : 19,
+            "endLine" : 594,
+            "endColumn" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 603,
+            "startColumn" : 19,
+            "endLine" : 605,
+            "endColumn" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 614,
+            "startColumn" : 19,
+            "endLine" : 616,
+            "endColumn" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 625,
+            "startColumn" : 19,
+            "endLine" : 627,
+            "endColumn" : 49
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 636,
+            "startColumn" : 19,
+            "endLine" : 638,
+            "endColumn" : 48
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"dynaArray\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 296,
+            "startColumn" : 19,
+            "endLine" : 296,
+            "endColumn" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"target\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 454,
+            "startColumn" : 16,
+            "endLine" : 454,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"bean\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 455,
+            "startColumn" : 14,
+            "endLine" : 455,
+            "endColumn" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"target\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 479,
+            "startColumn" : 16,
+            "endLine" : 479,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"bean\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 480,
+            "startColumn" : 14,
+            "endLine" : 480,
+            "endColumn" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"target\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 504,
+            "startColumn" : 16,
+            "endLine" : 504,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"bean\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 505,
+            "startColumn" : 14,
+            "endLine" : 505,
+            "endColumn" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"target\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 529,
+            "startColumn" : 16,
+            "endLine" : 529,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"bean\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 530,
+            "startColumn" : 14,
+            "endLine" : 530,
+            "endColumn" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 892,
+            "startColumn" : 19,
+            "endLine" : 894,
+            "endColumn" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 903,
+            "startColumn" : 19,
+            "endLine" : 905,
+            "endColumn" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 914,
+            "startColumn" : 19,
+            "endLine" : 916,
+            "endColumn" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 925,
+            "startColumn" : 19,
+            "endLine" : 927,
+            "endColumn" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 936,
+            "startColumn" : 19,
+            "endLine" : 938,
+            "endColumn" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 947,
+            "startColumn" : 19,
+            "endLine" : 949,
+            "endColumn" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 958,
+            "startColumn" : 19,
+            "endLine" : 960,
+            "endColumn" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 969,
+            "startColumn" : 19,
+            "endLine" : 971,
+            "endColumn" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 980,
+            "startColumn" : 19,
+            "endLine" : 982,
+            "endColumn" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 991,
+            "startColumn" : 19,
+            "endLine" : 993,
+            "endColumn" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1002,
+            "startColumn" : 19,
+            "endLine" : 1004,
+            "endColumn" : 49
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"value\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1013,
+            "startColumn" : 19,
+            "endLine" : 1015,
+            "endColumn" : 48
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"clazz\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1811,
+            "startColumn" : 23,
+            "endLine" : 1811,
+            "endColumn" : 95
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"sqlType\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSetMetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 127,
+            "startColumn" : 21,
+            "endLine" : 127,
+            "endColumn" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"list\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira347TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 117,
+            "startColumn" : 18,
+            "endLine" : 117,
+            "endColumn" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"myClass\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 109,
+            "startColumn" : 26,
+            "endLine" : 109,
+            "endColumn" : 86
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"loader\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 16,
+            "endLine" : 114,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"myClass\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 115,
+            "startColumn" : 17,
+            "endLine" : 115,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"b\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 129,
+            "startColumn" : 28,
+            "endLine" : 129,
+            "endColumn" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"loader\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 159,
+            "startColumn" : 16,
+            "endLine" : 159,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"test\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 160,
+            "startColumn" : 14,
+            "endLine" : 160,
+            "endColumn" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"b\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 178,
+            "startColumn" : 28,
+            "endLine" : 178,
+            "endColumn" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"threadWeakReference\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 218,
+            "startColumn" : 73,
+            "endLine" : 218,
+            "endColumn" : 102
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"loader\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 232,
+            "startColumn" : 16,
+            "endLine" : 232,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"thread\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 234,
+            "startColumn" : 16,
+            "endLine" : 234,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"b\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 253,
+            "startColumn" : 28,
+            "endLine" : 253,
+            "endColumn" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"loader\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 19,
+            "endLine" : 84,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"beanClass\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 85,
+            "startColumn" : 19,
+            "endLine" : 85,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"bean\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 86,
+            "startColumn" : 19,
+            "endLine" : 86,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"loader\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 133,
+            "startColumn" : 16,
+            "endLine" : 133,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"beanClass\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 134,
+            "startColumn" : 19,
+            "endLine" : 134,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"bean\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 135,
+            "startColumn" : 14,
+            "endLine" : 135,
+            "endColumn" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"loader\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 230,
+            "startColumn" : 16,
+            "endLine" : 230,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"beanClass\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 231,
+            "startColumn" : 19,
+            "endLine" : 231,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"bean\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 232,
+            "startColumn" : 14,
+            "endLine" : 232,
+            "endColumn" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"loader\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 281,
+            "startColumn" : 19,
+            "endLine" : 281,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"beanClass\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 282,
+            "startColumn" : 19,
+            "endLine" : 282,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"bean\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 283,
+            "startColumn" : 19,
+            "endLine" : 283,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"loader\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 329,
+            "startColumn" : 22,
+            "endLine" : 329,
+            "endColumn" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"beanClass\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 330,
+            "startColumn" : 22,
+            "endLine" : 330,
+            "endColumn" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"bean\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 331,
+            "startColumn" : 22,
+            "endLine" : 331,
+            "endColumn" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"wrapDynaBean\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 332,
+            "startColumn" : 22,
+            "endLine" : 332,
+            "endColumn" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"loader\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 382,
+            "startColumn" : 19,
+            "endLine" : 382,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"beanClass\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 383,
+            "startColumn" : 19,
+            "endLine" : 383,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"bean\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 384,
+            "startColumn" : 19,
+            "endLine" : 384,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"loader\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 430,
+            "startColumn" : 19,
+            "endLine" : 430,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"beanClass\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 431,
+            "startColumn" : 19,
+            "endLine" : 431,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"bean\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 432,
+            "startColumn" : 19,
+            "endLine" : 432,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1854",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this useless assignment to local variable \"list\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 495,
+            "startColumn" : 18,
+            "endLine" : 495,
+            "endColumn" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

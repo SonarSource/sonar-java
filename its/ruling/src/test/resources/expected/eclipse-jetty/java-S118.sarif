@@ -1,0 +1,858 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/CookieCutter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 23,
+            "endLine" : 33,
+            "endColumn" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedCSVParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 29,
+            "startColumn" : 23,
+            "endLine" : 29,
+            "endColumn" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 73,
+            "startColumn" : 34,
+            "endLine" : 73,
+            "endColumn" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/CyclicTimeout.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 23,
+            "endLine" : 51,
+            "endColumn" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/FillInterest.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 23,
+            "endLine" : 36,
+            "endColumn" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/IdleTimeout.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 37,
+            "startColumn" : 23,
+            "endLine" : 37,
+            "endColumn" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/NegotiatingClientConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 23,
+            "endLine" : 30,
+            "endColumn" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/NegotiatingClientConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 21,
+            "startColumn" : 23,
+            "endLine" : 21,
+            "endColumn" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SelectorManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 23,
+            "endLine" : 58,
+            "endColumn" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SocketChannelEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 28,
+            "endLine" : 56,
+            "endColumn" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SocketChannelEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 28,
+            "endLine" : 72,
+            "endColumn" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/WriteFlusher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 23,
+            "endLine" : 46,
+            "endColumn" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 127,
+            "startColumn" : 28,
+            "endLine" : 127,
+            "endColumn" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1494,
+            "startColumn" : 28,
+            "endLine" : 1494,
+            "endColumn" : 42
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1522,
+            "startColumn" : 28,
+            "endLine" : 1522,
+            "endColumn" : 48
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 30,
+            "startColumn" : 23,
+            "endLine" : 30,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/NegotiatingServerConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 33,
+            "startColumn" : 23,
+            "endLine" : 33,
+            "endColumn" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/NegotiatingServerConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 23,
+            "endLine" : 32,
+            "endColumn" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/AbstractHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 138,
+            "startColumn" : 34,
+            "endLine" : 138,
+            "endColumn" : 54
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ScopedHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 102,
+            "startColumn" : 23,
+            "endLine" : 102,
+            "endColumn" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class abstract or rename it, since it matches the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/jmx/AbstractHandlerMBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 14,
+            "endLine" : 31,
+            "endColumn" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Make this class abstract or rename it, since it matches the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/jmx/AbstractConnectorMBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 14,
+            "endLine" : 27,
+            "endColumn" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Attributes.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 20,
+            "endLine" : 79,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 23,
+            "endLine" : 46,
+            "endColumn" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IteratingCallback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 57,
+            "startColumn" : 23,
+            "endLine" : 57,
+            "endColumn" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IteratingNestedCallback.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 23,
+            "endLine" : 39,
+            "endColumn" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PatternMatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 23,
+            "endLine" : 26,
+            "endColumn" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Utf8Appendable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 23,
+            "endLine" : 50,
+            "endColumn" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/Graceful.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 20,
+            "endLine" : 67,
+            "endColumn" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/compression/CompressionPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 27,
+            "startColumn" : 23,
+            "endLine" : 27,
+            "endColumn" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 60,
+            "startColumn" : 23,
+            "endLine" : 60,
+            "endColumn" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Credential.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 45,
+            "startColumn" : 23,
+            "endLine" : 45,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/SslContextFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 23,
+            "endLine" : 104,
+            "endColumn" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 71,
+            "startColumn" : 34,
+            "endLine" : 71,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S118",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 292,
+            "startColumn" : 34,
+            "endLine" : 292,
+            "endColumn" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

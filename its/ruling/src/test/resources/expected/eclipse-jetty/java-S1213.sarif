@@ -1,0 +1,6130 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/CookieCompliance.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 85,
+            "startColumn" : 26,
+            "endLine" : 85,
+            "endColumn" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/CookieCompliance.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 86,
+            "startColumn" : 34,
+            "endLine" : 86,
+            "endColumn" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/CookieCompliance.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 88,
+            "startColumn" : 13,
+            "endLine" : 88,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/DateGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 33,
+            "endLine" : 90,
+            "endColumn" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/DateGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 91,
+            "startColumn" : 37,
+            "endLine" : 91,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 50,
+            "endLine" : 58,
+            "endColumn" : 61
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 30,
+            "endLine" : 67,
+            "endColumn" : 42
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCompliance.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 179,
+            "startColumn" : 26,
+            "endLine" : 179,
+            "endColumn" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCompliance.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 180,
+            "startColumn" : 34,
+            "endLine" : 180,
+            "endColumn" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCompliance.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 182,
+            "startColumn" : 13,
+            "endLine" : 182,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 91,
+            "startColumn" : 30,
+            "endLine" : 91,
+            "endColumn" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 92,
+            "startColumn" : 30,
+            "endLine" : 92,
+            "endColumn" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 93,
+            "startColumn" : 40,
+            "endLine" : 93,
+            "endColumn" : 63
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 109,
+            "startColumn" : 21,
+            "endLine" : 109,
+            "endColumn" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 111,
+            "startColumn" : 12,
+            "endLine" : 111,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 116,
+            "startColumn" : 12,
+            "endLine" : 116,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 815,
+            "startColumn" : 33,
+            "endLine" : 815,
+            "endColumn" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 816,
+            "startColumn" : 33,
+            "endLine" : 816,
+            "endColumn" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 817,
+            "startColumn" : 33,
+            "endLine" : 817,
+            "endColumn" : 49
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 818,
+            "startColumn" : 33,
+            "endLine" : 818,
+            "endColumn" : 49
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 819,
+            "startColumn" : 33,
+            "endLine" : 819,
+            "endColumn" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 820,
+            "startColumn" : 33,
+            "endLine" : 820,
+            "endColumn" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 821,
+            "startColumn" : 35,
+            "endLine" : 821,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 836,
+            "startColumn" : 45,
+            "endLine" : 836,
+            "endColumn" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpHeaderValue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 87,
+            "startColumn" : 40,
+            "endLine" : 87,
+            "endColumn" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpMethod.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 134,
+            "startColumn" : 42,
+            "endLine" : 134,
+            "endColumn" : 59
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpMethod.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 144,
+            "startColumn" : 42,
+            "endLine" : 144,
+            "endColumn" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpMethod.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 154,
+            "startColumn" : 30,
+            "endLine" : 154,
+            "endColumn" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpMethod.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 155,
+            "startColumn" : 26,
+            "endLine" : 155,
+            "endColumn" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpMethod.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 157,
+            "startColumn" : 5,
+            "endLine" : 157,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 246,
+            "startColumn" : 12,
+            "endLine" : 246,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 251,
+            "startColumn" : 12,
+            "endLine" : 251,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 256,
+            "startColumn" : 12,
+            "endLine" : 256,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 261,
+            "startColumn" : 12,
+            "endLine" : 261,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 266,
+            "startColumn" : 12,
+            "endLine" : 266,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 271,
+            "startColumn" : 12,
+            "endLine" : 271,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 276,
+            "startColumn" : 12,
+            "endLine" : 276,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 281,
+            "startColumn" : 13,
+            "endLine" : 281,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpVersion.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 103,
+            "startColumn" : 26,
+            "endLine" : 103,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpVersion.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 26,
+            "endLine" : 104,
+            "endColumn" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpVersion.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 105,
+            "startColumn" : 30,
+            "endLine" : 105,
+            "endColumn" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpVersion.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 106,
+            "startColumn" : 23,
+            "endLine" : 106,
+            "endColumn" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpVersion.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 108,
+            "startColumn" : 5,
+            "endLine" : 108,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/PreEncodedHttpField.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 95,
+            "startColumn" : 28,
+            "endLine" : 95,
+            "endColumn" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/PreEncodedHttpField.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 97,
+            "startColumn" : 12,
+            "endLine" : 97,
+            "endColumn" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/PreEncodedHttpField.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 106,
+            "startColumn" : 12,
+            "endLine" : 106,
+            "endColumn" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/PreEncodedHttpField.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 111,
+            "startColumn" : 12,
+            "endLine" : 111,
+            "endColumn" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedCSV.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 116,
+            "startColumn" : 34,
+            "endLine" : 116,
+            "endColumn" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedCSV.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 118,
+            "startColumn" : 12,
+            "endLine" : 118,
+            "endColumn" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedCSV.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 123,
+            "startColumn" : 12,
+            "endLine" : 123,
+            "endColumn" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/ServletPathSpec.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 195,
+            "startColumn" : 12,
+            "endLine" : 195,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SelectorManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 83,
+            "startColumn" : 15,
+            "endLine" : 83,
+            "endColumn" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SelectorManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 94,
+            "startColumn" : 15,
+            "endLine" : 94,
+            "endColumn" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DebugListener.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 198,
+            "startColumn" : 25,
+            "endLine" : 198,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DebugListener.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 239,
+            "startColumn" : 34,
+            "endLine" : 239,
+            "endColumn" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DebugListener.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 293,
+            "startColumn" : 47,
+            "endLine" : 293,
+            "endColumn" : 68
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelListeners.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 224,
+            "startColumn" : 23,
+            "endLine" : 224,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelListeners.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 233,
+            "startColumn" : 23,
+            "endLine" : 233,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelListeners.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 242,
+            "startColumn" : 23,
+            "endLine" : 242,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 100,
+            "startColumn" : 12,
+            "endLine" : 100,
+            "endColumn" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 197,
+            "startColumn" : 31,
+            "endLine" : 197,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 198,
+            "startColumn" : 57,
+            "endLine" : 198,
+            "endColumn" : 83
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 199,
+            "startColumn" : 29,
+            "endLine" : 199,
+            "endColumn" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 200,
+            "startColumn" : 30,
+            "endLine" : 200,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 201,
+            "startColumn" : 24,
+            "endLine" : 201,
+            "endColumn" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 202,
+            "startColumn" : 24,
+            "endLine" : 202,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 203,
+            "startColumn" : 21,
+            "endLine" : 203,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 204,
+            "startColumn" : 20,
+            "endLine" : 204,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 205,
+            "startColumn" : 20,
+            "endLine" : 205,
+            "endColumn" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 206,
+            "startColumn" : 32,
+            "endLine" : 206,
+            "endColumn" : 51
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 207,
+            "startColumn" : 21,
+            "endLine" : 207,
+            "endColumn" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 208,
+            "startColumn" : 20,
+            "endLine" : 208,
+            "endColumn" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 209,
+            "startColumn" : 21,
+            "endLine" : 209,
+            "endColumn" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 210,
+            "startColumn" : 21,
+            "endLine" : 210,
+            "endColumn" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 211,
+            "startColumn" : 21,
+            "endLine" : 211,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 212,
+            "startColumn" : 21,
+            "endLine" : 212,
+            "endColumn" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 213,
+            "startColumn" : 21,
+            "endLine" : 213,
+            "endColumn" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 214,
+            "startColumn" : 24,
+            "endLine" : 214,
+            "endColumn" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 215,
+            "startColumn" : 28,
+            "endLine" : 215,
+            "endColumn" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 216,
+            "startColumn" : 20,
+            "endLine" : 216,
+            "endColumn" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 217,
+            "startColumn" : 20,
+            "endLine" : 217,
+            "endColumn" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 218,
+            "startColumn" : 36,
+            "endLine" : 218,
+            "endColumn" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 219,
+            "startColumn" : 36,
+            "endLine" : 219,
+            "endColumn" : 49
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 220,
+            "startColumn" : 21,
+            "endLine" : 220,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 221,
+            "startColumn" : 28,
+            "endLine" : 221,
+            "endColumn" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 222,
+            "startColumn" : 17,
+            "endLine" : 222,
+            "endColumn" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 223,
+            "startColumn" : 30,
+            "endLine" : 223,
+            "endColumn" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 224,
+            "startColumn" : 30,
+            "endLine" : 224,
+            "endColumn" : 48
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 225,
+            "startColumn" : 30,
+            "endLine" : 225,
+            "endColumn" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 226,
+            "startColumn" : 21,
+            "endLine" : 226,
+            "endColumn" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 227,
+            "startColumn" : 28,
+            "endLine" : 227,
+            "endColumn" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 228,
+            "startColumn" : 20,
+            "endLine" : 228,
+            "endColumn" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 229,
+            "startColumn" : 31,
+            "endLine" : 229,
+            "endColumn" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 230,
+            "startColumn" : 20,
+            "endLine" : 230,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 231,
+            "startColumn" : 32,
+            "endLine" : 231,
+            "endColumn" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 232,
+            "startColumn" : 25,
+            "endLine" : 232,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 233,
+            "startColumn" : 28,
+            "endLine" : 233,
+            "endColumn" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 234,
+            "startColumn" : 18,
+            "endLine" : 234,
+            "endColumn" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 235,
+            "startColumn" : 38,
+            "endLine" : 235,
+            "endColumn" : 49
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 236,
+            "startColumn" : 31,
+            "endLine" : 236,
+            "endColumn" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 237,
+            "startColumn" : 27,
+            "endLine" : 237,
+            "endColumn" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 239,
+            "startColumn" : 12,
+            "endLine" : 239,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 296,
+            "startColumn" : 40,
+            "endLine" : 296,
+            "endColumn" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 109,
+            "startColumn" : 48,
+            "endLine" : 109,
+            "endColumn" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Response.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 110,
+            "startColumn" : 48,
+            "endLine" : 110,
+            "endColumn" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 42,
+            "endLine" : 89,
+            "endColumn" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 90,
+            "startColumn" : 34,
+            "endLine" : 90,
+            "endColumn" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 91,
+            "startColumn" : 21,
+            "endLine" : 91,
+            "endColumn" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 92,
+            "startColumn" : 26,
+            "endLine" : 92,
+            "endColumn" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 93,
+            "startColumn" : 17,
+            "endLine" : 93,
+            "endColumn" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 94,
+            "startColumn" : 20,
+            "endLine" : 94,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 95,
+            "startColumn" : 21,
+            "endLine" : 95,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 96,
+            "startColumn" : 21,
+            "endLine" : 96,
+            "endColumn" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 106,
+            "startColumn" : 13,
+            "endLine" : 106,
+            "endColumn" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/UserIdentity.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 93,
+            "startColumn" : 38,
+            "endLine" : 93,
+            "endColumn" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 187,
+            "startColumn" : 29,
+            "endLine" : 187,
+            "endColumn" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 188,
+            "startColumn" : 23,
+            "endLine" : 188,
+            "endColumn" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 189,
+            "startColumn" : 33,
+            "endLine" : 189,
+            "endColumn" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 190,
+            "startColumn" : 39,
+            "endLine" : 190,
+            "endColumn" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 191,
+            "startColumn" : 25,
+            "endLine" : 191,
+            "endColumn" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 192,
+            "startColumn" : 21,
+            "endLine" : 192,
+            "endColumn" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 193,
+            "startColumn" : 20,
+            "endLine" : 193,
+            "endColumn" : 52
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 194,
+            "startColumn" : 20,
+            "endLine" : 194,
+            "endColumn" : 53
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 195,
+            "startColumn" : 20,
+            "endLine" : 195,
+            "endColumn" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 196,
+            "startColumn" : 20,
+            "endLine" : 196,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 197,
+            "startColumn" : 20,
+            "endLine" : 197,
+            "endColumn" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 198,
+            "startColumn" : 18,
+            "endLine" : 198,
+            "endColumn" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 199,
+            "startColumn" : 22,
+            "endLine" : 199,
+            "endColumn" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 200,
+            "startColumn" : 23,
+            "endLine" : 200,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 201,
+            "startColumn" : 33,
+            "endLine" : 201,
+            "endColumn" : 51
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 202,
+            "startColumn" : 22,
+            "endLine" : 202,
+            "endColumn" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 203,
+            "startColumn" : 26,
+            "endLine" : 203,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 204,
+            "startColumn" : 22,
+            "endLine" : 204,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 205,
+            "startColumn" : 23,
+            "endLine" : 205,
+            "endColumn" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 206,
+            "startColumn" : 22,
+            "endLine" : 206,
+            "endColumn" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 207,
+            "startColumn" : 20,
+            "endLine" : 207,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 208,
+            "startColumn" : 21,
+            "endLine" : 208,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 209,
+            "startColumn" : 17,
+            "endLine" : 209,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 210,
+            "startColumn" : 17,
+            "endLine" : 210,
+            "endColumn" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 211,
+            "startColumn" : 21,
+            "endLine" : 211,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 212,
+            "startColumn" : 21,
+            "endLine" : 212,
+            "endColumn" : 42
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 214,
+            "startColumn" : 39,
+            "endLine" : 214,
+            "endColumn" : 61
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 215,
+            "startColumn" : 48,
+            "endLine" : 215,
+            "endColumn" : 72
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 216,
+            "startColumn" : 48,
+            "endLine" : 216,
+            "endColumn" : 79
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 217,
+            "startColumn" : 57,
+            "endLine" : 217,
+            "endColumn" : 90
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 218,
+            "startColumn" : 48,
+            "endLine" : 218,
+            "endColumn" : 72
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 219,
+            "startColumn" : 57,
+            "endLine" : 219,
+            "endColumn" : 90
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 220,
+            "startColumn" : 46,
+            "endLine" : 220,
+            "endColumn" : 63
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 221,
+            "startColumn" : 38,
+            "endLine" : 221,
+            "endColumn" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 222,
+            "startColumn" : 22,
+            "endLine" : 222,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 223,
+            "startColumn" : 52,
+            "endLine" : 223,
+            "endColumn" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 234,
+            "startColumn" : 49,
+            "endLine" : 234,
+            "endColumn" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 236,
+            "startColumn" : 12,
+            "endLine" : 236,
+            "endColumn" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 241,
+            "startColumn" : 15,
+            "endLine" : 241,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 246,
+            "startColumn" : 12,
+            "endLine" : 246,
+            "endColumn" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 251,
+            "startColumn" : 12,
+            "endLine" : 251,
+            "endColumn" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 256,
+            "startColumn" : 15,
+            "endLine" : 256,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/InetAccessSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 16,
+            "endLine" : 104,
+            "endColumn" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 178,
+            "startColumn" : 12,
+            "endLine" : 178,
+            "endColumn" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 47,
+            "endLine" : 61,
+            "endColumn" : 52
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 165,
+            "startColumn" : 12,
+            "endLine" : 165,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 178,
+            "startColumn" : 12,
+            "endLine" : 178,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1067,
+            "startColumn" : 33,
+            "endLine" : 1067,
+            "endColumn" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/UnreadableSessionDataException.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 12,
+            "endLine" : 54,
+            "endColumn" : 42
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 73,
+            "startColumn" : 23,
+            "endLine" : 73,
+            "endColumn" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 74,
+            "startColumn" : 24,
+            "endLine" : 74,
+            "endColumn" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 75,
+            "startColumn" : 35,
+            "endLine" : 75,
+            "endColumn" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 76,
+            "startColumn" : 35,
+            "endLine" : 76,
+            "endColumn" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 77,
+            "startColumn" : 27,
+            "endLine" : 77,
+            "endColumn" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 82,
+            "startColumn" : 12,
+            "endLine" : 82,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 91,
+            "startColumn" : 12,
+            "endLine" : 91,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 100,
+            "startColumn" : 12,
+            "endLine" : 100,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 109,
+            "startColumn" : 12,
+            "endLine" : 109,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/JSONPojoConvertor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 119,
+            "startColumn" : 12,
+            "endLine" : 119,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1240,
+            "startColumn" : 32,
+            "endLine" : 1240,
+            "endColumn" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1245,
+            "startColumn" : 32,
+            "endLine" : 1245,
+            "endColumn" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/BufferUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1250,
+            "startColumn" : 33,
+            "endLine" : 1250,
+            "endColumn" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 518,
+            "startColumn" : 27,
+            "endLine" : 518,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 529,
+            "startColumn" : 29,
+            "endLine" : 529,
+            "endColumn" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 585,
+            "startColumn" : 30,
+            "endLine" : 585,
+            "endColumn" : 42
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IO.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 586,
+            "startColumn" : 32,
+            "endLine" : 586,
+            "endColumn" : 49
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/InetAddressPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 82,
+            "startColumn" : 12,
+            "endLine" : 82,
+            "endColumn" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/JavaVersion.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 26,
+            "endLine" : 64,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/JavaVersion.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 23,
+            "endLine" : 65,
+            "endColumn" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/JavaVersion.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 23,
+            "endLine" : 66,
+            "endColumn" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/JavaVersion.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 23,
+            "endLine" : 67,
+            "endColumn" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/JavaVersion.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 23,
+            "endLine" : 68,
+            "endColumn" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/JavaVersion.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 13,
+            "endLine" : 70,
+            "endColumn" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 555,
+            "startColumn" : 16,
+            "endLine" : 555,
+            "endColumn" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 726,
+            "startColumn" : 47,
+            "endLine" : 726,
+            "endColumn" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 727,
+            "startColumn" : 47,
+            "endLine" : 727,
+            "endColumn" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 729,
+            "startColumn" : 26,
+            "endLine" : 729,
+            "endColumn" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 730,
+            "startColumn" : 35,
+            "endLine" : 730,
+            "endColumn" : 49
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 731,
+            "startColumn" : 21,
+            "endLine" : 731,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 733,
+            "startColumn" : 32,
+            "endLine" : 733,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 734,
+            "startColumn" : 41,
+            "endLine" : 734,
+            "endColumn" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 735,
+            "startColumn" : 39,
+            "endLine" : 735,
+            "endColumn" : 48
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 737,
+            "startColumn" : 45,
+            "endLine" : 737,
+            "endColumn" : 52
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 738,
+            "startColumn" : 40,
+            "endLine" : 738,
+            "endColumn" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 743,
+            "startColumn" : 18,
+            "endLine" : 743,
+            "endColumn" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 744,
+            "startColumn" : 22,
+            "endLine" : 744,
+            "endColumn" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 745,
+            "startColumn" : 20,
+            "endLine" : 745,
+            "endColumn" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 746,
+            "startColumn" : 21,
+            "endLine" : 746,
+            "endColumn" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 751,
+            "startColumn" : 12,
+            "endLine" : 751,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/QuotedStringTokenizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 350,
+            "startColumn" : 33,
+            "endLine" : 350,
+            "endColumn" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SearchPattern.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 13,
+            "endLine" : 70,
+            "endColumn" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/StringUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 85,
+            "startColumn" : 32,
+            "endLine" : 85,
+            "endColumn" : 42
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Uptime.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 98,
+            "startColumn" : 18,
+            "endLine" : 98,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Uptime.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 100,
+            "startColumn" : 13,
+            "endLine" : 100,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Utf8Appendable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 33,
+            "endLine" : 63,
+            "endColumn" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Utf8Appendable.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 77,
+            "startColumn" : 33,
+            "endLine" : 77,
+            "endColumn" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 215,
+            "startColumn" : 12,
+            "endLine" : 215,
+            "endColumn" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 225,
+            "startColumn" : 12,
+            "endLine" : 225,
+            "endColumn" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 257,
+            "startColumn" : 13,
+            "endLine" : 257,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 279,
+            "startColumn" : 12,
+            "endLine" : 279,
+            "endColumn" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 331,
+            "startColumn" : 12,
+            "endLine" : 331,
+            "endColumn" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 29,
+            "endLine" : 62,
+            "endColumn" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 29,
+            "endLine" : 63,
+            "endColumn" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 29,
+            "endLine" : 64,
+            "endColumn" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 29,
+            "endLine" : 65,
+            "endColumn" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 29,
+            "endLine" : 66,
+            "endColumn" : 41
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 32,
+            "endLine" : 68,
+            "endColumn" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 32,
+            "endLine" : 70,
+            "endColumn" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 32,
+            "endLine" : 72,
+            "endColumn" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 74,
+            "startColumn" : 20,
+            "endLine" : 74,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 76,
+            "startColumn" : 22,
+            "endLine" : 76,
+            "endColumn" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 17,
+            "endLine" : 78,
+            "endColumn" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 80,
+            "startColumn" : 21,
+            "endLine" : 80,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 82,
+            "startColumn" : 21,
+            "endLine" : 82,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 84,
+            "startColumn" : 21,
+            "endLine" : 84,
+            "endColumn" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 12,
+            "endLine" : 89,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Constraint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 99,
+            "startColumn" : 12,
+            "endLine" : 99,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/X509.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 35,
+            "endLine" : 62,
+            "endColumn" : 40
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/X509.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 26,
+            "endLine" : 63,
+            "endColumn" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/X509.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 64,
+            "startColumn" : 31,
+            "endLine" : 64,
+            "endColumn" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/X509.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 31,
+            "endLine" : 65,
+            "endColumn" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ssl/X509.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 12,
+            "endLine" : 67,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/QueuedThreadPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 780,
+            "startColumn" : 28,
+            "endLine" : 780,
+            "endColumn" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/TryExecutor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 17,
+            "endLine" : 79,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 203,
+            "startColumn" : 39,
+            "endLine" : 203,
+            "endColumn" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 204,
+            "startColumn" : 39,
+            "endLine" : 204,
+            "endColumn" : 51
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 205,
+            "startColumn" : 28,
+            "endLine" : 205,
+            "endColumn" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 206,
+            "startColumn" : 26,
+            "endLine" : 206,
+            "endColumn" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 207,
+            "startColumn" : 36,
+            "endLine" : 207,
+            "endColumn" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 224,
+            "startColumn" : 12,
+            "endLine" : 224,
+            "endColumn" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 166,
+            "startColumn" : 13,
+            "endLine" : 166,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}d/QueuedThreadPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 780,
+            "startColumn" : 28,
+            "endLine" : 780,
+            "endColumn" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this static variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/TryExecutor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 79,
+            "startColumn" : 17,
+            "endLine" : 79,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 203,
+            "startColumn" : 39,
+            "endLine" : 203,
+            "endColumn" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 204,
+            "startColumn" : 39,
+            "endLine" : 204,
+            "endColumn" : 51
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 205,
+            "startColumn" : 28,
+            "endLine" : 205,
+            "endColumn" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 206,
+            "startColumn" : 26,
+            "endLine" : 206,
+            "endColumn" : 30
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this variable to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 207,
+            "startColumn" : 36,
+            "endLine" : 207,
+            "endColumn" : 46
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 224,
+            "startColumn" : 12,
+            "endLine" : 224,
+            "endColumn" : 28
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1213",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this constructor to comply with Java Code Conventions."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 166,
+            "startColumn" : 13,
+            "endLine" : 166,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

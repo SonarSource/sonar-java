@@ -1,0 +1,685 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BaseDynaBeanMapDecorator.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 374,
+            "startColumn" : 38,
+            "endLine" : 374,
+            "endColumn" :  ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 437,
+            "startColumn" : 17,
+            "endLine" : 437,
+            "endColumn" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 438,
+            "startColumn" : 17,
+            "endLine" : 438,
+            "endColumn" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 439,
+            "startColumn" : 17,
+            "endLine" : 439,
+            "endColumn" : 68
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 440,
+            "startColumn" : 17,
+            "endLine" : 440,
+            "endColumn" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 441,
+            "startColumn" : 17,
+            "endLine" : 441,
+            "endColumn" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 442,
+            "startColumn" : 17,
+            "endLine" : 442,
+            "endColumn" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 443,
+            "startColumn" : 17,
+            "endLine" : 443,
+            "endColumn" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 444,
+            "startColumn" : 17,
+            "endLine" : 444,
+            "endColumn" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanPropertyValueEqualsPredicate.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 249,
+            "startColumn" : 38,
+            "endLine" : 249,
+            "endColumn" : 81
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DefaultBeanIntrospector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 133,
+            "startColumn" : 65,
+            "endLine" : 134,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DefaultBeanIntrospector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 150,
+            "startColumn" : 66,
+            "endLine" : 151,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 220,
+            "startColumn" : 37,
+            "endLine" : 220,
+            "endColumn" : 54
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 221,
+            "startColumn" : 37,
+            "endLine" : 221,
+            "endColumn" : 54
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaProperty.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 222,
+            "startColumn" : 44,
+            "endLine" : 222,
+            "endColumn" : 68
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 930,
+            "startColumn" : 17,
+            "endLine" : 930,
+            "endColumn" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 931,
+            "startColumn" : 17,
+            "endLine" : 931,
+            "endColumn" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 932,
+            "startColumn" : 17,
+            "endLine" : 932,
+            "endColumn" : 68
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 933,
+            "startColumn" : 17,
+            "endLine" : 933,
+            "endColumn" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 934,
+            "startColumn" : 17,
+            "endLine" : 934,
+            "endColumn" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 935,
+            "startColumn" : 17,
+            "endLine" : 935,
+            "endColumn" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 936,
+            "startColumn" : 17,
+            "endLine" : 936,
+            "endColumn" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 937,
+            "startColumn" : 17,
+            "endLine" : 937,
+            "endColumn" : 60
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaList.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 447,
+            "startColumn" : 20,
+            "endLine" : 447,
+            "endColumn" : 54
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/AbstractConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 141,
+            "startColumn" : 45,
+            "endLine" : 141,
+            "endColumn" : 78
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/AbstractConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 318,
+            "startColumn" : 49,
+            "endLine" : 318,
+            "endColumn" : 81
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S864",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/FloatLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 220,
+            "startColumn" : 65,
+            "endLine" : 220,
+            "endColumn" : 81
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}text" : "Add parentheses to make the operator precedence explicit."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/FloatLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 220,
+            "startColumn" : 65,
+            "endLine" : 220,
+            "endColumn" : 81
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

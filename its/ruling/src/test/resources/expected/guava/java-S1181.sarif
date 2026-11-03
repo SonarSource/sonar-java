@@ -1,0 +1,1218 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/FinalizableReferenceQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 169,
+            "startColumn" : 14,
+            "endLine" : 169,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/FinalizableReferenceQueue.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 205,
+            "startColumn" : 16,
+            "endLine" : 205,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Throwables.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 339,
+            "startColumn" : 14,
+            "endLine" : 339,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/Throwables.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 372,
+            "startColumn" : 14,
+            "endLine" : 372,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/internal/Finalizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 91,
+            "startColumn" : 14,
+            "endLine" : 91,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/internal/Finalizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 165,
+            "startColumn" : 16,
+            "endLine" : 165,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/base/internal/Finalizer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 205,
+            "startColumn" : 14,
+            "endLine" : 205,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1957,
+            "startColumn" : 16,
+            "endLine" : 1957,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2332,
+            "startColumn" : 24,
+            "endLine" : 2332,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2393,
+            "startColumn" : 18,
+            "endLine" : 2393,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 3554,
+            "startColumn" : 16,
+            "endLine" : 3554,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Error."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 4050,
+            "startColumn" : 14,
+            "endLine" : 4050,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/cache/LongAddables.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 14,
+            "endLine" : 44,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ComputingConcurrentHashMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 360,
+            "startColumn" : 16,
+            "endLine" : 360,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/MapMaker.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 854,
+            "startColumn" : 16,
+            "endLine" : 854,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/eventbus/EventBus.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 174,
+            "startColumn" : 14,
+            "endLine" : 174,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/Closer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 215,
+            "startColumn" : 16,
+            "endLine" : 215,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/Closer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 274,
+            "startColumn" : 16,
+            "endLine" : 274,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/Closer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 287,
+            "startColumn" : 16,
+            "endLine" : 287,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/io/FileBackedOutputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 106,
+            "startColumn" : 20,
+            "endLine" : 106,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/primitives/UnsignedBytes.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 452,
+            "startColumn" : 16,
+            "endLine" : 452,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractExecutionThreadService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 24,
+            "endLine" : 61,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractExecutionThreadService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 20,
+            "endLine" : 78,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 14,
+            "endLine" : 114,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 673,
+            "startColumn" : 18,
+            "endLine" : 673,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 680,
+            "startColumn" : 20,
+            "endLine" : 680,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 722,
+            "startColumn" : 16,
+            "endLine" : 722,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractIdleService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 24,
+            "endLine" : 55,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractIdleService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 69,
+            "startColumn" : 24,
+            "endLine" : 69,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractScheduledService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 187,
+            "startColumn" : 18,
+            "endLine" : 187,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractScheduledService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 217,
+            "startColumn" : 20,
+            "endLine" : 217,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractScheduledService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 249,
+            "startColumn" : 20,
+            "endLine" : 249,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractScheduledService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 466,
+            "startColumn" : 18,
+            "endLine" : 466,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractScheduledService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 480,
+            "startColumn" : 18,
+            "endLine" : 480,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 175,
+            "startColumn" : 16,
+            "endLine" : 175,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AbstractService.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 213,
+            "startColumn" : 16,
+            "endLine" : 213,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/AggregateFuture.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 227,
+            "startColumn" : 16,
+            "endLine" : 227,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Futures.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 776,
+            "startColumn" : 16,
+            "endLine" : 776,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Futures.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 787,
+            "startColumn" : 16,
+            "endLine" : 787,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Futures.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1338,
+            "startColumn" : 18,
+            "endLine" : 1338,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Futures.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1406,
+            "startColumn" : 16,
+            "endLine" : 1406,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Error."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Futures.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1763,
+            "startColumn" : 18,
+            "endLine" : 1763,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/FuturesGetChecked.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 192,
+            "startColumn" : 16,
+            "endLine" : 192,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Error."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/JdkFutureAdapters.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 171,
+            "startColumn" : 22,
+            "endLine" : 171,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/JdkFutureAdapters.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 173,
+            "startColumn" : 22,
+            "endLine" : 173,
+            "endColumn" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/Monitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1020,
+            "startColumn" : 14,
+            "endLine" : 1020,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/MoreExecutors.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 653,
+            "startColumn" : 18,
+            "endLine" : 653,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Error."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/SerializingExecutor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 165,
+            "startColumn" : 16,
+            "endLine" : 165,
+            "endColumn" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/TrustedListenableFutureTask.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 107,
+            "startColumn" : 18,
+            "endLine" : 107,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/util/concurrent/UncaughtExceptionHandlers.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 16,
+            "endLine" : 68,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

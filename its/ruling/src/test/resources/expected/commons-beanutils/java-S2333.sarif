@@ -1,0 +1,522 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/Converter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 5,
+            "endLine" : 53,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 5,
+            "endLine" : 46,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 5,
+            "endLine" : 58,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 77,
+            "startColumn" : 5,
+            "endLine" : 77,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 93,
+            "startColumn" : 5,
+            "endLine" : 93,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 102,
+            "startColumn" : 5,
+            "endLine" : 102,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 116,
+            "startColumn" : 5,
+            "endLine" : 116,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 132,
+            "startColumn" : 5,
+            "endLine" : 132,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 151,
+            "startColumn" : 5,
+            "endLine" : 151,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 168,
+            "startColumn" : 5,
+            "endLine" : 168,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 5,
+            "endLine" : 39,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 5,
+            "endLine" : 52,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 66,
+            "startColumn" : 5,
+            "endLine" : 66,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 81,
+            "startColumn" : 5,
+            "endLine" : 81,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MutableDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 5,
+            "endLine" : 47,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MutableDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 5,
+            "endLine" : 62,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MutableDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 81,
+            "startColumn" : 5,
+            "endLine" : 81,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MutableDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 93,
+            "startColumn" : 5,
+            "endLine" : 93,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MutableDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 109,
+            "startColumn" : 5,
+            "endLine" : 109,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MutableDynaClass.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 117,
+            "startColumn" : 5,
+            "endLine" : 117,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S2333",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "\"public\" is redundant in this context."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 5,
+            "endLine" : 46,
+            "endColumn" : 11
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

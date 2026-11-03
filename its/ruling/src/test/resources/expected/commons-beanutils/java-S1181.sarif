@@ -1,0 +1,234 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1057,
+            "startColumn" : 28,
+            "endLine" : 1057,
+            "endColumn" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1116,
+            "startColumn" : 24,
+            "endLine" : 1116,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertingWrapDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 72,
+            "startColumn" : 24,
+            "endLine" : 72,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 142,
+            "startColumn" : 24,
+            "endLine" : 142,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 181,
+            "startColumn" : 24,
+            "endLine" : 181,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 215,
+            "startColumn" : 24,
+            "endLine" : 215,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 286,
+            "startColumn" : 24,
+            "endLine" : 286,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 323,
+            "startColumn" : 24,
+            "endLine" : 323,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1181",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Catch Exception instead of Throwable."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 356,
+            "startColumn" : 24,
+            "endLine" : 356,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}
