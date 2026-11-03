@@ -170,6 +170,7 @@ fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
         "paramTypes": m.signature.as_deref().map(parameter_types),
         "typeVars": m.signature.as_deref().map(|s| type_parameters(s).into_iter().map(|(name, _)| name).collect::<Vec<_>>()),
         "annotations": annotations_json(&m.annotations),
+        "throws": m.exceptions,
       })
     })
     .collect();
