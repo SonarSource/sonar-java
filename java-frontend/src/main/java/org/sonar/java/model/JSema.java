@@ -1202,6 +1202,12 @@ public final class JSema implements Sema {
       method.returnTypeSymbol(primitiveSymbol("void"));
     }
     method.parametrized(id.indexOf('<') >= 0);
+    if (fact != null && fact.get("props") instanceof JsonObject props) {
+      List<String> thrown = strings(props, "thrownTypes");
+      if (!thrown.isEmpty()) {
+        method.thrownTypes(thrown.stream().map(this::typeFromName).toList());
+      }
+    }
   }
 
   private void applyFact(JSymbol symbol, JsonObject fact) {
