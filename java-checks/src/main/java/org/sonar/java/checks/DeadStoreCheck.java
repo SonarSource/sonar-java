@@ -158,7 +158,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
       Symbol symbol = ((IdentifierTree) lhs).symbol();
       if (symbol.isLocalVariable()
         && !out.contains(symbol)
-        && (element.is(Tree.Kind.ASSIGNMENT) || isExpressionValueDiscarded(element))
+        && isExpressionValueDiscarded(element)
         && !UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(symbol.name())) {
         createIssue(element.operatorToken(), element.expression(), symbol);
       }
