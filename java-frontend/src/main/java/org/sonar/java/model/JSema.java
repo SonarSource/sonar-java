@@ -1272,7 +1272,7 @@ public final class JSema implements Sema {
     boolean interfaceKind = "interface".equals(kind) || "annotation".equals(kind);
     symbol.interfaceSymbol(interfaceKind);
     symbol.annotationSymbol("annotation".equals(kind));
-    symbol.enumSymbol("enum".equals(kind));
+    symbol.enumSymbol("enum".equals(kind) || "java.lang.Enum".equals(text(info, "super")));
     if (interfaceKind) {
       List<String> extend = strings(info, "super");
       symbol.interfaceNames(extend.isEmpty() ? strings(info, "interfaces") : extend);
