@@ -76,6 +76,13 @@ class DeadStoreCheckSample {
     };
   }
 
+  IntFunction<Integer> assignment_result_used_in_block_lambda() {
+    return x -> {
+      int y = x = x + 1; // Compliant (The assignment result is used)
+      return y;
+    };
+  }
+
   IntFunction<Integer> dead_store_in_expression_lambda() {
     return x -> x++; // Noncompliant {{Remove this useless assignment to local variable "x".}}
 //              ^^^
@@ -104,6 +111,10 @@ class DeadStoreCheckSample {
 
   IntUnaryOperator prefix_increment_result_lambda = x -> ++x;
   IntUnaryOperator compound_assignment_result_lambda = x -> x += 2;
+  IntUnaryOperator assignment_result_lambda = x -> x = x + 1; // Compliant (The assignment result is used)
+  IntUnaryOperator assignment_result_lambda2 = x -> {
+    return x = x + 1; // Compliant (The assignment result is used)
+  };
 
   Runnable prefix_increment_field_lambda = () -> ++var;
   Runnable compound_assignment_field_lambda = () -> var += 2;
