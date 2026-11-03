@@ -54,7 +54,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION);
+    return List.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
