@@ -32,13 +32,14 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 /**
  * Semantic model of one translated file. Symbols are created from the SemSitter dump and from the
- * {@code types} response (project graph, classpath declarations, embedded JDK table).
+ * {@code types} response (project graph, classpath declarations including the JDK image, embedded JDK table).
  */
 public final class JSema implements Sema {
   private static final String ANNOTATIONS = "annotations";
@@ -55,7 +56,7 @@ public final class JSema implements Sema {
   private final Map<String, JsonObject> facts = new HashMap<>();
   private final Map<String, JsonObject> dumpSymbols = new HashMap<>();
   private final Map<String, JsonObject> typeInfos = new HashMap<>();
-  private final Map<String, List<String>> libraryAnnotations = new HashMap<>();
+  private final Map<String, List<DeclaredAnnotation>> libraryAnnotations = new HashMap<>();
   private final Map<String, JSymbol> symbols = new HashMap<>();
   private final Map<String, JTypeSymbol> typesByName = new HashMap<>();
   private final Map<String, JType> rawTypes = new HashMap<>();
@@ -342,24 +343,100 @@ public final class JSema implements Sema {
   }
 
   List<String> annotationNames(@Nullable String id) {
+    return declaredAnnotations(id).stream().map(DeclaredAnnotation::name).toList();
+  }
+
+  List<DeclaredAnnotation> declaredAnnotations(@Nullable String id) {
     if (id == null) {
       return List.of();
     }
     JsonObject fact = facts.get(id);
-    List<String> annotations = fact == null ? List.of() : strings(fact, ANNOTATIONS);
-    return annotations.isEmpty() ? libraryAnnotations.getOrDefault(id, List.of()) : annotations;
+    List<String> fromFact = fact == null ? List.of() : strings(fact, ANNOTATIONS);
+    if (!fromFact.isEmpty()) {
+      return fromFact.stream().map(name -> new DeclaredAnnotation(erase(name), List.of())).toList();
+    }
+    return libraryAnnotations.getOrDefault(id, List.of());
   }
 
   /** Annotations and deprecation a {@code types} answer gives a library type or member. */
   private void libraryAnnotations(JSymbol symbol, String id, JsonObject info) {
-    List<String> annotations = strings(info, ANNOTATIONS);
+    List<DeclaredAnnotation> annotations = readAnnotations(info);
     if (annotations.isEmpty()) {
       return;
     }
     libraryAnnotations.put(id, annotations);
-    if (annotations.contains("java.lang.Deprecated")) {
+    if (annotations.stream().anyMatch(annotation -> "java.lang.Deprecated".equals(annotation.name()))) {
       symbol.deprecated(true);
     }
+  }
+
+  private List<DeclaredAnnotation> readAnnotations(JsonObject info) {
+    if (!info.has(ANNOTATIONS) || !info.get(ANNOTATIONS).isJsonArray()) {
+      return List.of();
+    }
+    List<DeclaredAnnotation> annotations = new ArrayList<>();
+    for (JsonElement element : info.getAsJsonArray(ANNOTATIONS)) {
+      if (element.isJsonPrimitive()) {
+        annotations.add(new DeclaredAnnotation(element.getAsString(), List.of()));
+      } else if (element.isJsonObject()) {
+        JsonObject annotation = element.getAsJsonObject();
+        String name = text(annotation, "name");
+        if (name != null) {
+          annotations.add(new DeclaredAnnotation(name, readAnnotationValues(annotation.get("values"))));
+        }
+      }
+    }
+    return annotations;
+  }
+
+  private List<SymbolMetadata.AnnotationValue> readAnnotationValues(@Nullable JsonElement element) {
+    if (!(element instanceof JsonArray array)) {
+      return List.of();
+    }
+    List<SymbolMetadata.AnnotationValue> values = new ArrayList<>();
+    for (JsonElement item : array) {
+      if (item.isJsonObject()) {
+        JsonObject value = item.getAsJsonObject();
+        String name = text(value, "name");
+        values.add(new AnnotationValueImpl(name == null ? "value" : name, readAnnotationElement(value)));
+      }
+    }
+    return values;
+  }
+
+  @Nullable
+  private Object readAnnotationElement(JsonObject value) {
+    String kind = text(value, "kind");
+    JsonElement raw = value.get("value");
+    if (kind == null) {
+      return null;
+    }
+    return switch (kind) {
+      case "boolean" -> Boolean.valueOf(raw != null && raw.isJsonPrimitive() && raw.getAsBoolean());
+      case "byte" -> raw == null || !raw.isJsonPrimitive() ? null : Byte.valueOf(raw.getAsByte());
+      case "short" -> raw == null || !raw.isJsonPrimitive() ? null : Short.valueOf(raw.getAsShort());
+      case "int" -> raw == null || !raw.isJsonPrimitive() ? null : Integer.valueOf(raw.getAsInt());
+      case "long" -> raw == null || !raw.isJsonPrimitive() ? null : Long.valueOf(raw.getAsLong());
+      case "float" -> raw == null || !raw.isJsonPrimitive() ? null : Float.valueOf(raw.getAsFloat());
+      case "double" -> raw == null || !raw.isJsonPrimitive() ? null : Double.valueOf(raw.getAsDouble());
+      case "char" -> raw == null || !raw.isJsonPrimitive() ? null : Character.valueOf((char) raw.getAsInt());
+      case "string", "class" -> raw == null || !raw.isJsonPrimitive() ? null : raw.getAsString();
+      case "enum" -> text(value, "const");
+      case "array" -> readAnnotationArray(raw);
+      case "annotation" -> raw != null && raw.isJsonObject() ? text(raw.getAsJsonObject(), "name") : null;
+      default -> null;
+    };
+  }
+
+  private Object[] readAnnotationArray(@Nullable JsonElement element) {
+    if (!(element instanceof JsonArray array)) {
+      return new Object[0];
+    }
+    List<Object> values = new ArrayList<>();
+    for (JsonElement item : array) {
+      values.add(item.isJsonObject() ? readAnnotationElement(item.getAsJsonObject()) : null);
+    }
+    return values.toArray();
   }
 
   /**
@@ -1503,5 +1580,8 @@ public final class JSema implements Sema {
   }
 
   private record MemberId(String owner, String name, @Nullable String params, boolean arityOnly, int arity) {
+  }
+
+  record DeclaredAnnotation(String name, List<SymbolMetadata.AnnotationValue> values) {
   }
 }
