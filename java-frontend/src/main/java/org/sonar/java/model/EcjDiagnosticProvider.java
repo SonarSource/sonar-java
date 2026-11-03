@@ -58,7 +58,7 @@ final class EcjDiagnosticProvider {
     for (JProblem.Type type : JProblem.Type.values()) {
       if (problem.getID() == IDS.get(type)) {
         LineColumnConverter.Pos start = positions.toPos(problem.getSourceStart());
-        LineColumnConverter.Pos end = positions.toPos(problem.getSourceStart());
+        LineColumnConverter.Pos end = positions.toPos(problem.getSourceEnd());
         return new JWarning(problem.getMessage(), type, start.line(), start.columnOffset(), end.line(), end.columnOffset());
       }
     }
