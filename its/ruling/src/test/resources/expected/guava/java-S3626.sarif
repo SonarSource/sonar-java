@@ -17,7 +17,7 @@
       "kind" : "fail",
       "level" : "warning",
       "message" : {
-        "text" : "Remove this redundant continue."
+        "text" : "Remove this redundant jump."
       },
       "locations" : [ {
         "id" : -1,
@@ -41,7 +41,7 @@
       "kind" : "fail",
       "level" : "warning",
       "message" : {
-        "text" : "Remove this redundant continue."
+        "text" : "Remove this redundant jump."
       },
       "locations" : [ {
         "id" : -1,
