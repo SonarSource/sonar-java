@@ -22,8 +22,9 @@
 use std::collections::{BTreeSet, HashMap, VecDeque};
 
 use serde_json::{Map, Value, json};
-use udg_family_jvm::external::classpath::classfile::{Annotation, Element};
-use udg_family_jvm::external::classpath::{ClasspathIndex, ClasspathType};
+use udg_family_jvm::external::classpath::{
+  Annotation, ClasspathDeclaration, ClasspathIndex, ClasspathType, ConstantValue, ElementValue,
+};
 use udg_family_jvm::external::jdk_table::{JdkMemberKind, JdkType, jdk_type, parameter_type_variables};
 
 const ACC_STATIC: u16 = 0x0008;
@@ -97,7 +98,7 @@ pub fn lookup(
       continue;
     }
     let info = project_type(&name, project, facts)
-      .or_else(|| classpath.get(&name).map(|ty| classpath_type(&name, ty)))
+      .or_else(|| classpath.get(&name).map(|ty| classpath_type(&name, ty, classpath.declaration(&name))))
       .or_else(|| jdk_type(&name).map(jdk_type_info));
     let Some(info) = info else {
       continue;
@@ -149,13 +150,16 @@ fn project_type(name: &str, project: &ProjectTypes, facts: &HashMap<String, Valu
   }))
 }
 
-fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
+fn classpath_type(name: &str, ty: &ClasspathType, declaration: Option<&ClasspathDeclaration>) -> Value {
   let parameters = ty.signature.as_deref().map(type_parameters).unwrap_or_default();
+  let no_annotations: &[Annotation] = &[];
+  let no_throws: &[String] = &[];
   let mut members: Vec<Value> = ty
     .methods
     .iter()
     .map(|m| {
       let returned = m.signature.as_deref().and_then(|s| class_return_parameter(s, &parameters));
+      let declared = declaration.and_then(|facts| facts.methods.get(&(m.name.clone(), m.descriptor.clone())));
       json!({
         "k": "m",
         "name": m.name,
@@ -170,13 +174,14 @@ fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
         "paramVars": m.signature.as_deref().map(|s| parameter_variables(s, &parameters)),
         "paramTypes": m.signature.as_deref().map(parameter_types),
         "typeVars": m.signature.as_deref().map(|s| type_parameters(s).into_iter().map(|(name, _)| name).collect::<Vec<_>>()),
-        "annotations": annotations_json(&m.annotations),
-        "throws": m.exceptions,
+        "annotations": annotations_json(declared.map(|facts| facts.annotations.as_slice()).unwrap_or(no_annotations)),
+        "throws": declared.map(|facts| facts.exceptions.as_slice()).unwrap_or(no_throws),
       })
     })
     .collect();
   members.extend(ty.fields.iter().filter_map(|f| {
     let desc = field_descriptor(f.declared_type.as_ref()?);
+    let declared = declaration.and_then(|facts| facts.fields.get(&f.name));
     Some(json!({
       "k": "f",
       "name": f.name,
@@ -185,17 +190,18 @@ fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
       "final": f.access_flags & ACC_FINAL != 0,
       "enum": f.access_flags & ACC_ENUM != 0,
       "vis": access_visibility(f.access_flags),
-      "constant": f.constant_string,
-      "annotations": annotations_json(&f.annotations),
+      "constant": f.constant.as_ref().and_then(ConstantValue::as_string),
+      "annotations": annotations_json(declared.map(|facts| facts.annotations.as_slice()).unwrap_or(no_annotations)),
     }))
   }));
+  let flags = declaration.map(|facts| facts.access_flags).unwrap_or(0);
   let mut info = json!({
     "origin": "classpath",
     "kind": classpath_kind(ty),
     "super": ty.super_class,
     "interfaces": ty.interfaces,
-    "modifiers": classpath_modifiers(ty.access_flags),
-    "annotations": annotations_json(&ty.annotations),
+    "modifiers": classpath_modifiers(flags),
+    "annotations": annotations_json(declaration.map(|facts| facts.annotations.as_slice()).unwrap_or(no_annotations)),
     "typeParameters": parameters.len(),
     "typeVars": parameters.iter().map(|(name, _)| name).collect::<Vec<_>>(),
     "members": members,
@@ -234,25 +240,25 @@ fn annotations_json(annotations: &[Annotation]) -> Value {
 fn annotation_json(annotation: &Annotation) -> Value {
   json!({
     "name": annotation.name,
-    "values": annotation.pairs.iter().map(|(name, value)| element_json(name, value)).collect::<Vec<_>>(),
+    "values": annotation.elements.iter().map(|(name, value)| element_json(name, value)).collect::<Vec<_>>(),
   })
 }
 
-fn element_json(name: &str, value: &Element) -> Value {
+fn element_json(name: &str, value: &ElementValue) -> Value {
   match value {
-    Element::Boolean(value) => json!({"name": name, "kind": "boolean", "value": value}),
-    Element::Byte(value) => json!({"name": name, "kind": "byte", "value": value}),
-    Element::Char(value) => json!({"name": name, "kind": "char", "value": value}),
-    Element::Short(value) => json!({"name": name, "kind": "short", "value": value}),
-    Element::Int(value) => json!({"name": name, "kind": "int", "value": value}),
-    Element::Long(value) => json!({"name": name, "kind": "long", "value": value}),
-    Element::Float(bits) => json!({"name": name, "kind": "float", "value": f32::from_bits(*bits)}),
-    Element::Double(bits) => json!({"name": name, "kind": "double", "value": f64::from_bits(*bits)}),
-    Element::String(value) => json!({"name": name, "kind": "string", "value": value}),
-    Element::Class(value) => json!({"name": name, "kind": "class", "value": value}),
-    Element::Enum { type_name, const_name } => json!({"name": name, "kind": "enum", "type": type_name, "const": const_name}),
-    Element::Annotation(annotation) => json!({"name": name, "kind": "annotation", "value": annotation_json(annotation)}),
-    Element::Array(items) => json!({
+    ElementValue::Constant(ConstantValue::Boolean(value)) => json!({"name": name, "kind": "boolean", "value": value}),
+    ElementValue::Constant(ConstantValue::Byte(value)) => json!({"name": name, "kind": "byte", "value": value}),
+    ElementValue::Constant(ConstantValue::Char(value)) => json!({"name": name, "kind": "char", "value": value}),
+    ElementValue::Constant(ConstantValue::Short(value)) => json!({"name": name, "kind": "short", "value": value}),
+    ElementValue::Constant(ConstantValue::Int(value)) => json!({"name": name, "kind": "int", "value": value}),
+    ElementValue::Constant(ConstantValue::Long(value)) => json!({"name": name, "kind": "long", "value": value}),
+    ElementValue::Constant(ConstantValue::Float(value)) => json!({"name": name, "kind": "float", "value": value}),
+    ElementValue::Constant(ConstantValue::Double(value)) => json!({"name": name, "kind": "double", "value": value}),
+    ElementValue::Constant(ConstantValue::String(value)) => json!({"name": name, "kind": "string", "value": value}),
+    ElementValue::Class(value) => json!({"name": name, "kind": "class", "value": value}),
+    ElementValue::Enum { type_name, constant } => json!({"name": name, "kind": "enum", "type": type_name, "const": constant}),
+    ElementValue::Annotation(annotation) => json!({"name": name, "kind": "annotation", "value": annotation_json(annotation)}),
+    ElementValue::Array(items) => json!({
       "name": name,
       "kind": "array",
       "value": items.iter().map(|item| element_json("value", item)).collect::<Vec<_>>(),
