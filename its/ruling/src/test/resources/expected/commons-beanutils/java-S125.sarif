@@ -1,0 +1,1434 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 661,
+            "startColumn" : 15,
+            "endLine" : 661,
+            "endColumn" : 74
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 270,
+            "startColumn" : 19,
+            "endLine" : 270,
+            "endColumn" : 51
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 489,
+            "startColumn" : 23,
+            "endLine" : 489,
+            "endColumn" : 54
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MappedPropertyDescriptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 487,
+            "startColumn" : 24,
+            "endLine" : 487,
+            "endColumn" : 99
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 314,
+            "startColumn" : 19,
+            "endLine" : 314,
+            "endColumn" : 51
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/AbstractConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 7,
+            "endLine" : 65,
+            "endColumn" : 98
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/BaseLocaleConverter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 227,
+            "startColumn" : 16,
+            "endLine" : 227,
+            "endColumn" : 79
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanComparatorTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 187,
+            "startColumn" : 14,
+            "endLine" : 187,
+            "endColumn" : 92
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanMapTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 9,
+            "endLine" : 56,
+            "endColumn" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanMapTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 173,
+            "startColumn" : 11,
+            "endLine" : 173,
+            "endColumn" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 919,
+            "startColumn" : 9,
+            "endLine" : 919,
+            "endColumn" : 79
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1046,
+            "startColumn" : 9,
+            "endLine" : 1046,
+            "endColumn" : 79
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1069,
+            "startColumn" : 9,
+            "endLine" : 1069,
+            "endColumn" : 79
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1104,
+            "startColumn" : 9,
+            "endLine" : 1104,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 144,
+            "startColumn" : 11,
+            "endLine" : 144,
+            "endColumn" : 82
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 529,
+            "startColumn" : 27,
+            "endLine" : 529,
+            "endColumn" : 72
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 967,
+            "startColumn" : 9,
+            "endLine" : 967,
+            "endColumn" : 79
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1032,
+            "startColumn" : 9,
+            "endLine" : 1032,
+            "endColumn" : 79
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1055,
+            "startColumn" : 9,
+            "endLine" : 1055,
+            "endColumn" : 79
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1090,
+            "startColumn" : 9,
+            "endLine" : 1090,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaBeanTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 194,
+            "startColumn" : 11,
+            "endLine" : 194,
+            "endColumn" : 79
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaMapTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 97,
+            "startColumn" : 11,
+            "endLine" : 97,
+            "endColumn" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 4320,
+            "startColumn" : 18,
+            "endLine" : 4320,
+            "endColumn" : 36
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 4452,
+            "startColumn" : 16,
+            "endLine" : 4452,
+            "endColumn" : 98
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSetMetaData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 131,
+            "startColumn" : 11,
+            "endLine" : 131,
+            "endColumn" : 61
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/WrapDynaBeanTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 230,
+            "startColumn" : 24,
+            "endLine" : 230,
+            "endColumn" : 71
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/WrapDynaBeanTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 243,
+            "startColumn" : 24,
+            "endLine" : 243,
+            "endColumn" : 73
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira347TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 118,
+            "startColumn" : 16,
+            "endLine" : 118,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira347TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 122,
+            "startColumn" : 12,
+            "endLine" : 122,
+            "endColumn" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira347TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 135,
+            "startColumn" : 11,
+            "endLine" : 135,
+            "endColumn" : 63
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira347TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 137,
+            "startColumn" : 11,
+            "endLine" : 137,
+            "endColumn" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira347TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 148,
+            "startColumn" : 11,
+            "endLine" : 148,
+            "endColumn" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira357TestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 94,
+            "startColumn" : 11,
+            "endLine" : 94,
+            "endColumn" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ArrayConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 306,
+            "startColumn" : 24,
+            "endLine" : 306,
+            "endColumn" : 73
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ClassConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 134,
+            "startColumn" : 12,
+            "endLine" : 134,
+            "endColumn" : 117
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 150,
+            "startColumn" : 11,
+            "endLine" : 150,
+            "endColumn" : 82
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 137,
+            "startColumn" : 9,
+            "endLine" : 137,
+            "endColumn" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 160,
+            "startColumn" : 10,
+            "endLine" : 160,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 387,
+            "startColumn" : 10,
+            "endLine" : 387,
+            "endColumn" : 67
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 461,
+            "startColumn" : 9,
+            "endLine" : 461,
+            "endColumn" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 470,
+            "startColumn" : 9,
+            "endLine" : 470,
+            "endColumn" : 77
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 510,
+            "startColumn" : 9,
+            "endLine" : 510,
+            "endColumn" : 63
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/BaseLocaleConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 109,
+            "startColumn" : 16,
+            "endLine" : 109,
+            "endColumn" : 106
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/BaseLocaleConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 129,
+            "startColumn" : 16,
+            "endLine" : 129,
+            "endColumn" : 80
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/BigDecimalLocaleConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 107,
+            "startColumn" : 11,
+            "endLine" : 107,
+            "endColumn" : 125
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/BigIntegerLocaleConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 108,
+            "startColumn" : 11,
+            "endLine" : 108,
+            "endColumn" : 125
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/ByteLocaleConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 111,
+            "startColumn" : 11,
+            "endLine" : 111,
+            "endColumn" : 125
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 242,
+            "startColumn" : 11,
+            "endLine" : 242,
+            "endColumn" : 119
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/DoubleLocaleConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 105,
+            "startColumn" : 11,
+            "endLine" : 105,
+            "endColumn" : 126
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/FloatLocaleConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 111,
+            "startColumn" : 11,
+            "endLine" : 111,
+            "endColumn" : 126
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/IntegerLocaleConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 11,
+            "endLine" : 104,
+            "endColumn" : 125
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/LongLocaleConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 11,
+            "endLine" : 104,
+            "endColumn" : 125
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/ShortLocaleConverterTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 11,
+            "endLine" : 104,
+            "endColumn" : 125
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 139,
+            "startColumn" : 12,
+            "endLine" : 139,
+            "endColumn" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 336,
+            "startColumn" : 12,
+            "endLine" : 336,
+            "endColumn" : 78
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 513,
+            "startColumn" : 11,
+            "endLine" : 513,
+            "endColumn" : 63
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 515,
+            "startColumn" : 11,
+            "endLine" : 515,
+            "endColumn" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 526,
+            "startColumn" : 11,
+            "endLine" : 526,
+            "endColumn" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S125",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "This block of commented-out lines of code should be removed."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 545,
+            "startColumn" : 9,
+            "endLine" : 545,
+            "endColumn" : 84
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

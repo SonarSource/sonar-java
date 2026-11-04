@@ -1,0 +1,162 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1161",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add the \"@Override\" annotation above this method signature"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/EmptyContiguousSet.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 167,
+            "startColumn" : 25,
+            "endLine" : 167,
+            "endColumn" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1161",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add the \"@Override\" annotation above this method signature"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 358,
+            "startColumn" : 12,
+            "endLine" : 358,
+            "endColumn" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1161",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add the \"@Override\" annotation above this method signature"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 406,
+            "startColumn" : 10,
+            "endLine" : 406,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1161",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add the \"@Override\" annotation above this method signature"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/reflect/Parameter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 37,
+            "endLine" : 89,
+            "endColumn" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1161",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add the \"@Override\" annotation above this method signature"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/reflect/Parameter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 106,
+            "startColumn" : 35,
+            "endLine" : 106,
+            "endColumn" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1161",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Add the \"@Override\" annotation above this method signature"
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/reflect/Parameter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 119,
+            "startColumn" : 7,
+            "endLine" : 119,
+            "endColumn" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}
