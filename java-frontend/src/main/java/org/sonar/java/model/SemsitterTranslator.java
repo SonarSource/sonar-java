@@ -2381,6 +2381,9 @@ final class SemsitterTranslator {
     ascribe(identifier, identifierType(symbol));
     if (tree instanceof ClassTreeImpl classTree && symbol instanceof Symbol.TypeSymbol typeSymbol) {
       classTree.typeSymbol = typeSymbol;
+      if (symbol instanceof JSymbol nested && ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.STATIC) && !nested.isStatic()) {
+        nested.addModifiers(List.of("static"));
+      }
     } else if (tree instanceof MethodTreeImpl method && symbol instanceof Symbol.MethodSymbol methodSymbol) {
       method.methodSymbol = methodSymbol;
     } else if (tree instanceof VariableTreeImpl variable && symbol instanceof Symbol.VariableSymbol variableSymbol) {
