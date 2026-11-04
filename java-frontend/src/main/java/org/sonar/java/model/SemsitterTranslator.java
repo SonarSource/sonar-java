@@ -1644,16 +1644,19 @@ final class SemsitterTranslator {
     Type receiver = qualifier == null ? currentType() : qualifier.symbolType();
     String target = (name == null ? node : name).valueTarget();
     boolean arityOnly = target != null && ARITY_ONLY.matcher(target).matches();
+    List<Type> arguments = argumentTypes(tree.arguments());
     if (identifier.symbol().isUnknown() || arityOnly) {
       Symbol.MethodSymbol method = arityOnly
-        ? sema.declaredMethod(JSema.erase(target.substring(0, target.indexOf('#'))), identifier.name(), argumentTypes(tree.arguments()))
-        : libraryMethod(qualifier, identifier.name(), argumentTypes(tree.arguments()));
+        ? sema.declaredMethod(JSema.erase(target.substring(0, target.indexOf('#'))), identifier.name(), arguments)
+        : libraryMethod(qualifier, identifier.name(), arguments);
       if (method != null) {
         identifier.symbol = method;
       }
+    } else if (identifier.symbol() instanceof Symbol.MethodSymbol bound) {
+      identifier.symbol = sema.preferOverload(bound, libraryMethod(qualifier, identifier.name(), arguments), arguments);
     }
     if (identifier.symbol instanceof JMethodSymbol method) {
-      List<Type> parameters = sema.invocationParameters(method, receiver, argumentTypes(tree.arguments()));
+      List<Type> parameters = sema.invocationParameters(method, receiver, arguments);
       ascribeArguments(method, parameters, tree.arguments());
       Type returned = sema.invocationReturn(method, receiver);
       JMethodSymbol view = sema.invocationView(method, receiver, parameters, returned);
