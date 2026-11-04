@@ -397,9 +397,9 @@ final class SemsitterTranslator {
       name = new MemberSelectExpressionTreeImpl(name, token(lastKeyword(node, ".")), new IdentifierTreeImpl(token(star)));
     } else if (name instanceof MemberSelectExpressionTree select) {
       if (staticToken == null) {
-        singleImports.put(select.identifier().name(), dottedName(name));
+        singleImports.putIfAbsent(select.identifier().name(), dottedName(name));
       } else {
-        staticImports.put(select.identifier().name(), dottedName(select.expression()));
+        staticImports.putIfAbsent(select.identifier().name(), dottedName(select.expression()));
       }
     }
     return new JavaTree.ImportTreeImpl(token(required(node, "import")), staticToken, optionalToken(node, "module"), name, token(required(node, ";")));
@@ -1333,6 +1333,7 @@ final class SemsitterTranslator {
       }
     }
     if (!naming && "type_identifier".equals(node.k())) {
+      preferSingleImport(identifier);
       recoverType(identifier);
     }
     return identifier;
@@ -1368,6 +1369,23 @@ final class SemsitterTranslator {
       JTypeSymbol recovered = sema.recoveredType(identifier.name());
       identifier.symbol = recovered;
       ascribe(identifier, recovered.type());
+    }
+  }
+
+  /** A duplicate single-type import is an error; recovery keeps the first, which is the type this simple name denotes. */
+  private void preferSingleImport(IdentifierTreeImpl identifier) {
+    String imported = singleImports.get(identifier.name());
+    if (imported == null || !sema.declaresType(imported)) {
+      return;
+    }
+    Symbol symbol = identifier.symbol();
+    boolean constructor = symbol.isMethodSymbol() && "<init>".equals(symbol.name());
+    if (!symbol.isTypeSymbol() && !symbol.isUnknown() && !constructor) {
+      return;
+    }
+    String resolved = identifier.symbolType().erasure().fullyQualifiedName();
+    if (!imported.equals(resolved)) {
+      bindType(identifier, imported);
     }
   }
 
@@ -1666,6 +1684,16 @@ final class SemsitterTranslator {
     String target = (name == null ? node : name).valueTarget();
     boolean arityOnly = target != null && ARITY_ONLY.matcher(target).matches();
     List<Type> arguments = argumentTypes(tree.arguments());
+    if (qualifier == null && staticImports.containsKey(identifier.name())) {
+      boolean declaredHere = types.stream().filter(type -> !type.isUnknown())
+        .anyMatch(type -> sema.declaredMethod(type.type().fullyQualifiedName(), identifier.name(), arguments) != null);
+      if (!declaredHere) {
+        Symbol.MethodSymbol imported = sema.declaredMethod(staticImports.get(identifier.name()), identifier.name(), arguments);
+        if (imported != null) {
+          identifier.symbol = imported;
+        }
+      }
+    }
     if (identifier.symbol().isUnknown() || arityOnly) {
       Symbol.MethodSymbol method = arityOnly
         ? sema.declaredMethod(JSema.erase(target.substring(0, target.indexOf('#'))), identifier.name(), arguments)
@@ -1727,10 +1755,13 @@ final class SemsitterTranslator {
     if (!(tree.getConstructorIdentifier() instanceof IdentifierTreeImpl identifier)) {
       return;
     }
+    String imported = singleImports.get(identifier.name());
     String constructor = typeNode == null ? null : typeNode.valueTarget();
     if (constructor != null) {
       Symbol resolved = sema.resolve(constructor);
-      if (resolved instanceof Symbol.MethodSymbol method) {
+      String owner = resolved.owner() == null || resolved.owner().type() == null ? "" : resolved.owner().type().erasure().fullyQualifiedName();
+      boolean importedElsewhere = imported != null && sema.declaresType(imported) && !imported.equals(owner);
+      if (resolved instanceof Symbol.MethodSymbol method && !importedElsewhere) {
         identifier.symbol = resolved;
         recordUse(resolved, identifier);
         ascribeArguments(method, tree.arguments());
@@ -1738,6 +1769,10 @@ final class SemsitterTranslator {
       }
     }
     Type type = tree.identifier().symbolType().erasure();
+    if (imported != null && sema.declaresType(imported) && !imported.equals(type.fullyQualifiedName())) {
+      type = sema.getClassType(imported);
+      bindType(identifier, imported);
+    }
     String owner = tree.classBody() != null && type.symbol().isInterface() ? "java.lang.Object" : type.fullyQualifiedName();
     Symbol.MethodSymbol declared = type.isClass() ? sema.declaredMethod(owner, "<init>", argumentTypes(tree.arguments())) : null;
     if (declared != null) {
