@@ -122,6 +122,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
 import org.sonar.plugins.java.api.tree.ModuleDirectiveTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
@@ -1916,7 +1917,8 @@ final class SemsitterTranslator {
     if (!(tree.getConstructorIdentifier() instanceof IdentifierTreeImpl identifier)) {
       return;
     }
-    String imported = singleImports.get(identifier.name());
+    TypeTree written = tree.identifier() instanceof ParameterizedTypeTree parameterized ? parameterized.type() : tree.identifier();
+    String imported = written instanceof MemberSelectExpressionTree ? null : singleImports.get(identifier.name());
     String constructor = typeNode == null ? null : typeNode.valueTarget();
     if (constructor != null) {
       Symbol resolved = sema.resolve(constructor);
