@@ -356,7 +356,7 @@
           <artifactId>license-maven-plugin</artifactId>
           <configuration>
             <licenseMerges combine.children="append">
-              <licenseMerge>bsd|The BSD 2-Clause License</licenseMerge>
+              <licenseMerge>bsd|The BSD 2-Clause License|0BSD|Zero-Clause BSD</licenseMerge>
             </licenseMerges>
           </configuration>
         </plugin>

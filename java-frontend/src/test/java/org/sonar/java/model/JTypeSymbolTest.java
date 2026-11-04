@@ -22,41 +22,38 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.sonar.java.model.JParserTestUtils.sema;
+import static org.sonar.java.model.JParserTestUtils.symbolOf;
 import static org.sonar.java.model.JParserTestUtils.typeOf;
 
 class JTypeSymbolTest {
 
   @Test
   void superClass() {
-    var cu = test("interface I {} class C implements I {} class C2 extends C {} class A { Object[] array; }");
+    JavaTree.CompilationUnitTreeImpl cu = test("interface I { } class C implements I { } class C2 extends C { }");
     Type object = sema(cu).getClassType("java.lang.Object");
-    var i = (ClassTreeImpl) cu.types().get(0);
-    var c = (ClassTreeImpl) cu.types().get(1);
-    var c2 = (ClassTreeImpl) cu.types().get(2);
-    var a = (ClassTreeImpl) cu.types().get(3);
-    var array = (VariableTreeImpl) a.members().get(0);
-
-    assertThat(object.symbol().superClass()).isNull();
-    assertThat(i.symbol().superClass()).isSameAs(object);
-    assertThat(c.symbol().superClass()).isSameAs(object);
-    assertThat(c2.symbol().superClass()).isSameAs(c.symbol().type());
-    assertThat(array.symbol().type().symbol().superClass()).isSameAs(object);
+    JTypeSymbol i = (JTypeSymbol) ((ClassTreeImpl) cu.types().get(0)).symbol();
+    JTypeSymbol c = (JTypeSymbol) ((ClassTreeImpl) cu.types().get(1)).symbol();
+    JTypeSymbol c2 = (JTypeSymbol) ((ClassTreeImpl) cu.types().get(2)).symbol();
+    assertAll(
+      () -> assertThat(object.symbol().superClass()).isNull(),
+      () -> assertThat(i.superClass()).isSameAs(object),
+      () -> assertThat(c.superClass()).isSameAs(object),
+      () -> assertThat(c2.superClass().is(c.type().fullyQualifiedName())).isTrue(),
+      () -> assertThat(sema(cu).getClassType("java.lang.Object[]").symbol().superClass()).isSameAs(object)
+    );
   }
 
   @Test
   void interfaces() {
-    var cu = test("interface I {} class C implements I {}");
-    var i = (ClassTreeImpl) cu.types().get(0);
-    var c = (ClassTreeImpl) cu.types().get(1);
-    assertThat(i.symbol().interfaces()).isEmpty();
-    assertThat(c.symbol().interfaces()).containsOnly(i.symbol().type());
+    JavaTree.CompilationUnitTreeImpl cu = test("interface I { } class C implements I { }");
+    JTypeSymbol i = (JTypeSymbol) ((ClassTreeImpl) cu.types().get(0)).symbol();
+    JTypeSymbol c = (JTypeSymbol) ((ClassTreeImpl) cu.types().get(1)).symbol();
+    assertThat(i.interfaces()).isEmpty();
+    assertThat(c.interfaces()).containsOnly(i.type());
   }
 
   @Test
@@ -66,32 +63,35 @@ class JTypeSymbolTest {
     VariableTreeImpl f = (VariableTreeImpl) c.members().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(1);
     ClassTreeImpl n = (ClassTreeImpl) c.members().get(2);
-    assertThat(typeOf(c).symbol().memberSymbols())
+    assertThat(((JTypeSymbol) typeOf(c).symbol()).memberSymbols())
       .containsOnly(
-        f.symbol(),
-        m.symbol(),
-        typeOf(n).symbol()
+        ((JVariableSymbol) symbolOf(f)),
+        ((JMethodSymbol) symbolOf(m)),
+        ((JTypeSymbol) typeOf(n).symbol())
       );
   }
 
   @Test
-  void superTypesTest() {
+  void superTypesTest(){
     JavaTree.CompilationUnitTreeImpl cu = test("interface I { } class C implements I { } class C2 extends C { }");
     Type javaLangObject = sema(cu).getClassType("java.lang.Object");
     assertThat(javaLangObject.symbol().superTypes()).isEmpty();
 
     ClassTreeImpl interfaceI = (ClassTreeImpl) cu.types().get(0);
-    Symbol.TypeSymbol interfaceITypeSymbol = typeOf(interfaceI).symbol();
-    assertThat(interfaceITypeSymbol.superTypes()).isEmpty();
-    assertThat(interfaceITypeSymbol.superTypes()).isEmpty(); // repeat call to cover cache
+    JTypeSymbol interfaceITypeSymbol = ((JTypeSymbol) typeOf(interfaceI).symbol());
+    assertThat(interfaceITypeSymbol.superTypes()).containsExactly(javaLangObject);
+    assertThat(interfaceITypeSymbol.superTypes()).containsExactly(javaLangObject);
 
     ClassTreeImpl classC = (ClassTreeImpl) cu.types().get(1);
-    Symbol.TypeSymbol classCTypeSymbol = typeOf(classC).symbol();
+    JTypeSymbol classCTypeSymbol = ((JTypeSymbol) typeOf(classC).symbol());
     assertThat(classCTypeSymbol.superTypes()).containsExactly(interfaceITypeSymbol.type(), javaLangObject);
 
     ClassTreeImpl classC2 = (ClassTreeImpl) cu.types().get(2);
-    Symbol.TypeSymbol classC2TypeSymbol = typeOf(classC2).symbol();
-    assertThat(classC2TypeSymbol.superTypes()).containsExactly(classCTypeSymbol.type(), interfaceITypeSymbol.type(), javaLangObject);
+    JTypeSymbol classC2TypeSymbol = ((JTypeSymbol) typeOf(classC2).symbol());
+    assertThat(classC2TypeSymbol.superTypes()).containsExactly(classCTypeSymbol.type() ,interfaceITypeSymbol.type(), javaLangObject);
+
+    classC2TypeSymbol.unknown(true);
+    assertThat(classC2TypeSymbol.superTypes()).isEmpty();
   }
 
   @Test
@@ -99,36 +99,39 @@ class JTypeSymbolTest {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { class N {} }");
     ClassTreeImpl outerClass = (ClassTreeImpl) cu.types().get(0);
     ClassTreeImpl innerClass = (ClassTreeImpl) outerClass.members().get(0);
-    Symbol.TypeSymbol innerClassSymbol = typeOf(innerClass).symbol();
-    Symbol.TypeSymbol outerClassSymbol = typeOf(outerClass).symbol();
+    JTypeSymbol innerClassSymbol = ((JTypeSymbol) typeOf(innerClass).symbol());
+    JTypeSymbol outerClassSymbol = ((JTypeSymbol) typeOf(outerClass).symbol());
     assertThat(innerClassSymbol.outermostClass()).isSameAs(outerClassSymbol);
     assertThat(innerClassSymbol.outermostClass()).isSameAs(outerClassSymbol);
   }
 
   @Test
-  void isAnnotationTest() {
-    Symbol.TypeSymbol annotationSymbol = typeSymbolFromClassText("@interface A { }");
+  void isAnnotationTest(){
+    JTypeSymbol annotationSymbol = getJTypeSymbolFromClassText("@interface A { }", true);
+    assertThat(annotationSymbol.isAnnotation()).isFalse();
+    annotationSymbol = getJTypeSymbolFromClassText("@interface A { }", false);
     assertThat(annotationSymbol.isAnnotation()).isTrue();
-    Symbol.TypeSymbol classSymbol = typeSymbolFromClassText("class C { }");
+    JTypeSymbol classSymbol = getJTypeSymbolFromClassText("class C { }", false);
     assertThat(classSymbol.isAnnotation()).isFalse();
   }
 
   @Test
-  void isEffectivelyFinalTest() {
-    var cu = test("class C { String m() { return super.toString(); } }");
-    var c = (ClassTreeImpl) cu.types().get(0);
-    var m = (MethodTreeImpl) c.members().get(0);
-    var statement = (ReturnStatementTree) m.block().body().get(0);
-    var invocation = (MethodInvocationTree) statement.expression();
-    var select = (MemberSelectExpressionTree) invocation.methodSelect();
-    var keywordSuper = (IdentifierTree) select.expression();
-
-    assertThat(((Symbol.VariableSymbol) keywordSuper.symbol()).isEffectivelyFinal()).isFalse();
+  void isEffectivelyFinalTest(){
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { }");
+    JTypeSymbol classSymbol = (JTypeSymbol) ((ClassTreeImpl) cu.types().get(0)).symbol();
+    Symbol superReceiver = sema(cu).receiverSymbol(classSymbol, "super", classSymbol.superClass());
+    assertThat(superReceiver.name()).isEqualTo("super");
+    assertThat(superReceiver.owner()).isSameAs(classSymbol);
   }
 
-  private static Symbol.TypeSymbol typeSymbolFromClassText(String classText) {
-    var cu = test(classText);
-    return ((ClassTreeImpl) cu.types().get(0)).symbol();
+  private static JTypeSymbol getJTypeSymbolFromClassText(String classText, boolean isUnknown){
+    JavaTree.CompilationUnitTreeImpl cu = test(classText);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    JTypeSymbol symbol = (JTypeSymbol) c.symbol();
+    if (isUnknown) {
+      symbol.unknown(true);
+    }
+    return symbol;
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {

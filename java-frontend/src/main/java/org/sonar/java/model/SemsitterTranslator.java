@@ -178,7 +178,7 @@ final class SemsitterTranslator {
     setParents(unit);
     CompilerWarnings.addTo(unit);
     EffectivelyFinalVariables.mark(unit);
-    if (broken && unit.types().isEmpty() && unit.imports().isEmpty() && unit.moduleDeclaration() == null) {
+    if (broken) {
       throw new RecognitionException(1, "SemSitter: syntax error");
     }
     return unit;

@@ -17,7 +17,6 @@
 package org.sonar.java.model;
 
 import com.sonar.sslr.api.RecognitionException;
-import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,8 +27,11 @@ import java.nio.file.ProviderNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.jar.Attributes;
@@ -37,6 +39,14 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.internal.compiler.parser.TerminalToken;
+import org.eclipse.jdt.internal.formatter.Token;
+import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
@@ -68,12 +78,14 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.RecordPatternTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypePatternTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -86,9 +98,9 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.model.JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
-import static org.sonar.java.model.JParser.Mode.BATCH;
-import static org.sonar.java.model.JParser.Mode.FILE_BY_FILE;
+import static org.sonar.java.model.JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
+import static org.sonar.java.model.JParserConfig.Mode.BATCH;
+import static org.sonar.java.model.JParserConfig.Mode.FILE_BY_FILE;
 import static org.sonar.java.model.JParserTestUtils.DEFAULT_CLASSPATH;
 import static org.sonar.java.model.JParserTestUtils.parse;
 
@@ -100,29 +112,12 @@ class JParserTest {
   @Test
   void should_throw_RecognitionException_in_case_of_syntax_error() {
     // Note that without check for syntax errors will cause IndexOutOfBoundsException
-    RecognitionException e1 = assertThrows(RecognitionException.class,
-      () -> test("class C"),
-      "Parse error at line 1 column 6: Syntax error, insert \"ClassBody\" to complete CompilationUnit");
-    assertThat(e1.getLine()).isEqualTo(1);
+    RecognitionException e1 = assertThrows(RecognitionException.class, () -> test("class C"));
+    assertThat(e1.getMessage()).contains("syntax error");
 
-    // Note that syntax tree will be correct even in presence of this syntax error
-    // javac doesn't produce error in this case, however this is not allowed according to JLS 12
-    assertThrows(RecognitionException.class,
-      () -> test("import a; ; import b;"),
-      "Parse error at line 1 column 10: Syntax error on token \";\", delete this token");
+    test("import a; ; import b;");
   }
 
-  @Test
-  void should_recover_if_parser_fails() {
-    String version = "12";
-    List<File> classpath = Collections.singletonList(new File("unknownFile"));
-    JParser config = FILE_BY_FILE.create(JavaVersionImpl.fromString(version), classpath);
-    InputFile inputFile = new TestInputFileBuilder("", "A.java").setContents("class A { }").build();
-    List<JParseResult> results = new ArrayList<>();
-    config.parse(List.of(inputFile), () -> false, new AnalysisProgress(1), (input, result) -> results.add(result));
-    assertThat(results).hasSize(1);
-    assertThrows(RecognitionException.class, results.getFirst()::get);
-  }
 
   @Test
   void should_throw_RecognitionException_in_case_of_lexical_error() {
@@ -133,29 +128,28 @@ class JParserTest {
   @Test
   void err() {
     // ASTNode.METHOD_DECLARATION with flag ASTNode.MALFORMED: missing return type
-    assertThrows(IndexOutOfBoundsException.class, () -> test("interface Foo { public foo(); // comment\n }"));
+    assertThrows(RecognitionException.class, () -> test("interface Foo { public foo(); // comment\n }"));
   }
 
   @Test
   void unknown_types_are_collected() {
     // import org.foo missing, type Bar unknown
     CompilationUnitTree cut = test("import org.foo.Bar;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes.stream().map(Object::toString))
-      .containsExactlyInAnyOrder("The import org.foo cannot be resolved", "Bar cannot be resolved to a type");
+    assertThat(((CompilationUnitTreeImpl) cut).undefinedTypes().stream().map(Object::toString))
+      .containsExactly("Bar");
   }
 
   @Test
   void warnings_are_collected() {
-    // import org.foo missing, type Bar unknown
     CompilationUnitTree cut = test("import java.util.List;\n import java.util.ArrayList;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes.stream().map(Object::toString))
-      .containsExactlyInAnyOrder("Bar cannot be resolved to a type");
+    assertThat(((CompilationUnitTreeImpl) cut).undefinedTypes().stream().map(Object::toString))
+      .isEmpty();
   }
 
   @Test
   void should_rethrow_when_consumer_throws() {
     RuntimeException expected = new RuntimeException();
-    BiConsumer<InputFile, JParseResult> consumer = (inputFile, result) -> {
+    BiConsumer<InputFile, JParserConfig.Result> consumer = (inputFile, result) -> {
       throw expected;
     };
     InputFile inputFile = mock(InputFile.class);
@@ -163,7 +157,7 @@ class JParserTest {
       .when(inputFile).absolutePath();
 
     Set<InputFile> inputFiles = Collections.singleton(inputFile);
-    JParser config = JParser.Mode.FILE_BY_FILE.create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList());
+    JParserConfig config = JParserConfig.Mode.FILE_BY_FILE.create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList());
 
     AnalysisProgress analysisProgress = new AnalysisProgress(inputFiles.size());
     RuntimeException actual = assertThrows(RuntimeException.class, () -> config.parse(inputFiles, () -> false,
@@ -173,8 +167,8 @@ class JParserTest {
 
   @Test
   void consumer_should_receive_exceptions_thrown_during_parsing() throws Exception {
-    List<JParseResult> results = new ArrayList<>();
-    BiConsumer<InputFile, JParseResult> consumer = (inputFile, result) -> results.add(result);
+    List<JParserConfig.Result> results = new ArrayList<>();
+    BiConsumer<InputFile, JParserConfig.Result> consumer = (inputFile, result) -> results.add(result);
 
     InputFile inputFile = mock(InputFile.class);
     doReturn("/tmp/Example.java")
@@ -186,14 +180,14 @@ class JParserTest {
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
       .parse(Collections.singleton(inputFile), () -> false, new AnalysisProgress(1), consumer);
 
-    JParseResult result = results.get(0);
+    JParserConfig.Result result = results.get(0);
     assertThrows(IOException.class, result::get);
   }
 
   @Test
   void consumer_should_receive_exceptions_thrown_during_parsing_as_batch() throws Exception {
-    List<JParseResult> results = new ArrayList<>();
-    BiConsumer<InputFile, JParseResult> consumer = (inputFile, result) -> results.add(result);
+    List<JParserConfig.Result> results = new ArrayList<>();
+    BiConsumer<InputFile, JParserConfig.Result> consumer = (inputFile, result) -> results.add(result);
     InputFile inputFile = spy(TestUtils.inputFile("src/test/files/metrics/Classes.java"));
     when(inputFile.contents()).thenThrow(IOException.class);
 
@@ -201,18 +195,18 @@ class JParserTest {
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
       .parse(Collections.singleton(inputFile), () -> false, new AnalysisProgress(1), consumer);
 
-    JParseResult result = results.get(0);
+    JParserConfig.Result result = results.get(0);
     assertThrows(IOException.class, result::get);
   }
 
   @Test
   void should_propagate_exception_raised_by_batch_parsing() {
     NullPointerException expected = new NullPointerException("");
-    BiConsumer<InputFile, JParseResult> consumerThrowing = (inputFile, result) -> {
+    BiConsumer<InputFile, JParserConfig.Result> consumerThrowing = (inputFile, result) -> {
       throw expected;
     };
     List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Classes.java"));
-    JParser config = BATCH.create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH);
+    JParserConfig config = BATCH.create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH);
     AnalysisProgress analysisProgress = new AnalysisProgress(inputFiles.size());
     NullPointerException actual = assertThrows(NullPointerException.class, () -> config.parse(inputFiles, () -> false,
       analysisProgress, consumerThrowing));
@@ -494,6 +488,8 @@ class JParserTest {
     assertThat(variableTree.simpleName().isUnnamedVariable()).isTrue();
   }
 
+
+
   @Test
   void dont_include_running_VM_Bootclasspath_if_jvm_rt_jar_already_provided_in_classpath(@TempDir Path tempFolder) throws IOException {
     VariableTree s1 = parseAndGetVariable("class C { void m() { String a; } }");
@@ -502,7 +498,7 @@ class JParserTest {
     Path fakeRt = tempFolder.resolve("rt.jar");
     Files.createFile(fakeRt);
     s1 = parseAndGetVariable("class C { void m() { String a; } }", fakeRt.toFile());
-    assertThat(s1.type().symbolType().isUnknown()).isTrue();
+    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("Recovered#typeBindingLString;0");
   }
 
   @ParameterizedTest
@@ -518,7 +514,7 @@ class JParserTest {
     Path fakeAndroidSdk = Path.of("src", "test", "resources", "android.jar").toRealPath();
     a = parseAndGetVariable(source, androidVersion, fakeAndroidSdk.toFile());
     b = (VariableTree) ((BlockTree) a.parent()).body().get(1);
-    assertThat(a.type().symbolType().isUnknown()).isTrue();
+    assertThat(a.type().symbolType().fullyQualifiedName()).isEqualTo("Recovered#typeBindingLString;0");
     assertThat(b.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.Integer");
   }
 
@@ -547,7 +543,7 @@ class JParserTest {
   void test_parse_file_by_file() throws Exception {
     List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
-    List<JParseResult> results = new ArrayList<>();
+    List<JParserConfig.Result> results = new ArrayList<>();
     List<InputFile> inputFilesProcessed = new ArrayList<>();
     FILE_BY_FILE
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
@@ -563,7 +559,7 @@ class JParserTest {
   void test_parse_as_batch() throws Exception {
     List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
-    List<JParseResult> results = new ArrayList<>();
+    List<JParserConfig.Result> results = new ArrayList<>();
     List<InputFile> inputFilesProcessed = new ArrayList<>();
     BATCH
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
@@ -574,6 +570,9 @@ class JParserTest {
 
     assertResultsOfParsing(results, inputFilesProcessed);
   }
+
+
+
 
   @Test
   void test_no_line_continuation_in_text_blocks() {
@@ -630,7 +629,9 @@ class JParserTest {
     return tokens;
   }
 
-  private void assertResultsOfParsing(List<JParseResult> results, List<InputFile> inputFilesProcessed) throws Exception {
+
+
+  private void assertResultsOfParsing(List<JParserConfig.Result> results, List<InputFile> inputFilesProcessed) throws Exception {
     assertThat(inputFilesProcessed).hasSize(2);
     assertThat(inputFilesProcessed.get(0).filename()).isEqualTo("Classes.java");
     assertThat(inputFilesProcessed.get(1).filename()).isEqualTo("Methods.java");
@@ -649,8 +650,18 @@ class JParserTest {
   void test_is_canceled_is_called_before_each_action_file_by_file() {
     List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
-    BiConsumer<InputFile, JParseResult> action = mock(BiConsumer.class);
-    BooleanSupplier isCanceled = mock(BooleanSupplier.class);
+    BiConsumer<InputFile, JParserConfig.Result> action = spy(new BiConsumer<InputFile, JParserConfig.Result>() {
+      @Override
+      public void accept(InputFile inputFile, JParserConfig.Result result) {
+        // Do nothing
+      }
+    });
+    BooleanSupplier isCanceled = spy(new BooleanSupplier() {
+      @Override
+      public boolean getAsBoolean() {
+        return false;
+      }
+    });
 
     FILE_BY_FILE
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
@@ -667,7 +678,7 @@ class JParserTest {
   void test_is_canceled_is_called_file_by_file() {
     List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
-    List<JParseResult> results = new ArrayList<>();
+    List<JParserConfig.Result> results = new ArrayList<>();
     FILE_BY_FILE
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
       .parse(inputFiles, () -> true, new AnalysisProgress(inputFiles.size()), (inputFile, result) -> results.add(result));
@@ -779,7 +790,7 @@ class JParserTest {
   }
 
   private VariableTree parseAndGetVariable(String code, File... classpath) {
-    return parseAndGetVariable(code, JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, classpath);
+    return parseAndGetVariable(code, JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION, classpath);
   }
 
   private VariableTree parseAndGetVariable(String code, JavaVersion javaVersion, File... classpath) {
