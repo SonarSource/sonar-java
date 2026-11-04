@@ -1,0 +1,4890 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/MinioController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 15,
+            "endLine" : 54,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/MinioController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 80,
+            "startColumn" : 11,
+            "endLine" : 80,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/MinioController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 113,
+            "startColumn" : 11,
+            "endLine" : 113,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsBrandController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 11,
+            "endLine" : 43,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsBrandController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 11,
+            "endLine" : 58,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsBrandController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 71,
+            "startColumn" : 11,
+            "endLine" : 71,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsBrandController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 101,
+            "startColumn" : 11,
+            "endLine" : 101,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsBrandController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 11,
+            "endLine" : 114,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsBrandController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 127,
+            "startColumn" : 11,
+            "endLine" : 127,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductAttributeCategoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 11,
+            "endLine" : 34,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductAttributeCategoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 11,
+            "endLine" : 46,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductAttributeCategoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 11,
+            "endLine" : 58,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductAttributeController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 11,
+            "endLine" : 51,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductAttributeController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 11,
+            "endLine" : 63,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductAttributeController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 83,
+            "startColumn" : 11,
+            "endLine" : 83,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductCategoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 11,
+            "endLine" : 36,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductCategoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 11,
+            "endLine" : 50,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductCategoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 80,
+            "startColumn" : 11,
+            "endLine" : 80,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductCategoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 92,
+            "startColumn" : 11,
+            "endLine" : 92,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductCategoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 11,
+            "endLine" : 104,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 36,
+            "startColumn" : 11,
+            "endLine" : 36,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 11,
+            "endLine" : 56,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 88,
+            "startColumn" : 11,
+            "endLine" : 88,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 101,
+            "startColumn" : 11,
+            "endLine" : 101,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 11,
+            "endLine" : 114,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 127,
+            "startColumn" : 11,
+            "endLine" : 127,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 140,
+            "startColumn" : 11,
+            "endLine" : 140,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/PmsSkuStockController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 10,
+            "endLine" : 39,
+            "endColumn" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsAdminController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 151,
+            "startColumn" : 11,
+            "endLine" : 151,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsAdminController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 153,
+            "startColumn" : 11,
+            "endLine" : 153,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsAdminController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 155,
+            "startColumn" : 11,
+            "endLine" : 155,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsAdminController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 157,
+            "startColumn" : 11,
+            "endLine" : 157,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsMenuController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 35,
+            "startColumn" : 11,
+            "endLine" : 35,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsMenuController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 48,
+            "startColumn" : 11,
+            "endLine" : 48,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsMenuController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 11,
+            "endLine" : 68,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsMenuController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 98,
+            "startColumn" : 11,
+            "endLine" : 98,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsResourceCategoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 40,
+            "startColumn" : 11,
+            "endLine" : 40,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsResourceCategoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 53,
+            "startColumn" : 11,
+            "endLine" : 53,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsResourceCategoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 11,
+            "endLine" : 65,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsResourceController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 11,
+            "endLine" : 38,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsResourceController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 11,
+            "endLine" : 52,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/controller/UmsResourceController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 73,
+            "startColumn" : 11,
+            "endLine" : 73,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderReturnApplyServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 54,
+            "startColumn" : 10,
+            "endLine" : 54,
+            "endColumn" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderReturnApplyServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 10,
+            "endLine" : 61,
+            "endColumn" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderReturnApplyServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 10,
+            "endLine" : 68,
+            "endColumn" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/OssServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 83,
+            "startColumn" : 5,
+            "endLine" : 83,
+            "endColumn" : 10
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductAttributeServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 10,
+            "endLine" : 50,
+            "endColumn" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductAttributeServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 83,
+            "startColumn" : 14,
+            "endLine" : 83,
+            "endColumn" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductAttributeServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 86,
+            "startColumn" : 10,
+            "endLine" : 86,
+            "endColumn" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductAttributeServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 14,
+            "endLine" : 89,
+            "endColumn" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductCategoryServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 87,
+            "startColumn" : 10,
+            "endLine" : 87,
+            "endColumn" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductCategoryServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 144,
+            "startColumn" : 11,
+            "endLine" : 144,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductCategoryServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 149,
+            "startColumn" : 15,
+            "endLine" : 149,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 321,
+            "startColumn" : 11,
+            "endLine" : 321,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeAdvertiseServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 77,
+            "startColumn" : 15,
+            "endLine" : 77,
+            "endColumn" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeAdvertiseServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 83,
+            "startColumn" : 15,
+            "endLine" : 83,
+            "endColumn" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 115,
+            "startColumn" : 11,
+            "endLine" : 115,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 177,
+            "startColumn" : 10,
+            "endLine" : 177,
+            "endColumn" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 181,
+            "startColumn" : 14,
+            "endLine" : 181,
+            "endColumn" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsMenuServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 11,
+            "endLine" : 39,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsMenuServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 15,
+            "endLine" : 44,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/log/WebLogAspect.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 121,
+            "startColumn" : 11,
+            "endLine" : 121,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/log/WebLogAspect.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 123,
+            "startColumn" : 11,
+            "endLine" : 123,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-common/src/main/java/com/macro/mall/common/util/RequestUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 19,
+            "endLine" : 32,
+            "endColumn" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-demo/src/main/java/com/macro/mall/demo/controller/DemoController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 11,
+            "endLine" : 47,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-demo/src/main/java/com/macro/mall/demo/controller/DemoController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 11,
+            "endLine" : 63,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-demo/src/main/java/com/macro/mall/demo/controller/DemoController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 11,
+            "endLine" : 78,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 557,
+            "startColumn" : 15,
+            "endLine" : 557,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 618,
+            "startColumn" : 15,
+            "endLine" : 618,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsMemberReportExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 688,
+            "startColumn" : 15,
+            "endLine" : 688,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 497,
+            "startColumn" : 15,
+            "endLine" : 497,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 357,
+            "startColumn" : 15,
+            "endLine" : 357,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 557,
+            "startColumn" : 15,
+            "endLine" : 557,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 628,
+            "startColumn" : 15,
+            "endLine" : 628,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1128,
+            "startColumn" : 15,
+            "endLine" : 1128,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 357,
+            "startColumn" : 15,
+            "endLine" : 357,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 557,
+            "startColumn" : 15,
+            "endLine" : 557,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 628,
+            "startColumn" : 15,
+            "endLine" : 628,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 868,
+            "startColumn" : 15,
+            "endLine" : 868,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCartItemExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1339,
+            "startColumn" : 15,
+            "endLine" : 1339,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCompanyAddressExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 847,
+            "startColumn" : 15,
+            "endLine" : 847,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2989,
+            "startColumn" : 15,
+            "endLine" : 2989,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderItemExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1518,
+            "startColumn" : 15,
+            "endLine" : 1518,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderOperateHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 558,
+            "startColumn" : 15,
+            "endLine" : 558,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnApplyExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1949,
+            "startColumn" : 15,
+            "endLine" : 1949,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnReasonExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 488,
+            "startColumn" : 15,
+            "endLine" : 488,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 537,
+            "startColumn" : 15,
+            "endLine" : 537,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 567,
+            "startColumn" : 15,
+            "endLine" : 567,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumPicExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 367,
+            "startColumn" : 15,
+            "endLine" : 367,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsBrandExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 817,
+            "startColumn" : 15,
+            "endLine" : 817,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1078,
+            "startColumn" : 15,
+            "endLine" : 1078,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentReplayExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 628,
+            "startColumn" : 15,
+            "endLine" : 628,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsFeightTemplateExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 678,
+            "startColumn" : 15,
+            "endLine" : 678,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsMemberPriceExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 488,
+            "startColumn" : 15,
+            "endLine" : 488,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 427,
+            "startColumn" : 15,
+            "endLine" : 427,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 917,
+            "startColumn" : 15,
+            "endLine" : 917,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeValueExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 427,
+            "startColumn" : 15,
+            "endLine" : 427,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryAttributeRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 357,
+            "startColumn" : 15,
+            "endLine" : 357,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 877,
+            "startColumn" : 15,
+            "endLine" : 877,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 2579,
+            "startColumn" : 15,
+            "endLine" : 2579,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductFullReductionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 418,
+            "startColumn" : 15,
+            "endLine" : 418,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductLadderExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 478,
+            "startColumn" : 15,
+            "endLine" : 478,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductOperateLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 909,
+            "startColumn" : 15,
+            "endLine" : 909,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductVertifyRecordExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 558,
+            "startColumn" : 15,
+            "endLine" : 558,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/PmsSkuStockExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 868,
+            "startColumn" : 15,
+            "endLine" : 868,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1289,
+            "startColumn" : 15,
+            "endLine" : 1289,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 868,
+            "startColumn" : 15,
+            "endLine" : 868,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductCategoryRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 497,
+            "startColumn" : 15,
+            "endLine" : 497,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 497,
+            "startColumn" : 15,
+            "endLine" : 497,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 575,
+            "startColumn" : 15,
+            "endLine" : 575,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 618,
+            "startColumn" : 15,
+            "endLine" : 618,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionProductRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 658,
+            "startColumn" : 15,
+            "endLine" : 658,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionSessionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 575,
+            "startColumn" : 15,
+            "endLine" : 575,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeAdvertiseExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 938,
+            "startColumn" : 15,
+            "endLine" : 938,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeBrandExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 487,
+            "startColumn" : 15,
+            "endLine" : 487,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeNewProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 487,
+            "startColumn" : 15,
+            "endLine" : 487,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendProductExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 487,
+            "startColumn" : 15,
+            "endLine" : 487,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendSubjectExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 487,
+            "startColumn" : 15,
+            "endLine" : 487,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 838,
+            "startColumn" : 15,
+            "endLine" : 838,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminLoginLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 568,
+            "startColumn" : 15,
+            "endLine" : 568,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminPermissionRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 417,
+            "startColumn" : 15,
+            "endLine" : 417,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminRoleRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 357,
+            "startColumn" : 15,
+            "endLine" : 357,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsGrowthChangeHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 678,
+            "startColumn" : 15,
+            "endLine" : 678,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationChangeHistoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 678,
+            "startColumn" : 15,
+            "endLine" : 678,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationConsumeSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 477,
+            "startColumn" : 15,
+            "endLine" : 477,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1425,
+            "startColumn" : 15,
+            "endLine" : 1425,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLevelExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 978,
+            "startColumn" : 15,
+            "endLine" : 978,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLoginLogExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 628,
+            "startColumn" : 15,
+            "endLine" : 628,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberMemberTagRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 357,
+            "startColumn" : 15,
+            "endLine" : 357,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberProductCategoryRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 357,
+            "startColumn" : 15,
+            "endLine" : 357,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberReceiveAddressExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 847,
+            "startColumn" : 15,
+            "endLine" : 847,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberRuleSettingExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 598,
+            "startColumn" : 15,
+            "endLine" : 598,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberStatisticsInfoExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 1139,
+            "startColumn" : 15,
+            "endLine" : 1139,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTagExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 428,
+            "startColumn" : 15,
+            "endLine" : 428,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTaskExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 487,
+            "startColumn" : 15,
+            "endLine" : 487,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMenuExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 748,
+            "startColumn" : 15,
+            "endLine" : 748,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsPermissionExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 818,
+            "startColumn" : 15,
+            "endLine" : 818,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceCategoryExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 428,
+            "startColumn" : 15,
+            "endLine" : 428,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 568,
+            "startColumn" : 15,
+            "endLine" : 568,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 618,
+            "startColumn" : 15,
+            "endLine" : 618,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleMenuRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 357,
+            "startColumn" : 15,
+            "endLine" : 357,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRolePermissionRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 357,
+            "startColumn" : 15,
+            "endLine" : 357,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleResourceRelationExample.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 357,
+            "startColumn" : 15,
+            "endLine" : 357,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/MemberAttentionController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 31,
+            "startColumn" : 10,
+            "endLine" : 31,
+            "endColumn" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/MemberAttentionController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 10,
+            "endLine" : 43,
+            "endColumn" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/MemberProductCollectionController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 32,
+            "startColumn" : 11,
+            "endLine" : 32,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/MemberProductCollectionController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 44,
+            "startColumn" : 11,
+            "endLine" : 44,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/MemberReadHistoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 34,
+            "startColumn" : 11,
+            "endLine" : 34,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/controller/MemberReadHistoryController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 46,
+            "startColumn" : 11,
+            "endLine" : 46,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/AlipayServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 11,
+            "endLine" : 65,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/AlipayServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 11,
+            "endLine" : 78,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/AlipayServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 89,
+            "startColumn" : 14,
+            "endLine" : 89,
+            "endColumn" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/AlipayServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 92,
+            "startColumn" : 11,
+            "endLine" : 92,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/AlipayServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 117,
+            "startColumn" : 11,
+            "endLine" : 117,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/AlipayServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 125,
+            "startColumn" : 11,
+            "endLine" : 125,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/AlipayServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 157,
+            "startColumn" : 11,
+            "endLine" : 157,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/MemberAttentionServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 18,
+            "endLine" : 51,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsCartItemServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 11,
+            "endLine" : 49,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 133,
+            "startColumn" : 11,
+            "endLine" : 133,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 148,
+            "startColumn" : 11,
+            "endLine" : 148,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 154,
+            "startColumn" : 15,
+            "endLine" : 154,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 175,
+            "startColumn" : 11,
+            "endLine" : 175,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 182,
+            "startColumn" : 11,
+            "endLine" : 182,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 417,
+            "startColumn" : 10,
+            "endLine" : 417,
+            "endColumn" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 450,
+            "startColumn" : 11,
+            "endLine" : 450,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 635,
+            "startColumn" : 11,
+            "endLine" : 635,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 639,
+            "startColumn" : 11,
+            "endLine" : 639,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 677,
+            "startColumn" : 19,
+            "endLine" : 677,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 681,
+            "startColumn" : 11,
+            "endLine" : 681,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 689,
+            "startColumn" : 19,
+            "endLine" : 689,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPromotionServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 15,
+            "endLine" : 58,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPromotionServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 78,
+            "startColumn" : 18,
+            "endLine" : 78,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPromotionServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 81,
+            "startColumn" : 15,
+            "endLine" : 81,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPromotionServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 101,
+            "startColumn" : 18,
+            "endLine" : 101,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPromotionServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 15,
+            "endLine" : 104,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPromotionServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 134,
+            "startColumn" : 15,
+            "endLine" : 134,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 11,
+            "endLine" : 63,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 11,
+            "endLine" : 65,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 11,
+            "endLine" : 67,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCouponServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 96,
+            "startColumn" : 11,
+            "endLine" : 96,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCouponServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 134,
+            "startColumn" : 18,
+            "endLine" : 134,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCouponServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 137,
+            "startColumn" : 14,
+            "endLine" : 137,
+            "endColumn" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCouponServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 147,
+            "startColumn" : 18,
+            "endLine" : 147,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCouponServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 150,
+            "startColumn" : 14,
+            "endLine" : 150,
+            "endColumn" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCouponServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 160,
+            "startColumn" : 18,
+            "endLine" : 160,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCouponServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 167,
+            "startColumn" : 10,
+            "endLine" : 167,
+            "endColumn" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 176,
+            "startColumn" : 11,
+            "endLine" : 176,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-search/src/main/java/com/macro/mall/search/controller/EsProductController.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 11,
+            "endLine" : 62,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 11,
+            "endLine" : 114,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 138,
+            "startColumn" : 10,
+            "endLine" : 138,
+            "endColumn" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 141,
+            "startColumn" : 10,
+            "endLine" : 141,
+            "endColumn" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 144,
+            "startColumn" : 10,
+            "endLine" : 144,
+            "endColumn" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 220,
+            "startColumn" : 10,
+            "endLine" : 220,
+            "endColumn" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-security/src/main/java/com/macro/mall/security/aspect/RedisCacheAspect.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 39,
+            "startColumn" : 11,
+            "endLine" : 39,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-security/src/main/java/com/macro/mall/security/aspect/RedisCacheAspect.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 15,
+            "endLine" : 43,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-security/src/main/java/com/macro/mall/security/component/DynamicAuthorizationManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 14,
+            "endLine" : 68,
+            "endColumn" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-security/src/main/java/com/macro/mall/security/component/DynamicAuthorizationManager.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 71,
+            "startColumn" : 10,
+            "endLine" : 71,
+            "endColumn" : 14
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-security/src/main/java/com/macro/mall/security/util/JwtTokenUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 68,
+            "startColumn" : 11,
+            "endLine" : 68,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-security/src/main/java/com/macro/mall/security/util/JwtTokenUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 82,
+            "startColumn" : 11,
+            "endLine" : 82,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"catch\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-security/src/main/java/com/macro/mall/security/util/JwtTokenUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 115,
+            "startColumn" : 11,
+            "endLine" : 115,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-security/src/main/java/com/macro/mall/security/util/JwtTokenUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 131,
+            "startColumn" : 11,
+            "endLine" : 131,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-security/src/main/java/com/macro/mall/security/util/JwtTokenUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 172,
+            "startColumn" : 11,
+            "endLine" : 172,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1108",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Move this \"else\" keyword to a new dedicated line."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "mall:mall-security/src/main/java/com/macro/mall/security/util/JwtTokenUtil.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 193,
+            "startColumn" : 11,
+            "endLine" : 193,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}
