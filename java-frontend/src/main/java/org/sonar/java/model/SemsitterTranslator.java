@@ -1866,6 +1866,9 @@ final class SemsitterTranslator {
     } else if (identifier.symbol() instanceof Symbol.MethodSymbol bound) {
       identifier.symbol = sema.preferOverload(bound, libraryMethod(qualifier, identifier.name(), arguments), arguments);
     }
+    if (identifier.symbol instanceof JMethodSymbol method && !method.isUnknown() && !JSema.arityMatches(method, arguments.size())) {
+      identifier.symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
+    }
     if (identifier.symbol instanceof JMethodSymbol method) {
       List<Type> parameters = sema.invocationParameters(method, receiver, arguments);
       ascribeArguments(method, parameters, tree.arguments());
@@ -1924,7 +1927,7 @@ final class SemsitterTranslator {
       Symbol resolved = sema.resolve(constructor);
       String owner = resolved.owner() == null || resolved.owner().type() == null ? "" : resolved.owner().type().erasure().fullyQualifiedName();
       boolean importedElsewhere = imported != null && sema.declaresType(imported) && !imported.equals(owner);
-      if (resolved instanceof Symbol.MethodSymbol method && !importedElsewhere) {
+      if (resolved instanceof Symbol.MethodSymbol method && !importedElsewhere && JSema.arityMatches(method, tree.arguments().size())) {
         identifier.symbol = resolved;
         recordUse(resolved, identifier);
         ascribeArguments(method, tree.arguments());
@@ -1938,7 +1941,7 @@ final class SemsitterTranslator {
     }
     String owner = tree.classBody() != null && type.symbol().isInterface() ? "java.lang.Object" : type.fullyQualifiedName();
     Symbol.MethodSymbol declared = type.isClass() ? sema.declaredMethod(owner, "<init>", argumentTypes(tree.arguments())) : null;
-    if (declared != null) {
+    if (declared != null && JSema.arityMatches(declared, tree.arguments().size())) {
       identifier.symbol = declared;
       recordUse(declared, identifier);
       ascribeArguments(declared, tree.arguments());
