@@ -154,6 +154,7 @@ final class SemsitterTranslator {
   private final List<String> onDemandImports = new ArrayList<>();
   private final Map<String, String> staticImports = new HashMap<>();
   private final List<String> staticOnDemandImports = new ArrayList<>();
+  private final Deque<Map<String, Symbol>> scopes = new ArrayDeque<>();
 
   private SemsitterTranslator(JSema sema) {
     this.sema = sema;
@@ -591,6 +592,15 @@ final class SemsitterTranslator {
   }
 
   private MethodTreeImpl method(Node node) {
+    scopes.addFirst(new HashMap<>());
+    try {
+      return methodInScope(node);
+    } finally {
+      scopes.removeFirst();
+    }
+  }
+
+  private MethodTreeImpl methodInScope(Node node) {
     Node parameters = field(node, "parameters");
     FormalParametersListTreeImpl formals = new FormalParametersListTreeImpl(
       parameters == null ? null : token(required(parameters, "(")),
@@ -728,6 +738,15 @@ final class SemsitterTranslator {
   }
 
   private BlockTreeImpl block(Node node) {
+    scopes.addFirst(new HashMap<>());
+    try {
+      return blockInScope(node);
+    } finally {
+      scopes.removeFirst();
+    }
+  }
+
+  private BlockTreeImpl blockInScope(Node node) {
     if (!"block".equals(node.k())) {
       Node nested = childKind(node, "block");
       if (nested != null) {
@@ -865,6 +884,15 @@ final class SemsitterTranslator {
   }
 
   private ForStatementTreeImpl forStatement(Node node) {
+    scopes.addFirst(new HashMap<>());
+    try {
+      return forStatementInScope(node);
+    } finally {
+      scopes.removeFirst();
+    }
+  }
+
+  private ForStatementTreeImpl forStatementInScope(Node node) {
     StatementListTreeImpl init = StatementListTreeImpl.emptyList();
     StatementListTreeImpl update = StatementListTreeImpl.emptyList();
     InternalSyntaxToken firstSemicolon = null;
@@ -922,6 +950,15 @@ final class SemsitterTranslator {
   }
 
   private ForEachStatementImpl forEach(Node node) {
+    scopes.addFirst(new HashMap<>());
+    try {
+      return forEachInScope(node);
+    } finally {
+      scopes.removeFirst();
+    }
+  }
+
+  private ForEachStatementImpl forEachInScope(Node node) {
     TypeTree type = arrayType(type(requiredField(node, "type", firstType(node))), field(node, "dimensions"));
     IdentifierTreeImpl name = identifier(requiredField(node, "name", firstOf(node, "identifier")));
     VariableTreeImpl variable = new VariableTreeImpl(modifiers(node), type, name);
@@ -1029,12 +1066,17 @@ final class SemsitterTranslator {
     List<org.sonar.plugins.java.api.tree.CatchTree> catches = new ArrayList<>();
     for (Node child : node.children()) {
       if ("catch_clause".equals(child.k())) {
-        Node parameter = field(child, "parameter");
-        if (parameter == null) {
-          parameter = childKind(child, "formal_parameter") == null ? childKind(child, "catch_formal_parameter") : childKind(child, "formal_parameter");
+        scopes.addFirst(new HashMap<>());
+        try {
+          Node parameter = field(child, "parameter");
+          if (parameter == null) {
+            parameter = childKind(child, "formal_parameter") == null ? childKind(child, "catch_formal_parameter") : childKind(child, "formal_parameter");
+          }
+          VariableTreeImpl variable = parameter == null ? variables(child).get(0) : variable(parameter, false);
+          catches.add(new CatchTreeImpl(token(required(child, "catch")), token(required(child, "(")), variable, token(required(child, ")")), block(requiredField(child, "body", childKind(child, "block")))));
+        } finally {
+          scopes.removeFirst();
         }
-        VariableTreeImpl variable = parameter == null ? variables(child).get(0) : variable(parameter, false);
-        catches.add(new CatchTreeImpl(token(required(child, "catch")), token(required(child, "(")), variable, token(required(child, ")")), block(requiredField(child, "body", childKind(child, "block")))));
       }
     }
     Node body = field(node, "body");
@@ -1611,7 +1653,7 @@ final class SemsitterTranslator {
     ExpressionTree qualifier = object == null && compoundName(scope) ? typeExpression(scope) : (object == null ? primary(scope) : superQualifier(node, object));
     Node nameNode = name == null ? lastNamed(node) : name;
     IdentifierTreeImpl identifier = identifier(nameNode);
-    bindUse(identifier, name != null || nameNode.json.has("refs") ? nameNode : node);
+    bindUse(identifier, name != null || nameNode.json.has("refs") ? nameNode : node, true);
     if (!naming) {
       bindQualifiedReceiver(qualifier, identifier);
       if (identifier.symbol().isUnknown()) {
@@ -1667,10 +1709,10 @@ final class SemsitterTranslator {
 
   private MethodInvocationTreeImpl invocation(Node node) {
     Node name = field(node, "name");
-    IdentifierTreeImpl identifier = identifier(name == null ? firstOf(node, "identifier") : name);
-    bindUse(identifier, name == null ? node : name);
-    ExpressionTree select;
     Node object = field(node, "object");
+    IdentifierTreeImpl identifier = identifier(name == null ? firstOf(node, "identifier") : name);
+    bindUse(identifier, name == null ? node : name, object != null);
+    ExpressionTree select;
     ExpressionTree qualifier = null;
     if (object == null) {
       select = identifier;
@@ -1991,6 +2033,15 @@ final class SemsitterTranslator {
   }
 
   private LambdaExpressionTreeImpl lambda(Node node) {
+    scopes.addFirst(new HashMap<>());
+    try {
+      return lambdaInScope(node);
+    } finally {
+      scopes.removeFirst();
+    }
+  }
+
+  private LambdaExpressionTreeImpl lambdaInScope(Node node) {
     List<VariableTree> parameters = new ArrayList<>();
     Node formals = field(node, "parameters");
     InternalSyntaxToken open = null;
@@ -2041,7 +2092,7 @@ final class SemsitterTranslator {
       nameNode = last != null && "new".equals(last.text()) ? last : lastOf(node, "identifier");
     }
     IdentifierTreeImpl name = identifier(nameNode == null ? node : nameNode);
-    bindUse(name, nameNode == null ? node : nameNode);
+    bindUse(name, nameNode == null ? node : nameNode, true);
     MethodReferenceTreeImpl tree = new MethodReferenceTreeImpl(qualifier, token(required(node, "::")));
     Node typeArguments = field(node, "type_arguments");
     tree.complete(typeArguments == null ? null : typeArguments(typeArguments), name);
@@ -2379,6 +2430,9 @@ final class SemsitterTranslator {
     }
     identifier.symbol = symbol;
     ascribe(identifier, identifierType(symbol));
+    if (!scopes.isEmpty() && symbol.isVariableSymbol() && symbol.owner() != null && symbol.owner().isMethodSymbol()) {
+      scopes.peekFirst().put(symbol.name(), symbol);
+    }
     if (tree instanceof ClassTreeImpl classTree && symbol instanceof Symbol.TypeSymbol typeSymbol) {
       classTree.typeSymbol = typeSymbol;
       if (symbol instanceof JSymbol nested && ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.STATIC) && !nested.isStatic()) {
@@ -2434,11 +2488,23 @@ final class SemsitterTranslator {
   }
 
   private void bindUse(IdentifierTreeImpl identifier, Node node) {
+    bindUse(identifier, node, false);
+  }
+
+  private void bindUse(IdentifierTreeImpl identifier, Node node, boolean qualified) {
     String target = node.valueTarget();
     if (target == null) {
       target = node.typeTarget();
     }
     if (target == null) {
+      if (!qualified) {
+        Symbol local = scopedVariable(identifier.name());
+        if (local != null) {
+          identifier.symbol = local;
+          ascribe(identifier, identifierType(local));
+          sema.use(usageId(local, local.name()), identifier);
+        }
+      }
       return;
     }
     Symbol symbol = sema.resolve(target);
@@ -2451,9 +2517,26 @@ final class SemsitterTranslator {
       symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
     }
     symbol = typedField(symbol);
+    if (!qualified && (symbol.isUnknown() || symbol.isVariableSymbol())) {
+      Symbol local = scopedVariable(identifier.name());
+      if (local != null) {
+        symbol = local;
+      }
+    }
     identifier.symbol = symbol;
     ascribe(identifier, identifierType(symbol));
     sema.use(usageId(symbol, target), identifier);
+  }
+
+  @Nullable
+  private Symbol scopedVariable(String name) {
+    for (Map<String, Symbol> scope : scopes) {
+      Symbol found = scope.get(name);
+      if (found != null) {
+        return found;
+      }
+    }
+    return null;
   }
 
   /** A field the graph typed as void keeps the type its class file declares. */
