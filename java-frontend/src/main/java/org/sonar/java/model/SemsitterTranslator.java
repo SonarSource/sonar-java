@@ -170,6 +170,7 @@ final class SemsitterTranslator {
     }
     Node root = new Node(document.getAsJsonObject("tree"));
     translator.indexTokens(root);
+    translator.declareGenericReturns(root);
     JavaTree.CompilationUnitTreeImpl unit = translator.compilationUnit(root);
     unit.sema = sema;
     setParents(unit);
