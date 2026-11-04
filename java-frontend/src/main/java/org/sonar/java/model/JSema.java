@@ -299,7 +299,11 @@ public final class JSema implements Sema {
     symbols.putIfAbsent(fqn, created);
     JsonObject info = typeInfos.get(fqn);
     if (info == null && typesLoaded && requestedTypes.add(fqn)) {
-      ingestTypes(typeLoader.apply(Set.of(fqn)));
+      JsonObject loaded = typeLoader.apply(Set.of(fqn));
+      if (loaded == null) {
+        return created;
+      }
+      ingestTypes(loaded);
       if (typeInfos.containsKey(fqn)) {
         return created;
       }
