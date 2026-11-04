@@ -31,7 +31,17 @@ CP uses the platform path separator.
 --jsonl is the line-delimited JSON server.
 --dump-json writes udg.json, semantic-dump JSON and annotated CST JSON under DIR.";
 
+/// Runs the command on a stack deep enough to analyze, encode and drop the tree of a deeply nested
+/// expression, such as a concatenation of thousands of strings.
 fn main() -> Result<()> {
+  std::thread::Builder::new()
+    .stack_size(semsitter_bridge::STACK_SIZE)
+    .spawn(run)?
+    .join()
+    .map_err(|_| anyhow!("the bridge panicked"))?
+}
+
+fn run() -> Result<()> {
   let args: Vec<String> = std::env::args().skip(1).collect();
   match args.first().map(String::as_str) {
     None | Some("serve") => serve_command(&args[1..]),
