@@ -1086,6 +1086,27 @@ public final class JSema implements Sema {
     }
   }
 
+  /** The overload that matches {@code arguments} when {@code candidate} is more specific than {@code current}. */
+  Symbol.MethodSymbol preferOverload(Symbol.MethodSymbol current, @Nullable Symbol.MethodSymbol candidate, List<Type> arguments) {
+    if (candidate == null || candidate == current || candidate.isUnknown()) {
+      return current;
+    }
+    for (int phase = 0; phase < 3; phase++) {
+      boolean currentOk = applicable(current, arguments, phase);
+      boolean candidateOk = applicable(candidate, arguments, phase);
+      if (currentOk && !candidateOk) {
+        return current;
+      }
+      if (candidateOk && !currentOk) {
+        return candidate;
+      }
+      if (currentOk && candidateOk) {
+        return moreSpecific(candidate, current) && !moreSpecific(current, candidate) ? candidate : current;
+      }
+    }
+    return current;
+  }
+
   private static boolean applicable(Symbol.MethodSymbol method, List<Type> arguments, int phase) {
     List<Type> parameters = method.parameterTypes();
     int count = parameters.size();
