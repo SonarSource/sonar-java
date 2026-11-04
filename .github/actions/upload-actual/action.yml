@@ -42,7 +42,7 @@ runs:
       run: |
         cd "${IT_DIR}"
         mkdir -p target "${EXPECTED_DIR}"
-        diff --unified --recursive --new-file --strip-trailing-cr "${EXPECTED_DIR}" "${ACTUAL_DIR}" > "target/test.diff" || true
+        diff --unified --recursive --new-file --exclude=.gitkeep --strip-trailing-cr "${EXPECTED_DIR}" "${ACTUAL_DIR}" > "target/test.diff" || true
         npx diff2html-cli --input file --style side --diffMaxChanges 2000 --file "target/diff_${NAME}.html" -- "target/test.diff"
 
     - name: Upload Diff Report
