@@ -187,6 +187,9 @@ public abstract class JParserConfig {
       JSema sema = new JSema();
       sema.ingestDocument(document);
       sema.loadTypes(names -> {
+        if (bridge == null) {
+          return null;
+        }
         try {
           return bridge.types(names);
         } catch (IOException failure) {
