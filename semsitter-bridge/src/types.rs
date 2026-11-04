@@ -176,7 +176,7 @@ fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
     })
     .collect();
   members.extend(ty.fields.iter().filter_map(|f| {
-    let desc = f.declared_type.as_ref()?;
+    let desc = field_descriptor(f.declared_type.as_ref()?);
     Some(json!({
       "k": "f",
       "name": f.name,
@@ -206,6 +206,25 @@ fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
     object.insert("interfaceTypes".into(), json!(interfaces));
   }
   info
+}
+
+/// The JVM descriptor of a classpath field type, which the classpath reader spells as a source
+/// type: a primitive or a binary name, followed by one `[]` per array dimension.
+fn field_descriptor(source: &str) -> String {
+  let element = source.trim_end_matches("[]");
+  let dimensions = (source.len() - element.len()) / 2;
+  let base = match element {
+    "boolean" => "Z".to_string(),
+    "byte" => "B".to_string(),
+    "char" => "C".to_string(),
+    "short" => "S".to_string(),
+    "int" => "I".to_string(),
+    "long" => "J".to_string(),
+    "float" => "F".to_string(),
+    "double" => "D".to_string(),
+    name => format!("L{};", name.replace('.', "/")),
+  };
+  format!("{}{base}", "[".repeat(dimensions))
 }
 
 fn annotations_json(annotations: &[Annotation]) -> Value {
@@ -569,6 +588,14 @@ fn jdk_type_info(ty: &JdkType) -> Value {
 #[cfg(test)]
 mod tests {
   use super::*;
+
+  #[test]
+  fn field_descriptors_round_trip_source_spellings() {
+    assert_eq!(field_descriptor("java.io.PrintStream"), "Ljava/io/PrintStream;");
+    assert_eq!(field_descriptor("int"), "I");
+    assert_eq!(field_descriptor("java.util.Map$Entry[][]"), "[[Ljava/util/Map$Entry;");
+    assert_eq!(field_descriptor("long[]"), "[J");
+  }
 
   #[test]
   fn supertypes_keep_type_arguments_and_type_variables() {
