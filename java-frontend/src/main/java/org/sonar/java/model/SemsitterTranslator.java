@@ -1447,7 +1447,7 @@ final class SemsitterTranslator {
       }
       types.add(type == null || type.isUnknown() ? functional.parameterTypes().get(i) : type);
     }
-    JMethodSymbol view = functional.withSignature(types, sema.invocationReturn(functional, target));
+    JMethodSymbol view = sema.invocationView(functional, target, types, sema.invocationReturn(functional, target));
     for (VariableTree parameter : lambda.parameters()) {
       if (parameter.symbol() instanceof JVariableSymbol symbol) {
         symbol.owner(view);
@@ -1656,7 +1656,7 @@ final class SemsitterTranslator {
       List<Type> parameters = sema.invocationParameters(method, receiver, argumentTypes(tree.arguments()));
       ascribeArguments(method, parameters, tree.arguments());
       Type returned = sema.invocationReturn(method, receiver);
-      JMethodSymbol view = method.withSignature(parameters, returned);
+      JMethodSymbol view = sema.invocationView(method, receiver, parameters, returned);
       tree.methodSymbol = view;
       identifier.symbol = view;
       ascribe(identifier, returned);
@@ -1766,8 +1766,13 @@ final class SemsitterTranslator {
 
   private MemberSelectExpressionTreeImpl classLiteral(Node node) {
     ExpressionTree type = (ExpressionTree) type(firstNamed(node));
-    MemberSelectExpressionTreeImpl tree = new MemberSelectExpressionTreeImpl(type, token(required(node, ".")), new IdentifierTreeImpl(token(required(node, "class"))));
-    ascribe(tree, sema.getClassType("java.lang.Class"));
+    IdentifierTreeImpl className = new IdentifierTreeImpl(token(required(node, "class")));
+    MemberSelectExpressionTreeImpl tree = new MemberSelectExpressionTreeImpl(type, token(required(node, ".")), className);
+    JType argument = type.symbolType() instanceof JType jType ? jType : JType.unknown(sema);
+    JType classType = JType.named(sema, "java.lang.Class", List.of(argument));
+    ascribe(tree, classType);
+    ascribe(className, classType);
+    className.symbol = classType.symbol();
     return tree;
   }
 
@@ -2041,7 +2046,14 @@ final class SemsitterTranslator {
       for (Type argument : args) {
         typeArguments.add(argument instanceof JType jType ? jType : JType.unknown(sema));
       }
-      ascribe(tree, JType.named(sema, raw.symbolType().erasure().fullyQualifiedName(), typeArguments));
+      JType parameterized = JType.named(sema, raw.symbolType().erasure().fullyQualifiedName(), typeArguments);
+      ascribe(tree, parameterized);
+      if (raw instanceof AbstractTypedTree typed) {
+        ascribe(typed, parameterized);
+      }
+      if (raw instanceof IdentifierTreeImpl identifier) {
+        identifier.symbol = parameterized.symbol();
+      }
     }
     return tree;
   }
