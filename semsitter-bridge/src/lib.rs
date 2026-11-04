@@ -50,7 +50,7 @@ use udg_lang_sdk::settings::ResolvedSettings;
 use udg_semantic::{DumpLanguage, DumpProject, GraphIds, language_of};
 
 const BOM: &[u8] = b"\xEF\xBB\xBF";
-const STACK_SIZE: usize = 512 * 1024 * 1024;
+pub const STACK_SIZE: usize = 512 * 1024 * 1024;
 const GRAPH_EDGES: &[(&str, &str)] = &[
   ("extends", "extends"),
   ("implements", "implements"),
