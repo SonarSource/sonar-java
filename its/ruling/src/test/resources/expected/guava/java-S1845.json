@@ -9,19 +9,60 @@
 ],
 "guava:src/com/google/common/cache/LocalCache.java": [
 732,
-4356
+4356,
+4588
+],
+"guava:src/com/google/common/collect/Constraints.java": [
+146,
+208
+],
+"guava:src/com/google/common/collect/MapConstraints.java": [
+408,
+410,
+412,
+431,
+432,
+521
 ],
 "guava:src/com/google/common/collect/MapMaker.java": [
+115,
+116,
 117,
 127,
 479
 ],
 "guava:src/com/google/common/collect/MapMakerInternalMap.java": [
 615,
-3687
+3687,
+3915
+],
+"guava:src/com/google/common/collect/Maps.java": [
+1472,
+1474
+],
+"guava:src/com/google/common/collect/Multimaps.java": [
+496,
+497,
+498,
+499,
+500
+],
+"guava:src/com/google/common/collect/Multisets.java": [
+98,
+110,
+122
+],
+"guava:src/com/google/common/collect/SingletonImmutableBiMap.java": [
+82
 ],
 "guava:src/com/google/common/collect/StandardTable.java": [
 270
+],
+"guava:src/com/google/common/collect/Tables.java": [
+460
+],
+"guava:src/com/google/common/collect/TreeRangeSet.java": [
+89
 ],
 "guava:src/com/google/common/io/Closer.java": [
 107

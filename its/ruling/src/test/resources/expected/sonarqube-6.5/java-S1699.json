@@ -2,12 +2,12 @@
 "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/container/TaskContainerImpl.java": [
 44
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/es/DefaultIndexSettingsElement.java": [
-292
-],
 "sonarqube-6.5:src/main/java/org/sonar/server/platform/platformlevel/PlatformLevel.java": [
 44,
 50
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/plugins/UpdateCenterClient.java": [
+79
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/index/ActiveRuleDoc.java": [
 40

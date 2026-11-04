@@ -1,14 +1,31 @@
 {
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpTokens.java": [
+67
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Cookies.java": [
+102
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java": [
+1043
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
+287
+],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
-279
+279,
+2427
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/Session.java": [
-498
+593
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTernaryTrie.java": [
+157,
+281,
 305,
 360,
+378,
 411,
+422,
 454
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ArrayTrie.java": [
@@ -18,14 +35,33 @@
 350,
 389
 ],
-"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/AtomicBiInteger.java": [
-268,
-269,
-282,
-297
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ServiceLoaderSpliterator.java": [
+99
 ],
-"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java": [
-175
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java": [
+442,
+477,
+479,
+490,
+492,
+494,
+496,
+498,
+500,
+502,
+504
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/URIUtil.java": [
+308,
+320,
+322
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java": [
+894,
+899
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/UnixCrypt.java": [
+363
 ],
 "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java": [
 269,

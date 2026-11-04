@@ -37,6 +37,9 @@
 "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ServerConnectorTest.java": [
 86
 ],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/StressTest.java": [
+243
+],
 "eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/JettyLoggerTest.java": [
 62,
 63,

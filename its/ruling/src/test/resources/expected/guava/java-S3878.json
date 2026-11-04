@@ -1,5 +1,13 @@
 {
 "guava:src/com/google/common/collect/ArrayTable.java": [
 360
+],
+"guava:src/com/google/common/hash/Hashing.java": [
+485,
+506
+],
+"guava:src/com/google/common/util/concurrent/ServiceManager.java": [
+642,
+751
 ]
 }

@@ -1,5 +1,12 @@
 {
 "guava:src/com/google/common/collect/TreeRangeMap.java": [
 547
+],
+"guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
+728
+],
+"guava:src/com/google/common/util/concurrent/ListenerCallQueue.java": [
+106,
+131
 ]
 }

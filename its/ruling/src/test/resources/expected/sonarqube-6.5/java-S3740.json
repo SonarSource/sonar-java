@@ -7,29 +7,6 @@
 195,
 207
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/component/VisitorsCrawler.java": [
-161
-],
-"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/FormulaExecutorComponentVisitor.java": [
-66,
-68,
-100,
-149,
-150,
-163,
-164,
-173,
-173,
-185,
-185,
-220,
-220,
-222,
-222,
-223,
-235,
-235
-],
 "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/NewEffortCalculator.java": [
 110
 ],
@@ -47,37 +24,9 @@
 117,
 143
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/CommentMeasuresStep.java": [
-57,
-95,
-105,
-172,
-173
-],
-"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ComplexityMeasuresStep.java": [
-53
-],
-"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/CoverageMeasuresStep.java": [
-48
-],
-"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/DuplicationMeasuresStep.java": [
-65
-],
-"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LanguageDistributionMeasuresStep.java": [
-56
-],
 "sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LoadMeasureComputersStep.java": [
 153,
 163
-],
-"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/NewCoverageMeasuresStep.java": [
-65
-],
-"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/SizeMeasuresStep.java": [
-57
-],
-"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/UnitTestMeasuresStep.java": [
-55
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/es/IndexDefinitionHash.java": [
 46,
@@ -118,9 +67,6 @@
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/metric/DefaultMetricFinder.java": [
 90
-],
-"sonarqube-6.5:src/main/java/org/sonar/server/platform/db/migration/DatabaseMigrationExecutorServiceImpl.java": [
-32
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/plugins/ServerExtensionInstaller.java": [
 136,

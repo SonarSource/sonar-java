@@ -1,7 +1,4 @@
 {
-"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/CookieCutter.java": [
-208
-],
 "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java": [
 84,
 100
@@ -13,7 +10,6 @@
 487
 ],
 "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java": [
-252,
 432
 ],
 "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedQualityCSV.java": [
@@ -52,8 +48,7 @@
 244
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/LocalConnector.java": [
-279,
-305
+279
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java": [
 453,
@@ -109,6 +104,7 @@
 152
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DefaultSessionIdManager.java": [
+306,
 366
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java": [

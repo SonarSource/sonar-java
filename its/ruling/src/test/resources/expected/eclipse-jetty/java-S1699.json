@@ -43,6 +43,9 @@
 197,
 216
 ],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncRequestLogWriter.java": [
+61
+],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
 307
 ],
@@ -98,6 +101,9 @@
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandlerCollection.java": [
 67
 ],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/DefaultHandler.java": [
+68
+],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HandlerCollection.java": [
 65
 ],
@@ -128,7 +134,8 @@
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiException.java": [
 59,
-63
+63,
+64
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java": [
 111

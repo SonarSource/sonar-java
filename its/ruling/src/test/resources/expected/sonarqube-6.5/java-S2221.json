@@ -109,9 +109,6 @@
 68,
 84
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/platform/BackendCleanup.java": [
-100
-],
 "sonarqube-6.5:src/main/java/org/sonar/server/platform/Platform.java": [
 290
 ],
@@ -151,9 +148,6 @@
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/util/ObjectInputStreamIterator.java": [
 45
-],
-"sonarqube-6.5:src/main/java/org/sonar/server/view/index/ViewIndexer.java": [
-127
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/ws/ServletRequest.java": [
 101

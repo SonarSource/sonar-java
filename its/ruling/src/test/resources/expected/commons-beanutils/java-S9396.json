@@ -1,0 +1,28 @@
+{
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/WeakFastHashMap.java": [
+659,
+660,
+661
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanWithInnerBean.java": [
+35
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java": [
+488,
+489,
+490,
+491,
+492,
+493
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira411TestCase.java": [
+46
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java": [
+533,
+534,
+535,
+536,
+537
+]
+}

@@ -1,0 +1,274 @@
+{
+"guava:src/com/google/common/base/Predicates.java": [
+564
+],
+"guava:src/com/google/common/cache/AbstractCache.java": [
+69
+],
+"guava:src/com/google/common/cache/LocalCache.java": [
+2252,
+2253,
+2596,
+3263,
+3264,
+3296,
+3297,
+3669,
+3806,
+3962,
+4226,
+4485,
+4490,
+4520,
+4545,
+4557,
+4777
+],
+"guava:src/com/google/common/collect/AbstractBiMap.java": [
+153,
+159,
+295
+],
+"guava:src/com/google/common/collect/AbstractMapBasedMultimap.java": [
+186,
+258,
+547,
+570,
+584,
+836,
+842,
+1304,
+1366
+],
+"guava:src/com/google/common/collect/AbstractMapBasedMultiset.java": [
+243,
+255
+],
+"guava:src/com/google/common/collect/AbstractMultimap.java": [
+48,
+58,
+59,
+64,
+65
+],
+"guava:src/com/google/common/collect/AbstractTable.java": [
+60
+],
+"guava:src/com/google/common/collect/Collections2.java": [
+193,
+193
+],
+"guava:src/com/google/common/collect/ConcurrentHashMultiset.java": [
+302,
+302,
+344,
+344,
+394,
+394,
+436,
+436,
+448,
+448
+],
+"guava:src/com/google/common/collect/DescendingImmutableSortedSet.java": [
+38
+],
+"guava:src/com/google/common/collect/FilteredEntryMultimap.java": [
+172,
+238
+],
+"guava:src/com/google/common/collect/ForwardingCollection.java": [
+69,
+79,
+89
+],
+"guava:src/com/google/common/collect/ForwardingConcurrentMap.java": [
+49,
+49
+],
+"guava:src/com/google/common/collect/ForwardingList.java": [
+81,
+86
+],
+"guava:src/com/google/common/collect/ForwardingMap.java": [
+80,
+90,
+95,
+100
+],
+"guava:src/com/google/common/collect/ImmutableAsList.java": [
+42
+],
+"guava:src/com/google/common/collect/ImmutableEnumMap.java": [
+68,
+73
+],
+"guava:src/com/google/common/collect/ImmutableEnumSet.java": [
+77
+],
+"guava:src/com/google/common/collect/ImmutableList.java": [
+354,
+525,
+530,
+536
+],
+"guava:src/com/google/common/collect/ImmutableMap.java": [
+441,
+446,
+546,
+551
+],
+"guava:src/com/google/common/collect/ImmutableRangeSet.java": [
+500
+],
+"guava:src/com/google/common/collect/ImmutableTable.java": [
+327
+],
+"guava:src/com/google/common/collect/Iterables.java": [
+366
+],
+"guava:src/com/google/common/collect/LinkedListMultimap.java": [
+459,
+473,
+572,
+577
+],
+"guava:src/com/google/common/collect/Lists.java": [
+1119
+],
+"guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+2310,
+2313,
+2866,
+2867,
+2886,
+2887,
+3168,
+3304,
+3795,
+3800,
+3829,
+3856,
+3868
+],
+"guava:src/com/google/common/collect/Maps.java": [
+792,
+808,
+1947,
+1953,
+1954,
+1962,
+1963,
+2652,
+2652,
+2656,
+2665,
+2665,
+2738,
+2799,
+2800,
+3016,
+3021,
+3031,
+3590,
+3594,
+3595,
+3760,
+3809,
+3835,
+3845,
+3868
+],
+"guava:src/com/google/common/collect/Multimaps.java": [
+945,
+950,
+1022,
+1025,
+1255,
+1692,
+1711,
+1722,
+1726
+],
+"guava:src/com/google/common/collect/Multisets.java": [
+347,
+892
+],
+"guava:src/com/google/common/collect/RegularContiguousSet.java": [
+71
+],
+"guava:src/com/google/common/collect/RegularImmutableMultiset.java": [
+152
+],
+"guava:src/com/google/common/collect/Sets.java": [
+602,
+602,
+659,
+659,
+696,
+696,
+747,
+747
+],
+"guava:src/com/google/common/collect/StandardTable.java": [
+155,
+157,
+711,
+821
+],
+"guava:src/com/google/common/collect/Synchronized.java": [
+141,
+167,
+174,
+342,
+349,
+944,
+951,
+968,
+1006,
+1164
+],
+"guava:src/com/google/common/collect/TreeRangeMap.java": [
+227,
+480,
+517,
+550
+],
+"guava:src/com/google/common/collect/TreeRangeSet.java": [
+311,
+606,
+694,
+714
+],
+"guava:src/com/google/common/eventbus/SubscriberRegistry.java": [
+87,
+109,
+110,
+126,
+140
+],
+"guava:src/com/google/common/reflect/ClassPath.java": [
+395
+],
+"guava:src/com/google/common/reflect/TypeToken.java": [
+540
+],
+"guava:src/com/google/common/reflect/TypeVisitor.java": [
+93
+],
+"guava:src/com/google/common/util/concurrent/AtomicLongMap.java": [
+245,
+306,
+426
+],
+"guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java": [
+309,
+537
+],
+"guava:src/com/google/common/util/concurrent/SimpleTimeLimiter.java": [
+112
+],
+"guava:src/com/google/common/util/concurrent/Striped.java": [
+426
+]
+}

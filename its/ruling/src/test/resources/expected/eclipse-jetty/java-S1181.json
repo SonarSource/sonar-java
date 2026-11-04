@@ -2,9 +2,6 @@
 "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java": [
 1594
 ],
-"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/PreEncodedHttpField.java": [
-55
-],
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractConnection.java": [
 221,
 249
@@ -19,7 +16,6 @@
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
 176,
 206,
-335,
 399,
 412,
 539,
@@ -63,8 +59,6 @@
 "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
 540,
 775,
-802,
-885,
 930,
 951,
 1124,
@@ -97,9 +91,6 @@
 674,
 735
 ],
-"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncRequestLogWriter.java": [
-86
-],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DetectorConnectionFactory.java": [
 216
 ],
@@ -112,7 +103,6 @@
 649,
 787,
 820,
-878,
 999,
 1016,
 1032
@@ -124,7 +114,6 @@
 1006
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java": [
-596,
 705,
 859,
 934,
@@ -154,10 +143,7 @@
 152
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
-405,
 431,
-442,
-451,
 493,
 509,
 520

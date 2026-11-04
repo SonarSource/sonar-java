@@ -61,9 +61,6 @@
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ShutdownThread.java": [
 43
 ],
-"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/Sweeper.java": [
-92
-],
 "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java": [
 61,
 64,

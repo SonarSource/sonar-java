@@ -1,13 +1,44 @@
 {
+"mall:mall-admin/src/main/java/com/macro/mall/bo/AdminUserDetails.java": [
+33
+],
+"mall:mall-admin/src/main/java/com/macro/mall/controller/UmsAdminController.java": [
+101
+],
+"mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderServiceImpl.java": [
+55,
+75
+],
+"mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductServiceImpl.java": [
+181,
+192
+],
 "mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminCacheServiceImpl.java": [
+65,
+77,
 87
+],
+"mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsMenuServiceImpl.java": [
+82,
+102
+],
+"mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java": [
+379
+],
+"mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalProductServiceImpl.java": [
+80,
+100,
+140
+],
+"mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCouponServiceImpl.java": [
+180,
+189
 ],
 "mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java": [
 156,
 208
 ],
 "mall:mall-security/src/main/java/com/macro/mall/security/component/DynamicAuthorizationManager.java": [
-58,
-65
+58
 ]
 }

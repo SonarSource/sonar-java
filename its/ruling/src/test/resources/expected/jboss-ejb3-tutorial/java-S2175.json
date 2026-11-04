@@ -1,0 +1,33 @@
+{
+"jboss-ejb3-tutorial:blob/src/org/jboss/tutorial/blob/client/Client.java": [
+43
+],
+"jboss-ejb3-tutorial:injection/src/org/jboss/tutorial/injection/bean/ShoppingCartBean.java": [
+52,
+54
+],
+"jboss-ejb3-tutorial:injection/src/org/jboss/tutorial/injection/client/Client.java": [
+56
+],
+"jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/bean/ShoppingCartBean.java": [
+33,
+35
+],
+"jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/client/Client.java": [
+91
+],
+"jboss-ejb3-tutorial:stateful/src/org/jboss/tutorial/stateful/bean/ShoppingCartBean.java": [
+39,
+41
+],
+"jboss-ejb3-tutorial:stateful/src/org/jboss/tutorial/stateful/client/Client.java": [
+54
+],
+"jboss-ejb3-tutorial:stateful_deployment_descriptor/src/org/jboss/tutorial/stateful_deployment_descriptor/bean/ShoppingCartBean.java": [
+33,
+35
+],
+"jboss-ejb3-tutorial:stateful_deployment_descriptor/src/org/jboss/tutorial/stateful_deployment_descriptor/client/Client.java": [
+59
+]
+}

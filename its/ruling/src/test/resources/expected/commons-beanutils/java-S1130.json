@@ -44,14 +44,8 @@
 "commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ClassReloader.java": [
 57
 ],
-"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/DoubleConverterTestCase.java": [
-79
-],
 "commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/FileConverterTestCase.java": [
 72
-],
-"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/FloatConverterTestCase.java": [
-79
 ],
 "commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/IntegerConverterTestCase.java": [
 80
