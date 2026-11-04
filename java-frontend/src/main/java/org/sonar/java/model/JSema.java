@@ -604,11 +604,20 @@ public final class JSema implements Sema {
     return found == null ? receiver : found;
   }
 
+  /** Capture conversion: a member is accessed through captures of the receiver's wildcard arguments. */
+  private Type captureWildcards(Type receiver) {
+    if (!(receiver instanceof JType type) || !type.isParameterized() || type.args.stream().noneMatch(JType::isWildcard)) {
+      return receiver;
+    }
+    List<JType> captured = type.args.stream().map(argument -> argument.isWildcard() && argument.element != null ? JType.capture(this, argument.element) : argument).toList();
+    return JType.named(this, type.fullyQualifiedName(), captured);
+  }
+
   /** The method as seen from {@code receiver}, so its owner keeps that parameterization. */
   JMethodSymbol invocationView(JMethodSymbol method, @Nullable Type receiver, List<Type> parameters, Type returned) {
     JMethodSymbol view = method.withSignature(parameters, returned);
     if (receiver != null && !method.isStatic() && method.owner().type() != null) {
-      Type declaring = asSuperType(receiver, method.owner().type().erasure().fullyQualifiedName(), new HashSet<>());
+      Type declaring = asSuperType(captureWildcards(receiver), method.owner().type().erasure().fullyQualifiedName(), new HashSet<>());
       if (declaring != null && declaring.isParameterized()) {
         view.owner(declaring.symbol());
       }
