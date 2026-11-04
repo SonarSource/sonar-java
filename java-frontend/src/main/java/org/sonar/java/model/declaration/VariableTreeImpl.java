@@ -17,13 +17,15 @@
 package org.sonar.java.model.declaration;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import org.eclipse.jdt.core.dom.IVariableBinding;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
+import java.util.Objects;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.InferedTypeTree;
@@ -33,11 +35,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.Objects;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 public class VariableTreeImpl extends JavaTree implements VariableTree {
   private ModifiersTree modifiers;
@@ -50,7 +48,7 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   @Nullable
   private SyntaxToken endToken;
 
-  public IVariableBinding variableBinding;
+  private Symbol symbol = Symbol.UNKNOWN_SYMBOL;
 
   public VariableTreeImpl(
     ModifiersTree modifiers,
@@ -129,11 +127,13 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     return equalToken;
   }
 
+  public void setSymbol(Symbol symbol) {
+    this.symbol = Objects.requireNonNull(symbol);
+  }
+
   @Override
   public Symbol symbol() {
-    return variableBinding != null
-      ? root.sema.variableSymbol(variableBinding)
-      : Symbol.UNKNOWN_SYMBOL;
+    return symbol;
   }
 
   @Override
