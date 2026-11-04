@@ -407,7 +407,14 @@ final class SemsitterTranslator {
         staticImports.putIfAbsent(select.identifier().name(), dottedName(select.expression()));
       }
     }
-    return new JavaTree.ImportTreeImpl(token(required(node, "import")), staticToken, optionalToken(node, "module"), name, token(required(node, ";")));
+    JavaTree.ImportTreeImpl imported = new JavaTree.ImportTreeImpl(token(required(node, "import")), staticToken, optionalToken(node, "module"), name, token(required(node, ";")));
+    if (staticToken == null && name instanceof MemberSelectExpressionTree select && !"*".equals(select.identifier().name())) {
+      String fqn = dottedName(name);
+      if (sema.declaresType(fqn) && sema.resolve(fqn) instanceof Symbol.TypeSymbol type) {
+        imported.symbol = type;
+      }
+    }
+    return imported;
   }
 
   private void addMember(List<Tree> members, Node node) {
