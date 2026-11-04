@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S3626")
@@ -73,7 +74,8 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
         Block successor = CFGUtils.nonEmptySuccessor(successors.next());
         if (successor.equals(successorWithoutJump)
           && !CFGUtils.isJumpThroughFinallyWithDistinctContinuation(terminator, successor)) {
-          String jump = terminator.is(Tree.Kind.RETURN_STATEMENT) ? "return" : "continue";
+          SyntaxToken fstToken = terminator.firstToken();
+          String jump = fstToken != null ? fstToken.text() : "jump";
           reportIssue(terminator, "Remove this redundant %s.".formatted(jump));
         }
       }
