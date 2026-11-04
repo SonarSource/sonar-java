@@ -1303,9 +1303,9 @@ public final class JSema implements Sema {
       boolean interfaceKind = "interface".equals(kind) || "annotation".equals(kind);
       type.interfaceSymbol(interfaceKind);
       type.annotationSymbol("annotation".equals(kind));
-      type.enumSymbol("enum".equals(kind));
       List<String> extend = strings(fact, "extends");
       List<String> implement = strings(fact, "implements");
+      type.enumSymbol("enum".equals(kind) || extend.stream().map(JSema::erase).anyMatch("java.lang.Enum"::equals));
       if (interfaceKind) {
         type.interfaceNames(extend.isEmpty() ? implement : extend);
       } else {
