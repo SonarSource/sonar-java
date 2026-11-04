@@ -17,7 +17,6 @@
 package org.sonar.java.model;
 
 import com.google.common.io.Files;
-import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -27,22 +26,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.sonar.java.AnalysisProgress;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.semantic.Sema;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,32 +36,6 @@ public class JParserTestUtils {
 
   private JParserTestUtils() {
     // Utility class
-  }
-
-  public static Sema sema(CompilationUnitTree tree) {
-    return ((JavaTree.CompilationUnitTreeImpl) tree).sema;
-  }
-
-  public static Type typeOf(Tree tree) {
-    return switch (tree) {
-      case TypeTree type -> type.symbolType();
-      case ExpressionTree expression -> expression.symbolType();
-      default -> symbolOf(tree).type();
-    };
-  }
-
-  public static Symbol symbolOf(Tree tree) {
-    return switch (tree) {
-      case ClassTree declaration -> declaration.symbol();
-      case MethodTree declaration -> declaration.symbol();
-      case VariableTree declaration -> declaration.symbol();
-      case IdentifierTree identifier -> identifier.symbol();
-      case MethodInvocationTree invocation -> invocation.methodSymbol();
-      case LambdaExpressionTree lambda -> lambda.symbol();
-      case TypeParameterTreeImpl parameter -> parameter.symbol();
-      case JavaTree.ImportTreeImpl importTree -> importTree.symbol();
-      default -> throw new IllegalArgumentException(tree.kind().name());
-    };
   }
 
   public static final List<File> DEFAULT_CLASSPATH = Arrays.asList(new File("target/test-classes"), new File("target/classes"));
@@ -117,24 +77,11 @@ public class JParserTestUtils {
   }
 
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath) {
-    return parse(unitName, source, classpath, JParser.MAXIMUM_SUPPORTED_JAVA_VERSION);
+    return parse(unitName, source, classpath, JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION);
   }
 
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath, JavaVersion version) {
-    var inputFile = new TestInputFileBuilder("", unitName)
-      .setContents(source)
-      .setCharset(StandardCharsets.UTF_8)
-      .build();
-    List<JParseResult> results = new ArrayList<>();
-    JParser.Mode.FILE_BY_FILE.create(version, classpath)
-      .parse(List.of(inputFile), () -> false, new AnalysisProgress(1), (input, result) -> results.add(result));
-    try {
-      return results.getFirst().get();
-    } catch (RuntimeException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new IllegalStateException("Unable to parse source", e);
-    }
+    return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version.toString(), unitName, source);
   }
 
   public static List<File> checksTestClassPath() throws IOException {

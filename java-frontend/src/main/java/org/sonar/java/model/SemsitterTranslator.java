@@ -174,7 +174,7 @@ final class SemsitterTranslator {
     translator.indexTokens(root);
     translator.declareGenericReturns(root);
     JavaTree.CompilationUnitTreeImpl unit = translator.compilationUnit(root);
-    unit.sema = sema;
+    unit.setSemanticModel(sema, sema.undefinedTypes(), sema.getEnvironmentCleaner());
     setParents(unit);
     CompilerWarnings.addTo(unit);
     EffectivelyFinalVariables.mark(unit);
@@ -411,7 +411,7 @@ final class SemsitterTranslator {
     if (staticToken == null && name instanceof MemberSelectExpressionTree select && !"*".equals(select.identifier().name())) {
       String fqn = dottedName(name);
       if (sema.declaresType(fqn) && sema.resolve(fqn) instanceof Symbol.TypeSymbol type) {
-        imported.symbol = type;
+        imported.setSymbol(type);
       }
     }
     return imported;

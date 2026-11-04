@@ -18,6 +18,7 @@ package org.sonar.java.model.declaration;
 
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
@@ -33,7 +34,11 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
+
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 public class ClassTreeImpl extends JavaTree implements ClassTree {
 
@@ -212,7 +217,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   public void setSymbol(Symbol.TypeSymbol symbol) {
-    this.symbol = Objects.requireNonNull(symbol);
+    this.typeSymbol = Objects.requireNonNull(symbol);
   }
 
   @Override
