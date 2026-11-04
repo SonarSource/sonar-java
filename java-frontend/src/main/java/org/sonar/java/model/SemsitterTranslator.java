@@ -1614,7 +1614,7 @@ final class SemsitterTranslator {
       }
       types.add(type == null || type.isUnknown() ? functional.parameterTypes().get(i) : type);
     }
-    JMethodSymbol view = sema.invocationView(functional, target, types, sema.invocationReturn(functional, target));
+    JMethodSymbol view = sema.invocationView(functional, target, types, sema.invocationReturn(functional, target, List.of()));
     for (VariableTree parameter : lambda.parameters()) {
       if (parameter.symbol() instanceof JVariableSymbol symbol) {
         symbol.owner(view);
@@ -1836,7 +1836,7 @@ final class SemsitterTranslator {
     if (identifier.symbol instanceof JMethodSymbol method) {
       List<Type> parameters = sema.invocationParameters(method, receiver, arguments);
       ascribeArguments(method, parameters, tree.arguments());
-      Type returned = sema.invocationReturn(method, receiver);
+      Type returned = sema.invocationReturn(method, receiver, arguments);
       JMethodSymbol view = sema.invocationView(method, receiver, parameters, returned);
       tree.methodSymbol = view;
       identifier.symbol = view;
