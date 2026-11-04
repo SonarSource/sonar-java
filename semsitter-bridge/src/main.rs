@@ -31,9 +31,10 @@ CP uses the platform path separator.
 --jsonl is the line-delimited JSON server.
 --dump-json writes udg.json, semantic-dump JSON and annotated CST JSON under DIR.";
 
-/// Runs the command on a stack deep enough to analyze, encode and drop the tree of a deeply nested
-/// expression, such as a concatenation of thousands of strings.
+/// Runs the command, and the scan workers, on a stack deep enough to analyze, encode and drop the
+/// tree of a deeply nested expression, such as a concatenation of thousands of strings.
 fn main() -> Result<()> {
+  udg_gen::scanner::init_global_pool(None, Some(semsitter_bridge::STACK_SIZE));
   std::thread::Builder::new()
     .stack_size(semsitter_bridge::STACK_SIZE)
     .spawn(run)?
