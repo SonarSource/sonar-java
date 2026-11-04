@@ -1006,7 +1006,13 @@ public final class JSema implements Sema {
         return applicable.stream().filter(method -> applicable.stream().allMatch(other -> moreSpecific(method, other))).findFirst().orElse(applicable.get(0));
       }
     }
-    return null;
+    List<Symbol.MethodSymbol> sameArity = candidates.stream()
+      .filter(method -> method.isVarArgsMethod() ? arguments.size() >= method.parameterTypes().size() - 1 : method.parameterTypes().size() == arguments.size())
+      .toList();
+    if (sameArity.size() == 1) {
+      return sameArity.get(0);
+    }
+    return candidates.size() == 1 ? candidates.get(0) : null;
   }
 
   /** The single abstract method of {@code type} when it is a functional interface, else null. */
