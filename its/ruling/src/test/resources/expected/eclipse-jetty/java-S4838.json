@@ -1,8 +1,55 @@
 {
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java": [
+472
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelState.java": [
+195
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConfiguration.java": [
+170
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java": [
+447
+],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Request.java": [
 1470
 ],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
+725
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
+440
+],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+1076
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java": [
+1317,
+1342
+],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Scanner.java": [
-839
+673,
+818,
+839,
+860,
+881,
+900,
+921
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/AbstractLifeCycle.java": [
+255,
+266,
+276,
+288,
+299
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/component/ContainerLifeCycle.java": [
+879
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ShutdownThread.java": [
+135
+],
+"eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
+1812
 ]
 }

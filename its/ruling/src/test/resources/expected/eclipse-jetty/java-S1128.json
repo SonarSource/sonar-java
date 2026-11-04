@@ -1,6 +1,26 @@
 {
+"eclipse-jetty:jetty-http/src/main/java/module-info.java": [
+19,
+20
+],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AsyncContextEvent.java": [
 23
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/session/HouseKeeperTest.java": [
+28
+],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/session/SessionHandlerTest.java": [
+25
+],
+"eclipse-jetty:jetty-slf4j-impl/src/main/java/module-info.java": [
+19,
+20
+],
+"eclipse-jetty:jetty-util/src/main/java/module-info.java": [
+19
+],
+"eclipse-jetty:jetty-xml/src/main/java/module-info.java": [
+19
 ],
 "eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
 67

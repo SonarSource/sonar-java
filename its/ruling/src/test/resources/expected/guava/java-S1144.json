@@ -1,0 +1,75 @@
+{
+"guava:src/com/google/common/cache/LocalCache.java": [
+4736
+],
+"guava:src/com/google/common/collect/AbstractMapBasedMultimap.java": [
+1135
+],
+"guava:src/com/google/common/collect/BinaryTreeTraverser.java": [
+207
+],
+"guava:src/com/google/common/collect/CartesianList.java": [
+67
+],
+"guava:src/com/google/common/collect/Constraints.java": [
+281,
+332
+],
+"guava:src/com/google/common/collect/FilteredEntryMultimap.java": [
+71
+],
+"guava:src/com/google/common/collect/Iterables.java": [
+506
+],
+"guava:src/com/google/common/collect/LinkedHashMultimap.java": [
+144,
+148
+],
+"guava:src/com/google/common/collect/LinkedListMultimap.java": [
+310
+],
+"guava:src/com/google/common/collect/MapConstraints.java": [
+190,
+216,
+250,
+268,
+770,
+780
+],
+"guava:src/com/google/common/collect/Maps.java": [
+455
+],
+"guava:src/com/google/common/collect/Multimaps.java": [
+826,
+847,
+2051
+],
+"guava:src/com/google/common/collect/RegularContiguousSet.java": [
+97
+],
+"guava:src/com/google/common/collect/StandardRowSortedTable.java": [
+63
+],
+"guava:src/com/google/common/collect/StandardTable.java": [
+162,
+185
+],
+"guava:src/com/google/common/collect/Synchronized.java": [
+830
+],
+"guava:src/com/google/common/collect/TreeRangeMap.java": [
+532
+],
+"guava:src/com/google/common/eventbus/SubscriberRegistry.java": [
+184
+],
+"guava:src/com/google/common/io/FileBackedOutputStream.java": [
+131
+],
+"guava:src/com/google/common/net/MediaType.java": [
+754
+],
+"guava:src/com/google/common/reflect/TypeResolver.java": [
+205
+]
+}

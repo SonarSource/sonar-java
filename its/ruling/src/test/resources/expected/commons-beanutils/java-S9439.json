@@ -2,6 +2,12 @@
 "commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java": [
 1108
 ],
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/DefaultBeanIntrospector.java": [
+56
+],
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/MappedPropertyDescriptor.java": [
+65
+],
 "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/ArrayConverter.java": [
 135
 ],
@@ -46,6 +52,12 @@
 ],
 "commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestBean.java": [
 514
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSet.java": [
+90
+],
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSetMetaData.java": [
+79
 ],
 "commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira345TestCase.java": [
 98,

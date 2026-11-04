@@ -1,6 +1,5 @@
 {
 "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java": [
-197,
 358
 ],
 "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpCookieTest.java": [
@@ -24,6 +23,9 @@
 "eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/WriteFlusherTest.java": [
 411
 ],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Dispatcher.java": [
+137
+],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceContentFactory.java": [
 71
 ],
@@ -38,9 +40,6 @@
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
 938
-],
-"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncRequestReadTest.java": [
-56
 ],
 "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java": [
 265
@@ -107,11 +106,12 @@
 "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ThreadLimitHandlerTest.java": [
 54
 ],
-"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLSelectChannelConnectorLoadTest.java": [
-334
-],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiPartOutputStream.java": [
+44,
 54
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiPartWriter.java": [
+42
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/EmptyResource.java": [
 125
@@ -186,8 +186,6 @@
 80
 ],
 "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/security/CredentialTest.java": [
-35,
-54,
 66
 ],
 "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/statistic/CounterStatisticTest.java": [

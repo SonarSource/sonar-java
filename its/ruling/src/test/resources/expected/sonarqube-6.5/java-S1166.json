@@ -44,6 +44,7 @@
 114
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/platform/web/PlatformServletContextListener.java": [
+46,
 59
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/project/ws/ProjectsWsSupport.java": [

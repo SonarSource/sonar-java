@@ -1,4 +1,13 @@
 {
+"sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/UsersAction.java": [
+148
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/TemplateUsersAction.java": [
+131
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/setting/ws/ResetAction.java": [
+96
+],
 "sonarqube-6.5:src/test/java/org/sonar/server/authentication/UserIdentityAuthenticatorTest.java": [
 291
 ],

@@ -1,0 +1,39 @@
+{
+"sonarqube-6.5:src/test/java/org/sonar/server/authentication/BasicAuthenticatorTest.java": [
+150
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/authentication/CredentialsAuthenticatorTest.java": [
+78
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/authentication/OAuth2CallbackFilterTest.java": [
+93,
+122
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/authentication/OAuth2ContextFactoryTest.java": [
+95,
+155
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/authentication/RealmAuthenticatorTest.java": [
+110,
+131,
+147,
+162,
+178,
+192,
+206
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/authentication/SsoAuthenticatorTest.java": [
+136,
+148,
+163,
+176,
+192,
+205,
+236,
+251,
+282,
+298,
+314,
+326
+]
+}

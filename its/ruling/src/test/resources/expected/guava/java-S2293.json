@@ -13,7 +13,6 @@
 "guava:src/com/google/common/base/Enums.java": [
 84,
 91,
-93,
 120
 ],
 "guava:src/com/google/common/base/Equivalence.java": [
@@ -110,9 +109,7 @@
 2261,
 2436,
 2443,
-3163,
-4733,
-4829
+3163
 ],
 "guava:src/com/google/common/cache/Striped64.java": [
 125
@@ -134,7 +131,6 @@
 78,
 91,
 101,
-105,
 130
 ],
 "guava:src/com/google/common/collect/ArrayTable.java": [
@@ -163,12 +159,9 @@
 ],
 "guava:src/com/google/common/collect/ComputingConcurrentHashMap.java": [
 56,
-135,
-361,
-365
+135
 ],
 "guava:src/com/google/common/collect/ConcurrentHashMultiset.java": [
-88,
 88,
 128
 ],
@@ -197,8 +190,7 @@
 57
 ],
 "guava:src/com/google/common/collect/EnumHashBiMap.java": [
-56,
-122
+56
 ],
 "guava:src/com/google/common/collect/EnumMultiset.java": [
 42,
@@ -227,9 +219,6 @@
 ],
 "guava:src/com/google/common/collect/HashBasedTable.java": [
 76,
-76,
-76,
-92,
 92
 ],
 "guava:src/com/google/common/collect/HashBiMap.java": [
@@ -242,13 +231,11 @@
 "guava:src/com/google/common/collect/HashMultimap.java": [
 60,
 73,
-84,
-88
+84
 ],
 "guava:src/com/google/common/collect/HashMultiset.java": [
 42,
-53,
-71
+53
 ],
 "guava:src/com/google/common/collect/ImmutableBiMap.java": [
 49,
@@ -295,7 +282,6 @@
 ],
 "guava:src/com/google/common/collect/ImmutableMultimap.java": [
 126,
-136,
 166,
 284,
 525,
@@ -340,7 +326,6 @@
 ],
 "guava:src/com/google/common/collect/ImmutableSetMultimap.java": [
 134,
-143,
 272,
 321,
 335,
@@ -352,11 +337,7 @@
 67,
 74,
 100,
-101,
 353,
-354,
-354,
-355,
 365,
 377,
 385,
@@ -369,7 +350,6 @@
 74,
 262,
 270,
-271,
 282,
 305,
 364,
@@ -412,7 +392,6 @@
 "guava:src/com/google/common/collect/LinkedHashMultimap.java": [
 90,
 104,
-227,
 231,
 246,
 428,
@@ -421,9 +400,7 @@
 ],
 "guava:src/com/google/common/collect/LinkedHashMultiset.java": [
 52,
-63,
-83,
-105
+63
 ],
 "guava:src/com/google/common/collect/LinkedListMultimap.java": [
 174,
@@ -431,7 +408,6 @@
 197,
 205,
 221,
-224,
 232,
 789
 ],
@@ -464,7 +440,6 @@
 294,
 341,
 380,
-381,
 460,
 782
 ],
@@ -611,7 +586,6 @@
 ],
 "guava:src/com/google/common/collect/MutableClassToInstanceMap.java": [
 45,
-46,
 56
 ],
 "guava:src/com/google/common/collect/Ordering.java": [
@@ -723,7 +697,6 @@
 955,
 1162,
 1188,
-1188,
 1266,
 1333,
 1426,
@@ -739,8 +712,6 @@
 151
 ],
 "guava:src/com/google/common/collect/SparseImmutableTable.java": [
-42,
-46,
 69,
 76
 ],
@@ -787,17 +758,13 @@
 106,
 122,
 132,
-140,
-141,
 197
 ],
 "guava:src/com/google/common/collect/TreeMultimap.java": [
 89,
 103,
 115,
-121,
-142,
-260
+142
 ],
 "guava:src/com/google/common/collect/TreeMultiset.java": [
 74,
@@ -813,20 +780,15 @@
 977
 ],
 "guava:src/com/google/common/collect/TreeRangeMap.java": [
-61,
-129,
-158
+61
 ],
 "guava:src/com/google/common/collect/TreeRangeSet.java": [
-54,
 54,
 280,
 434,
 443,
-612,
 658,
-665,
-808
+665
 ],
 "guava:src/com/google/common/collect/TreeTraverser.java": [
 88,
@@ -901,11 +863,7 @@
 191,
 327
 ],
-"guava:src/com/google/common/util/concurrent/AbstractService.java": [
-411
-],
 "guava:src/com/google/common/util/concurrent/AtomicLongMap.java": [
-66,
 66
 ],
 "guava:src/com/google/common/util/concurrent/Atomics.java": [
@@ -942,8 +900,7 @@
 1621
 ],
 "guava:src/com/google/common/util/concurrent/FuturesGetChecked.java": [
-155,
-180
+155
 ],
 "guava:src/com/google/common/util/concurrent/JdkFutureAdapters.java": [
 63,
@@ -963,8 +920,7 @@
 57
 ],
 "guava:src/com/google/common/util/concurrent/ServiceManager.java": [
-202,
-517
+202
 ],
 "guava:src/com/google/common/util/concurrent/SettableFuture.java": [
 39

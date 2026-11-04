@@ -20,6 +20,9 @@
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/gzip/GzipHttpOutputInterceptor.java": [
 47
 ],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java": [
+132
+],
 "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpChannelEventTest.java": [
 111
 ],
@@ -55,6 +58,9 @@
 "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SelectChannelServerSslTest.java": [
 193
 ],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/TypeUtil.java": [
+66
+],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/Utf8Appendable.java": [
 56
 ],
@@ -81,6 +87,9 @@
 ],
 "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/SearchPatternTest.java": [
 227
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/TestIntrospectionUtil.java": [
+35
 ],
 "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/TrieTest.java": [
 86
