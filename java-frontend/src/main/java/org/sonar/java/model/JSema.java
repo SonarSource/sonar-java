@@ -1133,7 +1133,13 @@ public final class JSema implements Sema {
     if (sameArity.size() == 1) {
       return sameArity.get(0);
     }
-    return candidates.size() == 1 ? candidates.get(0) : null;
+    return null;
+  }
+
+  /** ECJ leaves a call unresolved when no declaration takes this many arguments, rather than guessing one. */
+  static boolean arityMatches(Symbol.MethodSymbol method, int argumentCount) {
+    int parameters = method.parameterTypes().size();
+    return method.isVarArgsMethod() ? argumentCount >= parameters - 1 : argumentCount == parameters;
   }
 
   /** The single abstract method of {@code type} when it is a functional interface, else null. */
