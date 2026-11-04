@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Sema;
@@ -511,31 +512,96 @@ public final class JSema implements Sema {
     return variable;
   }
 
-  Type invocationReturn(JMethodSymbol method, @Nullable Type receiver) {
+  /**
+   * The type an invocation of {@code method} evaluates to. A self-typed method returns the receiver, or a
+   * capture of it when the receiver leaves its own type argument as a wildcard.
+   */
+  Type invocationReturn(JMethodSymbol method, @Nullable Type receiver, List<Type> arguments) {
     Integer index = method.returnTypeParameter();
-    if (index != null && receiver != null && receiver.isParameterized() && receiver.typeArguments().size() > index) {
-      return receiver.typeArguments().get(index);
+    if (method.returnsSelf() && receiver instanceof JType returned && returned.isCapture()) {
+      return returned;
     }
-    if (method.returnsSelf() && receiver instanceof JType returned) {
-      if (returned.isCapture()) {
-        return returned;
+    Type declaring = index == null || receiver == null ? null : declaringType(method, receiver);
+    if (declaring != null && declaring.isParameterized() && declaring.typeArguments().size() > index) {
+      Type argument = declaring.typeArguments().get(index);
+      if (method.returnsSelf() && argument instanceof JType captured && captured.isCapture() && receiver instanceof JType self && self.isClass()) {
+        return JType.capture(this, self);
       }
-      if (returned.isClass()) {
-        return JType.capture(this, returned);
+      if (!argument.isTypeVar()) {
+        return argument;
       }
+    }
+    if (method.returnsSelf() && receiver instanceof JType returned && returned.isClass()) {
+      boolean wildcard = returned.typeArguments().stream().anyMatch(argument -> argument instanceof JType type && type.isCapture());
+      return wildcard ? JType.capture(this, returned) : returned;
     }
     JsonObject declaredReturn = declaredReturn(method);
-    if (declaredReturn != null && receiver != null) {
-      Map<String, Type> substitution = classSubstitution(method, receiver);
-      if (!substitution.isEmpty()) {
+    if (declaredReturn != null) {
+      Map<String, Type> classSubstitution = receiver == null ? Map.of() : classSubstitution(method, receiver);
+      Map<String, Type> substitution = new HashMap<>(methodSubstitution(method, arguments));
+      substitution.putAll(classSubstitution);
+      if (!substitution.isEmpty() || method.isStatic()) {
         JType substituted = typeFromFact(declaredReturn, substitution, true);
-        if (!substituted.isUnknown()) {
+        boolean leaks = classSubstitution.isEmpty() ? mentionsTypeVariable(substituted) : mentionsMethodTypeVariable(method, substituted);
+        if (!substituted.isUnknown() && !leaks) {
           return substituted;
         }
       }
     }
     Type declared = method.returnType().type();
     return declared == null ? Type.UNKNOWN : declared;
+  }
+
+  /** Maps the type variables of {@code method} itself to the arguments they are inferred from. */
+  private Map<String, Type> methodSubstitution(JMethodSymbol method, List<Type> arguments) {
+    JsonObject member = arguments.isEmpty() ? null : lookupGenericMember(method);
+    if (member == null || !(member.get("typeVars") instanceof JsonArray names)) {
+      return Map.of();
+    }
+    List<String> variables = parameterVariables(method);
+    Map<String, Type> substitution = new HashMap<>();
+    for (int i = 0; i < names.size(); i++) {
+      Type inferred = methodArgument(variables, "m" + i, arguments);
+      if (inferred != null && !inferred.isUnknown()) {
+        substitution.put(names.get(i).getAsString(), inferred);
+      }
+    }
+    return substitution;
+  }
+
+  private static boolean mentionsTypeVariable(Type type) {
+    return mentionsTypeVariable(type, name -> true);
+  }
+
+  private boolean mentionsMethodTypeVariable(JMethodSymbol method, Type type) {
+    JsonObject member = lookupGenericMember(method);
+    if (member == null || !(member.get("typeVars") instanceof JsonArray names) || names.isEmpty()) {
+      return false;
+    }
+    Set<String> own = new HashSet<>();
+    names.forEach(name -> own.add(name.getAsString()));
+    return mentionsTypeVariable(type, own::contains);
+  }
+
+  private static boolean mentionsTypeVariable(Type type, Predicate<String> variable) {
+    if (type.isTypeVar()) {
+      return variable.test(type.name());
+    }
+    if (type.isArray()) {
+      return mentionsTypeVariable(((Type.ArrayType) type).elementType(), variable);
+    }
+    return type.isParameterized() && type.typeArguments().stream().anyMatch(argument -> mentionsTypeVariable(argument, variable));
+  }
+
+  /** The supertype of {@code receiver} that declares {@code method}, with the receiver's type arguments applied. */
+  @Nullable
+  private Type declaringType(JMethodSymbol method, Type receiver) {
+    Type owner = method.owner().type();
+    if (owner == null || owner.isUnknown()) {
+      return receiver;
+    }
+    Type found = asSuperType(receiver, owner.erasure().fullyQualifiedName(), new HashSet<>());
+    return found == null ? receiver : found;
   }
 
   /** The method as seen from {@code receiver}, so its owner keeps that parameterization. */
