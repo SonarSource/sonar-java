@@ -311,6 +311,9 @@ final class JType implements Type, Type.ArrayType {
     if (kind == Kind.UNKNOWN) {
       return true;
     }
+    if (kind == Kind.ARRAY && element != null) {
+      return element.isUnknown();
+    }
     if (kind == Kind.NAMED) {
       Symbol.TypeSymbol owner = declaredSymbol();
       return owner.isUnknown();
