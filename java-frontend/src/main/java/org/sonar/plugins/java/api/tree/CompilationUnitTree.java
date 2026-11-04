@@ -17,10 +17,14 @@
 package org.sonar.plugins.java.api.tree;
 
 import org.sonar.java.annotations.Beta;
+import org.sonar.plugins.java.api.diagnostics.Problem;
+import org.sonar.plugins.java.api.diagnostics.ProblemKind;
+import org.sonar.plugins.java.api.diagnostics.Warning;
 
 import javax.annotation.Nullable;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Compilation unit.
@@ -53,5 +57,28 @@ public interface CompilationUnitTree extends Tree {
   ModuleDeclarationTree moduleDeclaration();
 
   SyntaxToken eofToken();
+
+  /**
+   * Immutable diagnostics for unresolved types and uses of preview features.
+   */
+  default Set<Problem> semanticProblems() {
+    return Set.of();
+  }
+
+  /**
+   * Warning kinds supported by this compilation unit's frontend, even when no warnings were produced.
+   * An empty set means that no compiler warnings are available.
+   */
+  default Set<ProblemKind> supportedWarningKinds() {
+    return Set.of();
+  }
+
+  /**
+   * Immutable warnings in frontend encounter order. Unsupported kinds return an empty list;
+   * use supportedWarningKinds() to distinguish unsupported kinds from an absence of findings.
+   */
+  default List<Warning> warnings(ProblemKind kind) {
+    return List.of();
+  }
 
 }

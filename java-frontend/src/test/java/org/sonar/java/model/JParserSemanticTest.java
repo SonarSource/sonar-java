@@ -26,7 +26,6 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -58,6 +57,8 @@ import org.sonar.java.model.statement.StaticInitializerTreeImpl;
 import org.sonar.java.model.statement.SwitchExpressionTreeImpl;
 import org.sonar.java.model.statement.YieldStatementTreeImpl;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.diagnostics.ProblemKind;
+import org.sonar.plugins.java.api.diagnostics.Warning;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
@@ -1840,30 +1841,33 @@ class JParserSemanticTest {
       + "  }\n"
       + "}\n";
 
-    JavaTree.CompilationUnitTreeImpl cu = test(source);
-    List<JWarning> importsWarnings = cu.warnings(JWarning.Type.UNUSED_IMPORT);
+    CompilationUnitTree cu = test(source);
+    assertThat(cu.supportedWarningKinds()).containsExactlyInAnyOrder(
+      ProblemKind.UNUSED_IMPORT, ProblemKind.REDUNDANT_CAST, ProblemKind.ASSIGNMENT_HAS_NO_EFFECT, ProblemKind.MASKED_CATCH);
+    assertThat(cu.warnings(ProblemKind.MASKED_CATCH)).isEmpty();
+    List<Warning> importsWarnings = cu.warnings(ProblemKind.UNUSED_IMPORT);
     assertThat(importsWarnings).hasSize(2);
 
-    JWarning listWarning = importsWarnings.get(0);
+    Warning listWarning = importsWarnings.get(0);
     assertThat(listWarning.message()).isEqualTo("The import java.util.List is never used");
     assertThat(listWarning.syntaxTree()).isEqualTo(cu.imports().get(0));
 
-    JWarning objectWarning = importsWarnings.get(1);
+    Warning objectWarning = importsWarnings.get(1);
     assertThat(objectWarning.message()).isEqualTo("The import java.lang.Object is never used");
     assertThat(objectWarning.syntaxTree()).isEqualTo(cu.imports().get(2));
 
-    List<JWarning> castWarnings = cu.warnings(JWarning.Type.REDUNDANT_CAST);
+    List<Warning> castWarnings = cu.warnings(ProblemKind.REDUNDANT_CAST);
     assertThat(castWarnings).hasSize(2);
 
     TypeCastTree typeCast = (TypeCastTree) ((VariableTree) ((MethodTree) (((ClassTree) cu.types().get(0)).members().get(0))).block().body().get(0)).initializer();
-    JWarning parentCastWarning = castWarnings.get(0);
+    Warning parentCastWarning = castWarnings.get(0);
     assertThat(parentCastWarning.message()).isEqualTo("Unnecessary cast from String to String");
     assertThat(parentCastWarning.syntaxTree()).isEqualTo(typeCast);
 
     ParenthesizedTree parenthesizedTree = (ParenthesizedTree) typeCast.expression();
-    JWarning nestedCastWarning = castWarnings.get(1);
+    Warning nestedCastWarning = castWarnings.get(1);
     assertThat(nestedCastWarning.message()).isEqualTo("Unnecessary cast from String to String");
-    assertThat(nestedCastWarning.syntaxTree()).isEqualTo(parenthesizedTree);
+    assertThat(nestedCastWarning.syntaxTree()).isEqualTo(parenthesizedTree.expression());
   }
 
   @Test

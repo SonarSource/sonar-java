@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -257,21 +255,6 @@ public class JParser {
 
   private static final Logger LOG = LoggerFactory.getLogger(JParser.class);
 
-  private static final Set<Integer> WRONGLY_CATEGORIZED_AS_SYNTAX_ERROR = Set.of(
-    // Accept missing default clause, it may be due to missing semantic information of the switch expression,
-    // in this case, an enum fully covered with the switch cases will be seen as something that is not an enum
-    // when it is unknown, and the parser will wrongly consider the missing default clause as a syntax error.
-    IProblem.SwitchExpressionsYieldMissingDefaultCase,
-    // Accept missing default clause, it may be due the switch expression being an enum from a wrong dependency.
-    // In this case, the parser will wrongly consider the missing default clause as a syntax error.
-    IProblem.SwitchExpressionsYieldMissingEnumConstantCase
-  );
-
-  private static final Predicate<IProblem> IS_SYNTAX_ERROR = error -> ((error.getID() & IProblem.Syntax) != 0) &&
-    !WRONGLY_CATEGORIZED_AS_SYNTAX_ERROR.contains(error.getID());
-
-  private static final Predicate<IProblem> IS_UNDEFINED_TYPE_ERROR = error -> (error.getID() & IProblem.UndefinedType) != 0;
-
   /**
    * @param unitName see {@link ASTParser#setUnitName(String)}
    * @throws RecognitionException in case of syntax errors
@@ -293,7 +276,7 @@ public class JParser {
 
   static JavaTree.CompilationUnitTreeImpl convert(String version, String unitName, String source, CompilationUnit astNode) {
     List<IProblem> errors = Stream.of(astNode.getProblems()).filter(IProblem::isError).toList();
-    Optional<IProblem> possibleSyntaxError = errors.stream().filter(IS_SYNTAX_ERROR).findFirst();
+    Optional<IProblem> possibleSyntaxError = errors.stream().filter(JProblem::isSyntaxError).findFirst();
     LineColumnConverter lineColumnConverter = new LineColumnConverter(source);
     if (possibleSyntaxError.isPresent()) {
       IProblem syntaxError = possibleSyntaxError.get();
@@ -303,13 +286,6 @@ public class JParser {
       throw new RecognitionException(pos.line(), message);
     }
 
-    Set<JProblem> undefinedTypes = errors.stream()
-      .filter(IS_UNDEFINED_TYPE_ERROR)
-      .map(i -> new JProblem(
-        i.getMessage(),
-        (i.getID() & IProblem.PreviewFeatureUsed) == 0 ? JProblem.Type.UNDEFINED_TYPE : JProblem.Type.PREVIEW_FEATURE_USED))
-      .collect(Collectors.toSet());
-
     JParser converter = new JParser();
     converter.sema = new JSema(astNode.getAST());
     converter.compilationUnit = astNode;
@@ -317,7 +293,7 @@ public class JParser {
     converter.lineColumnConverter = lineColumnConverter;
 
     JavaTree.CompilationUnitTreeImpl tree = converter.convertCompilationUnit(astNode);
-    tree.setSemanticModel(converter.sema, undefinedTypes, converter.sema.getEnvironmentCleaner());
+    tree.setSemanticModel(converter.sema, JProblem.semanticProblems(errors), converter.sema.getEnvironmentCleaner());
     JWarning.Mapper.warningsFor(astNode, converter.lineColumnConverter).mappedInto(tree);
 
     ASTUtils.mayTolerateMissingType(astNode.getAST());

@@ -16,50 +16,62 @@
  */
 package org.sonar.java.model;
 
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import javax.annotation.CheckForNull;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.compiler.IProblem;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
+import org.sonar.plugins.java.api.diagnostics.Problem;
+import org.sonar.plugins.java.api.diagnostics.ProblemKind;
 
-public class JProblem {
+public class JProblem implements Problem {
 
   private static final String USE_ENABLE_PREVIEW = " Use --enable-preview to enable";
 
-  private final String message;
-  private final Type type;
+  private static final Map<Integer, ProblemKind> PROBLEM_KINDS = Map.of(
+    IProblem.UndefinedType, ProblemKind.UNDEFINED_TYPE,
+    IProblem.PreviewFeatureUsed, ProblemKind.PREVIEW_FEATURE_USED,
+    IProblem.UnusedImport, ProblemKind.UNUSED_IMPORT,
+    IProblem.UnnecessaryCast, ProblemKind.REDUNDANT_CAST,
+    IProblem.AssignmentHasNoEffect, ProblemKind.ASSIGNMENT_HAS_NO_EFFECT,
+    IProblem.MaskedCatch, ProblemKind.MASKED_CATCH);
 
-  JProblem(String message, Type type) {
-    this.message = message;
+  private static final Set<String> COMPILER_OPTIONS = Set.of(
+    JavaCore.COMPILER_PB_UNUSED_IMPORT,
+    JavaCore.COMPILER_PB_UNNECESSARY_TYPE_CHECK,
+    JavaCore.COMPILER_PB_NO_EFFECT_ASSIGNMENT,
+    JavaCore.COMPILER_PB_HIDDEN_CATCH_BLOCK);
+
+  private static final Set<Integer> WRONGLY_CATEGORIZED_AS_SYNTAX_ERROR = Set.of(
+    IProblem.SwitchExpressionsYieldMissingDefaultCase,
+    IProblem.SwitchExpressionsYieldMissingEnumConstantCase);
+
+  private final String message;
+  private final ProblemKind type;
+
+  JProblem(String message, ProblemKind type) {
+    this.message = type == ProblemKind.PREVIEW_FEATURE_USED && message.endsWith(USE_ENABLE_PREVIEW)
+      ? message.substring(0, message.length() - USE_ENABLE_PREVIEW.length())
+      : message;
     this.type = type;
   }
 
-  public Type type() {
+  @Override
+  public ProblemKind type() {
     return type;
   }
 
+  @Override
   public String message() {
     return message;
   }
 
   @Override
   public String toString() {
-    if (type == JProblem.Type.PREVIEW_FEATURE_USED) {
-      return cleanMessage(message);
-    }
-    return message;
-  }
-
-  private static String cleanMessage(String message) {
-    if (message.endsWith(USE_ENABLE_PREVIEW)) {
-      // Using --enable-preview is irrelevant in this context.
-      return message.substring(0, message.length() - USE_ENABLE_PREVIEW.length());
-    }
-    return message;
+    return message();
   }
 
   @Override
@@ -67,10 +79,9 @@ public class JProblem {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof JProblem)) {
+    if (!(o instanceof JProblem that)) {
       return false;
     }
-    JProblem that = (JProblem) o;
     return type == that.type && message.equals(that.message);
   }
 
@@ -79,48 +90,26 @@ public class JProblem {
     return Objects.hash(type, message);
   }
 
-  public enum Type {
-    UNDEFINED_TYPE(IProblem.UndefinedType),
-    PREVIEW_FEATURE_USED(IProblem.PreviewFeatureUsed),
-    UNUSED_IMPORT(IProblem.UnusedImport, JavaCore.COMPILER_PB_UNUSED_IMPORT, Tree.Kind.IMPORT),
-    REDUNDANT_CAST(IProblem.UnnecessaryCast, JavaCore.COMPILER_PB_UNNECESSARY_TYPE_CHECK, Tree.Kind.TYPE_CAST, Tree.Kind.PARENTHESIZED_EXPRESSION),
-    ASSIGNMENT_HAS_NO_EFFECT(IProblem.AssignmentHasNoEffect, JavaCore.COMPILER_PB_NO_EFFECT_ASSIGNMENT, Tree.Kind.ASSIGNMENT),
-    MASKED_CATCH(IProblem.MaskedCatch, JavaCore.COMPILER_PB_HIDDEN_CATCH_BLOCK, Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT);
-
-    private final int warningID;
-    private final String compilerOptionKey;
-    private final Set<Tree.Kind> kinds;
-
-    private static final Set<String> COMPILER_OPTIONS = new HashSet<>();
-
-    Type(int warningID) {
-      this.warningID = warningID;
-      this.compilerOptionKey = null;
-      this.kinds = Collections.emptySet();
-    }
-
-    Type(int warningID, String compilerOptionKey, Tree.Kind... kinds) {
-      this.warningID = warningID;
-      this.compilerOptionKey = compilerOptionKey;
-      this.kinds = SetUtils.immutableSetOf(kinds);
-    }
-
-    boolean matches(IProblem warning) {
-      return warning.getID() == warningID;
-    }
-
-    public static Set<String> compilerOptions() {
-      if (COMPILER_OPTIONS.isEmpty()) {
-        Stream.of(Type.values())
-          .map(t -> t.compilerOptionKey)
-          .forEach(COMPILER_OPTIONS::add);
-      }
-      return Collections.unmodifiableSet(COMPILER_OPTIONS);
-    }
-
-    public Set<Tree.Kind> getKinds() {
-      return kinds;
-    }
+  public static Set<String> compilerOptions() {
+    return COMPILER_OPTIONS;
   }
 
+  @CheckForNull
+  static ProblemKind kindOf(IProblem problem) {
+    return PROBLEM_KINDS.get(problem.getID());
+  }
+
+  /**
+   * Missing switch defaults can be caused by incomplete enum type information rather than invalid syntax.
+   */
+  static boolean isSyntaxError(IProblem problem) {
+    return (problem.getID() & IProblem.Syntax) != 0 && !WRONGLY_CATEGORIZED_AS_SYNTAX_ERROR.contains(problem.getID());
+  }
+
+  static Set<Problem> semanticProblems(List<IProblem> errors) {
+    return errors.stream()
+      .filter(error -> (error.getID() & IProblem.UndefinedType) != 0)
+      .map(error -> new JProblem(error.getMessage(), (error.getID() & IProblem.PreviewFeatureUsed) == 0 ? ProblemKind.UNDEFINED_TYPE : ProblemKind.PREVIEW_FEATURE_USED))
+      .collect(Collectors.toSet());
+  }
 }
