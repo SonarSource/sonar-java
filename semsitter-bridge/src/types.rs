@@ -166,6 +166,7 @@ fn classpath_type(name: &str, ty: &ClasspathType) -> Value {
         "vis": "public",
         "retParam": returned,
         "retSelf": returned.is_some_and(|index| parameters[index].1 == name),
+        "retType": m.signature.as_deref().and_then(return_type),
         "paramVars": m.signature.as_deref().map(|s| parameter_variables(s, &parameters)),
         "paramTypes": m.signature.as_deref().map(parameter_types),
         "typeVars": m.signature.as_deref().map(|s| type_parameters(s).into_iter().map(|(name, _)| name).collect::<Vec<_>>()),
@@ -470,6 +471,16 @@ fn parameter_variables(signature: &str, parameters: &[(String, String)]) -> Vec<
     i = end;
   }
   out
+}
+
+/// The return type of a method `Signature`, keeping the type variables it is written in terms of.
+fn return_type(signature: &str) -> Option<Value> {
+  let close = signature.rfind(')')?;
+  let mut i = close + 1;
+  if i >= signature.len() {
+    return None;
+  }
+  Some(signature_type(signature, &mut i))
 }
 
 /// The declared parameter types of a method `Signature`, as type facts keeping the type variables

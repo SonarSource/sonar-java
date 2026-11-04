@@ -45,6 +45,9 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   private List<String> parameterVariables;
   @Nullable
   private List<JsonObject> declaredParameters;
+  private boolean declaredReturnLoaded;
+  @Nullable
+  private JsonObject declaredReturn;
   private List<MethodSymbol> overridden;
   @Nullable
   private List<Type> thrownTypes;
@@ -115,6 +118,20 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     return declaredParameters;
   }
 
+  void declaredReturn(@Nullable JsonObject declaredReturn) {
+    this.declaredReturnLoaded = true;
+    this.declaredReturn = declaredReturn;
+  }
+
+  boolean declaredReturnLoaded() {
+    return declaredReturnLoaded;
+  }
+
+  @Nullable
+  JsonObject declaredReturn() {
+    return declaredReturn;
+  }
+
   /**
    * A per-invocation view with substituted parameter and return types. Equality stays on the SemSitter id,
    * so the view still denotes the same method as the declaration.
@@ -126,6 +143,8 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     view.parameterTypes = List.copyOf(parameterTypes);
     view.parameterVariables = parameterVariables;
     view.declaredParameters = declaredParameters;
+    view.declaredReturnLoaded = declaredReturnLoaded;
+    view.declaredReturn = declaredReturn;
     view.returnTypeSymbol = returnType.symbol();
     view.varArgs = varArgs;
     view.lambda = lambda;
