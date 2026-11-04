@@ -385,10 +385,8 @@ fn signature_type(signature: &str, i: &mut usize) -> Value {
       json!({"kind": "typevar", "id": name})
     }
     b'*' => json!({"kind": "wildcard"}),
-    b'+' | b'-' => {
-      signature_type(signature, i);
-      json!({"kind": "wildcard"})
-    }
+    b'+' => json!({"kind": "wildcard", "extends": signature_type(signature, i)}),
+    b'-' => json!({"kind": "wildcard", "super": signature_type(signature, i)}),
     b'L' => {
       let mut name = Vec::new();
       let mut args = Vec::new();
@@ -607,7 +605,7 @@ mod tests {
       interfaces,
       vec![
         json!({"id": "java.util.List", "args": [{"kind": "array", "elem": {"kind": "typevar", "id": "E"}}]}),
-        json!({"id": "java.util.Map$Entry", "args": [{"kind": "wildcard"}, {"kind": "wildcard"}]}),
+        json!({"id": "java.util.Map$Entry", "args": [{"kind": "wildcard"}, {"kind": "wildcard", "extends": {"id": "java.lang.Number", "args": []}}]}),
       ]
     );
     // A member of a generic outer class keeps only its own arguments.
