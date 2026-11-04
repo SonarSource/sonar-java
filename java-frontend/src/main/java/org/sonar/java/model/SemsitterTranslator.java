@@ -2127,9 +2127,10 @@ final class SemsitterTranslator {
     for (int i = 0; i < children.size(); i++) {
       if ("[".equals(children.get(i).text())) {
         InternalSyntaxToken close = i + 1 < children.size() ? token(children.get(i + 1)) : synthetic("]");
+        JType component = current.symbolType() instanceof JType jType ? jType : JType.unknown(sema);
         current = new JavaTree.ArrayTypeTreeImpl(current, annotations, token(children.get(i)), close);
         annotations = new ArrayList<>();
-        ascribe((AbstractTypedTree) current, JType.array(sema, (JType) (element.symbolType() instanceof JType j ? j : JType.unknown(sema))));
+        ascribe((AbstractTypedTree) current, JType.array(sema, component));
       } else if (isAnnotation(children.get(i))) {
         annotations.add(annotation(children.get(i)));
       }
