@@ -2384,9 +2384,28 @@ final class SemsitterTranslator {
     if (symbol.isMethodSymbol() && symbol.isUnknown()) {
       symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
     }
+    symbol = typedField(symbol);
     identifier.symbol = symbol;
     ascribe(identifier, identifierType(symbol));
     sema.use(usageId(symbol, target), identifier);
+  }
+
+  /** A field the graph typed as void keeps the type its class file declares. */
+  private Symbol typedField(Symbol symbol) {
+    if (!(symbol instanceof JSymbol field) || !field.isVariableSymbol() || field.type() == null || !field.type().isVoid()) {
+      return symbol;
+    }
+    String owner = field.owner().type() != null && !field.owner().type().isUnknown()
+      ? field.owner().type().erasure().fullyQualifiedName()
+      : (field.id != null && field.id.indexOf('#') > 0 ? field.id.substring(0, field.id.indexOf('#')) : null);
+    if (owner == null) {
+      return symbol;
+    }
+    Symbol.VariableSymbol declared = sema.declaredField(JSema.erase(owner), field.name());
+    if (declared != null && declared.type() != null && !declared.type().isVoid() && !declared.type().isUnknown()) {
+      return declared;
+    }
+    return symbol;
   }
 
   /** Usages are stored under the symbol's own id, which can differ from the fact key that resolved it. */
