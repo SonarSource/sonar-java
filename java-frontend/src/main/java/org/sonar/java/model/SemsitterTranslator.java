@@ -179,9 +179,40 @@ final class SemsitterTranslator {
     CompilerWarnings.addTo(unit);
     EffectivelyFinalVariables.mark(unit);
     if (broken) {
-      throw new RecognitionException(1, "SemSitter: syntax error");
+      throw syntaxError(root);
     }
     return unit;
+  }
+
+  /** ECJ aborts the file on a syntax error and reports the location of the first broken token. */
+  private static RecognitionException syntaxError(Node root) {
+    Node problem = firstProblem(root);
+    int line = problem == null ? 1 : problem.line();
+    int column = 1;
+    if (problem != null) {
+      column = problem.col() + 1;
+      if (problem.missing() && problem.col() == problem.endCol()) {
+        column = Math.max(1, problem.col());
+      }
+    }
+    return new RecognitionException(line, "Parse error at line " + line + " column " + column + ": SemSitter: syntax error");
+  }
+
+  @Nullable
+  private static Node firstProblem(Node node) {
+    if ("ERROR".equals(node.k()) || node.missing()) {
+      return node;
+    }
+    if (!node.json.has("c")) {
+      return null;
+    }
+    for (JsonElement element : node.json.getAsJsonArray("c")) {
+      Node problem = firstProblem(new Node(element.getAsJsonObject()));
+      if (problem != null) {
+        return problem;
+      }
+    }
+    return null;
   }
 
   private void indexTokens(Node root) {
@@ -3223,6 +3254,10 @@ final class SemsitterTranslator {
 
     private int col() {
       return json.has("p") ? json.getAsJsonArray("p").get(1).getAsInt() : 0;
+    }
+
+    private int endCol() {
+      return json.has("p") ? json.getAsJsonArray("p").get(3).getAsInt() : col();
     }
 
     private List<Node> children() {
