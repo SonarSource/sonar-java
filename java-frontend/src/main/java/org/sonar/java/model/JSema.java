@@ -604,6 +604,40 @@ public final class JSema implements Sema {
     return found == null ? receiver : found;
   }
 
+  /**
+   * The parameterization of {@code created} a diamond infers from {@code target}: each type parameter of the created
+   * class takes the target argument it is passed to through the supertype matching the target.
+   */
+  Type inferDiamond(Type created, Type target) {
+    if (!(created.erasure() instanceof JType raw) || raw.isUnknown() || !(target instanceof JType expected) || !expected.isParameterized()) {
+      return created;
+    }
+    String targetFqn = expected.erasure().fullyQualifiedName();
+    if (raw.fullyQualifiedName().equals(targetFqn)) {
+      return JType.named(this, raw.fullyQualifiedName(), expected.args);
+    }
+    Type generic = raw.declaringType();
+    Type declared = generic.isParameterized() ? asSuperType(generic, targetFqn, new HashSet<>()) : null;
+    if (declared == null || declared.typeArguments().size() != expected.args.size()) {
+      return created;
+    }
+    Map<String, JType> inferred = new HashMap<>();
+    for (int i = 0; i < expected.args.size(); i++) {
+      if (declared.typeArguments().get(i).isTypeVar()) {
+        inferred.put(declared.typeArguments().get(i).fullyQualifiedName(), expected.args.get(i));
+      }
+    }
+    List<JType> arguments = new ArrayList<>();
+    for (Type variable : generic.typeArguments()) {
+      JType argument = inferred.get(variable.fullyQualifiedName());
+      if (argument == null) {
+        return created;
+      }
+      arguments.add(argument);
+    }
+    return JType.named(this, raw.fullyQualifiedName(), arguments);
+  }
+
   /** The type a lambda or method reference implements for a wildcard-parameterized target (JLS 9.9). */
   Type groundType(Type target) {
     if (!(target instanceof JType type) || !type.isParameterized() || type.args.stream().noneMatch(JType::isWildcard)) {
