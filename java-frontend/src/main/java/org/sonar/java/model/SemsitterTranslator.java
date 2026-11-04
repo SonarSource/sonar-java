@@ -156,6 +156,7 @@ final class SemsitterTranslator {
   private final Map<String, String> staticImports = new HashMap<>();
   private final List<String> staticOnDemandImports = new ArrayList<>();
   private final Deque<Map<String, Symbol>> scopes = new ArrayDeque<>();
+  private final Deque<Type> returnTargets = new ArrayDeque<>();
 
   private SemsitterTranslator(JSema sema) {
     this.sema = sema;
@@ -641,10 +642,13 @@ final class SemsitterTranslator {
 
   private MethodTreeImpl method(Node node) {
     scopes.addFirst(new HashMap<>());
+    Node typeNode = field(node, "type");
+    returnTargets.push(typeNode == null || field(node, "dimensions") != null ? Type.UNKNOWN : syntacticType(typeNode));
     try {
       return methodInScope(node);
     } finally {
       scopes.removeFirst();
+      returnTargets.pop();
     }
   }
 
@@ -1077,6 +1081,9 @@ final class SemsitterTranslator {
       if (!"return".equals(child.text()) && !";".equals(child.text())) {
         expression = expression(child);
       }
+    }
+    if (expression instanceof NewClassTreeImpl newClass && !returnTargets.isEmpty()) {
+      inferDiamond(newClass, returnTargets.peek());
     }
     return new ReturnStatementTreeImpl(token(required(node, "return")), expression, token(required(node, ";")));
   }
@@ -1594,8 +1601,31 @@ final class SemsitterTranslator {
     if (targetTyped && expression.symbolType().isUnknown() && !target.isUnknown()) {
       ascribe(expression, expression instanceof NewArrayTreeImpl ? target : sema.groundType(target));
     }
+    if (expression instanceof NewClassTreeImpl newClass) {
+      inferDiamond(newClass, target);
+    }
     if (expression instanceof LambdaExpressionTreeImpl lambda) {
       bindLambdaParameterOwner(lambda, lambda.symbolType());
+    }
+  }
+
+  /** A diamond takes the type arguments its target gives the created class, and its constructor is seen from that type. */
+  private void inferDiamond(NewClassTreeImpl tree, Type target) {
+    if (!(tree.identifier() instanceof JavaTree.ParameterizedTypeTreeImpl generic) || !generic.typeArguments().isEmpty() || !target.isParameterized()) {
+      return;
+    }
+    Type inferred = sema.inferDiamond(tree.symbolType(), sema.groundType(target));
+    if (!inferred.isParameterized()) {
+      return;
+    }
+    ascribe(tree, inferred);
+    ascribe(generic, inferred);
+    if (tree.getConstructorIdentifier() instanceof IdentifierTreeImpl identifier) {
+      ascribe(identifier, inferred);
+      if (identifier.symbol() instanceof JMethodSymbol constructor && !constructor.isUnknown()) {
+        List<Type> parameters = sema.invocationParameters(constructor, inferred, argumentTypes(tree.arguments()));
+        identifier.symbol = sema.invocationView(constructor, inferred, parameters, constructor.returnType().type());
+      }
     }
   }
 
@@ -1998,6 +2028,9 @@ final class SemsitterTranslator {
       operator == null ? token(required(node, text)) : token(operator),
       expression(requiredField(node, "right", lastNamed(node))));
     ascribe(tree, tree.variable().symbolType());
+    if (tree.is(Tree.Kind.ASSIGNMENT) && tree.expression() instanceof NewClassTreeImpl newClass) {
+      inferDiamond(newClass, tree.variable().symbolType());
+    }
     return tree;
   }
 
@@ -2121,10 +2154,12 @@ final class SemsitterTranslator {
 
   private LambdaExpressionTreeImpl lambda(Node node) {
     scopes.addFirst(new HashMap<>());
+    returnTargets.push(Type.UNKNOWN);
     try {
       return lambdaInScope(node);
     } finally {
       scopes.removeFirst();
+      returnTargets.pop();
     }
   }
 
@@ -2544,6 +2579,67 @@ final class SemsitterTranslator {
     } else if (tree instanceof VariableTreeImpl variable && symbol instanceof Symbol.VariableSymbol variableSymbol) {
       variable.variableSymbol = variableSymbol;
     }
+  }
+
+  /**
+   * The scan records erased return types, so the type arguments of each declared return type are read from the
+   * syntax before any body is translated: invocations may precede the declaration they call.
+   */
+  private void declareGenericReturns(Node node) {
+    if ("method_declaration".equals(node.k()) && field(node, "dimensions") == null) {
+      Node typeNode = field(node, "type");
+      Node name = nameNode(node);
+      String id = name == null ? null : name.decl();
+      if (typeNode != null && id != null && sema.resolve(id) instanceof JMethodSymbol method) {
+        Type declared = syntacticType(typeNode);
+        if (declared.isParameterized() && !mentionsUnknown(declared) && sameErasure(declared, method.returnType().type())) {
+          method.returnTypeSymbol(declared.symbol());
+        }
+      }
+    }
+    for (Node child : node.children()) {
+      declareGenericReturns(child);
+    }
+  }
+
+  /** The type a type node denotes, from the references the scan bound, without translating it. */
+  private Type syntacticType(Node node) {
+    switch (node.k()) {
+      case "type_identifier", "scoped_type_identifier" -> {
+        String target = node.typeTarget();
+        return target != null && sema.resolve(target) instanceof Symbol.TypeSymbol type && !type.isUnknown() ? type.type() : Type.UNKNOWN;
+      }
+      case "generic_type" -> {
+        Node rawNode = firstType(node);
+        Type raw = rawNode == null ? Type.UNKNOWN : syntacticType(rawNode);
+        Node arguments = childKind(node, "type_arguments");
+        if (raw.isUnknown() || arguments == null) {
+          return raw;
+        }
+        List<JType> types = new ArrayList<>();
+        for (Node argument : arguments.children()) {
+          if (isTypeKind(argument.k())) {
+            types.add(syntacticType(argument) instanceof JType type ? type : JType.unknown(sema));
+          }
+        }
+        return JType.named(sema, raw.erasure().fullyQualifiedName(), types);
+      }
+      case "wildcard" -> {
+        Node bound = firstType(node);
+        if (bound == null) {
+          return JType.wildcard(sema, (JType) sema.getClassType("java.lang.Object"));
+        }
+        JType type = syntacticType(bound) instanceof JType known ? known : JType.unknown(sema);
+        return keyword(node, "super") != null ? JType.superWildcard(sema, type) : JType.wildcard(sema, type);
+      }
+      default -> {
+        return Type.UNKNOWN;
+      }
+    }
+  }
+
+  private static boolean mentionsUnknown(Type type) {
+    return type.isUnknown() || (type.isParameterized() && type.typeArguments().stream().anyMatch(SemsitterTranslator::mentionsUnknown));
   }
 
   private static boolean sameErasure(Type left, Type right) {
