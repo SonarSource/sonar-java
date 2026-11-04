@@ -1,0 +1,1554 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"add\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpFields.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 544,
+            "startColumn" : 13,
+            "endLine" : 544,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"uri\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpURI.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 393,
+            "startColumn" : 13,
+            "endLine" : 393,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addValue\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedCSV.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 128,
+            "startColumn" : 13,
+            "endLine" : 128,
+            "endColumn" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"getCapacityFactor\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ArrayByteBufferPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 94,
+            "startColumn" : 18,
+            "endLine" : 94,
+            "endColumn" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addInput\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 120,
+            "startColumn" : 13,
+            "endLine" : 120,
+            "endColumn" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setIdleTimeout\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 122,
+            "startColumn" : 9,
+            "endLine" : 122,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"onOpen\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ByteArrayEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 123,
+            "startColumn" : 9,
+            "endLine" : 123,
+            "endColumn" : 15
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addBean\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 80,
+            "startColumn" : 13,
+            "endLine" : 80,
+            "endColumn" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"initCause\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/EofException.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 43,
+            "startColumn" : 13,
+            "endLine" : 43,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addBean\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/LeakTrackingByteBufferPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 9,
+            "endLine" : 62,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addBean\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/LeakTrackingByteBufferPool.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 63,
+            "startColumn" : 9,
+            "endLine" : 63,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addBean\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 100,
+            "startColumn" : 9,
+            "endLine" : 100,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setIdleTimeout\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/NetworkTrafficSocketChannelEndPoint.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 42,
+            "startColumn" : 9,
+            "endLine" : 42,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"newDecryptedEndPoint\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 198,
+            "startColumn" : 35,
+            "endLine" : 198,
+            "endColumn" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addBean\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 185,
+            "startColumn" : 9,
+            "endLine" : 185,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"unmanage\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 187,
+            "startColumn" : 13,
+            "endLine" : 187,
+            "endColumn" : 21
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addBean\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 191,
+            "startColumn" : 9,
+            "endLine" : 191,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addBean\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 195,
+            "startColumn" : 9,
+            "endLine" : 195,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addEventListener\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 197,
+            "startColumn" : 9,
+            "endLine" : 197,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addConnectionFactory\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 216,
+            "startColumn" : 13,
+            "endLine" : 216,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addBean\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 307,
+            "startColumn" : 9,
+            "endLine" : 307,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addBean\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DetectorConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 55,
+            "startColumn" : 13,
+            "endLine" : 55,
+            "endColumn" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"getInputBufferSize\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DetectorConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 152,
+            "startColumn" : 61,
+            "endLine" : 152,
+            "endColumn" : 79
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"newHttpGenerator\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 106,
+            "startColumn" : 22,
+            "endLine" : 106,
+            "endColumn" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"newHttpChannel\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 107,
+            "startColumn" : 20,
+            "endLine" : 107,
+            "endColumn" : 34
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"newHttpParser\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 109,
+            "startColumn" : 19,
+            "endLine" : 109,
+            "endColumn" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addBean\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 9,
+            "endLine" : 50,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setUseInputDirectByteBuffers\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 51,
+            "startColumn" : 9,
+            "endLine" : 51,
+            "endColumn" : 37
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setUseOutputDirectByteBuffers\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 52,
+            "startColumn" : 9,
+            "endLine" : 52,
+            "endColumn" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setIdleTimeout\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/LocalConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 9,
+            "endLine" : 56,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setGrowOutput\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/LocalConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 243,
+            "startColumn" : 13,
+            "endLine" : 243,
+            "endColumn" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"getInputBufferSize\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 164,
+            "startColumn" : 66,
+            "endLine" : 164,
+            "endColumn" : 84
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"getInputBufferSize\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 451,
+            "startColumn" : 66,
+            "endLine" : 451,
+            "endColumn" : 84
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setAppend\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/RequestLogWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 61,
+            "startColumn" : 9,
+            "endLine" : 61,
+            "endColumn" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setRetainDays\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/RequestLogWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 9,
+            "endLine" : 62,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setFilename\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/RequestLogWriter.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 13,
+            "endLine" : 65,
+            "endColumn" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setConnectors\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 113,
+            "startColumn" : 9,
+            "endLine" : 113,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addBean\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 114,
+            "startColumn" : 9,
+            "endLine" : 114,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setConnectors\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 130,
+            "startColumn" : 9,
+            "endLine" : 130,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addBean\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 136,
+            "startColumn" : 9,
+            "endLine" : 136,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setServer\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 137,
+            "startColumn" : 9,
+            "endLine" : 137,
+            "endColumn" : 18
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"newSelectorManager\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 215,
+            "startColumn" : 20,
+            "endLine" : 215,
+            "endColumn" : 38
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"getExecutor\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 215,
+            "startColumn" : 39,
+            "endLine" : 215,
+            "endColumn" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"getScheduler\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 215,
+            "startColumn" : 54,
+            "endLine" : 215,
+            "endColumn" : 66
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addBean\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 216,
+            "startColumn" : 9,
+            "endLine" : 216,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setAcceptorPriorityDelta\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 217,
+            "startColumn" : 9,
+            "endLine" : 217,
+            "endColumn" : 33
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addBean\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/SslConnectionFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 62,
+            "startColumn" : 9,
+            "endLine" : 62,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addAliasCheck\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 261,
+            "startColumn" : 9,
+            "endLine" : 261,
+            "endColumn" : 22
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addAliasCheck\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 263,
+            "startColumn" : 13,
+            "endLine" : 263,
+            "endColumn" : 26
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setContextPath\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 266,
+            "startColumn" : 13,
+            "endLine" : 266,
+            "endColumn" : 27
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setHandlers\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandlerCollection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 9,
+            "endLine" : 67,
+            "endColumn" : 20
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setHandlers\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HandlerCollection.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 13,
+            "endLine" : 65,
+            "endColumn" : 24
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setHandler\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/MovedContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 49,
+            "startColumn" : 9,
+            "endLine" : 49,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setAllowNullPathInfo\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/MovedContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 50,
+            "startColumn" : 9,
+            "endLine" : 50,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setHandler\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/MovedContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 58,
+            "startColumn" : 9,
+            "endLine" : 58,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setExitJvm\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ShutdownHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 103,
+            "startColumn" : 9,
+            "endLine" : 103,
+            "endColumn" : 19
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setSendShutdownAtStart\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ShutdownHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 104,
+            "startColumn" : 9,
+            "endLine" : 104,
+            "endColumn" : 31
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addBean\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/CachingSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 9,
+            "endLine" : 65,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"addBean\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/CachingSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 9,
+            "endLine" : 67,
+            "endColumn" : 16
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setContextPath\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 168,
+            "startColumn" : 9,
+            "endLine" : 168,
+            "endColumn" : 23
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setVhost\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 169,
+            "startColumn" : 9,
+            "endLine" : 169,
+            "endColumn" : 17
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"calcAndSetExpiry\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 174,
+            "startColumn" : 9,
+            "endLine" : 174,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"putAllAttributes\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 181,
+            "startColumn" : 9,
+            "endLine" : 181,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1699",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Remove this call from a constructor to the overridable \"setSessionTrackingModes\" method."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 203,
+            "startColumn" : 9,
+            "endLine" : 203,
+            "endColumn" : 32
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

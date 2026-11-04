@@ -1,0 +1,810 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/PathMappings.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 204,
+            "startColumn" : 23,
+            "endLine" : 204,
+            "endColumn" : 39
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/ConnectorServer.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 173,
+            "startColumn" : 60,
+            "endLine" : 173,
+            "endColumn" : 69
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/LocalConnector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 359,
+            "startColumn" : 90,
+            "endLine" : 359,
+            "endColumn" : 99
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 213,
+            "startColumn" : 35,
+            "endLine" : 213,
+            "endColumn" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 938,
+            "startColumn" : 45,
+            "endLine" : 938,
+            "endColumn" : 54
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 67,
+            "startColumn" : 48,
+            "endLine" : 67,
+            "endColumn" : 57
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 86,
+            "startColumn" : 56,
+            "endLine" : 86,
+            "endColumn" : 65
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 96,
+            "startColumn" : 89,
+            "endLine" : 96,
+            "endColumn" : 98
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 105,
+            "startColumn" : 58,
+            "endLine" : 105,
+            "endColumn" : 67
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DatabaseAdaptor.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 261,
+            "startColumn" : 16,
+            "endLine" : 261,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 136,
+            "startColumn" : 55,
+            "endLine" : 136,
+            "endColumn" : 64
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 252,
+            "startColumn" : 16,
+            "endLine" : 252,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 603,
+            "startColumn" : 16,
+            "endLine" : 603,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 454,
+            "startColumn" : 20,
+            "endLine" : 454,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 475,
+            "startColumn" : 20,
+            "endLine" : 475,
+            "endColumn" : 29
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 722,
+            "startColumn" : 16,
+            "endLine" : 722,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 766,
+            "startColumn" : 16,
+            "endLine" : 766,
+            "endColumn" : 25
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 98,
+            "startColumn" : 107,
+            "endLine" : 98,
+            "endColumn" : 116
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 108,
+            "startColumn" : 49,
+            "endLine" : 108,
+            "endColumn" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 118,
+            "startColumn" : 35,
+            "endLine" : 118,
+            "endColumn" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 132,
+            "startColumn" : 49,
+            "endLine" : 132,
+            "endColumn" : 58
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 144,
+            "startColumn" : 53,
+            "endLine" : 144,
+            "endColumn" : 62
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 155,
+            "startColumn" : 41,
+            "endLine" : 155,
+            "endColumn" : 50
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 166,
+            "startColumn" : 40,
+            "endLine" : 166,
+            "endColumn" : 49
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 176,
+            "startColumn" : 38,
+            "endLine" : 176,
+            "endColumn" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 186,
+            "startColumn" : 38,
+            "endLine" : 186,
+            "endColumn" : 47
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 38,
+            "startColumn" : 52,
+            "endLine" : 38,
+            "endColumn" : 61
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 47,
+            "startColumn" : 47,
+            "endLine" : 47,
+            "endColumn" : 56
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 56,
+            "startColumn" : 59,
+            "endLine" : 56,
+            "endColumn" : 68
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataMap.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 65,
+            "startColumn" : 45,
+            "endLine" : 65,
+            "endColumn" : 54
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 70,
+            "startColumn" : 45,
+            "endLine" : 70,
+            "endColumn" : 54
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataStoreFactory.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 26,
+            "startColumn" : 73,
+            "endLine" : 26,
+            "endColumn" : 82
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S112",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Replace generic exceptions with specific library exceptions or a custom exception."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 942,
+            "startColumn" : 46,
+            "endLine" : 942,
+            "endColumn" : 55
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}

@@ -1,0 +1,114 @@
+{
+  "$schema" : "https://json.schemastore.org/sarif-2.1.0.json",
+  "version" : "2.1.0",
+  "runs" : [ {
+    "tool" : {
+      "driver" : {
+        "name" : "LITS",
+        "language" : "en-US",
+        "contents" : [ "localizedData", "nonLocalizedData" ],
+        "isComprehensive" : false
+      }
+    },
+    "language" : "en-US",
+    "results" : [ {
+      "ruleId" : "java:S899",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Do something with the \"boolean\" value returned by \"await\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 736,
+            "startColumn" : 17,
+            "endLine" : 736,
+            "endColumn" : 44
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S899",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Do something with the \"boolean\" value returned by \"setReadable\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 230,
+            "startColumn" : 13,
+            "endLine" : 230,
+            "endColumn" : 45
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S899",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Do something with the \"boolean\" value returned by \"setReadable\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 231,
+            "startColumn" : 13,
+            "endLine" : 231,
+            "endColumn" : 43
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S899",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
+        "text" : "Do something with the \"boolean\" value returned by \"delete\"."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 339,
+            "startColumn" : 21,
+            "endLine" : 339,
+            "endColumn" : 35
+          }
+        }
+      } ],
+      "rank" : -1.0
+    } ],
+    "newlineSequences" : [ "\r\n", "\n" ],
+    "columnKind" : "utf16CodeUnits"
+  } ]
+}
