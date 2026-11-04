@@ -49,8 +49,15 @@ final class JType implements Type, Type.ArrayType {
   @Nullable
   final String typeVarId;
   private final List<JType> intersection;
+  @Nullable
+  private final JType lower;
 
   private JType(JSema sema, Kind kind, String fqn, List<JType> args, @Nullable JType element, @Nullable String typeVarId, List<JType> intersection) {
+    this(sema, kind, fqn, args, element, typeVarId, intersection, null);
+  }
+
+  private JType(JSema sema, Kind kind, String fqn, List<JType> args, @Nullable JType element, @Nullable String typeVarId, List<JType> intersection,
+    @Nullable JType lower) {
     this.sema = sema;
     this.kind = kind;
     this.fqn = fqn;
@@ -58,6 +65,7 @@ final class JType implements Type, Type.ArrayType {
     this.element = element;
     this.typeVarId = typeVarId;
     this.intersection = intersection;
+    this.lower = lower;
   }
 
   static JType named(JSema sema, String fqn, List<JType> args) {
@@ -102,6 +110,10 @@ final class JType implements Type, Type.ArrayType {
       JType replaced = element.substitute(substitution);
       return replaced == element ? this : capture(sema, replaced);
     }
+    if (kind == Kind.WILDCARD && lower != null) {
+      JType replaced = lower.substitute(substitution);
+      return replaced == lower ? this : superWildcard(sema, replaced);
+    }
     if (kind == Kind.WILDCARD && element != null) {
       JType replaced = element.substitute(substitution);
       return replaced == element ? this : wildcard(sema, replaced);
@@ -135,8 +147,22 @@ final class JType implements Type, Type.ArrayType {
     return new JType(sema, Kind.WILDCARD, upper.erasure().fullyQualifiedName(), List.of(), upper, null, List.of());
   }
 
+  /** A {@code ? super lower} type argument, which ECJ names after its implicit upper bound {@code Object}. */
+  static JType superWildcard(JSema sema, JType lower) {
+    JType object = sema.getClassType("java.lang.Object") instanceof JType type ? type : unknown(sema);
+    return new JType(sema, Kind.WILDCARD, object.fullyQualifiedName(), List.of(), object, null, List.of(), lower);
+  }
+
   boolean isWildcard() {
     return kind == Kind.WILDCARD;
+  }
+
+  /** The type a lambda sees for this type argument: the bound a wildcard is written with, or the type itself. */
+  JType groundType() {
+    if (kind != Kind.WILDCARD) {
+      return this;
+    }
+    return lower != null ? lower : element;
   }
 
   static JType intersection(JSema sema, List<JType> bounds) {
