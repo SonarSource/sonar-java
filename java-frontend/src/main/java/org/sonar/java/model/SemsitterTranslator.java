@@ -526,11 +526,57 @@ final class SemsitterTranslator {
         for (; j < declarations.size(); j++) {
           addMember(members, declarations.get(j));
         }
+      } else if (i + 1 < children.size() && brokenCompactConstructor(child, children.get(i + 1))) {
+        members.add(recoveredRecordConstructor(child, children.get(i + 1)));
+        i++;
       } else {
         addMember(members, child);
       }
     }
     return members;
+  }
+
+  /** Tree-sitter splits {@code Record throws Ex} into a field named {@code throws} and a compact constructor named {@code Ex}. */
+  private static boolean brokenCompactConstructor(Node field, Node next) {
+    if (!"field_declaration".equals(field.k()) || !"compact_constructor_declaration".equals(next.k())) {
+      return false;
+    }
+    for (Node child : field.children()) {
+      if ("variable_declarator".equals(child.k())) {
+        Node name = field(child, "name");
+        return name != null && "throws".equals(name.text());
+      }
+    }
+    return false;
+  }
+
+  private MethodTreeImpl recoveredRecordConstructor(Node field, Node compact) {
+    Node typeNode = field(field, "type");
+    IdentifierTreeImpl name = identifier(typeNode == null ? field : typeNode);
+    Node throwsName = null;
+    for (Node child : field.children()) {
+      if ("variable_declarator".equals(child.k())) {
+        throwsName = field(child, "name");
+      }
+    }
+    Node thrownName = nameNode(compact);
+    QualifiedIdentifierListTreeImpl thrown = QualifiedIdentifierListTreeImpl.emptyList();
+    if (thrownName != null && !"throws".equals(thrownName.text())) {
+      thrown.add(type(thrownName));
+    }
+    Node body = field(compact, "body");
+    BlockTreeImpl block = body == null ? null : block(body);
+    MethodTreeImpl tree = new MethodTreeImpl(
+      null,
+      name,
+      new FormalParametersListTreeImpl(null, null),
+      throwsName == null ? null : token(throwsName),
+      thrown,
+      block,
+      null)
+      .completeWithModifiers(modifiers(field));
+    bindDeclaration(tree, nameNode(compact), name);
+    return tree;
   }
 
   @Nullable
