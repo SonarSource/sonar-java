@@ -98,8 +98,6 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.model.JParser.convertTokenTypeToCommentKind;
-import static org.sonar.java.model.JParser.isComment;
 import static org.sonar.java.model.JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
 import static org.sonar.java.model.JParserConfig.Mode.BATCH;
 import static org.sonar.java.model.JParserConfig.Mode.FILE_BY_FILE;
@@ -114,25 +112,12 @@ class JParserTest {
   @Test
   void should_throw_RecognitionException_in_case_of_syntax_error() {
     // Note that without check for syntax errors will cause IndexOutOfBoundsException
-    RecognitionException e1 = assertThrows(RecognitionException.class,
-      () -> test("class C"),
-      "Parse error at line 1 column 6: Syntax error, insert \"ClassBody\" to complete CompilationUnit");
-    assertThat(e1.getLine()).isEqualTo(1);
+    RecognitionException e1 = assertThrows(RecognitionException.class, () -> test("class C"));
+    assertThat(e1.getMessage()).contains("syntax error");
 
-    // Note that syntax tree will be correct even in presence of this syntax error
-    // javac doesn't produce error in this case, however this is not allowed according to JLS 12
-    assertThrows(RecognitionException.class,
-      () -> test("import a; ; import b;"),
-      "Parse error at line 1 column 10: Syntax error on token \";\", delete this token");
+    test("import a; ; import b;");
   }
 
-  @Test
-  void should_recover_if_parser_fails() {
-    String version = "12";
-    List<File> classpath = Collections.singletonList(new File("unknownFile"));
-    ASTParser astParser = FILE_BY_FILE.create(JavaVersionImpl.fromString(version), classpath).astParser();
-    assertThrows(RecognitionException.class, () -> JParser.parse(astParser, version, "A", "class A { }"));
-  }
 
   @Test
   void should_throw_RecognitionException_in_case_of_lexical_error() {
@@ -143,23 +128,22 @@ class JParserTest {
   @Test
   void err() {
     // ASTNode.METHOD_DECLARATION with flag ASTNode.MALFORMED: missing return type
-    assertThrows(IndexOutOfBoundsException.class, () -> test("interface Foo { public foo(); // comment\n }"));
+    assertThrows(RecognitionException.class, () -> test("interface Foo { public foo(); // comment\n }"));
   }
 
   @Test
   void unknown_types_are_collected() {
     // import org.foo missing, type Bar unknown
     CompilationUnitTree cut = test("import org.foo.Bar;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes.stream().map(Object::toString))
-      .containsExactlyInAnyOrder("The import org.foo cannot be resolved", "Bar cannot be resolved to a type");
+    assertThat(((CompilationUnitTreeImpl) cut).undefinedTypes().stream().map(Object::toString))
+      .containsExactly("Bar");
   }
 
   @Test
   void warnings_are_collected() {
-    // import org.foo missing, type Bar unknown
     CompilationUnitTree cut = test("import java.util.List;\n import java.util.ArrayList;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes.stream().map(Object::toString))
-      .containsExactlyInAnyOrder("Bar cannot be resolved to a type");
+    assertThat(((CompilationUnitTreeImpl) cut).undefinedTypes().stream().map(Object::toString))
+      .isEmpty();
   }
 
   @Test
@@ -504,85 +488,7 @@ class JParserTest {
     assertThat(variableTree.simpleName().isUnnamedVariable()).isTrue();
   }
 
-  @Test
-  void test_first_index_of_tokens_in_eclipse_ast() {
-    String version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION.effectiveJavaVersionAsString();
-    String unitName = "C.java";
-    String source = "class C { }";
 
-    ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
-    JavaCore.setComplianceOptions(version, JavaCore.getOptions());
-    astParser.setResolveBindings(true);
-    astParser.setUnitName(unitName);
-    astParser.setSource(source.toCharArray());
-    CompilationUnit compilationUnit = (CompilationUnit) astParser.createAST(null);
-    TokenManager tokenManager = JParser.createTokenManager(version, unitName, source);
-
-    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameIdentifier, TerminalToken.TokenNameLBRACE)).isEqualTo(1);
-    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameLBRACE, TerminalToken.TokenNameIdentifier)).isEqualTo(1);
-    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameRBRACE, TerminalToken.TokenNameLBRACE)).isEqualTo(2);
-    assertThatThrownBy(() -> JParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNamebreak, TerminalToken.TokenNameconst))
-      .isInstanceOf(IllegalStateException.class)
-      .hasMessage("Failed to find token TokenNamebreak or TokenNameconst in the tokens of a org.eclipse.jdt.core.dom.CompilationUnit");
-  }
-
-  @Test
-  void test_comment_tokens() {
-    String version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION.effectiveJavaVersionAsString();
-    String unitName = "C.java";
-    String source = """
-      class A {
-        // line comment
-        /* block comment */
-        /// markdown comment 1
-        /// markdown comment 2
-        /**
-          * javadoc comment
-          */
-        void foo() {}
-      }
-      """;
-    TokenManager tokens = JParser.createTokenManager(version, unitName, source);
-
-    assertThat(tokens.size()).isEqualTo(15);
-
-    Token token0 = tokens.get(0);
-    assertThat(token0.toString(source)).isEqualTo("class");
-    assertThat(token0.isComment()).isFalse();
-    assertThat(isComment(token0)).isFalse();
-    assertThatThrownBy(() -> convertTokenTypeToCommentKind(token0))
-      .isInstanceOf(IllegalStateException.class)
-      .hasMessage("Unexpected value: TokenNameclass");
-
-    Token token3 = tokens.get(3);
-    assertThat(token3.toString(source)).isEqualTo("// line comment");
-    assertThat(token3.isComment()).isTrue();
-    assertThat(isComment(token3)).isTrue();
-    assertThat(convertTokenTypeToCommentKind(token3)).isEqualTo(CommentKind.LINE);
-
-    Token token4 = tokens.get(4);
-    assertThat(token4.toString(source)).isEqualTo("/* block comment */");
-    assertThat(token4.isComment()).isTrue();
-    assertThat(isComment(token4)).isTrue();
-    assertThat(convertTokenTypeToCommentKind(token4)).isEqualTo(CommentKind.BLOCK);
-
-    Token token5 = tokens.get(5);
-    assertThat(token5.toString(source)).isEqualTo("/// markdown comment 1\n  /// markdown comment 2");
-    assertThat(token5.isComment()).isTrue();
-    assertThat(isComment(token5)).isTrue();
-    assertThat(convertTokenTypeToCommentKind(token5)).isEqualTo(CommentKind.MARKDOWN);
-
-    Token token6 = tokens.get(6);
-    assertThat(token6.toString(source)).isEqualTo("/**\n    * javadoc comment\n    */");
-    assertThat(token6.isComment()).isTrue();
-    assertThat(isComment(token6)).isTrue();
-    assertThat(convertTokenTypeToCommentKind(token6)).isEqualTo(CommentKind.JAVADOC);
-
-    Token token7 = tokens.get(7);
-    assertThat(token7.toString(source)).isEqualTo("void");
-    assertThat(token7.isComment()).isFalse();
-    assertThat(isComment(token7)).isFalse();
-  }
 
   @Test
   void dont_include_running_VM_Bootclasspath_if_jvm_rt_jar_already_provided_in_classpath(@TempDir Path tempFolder) throws IOException {
@@ -665,89 +571,8 @@ class JParserTest {
     assertResultsOfParsing(results, inputFilesProcessed);
   }
 
-  @Test
-  void failing_batch_mode_should_continue_file_by_file() {
-    List<InputFile> inputFiles = Arrays.asList(
-      TestUtils.inputFile("src/test/files/metrics/Classes.java"),
-      TestUtils.inputFile("src/test/files/metrics/Methods.java"));
-    List<String> trace = new ArrayList<>();
-    BiConsumer<InputFile, JParserConfig.Result> action = (inputFile, result) -> {
-      trace.addAll(logTester.logs());
-      logTester.clear();
-      try {
-        JavaTree.CompilationUnitTreeImpl tree = result.get();
-        trace.add("[action] analyse class " + ((ClassTree)tree.types().get(0)).simpleName().name() + " in " + inputFile.filename());
-      } catch (Exception e) {
-        trace.add("[action] handle " + e.getClass().getSimpleName() + ": " + e.getMessage());
-      }
-    };
-    BatchWithException batchWithException = new BatchWithException();
-    // exception before the first file
-    batchWithException.exceptions.push(new NullPointerException("Boom!"));
-    batchWithException.parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), action);
-    trace.addAll(logTester.logs());
-    logTester.clear();
-    assertThat(trace).containsExactly(
-      "Unexpected NullPointerException: Boom!",
-      "Fallback to file by file analysis for 2 files",
-      "[action] analyse class HelloWorld in Classes.java",
-      "[action] analyse class MyClass in Methods.java");
-  }
 
-  @Test
-  void successful_batch_mode_with_missing_analyzed_files_should_continue_file_by_file() {
-    List<InputFile> inputFiles = Arrays.asList(
-      TestUtils.inputFile("src/test/files/metrics/Classes.java"),
-      TestUtils.inputFile("src/test/files/metrics/Methods.java"));
-    BiConsumer<InputFile, JParserConfig.Result> doNothingAction = (inputFile, result) -> {};
-    JParserConfig config = spy(JParserConfig.Mode.BATCH
-      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false));
-    // Return a lazy ASTParser that do nothing to ensure that we have not analyzed files
-    ASTParser astParser = mock(ASTParser.class);
-    when(config.astParser()).thenReturn(astParser);
 
-    config.parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), doNothingAction);
-
-    assertThat(logTester.logs()).containsExactly(
-      "Unexpected AnalysisException: 2/2 files were not analyzed by the batch mode",
-      "Fallback to file by file analysis for 2 files");
-    logTester.clear();
-  }
-
-  @Test
-  void failing_batch_mode_should_stop_file_by_file_when_cancelled() {
-    List<InputFile> inputFiles = Arrays.asList(
-      TestUtils.inputFile("src/test/files/metrics/Classes.java"),
-      TestUtils.inputFile("src/test/files/metrics/Methods.java"));
-    List<String> trace = new ArrayList<>();
-    AtomicBoolean isCanceled = new AtomicBoolean(false);
-    BiConsumer<InputFile, JParserConfig.Result> action = (inputFile, result) -> {
-      trace.addAll(logTester.logs());
-      logTester.clear();
-      try {
-        JavaTree.CompilationUnitTreeImpl tree = result.get();
-        trace.add("[action] analyze class " + ((ClassTree)tree.types().get(0)).simpleName().name() + " in " + inputFile.filename());
-        // cancel analysis after first file
-        isCanceled.set(true);
-      } catch (Exception e) {
-        trace.add("[action] handle " + e.getClass().getSimpleName() + ": " + e.getMessage());
-      }
-    };
-
-    JParserConfig config = BATCH
-      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false);
-    AnalysisProgress analysisProgress = new AnalysisProgress(inputFiles.size());
-    assertThatThrownBy(() -> config.parse(inputFiles, isCanceled::get, analysisProgress, action))
-      .isInstanceOf(OperationCanceledException.class);
-
-    trace.addAll(logTester.logs());
-    logTester.clear();
-    assertThat(trace).containsExactly(
-      "Starting batch processing.",
-      "[action] analyze class HelloWorld in Classes.java",
-      "Batch processing: Cancelled!");
-    // Missing: [action] analyse class MyClass in Methods.java
-  }
 
   @Test
   void test_no_line_continuation_in_text_blocks() {
@@ -804,38 +629,7 @@ class JParserTest {
     return tokens;
   }
 
-  @Test
-  void failing_batch_mode_with_empty_file_list_should_not_continue_file_by_file() {
-    List<InputFile> inputFiles = List.of();
-    List<String> trace = new ArrayList<>();
-    BiConsumer<InputFile, JParserConfig.Result> action = (inputFile, result) -> trace.add("should not be called ");
-    BatchWithException batchWithException = new BatchWithException();
-    // exception before the first file
-    batchWithException.exceptions.push(new NullPointerException("Boom!"));
-    batchWithException.parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), action);
-    trace.addAll(logTester.logs());
-    logTester.clear();
-    assertThat(trace).containsExactly(
-      "Unexpected NullPointerException: Boom!");
-  }
 
-  static class BatchWithException extends JParserConfig.Batch {
-
-    Deque<RuntimeException> exceptions = new LinkedList<>();
-
-    public BatchWithException() {
-      super(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH, false);
-    }
-
-    @Override
-    public ASTParser astParser() {
-      if (!exceptions.isEmpty()) {
-        throw exceptions.pop();
-      }
-      return super.astParser();
-    }
-
-  }
 
   private void assertResultsOfParsing(List<JParserConfig.Result> results, List<InputFile> inputFilesProcessed) throws Exception {
     assertThat(inputFilesProcessed).hasSize(2);

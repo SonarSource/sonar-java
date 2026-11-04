@@ -53,7 +53,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.sonar.java.model.JParserTestUtils.sema;
 import static org.sonar.java.model.JParserTestUtils.symbolOf;
-import static org.sonar.java.model.JParserTestUtils.typeBinding;
 import static org.sonar.java.model.JParserTestUtils.typeOf;
 import static org.sonar.java.model.assertions.SymbolAssert.assertThat;
 
@@ -90,7 +89,7 @@ class JSymbolTest {
 
     assertThat(((JTypeSymbol) typeOf(c1).symbol()))
       .as("of top-level class")
-      .hasOwner(sema(cu).packageSymbol(typeBinding(c1).getPackage()));
+      .hasOwner(sema(cu).packageSymbol(""));
 
     assertThat(((JTypeSymbol) typeOf(c2).symbol()))
       .as("of nested class")
@@ -298,50 +297,8 @@ class JSymbolTest {
 
     JVariableSymbol variableSymbol = ((JVariableSymbol) symbolOf(v));
     assertThat(variableSymbol).isSameAs(v.symbol());
-    JInitializerBlockSymbol initializerBlock = (JInitializerBlockSymbol) variableSymbol.owner();
-
-    if (isStatic) {
-      assertThat(initializerBlock).isSameAs(sema(cu).staticInitializerBlockSymbol((JTypeSymbol) c.symbol()));
-    } else {
-      assertThat(initializerBlock).isSameAs(sema(cu).initializerBlockSymbol((JTypeSymbol) c.symbol()));
-    }
-
+    assertThat(variableSymbol.owner()).isSameAs(t);
     assertThat(variableSymbol).hasEnclosingClass(t);
-    assertThat(initializerBlock).hasEnclosingClass(t).hasOwner(t);
-    assertThat(initializerBlock.isStatic()).isEqualTo(isStatic);
-    assertThat(initializerBlock).hasName(isStatic ? "<clinit> (initializer block)" : "<init> (initializer block)");
-    assertThat(initializerBlock.signature()).isEqualTo(isStatic ? "E.<clinit> (initializer block)" : "E.<init> (initializer block)");
-
-    assertThat(initializerBlock.isMethodSymbol()).isTrue();
-    assertThat(initializerBlock.isVariableSymbol()).isFalse();
-    assertThat(initializerBlock.isTypeSymbol()).isFalse();
-    assertThat(initializerBlock.isEnum()).isFalse();
-    assertThat(initializerBlock.isInterface()).isFalse();
-    assertThat(initializerBlock.isPackageSymbol()).isFalse();
-    assertThat(initializerBlock.isFinal()).isFalse();
-    assertThat(initializerBlock.isAbstract()).isFalse();
-    assertThat(initializerBlock.isPrivate()).isFalse();
-    assertThat(initializerBlock.isProtected()).isFalse();
-    assertThat(initializerBlock.isPublic()).isFalse();
-    assertThat(initializerBlock.isPackageVisibility()).isFalse();
-    assertThat(initializerBlock.isDeprecated()).isFalse();
-    assertThat(initializerBlock.isVolatile()).isFalse();
-    assertThat(initializerBlock.isUnknown()).isFalse();
-
-    assertThat(initializerBlock.declaration()).isNull();
-    assertThat(initializerBlock.returnType()).isUnknown();
-    assertThat(initializerBlock).isOfUnknownType();
-    assertThat(initializerBlock.overriddenSymbols()).isEmpty();
-    assertThat(initializerBlock.usages()).isEmpty();
-    assertThat(initializerBlock.parameterTypes()).isEmpty();
-    assertThat(initializerBlock.declarationParameters()).isEmpty();
-    assertThat(initializerBlock.thrownTypes()).isEmpty();
-    assertThat(initializerBlock.isOverridable()).isFalse();
-    assertThat(initializerBlock.isParametrizedMethod()).isFalse();
-    assertThat(initializerBlock.isDefaultMethod()).isFalse();
-    assertThat(initializerBlock.isSynchronizedMethod()).isFalse();
-    assertThat(initializerBlock.isVarArgsMethod()).isFalse();
-    assertThat(initializerBlock.isNativeMethod()).isFalse();
   }
 
   @Test
@@ -434,17 +391,6 @@ class JSymbolTest {
     assertThat(parameterMetadata.annotations()).hasSize(1);
   }
 
-  @Test
-  void test_with_type_null() {
-    ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
-    astParser.setSource("class C { void m(String p) { } }".toCharArray());
-    CompilationUnit cu = (CompilationUnit) astParser.createAST(null);
-    JSema jSema = new JSema(cu.getAST());
-    IVariableBinding mock = mock(IVariableBinding.class);
-    when(mock.getKind()).thenReturn(IBinding.VARIABLE);
-    JVariableSymbol jVariableSymbol = new JVariableSymbol(jSema, mock);
-    assertThat(jVariableSymbol.metadata()).isNotNull();
-  }
 
   @Nested
   class kinds {

@@ -242,7 +242,8 @@ public final class JSema implements Sema {
       return JType.nullType(this);
     }
     if (fullyQualifiedName.endsWith("[]")) {
-      return JType.array(this, asJType(getClassType(fullyQualifiedName.substring(0, fullyQualifiedName.length() - 2))));
+      JType element = asJType(getClassType(fullyQualifiedName.substring(0, fullyQualifiedName.length() - 2)));
+      return (JType) arraySymbol(element).type();
     }
     if (PRIMITIVES.contains(fullyQualifiedName)) {
       return primitiveType(fullyQualifiedName);
@@ -1643,7 +1644,7 @@ public final class JSema implements Sema {
   }
 
   private JType primitiveType(String name) {
-    return JType.primitive(this, name);
+    return rawTypes.computeIfAbsent(name, key -> JType.primitive(this, key));
   }
 
   private JType asJType(Type type) {

@@ -102,10 +102,8 @@ class SymbolsTest {
 
   @Test
   void metadata_with_unknown_symbol_and_unsupported_declaration() {
-    Tree unsupportedDeclaration = mock(Tree.class);
-    Symbol symbol = spy(Symbol.UNKNOWN_SYMBOL);
-    when(symbol.declaration()).thenReturn(unsupportedDeclaration);
-    SymbolMetadata metadata = new JSymbolMetadata(JUtilsTest.SEMA, symbol, new IAnnotationBinding[0]);
+    JSymbol symbol = new JVariableSymbol(JUtilsTest.SEMA, null, "x", "local");
+    SymbolMetadata metadata = new JSymbolMetadata(symbol);
     assertThat(metadata.findAnnotationTree(mock(AnnotationInstance.class))).isNull();
     assertThat(metadata.nullabilityData().type()).isEqualTo(NullabilityType.UNKNOWN);
     assertThat(metadata.nullabilityData(NullabilityTarget.METHOD).type()).isEqualTo(NullabilityType.UNKNOWN);
@@ -205,7 +203,7 @@ class SymbolsTest {
   @Test
   void testIsAnnotation() {
     JSema sema = sema(((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("")));
-    Type objectType = sema.type(sema.resolveType("java.lang.Object"));
+    Type objectType = sema.getClassType("java.lang.Object");
     JavaTree.CompilationUnitTreeImpl cu = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("@interface Anno { Unknown u; }");
     ClassTreeImpl anno = (ClassTreeImpl) cu.types().get(0);
 

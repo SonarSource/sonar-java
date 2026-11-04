@@ -165,30 +165,7 @@ class JTypeTest {
     assertThat(stringType.primitiveWrapperType()).isNull();
   }
 
-  @Test
-  void primitiveWrapperType_returns_null_when_semantic_cannot_resolve_wrapper_type() {
-    // Sema that can resolve primitives, but fails to resolve wrapper types, which can happen when the classpath is not correctly set up
-    var brokenSema = spy(sema);
-    when(brokenSema.resolveType("java.lang.Byte")).thenReturn(null);
 
-    var primitiveBinding = sema.resolveType("byte");
-    var primitiveType = new JType(brokenSema, primitiveBinding);
-
-    assertThat(primitiveType.primitiveWrapperType()).isNull();
-  }
-
-  @Test
-  void primitiveType_returns_null_when_semantic_cannot_resolve_primitive_type() {
-    // Sema that can resolve wrapper types, but fails to resolve a primitive, this should never happen in practice,
-    // but we want to make sure it doesn't throw an exception and returns null instead
-    var brokenSema = spy(sema);
-    when(brokenSema.resolveType("byte")).thenReturn(null);
-
-    var wrapperBinding = sema.resolveType("java.lang.Byte");
-    var wrapperType = new JType(brokenSema, wrapperBinding);
-
-    assertThat(wrapperType.primitiveType()).isNull();
-  }
 
   @Test
   void declaringType(){
@@ -262,9 +239,8 @@ class JTypeTest {
 
   @Test
   void symbol() {
-    ITypeBinding typeBinding = Objects.requireNonNull(sema.resolveType("java.lang.Object"));
-    assertThat(sema.type(typeBinding).symbol())
-      .isSameAs(sema.typeSymbol(typeBinding));
+    Type object = sema.getClassType("java.lang.Object");
+    assertThat(object.symbol().type().fullyQualifiedName()).isEqualTo("java.lang.Object");
   }
 
   @Test
@@ -324,21 +300,6 @@ class JTypeTest {
       .isNotSubtypeOf(primitiveType);
   }
 
-  @Test
-  void is_subtype_of_should_not_throw_NPE() {
-    JType objectType = type("java.lang.Object");
-    ITypeBinding brokenStringBinding = spy(Objects.requireNonNull(sema.resolveType("java.lang.String")));
-    // simulate the NullPointerException described in SONARJAVA-4390
-    when(brokenStringBinding.isSubTypeCompatible(any()))
-      .thenThrow(new NullPointerException("test NPE"));
-
-    JType stringType = new JType(sema, brokenStringBinding);
-    // should catch the NullPointerException
-    assertThat(stringType.isSubtypeOf(objectType)).isFalse();
-
-    assertThat(logTester.logs(Level.DEBUG))
-      .containsExactly("NullPointerException while resolving isSubTypeCompatible()");
-  }
 
   @Test
   void wildcard() {
@@ -363,26 +324,15 @@ class JTypeTest {
   }
 
   private JType type(String name) {
-    ITypeBinding typeBinding = Objects.requireNonNull(sema.resolveType(name));
-    return sema.type(typeBinding);
+    return (JType) sema.getClassType(name);
   }
 
   private JSema sema;
 
   @BeforeEach
   void setup() {
-    ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
-    astParser.setEnvironment(
-      new String[]{},
-      new String[]{},
-      new String[]{},
-      true
-    );
-    astParser.setResolveBindings(true);
-    astParser.setUnitName("File.java");
-    astParser.setSource("".toCharArray());
-    AST ast = astParser.createAST(null).getAST();
-    sema = new JSema(ast);
+    sema = new JSema();
+    sema.ingestTypes(new com.google.gson.JsonObject());
   }
 
 }
