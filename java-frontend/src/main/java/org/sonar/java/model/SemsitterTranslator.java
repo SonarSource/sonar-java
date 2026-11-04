@@ -2579,7 +2579,6 @@ final class SemsitterTranslator {
       method.methodSymbol = methodSymbol;
       if (methodSymbol instanceof JMethodSymbol declared) {
         declaredParameterTypes(declared, method.parameters());
-        declared.overriddenSymbols();
       }
     } else if (tree instanceof VariableTreeImpl variable && symbol instanceof Symbol.VariableSymbol variableSymbol) {
       variable.variableSymbol = variableSymbol;
