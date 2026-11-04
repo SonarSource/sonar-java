@@ -512,14 +512,19 @@ public final class JSema implements Sema {
     if (index != null && receiver != null && receiver.isParameterized() && receiver.typeArguments().size() > index) {
       return receiver.typeArguments().get(index);
     }
-    if (method.returnsSelf() && receiver != null && receiver.isClass()) {
-      return receiver;
+    if (method.returnsSelf() && receiver instanceof JType returned) {
+      if (returned.isCapture()) {
+        return returned;
+      }
+      if (returned.isClass()) {
+        return JType.capture(this, returned);
+      }
     }
     JsonObject declaredReturn = declaredReturn(method);
     if (declaredReturn != null && receiver != null) {
       Map<String, Type> substitution = classSubstitution(method, receiver);
       if (!substitution.isEmpty()) {
-        JType substituted = typeFromFact(declaredReturn, substitution);
+        JType substituted = typeFromFact(declaredReturn, substitution, true);
         if (!substituted.isUnknown()) {
           return substituted;
         }
@@ -1409,9 +1414,16 @@ public final class JSema implements Sema {
   }
 
   private JType typeFromFact(JsonObject fact, Map<String, Type> substitution) {
+    return typeFromFact(fact, substitution, false);
+  }
+
+  private JType typeFromFact(JsonObject fact, Map<String, Type> substitution, boolean captureWildcard) {
     String kind = text(fact, "kind");
     if (ARRAY.equals(kind) && fact.getAsJsonObject("elem") != null) {
-      return JType.array(this, typeFromFact(fact.getAsJsonObject("elem"), substitution));
+      return JType.array(this, typeFromFact(fact.getAsJsonObject("elem"), substitution, captureWildcard));
+    }
+    if ("wildcard".equals(kind)) {
+      return captureWildcard ? JType.capture(this, getClassType("java.lang.Object") instanceof JType object ? object : JType.unknown(this)) : JType.unknown(this);
     }
     if ("typevar".equals(kind)) {
       String id = text(fact, "id");
@@ -1423,7 +1435,7 @@ public final class JSema implements Sema {
       String name = open >= 0 && id.endsWith(">") ? id.substring(open + 1, id.length() - 1) : id;
       return JType.typeVar(this, name == null ? "" : name, id);
     }
-    if ("unknown".equals(kind) || "wildcard".equals(kind)) {
+    if ("unknown".equals(kind)) {
       return JType.unknown(this);
     }
     String id = text(fact, "id");
@@ -1434,7 +1446,7 @@ public final class JSema implements Sema {
     if (fact.has("args")) {
       for (JsonElement arg : fact.getAsJsonArray("args")) {
         if (arg.isJsonObject()) {
-          args.add(typeFromFact(arg.getAsJsonObject(), substitution));
+          args.add(typeFromFact(arg.getAsJsonObject(), substitution, captureWildcard));
         }
       }
     }

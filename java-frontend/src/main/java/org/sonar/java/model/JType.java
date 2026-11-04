@@ -35,7 +35,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 final class JType implements Type, Type.ArrayType {
 
   enum Kind {
-    NAMED, PRIMITIVE, VOID, NULL, ARRAY, TYPEVAR, UNKNOWN, INTERSECTION
+    NAMED, PRIMITIVE, VOID, NULL, ARRAY, TYPEVAR, UNKNOWN, INTERSECTION, CAPTURE
   }
 
   private static final Set<String> NUMERIC = Set.of("byte", "char", "short", "int", "long", "float", "double");
@@ -98,6 +98,10 @@ final class JType implements Type, Type.ArrayType {
         return replaced;
       }
     }
+    if (kind == Kind.CAPTURE && element != null) {
+      JType replaced = element.substitute(substitution);
+      return replaced == element ? this : capture(sema, replaced);
+    }
     if (kind == Kind.ARRAY && element != null) {
       JType replaced = element.substitute(substitution);
       return replaced == element ? this : array(sema, replaced);
@@ -113,6 +117,10 @@ final class JType implements Type, Type.ArrayType {
       return changed ? named(sema, fqn, replaced) : this;
     }
     return this;
+  }
+
+  static JType capture(JSema sema, JType upper) {
+    return new JType(sema, Kind.CAPTURE, "!capture!", List.of(), upper, null, List.of());
   }
 
   static JType intersection(JSema sema, List<JType> bounds) {
@@ -136,6 +144,9 @@ final class JType implements Type, Type.ArrayType {
   }
 
   private boolean isSubtypeOf(Type superType, Set<String> visited) {
+    if (kind == Kind.CAPTURE && element != null) {
+      return element.isSubtypeOf(superType, visited);
+    }
     if (superType == null || superType.isUnknown() || isUnknown()) {
       return false;
     }
@@ -214,6 +225,10 @@ final class JType implements Type, Type.ArrayType {
   @Override
   public boolean isArray() {
     return kind == Kind.ARRAY;
+  }
+
+  boolean isCapture() {
+    return kind == Kind.CAPTURE;
   }
 
   @Override
@@ -342,12 +357,16 @@ final class JType implements Type, Type.ArrayType {
       case PRIMITIVE, VOID -> sema.primitiveSymbol(fqn);
       case TYPEVAR -> sema.resolveTypeSymbol(typeVarId);
       case NULL, UNKNOWN, INTERSECTION -> Symbol.TypeSymbol.UNKNOWN_TYPE;
+      case CAPTURE -> element == null ? Symbol.TypeSymbol.UNKNOWN_TYPE : element.symbol();
       case NAMED -> sema.typeSymbol(fqn);
     };
   }
 
   @Override
   public Type erasure() {
+    if (kind == Kind.CAPTURE && element != null) {
+      return element.erasure();
+    }
     if (kind == Kind.ARRAY) {
       return JType.array(sema, (JType) element.erasure());
     }
