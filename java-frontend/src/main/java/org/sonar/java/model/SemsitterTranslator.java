@@ -2528,11 +2528,29 @@ final class SemsitterTranslator {
     } else if (tree instanceof MethodTreeImpl method && symbol instanceof Symbol.MethodSymbol methodSymbol) {
       method.methodSymbol = methodSymbol;
       if (methodSymbol instanceof JMethodSymbol declared) {
+        declaredParameterTypes(declared, method.parameters());
         declared.overriddenSymbols();
       }
     } else if (tree instanceof VariableTreeImpl variable && symbol instanceof Symbol.VariableSymbol variableSymbol) {
       variable.variableSymbol = variableSymbol;
     }
+  }
+
+  /** The scan records erased parameter types, while the declared parameters keep their type arguments. */
+  private static void declaredParameterTypes(JMethodSymbol method, List<VariableTree> parameters) {
+    List<Type> erased = method.parameterTypes();
+    if (erased.size() != parameters.size()) {
+      return;
+    }
+    List<Type> declared = new ArrayList<>();
+    for (int i = 0; i < parameters.size(); i++) {
+      Type type = parameters.get(i).type().symbolType();
+      if (type.isUnknown() || !type.erasure().fullyQualifiedName().equals(erased.get(i).erasure().fullyQualifiedName())) {
+        return;
+      }
+      declared.add(type);
+    }
+    method.parameterTypes(declared);
   }
 
   private void bindImplicitClass(ClassTreeImpl tree, List<Tree> members) {
