@@ -85,10 +85,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
     Type cast = tree.type().symbolType();
     Type operand = tree.expression().symbolType();
     if (!cast.isUnknown() && !operand.isUnknown() && operand.isSubtypeOf(cast)) {
-      Tree parent = tree.parent();
-      boolean identity = cast.erasure().fullyQualifiedName().equals(operand.erasure().fullyQualifiedName());
-      boolean discarded = parent != null && parent.is(Tree.Kind.RETURN_STATEMENT, Tree.Kind.EXPRESSION_STATEMENT, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT);
-      if (identity || discarded) {
+      if (cast.erasure().fullyQualifiedName().equals(operand.erasure().fullyQualifiedName())) {
         add(JProblem.Type.REDUNDANT_CAST, "Unnecessary cast to " + cast.erasure().name(), tree);
       }
     }
