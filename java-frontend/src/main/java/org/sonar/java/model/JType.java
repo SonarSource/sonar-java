@@ -16,10 +16,12 @@
  */
 package org.sonar.java.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -80,6 +82,37 @@ final class JType implements Type, Type.ArrayType {
 
   static JType typeVar(JSema sema, String name, String id) {
     return new JType(sema, Kind.TYPEVAR, name, List.of(), null, id, List.of());
+  }
+
+  /** Replaces type variables named in {@code substitution} inside this type. */
+  JType substitute(Map<String, Type> substitution) {
+    if (substitution.isEmpty()) {
+      return this;
+    }
+    if (kind == Kind.TYPEVAR) {
+      Type found = typeVarId == null ? null : substitution.get(typeVarId);
+      if (found == null) {
+        found = substitution.get(fqn);
+      }
+      if (found instanceof JType replaced) {
+        return replaced;
+      }
+    }
+    if (kind == Kind.ARRAY && element != null) {
+      JType replaced = element.substitute(substitution);
+      return replaced == element ? this : array(sema, replaced);
+    }
+    if (kind == Kind.NAMED && !args.isEmpty()) {
+      List<JType> replaced = new ArrayList<>();
+      boolean changed = false;
+      for (JType argument : args) {
+        JType next = argument.substitute(substitution);
+        changed |= next != argument;
+        replaced.add(next);
+      }
+      return changed ? named(sema, fqn, replaced) : this;
+    }
+    return this;
   }
 
   static JType intersection(JSema sema, List<JType> bounds) {
