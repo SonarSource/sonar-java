@@ -25,6 +25,11 @@ final class KeywordThis extends IdentifierTreeImpl {
     super(token);
   }
 
+  KeywordThis(InternalSyntaxToken token, Symbol symbol) {
+    this(token);
+    setSymbol(symbol);
+  }
+
   @Override
   public Symbol symbol() {
     return symbol != null ? symbol : Symbol.UNKNOWN_SYMBOL;

@@ -92,8 +92,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -150,7 +150,7 @@ class JParserTest {
   void unknown_types_are_collected() {
     // import org.foo missing, type Bar unknown
     CompilationUnitTree cut = test("import org.foo.Bar;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((CompilationUnitTreeImpl) cut).undefinedTypes().stream().map(Object::toString))
+    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes.stream().map(Object::toString))
       .containsExactlyInAnyOrder("The import org.foo cannot be resolved", "Bar cannot be resolved to a type");
   }
 
@@ -158,7 +158,7 @@ class JParserTest {
   void warnings_are_collected() {
     // import org.foo missing, type Bar unknown
     CompilationUnitTree cut = test("import java.util.List;\n import java.util.ArrayList;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((CompilationUnitTreeImpl) cut).undefinedTypes().stream().map(Object::toString))
+    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes.stream().map(Object::toString))
       .containsExactlyInAnyOrder("Bar cannot be resolved to a type");
   }
 
@@ -469,6 +469,7 @@ class JParserTest {
     assertThat(variableTree.simpleName().symbol()).isEqualTo(Symbol.UNKNOWN_SYMBOL);
     assertThat(variableTree.simpleName().isUnnamedVariable()).isTrue();
   }
+
 
   @Test
   void unnamed_pattern() {
