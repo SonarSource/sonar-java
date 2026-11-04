@@ -1400,6 +1400,15 @@ final class SemsitterTranslator {
     }
   }
 
+  @Nullable
+  private String fieldOwner(ExpressionTree qualifier) {
+    Type receiver = qualifier.symbolType().erasure();
+    if (receiver.isClass()) {
+      return receiver.fullyQualifiedName();
+    }
+    return qualifier instanceof IdentifierTree name ? importedType(name.name()) : null;
+  }
+
   /** The method SemSitter left unresolved, looked up in the receiver type, or in the enclosing types and static imports of an unqualified call. */
   @Nullable
   private Symbol.MethodSymbol libraryMethod(@Nullable ExpressionTree qualifier, String name, List<Type> arguments) {
@@ -1408,6 +1417,13 @@ final class SemsitterTranslator {
       Type receiver = qualifier.symbolType().erasure();
       if (receiver.isClass()) {
         owners.add(receiver.fullyQualifiedName());
+      } else if (receiver.isArray()) {
+        owners.add("java.lang.Object");
+      } else if (qualifier instanceof IdentifierTree typeName) {
+        String imported = importedType(typeName.name());
+        if (imported != null) {
+          owners.add(imported);
+        }
       }
     } else {
       types.stream().filter(type -> !type.isUnknown()).forEach(type -> owners.add(type.type().fullyQualifiedName()));
@@ -1416,7 +1432,11 @@ final class SemsitterTranslator {
       }
       owners.addAll(staticOnDemandImports);
     }
-    return owners.stream().map(owner -> sema.declaredMethod(owner, name, arguments)).filter(Objects::nonNull).findFirst().orElse(null);
+    Symbol.MethodSymbol found = owners.stream().map(owner -> sema.declaredMethod(owner, name, arguments)).filter(Objects::nonNull).findFirst().orElse(null);
+    if (found == null && qualifier != null && !owners.contains("java.lang.Object")) {
+      found = sema.declaredMethod("java.lang.Object", name, arguments);
+    }
+    return found;
   }
 
   /** Types a lambda, a method reference or an array initializer from the type its context expects. */
@@ -1579,8 +1599,9 @@ final class SemsitterTranslator {
       if (identifier.symbol().isUnknown()) {
         resolveQualifiedType(qualifier, identifier);
       }
-      if (identifier.symbol().isUnknown() && qualifier.symbolType().erasure().isClass()) {
-        Symbol.VariableSymbol field = sema.declaredField(qualifier.symbolType().erasure().fullyQualifiedName(), identifier.name());
+      if (identifier.symbol().isUnknown()) {
+        String owner = fieldOwner(qualifier);
+        Symbol.VariableSymbol field = owner == null ? null : sema.declaredField(owner, identifier.name());
         if (field != null) {
           identifier.symbol = field;
           ascribe(identifier, field.type());
