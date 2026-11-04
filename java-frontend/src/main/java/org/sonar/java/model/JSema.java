@@ -604,6 +604,14 @@ public final class JSema implements Sema {
     return found == null ? receiver : found;
   }
 
+  /** The type a lambda or method reference implements for a wildcard-parameterized target (JLS 9.9). */
+  Type groundType(Type target) {
+    if (!(target instanceof JType type) || !type.isParameterized() || type.args.stream().noneMatch(JType::isWildcard)) {
+      return target;
+    }
+    return JType.named(this, type.fullyQualifiedName(), type.args.stream().map(JType::groundType).toList());
+  }
+
   /** Capture conversion: a member is accessed through captures of the receiver's wildcard arguments. */
   private Type captureWildcards(Type receiver) {
     if (!(receiver instanceof JType type) || !type.isParameterized() || type.args.stream().noneMatch(JType::isWildcard)) {
@@ -1508,7 +1516,7 @@ public final class JSema implements Sema {
       return JType.array(this, typeFromFact(fact.getAsJsonObject("elem"), substitution, captureWildcard));
     }
     if ("wildcard".equals(kind)) {
-      return captureWildcard ? JType.capture(this, getClassType("java.lang.Object") instanceof JType object ? object : JType.unknown(this)) : JType.unknown(this);
+      return wildcardFromFact(fact, substitution, captureWildcard);
     }
     if ("typevar".equals(kind)) {
       String id = text(fact, "id");
@@ -1540,6 +1548,18 @@ public final class JSema implements Sema {
       return primitiveType(erased);
     }
     return JType.named(this, erased, args);
+  }
+
+  private JType wildcardFromFact(JsonObject fact, Map<String, Type> substitution, boolean capture) {
+    JType object = asJType(getClassType("java.lang.Object"));
+    JType upper = fact.get("extends") instanceof JsonObject bound ? typeFromFact(bound, substitution) : object;
+    if (capture) {
+      return JType.capture(this, upper.isUnknown() ? object : upper);
+    }
+    if (fact.get("super") instanceof JsonObject bound) {
+      return JType.superWildcard(this, typeFromFact(bound, substitution));
+    }
+    return JType.wildcard(this, upper);
   }
 
   /** A supertype fact: the loaded raw type, parameterized when the fact has type arguments. */

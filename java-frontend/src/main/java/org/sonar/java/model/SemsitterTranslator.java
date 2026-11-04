@@ -1591,7 +1591,7 @@ final class SemsitterTranslator {
   private void ascribeTarget(ExpressionTree expression, Type target) {
     boolean targetTyped = expression.is(Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.METHOD_REFERENCE) || (expression instanceof NewArrayTreeImpl array && array.type() == null);
     if (targetTyped && expression.symbolType().isUnknown() && !target.isUnknown()) {
-      ascribe(expression, target);
+      ascribe(expression, expression instanceof NewArrayTreeImpl ? target : sema.groundType(target));
     }
     if (expression instanceof LambdaExpressionTreeImpl lambda) {
       bindLambdaParameterOwner(lambda, lambda.symbolType());
@@ -2276,6 +2276,9 @@ final class SemsitterTranslator {
   }
 
   private Type wildcardType(WildcardTree wildcard) {
+    if (wildcard.is(Tree.Kind.SUPER_WILDCARD) && wildcard.bound() != null && wildcard.bound().symbolType() instanceof JType lower) {
+      return JType.superWildcard(sema, lower);
+    }
     Type upper = wildcard.is(Tree.Kind.EXTENDS_WILDCARD) && wildcard.bound() != null ? wildcard.bound().symbolType() : sema.getClassType("java.lang.Object");
     return upper instanceof JType bound ? JType.wildcard(sema, bound) : Type.UNKNOWN;
   }
