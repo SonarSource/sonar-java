@@ -721,6 +721,14 @@ final class SemsitterTranslator {
       if ("variable_declarator".equals(child.k()) || "formal_parameter".equals(child.k())) {
         previous = declarator(child, modifiers, type);
         trees.add(previous);
+      } else if ("ERROR".equals(child.k()) && previous != null && previous.initializer() == null && containsNew(child)) {
+        InternalSyntaxToken equals = null;
+        for (Node part : child.children()) {
+          if ("=".equals(part.text())) {
+            equals = token(part);
+          }
+        }
+        previous.completeTypeAndInitializer(previous.type(), equals == null ? synthetic("=") : equals, arrayFromError(child));
       } else if ((",".equals(child.text()) || ";".equals(child.text())) && previous != null) {
         previous.setEndToken(token(child));
       }
@@ -729,6 +737,39 @@ final class SemsitterTranslator {
       trees.add(declarator(declaration, modifiers, type));
     }
     return trees;
+  }
+
+  private static boolean containsNew(Node node) {
+    for (Node child : node.children()) {
+      if ("new".equals(child.text()) || containsNew(child)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** {@code new byte[]} left inside an error node beside the declarator. */
+  private NewArrayTreeImpl arrayFromError(Node error) {
+    InternalSyntaxToken newKeyword = synthetic("new");
+    Node typeNode = null;
+    List<ArrayDimensionTree> dims = new ArrayList<>();
+    for (Node child : error.children()) {
+      if ("new".equals(child.text())) {
+        newKeyword = token(child);
+      } else if (isTypeKind(child.k())) {
+        typeNode = child;
+      } else if ("dimensions".equals(child.k()) || "dimensions_expr".equals(child.k())) {
+        dims.addAll(dimensions(child));
+      }
+    }
+    if (dims.isEmpty()) {
+      dims.addAll(dimensions(error));
+    }
+    NewArrayTreeImpl tree = new NewArrayTreeImpl(dims, InitializerListTreeImpl.emptyList())
+      .complete(type(typeNode == null ? error : typeNode))
+      .completeWithNewKeyword(newKeyword);
+    ascribe(tree, arrayTypeOf(tree.type(), Math.max(dims.size(), 1)));
+    return tree;
   }
 
   private TypeTree spreadType(Node node) {
