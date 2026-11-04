@@ -232,9 +232,6 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   public List<MethodSymbol> overriddenSymbols() {
     if (overridden == null) {
       overridden = findOverridden();
-      if (overridden.stream().anyMatch(Symbol::isDeprecated)) {
-        deprecated(true);
-      }
     }
     return overridden;
   }
