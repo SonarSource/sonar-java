@@ -139,7 +139,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
       sema.getClassType(ENUM);
       return JType.named(sema, ENUM, List.of(self));
     }
-    if (noSuper || inheritsFrom(erased)) {
+    if (noSuper || inheritsFrom(erased) || interfaceDeclaredAsSuper() != null) {
       return sema.getClassType("java.lang.Object");
     }
     if (namesSameClass(superTypeFact, superName)) {
@@ -173,7 +173,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
       return List.of(sema.getClassType("java.lang.Cloneable"), sema.getClassType("java.io.Serializable"));
     }
     if (interfaceNames.isEmpty()) {
-      return isAnnotation() ? List.of(sema.getClassType("java.lang.annotation.Annotation")) : Collections.emptyList();
+      return withInterfaceSuper(isAnnotation() ? List.of(sema.getClassType("java.lang.annotation.Annotation")) : List.of());
     }
     boolean generic = interfaceTypeFacts.size() == interfaceNames.size();
     List<Type> types = new ArrayList<>();
@@ -183,7 +183,35 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
       Type erased = sema.getClassType(JSema.erase(name));
       types.add(namesSameClass(fact, name) ? sema.supertypeFromFact(fact) : withDeclaredArguments(erased, declaredInterfaces));
     }
-    return types;
+    return withInterfaceSuper(types);
+  }
+
+  /**
+   * An anonymous class whose named supertype is an interface is recorded with that interface as its superclass.
+   * Java implements the interface and extends Object.
+   */
+  @Nullable
+  private Type interfaceDeclaredAsSuper() {
+    if (superName == null || superName.isEmpty() || isInterface() || isAnnotation() || typeParameter || elementFqn != null) {
+      return null;
+    }
+    String erased = JSema.erase(superName);
+    JTypeSymbol parent = sema.typeSymbol(erased);
+    if (!parent.isInterface() || parent.isUnknown()) {
+      return null;
+    }
+    return sema.getClassType(erased);
+  }
+
+  private List<Type> withInterfaceSuper(List<Type> interfaces) {
+    Type superInterface = interfaceDeclaredAsSuper();
+    if (superInterface == null || interfaces.stream().anyMatch(type -> type.erasure().equals(superInterface.erasure()))) {
+      return interfaces;
+    }
+    List<Type> combined = new ArrayList<>(interfaces.size() + 1);
+    combined.add(superInterface);
+    combined.addAll(interfaces);
+    return combined;
   }
 
   private static boolean namesSameClass(@Nullable JsonObject fact, String name) {
