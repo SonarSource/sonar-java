@@ -17,7 +17,7 @@
       "kind" : "fail",
       "level" : "warning",
       "message" : {
-        "text" : "Remove this redundant jump."
+        "text" : "Remove this redundant return."
       },
       "locations" : [ {
         "id" : -1,
