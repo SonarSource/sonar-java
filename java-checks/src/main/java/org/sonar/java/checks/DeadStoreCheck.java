@@ -18,7 +18,6 @@ package org.sonar.java.checks;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,25 +54,31 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.METHOD);
+    return List.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    MethodTree methodTree = (MethodTree) tree;
-    if (methodTree.block() == null) {
-      return;
+    Tree body;
+    Symbol.MethodSymbol methodSymbol;
+    if (tree instanceof MethodTree methodTree) {
+      body = methodTree.block();
+      methodSymbol = methodTree.symbol();
+    } else {
+      LambdaExpressionTree lambda = (LambdaExpressionTree) tree;
+      body = lambda.body();
+      methodSymbol = lambda.symbol();
     }
 
     // TODO(npe) Exclude try statements with finally as CFG is incorrect for those and lead to false positive
-    if (hasTryFinallyWithLocalVar(methodTree.block(), methodTree.symbol())) {
+    if (body == null || hasTryFinallyWithLocalVar(body, methodSymbol)) {
       return;
     }
 
-    UNRESOLVED_IDENTIFIERS_VISITOR.check(methodTree);
+    UNRESOLVED_IDENTIFIERS_VISITOR.check(tree);
 
-    Symbol.MethodSymbol methodSymbol = methodTree.symbol();
-    CFG cfg = (CFG) methodTree.cfg();
+    CFG cfg = tree instanceof MethodTree methodTree ? (CFG) methodTree.cfg() : (CFG) ((LambdaExpressionTree) tree).cfg();
+    cfg.setMethodSymbol(methodSymbol);
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     // Liveness analysis provides information only for block boundaries, so we should do analysis between elements within blocks
     for (CFG.Block block : cfg.blocks()) {
@@ -153,7 +158,6 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
       Symbol symbol = ((IdentifierTree) lhs).symbol();
       if (symbol.isLocalVariable()
         && !out.contains(symbol)
-        && (element.is(Tree.Kind.ASSIGNMENT) || isParentExpressionStatement(element))
         && !UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(symbol.name())) {
         createIssue(element.operatorToken(), element.expression(), symbol);
       }
@@ -164,10 +168,6 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
         out.add(symbol);
       }
     }
-  }
-
-  private static boolean isParentExpressionStatement(Tree element) {
-    return element.parent().is(Tree.Kind.EXPRESSION_STATEMENT);
   }
 
   private static void handleIdentifier(Set<Symbol> out, Set<Tree> assignmentLHS, IdentifierTree element) {
@@ -228,7 +228,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
   private void handlePrefixExpression(Set<Symbol> out, UnaryExpressionTree element) {
     // within each block, each produced value is consumed or by following elements or by terminator
     ExpressionTree expression = element.expression();
-    if (isParentExpressionStatement(element) && expression.is(Tree.Kind.IDENTIFIER)) {
+    if (expression.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) expression).symbol();
       if (symbol.isLocalVariable() && !out.contains(symbol)) {
         createIssue(element, symbol);
@@ -264,9 +264,9 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     return localVarExtractor.usedVariables();
   }
 
-  private static boolean hasTryFinallyWithLocalVar(BlockTree block, Symbol.MethodSymbol methodSymbol) {
+  private static boolean hasTryFinallyWithLocalVar(Tree body, Symbol.MethodSymbol methodSymbol) {
     TryVisitor tryVisitor = new TryVisitor(methodSymbol);
-    block.accept(tryVisitor);
+    body.accept(tryVisitor);
     return tryVisitor.hasTryFinally;
   }
 
@@ -291,6 +291,11 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitClass(ClassTree tree) {
       // ignore inner classes
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree tree) {
+      // Lambda bodies have separate CFGs, so their try statements must not exclude the enclosing scope from analysis.
     }
   }
 
