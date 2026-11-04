@@ -20,6 +20,9 @@ udg-family-jvm = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev =
 udg-lang-sdk = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "b2a0ab3ab12d11ba2a77333765fecf189410fe4a", features = ["unstable-sdk"] }
 udg-semantic = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "b2a0ab3ab12d11ba2a77333765fecf189410fe4a" }
 
+[patch.crates-io]
+tree-sitter-java = { git = "https://github.com/rombirli/tree-sitter-java", rev = "324af3f22ee0a4579a1d5c1a8bc588631ec4d17c" }
+
 [dev-dependencies]
 tempfile = "3"
 
