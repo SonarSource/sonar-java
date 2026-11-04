@@ -515,8 +515,30 @@ public final class JSema implements Sema {
     if (method.returnsSelf() && receiver != null && receiver.isClass()) {
       return receiver;
     }
+    JsonObject declaredReturn = declaredReturn(method);
+    if (declaredReturn != null && receiver != null) {
+      Map<String, Type> substitution = classSubstitution(method, receiver);
+      if (!substitution.isEmpty()) {
+        JType substituted = typeFromFact(declaredReturn, substitution);
+        if (!substituted.isUnknown()) {
+          return substituted;
+        }
+      }
+    }
     Type declared = method.returnType().type();
     return declared == null ? Type.UNKNOWN : declared;
+  }
+
+  /** The method as seen from {@code receiver}, so its owner keeps that parameterization. */
+  JMethodSymbol invocationView(JMethodSymbol method, @Nullable Type receiver, List<Type> parameters, Type returned) {
+    JMethodSymbol view = method.withSignature(parameters, returned);
+    if (receiver != null && !method.isStatic() && method.owner().type() != null) {
+      Type declaring = asSuperType(receiver, method.owner().type().erasure().fullyQualifiedName(), new HashSet<>());
+      if (declaring != null && declaring.isParameterized()) {
+        view.owner(declaring.symbol());
+      }
+    }
+    return view;
   }
 
   /**
@@ -609,12 +631,42 @@ public final class JSema implements Sema {
       supertypes.add(0, superClass);
     }
     for (Type supertype : supertypes) {
-      Type found = asSuperType(supertype, targetFqn, visited);
+      Type found = asSuperType(instantiateSupertype(from, supertype), targetFqn, visited);
       if (found != null) {
         return found;
       }
     }
     return null;
+  }
+
+  /** Applies {@code from}'s type arguments to a supertype written with those type variables. */
+  private Type instantiateSupertype(Type from, Type supertype) {
+    if (!from.isParameterized() || !(from instanceof JType fromType) || !(supertype instanceof JType superType)) {
+      return supertype;
+    }
+    return superType.substitute(typeArgumentsOf(fromType));
+  }
+
+  private Map<String, Type> typeArgumentsOf(JType type) {
+    JsonObject info = typeInfos.get(sourceName(type.erasure().fullyQualifiedName()));
+    List<String> names = info == null ? List.of() : strings(info, "typeVars");
+    List<Type> arguments = type.typeArguments();
+    Map<String, Type> substitution = new HashMap<>();
+    for (int i = 0; i < names.size() && i < arguments.size(); i++) {
+      substitution.put(names.get(i), arguments.get(i));
+    }
+    return substitution;
+  }
+
+  @Nullable
+  private JsonObject declaredReturn(JMethodSymbol method) {
+    if (method.declaredReturnLoaded()) {
+      return method.declaredReturn();
+    }
+    JsonObject member = lookupGenericMember(method);
+    JsonObject retType = member != null && member.get("retType") instanceof JsonObject fact ? fact : null;
+    method.declaredReturn(retType);
+    return retType;
   }
 
   private List<JsonObject> declaredParameters(JMethodSymbol method) {
@@ -750,6 +802,9 @@ public final class JSema implements Sema {
     }
     if (member.has("retParam") && !member.get("retParam").isJsonNull()) {
       method.returnTypeParameter(member.get("retParam").getAsInt());
+    }
+    if (member.get("retType") instanceof JsonObject retType) {
+      method.declaredReturn(retType);
     }
     method.returnsSelf(member.has("retSelf") && member.get("retSelf").getAsBoolean());
     symbols.put(id, method);
