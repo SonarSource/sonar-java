@@ -133,12 +133,11 @@ class JavaFrontendTest {
   }
 
   @Test
-  void parsing_errors_are_recovered() throws Exception {
+  void parsing_errors_should_be_reported_to_sonarlint() throws Exception {
     scan(SONARLINT_RUNTIME, "class A {");
 
-    assertThat(sensorContext.allAnalysisErrors()).isEmpty();
-    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
-    assertThat(mainCodeIssueScannerAndFilter.lastScannedTree).isInstanceOf(CompilationUnitTree.class);
+    assertThat(sensorContext.allAnalysisErrors()).hasSize(1);
+    assertThat(sensorContext.allAnalysisErrors().iterator().next().message()).startsWith("Parse error at line 1 column 9");
   }
 
   @Test
@@ -617,7 +616,8 @@ class JavaFrontendTest {
     MapSettings settings = new MapSettings();
     settings.setProperty(propertyName, propertyValue);
     scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B {", "class C {}");
-    assertThat(sensorContext.allAnalysisErrors()).isEmpty();
+    String allLogs = String.join("\n", logTester.logs());
+    assertThat(allLogs).contains("Unable to parse source file : 'B.java'");
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(3);
     assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
   }
