@@ -37,14 +37,10 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.model.JParserTestUtils.methodBinding;
-import static org.sonar.java.model.JParserTestUtils.sema;
-import static org.sonar.java.model.JParserTestUtils.symbolOf;
-import static org.sonar.java.model.JParserTestUtils.typeOf;
 
 class JUtilsTest {
 
-  static final JSema SEMA = sema(test(""));
+  static final JSema SEMA = test("").sema;
   private static final Type OBJECT_TYPE = SEMA.type(SEMA.resolveType("java.lang.Object"));
 
   @Nested
@@ -144,14 +140,14 @@ class JUtilsTest {
     void nullType() {
       ReturnStatementTreeImpl s = (ReturnStatementTreeImpl) m1.block().body().get(0);
       AbstractTypedTree e = (AbstractTypedTree) s.expression();
-      assertThat(((JType) typeOf(e)).isNullType())
+      assertThat(cu.sema.type(e.typeBinding).isNullType())
         .isEqualTo(e.symbolType().isNullType())
         .isTrue();
     }
 
     @Test
     void a_non_null_type_is_not_null_type() {
-      assertThat(sema(cu).type(methodBinding(m1).getReturnType()).isNullType())
+      assertThat(cu.sema.type(m1.methodBinding.getReturnType()).isNullType())
         .isEqualTo(m1.returnType().symbolType().isNullType())
         .isFalse();
     }
@@ -159,7 +155,7 @@ class JUtilsTest {
     @Test
     void unresolved_type_is_not_null_type() {
       MethodTreeImpl m2 = nthMethod(c, 1);
-      assertThat(sema(cu).type(methodBinding(m2).getReturnType()).isNullType())
+      assertThat(cu.sema.type(m2.methodBinding.getReturnType()).isNullType())
         .isEqualTo(m2.returnType().symbolType().isNullType())
         .isFalse();
     }
@@ -182,14 +178,14 @@ class JUtilsTest {
     @Test
     void intersection_type() {
       TypeCastExpressionTreeImpl e = (TypeCastExpressionTreeImpl) f.initializer();
-      assertThat(JUtils.isIntersectionType(((JType) typeOf(e))))
+      assertThat(JUtils.isIntersectionType(cu.sema.type(e.typeBinding)))
         .isEqualTo(JUtils.isIntersectionType(e.symbolType()))
         .isTrue();
     }
 
     @Test
     void non_intersection_type() {
-      assertThat(JUtils.isIntersectionType(((JType) symbolOf(f).type())))
+      assertThat(JUtils.isIntersectionType(cu.sema.type(f.variableBinding.getType())))
         .isEqualTo(JUtils.isIntersectionType(f.symbol().type()))
         .isFalse();
     }
@@ -197,7 +193,7 @@ class JUtilsTest {
     @Test
     void unresolved_type_is_not_an_intersection_type() {
       VariableTreeImpl u = nthField(c, 1);
-      assertThat(JUtils.isIntersectionType(((JType) symbolOf(u).type())))
+      assertThat(JUtils.isIntersectionType(cu.sema.type(u.variableBinding.getType())))
         .isEqualTo(JUtils.isIntersectionType(u.symbol().type()))
         .isFalse();
     }
@@ -211,7 +207,7 @@ class JUtilsTest {
     @Test
     void type_var() {
       VariableTreeImpl t = firstField(c);
-      assertThat(((JType) symbolOf(t).type()).isTypeVar())
+      assertThat(cu.sema.type(t.variableBinding.getType()).isTypeVar())
         .isEqualTo(t.symbol().type().isTypeVar())
         .isTrue();
     }
@@ -224,7 +220,7 @@ class JUtilsTest {
     @Test
     void unresolved_type_is_not_a_type_var() {
       VariableTreeImpl u = nthField(c, 1);
-      assertThat(((JType) symbolOf(u).type()).isTypeVar())
+      assertThat(cu.sema.type(u.variableBinding.getType()).isTypeVar())
         .isEqualTo(u.symbol().type().isTypeVar())
         .isFalse();
     }
@@ -388,22 +384,22 @@ class JUtilsTest {
       JavaTree.CompilationUnitTreeImpl specificCu = test("interface I { short SHORT = 42; char CHAR = 42; byte BYTE = 42; boolean BOOLEAN = false; }");
       ClassTreeImpl specificC = firstClass(specificCu);
 
-      Symbol.VariableSymbol shortConstant = ((JVariableSymbol) symbolOf(firstField(specificC)));
+      Symbol.VariableSymbol shortConstant = specificCu.sema.variableSymbol(firstField(specificC).variableBinding);
       assertThat(shortConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
-      Symbol.VariableSymbol charConstant = ((JVariableSymbol) symbolOf(nthField(specificC, 1)));
+      Symbol.VariableSymbol charConstant = specificCu.sema.variableSymbol(nthField(specificC, 1).variableBinding);
       assertThat(charConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
-      Symbol.VariableSymbol byteConstant = ((JVariableSymbol) symbolOf(nthField(specificC, 2)));
+      Symbol.VariableSymbol byteConstant = specificCu.sema.variableSymbol(nthField(specificC, 2).variableBinding);
       assertThat(byteConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
-      Symbol.VariableSymbol booleanConstant = ((JVariableSymbol) symbolOf(nthField(specificC, 3)));
+      Symbol.VariableSymbol booleanConstant = specificCu.sema.variableSymbol(nthField(specificC, 3).variableBinding);
       assertThat(booleanConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Boolean.class)
         .isEqualTo(Boolean.FALSE);
@@ -709,13 +705,13 @@ class JUtilsTest {
       ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) m.block().body().get(0);
       MethodInvocationTreeImpl methodInvocation = (MethodInvocationTreeImpl) s.expression();
 
-      assertThat(((JMethodSymbol) symbolOf(m)).isParametrizedMethod())
+      assertThat(cu.sema.methodSymbol(m.methodBinding).isParametrizedMethod())
         .isEqualTo(m.symbol().isParametrizedMethod())
-        .isEqualTo(methodBinding(m).isGenericMethod())
+        .isEqualTo(m.methodBinding.isGenericMethod())
         .isTrue();
-      assertThat(((JMethodSymbol) symbolOf(methodInvocation)).isParametrizedMethod())
+      assertThat(cu.sema.methodSymbol(methodInvocation.methodBinding).isParametrizedMethod())
         .isEqualTo(methodInvocation.methodSymbol().isParametrizedMethod())
-        .isEqualTo(methodBinding(methodInvocation).isParameterizedMethod())
+        .isEqualTo(methodInvocation.methodBinding.isParameterizedMethod())
         .isTrue();
     }
 

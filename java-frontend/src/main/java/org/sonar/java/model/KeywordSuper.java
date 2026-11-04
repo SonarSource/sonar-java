@@ -26,6 +26,11 @@ final class KeywordSuper extends IdentifierTreeImpl {
     super(token);
   }
 
+  KeywordSuper(InternalSyntaxToken token, Symbol symbol) {
+    this(token);
+    setSymbol(symbol);
+  }
+
   @Override
   public Type symbolType() {
     return symbol().type();

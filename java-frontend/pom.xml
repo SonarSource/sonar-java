@@ -19,6 +19,12 @@
 
   <dependencies>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>jdt-package</artifactId>
+      <version>1.9.0.1840</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.sonarsource.api.plugin</groupId>
       <artifactId>sonar-plugin-api</artifactId>
       <scope>provided</scope>

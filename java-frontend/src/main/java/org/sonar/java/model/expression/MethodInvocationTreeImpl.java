@@ -17,9 +17,9 @@
 package org.sonar.java.model.expression;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -29,7 +29,10 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeArguments;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
+
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.Objects;
 
 public class MethodInvocationTreeImpl extends AssessableExpressionTree implements MethodInvocationTree {
 

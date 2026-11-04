@@ -49,7 +49,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
   }
 
   static void addTo(JavaTree.CompilationUnitTreeImpl unit) {
-    CompilerWarnings visitor = new CompilerWarnings(unit.sema);
+    CompilerWarnings visitor = new CompilerWarnings((JSema) unit.sema);
     visitor.scan(unit.packageDeclaration());
     visitor.scan(unit.types());
     unit.imports().forEach(visitor::scan);

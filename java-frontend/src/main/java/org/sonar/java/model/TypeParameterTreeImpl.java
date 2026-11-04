@@ -90,7 +90,7 @@ public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree
   }
 
   public void setSymbol(Symbol symbol) {
-    this.symbol = Objects.requireNonNull(symbol);
+    this.typeSymbol = (Symbol.TypeSymbol) Objects.requireNonNull(symbol);
   }
 
   public Symbol symbol() {

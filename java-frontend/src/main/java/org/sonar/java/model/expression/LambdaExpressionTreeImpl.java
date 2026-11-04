@@ -17,17 +17,22 @@
 package org.sonar.java.model.expression;
 
 import java.util.Arrays;
+import java.util.Objects;
 import org.sonar.java.cfg.CFG;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
+
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 
 public class LambdaExpressionTreeImpl extends AssessableExpressionTree implements LambdaExpressionTree {
 
@@ -85,7 +90,7 @@ public class LambdaExpressionTreeImpl extends AssessableExpressionTree implement
   }
 
   public void setSymbol(Symbol.MethodSymbol symbol) {
-    this.symbol = Objects.requireNonNull(symbol);
+    this.methodSymbol = Objects.requireNonNull(symbol);
   }
 
   @Override

@@ -26,22 +26,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,44 +36,6 @@ public class JParserTestUtils {
 
   private JParserTestUtils() {
     // Utility class
-  }
-
-  public static Type typeOf(Tree tree) {
-    return switch (tree) {
-      case TypeTree type -> type.symbolType();
-      case ExpressionTree expression -> expression.symbolType();
-      default -> symbolOf(tree).type();
-    };
-  }
-
-  public static Symbol symbolOf(Tree tree) {
-    return switch (tree) {
-      case ClassTree declaration -> declaration.symbol();
-      case MethodTree declaration -> declaration.symbol();
-      case VariableTree declaration -> declaration.symbol();
-      case IdentifierTree identifier -> identifier.symbol();
-      case MethodInvocationTree invocation -> invocation.methodSymbol();
-      case LambdaExpressionTree lambda -> lambda.symbol();
-      case TypeParameterTreeImpl parameter -> parameter.symbol();
-      case JavaTree.ImportTreeImpl importTree -> importTree.symbol();
-      default -> throw new IllegalArgumentException(tree.kind().name());
-    };
-  }
-
-  public static JSema sema(CompilationUnitTree tree) {
-    return (JSema) ((JavaTree.CompilationUnitTreeImpl) tree).sema;
-  }
-
-  public static ITypeBinding typeBinding(ClassTree tree) {
-    return ((JType) tree.symbol().type()).typeBinding;
-  }
-
-  public static IMethodBinding methodBinding(MethodTree tree) {
-    return tree.symbol() instanceof JMethodSymbol symbol ? symbol.methodBinding() : null;
-  }
-
-  public static IMethodBinding methodBinding(MethodInvocationTree tree) {
-    return tree.methodSymbol() instanceof JMethodSymbol symbol ? symbol.methodBinding() : null;
   }
 
   public static final List<File> DEFAULT_CLASSPATH = Arrays.asList(new File("target/test-classes"), new File("target/classes"));
