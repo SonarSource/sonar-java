@@ -38,11 +38,12 @@ runs:
         EXPECTED_DIR: ${{ inputs.expected-dir }}
         ACTUAL_DIR: ${{ inputs.actual-dir }}
         NAME: ${{ inputs.name }}
+        NODE_OPTIONS: --max-old-space-size=8192
       run: |
         cd "${IT_DIR}"
         mkdir -p target "${EXPECTED_DIR}"
         diff --unified --recursive --new-file --strip-trailing-cr "${EXPECTED_DIR}" "${ACTUAL_DIR}" > "target/test.diff" || true
-        npx diff2html-cli --input file --style side --file "target/diff_${NAME}.html" -- "target/test.diff"
+        npx diff2html-cli --input file --style side --diffMaxChanges 2000 --file "target/diff_${NAME}.html" -- "target/test.diff"
 
     - name: Upload Diff Report
       if: runner.os != 'Windows'
