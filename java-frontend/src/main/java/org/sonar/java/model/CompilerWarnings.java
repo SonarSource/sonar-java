@@ -210,7 +210,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
     if (symbol.isUnknown()) {
       return true;
     }
-    return importTree.isStatic() ? isMemberOf(symbol, qualifier) : denotesType(symbol, name);
+    return importTree.isStatic() ? isMemberOf(symbol, qualifier) : denotesType(symbol, name, identifier);
   }
 
   /** A static import also brings in the members the named type inherits. */
@@ -225,11 +225,18 @@ final class CompilerWarnings extends BaseTreeVisitor {
     return binary != null && sema.getClassType(binary).isSubtypeOf(owner.type());
   }
 
-  private static boolean denotesType(Symbol symbol, String name) {
+  private static boolean denotesType(Symbol symbol, String name, IdentifierTree identifier) {
     if (symbol.isTypeSymbol()) {
       return dottedType(symbol).equals(name);
     }
-    return symbol.isMethodSymbol() && "<init>".equals(symbol.name()) && symbol.owner() instanceof Symbol.TypeSymbol owner && dottedType(owner).equals(name);
+    if (!(symbol.isMethodSymbol() && "<init>".equals(symbol.name()))) {
+      return false;
+    }
+    if (symbol.owner() instanceof Symbol.TypeSymbol owner && dottedType(owner).equals(name)) {
+      return true;
+    }
+    Type written = identifier.symbolType();
+    return written != null && !written.isUnknown() && written.erasure().fullyQualifiedName().replace('$', '.').equals(name);
   }
 
   private static boolean declaredIn(Symbol symbol, String qualifier, boolean isStatic) {
