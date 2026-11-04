@@ -35,7 +35,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 final class JType implements Type, Type.ArrayType {
 
   enum Kind {
-    NAMED, PRIMITIVE, VOID, NULL, ARRAY, TYPEVAR, UNKNOWN, INTERSECTION, CAPTURE
+    NAMED, PRIMITIVE, VOID, NULL, ARRAY, TYPEVAR, UNKNOWN, INTERSECTION, CAPTURE, WILDCARD
   }
 
   private static final Set<String> NUMERIC = Set.of("byte", "char", "short", "int", "long", "float", "double");
@@ -102,6 +102,10 @@ final class JType implements Type, Type.ArrayType {
       JType replaced = element.substitute(substitution);
       return replaced == element ? this : capture(sema, replaced);
     }
+    if (kind == Kind.WILDCARD && element != null) {
+      JType replaced = element.substitute(substitution);
+      return replaced == element ? this : wildcard(sema, replaced);
+    }
     if (kind == Kind.ARRAY && element != null) {
       JType replaced = element.substitute(substitution);
       return replaced == element ? this : array(sema, replaced);
@@ -121,6 +125,18 @@ final class JType implements Type, Type.ArrayType {
 
   static JType capture(JSema sema, JType upper) {
     return new JType(sema, Kind.CAPTURE, "!capture!", List.of(), upper, null, List.of());
+  }
+
+  /** A wildcard type argument, named after the erasure of its upper bound as ECJ names it. */
+  static JType wildcard(JSema sema, JType upper) {
+    if (upper.isUnknown()) {
+      return upper;
+    }
+    return new JType(sema, Kind.WILDCARD, upper.erasure().fullyQualifiedName(), List.of(), upper, null, List.of());
+  }
+
+  boolean isWildcard() {
+    return kind == Kind.WILDCARD;
   }
 
   static JType intersection(JSema sema, List<JType> bounds) {
@@ -144,7 +160,7 @@ final class JType implements Type, Type.ArrayType {
   }
 
   private boolean isSubtypeOf(Type superType, Set<String> visited) {
-    if (kind == Kind.CAPTURE && element != null) {
+    if ((kind == Kind.CAPTURE || kind == Kind.WILDCARD) && element != null) {
       return element.isSubtypeOf(superType, visited);
     }
     if (superType == null || superType.isUnknown() || isUnknown()) {
@@ -360,14 +376,14 @@ final class JType implements Type, Type.ArrayType {
       case PRIMITIVE, VOID -> sema.primitiveSymbol(fqn);
       case TYPEVAR -> sema.resolveTypeSymbol(typeVarId);
       case NULL, UNKNOWN, INTERSECTION -> Symbol.TypeSymbol.UNKNOWN_TYPE;
-      case CAPTURE -> element == null ? Symbol.TypeSymbol.UNKNOWN_TYPE : element.symbol();
+      case CAPTURE, WILDCARD -> element == null ? Symbol.TypeSymbol.UNKNOWN_TYPE : element.symbol();
       case NAMED -> sema.typeSymbol(fqn);
     };
   }
 
   @Override
   public Type erasure() {
-    if (kind == Kind.CAPTURE && element != null) {
+    if ((kind == Kind.CAPTURE || kind == Kind.WILDCARD) && element != null) {
       return element.erasure();
     }
     if (kind == Kind.ARRAY) {

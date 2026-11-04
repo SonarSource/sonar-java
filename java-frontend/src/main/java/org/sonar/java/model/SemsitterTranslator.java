@@ -131,6 +131,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.WildcardTree;
 import org.sonar.plugins.java.api.tree.YieldStatementTree;
 
 /**
@@ -2234,7 +2235,7 @@ final class SemsitterTranslator {
     JavaTree.ParameterizedTypeTreeImpl tree = new JavaTree.ParameterizedTypeTreeImpl(raw, arguments == null ? new TypeArgumentListTreeImpl(synthetic("<"), synthetic(">")) : typeArguments(arguments));
     List<Type> args = new ArrayList<>();
     for (TypeTree argument : tree.typeArguments()) {
-      args.add(argument.symbolType());
+      args.add(argument instanceof WildcardTree wildcard ? wildcardType(wildcard) : argument.symbolType());
     }
     if (raw.symbolType() instanceof JType) {
       List<JType> typeArguments = new ArrayList<>();
@@ -2272,6 +2273,11 @@ final class SemsitterTranslator {
       }
     }
     return current;
+  }
+
+  private Type wildcardType(WildcardTree wildcard) {
+    Type upper = wildcard.is(Tree.Kind.EXTENDS_WILDCARD) && wildcard.bound() != null ? wildcard.bound().symbolType() : sema.getClassType("java.lang.Object");
+    return upper instanceof JType bound ? JType.wildcard(sema, bound) : Type.UNKNOWN;
   }
 
   private JavaTree.WildcardTreeImpl wildcard(Node node) {
@@ -2505,9 +2511,11 @@ final class SemsitterTranslator {
       && ModifiersUtils.hasModifier(declared.modifiers(), Modifier.FINAL)) {
       declaredSymbol.addModifiers(FINAL_MODIFIER);
     }
-    if (tree instanceof VariableTreeImpl variable && symbol instanceof JSymbol variableSymbol && symbol.isVariableSymbol() && symbol.type().isUnknown()
-      && variable.type() != null && isKnownOrRecovered(variable.type().symbolType())) {
-      variableSymbol.type(variable.type().symbolType());
+    if (tree instanceof VariableTreeImpl variable && symbol instanceof JSymbol variableSymbol && symbol.isVariableSymbol() && variable.type() != null) {
+      Type declared = variable.type().symbolType();
+      if (symbol.type().isUnknown() ? isKnownOrRecovered(declared) : declared.isParameterized() && sameErasure(declared, symbol.type())) {
+        variableSymbol.type(declared);
+      }
     }
     if (tree instanceof MethodTreeImpl method && symbol instanceof JMethodSymbol methodSymbol && method.returnType() != null
       && methodSymbol.returnType().type().isUnknown() && isKnownOrRecovered(method.returnType().symbolType())) {
@@ -2534,6 +2542,10 @@ final class SemsitterTranslator {
     }
   }
 
+  private static boolean sameErasure(Type left, Type right) {
+    return left.erasure().fullyQualifiedName().equals(right.erasure().fullyQualifiedName());
+  }
+
   /** The scan records erased parameter types, while the declared parameters keep their type arguments. */
   private static void declaredParameterTypes(JMethodSymbol method, List<VariableTree> parameters) {
     List<Type> erased = method.parameterTypes();
@@ -2543,7 +2555,7 @@ final class SemsitterTranslator {
     List<Type> declared = new ArrayList<>();
     for (int i = 0; i < parameters.size(); i++) {
       Type type = parameters.get(i).type().symbolType();
-      if (type.isUnknown() || !type.erasure().fullyQualifiedName().equals(erased.get(i).erasure().fullyQualifiedName())) {
+      if (type.isUnknown() || !sameErasure(type, erased.get(i))) {
         return;
       }
       declared.add(type);
