@@ -330,7 +330,7 @@ checksum = "77ce24cb58228fbb8aa041425bb1050850ac19177686ea6e0f41a70416f56fdb"
 [[package]]
 name = "fswatch"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "anyhow",
  "ignore",
@@ -717,6 +717,15 @@ dependencies = [
  "bitflags",
  "memchr",
  "unicase",
+]
+
+[[package]]
+name = "quick-xml"
+version = "0.42.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "41b1177fdf999d2321d3fb46ff47159d9c1fb9ad66a4879f8c50a0b504615e9b"
+dependencies = [
+ "memchr",
 ]
 
 [[package]]
@@ -1165,7 +1174,8 @@ dependencies = [
 [[package]]
 name = "tree-sitter-java"
 version = "0.23.5"
-source = "git+https://github.com/rombirli/tree-sitter-java?rev=324af3f22ee0a4579a1d5c1a8bc588631ec4d17c#324af3f22ee0a4579a1d5c1a8bc588631ec4d17c"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0aa6cbcdc8c679b214e616fd3300da67da0e492e066df01bcf5a5921a71e90d6"
 dependencies = [
  "cc",
  "tree-sitter-language",
@@ -1190,9 +1200,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6f5e870be6c3b371b77fe0ee0bafb859fa4964b4404c27de1d380043c4dda20"
 
 [[package]]
+name = "udg-boundary"
+version = "0.1.0"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
+dependencies = [
+ "anyhow",
+ "flate2",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tracing",
+ "udg-engine",
+ "udg-model",
+]
+
+[[package]]
 name = "udg-buffer"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "rustc-hash",
  "tracing",
@@ -1203,7 +1228,7 @@ dependencies = [
 [[package]]
 name = "udg-embed"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "anyhow",
  "clap",
@@ -1221,7 +1246,7 @@ dependencies = [
 [[package]]
 name = "udg-engine"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "anyhow",
  "ignore",
@@ -1242,24 +1267,32 @@ dependencies = [
 [[package]]
 name = "udg-engine-plugins"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "rayon",
+ "tracing",
  "tree-sitter",
  "udg-engine",
+ "udg-family-jvm",
+ "udg-lang-java",
  "udg-lang-sdk",
+ "udg-model",
+ "udg-sdk-tree-sitter",
 ]
 
 [[package]]
 name = "udg-family-jvm"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "anyhow",
- "flate2",
+ "encoding_rs",
  "globset",
+ "quick-xml",
  "rustc-hash",
  "serde",
+ "serde_json",
+ "toml",
  "tracing",
  "udg-lang-sdk",
  "udg-model",
@@ -1270,7 +1303,7 @@ dependencies = [
 [[package]]
 name = "udg-gen"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "anyhow",
  "clap",
@@ -1284,6 +1317,7 @@ dependencies = [
  "tracing-subscriber",
  "tree-sitter",
  "tree-sitter-java",
+ "udg-boundary",
  "udg-embed",
  "udg-engine",
  "udg-engine-plugins",
@@ -1302,7 +1336,7 @@ dependencies = [
 [[package]]
 name = "udg-lang-java"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "anyhow",
  "rustc-hash",
@@ -1322,7 +1356,7 @@ dependencies = [
 [[package]]
 name = "udg-lang-sdk"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "encoding_rs",
  "rustc-hash",
@@ -1333,7 +1367,7 @@ dependencies = [
 [[package]]
 name = "udg-live"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "anyhow",
  "clap",
@@ -1350,7 +1384,7 @@ dependencies = [
 [[package]]
 name = "udg-live-serve"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "anyhow",
  "fswatch",
@@ -1371,7 +1405,7 @@ dependencies = [
 [[package]]
 name = "udg-model"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "clap",
  "rustc-hash",
@@ -1385,7 +1419,7 @@ dependencies = [
 [[package]]
 name = "udg-packed-table"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "flate2",
 ]
@@ -1393,9 +1427,10 @@ dependencies = [
 [[package]]
 name = "udg-sdk-tree-sitter"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "anyhow",
+ "rustc-hash",
  "serde_json",
  "tree-sitter",
  "udg-lang-sdk",
@@ -1405,7 +1440,7 @@ dependencies = [
 [[package]]
 name = "udg-semantic"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "udg-lang-sdk",
  "udg-model",
@@ -1416,7 +1451,7 @@ dependencies = [
 [[package]]
 name = "udg-semantic-core"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "serde_json",
  "udg-lang-sdk",
@@ -1426,7 +1461,7 @@ dependencies = [
 [[package]]
 name = "udg-semantic-session"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "anyhow",
  "rayon",
@@ -1442,7 +1477,7 @@ dependencies = [
 [[package]]
 name = "udg-store"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "anyhow",
  "clap",
@@ -1462,12 +1497,11 @@ dependencies = [
 [[package]]
 name = "udg-ucfg"
 version = "0.1.0"
-source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=2340034d3d74542ab0ba042be74a0f8241d6010a#2340034d3d74542ab0ba042be74a0f8241d6010a"
+source = "git+ssh://git@github.com/SonarSource/semsitter.git?rev=b2a0ab3ab12d11ba2a77333765fecf189410fe4a#b2a0ab3ab12d11ba2a77333765fecf189410fe4a"
 dependencies = [
  "anyhow",
  "clap",
  "prost",
- "rayon",
  "regex",
  "serde",
  "serde_json",
@@ -1476,6 +1510,7 @@ dependencies = [
  "tree-sitter",
  "tree-sitter-java",
  "udg-engine",
+ "udg-engine-plugins",
  "udg-family-jvm",
  "udg-lang-java",
  "udg-lang-sdk",
