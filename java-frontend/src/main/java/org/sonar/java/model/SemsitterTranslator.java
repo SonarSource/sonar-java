@@ -1956,11 +1956,9 @@ final class SemsitterTranslator {
     ExpressionTree type = (ExpressionTree) type(firstNamed(node));
     IdentifierTreeImpl className = new IdentifierTreeImpl(token(required(node, "class")));
     MemberSelectExpressionTreeImpl tree = new MemberSelectExpressionTreeImpl(type, token(required(node, ".")), className);
-    JType argument = type.symbolType() instanceof JType jType ? jType : JType.unknown(sema);
-    JType classType = JType.named(sema, "java.lang.Class", List.of(argument));
-    ascribe(tree, classType);
-    ascribe(className, classType);
-    className.symbol = classType.symbol();
+    Type literal = type.symbolType().isPrimitive() ? type.symbolType().primitiveWrapperType() : type.symbolType();
+    JType argument = literal instanceof JType jType ? jType : JType.unknown(sema);
+    ascribe(tree, JType.named(sema, "java.lang.Class", List.of(argument)));
     return tree;
   }
 
