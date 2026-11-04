@@ -2386,6 +2386,9 @@ final class SemsitterTranslator {
       }
     } else if (tree instanceof MethodTreeImpl method && symbol instanceof Symbol.MethodSymbol methodSymbol) {
       method.methodSymbol = methodSymbol;
+      if (methodSymbol instanceof JMethodSymbol declared) {
+        declared.overriddenSymbols();
+      }
     } else if (tree instanceof VariableTreeImpl variable && symbol instanceof Symbol.VariableSymbol variableSymbol) {
       variable.variableSymbol = variableSymbol;
     }
