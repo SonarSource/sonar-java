@@ -9,6 +9,9 @@
 "eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/WebSocketUriMappingTest.java": [
 91
 ],
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/jmx/AbstractHandlerMBean.java": [
+82
+],
 "eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpOutputTest.java": [
 861
 ],
