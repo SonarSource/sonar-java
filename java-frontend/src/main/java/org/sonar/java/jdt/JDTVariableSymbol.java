@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,19 +23,20 @@ import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
+final class JDTVariableSymbol extends JDTSymbol implements Symbol.VariableSymbol {
 
   // cache for this.constantValue()
   private boolean constantValueComputed = false;
   private Optional<Object> constantValue;
 
-  JVariableSymbol(JSema sema, IVariableBinding variableBinding) {
+  JDTVariableSymbol(JDTSema sema, IVariableBinding variableBinding) {
     super(sema, variableBinding);
   }
 
@@ -89,11 +90,11 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
     private final Type type;
     private final SymbolMetadata metadata;
 
-    ParameterPlaceholderSymbol(int index, JSema sema, IMethodBinding owner, ITypeBinding typeBinding) {
+    ParameterPlaceholderSymbol(int index, JDTSema sema, IMethodBinding owner, ITypeBinding typeBinding) {
       this.name = "arg" + index;
       this.owner = sema.methodSymbol(owner);
       this.type = sema.type(typeBinding);
-      this.metadata = JSymbolMetadata.of(sema, this, typeBinding, owner.getParameterAnnotations(index));
+      this.metadata = JDTSymbolMetadata.of(sema, this, typeBinding, owner.getParameterAnnotations(index));
     }
 
     @Override

@@ -14,16 +14,18 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.event.Level;
+import org.sonar.java.model.JParserConfig;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.testing.ThreadLocalLogTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.model.JParserConfig.shouldEnablePreviewFlag;
+import static org.sonar.java.jdt.JDTParserConfig.shouldEnablePreviewFlag;
 
 class JParserConfigTest {
   @RegisterExtension

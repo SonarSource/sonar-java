@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,6 +26,7 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
+import org.sonar.java.model.Symbols;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -33,9 +34,9 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-abstract class JSymbol implements Symbol {
+class JDTSymbol implements Symbol {
 
-  protected final JSema sema;
+  protected final JDTSema sema;
   protected final IBinding binding;
 
   /**
@@ -53,7 +54,7 @@ abstract class JSymbol implements Symbol {
    */
   private SymbolMetadata metadata;
 
-  JSymbol(JSema sema, IBinding binding) {
+  JDTSymbol(JDTSema sema, IBinding binding) {
     this.sema = Objects.requireNonNull(sema);
     this.binding = Objects.requireNonNull(binding);
   }
@@ -63,16 +64,16 @@ abstract class JSymbol implements Symbol {
     if (this == obj) {
       return true;
     }
-    if (!(obj instanceof JSymbol)) {
+    if (!(obj instanceof JDTSymbol)) {
       return false;
     }
-    JSymbol other = (JSymbol) obj;
+    JDTSymbol other = (JDTSymbol) obj;
     if (this.binding.getKind() != other.binding.getKind()) {
       return false;
     }
     switch (this.binding.getKind()) {
       case IBinding.TYPE:
-        return JType.areEqual(
+        return JDTType.areEqual(
           (ITypeBinding) this.binding,
           (ITypeBinding) other.binding
         );
@@ -82,13 +83,13 @@ abstract class JSymbol implements Symbol {
           other
         );
       case IBinding.METHOD:
-        return areEqualMethodSymbols((JMethodSymbol) this, (JMethodSymbol) other);
+        return areEqualMethodSymbols((JDTMethodSymbol) this, (JDTMethodSymbol) other);
       default:
         return super.equals(obj);
     }
   }
 
-  private static boolean areEqualVariables(JSymbol thisVariableSymbol, JSymbol otherVariableSymbol) {
+  private static boolean areEqualVariables(JDTSymbol thisVariableSymbol, JDTSymbol otherVariableSymbol) {
     IVariableBinding thisBinding = (IVariableBinding) thisVariableSymbol.binding;
     IVariableBinding otherBinding = (IVariableBinding) otherVariableSymbol.binding;
     return thisBinding.getVariableId() == otherBinding.getVariableId()
@@ -106,7 +107,7 @@ abstract class JSymbol implements Symbol {
    * The symbol {@code foo} on the second line has no type parameter, parameter types are {@code Integer} and {@code String}, and has type argument {@code Integer}.
    * So the two {@code foo} symbols are not equal, although they may refer to the same method.
    */
-  private static boolean areEqualMethodSymbols(JMethodSymbol thisMethodSymbol, JMethodSymbol otherMethodSymbol) {
+  private static boolean areEqualMethodSymbols(JDTMethodSymbol thisMethodSymbol, JDTMethodSymbol otherMethodSymbol) {
     IMethodBinding thisBinding = (IMethodBinding) thisMethodSymbol.binding;
     IMethodBinding otherBinding = (IMethodBinding) otherMethodSymbol.binding;
     // In the case of lambdas, ecj doesn't assign a name to the different symbols, unlike the Java compiler.
@@ -132,7 +133,7 @@ abstract class JSymbol implements Symbol {
   }
 
   /**
-   * @see JType#name()
+   * @see JDTType#name()
    */
   @Override
   public final String name() {
@@ -230,7 +231,7 @@ abstract class JSymbol implements Symbol {
         case CLASS,
              RECORD,
              ENUM:
-          JTypeSymbol typeSymbol = (JTypeSymbol) ((ClassTreeImpl) node).symbol();
+          JDTTypeSymbol typeSymbol = (JDTTypeSymbol) ((ClassTreeImpl) node).symbol();
           if (initializerBlock) {
             return sema.initializerBlockSymbol(typeSymbol);
           }
@@ -378,11 +379,11 @@ abstract class JSymbol implements Symbol {
   private SymbolMetadata convertMetadata() {
     switch (binding.getKind()) {
       case IBinding.PACKAGE:
-        return new JSymbolMetadata(sema, this, sema.resolvePackageAnnotations(binding.getName()));
+        return new JDTSymbolMetadata(sema, this, sema.resolvePackageAnnotations(binding.getName()));
       case IBinding.VARIABLE:
         ITypeBinding type = ((IVariableBinding) binding).getType();
         if (type == null) {
-          return new JSymbolMetadata(sema, this, binding.getAnnotations());
+          return new JDTSymbolMetadata(sema, this, binding.getAnnotations());
         }
         return convertMetadata(type);
       case IBinding.METHOD:
@@ -393,12 +394,12 @@ abstract class JSymbol implements Symbol {
         }
         return convertMetadata(returnType);
       default:
-        return new JSymbolMetadata(sema, this, binding.getAnnotations());
+        return new JDTSymbolMetadata(sema, this, binding.getAnnotations());
     }
   }
 
   private SymbolMetadata convertMetadata(ITypeBinding type) {
-    return JSymbolMetadata.of(sema, this, type, binding.getAnnotations());
+    return JDTSymbolMetadata.of(sema, this, type, binding.getAnnotations());
   }
 
   /**
@@ -470,14 +471,14 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final List<IdentifierTree> usages() {
-    List<IdentifierTree> usages = sema.usages.get(JSema.declarationBinding(binding));
+    List<IdentifierTree> usages = sema.usages.get(JDTSema.declarationBinding(binding));
     return usages != null ? usages : Collections.emptyList();
   }
 
   @Nullable
   @Override
   public Tree declaration() {
-    return sema.declarations.get(JSema.declarationBinding(binding));
+    return sema.declarations.get(JDTSema.declarationBinding(binding));
   }
 
 }

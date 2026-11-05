@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,13 +29,14 @@ import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
+final class JDTTypeSymbol extends JDTSymbol implements Symbol.TypeSymbol {
 
   /**
    * Cache for {@link #superClass()}.
@@ -68,9 +69,9 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
       if (typeBinding().isInterface()) {
         // JLS § 15.12.1:
         // for "T.super.foo()", if T is an interface, 'super' keyword is used to access method of the interface itself
-        return JTypeSymbol.this.type();
+        return JDTTypeSymbol.this.type();
       }
-      Type superClass = JTypeSymbol.this.superClass();
+      Type superClass = JDTTypeSymbol.this.superClass();
       return superClass == null ? Type.UNKNOWN : superClass;
     }
   };
@@ -83,11 +84,11 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
     @Override
     public Type type() {
-      return JTypeSymbol.this.type();
+      return JDTTypeSymbol.this.type();
     }
   };
 
-  JTypeSymbol(JSema sema, ITypeBinding typeBinding) {
+  JDTTypeSymbol(JDTSema sema, ITypeBinding typeBinding) {
     super(sema, typeBinding);
   }
 
@@ -200,7 +201,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
   abstract class SpecialField extends Symbols.DefaultSymbol implements Symbol.VariableSymbol {
     @Override
     public final Symbol owner() {
-      return JTypeSymbol.this;
+      return JDTTypeSymbol.this;
     }
 
     @Override
@@ -220,7 +221,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
     @Override
     public final TypeSymbol enclosingClass() {
-      return JTypeSymbol.this;
+      return JDTTypeSymbol.this;
     }
 
     @Override
