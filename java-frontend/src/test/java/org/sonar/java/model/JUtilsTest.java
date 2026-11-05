@@ -609,7 +609,7 @@ class JUtilsTest {
   }
 
   @Nested
-  class DefaultValue {
+  class AnnotationElementDefaultValue {
     private final JavaTree.CompilationUnitTreeImpl cu = test("""
       @interface A {
         int foo() default 42;
@@ -619,7 +619,7 @@ class JUtilsTest {
     private final ClassTreeImpl a = firstClass(cu);
 
     @Test
-    void defaultValue() {
+    void annotationElementDefaultValue() {
       MethodTreeImpl defaultValueMethod = firstMethod(a);
       assertThat(JUtils.defaultValue(defaultValueMethod.symbol())).isEqualTo(42);
     }
