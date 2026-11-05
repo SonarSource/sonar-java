@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -28,6 +28,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.event.Level;
+import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -96,7 +99,7 @@ class JTypeTest {
     ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
 
-    assertThat(((JType) typeOf(e)).isParameterized())
+    assertThat(((JDTType) typeOf(e)).isParameterized())
       .isEqualTo(e.symbolType().isParameterized())
       .isTrue();
   }
@@ -109,11 +112,11 @@ class JTypeTest {
     ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
 
-    assertThat(((JType) typeOf(e)).typeArguments())
+    assertThat(((JDTType) typeOf(e)).typeArguments())
       .hasToString(e.symbolType().typeArguments().toString())
       .hasToString("[Integer, String]");
 
-    assertThat(((JType) typeOf(c)).typeArguments())
+    assertThat(((JDTType) typeOf(c)).typeArguments())
       .isEqualTo(c.symbol().type().typeArguments())
       .isEmpty();
   }
@@ -172,7 +175,7 @@ class JTypeTest {
     when(brokenSema.resolveType("java.lang.Byte")).thenReturn(null);
 
     var primitiveBinding = sema.resolveType("byte");
-    var primitiveType = new JType(brokenSema, primitiveBinding);
+    var primitiveType = new JDTType(brokenSema, primitiveBinding);
 
     assertThat(primitiveType.primitiveWrapperType()).isNull();
   }
@@ -185,7 +188,7 @@ class JTypeTest {
     when(brokenSema.resolveType("byte")).thenReturn(null);
 
     var wrapperBinding = sema.resolveType("java.lang.Byte");
-    var wrapperType = new JType(brokenSema, wrapperBinding);
+    var wrapperType = new JDTType(brokenSema, wrapperBinding);
 
     assertThat(wrapperType.primitiveType()).isNull();
   }
@@ -236,11 +239,11 @@ class JTypeTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) m.returnType());
-    JType parameterizedType = ((JType) typeOf(e));
+    JDTType parameterizedType = ((JDTType) typeOf(e));
 
     assertThat(parameterizedType)
       .hasSameNameAs(e.symbolType())
-      .hasSameNameAs(((JTypeSymbol) typeOf(e).symbol()).type())
+      .hasSameNameAs(((JDTTypeSymbol) typeOf(e).symbol()).type())
       .is("java.util.List")
       .hasName("List");
   }
@@ -251,10 +254,10 @@ class JTypeTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) m.returnType());
-    JType typeVariable = ((JType) typeOf(e));
+    JDTType typeVariable = ((JDTType) typeOf(e));
     assertThat(typeVariable)
       .hasSameNameAs(e.symbolType())
-      .hasSameNameAs(((JTypeSymbol) typeOf(e).symbol()).type())
+      .hasSameNameAs(((JDTTypeSymbol) typeOf(e).symbol()).type())
       .hasName("T")
       .is(e.symbolType().fullyQualifiedName())
       .is("T");
@@ -309,10 +312,10 @@ class JTypeTest {
     AbstractTypedTree primitive = (AbstractTypedTree) m.parameters().get(0).type();
     AbstractTypedTree array = (AbstractTypedTree) m.parameters().get(1).type();
 
-    JType nullType = ((JType) typeOf(e));
-    JType classType = ((JType) typeOf(c));
-    JType primitiveType = ((JType) typeOf(primitive));
-    JType arrayType = ((JType) typeOf(array));
+    JDTType nullType = ((JDTType) typeOf(e));
+    JDTType classType = ((JDTType) typeOf(c));
+    JDTType primitiveType = ((JDTType) typeOf(primitive));
+    JDTType arrayType = ((JDTType) typeOf(array));
 
     assertThat(nullType)
       .hasSameNameAs(e.symbolType())
@@ -326,13 +329,13 @@ class JTypeTest {
 
   @Test
   void is_subtype_of_should_not_throw_NPE() {
-    JType objectType = type("java.lang.Object");
+    JDTType objectType = type("java.lang.Object");
     ITypeBinding brokenStringBinding = spy(Objects.requireNonNull(sema.resolveType("java.lang.String")));
     // simulate the NullPointerException described in SONARJAVA-4390
     when(brokenStringBinding.isSubTypeCompatible(any()))
       .thenThrow(new NullPointerException("test NPE"));
 
-    JType stringType = new JType(sema, brokenStringBinding);
+    JDTType stringType = new JDTType(sema, brokenStringBinding);
     // should catch the NullPointerException
     assertThat(stringType.isSubtypeOf(objectType)).isFalse();
 
@@ -349,9 +352,9 @@ class JTypeTest {
     JavaTree.WildcardTreeImpl w1 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(0);
     JavaTree.WildcardTreeImpl w2 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(1);
     JavaTree.WildcardTreeImpl w3 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(2);
-    JType wildcardType1 = ((JType) typeOf(w1));
-    JType wildcardType2 = ((JType) typeOf(w2));
-    JType wildcardType3 = ((JType) typeOf(w3));
+    JDTType wildcardType1 = ((JDTType) typeOf(w1));
+    JDTType wildcardType2 = ((JDTType) typeOf(w2));
+    JDTType wildcardType3 = ((JDTType) typeOf(w3));
 
     assertThat(wildcardType1)
       .isEqualTo(wildcardType2)
@@ -362,12 +365,12 @@ class JTypeTest {
     return (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source);
   }
 
-  private JType type(String name) {
+  private JDTType type(String name) {
     ITypeBinding typeBinding = Objects.requireNonNull(sema.resolveType(name));
     return sema.type(typeBinding);
   }
 
-  private JSema sema;
+  private JDTSema sema;
 
   @BeforeEach
   void setup() {
@@ -382,7 +385,7 @@ class JTypeTest {
     astParser.setUnitName("File.java");
     astParser.setSource("".toCharArray());
     AST ast = astParser.createAST(null).getAST();
-    sema = new JSema(ast);
+    sema = new JDTSema(ast);
   }
 
 }

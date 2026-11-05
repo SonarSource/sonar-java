@@ -19,9 +19,9 @@ package org.sonar.java.model;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
-final class KeywordThis extends IdentifierTreeImpl {
+public final class KeywordThis extends IdentifierTreeImpl {
 
-  KeywordThis(InternalSyntaxToken token, Symbol symbol) {
+  public KeywordThis(InternalSyntaxToken token, Symbol symbol) {
     super(token);
     setSymbol(symbol);
   }

@@ -14,12 +14,17 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JUtils;
+import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.Symbols;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -37,14 +42,14 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.model.JParserTestUtils.methodBinding;
-import static org.sonar.java.model.JParserTestUtils.sema;
+import static org.sonar.java.jdt.JdtTestUtils.methodBinding;
+import static org.sonar.java.jdt.JdtTestUtils.sema;
 import static org.sonar.java.model.JParserTestUtils.symbolOf;
 import static org.sonar.java.model.JParserTestUtils.typeOf;
 
 class JUtilsTest {
 
-  static final JSema SEMA = sema(test(""));
+  static final JDTSema SEMA = sema(test(""));
   private static final Type OBJECT_TYPE = SEMA.type(SEMA.resolveType("java.lang.Object"));
 
   @Nested
@@ -144,7 +149,7 @@ class JUtilsTest {
     void nullType() {
       ReturnStatementTreeImpl s = (ReturnStatementTreeImpl) m1.block().body().get(0);
       AbstractTypedTree e = (AbstractTypedTree) s.expression();
-      assertThat(((JType) typeOf(e)).isNullType())
+      assertThat(((JDTType) typeOf(e)).isNullType())
         .isEqualTo(e.symbolType().isNullType())
         .isTrue();
     }
@@ -182,14 +187,14 @@ class JUtilsTest {
     @Test
     void intersection_type() {
       TypeCastExpressionTreeImpl e = (TypeCastExpressionTreeImpl) f.initializer();
-      assertThat(JUtils.isIntersectionType(((JType) typeOf(e))))
+      assertThat(JUtils.isIntersectionType(((JDTType) typeOf(e))))
         .isEqualTo(JUtils.isIntersectionType(e.symbolType()))
         .isTrue();
     }
 
     @Test
     void non_intersection_type() {
-      assertThat(JUtils.isIntersectionType(((JType) symbolOf(f).type())))
+      assertThat(JUtils.isIntersectionType(((JDTType) symbolOf(f).type())))
         .isEqualTo(JUtils.isIntersectionType(f.symbol().type()))
         .isFalse();
     }
@@ -197,7 +202,7 @@ class JUtilsTest {
     @Test
     void unresolved_type_is_not_an_intersection_type() {
       VariableTreeImpl u = nthField(c, 1);
-      assertThat(JUtils.isIntersectionType(((JType) symbolOf(u).type())))
+      assertThat(JUtils.isIntersectionType(((JDTType) symbolOf(u).type())))
         .isEqualTo(JUtils.isIntersectionType(u.symbol().type()))
         .isFalse();
     }
@@ -211,7 +216,7 @@ class JUtilsTest {
     @Test
     void type_var() {
       VariableTreeImpl t = firstField(c);
-      assertThat(((JType) symbolOf(t).type()).isTypeVar())
+      assertThat(((JDTType) symbolOf(t).type()).isTypeVar())
         .isEqualTo(t.symbol().type().isTypeVar())
         .isTrue();
     }
@@ -224,7 +229,7 @@ class JUtilsTest {
     @Test
     void unresolved_type_is_not_a_type_var() {
       VariableTreeImpl u = nthField(c, 1);
-      assertThat(((JType) symbolOf(u).type()).isTypeVar())
+      assertThat(((JDTType) symbolOf(u).type()).isTypeVar())
         .isEqualTo(u.symbol().type().isTypeVar())
         .isFalse();
     }
@@ -388,22 +393,22 @@ class JUtilsTest {
       JavaTree.CompilationUnitTreeImpl specificCu = test("interface I { short SHORT = 42; char CHAR = 42; byte BYTE = 42; boolean BOOLEAN = false; }");
       ClassTreeImpl specificC = firstClass(specificCu);
 
-      Symbol.VariableSymbol shortConstant = ((JVariableSymbol) symbolOf(firstField(specificC)));
+      Symbol.VariableSymbol shortConstant = ((JDTVariableSymbol) symbolOf(firstField(specificC)));
       assertThat(shortConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
-      Symbol.VariableSymbol charConstant = ((JVariableSymbol) symbolOf(nthField(specificC, 1)));
+      Symbol.VariableSymbol charConstant = ((JDTVariableSymbol) symbolOf(nthField(specificC, 1)));
       assertThat(charConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
-      Symbol.VariableSymbol byteConstant = ((JVariableSymbol) symbolOf(nthField(specificC, 2)));
+      Symbol.VariableSymbol byteConstant = ((JDTVariableSymbol) symbolOf(nthField(specificC, 2)));
       assertThat(byteConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
-      Symbol.VariableSymbol booleanConstant = ((JVariableSymbol) symbolOf(nthField(specificC, 3)));
+      Symbol.VariableSymbol booleanConstant = ((JDTVariableSymbol) symbolOf(nthField(specificC, 3)));
       assertThat(booleanConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Boolean.class)
         .isEqualTo(Boolean.FALSE);
@@ -709,11 +714,11 @@ class JUtilsTest {
       ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) m.block().body().get(0);
       MethodInvocationTreeImpl methodInvocation = (MethodInvocationTreeImpl) s.expression();
 
-      assertThat(((JMethodSymbol) symbolOf(m)).isParametrizedMethod())
+      assertThat(((JDTMethodSymbol) symbolOf(m)).isParametrizedMethod())
         .isEqualTo(m.symbol().isParametrizedMethod())
         .isEqualTo(methodBinding(m).isGenericMethod())
         .isTrue();
-      assertThat(((JMethodSymbol) symbolOf(methodInvocation)).isParametrizedMethod())
+      assertThat(((JDTMethodSymbol) symbolOf(methodInvocation)).isParametrizedMethod())
         .isEqualTo(methodInvocation.methodSymbol().isParametrizedMethod())
         .isEqualTo(methodBinding(methodInvocation).isParameterizedMethod())
         .isTrue();
@@ -780,6 +785,29 @@ class JUtilsTest {
     @Test
     void object_type_has_no_direct_supertypes() {
       assertThat(JUtils.directSuperTypes(OBJECT_TYPE)).isEmpty();
+    }
+
+    @Test
+    void interface_without_parents_has_no_direct_supertypes() {
+      ClassTreeImpl c = firstClass(test("interface C {}"));
+
+      assertThat(JUtils.directSuperTypes(c.symbol().type())).isEmpty();
+    }
+
+    @Test
+    void interface_direct_supertypes_include_only_extended_interfaces() {
+      ClassTreeImpl c = firstClass(test("interface C extends java.io.Serializable, java.lang.Cloneable {}"));
+
+      assertThat(JUtils.directSuperTypes(c.symbol().type()))
+        .extracting(Type::fullyQualifiedName)
+        .containsExactlyInAnyOrder("java.io.Serializable", "java.lang.Cloneable");
+    }
+
+    @Test
+    void array_type_has_no_direct_supertypes() {
+      ClassTreeImpl c = firstClass(test("class C { String[] values; }"));
+
+      assertThat(JUtils.directSuperTypes(firstField(c).symbol().type())).isEmpty();
     }
 
     @Test
@@ -1001,7 +1029,7 @@ class JUtilsTest {
 
   @Test
   void test_has_unknown_type_in_hierarchy_with_unexpected_null_owner() {
-    JInitializerBlockSymbol method = new JInitializerBlockSymbol(null, true);
+    JDTInitializerBlockSymbol method = new JDTInitializerBlockSymbol(null, true);
     assertThat(JUtils.hasUnknownTypePreventingOverrideResolution(method)).isTrue();
   }
 

@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +28,11 @@ import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.TestUtils;
+import org.sonar.java.model.JParserConfig;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
+import org.sonar.java.model.Symbols;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
@@ -53,13 +57,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.model.JParserTestUtils.methodBinding;
-import static org.sonar.java.model.JParserTestUtils.sema;
+import static org.sonar.java.jdt.JUtilsTest.firstClass;
+import static org.sonar.java.jdt.JUtilsTest.firstMethod;
+import static org.sonar.java.jdt.JUtilsTest.nthMethod;
+import static org.sonar.java.jdt.JdtTestUtils.methodBinding;
+import static org.sonar.java.jdt.JdtTestUtils.sema;
 import static org.sonar.java.model.JParserTestUtils.symbolOf;
 import static org.sonar.java.model.JParserTestUtils.typeOf;
-import static org.sonar.java.model.JUtilsTest.firstClass;
-import static org.sonar.java.model.JUtilsTest.firstMethod;
-import static org.sonar.java.model.JUtilsTest.nthMethod;
 
 class JMethodSymbolTest {
 
@@ -103,19 +107,18 @@ class JMethodSymbolTest {
     return ((Symbol.MethodSymbol) annotation.lookupSymbols(name).iterator().next()).annotationElementDefaultValue();
   }
 
-
   @Test
   void test() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { C m(C p) throws Exception { return null; } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
-    JMethodSymbol symbol = ((JMethodSymbol) symbolOf(m));
+    JDTMethodSymbol symbol = ((JDTMethodSymbol) symbolOf(m));
     assertThat(symbol.parameterTypes())
-      .containsOnly(((JType) typeOf(c)));
+      .containsOnly(((JDTType) typeOf(c)));
     assertThat(symbol.declarationParameters())
       .containsExactly(m.parameters().get(0).symbol());
     assertThat(symbol.returnType())
-      .isSameAs(((JTypeSymbol) typeOf(c).symbol()));
+      .isSameAs(((JDTTypeSymbol) typeOf(c).symbol()));
     assertThat(symbol.thrownTypes())
       .containsOnly(sema(cu).type(Objects.requireNonNull(sema(cu).resolveType("java.lang.Exception"))));
   }
@@ -126,7 +129,7 @@ class JMethodSymbolTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     Symbol.MethodSymbol declarationSymbol = m.symbol();
-    JType declarationParameterType = sema(cu).type(Objects.requireNonNull((methodBinding(m).getParameterTypes()[0])));
+    JDTType declarationParameterType = sema(cu).type(Objects.requireNonNull((methodBinding(m).getParameterTypes()[0])));
     assertThat(declarationSymbol.parameterTypes())
       .containsOnly(declarationParameterType);
     Symbol declarationParameterSymbol = m.parameters().get(0).symbol();
@@ -168,16 +171,16 @@ class JMethodSymbolTest {
 
     Symbol symbolParam1 = symbol1.declarationParameters().get(0);
     Symbol symbolParam2 = symbol2.declarationParameters().get(0);
-    assertThat(symbolParam1).isInstanceOf(JVariableSymbol.ParameterPlaceholderSymbol.class)
+    assertThat(symbolParam1).isInstanceOf(JDTVariableSymbol.ParameterPlaceholderSymbol.class)
       .isInstanceOf(Symbol.VariableSymbol.class);
-    assertThat(symbolParam2).isInstanceOf(JVariableSymbol.ParameterPlaceholderSymbol.class)
+    assertThat(symbolParam2).isInstanceOf(JDTVariableSymbol.ParameterPlaceholderSymbol.class)
       .isInstanceOf(Symbol.VariableSymbol.class);
 
     assertThat(symbolParam1.isVariableSymbol()).isTrue();
     assertThat(symbolParam2.isVariableSymbol()).isTrue();
 
-    JVariableSymbol.ParameterPlaceholderSymbol parameterSymbol1 = (JVariableSymbol.ParameterPlaceholderSymbol) symbolParam1;
-    JVariableSymbol.ParameterPlaceholderSymbol parameterSymbol2 = (JVariableSymbol.ParameterPlaceholderSymbol) symbolParam2;
+    JDTVariableSymbol.ParameterPlaceholderSymbol parameterSymbol1 = (JDTVariableSymbol.ParameterPlaceholderSymbol) symbolParam1;
+    JDTVariableSymbol.ParameterPlaceholderSymbol parameterSymbol2 = (JDTVariableSymbol.ParameterPlaceholderSymbol) symbolParam2;
 
     assertThat(parameterSymbol1).isSameAs(parameterSymbol2);
 
@@ -239,7 +242,7 @@ class JMethodSymbolTest {
       + "class Clazz implements A { public void a() {} }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(1);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
-    JMethodSymbol symbol = ((JMethodSymbol) symbolOf(m));
+    JDTMethodSymbol symbol = ((JDTMethodSymbol) symbolOf(m));
 
     assertThat(symbol.overriddenSymbols()).containsOnly(retrieveMethodSymbol("A", "a", cu));
   }
@@ -254,7 +257,7 @@ class JMethodSymbolTest {
       """);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(3);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
-    JMethodSymbol symbol = ((JMethodSymbol) symbolOf(m));
+    JDTMethodSymbol symbol = ((JDTMethodSymbol) symbolOf(m));
 
     assertThat(symbol.overriddenSymbols()).containsExactly(
       retrieveMethodSymbol("B", "a", cu),
@@ -267,7 +270,7 @@ class JMethodSymbolTest {
     JavaTree.CompilationUnitTreeImpl cu = test("class Clazz { public boolean equals(Object other) { return false; } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
-    JMethodSymbol symbol = ((JMethodSymbol) symbolOf(m));
+    JDTMethodSymbol symbol = ((JDTMethodSymbol) symbolOf(m));
 
     assertThat(symbol.overriddenSymbols()).containsExactly(objectEqualsMethod(sema(cu)));
   }
@@ -277,12 +280,12 @@ class JMethodSymbolTest {
     JavaTree.CompilationUnitTreeImpl cu = test("interface Interface { boolean equals(Object other) { return false; } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
-    JMethodSymbol symbol = ((JMethodSymbol) symbolOf(m));
+    JDTMethodSymbol symbol = ((JDTMethodSymbol) symbolOf(m));
 
     assertThat(symbol.overriddenSymbols()).containsExactly(objectEqualsMethod(sema(cu)));
   }
 
-  private static JMethodSymbol objectEqualsMethod(JSema sema) {
+  private static JDTMethodSymbol objectEqualsMethod(JDTSema sema) {
     return Arrays.stream(sema.resolveType("java.lang.Object").getDeclaredMethods())
       .filter(method -> "equals".equals(method.getName()))
       .findFirst()
@@ -299,7 +302,7 @@ class JMethodSymbolTest {
       """);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(2);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
-    JMethodSymbol symbol = ((JMethodSymbol) symbolOf(m));
+    JDTMethodSymbol symbol = ((JDTMethodSymbol) symbolOf(m));
 
     assertThat(symbol.overriddenSymbols()).containsExactly(
       retrieveMethodSymbol("A", "a", cu),
@@ -313,7 +316,7 @@ class JMethodSymbolTest {
       + "class C implements KnownInterface, UnknownInterface { public void a() { } }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(1);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
-    JMethodSymbol symbol = ((JMethodSymbol) symbolOf(m));
+    JDTMethodSymbol symbol = ((JDTMethodSymbol) symbolOf(m));
 
     assertThat(symbol.overriddenSymbols()).containsExactly(
       retrieveMethodSymbol("KnownInterface", "a", cu));
@@ -325,7 +328,7 @@ class JMethodSymbolTest {
       + "class B extends Unknown { public void a() { } }");
     ClassTreeImpl a = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) a.members().get(0);
-    JMethodSymbol symbol = ((JMethodSymbol) symbolOf(m));
+    JDTMethodSymbol symbol = ((JDTMethodSymbol) symbolOf(m));
     assertThat(symbol.overriddenSymbols()).isEmpty();
   }
 
@@ -335,9 +338,9 @@ class JMethodSymbolTest {
       + "class A { public void a() { } }");
     ClassTreeImpl a = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) a.members().get(0);
-    // We create a real JMethodSymbol because it is not possible to mock JMethodSymbol (it is final), and not easy
+    // We create a real JDTMethodSymbol because it is not possible to mock JDTMethodSymbol (it is final), and not easy
     // to mock the arguments either, because the constructor is using an external helper method.
-    JMethodSymbol symbol = ((JMethodSymbol) symbolOf(m));
+    JDTMethodSymbol symbol = ((JDTMethodSymbol) symbolOf(m));
 
     ITypeBinding iTypeBinding = mock(ITypeBinding.class);
     // In some rare situation, the "getSuperclass" can return null. It is not easy to write code reproducing the issue, we test it by "hand".
@@ -361,7 +364,7 @@ class JMethodSymbolTest {
       """);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(3);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
-    JMethodSymbol symbol = ((JMethodSymbol) symbolOf(m));
+    JDTMethodSymbol symbol = ((JDTMethodSymbol) symbolOf(m));
 
     assertThat(symbol.overriddenSymbols()).containsExactly(
       objectEqualsMethod(sema(cu)),
@@ -369,7 +372,7 @@ class JMethodSymbolTest {
       retrieveMethodSymbol("B", "equals", cu));
   }
 
-  private static JMethodSymbol retrieveMethodSymbol(String className, String methodName, CompilationUnitTreeImpl cu) {
+  private static JDTMethodSymbol retrieveMethodSymbol(String className, String methodName, CompilationUnitTreeImpl cu) {
     MethodMatchers methodMatcher = MethodMatchers.create()
       .ofTypes(className)
       .names(methodName)
@@ -382,7 +385,7 @@ class JMethodSymbolTest {
       .map(Symbol.TypeSymbol::memberSymbols)
       .flatMap(Collection::stream)
       .filter(methodMatcher::matches)
-      .map(JMethodSymbol.class::cast)
+      .map(JDTMethodSymbol.class::cast)
       .findFirst()
       .orElseThrow(() -> new IllegalStateException("No method could be found with the given name in the given class"));
   }
@@ -395,20 +398,20 @@ class JMethodSymbolTest {
     MethodTreeImpl method = (MethodTreeImpl) c.members().get(1);
     ReturnStatementTreeImpl s = (ReturnStatementTreeImpl) Objects.requireNonNull(method.block()).body().get(0);
     MethodInvocationTreeImpl methodInvocation = Objects.requireNonNull((MethodInvocationTreeImpl) s.expression());
-    assertThat(((JMethodSymbol) symbolOf(constructor)).signature())
+    assertThat(((JDTMethodSymbol) symbolOf(constructor)).signature())
       .isEqualTo(constructor.symbol().signature())
       .isEqualTo("org.example.C#<init>()V");
-    assertThat(((JMethodSymbol) symbolOf(method)).signature())
+    assertThat(((JDTMethodSymbol) symbolOf(method)).signature())
       .isEqualTo(method.symbol().signature())
       .isEqualTo("org.example.C#m(Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-    assertThat(((JMethodSymbol) symbolOf(methodInvocation)).signature())
+    assertThat(((JDTMethodSymbol) symbolOf(methodInvocation)).signature())
       .isEqualTo(method.symbol().signature())
       .isEqualTo("org.example.C#m(Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
   }
 
   @Test
   void isOverridableTest(){
-    JMethodSymbol jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }");
+    JDTMethodSymbol jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }");
     assertThat(jms.isOverridable()).isTrue();
     jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }", true);
     assertThat(jms.isOverridable()).isFalse();
@@ -424,7 +427,7 @@ class JMethodSymbolTest {
 
   @Test
   void isParametrizedMethodTest(){
-    JMethodSymbol jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }");
+    JDTMethodSymbol jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }");
     assertThat(jms.isParametrizedMethod()).isFalse();
     jms = getJMethodSymbolFromClassText("class C { <T> C m() { return null; } }");
     assertThat(jms.isParametrizedMethod()).isTrue();
@@ -436,7 +439,7 @@ class JMethodSymbolTest {
 
   @Test
   void isDefaultMethodTest(){
-    JMethodSymbol jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }");
+    JDTMethodSymbol jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }");
     assertThat(jms.isDefaultMethod()).isFalse();
     jms = getJMethodSymbolFromClassText("interface I { default C m() { return null; } }");
     assertThat(jms.isDefaultMethod()).isTrue();
@@ -446,7 +449,7 @@ class JMethodSymbolTest {
 
   @Test
   void isSynchronizedMethodTest(){
-    JMethodSymbol jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }");
+    JDTMethodSymbol jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }");
     assertThat(jms.isSynchronizedMethod()).isFalse();
     jms = getJMethodSymbolFromClassText("class C { synchronized C m() { return null; } }");
     assertThat(jms.isSynchronizedMethod()).isTrue();
@@ -456,7 +459,7 @@ class JMethodSymbolTest {
 
   @Test
   void isVarArgsTest(){
-    JMethodSymbol jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }");
+    JDTMethodSymbol jms = getJMethodSymbolFromClassText("class C { C m() { return null; } }");
     assertThat(jms.isVarArgsMethod()).isFalse();
     jms = getJMethodSymbolFromClassText("class C { C m(String... s) { return null; } }");
     assertThat(jms.isVarArgsMethod()).isTrue();
@@ -472,7 +475,7 @@ class JMethodSymbolTest {
     // simulate broken semantic with getReturnType() == null
     IMethodBinding brokenMethodBinding = spy(methodBinding(m));
     when(brokenMethodBinding.getReturnType()).thenReturn(null);
-    JMethodSymbol methodSymbol = new JMethodSymbol(sema(cu), brokenMethodBinding);
+    JDTMethodSymbol methodSymbol = new JDTMethodSymbol(sema(cu), brokenMethodBinding);
     assertThat(methodSymbol.returnType().isUnknown()).isTrue();
     assertThat(methodSymbol.isNativeMethod()).isFalse();
     assertThat(methodSymbol.metadata()).isSameAs(Symbols.EMPTY_METADATA);
@@ -493,15 +496,15 @@ class JMethodSymbolTest {
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(1);
     ExpressionStatementTree statementTree = ((ExpressionStatementTreeImpl) m.block().body().get(0));
     NewClassTreeImpl newClassExpression = ((NewClassTreeImpl) statementTree.expression());
-    JMethodSymbol symbol = ((JMethodSymbol) newClassExpression.methodSymbol());
+    JDTMethodSymbol symbol = ((JDTMethodSymbol) newClassExpression.methodSymbol());
 
     assertThat(symbol.declarationParameters()).hasSize(6);
   }
 
-  private static JMethodSymbol getJMethodSymbolFromClassText(String classText){
+  private static JDTMethodSymbol getJMethodSymbolFromClassText(String classText){
     return getJMethodSymbolFromClassText(classText, false);
   }
-  private static JMethodSymbol getJMethodSymbolFromClassText(String classText, boolean brokenSemantic){
+  private static JDTMethodSymbol getJMethodSymbolFromClassText(String classText, boolean brokenSemantic){
     JavaTree.CompilationUnitTreeImpl cu = test(classText);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
@@ -509,9 +512,9 @@ class JMethodSymbolTest {
       IMethodBinding brokenMethodBinding = spy(methodBinding(m));
       when(brokenMethodBinding.getReturnType()).thenReturn(null);
       when(brokenMethodBinding.isRecovered()).thenReturn(true);
-      return new JMethodSymbol(sema(cu), brokenMethodBinding);
+      return new JDTMethodSymbol(sema(cu), brokenMethodBinding);
     }
-    return new JMethodSymbol(sema(cu), methodBinding(m));
+    return new JDTMethodSymbol(sema(cu), methodBinding(m));
   }
 
   private static CompilationUnitTreeImpl test(String source) {
@@ -557,13 +560,13 @@ class JMethodSymbolTest {
     ClassTreeImpl a = firstClass(cu);
 
     MethodTreeImpl foo = firstMethod(a);
-    var fooSymbol = (JMethodSymbol) foo.symbol();
+    var fooSymbol = (JDTMethodSymbol) foo.symbol();
     assertFalse(fooSymbol.isLambda());
     assertThat(fooSymbol.toString()).isNotEmpty();
 
     var barAssignment = (VariableTree) a.members().get(1);
     var initializer = (LambdaExpressionTree) barAssignment.initializer();
-    var lambdaSymbol = (JMethodSymbol) initializer.symbol();
+    var lambdaSymbol = (JDTMethodSymbol) initializer.symbol();
     assertTrue(lambdaSymbol.isLambda());
     assertThat(lambdaSymbol.toString()).isNotEmpty();
   }
