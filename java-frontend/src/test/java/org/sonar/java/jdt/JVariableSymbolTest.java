@@ -14,9 +14,11 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -36,10 +38,10 @@ class JVariableSymbolTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl method = (MethodTreeImpl) c.members().get(0);
     VariableTreeImpl localVariable = (VariableTreeImpl) method.block().body().get(0);
-    JVariableSymbol variableSymbol = ((JVariableSymbol) symbolOf(localVariable));
+    JDTVariableSymbol variableSymbol = ((JDTVariableSymbol) symbolOf(localVariable));
     assertThat(variableSymbol.isLocalVariable()).isTrue();
     VariableTreeImpl classVariable = (VariableTreeImpl) c.members().get(1);
-    variableSymbol = ((JVariableSymbol) symbolOf(classVariable));
+    variableSymbol = ((JDTVariableSymbol) symbolOf(classVariable));
     assertThat(variableSymbol.isLocalVariable()).isFalse();
   }
 
@@ -62,11 +64,11 @@ class JVariableSymbolTest {
     MethodTreeImpl method = (MethodTreeImpl) c.members().get(0);
     VariableTreeImpl localVariable = (VariableTreeImpl) method.block().body().get(0);
 
-    JVariableSymbol variableSymbol = ((JVariableSymbol) symbolOf(localVariable));
+    JDTVariableSymbol variableSymbol = ((JDTVariableSymbol) symbolOf(localVariable));
     assertThat(variableSymbol.isParameter()).isFalse();
 
     VariableTreeImpl parameter = (VariableTreeImpl) method.parameters().get(0);
-    variableSymbol = ((JVariableSymbol) symbolOf(parameter));
+    variableSymbol = ((JDTVariableSymbol) symbolOf(parameter));
     assertThat(variableSymbol.isParameter()).isTrue();
   }
 

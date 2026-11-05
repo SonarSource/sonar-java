@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
+final class JDTMethodSymbol extends JDTSymbol implements Symbol.MethodSymbol {
 
   /**
    * Cache for {@link #parameterTypes()}.
@@ -59,7 +59,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
 
   private final String signature;
 
-  JMethodSymbol(JSema sema, IMethodBinding methodBinding) {
+  JDTMethodSymbol(JDTSema sema, IMethodBinding methodBinding) {
     super(sema, methodBinding);
     this.signature = methodBinding().getDeclaringClass().getBinaryName()
       + "#" + name()
@@ -93,7 +93,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
         IMethodBinding methodBinding = methodBinding();
         ITypeBinding[] parameterTypeBindings = methodBinding.getParameterTypes();
         for (int i = 0; i < parameterTypeBindings.length; i++) {
-          parameters.add(new JVariableSymbol.ParameterPlaceholderSymbol(i, sema, methodBinding.getMethodDeclaration(), parameterTypeBindings[i]));
+          parameters.add(new JDTVariableSymbol.ParameterPlaceholderSymbol(i, sema, methodBinding.getMethodDeclaration(), parameterTypeBindings[i]));
         }
       }
     }
@@ -186,7 +186,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   @Nullable
   @Override
   public Object annotationElementDefaultValue() {
-    return isUnknown() ? null : JSymbolMetadata.convertAnnotationValue(sema, methodBinding().getDefaultValue());
+    return isUnknown() ? null : JDTSymbolMetadata.convertAnnotationValue(sema, methodBinding().getDefaultValue());
   }
 
   @Override

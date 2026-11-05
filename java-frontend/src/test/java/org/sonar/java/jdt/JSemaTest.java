@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.util.Objects;
 import org.eclipse.jdt.core.JavaCore;
@@ -23,6 +23,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.model.JParserConfig;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,7 +74,7 @@ class JSemaTest {
       .hasSize(1);
   }
 
-  private JSema sema;
+  private JDTSema sema;
 
   @BeforeEach
   void setup() {
@@ -90,7 +91,7 @@ class JSemaTest {
     astParser.setUnitName("File.java");
     astParser.setSource("".toCharArray());
     AST ast = astParser.createAST(null).getAST();
-    sema = new JSema(ast);
+    sema = new JDTSema(ast);
   }
 
 }

@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import com.sonar.sslr.api.RecognitionException;
 import java.io.BufferedInputStream;
@@ -57,6 +57,12 @@ import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.TestUtils;
+import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.JParserConfig;
+import org.sonar.java.model.JParserConfig.Result;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -98,8 +104,8 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.model.JParser.convertTokenTypeToCommentKind;
-import static org.sonar.java.model.JParser.isComment;
+import static org.sonar.java.jdt.JDTParser.convertTokenTypeToCommentKind;
+import static org.sonar.java.jdt.JDTParser.isComment;
 import static org.sonar.java.model.JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
 import static org.sonar.java.model.JParserConfig.Mode.BATCH;
 import static org.sonar.java.model.JParserConfig.Mode.FILE_BY_FILE;
@@ -130,8 +136,8 @@ class JParserTest {
   void should_recover_if_parser_fails() {
     String version = "12";
     List<File> classpath = Collections.singletonList(new File("unknownFile"));
-    ASTParser astParser = FILE_BY_FILE.create(JavaVersionImpl.fromString(version), classpath).astParser();
-    assertThrows(RecognitionException.class, () -> JParser.parse(astParser, version, "A", "class A { }"));
+    ASTParser astParser = ((JDTParserConfig) FILE_BY_FILE.create(JavaVersionImpl.fromString(version), classpath)).jdtParser();
+    assertThrows(RecognitionException.class, () -> JDTParser.parse(astParser, version, "A", "class A { }"));
   }
 
   @Test
@@ -165,7 +171,7 @@ class JParserTest {
   @Test
   void should_rethrow_when_consumer_throws() {
     RuntimeException expected = new RuntimeException();
-    BiConsumer<InputFile, JParserConfig.Result> consumer = (inputFile, result) -> {
+    BiConsumer<InputFile, Result> consumer = (inputFile, result) -> {
       throw expected;
     };
     InputFile inputFile = mock(InputFile.class);
@@ -183,8 +189,8 @@ class JParserTest {
 
   @Test
   void consumer_should_receive_exceptions_thrown_during_parsing() throws Exception {
-    List<JParserConfig.Result> results = new ArrayList<>();
-    BiConsumer<InputFile, JParserConfig.Result> consumer = (inputFile, result) -> results.add(result);
+    List<Result> results = new ArrayList<>();
+    BiConsumer<InputFile, Result> consumer = (inputFile, result) -> results.add(result);
 
     InputFile inputFile = mock(InputFile.class);
     doReturn("/tmp/Example.java")
@@ -196,14 +202,14 @@ class JParserTest {
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
       .parse(Collections.singleton(inputFile), () -> false, new AnalysisProgress(1), consumer);
 
-    JParserConfig.Result result = results.get(0);
+    Result result = results.get(0);
     assertThrows(IOException.class, result::get);
   }
 
   @Test
   void consumer_should_receive_exceptions_thrown_during_parsing_as_batch() throws Exception {
-    List<JParserConfig.Result> results = new ArrayList<>();
-    BiConsumer<InputFile, JParserConfig.Result> consumer = (inputFile, result) -> results.add(result);
+    List<Result> results = new ArrayList<>();
+    BiConsumer<InputFile, Result> consumer = (inputFile, result) -> results.add(result);
     InputFile inputFile = spy(TestUtils.inputFile("src/test/files/metrics/Classes.java"));
     when(inputFile.contents()).thenThrow(IOException.class);
 
@@ -211,14 +217,14 @@ class JParserTest {
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
       .parse(Collections.singleton(inputFile), () -> false, new AnalysisProgress(1), consumer);
 
-    JParserConfig.Result result = results.get(0);
+    Result result = results.get(0);
     assertThrows(IOException.class, result::get);
   }
 
   @Test
   void should_propagate_exception_raised_by_batch_parsing() {
     NullPointerException expected = new NullPointerException("");
-    BiConsumer<InputFile, JParserConfig.Result> consumerThrowing = (inputFile, result) -> {
+    BiConsumer<InputFile, Result> consumerThrowing = (inputFile, result) -> {
       throw expected;
     };
     List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Classes.java"));
@@ -515,12 +521,12 @@ class JParserTest {
     astParser.setUnitName(unitName);
     astParser.setSource(source.toCharArray());
     CompilationUnit compilationUnit = (CompilationUnit) astParser.createAST(null);
-    TokenManager tokenManager = JParser.createTokenManager(version, unitName, source);
+    TokenManager tokenManager = JDTParser.createTokenManager(version, unitName, source);
 
-    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameIdentifier, TerminalToken.TokenNameLBRACE)).isEqualTo(1);
-    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameLBRACE, TerminalToken.TokenNameIdentifier)).isEqualTo(1);
-    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameRBRACE, TerminalToken.TokenNameLBRACE)).isEqualTo(2);
-    assertThatThrownBy(() -> JParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNamebreak, TerminalToken.TokenNameconst))
+    assertThat(JDTParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameIdentifier, TerminalToken.TokenNameLBRACE)).isEqualTo(1);
+    assertThat(JDTParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameLBRACE, TerminalToken.TokenNameIdentifier)).isEqualTo(1);
+    assertThat(JDTParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameRBRACE, TerminalToken.TokenNameLBRACE)).isEqualTo(2);
+    assertThatThrownBy(() -> JDTParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNamebreak, TerminalToken.TokenNameconst))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Failed to find token TokenNamebreak or TokenNameconst in the tokens of a org.eclipse.jdt.core.dom.CompilationUnit");
   }
@@ -541,7 +547,7 @@ class JParserTest {
         void foo() {}
       }
       """;
-    TokenManager tokens = JParser.createTokenManager(version, unitName, source);
+    TokenManager tokens = JDTParser.createTokenManager(version, unitName, source);
 
     assertThat(tokens.size()).isEqualTo(15);
 
@@ -636,7 +642,7 @@ class JParserTest {
   void test_parse_file_by_file() throws Exception {
     List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
-    List<JParserConfig.Result> results = new ArrayList<>();
+    List<Result> results = new ArrayList<>();
     List<InputFile> inputFilesProcessed = new ArrayList<>();
     FILE_BY_FILE
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
@@ -652,7 +658,7 @@ class JParserTest {
   void test_parse_as_batch() throws Exception {
     List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
-    List<JParserConfig.Result> results = new ArrayList<>();
+    List<Result> results = new ArrayList<>();
     List<InputFile> inputFilesProcessed = new ArrayList<>();
     BATCH
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
@@ -670,7 +676,7 @@ class JParserTest {
       TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
     List<String> trace = new ArrayList<>();
-    BiConsumer<InputFile, JParserConfig.Result> action = (inputFile, result) -> {
+    BiConsumer<InputFile, Result> action = (inputFile, result) -> {
       trace.addAll(logTester.logs());
       logTester.clear();
       try {
@@ -698,12 +704,12 @@ class JParserTest {
     List<InputFile> inputFiles = Arrays.asList(
       TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
-    BiConsumer<InputFile, JParserConfig.Result> doNothingAction = (inputFile, result) -> {};
-    JParserConfig config = spy(JParserConfig.Mode.BATCH
+    BiConsumer<InputFile, Result> doNothingAction = (inputFile, result) -> {};
+    JDTParserConfig config = spy((JDTParserConfig) JParserConfig.Mode.BATCH
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false));
     // Return a lazy ASTParser that do nothing to ensure that we have not analyzed files
     ASTParser astParser = mock(ASTParser.class);
-    when(config.astParser()).thenReturn(astParser);
+    when(config.jdtParser()).thenReturn(astParser);
 
     config.parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), doNothingAction);
 
@@ -720,7 +726,7 @@ class JParserTest {
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
     List<String> trace = new ArrayList<>();
     AtomicBoolean isCanceled = new AtomicBoolean(false);
-    BiConsumer<InputFile, JParserConfig.Result> action = (inputFile, result) -> {
+    BiConsumer<InputFile, Result> action = (inputFile, result) -> {
       trace.addAll(logTester.logs());
       logTester.clear();
       try {
@@ -807,7 +813,7 @@ class JParserTest {
   void failing_batch_mode_with_empty_file_list_should_not_continue_file_by_file() {
     List<InputFile> inputFiles = List.of();
     List<String> trace = new ArrayList<>();
-    BiConsumer<InputFile, JParserConfig.Result> action = (inputFile, result) -> trace.add("should not be called ");
+    BiConsumer<InputFile, Result> action = (inputFile, result) -> trace.add("should not be called ");
     BatchWithException batchWithException = new BatchWithException();
     // exception before the first file
     batchWithException.exceptions.push(new NullPointerException("Boom!"));
@@ -818,7 +824,7 @@ class JParserTest {
       "Unexpected NullPointerException: Boom!");
   }
 
-  static class BatchWithException extends JParserConfig.Batch {
+  static class BatchWithException extends JDTParserConfig.Batch {
 
     Deque<RuntimeException> exceptions = new LinkedList<>();
 
@@ -827,16 +833,16 @@ class JParserTest {
     }
 
     @Override
-    public ASTParser astParser() {
+    public ASTParser jdtParser() {
       if (!exceptions.isEmpty()) {
         throw exceptions.pop();
       }
-      return super.astParser();
+      return super.jdtParser();
     }
 
   }
 
-  private void assertResultsOfParsing(List<JParserConfig.Result> results, List<InputFile> inputFilesProcessed) throws Exception {
+  private void assertResultsOfParsing(List<Result> results, List<InputFile> inputFilesProcessed) throws Exception {
     assertThat(inputFilesProcessed).hasSize(2);
     assertThat(inputFilesProcessed.get(0).filename()).isEqualTo("Classes.java");
     assertThat(inputFilesProcessed.get(1).filename()).isEqualTo("Methods.java");
@@ -855,18 +861,8 @@ class JParserTest {
   void test_is_canceled_is_called_before_each_action_file_by_file() {
     List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
-    BiConsumer<InputFile, JParserConfig.Result> action = spy(new BiConsumer<InputFile, JParserConfig.Result>() {
-      @Override
-      public void accept(InputFile inputFile, JParserConfig.Result result) {
-        // Do nothing
-      }
-    });
-    BooleanSupplier isCanceled = spy(new BooleanSupplier() {
-      @Override
-      public boolean getAsBoolean() {
-        return false;
-      }
-    });
+    BiConsumer<InputFile, Result> action = mock(BiConsumer.class);
+    BooleanSupplier isCanceled = mock(BooleanSupplier.class);
 
     FILE_BY_FILE
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
@@ -883,7 +879,7 @@ class JParserTest {
   void test_is_canceled_is_called_file_by_file() {
     List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
-    List<JParserConfig.Result> results = new ArrayList<>();
+    List<Result> results = new ArrayList<>();
     FILE_BY_FILE
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
       .parse(inputFiles, () -> true, new AnalysisProgress(inputFiles.size()), (inputFile, result) -> results.add(result));

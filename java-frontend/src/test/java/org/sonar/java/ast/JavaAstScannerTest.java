@@ -47,7 +47,7 @@ import org.sonar.java.checks.VisitorThatCanBeSkipped;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.exceptions.ApiMismatchException;
-import org.sonar.java.model.JParserConfig;
+import org.sonar.java.model.JParserConfig.Result;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
@@ -402,7 +402,7 @@ class JavaAstScannerTest {
     jas.setVisitorBridge(visitorsBridge);
 
     InputFile inputFile = new TestInputFileBuilder("class A {}", "file.java").build();
-    jas.simpleScan(inputFile, mock(JParserConfig.Result.class), ignored -> {});
+    jas.simpleScan(inputFile, mock(Result.class), ignored -> {});
 
     verify(skippable, never()).visitNode(any());
     verify(unskippable, times(1)).visitNode(any());

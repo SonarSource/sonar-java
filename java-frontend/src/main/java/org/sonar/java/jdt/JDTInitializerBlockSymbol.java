@@ -14,10 +14,11 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.util.Collections;
 import java.util.List;
+import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -29,11 +30,11 @@ import org.sonar.plugins.java.api.tree.MethodTree;
  * defined inside an initializer block can have an owner other than the containing class. This is necessary to properly
  * detect them as local variables.
  */
-final class JInitializerBlockSymbol implements Symbol.MethodSymbol {
+final class JDTInitializerBlockSymbol implements Symbol.MethodSymbol {
   private final TypeSymbol owner;
   private final boolean isStatic;
 
-  public JInitializerBlockSymbol(TypeSymbol owner, boolean isStatic) {
+  public JDTInitializerBlockSymbol(TypeSymbol owner, boolean isStatic) {
     this.owner = owner;
     this.isStatic = isStatic;
   }

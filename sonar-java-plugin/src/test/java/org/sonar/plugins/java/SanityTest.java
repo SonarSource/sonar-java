@@ -18,6 +18,7 @@ package org.sonar.plugins.java;
 
 import com.sonar.sslr.api.RecognitionException;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestFileSystem;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
 import java.io.File;
@@ -55,7 +56,6 @@ import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
-import com.sonarsource.scanner.engine.sensor.test.fixtures.TestFileSystem;
 import org.sonar.scanner.plugin.api.impl.fs.DefaultInputFile;
 
 import static java.nio.charset.StandardCharsets.UTF_8;

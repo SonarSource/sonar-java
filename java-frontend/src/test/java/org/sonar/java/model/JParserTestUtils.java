@@ -26,10 +26,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -49,6 +48,10 @@ public class JParserTestUtils {
 
   private JParserTestUtils() {
     // Utility class
+  }
+
+  public static Sema sema(CompilationUnitTree tree) {
+    return ((JavaTree.CompilationUnitTreeImpl) tree).sema;
   }
 
   public static Type typeOf(Tree tree) {
@@ -71,22 +74,6 @@ public class JParserTestUtils {
       case JavaTree.ImportTreeImpl importTree -> importTree.symbol();
       default -> throw new IllegalArgumentException(tree.kind().name());
     };
-  }
-
-  public static JSema sema(CompilationUnitTree tree) {
-    return (JSema) ((JavaTree.CompilationUnitTreeImpl) tree).sema;
-  }
-
-  public static ITypeBinding typeBinding(ClassTree tree) {
-    return ((JType) tree.symbol().type()).typeBinding;
-  }
-
-  public static IMethodBinding methodBinding(MethodTree tree) {
-    return tree.symbol() instanceof JMethodSymbol symbol ? symbol.methodBinding() : null;
-  }
-
-  public static IMethodBinding methodBinding(MethodInvocationTree tree) {
-    return tree.methodSymbol() instanceof JMethodSymbol symbol ? symbol.methodBinding() : null;
   }
 
   public static final List<File> DEFAULT_CLASSPATH = Arrays.asList(new File("target/test-classes"), new File("target/classes"));
@@ -132,7 +119,7 @@ public class JParserTestUtils {
   }
 
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath, JavaVersion version) {
-    return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version.toString(), unitName, source);
+    return JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).parse(unitName, source);
   }
 
   public static List<File> checksTestClassPath() throws IOException {
