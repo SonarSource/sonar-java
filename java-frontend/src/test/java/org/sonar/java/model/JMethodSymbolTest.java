@@ -37,6 +37,7 @@ import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -61,6 +62,47 @@ import static org.sonar.java.model.JUtilsTest.firstMethod;
 import static org.sonar.java.model.JUtilsTest.nthMethod;
 
 class JMethodSymbolTest {
+
+  @Test
+  void annotation_default_values_use_semantic_api_types() {
+    var tree = test("""
+      @interface Nested { String value(); }
+      enum Choice { FIRST }
+      @interface Defaults {
+        int number() default 42;
+        String text() default "value";
+        Class<?> type() default String.class;
+        Choice choice() default Choice.FIRST;
+        Nested nested() default @Nested("value");
+        Class<?>[] types() default {String.class, int.class};
+        Choice[] choices() default {Choice.FIRST};
+        Nested[] annotations() default {@Nested("value")};
+        int[] numbers() default {1, 2};
+        String absent();
+      }
+      """);
+    var defaults = ((ClassTreeImpl) tree.types().get(2)).symbol();
+
+    assertThat(annotationElementDefaultValue(defaults, "number")).isEqualTo(42);
+    assertThat(annotationElementDefaultValue(defaults, "text")).isEqualTo("value");
+    assertThat(((Symbol.TypeSymbol) annotationElementDefaultValue(defaults, "type")).type().is("java.lang.String")).isTrue();
+    assertThat(((Symbol.VariableSymbol) annotationElementDefaultValue(defaults, "choice")).name()).isEqualTo("FIRST");
+    assertThat(((AnnotationInstance) annotationElementDefaultValue(defaults, "nested")).values().get(0).value()).isEqualTo("value");
+    assertThat((Object[]) annotationElementDefaultValue(defaults, "types"))
+      .allSatisfy(value -> assertThat(value).isInstanceOf(Symbol.TypeSymbol.class));
+    assertThat((Object[]) annotationElementDefaultValue(defaults, "choices"))
+      .allSatisfy(value -> assertThat(value).isInstanceOf(Symbol.VariableSymbol.class));
+    assertThat((Object[]) annotationElementDefaultValue(defaults, "annotations"))
+      .allSatisfy(value -> assertThat(value).isInstanceOf(AnnotationInstance.class));
+    assertThat((Object[]) annotationElementDefaultValue(defaults, "numbers")).containsExactly(1, 2);
+    assertThat(annotationElementDefaultValue(defaults, "absent")).isNull();
+    assertThat(Symbol.MethodSymbol.UNKNOWN_METHOD.annotationElementDefaultValue()).isNull();
+  }
+
+  private static Object annotationElementDefaultValue(Symbol.TypeSymbol annotation, String name) {
+    return ((Symbol.MethodSymbol) annotation.lookupSymbols(name).iterator().next()).annotationElementDefaultValue();
+  }
+
 
   @Test
   void test() {
