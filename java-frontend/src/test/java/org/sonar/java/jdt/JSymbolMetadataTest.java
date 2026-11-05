@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -26,6 +26,9 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.JNullabilityData;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
@@ -69,10 +72,10 @@ class JSymbolMetadataTest {
   void should_convert_annotation_values() {
     JavaTree.CompilationUnitTreeImpl cu = test("import java.lang.annotation.*; @Target({ElementType.TYPE, ElementType.METHOD}) @interface A { }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
-    Object[] value = (Object[]) ((JTypeSymbol) typeOf(c).symbol()).metadata().annotations().get(0).values().get(0).value();
+    Object[] value = (Object[]) ((JDTTypeSymbol) typeOf(c).symbol()).metadata().annotations().get(0).values().get(0).value();
     assertThat(value).hasSize(2);
-    assertThat(((JVariableSymbol) value[0]).isEnum()).isTrue();
-    assertThat(((JVariableSymbol) value[1]).isEnum()).isTrue();
+    assertThat(((JDTVariableSymbol) value[0]).isEnum()).isTrue();
+    assertThat(((JDTVariableSymbol) value[1]).isEnum()).isTrue();
   }
 
   @Test

@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -27,6 +27,8 @@ import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.sonar.java.model.AnnotationValueImpl;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -34,18 +36,12 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.model.JSymbolMetadataNullabilityHelper.getNullabilityDataAtLevel;
+import static org.sonar.java.model.JNullabilityData.noNullabilityAnnotationAt;
+import static org.sonar.java.model.JNullabilityData.unknownNullabilityAt;
 
-final class JSymbolMetadata implements SymbolMetadata {
+final class JDTSymbolMetadata implements SymbolMetadata {
 
-  public static NullabilityData noNullabilityAnnotationAt(NullabilityLevel level) {
-    return JNullabilityData.noNullabilityAnnotationAt(level);
-  }
-
-  public static NullabilityData unknownNullabilityAt(NullabilityLevel level) {
-    return JNullabilityData.unknownNullabilityAt(level);
-  }
-
-  private final JSema sema;
+  private final JDTSema sema;
   private final Symbol symbol;
   private final IAnnotationBinding[] symbolBindings;
   private final SymbolMetadata[] parameterMetas;
@@ -65,7 +61,7 @@ final class JSymbolMetadata implements SymbolMetadata {
 
   private final boolean isTypeArgMetadata;
 
-  JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] annotationBindings) {
+  JDTSymbolMetadata(JDTSema sema, Symbol symbol, IAnnotationBinding[] annotationBindings) {
     this.sema = Objects.requireNonNull(sema);
     this.symbol = symbol;
     this.symbolBindings = annotationBindings;
@@ -75,7 +71,7 @@ final class JSymbolMetadata implements SymbolMetadata {
     this.annotationBindings = annotationBindings;
   }
 
-  private JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] symbolAnnotations, JSymbolMetadata[] parameterMetaDatas, boolean isTypeArgMetadata) {
+  private JDTSymbolMetadata(JDTSema sema, Symbol symbol, IAnnotationBinding[] symbolAnnotations, JDTSymbolMetadata[] parameterMetaDatas, boolean isTypeArgMetadata) {
     this.sema = Objects.requireNonNull(sema);
     this.symbol = symbol;
     this.symbolBindings = symbolAnnotations;
@@ -83,7 +79,7 @@ final class JSymbolMetadata implements SymbolMetadata {
     this.isTypeArgMetadata = isTypeArgMetadata;
 
     int total = symbolBindings.length;
-    for (JSymbolMetadata parameterMetaData : parameterMetaDatas) {
+    for (JDTSymbolMetadata parameterMetaData : parameterMetaDatas) {
       total += parameterMetaData.annotationBindings.length;
     }
 
@@ -91,31 +87,31 @@ final class JSymbolMetadata implements SymbolMetadata {
     int current = symbolAnnotations.length;
     System.arraycopy(symbolAnnotations, 0, this.annotationBindings, 0, symbolAnnotations.length);
 
-    for (JSymbolMetadata parameterMetaData : parameterMetaDatas) {
+    for (JDTSymbolMetadata parameterMetaData : parameterMetaDatas) {
       var paramBindings = parameterMetaData.annotationBindings;
       System.arraycopy(paramBindings, 0, this.annotationBindings, current, paramBindings.length);
       current += paramBindings.length;
     }
   }
 
-  public static JSymbolMetadata of(JSema sema, Symbol owner, ITypeBinding type, IAnnotationBinding[] externalAnnotations) {
+  public static JDTSymbolMetadata of(JDTSema sema, Symbol owner, ITypeBinding type, IAnnotationBinding[] externalAnnotations) {
     var symbolAnnotations = new IAnnotationBinding[externalAnnotations.length + type.getTypeAnnotations().length];
     System.arraycopy(externalAnnotations, 0, symbolAnnotations, 0, externalAnnotations.length);
     System.arraycopy(type.getTypeAnnotations(), 0, symbolAnnotations, externalAnnotations.length, type.getTypeAnnotations().length);
 
     var parameterMetaDatas = Arrays.stream(type.getTypeArguments())
       .map(param -> ofTypeArg(sema, owner, param))
-      .toArray(JSymbolMetadata[]::new);
+      .toArray(JDTSymbolMetadata[]::new);
 
-    return new JSymbolMetadata(sema, owner, symbolAnnotations, parameterMetaDatas, false);
+    return new JDTSymbolMetadata(sema, owner, symbolAnnotations, parameterMetaDatas, false);
   }
 
-  private static JSymbolMetadata ofTypeArg(JSema sema, Symbol owner, ITypeBinding param) {
+  private static JDTSymbolMetadata ofTypeArg(JDTSema sema, Symbol owner, ITypeBinding param) {
     var symbolAnnotations = param.getTypeAnnotations();
     var parameterMetaDatas = Arrays.stream(param.getTypeArguments())
       .map(p -> ofTypeArg(sema, owner, p))
-      .toArray(JSymbolMetadata[]::new);
-    return new JSymbolMetadata(sema, owner, symbolAnnotations, parameterMetaDatas, true);
+      .toArray(JDTSymbolMetadata[]::new);
+    return new JDTSymbolMetadata(sema, owner, symbolAnnotations, parameterMetaDatas, true);
   }
 
   @Override
@@ -291,7 +287,7 @@ final class JSymbolMetadata implements SymbolMetadata {
   }
 
   static final class JAnnotationInstance implements AnnotationInstance {
-    private final JSema sema;
+    private final JDTSema sema;
     private final IAnnotationBinding annotationBinding;
 
     /**
@@ -299,7 +295,7 @@ final class JSymbolMetadata implements SymbolMetadata {
      */
     private List<AnnotationValue> values;
 
-    JAnnotationInstance(JSema sema, IAnnotationBinding annotationBinding) {
+    JAnnotationInstance(JDTSema sema, IAnnotationBinding annotationBinding) {
       this.sema = sema;
       this.annotationBinding = annotationBinding;
     }
@@ -320,7 +316,7 @@ final class JSymbolMetadata implements SymbolMetadata {
     }
   }
 
-  static Object convertAnnotationValue(JSema sema, Object value) {
+  static Object convertAnnotationValue(JDTSema sema, Object value) {
     return switch (value) {
       case IVariableBinding iVariableBinding -> sema.variableSymbol(iVariableBinding);
       case ITypeBinding iTypeBinding -> sema.typeSymbol(iTypeBinding);

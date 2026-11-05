@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +27,7 @@ import org.eclipse.jdt.core.compiler.IProblem;
 import org.sonar.plugins.java.api.diagnostics.Problem;
 import org.sonar.plugins.java.api.diagnostics.ProblemKind;
 
-public class JProblem implements Problem {
+class JDTProblem implements Problem {
 
   private static final String USE_ENABLE_PREVIEW = " Use --enable-preview to enable";
 
@@ -52,7 +52,7 @@ public class JProblem implements Problem {
   private final String message;
   private final ProblemKind type;
 
-  JProblem(String message, ProblemKind type) {
+  JDTProblem(String message, ProblemKind type) {
     this.message = type == ProblemKind.PREVIEW_FEATURE_USED && message.endsWith(USE_ENABLE_PREVIEW)
       ? message.substring(0, message.length() - USE_ENABLE_PREVIEW.length())
       : message;
@@ -79,7 +79,7 @@ public class JProblem implements Problem {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof JProblem that)) {
+    if (!(o instanceof JDTProblem that)) {
       return false;
     }
     return type == that.type && message.equals(that.message);
@@ -109,7 +109,7 @@ public class JProblem implements Problem {
   static Set<Problem> semanticProblems(List<IProblem> errors) {
     return errors.stream()
       .filter(error -> (error.getID() & IProblem.UndefinedType) != 0)
-      .map(error -> new JProblem(error.getMessage(), (error.getID() & IProblem.PreviewFeatureUsed) == 0 ? ProblemKind.UNDEFINED_TYPE : ProblemKind.PREVIEW_FEATURE_USED))
+      .map(error -> new JDTProblem(error.getMessage(), (error.getID() & IProblem.PreviewFeatureUsed) == 0 ? ProblemKind.UNDEFINED_TYPE : ProblemKind.PREVIEW_FEATURE_USED))
       .collect(Collectors.toSet());
   }
 }

@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.util.HashSet;
 import java.util.List;
@@ -27,9 +27,8 @@ import org.sonar.plugins.java.api.diagnostics.ProblemKind;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,22 +37,22 @@ class JProblemTest {
   @Test
   void normalizes_preview_messages_at_construction() {
     String message = "Preview feature used Use --enable-preview to enable";
-    JProblem preview = new JProblem(message, ProblemKind.PREVIEW_FEATURE_USED);
+    JDTProblem preview = new JDTProblem(message, ProblemKind.PREVIEW_FEATURE_USED);
     assertThat(preview.message()).isEqualTo("Preview feature used");
     assertThat(preview).hasToString(preview.message());
-    assertThat(new JProblem("Preview feature used", ProblemKind.PREVIEW_FEATURE_USED).message()).isEqualTo("Preview feature used");
-    assertThat(new JProblem(message + ".", ProblemKind.PREVIEW_FEATURE_USED).message()).isEqualTo(message + ".");
+    assertThat(new JDTProblem("Preview feature used", ProblemKind.PREVIEW_FEATURE_USED).message()).isEqualTo("Preview feature used");
+    assertThat(new JDTProblem(message + ".", ProblemKind.PREVIEW_FEATURE_USED).message()).isEqualTo(message + ".");
     for (ProblemKind kind : ProblemKind.values()) {
       if (kind != ProblemKind.PREVIEW_FEATURE_USED) {
-        assertThat(new JProblem(message, kind).message()).isEqualTo(message);
+        assertThat(new JDTProblem(message, kind).message()).isEqualTo(message);
       }
     }
   }
 
   @Test
   void equivalent_normalized_messages_have_equal_values_and_hashes() {
-    JProblem withGuidance = new JProblem("Preview feature used Use --enable-preview to enable", ProblemKind.PREVIEW_FEATURE_USED);
-    JProblem withoutGuidance = new JProblem("Preview feature used", ProblemKind.PREVIEW_FEATURE_USED);
+    JDTProblem withGuidance = new JDTProblem("Preview feature used Use --enable-preview to enable", ProblemKind.PREVIEW_FEATURE_USED);
+    JDTProblem withoutGuidance = new JDTProblem("Preview feature used", ProblemKind.PREVIEW_FEATURE_USED);
     assertThat(withGuidance).isEqualTo(withoutGuidance);
     assertThat(withoutGuidance).isEqualTo(withGuidance);
     assertThat(withGuidance).hasSameHashCodeAs(withoutGuidance);
@@ -62,12 +61,12 @@ class JProblemTest {
 
   @Test
   void compiler_options_enable_only_supported_warnings() {
-    assertThat(JProblem.compilerOptions()).containsExactlyInAnyOrder(
+    assertThat(JDTProblem.compilerOptions()).containsExactlyInAnyOrder(
       JavaCore.COMPILER_PB_UNUSED_IMPORT,
       JavaCore.COMPILER_PB_UNNECESSARY_TYPE_CHECK,
       JavaCore.COMPILER_PB_NO_EFFECT_ASSIGNMENT,
       JavaCore.COMPILER_PB_HIDDEN_CATCH_BLOCK);
-    Set<String> options = JProblem.compilerOptions();
+    Set<String> options = JDTProblem.compilerOptions();
     assertThatThrownBy(options::clear).isInstanceOf(UnsupportedOperationException.class);
   }
 
@@ -77,39 +76,39 @@ class JProblemTest {
     IProblem toleratedSwitch = problem(IProblem.SwitchExpressionsYieldMissingDefaultCase, "Switch");
     IProblem undefined = problem(IProblem.UndefinedType, "Unknown type");
     IProblem preview = problem(IProblem.PreviewFeatureDisabled, "Preview");
-    assertThat(JProblem.isSyntaxError(syntax)).isTrue();
-    assertThat(JProblem.isSyntaxError(toleratedSwitch)).isFalse();
-    assertThat(JProblem.isSyntaxError(undefined)).isFalse();
-    assertThat(JProblem.semanticProblems(List.of(syntax, undefined, preview)))
-      .containsExactlyInAnyOrder(new JProblem("Unknown type", ProblemKind.UNDEFINED_TYPE), new JProblem("Preview", ProblemKind.PREVIEW_FEATURE_USED));
-    assertThat(JProblem.kindOf(syntax)).isNull();
+    assertThat(JDTProblem.isSyntaxError(syntax)).isTrue();
+    assertThat(JDTProblem.isSyntaxError(toleratedSwitch)).isFalse();
+    assertThat(JDTProblem.isSyntaxError(undefined)).isFalse();
+    assertThat(JDTProblem.semanticProblems(List.of(syntax, undefined, preview)))
+      .containsExactlyInAnyOrder(new JDTProblem("Unknown type", ProblemKind.UNDEFINED_TYPE), new JDTProblem("Preview", ProblemKind.PREVIEW_FEATURE_USED));
+    assertThat(JDTProblem.kindOf(syntax)).isNull();
   }
 
   @Test
   void test_equals() {
-    JProblem p1 = new JProblem("message1", ProblemKind.UNDEFINED_TYPE);
-    assertFalse(p1.equals(null));
-    assertTrue(p1.equals(p1));
+    JDTProblem p1 = new JDTProblem("message1", ProblemKind.UNDEFINED_TYPE);
+    assertNotNull(p1);
+    assertEquals(p1, p1);
 
-    JProblem p2 = new JProblem("message1", ProblemKind.UNDEFINED_TYPE);
-    assertTrue(p1.equals(p2));
-    p2 = new JProblem("message2", ProblemKind.UNDEFINED_TYPE);
-    assertFalse(p1.equals(p2));
-    p2 = new JProblem("message1", ProblemKind.PREVIEW_FEATURE_USED);
-    assertFalse(p1.equals(p2));
+    JDTProblem p2 = new JDTProblem("message1", ProblemKind.UNDEFINED_TYPE);
+    assertEquals(p1, p2);
+    p2 = new JDTProblem("message2", ProblemKind.UNDEFINED_TYPE);
+    assertNotEquals(p1, p2);
+    p2 = new JDTProblem("message1", ProblemKind.PREVIEW_FEATURE_USED);
+    assertNotEquals(p1, p2);
   }
 
   @Test
   void test_hashcode() {
     assertEquals(
-      new JProblem("a", ProblemKind.UNDEFINED_TYPE).hashCode(),
-      new JProblem("a", ProblemKind.UNDEFINED_TYPE).hashCode());
+      new JDTProblem("a", ProblemKind.UNDEFINED_TYPE).hashCode(),
+      new JDTProblem("a", ProblemKind.UNDEFINED_TYPE).hashCode());
     assertNotEquals(
-      new JProblem("a", ProblemKind.UNDEFINED_TYPE).hashCode(),
-      new JProblem("b", ProblemKind.UNDEFINED_TYPE).hashCode());
+      new JDTProblem("a", ProblemKind.UNDEFINED_TYPE).hashCode(),
+      new JDTProblem("b", ProblemKind.UNDEFINED_TYPE).hashCode());
     assertNotEquals(
-      new JProblem("a", ProblemKind.UNDEFINED_TYPE).hashCode(),
-      new JProblem("a", ProblemKind.PREVIEW_FEATURE_USED).hashCode());
+      new JDTProblem("a", ProblemKind.UNDEFINED_TYPE).hashCode(),
+      new JDTProblem("a", ProblemKind.PREVIEW_FEATURE_USED).hashCode());
   }
 
   private static IProblem problem(int id, String message) {

@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -33,6 +33,9 @@ import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.LineColumnConverter;
 import org.sonar.java.model.location.InternalPosition;
 import org.sonar.plugins.java.api.diagnostics.ProblemKind;
 import org.sonar.plugins.java.api.diagnostics.Warning;
@@ -43,13 +46,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.sonar.plugins.java.api.location.Position.endOf;
 import static org.sonar.plugins.java.api.location.Position.startOf;
 
-public final class JWarning extends JProblem implements Warning {
+final class JDTWarning extends JDTProblem implements Warning {
   private final Position start;
   private final Position end;
 
   private Tree syntaxTree;
 
-  JWarning(String message, ProblemKind type, int startLine, int startColumnOffset, int endLine, int endColumnOffset) {
+  JDTWarning(String message, ProblemKind type, int startLine, int startColumnOffset, int endLine, int endColumnOffset) {
     super(message, type);
     this.start = InternalPosition.atOffset(startLine, startColumnOffset);
     this.end = InternalPosition.atOffset(endLine, endColumnOffset);
@@ -73,13 +76,13 @@ public final class JWarning extends JProblem implements Warning {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof JWarning)) {
+    if (!(o instanceof JDTWarning)) {
       return false;
     }
     if (!super.equals(o)) {
       return false;
     }
-    JWarning jWarning = (JWarning) o;
+    JDTWarning jWarning = (JDTWarning) o;
     // skip syntaxTree
     return start.equals(jWarning.start) && end.equals(jWarning.end);
   }
@@ -102,9 +105,9 @@ public final class JWarning extends JProblem implements Warning {
       .flatMap(Set::stream)
       .collect(Collectors.toSet());
 
-    private final Map<ProblemKind, Set<JWarning>> warningsByType = new EnumMap<>(ProblemKind.class);
+    private final Map<ProblemKind, Set<JDTWarning>> warningsByType = new EnumMap<>(ProblemKind.class);
 
-    private final PriorityQueue<JWarning> warnings = new PriorityQueue<>(Comparator.comparing(JWarning::start).thenComparing(JWarning::end));
+    private final PriorityQueue<JDTWarning> warnings = new PriorityQueue<>(Comparator.comparing(JDTWarning::start).thenComparing(JDTWarning::end));
 
     private Mapper(CompilationUnit ast, LineColumnConverter lineColumnConverter) {
       WARNING_KINDS.keySet().forEach(kind -> warningsByType.put(kind, new LinkedHashSet<>()));
@@ -116,14 +119,14 @@ public final class JWarning extends JProblem implements Warning {
 
     @CheckForNull
     @VisibleForTesting
-    static JWarning convert(IProblem problem, LineColumnConverter lineColumnConverter) {
-      ProblemKind kind = JProblem.kindOf(problem);
+    static JDTWarning convert(IProblem problem, LineColumnConverter lineColumnConverter) {
+      ProblemKind kind = JDTProblem.kindOf(problem);
       if (kind == null || !WARNING_KINDS.containsKey(kind)) {
         return null;
       }
       LineColumnConverter.Pos start = lineColumnConverter.toPos(problem.getSourceStart());
       LineColumnConverter.Pos end = lineColumnConverter.toPos(problem.getSourceEnd());
-      return new JWarning(problem.getMessage(), kind, start.line(), start.columnOffset(), end.line(), end.columnOffset());
+      return new JDTWarning(problem.getMessage(), kind, start.line(), start.columnOffset(), end.line(), end.columnOffset());
     }
 
     public static Mapper warningsFor(CompilationUnit ast, LineColumnConverter lineColumnConverter) {
@@ -157,8 +160,8 @@ public final class JWarning extends JProblem implements Warning {
       if (warnings.isEmpty()) {
         return;
       }
-      for (Iterator<JWarning> iterator = warnings.iterator(); iterator.hasNext();) {
-        JWarning warning = iterator.next();
+      for (Iterator<JDTWarning> iterator = warnings.iterator(); iterator.hasNext();) {
+        JDTWarning warning = iterator.next();
         if (isInsideTree(warning, tree)) {
           setSyntaxTree(warning, tree);
           warningsByType.computeIfAbsent(warning.type(), k -> new LinkedHashSet<>()).add(warning);
@@ -171,14 +174,14 @@ public final class JWarning extends JProblem implements Warning {
     }
 
     @VisibleForTesting
-    static void setSyntaxTree(JWarning warning, Tree tree) {
+    static void setSyntaxTree(JDTWarning warning, Tree tree) {
       if (warning.syntaxTree == null || isMorePreciseTree(warning.syntaxTree, tree)) {
         warning.syntaxTree = tree;
       }
     }
 
     @VisibleForTesting
-    static boolean isInsideTree(JWarning warning, Tree tree) {
+    static boolean isInsideTree(JDTWarning warning, Tree tree) {
       if (!WARNING_KINDS.getOrDefault(warning.type(), Set.of()).contains(tree.kind())) {
         // wrong kind
         return false;
@@ -194,7 +197,7 @@ public final class JWarning extends JProblem implements Warning {
     }
 
     @VisibleForTesting
-    static boolean matchesTreeExactly(JWarning warning) {
+    static boolean matchesTreeExactly(JDTWarning warning) {
       Tree syntaxTree = warning.syntaxTree();
       return warning.start().compareTo(startOf(syntaxTree)) == 0
         && warning.end().compareTo(endOf(syntaxTree)) == 0;

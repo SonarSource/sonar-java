@@ -14,11 +14,14 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.io.File;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.Symbols;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -36,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.model.JParserTestUtils.sema;
+import static org.sonar.java.jdt.JdtTestUtils.sema;
 
 class SymbolsTest {
 
@@ -105,7 +108,7 @@ class SymbolsTest {
     Tree unsupportedDeclaration = mock(Tree.class);
     Symbol symbol = spy(Symbol.UNKNOWN_SYMBOL);
     when(symbol.declaration()).thenReturn(unsupportedDeclaration);
-    SymbolMetadata metadata = new JSymbolMetadata(JUtilsTest.SEMA, symbol, new IAnnotationBinding[0]);
+    SymbolMetadata metadata = new JDTSymbolMetadata(JUtilsTest.SEMA, symbol, new IAnnotationBinding[0]);
     assertThat(metadata.findAnnotationTree(mock(AnnotationInstance.class))).isNull();
     assertThat(metadata.nullabilityData().type()).isEqualTo(NullabilityType.UNKNOWN);
     assertThat(metadata.nullabilityData(NullabilityTarget.METHOD).type()).isEqualTo(NullabilityType.UNKNOWN);
@@ -204,7 +207,7 @@ class SymbolsTest {
 
   @Test
   void testIsAnnotation() {
-    JSema sema = sema(((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("")));
+    JDTSema sema = sema(((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("")));
     Type objectType = sema.type(sema.resolveType("java.lang.Object"));
     JavaTree.CompilationUnitTreeImpl cu = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("@interface Anno { Unknown u; }");
     ClassTreeImpl anno = (ClassTreeImpl) cu.types().get(0);

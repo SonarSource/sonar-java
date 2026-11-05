@@ -19,21 +19,28 @@ package org.sonar.java.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 
-import javax.annotation.Nullable;
-
 public class JLabelSymbol extends Symbols.DefaultSymbol implements Symbol.LabelSymbol {
 
   private final String name;
-  LabeledStatementTree declaration;
-  final List<IdentifierTree> usages = new ArrayList<>();
+  private LabeledStatementTree declaration;
+  private final List<IdentifierTree> usages = new ArrayList<>();
 
-  JLabelSymbol(String name) {
+  public JLabelSymbol(String name) {
     this.name = name;
+  }
+
+  public void setDeclaration(LabeledStatementTree declaration) {
+    this.declaration = declaration;
+  }
+
+  public void addUsage(IdentifierTree usage) {
+    usages.add(usage);
   }
 
   @Override

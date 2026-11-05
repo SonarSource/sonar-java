@@ -14,14 +14,8 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+@javax.annotation.ParametersAreNonnullByDefault
+@MethodsAreNonnullByDefault
+package org.sonar.java.jdt;
 
-import org.eclipse.jdt.core.dom.IPackageBinding;
-
-final class JPackageSymbol extends JSymbol {
-
-  JPackageSymbol(JSema sema, IPackageBinding binding) {
-    super(sema, binding);
-  }
-
-}
+import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
