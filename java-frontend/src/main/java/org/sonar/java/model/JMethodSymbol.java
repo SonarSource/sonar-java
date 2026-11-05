@@ -183,6 +183,12 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     return !isUnknown() && (methodBinding().isParameterizedMethod() || methodBinding().isGenericMethod());
   }
 
+  @Nullable
+  @Override
+  public Object annotationElementDefaultValue() {
+    return isUnknown() ? null : JSymbolMetadata.convertAnnotationValue(sema, methodBinding().getDefaultValue());
+  }
+
   @Override
   public boolean isDefaultMethod() {
     return !isUnknown() && Modifier.isDefault(binding.getModifiers());
