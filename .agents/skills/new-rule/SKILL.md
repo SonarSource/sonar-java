@@ -85,7 +85,7 @@ If **ruling** fails (likely for a new rule), a PR updating the expectations is c
 
 ### Step 6 — TP/FP analysis (only when Step 5 is fully green)
 
-1. Collect the **new** findings from the ruling expectation diff: `its/ruling/src/test/resources/expected/<project>/java-<RULE_ID>.json`, where each entry is `"group:artifact:path/to/File.java": [line, …]`. Sources are under `its/sources/<project>/`.
+1. Collect the **new** findings from the ruling expectation diff between `its/ruling/target/actual/<project>/java-<RULE_ID>.sarif` and `its/ruling/src/test/resources/expected/<project>/java-<RULE_ID>.sarif`. Each finding is a `runs[].results[]` entry. Its `locations[0].physicalLocation.artifactLocation.uri` identifies the source file as `<project>:path/to/File.java`, and `locations[0].physicalLocation.region` gives the line and column. Sources are under `its/sources/<project>/`.
 2. **Sample** new findings before classifying (do not analyze unbounded volumes):
    - Let `N` be the sample size (default **100**).
    - If total new findings ≤ `N` → analyze **all**.
