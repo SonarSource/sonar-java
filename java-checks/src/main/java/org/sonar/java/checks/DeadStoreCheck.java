@@ -77,13 +77,36 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
 
     UNRESOLVED_IDENTIFIERS_VISITOR.check(tree);
 
-    CFG cfg = tree instanceof MethodTree methodTree ? (CFG) methodTree.cfg() : (CFG) ((LambdaExpressionTree) tree).cfg();
+    CFG cfg = buildCFG(tree, methodSymbol);
     cfg.setMethodSymbol(methodSymbol);
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     // Liveness analysis provides information only for block boundaries, so we should do analysis between elements within blocks
     for (CFG.Block block : cfg.blocks()) {
       checkElements(block, liveVariables.getOut(block), methodSymbol);
     }
+  }
+
+  private static CFG buildCFG(Tree tree, Symbol.MethodSymbol methodSymbol) {
+    if (tree instanceof MethodTree methodTree) {
+      // Compact record constructors have no parameter-list parentheses.
+      if (methodTree.is(Tree.Kind.CONSTRUCTOR) && methodTree.openParenToken() == null) {
+        List<Tree> elements = new ArrayList<>(methodTree.block().body());
+        Set<Symbol> parameters = new HashSet<>();
+        methodTree.block().accept(new BaseTreeVisitor() {
+          @Override
+          public void visitIdentifier(IdentifierTree identifier) {
+            Symbol symbol = identifier.symbol();
+            if (symbol.isParameter() && methodSymbol.equals(symbol.owner()) && parameters.add(symbol)) {
+              // Add an artificial read to model the implicit assignment to the record field.
+              elements.add(identifier);
+            }
+          }
+        });
+        return CFG.buildCFG(elements);
+      }
+      return (CFG) methodTree.cfg();
+    }
+    return (CFG) ((LambdaExpressionTree) tree).cfg();
   }
 
   private void checkElements(CFG.Block block, Set<Symbol> blockOut, Symbol.MethodSymbol methodSymbol) {
