@@ -44,7 +44,6 @@ import org.sonar.java.ExecutionTimeReport;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JParser;
 import org.sonar.java.model.JParserConfig;
-import org.sonar.java.model.JParserConfig.Result;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonarsource.analyzer.commons.ProgressReport;
