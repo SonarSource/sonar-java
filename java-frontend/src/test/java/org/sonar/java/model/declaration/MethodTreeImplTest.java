@@ -18,12 +18,15 @@ package org.sonar.java.model.declaration;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -218,6 +221,23 @@ class MethodTreeImplTest {
     cfg = methodWithSwitchAndYield.cfg();
     assertThat(cfg).isNotNull();
     assertThat(methodWithSwitchAndYield.cfg()).isSameAs(cfg);
+  }
+
+  @Test
+  void compact_constructor_cfg_reads_final_parameter_value_without_modifying_body() {
+    MethodTreeImpl method = getUniqueMethod("record R(int value) { R { value = 42; value = 24; } }");
+    List<StatementTree> statements = List.copyOf(method.block().body());
+
+    CFG cfg = method.cfg();
+
+    assertThat(cfg.entryBlock().elements()).extracting(Tree::kind)
+      .containsExactly(Tree.Kind.INT_LITERAL, Tree.Kind.ASSIGNMENT, Tree.Kind.INT_LITERAL, Tree.Kind.ASSIGNMENT, Tree.Kind.IDENTIFIER);
+    IdentifierTree implicitRead = (IdentifierTree) cfg.entryBlock().elements().getLast();
+    assertThat(implicitRead.symbol().name()).isEqualTo("value");
+    assertThat(implicitRead.symbol().owner()).isEqualTo(method.symbol());
+    assertThat(cfg.methodSymbol()).isSameAs(method.symbol());
+    assertThat(method.cfg()).isSameAs(cfg);
+    assertThat(method.block().body()).containsExactlyElementsOf(statements);
   }
 
   @Test
