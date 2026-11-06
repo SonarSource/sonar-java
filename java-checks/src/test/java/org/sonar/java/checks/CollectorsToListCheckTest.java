@@ -29,6 +29,15 @@ class CollectorsToListCheckTest {
   }
 
   @Test
+  void test_sequenced_collection_mutators() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CollectorsToListCheckSequencedSample.java"))
+      .withCheck(new CollectorsToListCheck())
+      .withJavaVersion(21)
+      .verifyIssues();
+  }
+
+  @Test
   void test_no_issues_for_older_versions() {
     createCheckVerifier()
       .withJavaVersion(15)

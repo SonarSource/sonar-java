@@ -16,25 +16,13 @@
  */
 package org.sonar.java.model;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
-import java.util.function.BooleanSupplier;
-import java.util.stream.StreamSupport;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
+import org.eclipse.jdt.core.dom.SystemReleaseClasspath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
@@ -47,6 +35,21 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonarsource.analyzer.commons.ProgressReport;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
+import java.util.function.BooleanSupplier;
+import java.util.stream.StreamSupport;
+
 public abstract class JParserConfig {
 
   public static final JavaVersion MAXIMUM_SUPPORTED_JAVA_VERSION = new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED, true);
@@ -54,7 +57,9 @@ public abstract class JParserConfig {
   private static final Logger LOG = LoggerFactory.getLogger(JParserConfig.class);
 
   private static final String MAXIMUM_ECJ_WARNINGS = "42000";
-  private static final Set<String> JRE_JARS = new HashSet<>(Arrays.asList("rt.jar", "jrt-fs.jar", "android.jar"));
+  private static final String JRT_FS_JAR = "jrt-fs.jar";
+  private static final Set<String> NON_MODULAR_JRE_JAR = new HashSet<>(Arrays.asList("rt.jar", "android.jar"));
+  private static final Set<String> JRE_JARS = new HashSet<>(Arrays.asList("rt.jar", JRT_FS_JAR, "android.jar"));
 
   final JavaVersion javaVersion;
   final List<File> classpath;
@@ -67,7 +72,7 @@ public abstract class JParserConfig {
   }
 
   public abstract void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled,
-    AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action);
+                             AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action);
 
   public enum Mode {
     BATCH(Batch::new),
@@ -128,19 +133,69 @@ public abstract class JParserConfig {
     JProblem.Type.compilerOptions()
       .forEach(option -> options.put(option, "warning"));
 
+    options.put(SystemReleaseClasspath.OPTION_RELEASE, javaVersion.effectiveJavaVersionAsString());
+    List<File> environment = useReleaseApiOfConfiguredJdk(options);
+
     astParser.setCompilerOptions(options);
 
-    boolean includeRunningVMBootclasspath = classpath.stream()
+    boolean includeRunningVMBootclasspath = environment.stream()
       .noneMatch(f -> JRE_JARS.contains(f.getName()));
 
-    astParser.setEnvironment(classpath.stream()
+    astParser.setEnvironment(environment.stream()
       .map(File::getAbsolutePath)
-      .toArray(String[]::new), new String[] {}, new String[] {}, includeRunningVMBootclasspath);
+      .toArray(String[]::new), new String[]{}, new String[]{}, includeRunningVMBootclasspath);
 
     astParser.setResolveBindings(true);
     astParser.setBindingsRecovery(true);
 
     return astParser;
+  }
+
+  /**
+   * When the classpath carries the runtime image of a modular JDK (the {@code lib/jrt-fs.jar} added for
+   * {@code sonar.java.jdkHome}), ECJ would see the whole API of that JDK whatever the analyzed Java version is.
+   * If the requested release is older than that JDK, the image is removed from the classpath and the JDK is
+   * registered in {@code options} as the provider of the release API, which {@link SystemReleaseClasspath} then
+   * serves from its {@code ct.sym}.
+   *
+   * <p>Nothing changes when another JDK-like entry is present ({@code rt.jar}, {@code android.jar}), since it is
+   * the actual platform to analyze against, or when the release cannot be served by that JDK.
+   *
+   * @param options the compiler options, to which the JDK home is added when the release API is used
+   * @return the classpath to give to ECJ
+   */
+  @VisibleForTesting
+  List<File> useReleaseApiOfConfiguredJdk(Map<String, String> options) {
+    boolean hasOtherPlatformJar = classpath.stream()
+      .anyMatch(f -> NON_MODULAR_JRE_JAR.contains(f.getName()));
+    if (hasOtherPlatformJar) {
+      return classpath;
+    }
+    for (File runtimeImage : classpath) {
+      Optional<File> jdkHome = jdkHomeOfRuntimeImage(runtimeImage);
+      if (jdkHome.isPresent()) {
+        Map<String, String> candidate = new HashMap<>(options);
+        candidate.put(SystemReleaseClasspath.OPTION_JAVA_HOME, jdkHome.get().getAbsolutePath());
+        if (SystemReleaseClasspath.isApplicable(candidate)) {
+          options.put(SystemReleaseClasspath.OPTION_JAVA_HOME, jdkHome.get().getAbsolutePath());
+          return classpath.stream().filter(f -> !f.equals(runtimeImage)).toList();
+        }
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("The API of Java {} is not served from the JDK '{}': using the API of that JDK as is.",
+            javaVersion.effectiveJavaVersionAsString(), jdkHome.get());
+        }
+        return classpath;
+      }
+    }
+    return classpath;
+  }
+
+  private static Optional<File> jdkHomeOfRuntimeImage(File file) {
+    File lib = file.getParentFile();
+    if (JRT_FS_JAR.equals(file.getName()) && lib != null && "lib".equals(lib.getName())) {
+      return Optional.ofNullable(lib.getParentFile());
+    }
+    return Optional.empty();
   }
 
   @VisibleForTesting
@@ -152,7 +207,7 @@ public abstract class JParserConfig {
 
     @Override
     public void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled,
-      AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action) {
+                      AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action) {
 
       List<String> sourceFilePaths = new ArrayList<>();
       Set<InputFile> notYetAnalyzedFiles = new LinkedHashSet<>();
@@ -230,7 +285,7 @@ public abstract class JParserConfig {
 
     @Override
     public void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled,
-      AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action) {
+                      AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action) {
       boolean successfullyCompleted = false;
       boolean cancelled = false;
 
@@ -280,6 +335,7 @@ public abstract class JParserConfig {
   static boolean shouldEnablePreviewFlag(JavaVersion currentVersion) {
     return currentVersion.arePreviewFeaturesEnabled();
   }
+
   @FunctionalInterface
   public interface ParserConfigConstructor {
     JParserConfig apply(JavaVersion version, List<File> files, Boolean shouldIgnoreUnnamedModuleForSplitPackage);
