@@ -23,6 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.sonar.plugins.java.api.diagnostics.ProblemKind;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -40,7 +41,7 @@ import org.sonar.plugins.java.api.tree.Tree;
  */
 final class CompilerWarnings extends BaseTreeVisitor {
 
-  private final Map<JProblem.Type, Set<JWarning>> warnings = new EnumMap<>(JProblem.Type.class);
+  private final Map<ProblemKind, Set<JWarning>> warnings = new EnumMap<>(ProblemKind.class);
   private final List<IdentifierTree> identifiers = new ArrayList<>();
   private final JSema sema;
 
@@ -57,7 +58,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
     unit.addWarnings(visitor.warnings);
   }
 
-  private void add(JProblem.Type type, String message, Tree tree) {
+  private void add(ProblemKind type, String message, Tree tree) {
     warnings.computeIfAbsent(type, key -> new LinkedHashSet<>()).add(new JWarning(message, type, tree));
   }
 
@@ -86,7 +87,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
     Type operand = tree.expression().symbolType();
     if (!cast.isUnknown() && !operand.isUnknown() && operand.isSubtypeOf(cast)) {
       if (cast.erasure().fullyQualifiedName().equals(operand.erasure().fullyQualifiedName())) {
-        add(JProblem.Type.REDUNDANT_CAST, "Unnecessary cast to " + cast.erasure().name(), tree);
+        add(ProblemKind.REDUNDANT_CAST, "Unnecessary cast to " + cast.erasure().name(), tree);
       }
     }
     super.visitTypeCast(tree);
@@ -97,7 +98,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
     if (tree.is(Tree.Kind.ASSIGNMENT)) {
       Symbol target = assignedVariable(tree.variable());
       if (target != null && target.equals(assignedVariable(tree.expression()))) {
-        add(JProblem.Type.ASSIGNMENT_HAS_NO_EFFECT, "The assignment to variable " + target.name() + " has no effect", tree);
+        add(ProblemKind.ASSIGNMENT_HAS_NO_EFFECT, "The assignment to variable " + target.name() + " has no effect", tree);
       }
     }
     super.visitAssignmentExpression(tree);
@@ -135,7 +136,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
       String key = (importTree.isStatic() ? "static " : "") + name;
       boolean duplicate = !seen.add(key);
       if (isResolvable(importTree, name, currentPackage) && (duplicate || isOwnPackage(importTree, name, currentPackage) || !isUsed(importTree, name))) {
-        add(JProblem.Type.UNUSED_IMPORT, "The import " + (name.endsWith(".*") ? name.substring(0, name.length() - 2) : name) + " is never used", importTree);
+        add(ProblemKind.UNUSED_IMPORT, "The import " + (name.endsWith(".*") ? name.substring(0, name.length() - 2) : name) + " is never used", importTree);
       }
     }
   }
