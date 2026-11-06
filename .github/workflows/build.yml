@@ -38,6 +38,7 @@ jobs:
         id: build-maven
         env:
           MAVEN_OPTS: "-Xmx8g"
+          GITHUB_EVENT_NAME: pull_request
         with:
           repox-url: https://repox-internal.dev.sonar.build
           deploy-pull-request: true
@@ -464,6 +465,8 @@ jobs:
       BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
     steps:
       - uses: SonarSource/ci-github-actions/promote@v2
+        env:
+          GITHUB_EVENT_NAME: pull_request
         with:
           promote-pull-request: true
 
