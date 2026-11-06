@@ -6,12 +6,124 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 
 class DeadStoreCheckSample {
+
+  record AnalysisResult(List<Integer> issues) {
+    public AnalysisResult {
+      issues = List.copyOf(issues);
+    }
+
+    AnalysisResult(List<Integer> issues, boolean ignored) {
+      this(issues);
+      issues = List.of(); // Noncompliant {{Remove this useless assignment to local variable "issues".}}
+//           ^^^^^^^^^^^
+      ignored = false; // Noncompliant {{Remove this useless assignment to local variable "ignored".}}
+//            ^^^^^^^
+    }
+
+    void update(List<Integer> issues) {
+      issues = List.copyOf(issues); // Noncompliant {{Remove this useless assignment to local variable "issues".}}
+//           ^^^^^^^^^^^^^^^^^^^^^
+    }
+  }
+
+  record OverwrittenRecordParameter(List<Integer> issues) {
+    OverwrittenRecordParameter {
+      issues = List.copyOf(issues); // Noncompliant {{Remove this useless assignment to local variable "issues".}}
+//           ^^^^^^^^^^^^^^^^^^^^^
+      issues = List.of();
+    }
+  }
+
+  record AssignedRecordParameter(int value) {
+    AssignedRecordParameter {
+      value = 42;
+      int local = 42; // Noncompliant {{Remove this useless assignment to local variable "local".}}
+//              ^^^^
+    }
+  }
+
+  record ConditionalRecordParameters(int value, boolean replace) {
+    ConditionalRecordParameters {
+      value = 42;
+      if (replace) {
+        value = 24;
+      }
+      replace = false;
+    }
+  }
+
+  record OverwrittenConditionalRecordParameter(int value, boolean replace) {
+    OverwrittenConditionalRecordParameter {
+      value = 42; // Noncompliant {{Remove this useless assignment to local variable "value".}}
+//          ^^^^
+      if (replace) {
+        value = 24;
+      } else {
+        value = 12;
+      }
+    }
+  }
+
+  record LoopRecordParameter(int value, boolean repeat) {
+    LoopRecordParameter {
+      value = 42;
+      while (repeat) {
+        value = 24;
+        repeat = false;
+      }
+    }
+  }
+
+  record IncrementedRecordParameters(int value, int other) {
+    IncrementedRecordParameters {
+      value++;
+      ++other;
+    }
+  }
+
+  record CompoundRecordParameter(int value) {
+    CompoundRecordParameter {
+      value += 2; // Noncompliant {{Remove this useless assignment to local variable "value".}}
+//          ^^^^
+      value = 42;
+      value += 2;
+    }
+  }
+
+  record NestedRecordParameter(int value) {
+    NestedRecordParameter {
+      value = 42;
+      class Local {
+        void update(int value) {
+          value = 24; // Noncompliant {{Remove this useless assignment to local variable "value".}}
+//              ^^^^
+        }
+      }
+    }
+  }
+
+  record ThrowingRecordParameter(int value) {
+    ThrowingRecordParameter {
+      value = 42; // Noncompliant {{Remove this useless assignment to local variable "value".}}
+//          ^^^^
+      throw new IllegalArgumentException();
+    }
+  }
+
+  record ExplicitCanonicalConstructor(int value) {
+    ExplicitCanonicalConstructor(int value) {
+      this.value = value;
+      value = 42; // Noncompliant {{Remove this useless assignment to local variable "value".}}
+//          ^^^^
+    }
+  }
 
   int var;
 
