@@ -24,14 +24,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JProblem;
-import org.sonar.java.model.JWarning;
-import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
+import org.sonar.plugins.java.api.diagnostics.ProblemKind;
+import org.sonar.plugins.java.api.diagnostics.Warning;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
@@ -41,7 +41,7 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 @Rule(key = "S4970")
 public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
 
-  private final List<JWarning> warnings = new ArrayList<>();
+  private final List<Warning> warnings = new ArrayList<>();
   private static final Comparator<Location> LOCATION_COMPARATOR = Comparator.comparing(loc -> Position.startOf(loc.syntaxNode));
 
   @Override
@@ -53,7 +53,7 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
       warnings.clear();
-      warnings.addAll(((CompilationUnitTreeImpl) tree).warnings(JProblem.Type.MASKED_CATCH));
+      warnings.addAll(((CompilationUnitTree) tree).warnings(ProblemKind.MASKED_CATCH));
       return;
     }
     checkWarnings((TryStatementTree) tree);

@@ -57,10 +57,10 @@ import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.TestUtils;
-import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.diagnostics.Problem;
 import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -150,7 +150,7 @@ class JParserTest {
   void unknown_types_are_collected() {
     // import org.foo missing, type Bar unknown
     CompilationUnitTree cut = test("import org.foo.Bar;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((CompilationUnitTreeImpl) cut).undefinedTypes().stream().map(Object::toString))
+    assertThat(cut.semanticProblems().stream().map(Problem::message))
       .containsExactlyInAnyOrder("The import org.foo cannot be resolved", "Bar cannot be resolved to a type");
   }
 
@@ -158,7 +158,7 @@ class JParserTest {
   void warnings_are_collected() {
     // import org.foo missing, type Bar unknown
     CompilationUnitTree cut = test("import java.util.List;\n import java.util.ArrayList;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((CompilationUnitTreeImpl) cut).undefinedTypes().stream().map(Object::toString))
+    assertThat(cut.semanticProblems().stream().map(Problem::message))
       .containsExactlyInAnyOrder("Bar cannot be resolved to a type");
   }
 
