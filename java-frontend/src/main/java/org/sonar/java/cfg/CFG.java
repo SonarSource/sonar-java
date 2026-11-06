@@ -498,7 +498,11 @@ public class CFG implements ControlFlowGraph {
   public static CFG build(MethodTree tree) {
     BlockTree block = tree.block();
     Preconditions.checkArgument(block != null, "Cannot build CFG for method with no body.");
-    return new CFG(block.body(), tree);
+    return build(tree, block.body());
+  }
+
+  public static CFG build(MethodTree tree, List<? extends Tree> elements) {
+    return new CFG(elements, tree);
   }
 
   private void build(ListTree<? extends Tree> trees) {
