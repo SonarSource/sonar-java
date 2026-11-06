@@ -39,6 +39,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.InputFileUtils;
 import org.sonar.java.model.JParserConfig;
+import org.sonar.java.model.JParserConfig.Result;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.telemetry.NoOpTelemetry;
@@ -150,12 +151,12 @@ public class JavaAstScanner {
     return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
-  public void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp) {
+  public void simpleScan(InputFile inputFile, Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp) {
     simpleScan(inputFile, result, cleanUp, compilationUnitTree -> {});
   }
 
   // modifyCompilationUnit should be used for testing.
-  public void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp,
+  public void simpleScan(InputFile inputFile, Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp,
     Consumer<CompilationUnitTree> modifyCompilationUnit) {
     long startTime = currentTimeMillis();
     visitor.setCurrentFile(inputFile);

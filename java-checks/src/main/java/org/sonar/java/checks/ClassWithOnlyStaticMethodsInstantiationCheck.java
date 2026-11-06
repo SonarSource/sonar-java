@@ -16,6 +16,11 @@
  */
 package org.sonar.java.checks;
 
+import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
@@ -29,13 +34,6 @@ import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeTree;
-
-import javax.annotation.Nullable;
-
-import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 @Rule(key = "S2440")
 public class ClassWithOnlyStaticMethodsInstantiationCheck extends IssuableSubscriptionVisitor {
