@@ -217,8 +217,8 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     return defaultValue;
   }
 
-  public void setSymbol(Symbol.MethodSymbol symbol) {
-    this.symbol = Objects.requireNonNull(symbol);
+  public void setSymbol(Symbol.MethodSymbol methodSymbol) {
+    this.symbol = Objects.requireNonNull(methodSymbol);
   }
 
   @Override
