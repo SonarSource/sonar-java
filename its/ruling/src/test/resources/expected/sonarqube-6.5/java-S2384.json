@@ -347,9 +347,6 @@
 "sonarqube-6.5:src/main/java/org/sonar/server/plugins/ws/PluginsWs.java": [
 31
 ],
-"sonarqube-6.5:src/main/java/org/sonar/server/project/Visibility.java": [
-68
-],
 "sonarqube-6.5:src/main/java/org/sonar/server/project/ws/ProjectsWs.java": [
 32
 ],
@@ -363,8 +360,7 @@
 29
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/projectanalysis/ws/SearchData.java": [
-91,
-108
+91
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/projectlink/ws/ProjectLinksWs.java": [
 29

@@ -1,18 +1,149 @@
 {
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/notification/NewIssuesStatistics.java": [
+34,
+35,
+36,
+37,
+38
+],
 "sonarqube-6.5:src/main/java/org/sonar/server/notification/DefaultNotificationManager.java": [
 24
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/SearchProjectPermissionsData.java": [
+33
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/SearchTemplatesData.java": [
+29
 ],
 "sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/QualityGates.java": [
 47
 ],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/RuleUpdate.java": [
+33,
+34
+],
 "sonarqube-6.5:src/test/java/org/sonar/server/authentication/UserIdentityAuthenticatorTest.java": [
 29
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/MeasureComputerContextImplTest.java": [
+46
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/batch/BatchReportReaderImplTest.java": [
+35
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/filemove/MutableMovedFilesRepositoryImplTest.java": [
+31
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/formula/AverageFormulaExecutionTest.java": [
+36
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/formula/DistributionFormulaExecutionTest.java": [
+35
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/formula/SumFormulaExecutionTest.java": [
+35
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/formula/ViewsFormulaExecutorComponentVisitorTest.java": [
+41
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/formula/counter/IntSumCounterTest.java": [
+28
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/formula/counter/LongSumCounterTest.java": [
+28
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/NewEffortAggregatorTest.java": [
+37
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/RuleRepositoryImplTest.java": [
+37
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/BatchMeasureToMeasureTest.java": [
+37
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MapBasedRawMeasureRepositoryTest.java": [
+56
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureDtoToMeasureTest.java": [
+37
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureRepositoryImplTest.java": [
+56
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitygate/QualityGateHolderImplTest.java": [
+26
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitygate/QualityGateServiceImplTest.java": [
+37
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/scm/DbScmInfoTest.java": [
+29
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/scm/ScmInfoRepositoryImplTest.java": [
+55
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ComputeQProfileMeasureStepTest.java": [
+43
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/CustomMeasuresCopyStepTest.java": [
+41
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/DuplicationDataMeasuresStepTest.java": [
+32
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/NewSizeMeasuresStepTest.java": [
+38
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/QualityGateLoadingStepTest.java": [
+40
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ReportCommentMeasuresStepTest.java": [
+31
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ReportComplexityMeasuresStepTest.java": [
+31
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ReportDuplicationMeasuresStepTest.java": [
+33
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ReportLanguageDistributionMeasuresStepTest.java": [
+32
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ReportNewCoverageMeasuresStepTest.java": [
+41
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ReportPersistComponentsStepTest.java": [
+47
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ReportUnitTestMeasuresStepTest.java": [
+32
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ViewsCommentMeasuresStepTest.java": [
+31
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ViewsComplexityMeasuresStepTest.java": [
+31
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ViewsDuplicationMeasuresStepTest.java": [
+30
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ViewsLanguageDistributionMeasuresStepTest.java": [
+30
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ViewsNewCoverageMeasuresStepTest.java": [
+36
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ViewsUnitTestMeasuresStepTest.java": [
+30
 ],
 "sonarqube-6.5:src/test/java/org/sonar/server/measure/index/ProjectsEsModuleTest.java": [
 24
 ],
 "sonarqube-6.5:src/test/java/org/sonar/server/platform/web/SecurityServletFilterTest.java": [
 29
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/plugins/UpdateCenterClientTest.java": [
+35
 ],
 "sonarqube-6.5:src/test/java/org/sonar/server/qualitygate/ws/CreateConditionActionTest.java": [
 45
@@ -41,8 +172,17 @@
 30,
 36
 ],
+"sonarqube-6.5:src/test/java/org/sonar/server/setting/ws/SettingsFinderTest.java": [
+46
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/test/index/TestIndexTest.java": [
+32
+],
 "sonarqube-6.5:src/test/java/org/sonar/server/usertoken/ws/SearchActionTest.java": [
 37
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/ws/WebServiceFilterTest.java": [
+42
 ],
 "sonarqube-6.5:src/test/java/org/sonar/server/ws/WsTester.java": [
 23

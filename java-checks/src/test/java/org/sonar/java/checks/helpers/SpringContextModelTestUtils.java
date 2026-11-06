@@ -174,6 +174,6 @@ public final class SpringContextModelTestUtils {
       throw new IllegalStateException("Unable to read file '" + file.getAbsolutePath() + "'", e);
     }
     JavaVersion version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version.toString(), file.getName(), source);
+    return JParser.parse(version.toString(), file.getName(), source);
   }
 }

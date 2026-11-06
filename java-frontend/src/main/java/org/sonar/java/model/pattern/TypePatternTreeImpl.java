@@ -31,9 +31,14 @@ public class TypePatternTreeImpl extends AbstractPatternTree implements TypePatt
 
   private final VariableTree patternVariable;
 
-  public TypePatternTreeImpl(VariableTree patternVariable, Type type) {
-    super(Tree.Kind.TYPE_PATTERN, type);
+  public TypePatternTreeImpl(VariableTree patternVariable) {
+    super(Tree.Kind.TYPE_PATTERN);
     this.patternVariable = patternVariable;
+  }
+
+  public TypePatternTreeImpl(VariableTree patternVariable, Type type) {
+    this(patternVariable);
+    this.type = type;
   }
 
   @Override

@@ -31,7 +31,6 @@
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java": [
 454,
 475,
-722,
 766
 ],
 "eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java": [

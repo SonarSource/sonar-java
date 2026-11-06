@@ -52,7 +52,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.model.JParserTestUtils.methodBinding;
 import static org.sonar.java.model.JParserTestUtils.sema;
 import static org.sonar.java.model.JParserTestUtils.symbolOf;
 import static org.sonar.java.model.JParserTestUtils.typeOf;
@@ -75,7 +74,7 @@ class JMethodSymbolTest {
     assertThat(symbol.returnType())
       .isSameAs(((JTypeSymbol) typeOf(c).symbol()));
     assertThat(symbol.thrownTypes())
-      .containsOnly(sema(cu).type(Objects.requireNonNull(sema(cu).resolveType("java.lang.Exception"))));
+      .containsOnly(sema(cu).getClassType("java.lang.Exception"));
   }
 
   @Test
@@ -84,7 +83,7 @@ class JMethodSymbolTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     Symbol.MethodSymbol declarationSymbol = m.symbol();
-    JType declarationParameterType = sema(cu).type(Objects.requireNonNull((methodBinding(m).getParameterTypes()[0])));
+    Type declarationParameterType = m.parameters().get(0).type().symbolType();
     assertThat(declarationSymbol.parameterTypes())
       .containsOnly(declarationParameterType);
     Symbol declarationParameterSymbol = m.parameters().get(0).symbol();
@@ -240,11 +239,12 @@ class JMethodSymbolTest {
     assertThat(symbol.overriddenSymbols()).containsExactly(objectEqualsMethod(sema(cu)));
   }
 
-  private static JMethodSymbol objectEqualsMethod(JSema sema) {
-    return Arrays.stream(sema.resolveType("java.lang.Object").getDeclaredMethods())
-      .filter(method -> "equals".equals(method.getName()))
+  private static Symbol.MethodSymbol objectEqualsMethod(JSema sema) {
+    return sema.getClassType("java.lang.Object").symbol().memberSymbols().stream()
+      .filter(Symbol.MethodSymbol.class::isInstance)
+      .map(Symbol.MethodSymbol.class::cast)
+      .filter(method -> "equals".equals(method.name()))
       .findFirst()
-      .map(sema::methodSymbol)
       .orElseThrow(() -> new IllegalStateException("Could not find Object#equals"));
   }
 
@@ -285,28 +285,6 @@ class JMethodSymbolTest {
     MethodTreeImpl m = (MethodTreeImpl) a.members().get(0);
     JMethodSymbol symbol = ((JMethodSymbol) symbolOf(m));
     assertThat(symbol.overriddenSymbols()).isEmpty();
-  }
-
-  @Test
-  void testBindingReturnNullSuperClass() {
-    JavaTree.CompilationUnitTreeImpl cu = test(""
-      + "class A { public void a() { } }");
-    ClassTreeImpl a = (ClassTreeImpl) cu.types().get(0);
-    MethodTreeImpl m = (MethodTreeImpl) a.members().get(0);
-    // We create a real JMethodSymbol because it is not possible to mock JMethodSymbol (it is final), and not easy
-    // to mock the arguments either, because the constructor is using an external helper method.
-    JMethodSymbol symbol = ((JMethodSymbol) symbolOf(m));
-
-    ITypeBinding iTypeBinding = mock(ITypeBinding.class);
-    // In some rare situation, the "getSuperclass" can return null. It is not easy to write code reproducing the issue, we test it by "hand".
-    when(iTypeBinding.getSuperclass()).thenReturn(null);
-    ITypeBinding[] interfaces = {null};
-    when(iTypeBinding.getInterfaces()).thenReturn(interfaces);
-
-    Collection<Symbol.MethodSymbol> overrides = new ArrayList<>();
-    assertDoesNotThrow(() ->
-      symbol.findOverridesInParentTypes(overrides, methodBinding -> false, iTypeBinding));
-    assertThat(overrides).isEmpty();
   }
 
   @Test
@@ -423,20 +401,6 @@ class JMethodSymbolTest {
   }
 
   @Test
-  void support_unexpected_IMethodBinding_null_return_type() {
-    JavaTree.CompilationUnitTreeImpl cu = test("class C { C m() { return null; } }");
-    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
-    MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
-    // simulate broken semantic with getReturnType() == null
-    IMethodBinding brokenMethodBinding = spy(methodBinding(m));
-    when(brokenMethodBinding.getReturnType()).thenReturn(null);
-    JMethodSymbol methodSymbol = new JMethodSymbol(sema(cu), brokenMethodBinding);
-    assertThat(methodSymbol.returnType().isUnknown()).isTrue();
-    assertThat(methodSymbol.isNativeMethod()).isFalse();
-    assertThat(methodSymbol.metadata()).isSameAs(Symbols.EMPTY_METADATA);
-  }
-
-  @Test
   void testParameterDeclarationsOfCompactConstructor() {
     JavaTree.CompilationUnitTreeImpl cu = test("""
       record TestSonar(String arg1, String arg2, String arg3, String arg4, long arg5, String arg6) {
@@ -463,13 +427,11 @@ class JMethodSymbolTest {
     JavaTree.CompilationUnitTreeImpl cu = test(classText);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
-    if(brokenSemantic){
-      IMethodBinding brokenMethodBinding = spy(methodBinding(m));
-      when(brokenMethodBinding.getReturnType()).thenReturn(null);
-      when(brokenMethodBinding.isRecovered()).thenReturn(true);
-      return new JMethodSymbol(sema(cu), brokenMethodBinding);
+    JMethodSymbol symbol = (JMethodSymbol) m.symbol();
+    if (brokenSemantic) {
+      symbol.unknown(true);
     }
-    return new JMethodSymbol(sema(cu), methodBinding(m));
+    return symbol;
   }
 
   private static CompilationUnitTreeImpl test(String source) {

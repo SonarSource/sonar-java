@@ -20,23 +20,37 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
-  // cache for this.constantValue()
-  private boolean constantValueComputed = false;
-  private Optional<Object> constantValue;
+  private final boolean parameter;
+  private final boolean local;
+  private boolean effectivelyFinal;
+  @Nullable
+  private Optional<Object> constant;
 
-  JVariableSymbol(JSema sema, IVariableBinding variableBinding) {
-    super(sema, variableBinding);
+  JVariableSymbol(JSema sema, @Nullable String id, String name, String dumpKind) {
+    super(sema, Kind.VARIABLE, id, name);
+    this.parameter = "param".equals(dumpKind);
+    this.local = "local".equals(dumpKind);
+    this.effectivelyFinal = "constant".equals(dumpKind) || "enum_member".equals(dumpKind);
+    enumSymbol("enum_member".equals(dumpKind));
+  }
+
+  void effectivelyFinal(boolean effectivelyFinal) {
+    this.effectivelyFinal = effectivelyFinal;
+  }
+
+  void constantValue(@Nullable Object value) {
+    this.constant = Optional.ofNullable(value);
   }
 
   @Nullable
@@ -47,53 +61,84 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
   @Override
   public boolean isEffectivelyFinal() {
-    return ((IVariableBinding)binding).isEffectivelyFinal();
+    return isFinal() || effectivelyFinal;
   }
 
   @Override
   public Optional<Object> constantValue() {
-    if (!constantValueComputed) {
-      constantValueComputed = true;
-      if (!isFinal() || !isStatic()) {
-        constantValue = Optional.empty();
-      } else {
-        Object c = ((IVariableBinding) binding).getConstantValue();
-        if (c instanceof Short shortValue) {
-          c = Integer.valueOf(shortValue);
-        } else if (c instanceof Byte byteValue) {
-          c = Integer.valueOf(byteValue);
-        } else if (c instanceof Character characterValue) {
-          c = Integer.valueOf(characterValue);
-        }
-        constantValue = Optional.ofNullable(c);
+    if (constant == null) {
+      constant = Optional.ofNullable(declaredConstant());
+    }
+    return constant;
+  }
+
+  /** A constant is a static final field with a compile time value, typed as its declaration. */
+  @Nullable
+  private Object declaredConstant() {
+    VariableTree declaration = declaration();
+    if (declaration == null || declaration.initializer() == null || declaration.type() == null || !isStaticFinalOrInterfaceMember()) {
+      return null;
+    }
+    ExpressionTree initializer = declaration.initializer();
+    Object value = initializer.is(Tree.Kind.LONG_LITERAL, Tree.Kind.FLOAT_LITERAL, Tree.Kind.DOUBLE_LITERAL)
+      ? literalNumber((LiteralTree) initializer)
+      : ExpressionUtils.resolveAsConstant(initializer);
+    return convert(value, declaration.type().symbolType());
+  }
+
+  private boolean isStaticFinalOrInterfaceMember() {
+    boolean constantKind = isFinal() || owner().isInterface() || isEnum();
+    return constantKind && (isStatic() || owner().isInterface());
+  }
+
+  @Nullable
+  private static Object literalNumber(LiteralTree literal) {
+    String text = literal.value().replace("_", "");
+    try {
+      return switch (literal.kind()) {
+        case LONG_LITERAL -> LiteralUtils.longLiteralValue(literal);
+        case FLOAT_LITERAL -> Float.valueOf(text);
+        default -> Double.valueOf(text);
+      };
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
+
+  @Nullable
+  private static Object convert(@Nullable Object value, Type type) {
+    if (value instanceof Number number) {
+      if (type.is("long")) {
+        return number.longValue();
+      } else if (type.is("double")) {
+        return number.doubleValue();
+      } else if (type.is("float")) {
+        return number.floatValue();
       }
     }
-    return constantValue;
+    return value;
   }
 
   @Override
   public boolean isLocalVariable() {
-    Symbol owner = owner();
-    return owner != null && owner.isMethodSymbol();
+    return local || (owner().isMethodSymbol() && !parameter);
   }
 
   @Override
   public boolean isParameter() {
-    return ((IVariableBinding) binding).isParameter();
+    return parameter;
   }
 
-
   static class ParameterPlaceholderSymbol extends Symbols.DefaultSymbol implements Symbol.VariableSymbol {
+
     private final String name;
     private final Symbol owner;
     private final Type type;
-    private final SymbolMetadata metadata;
 
-    ParameterPlaceholderSymbol(int index, JSema sema, IMethodBinding owner, ITypeBinding typeBinding) {
+    ParameterPlaceholderSymbol(int index, Symbol owner, Type type) {
       this.name = "arg" + index;
-      this.owner = sema.methodSymbol(owner);
-      this.type = sema.type(typeBinding);
-      this.metadata = JSymbolMetadata.of(sema, this, typeBinding, owner.getParameterAnnotations(index));
+      this.owner = owner;
+      this.type = type == null ? Type.UNKNOWN : type;
     }
 
     @Override
@@ -126,6 +171,7 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
       return Collections.emptyList();
     }
 
+    @Nullable
     @Override
     public VariableTree declaration() {
       return null;
@@ -133,7 +179,7 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
     @Override
     public boolean isEffectivelyFinal() {
-      return false;
+      return true;
     }
 
     @Override
@@ -153,7 +199,7 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
     @Override
     public SymbolMetadata metadata() {
-      return metadata;
+      return Symbols.EMPTY_METADATA;
     }
 
     @Override
@@ -163,9 +209,7 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
     @Override
     public boolean isFinal() {
-      // From a caller perspective, it is not useful (and even not possible) to know if the parameter is final.
       return false;
     }
-
   }
 }

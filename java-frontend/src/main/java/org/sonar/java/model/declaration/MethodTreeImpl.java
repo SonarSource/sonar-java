@@ -72,7 +72,8 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   @Nullable
   private CFG cfg;
 
-  private Symbol.MethodSymbol symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
+  @Nullable
+  public Symbol.MethodSymbol methodSymbol;
 
   /**
    * Cache for {@link #isOverriding()}.
@@ -215,12 +216,12 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   public void setSymbol(Symbol.MethodSymbol symbol) {
-    this.symbol = Objects.requireNonNull(symbol);
+    this.methodSymbol = Objects.requireNonNull(symbol);
   }
 
   @Override
   public Symbol.MethodSymbol symbol() {
-    return symbol;
+    return methodSymbol != null ? methodSymbol : Symbol.MethodSymbol.UNKNOWN_METHOD;
   }
 
   @Override

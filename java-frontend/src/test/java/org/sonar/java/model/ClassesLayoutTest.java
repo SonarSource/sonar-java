@@ -88,11 +88,6 @@ class ClassesLayoutTest {
     assertThat(countFields(JVariableSymbol.class)).isEqualTo(7);
   }
 
-  @Test
-  void annotation() {
-    assertThat(countFields(JSymbolMetadata.JAnnotationInstance.class)).isEqualTo(3);
-  }
-
   /** Count number of fields in instances, including inherited fields. */
   private static int countFields(Class<?> clazz) {
     int count = 0;

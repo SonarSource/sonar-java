@@ -26,8 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.sonar.java.model.TypeParameterTreeImpl;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -77,18 +76,6 @@ public class JParserTestUtils {
     return (JSema) ((JavaTree.CompilationUnitTreeImpl) tree).sema;
   }
 
-  public static ITypeBinding typeBinding(ClassTree tree) {
-    return ((JType) tree.symbol().type()).typeBinding;
-  }
-
-  public static IMethodBinding methodBinding(MethodTree tree) {
-    return tree.symbol() instanceof JMethodSymbol symbol ? symbol.methodBinding() : null;
-  }
-
-  public static IMethodBinding methodBinding(MethodInvocationTree tree) {
-    return tree.methodSymbol() instanceof JMethodSymbol symbol ? symbol.methodBinding() : null;
-  }
-
   public static final List<File> DEFAULT_CLASSPATH = Arrays.asList(new File("target/test-classes"), new File("target/classes"));
 
   public static final Path CHECKS_TEST_DIR = Paths.get("..", "java-checks-test-sources", "default");
@@ -132,7 +119,7 @@ public class JParserTestUtils {
   }
 
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath, JavaVersion version) {
-    return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version.toString(), unitName, source);
+    return JParser.parse(version.effectiveJavaVersionAsString(), unitName, source, classpath);
   }
 
   public static List<File> checksTestClassPath() throws IOException {

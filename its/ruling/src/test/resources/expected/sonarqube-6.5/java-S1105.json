@@ -1,0 +1,30 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ExtractReportStep.java": [
+63
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistIssuesStep.java": [
+59
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/index/ProjectMeasuresIndexer.java": [
+99
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/permission/index/PermissionIndexerDao.java": [
+187
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/BackendCleanup.java": [
+81,
+112
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/monitoring/DatabaseMonitor.java": [
+126
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/RegisterQualityProfiles.java": [
+74
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/BackupAction.java": [
+70
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/ws/ExportAction.java": [
+137
+]
+}

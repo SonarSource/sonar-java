@@ -1,10 +1,16 @@
 {
+"guava:src/com/google/common/cache/LongAdder.java": [
+56
+],
 "guava:src/com/google/common/collect/EmptyContiguousSet.java": [
 167
 ],
 "guava:src/com/google/common/collect/ImmutableMultiset.java": [
 358,
 406
+],
+"guava:src/com/google/common/collect/ImmutableSetMultimap.java": [
+395
 ],
 "guava:src/com/google/common/reflect/Parameter.java": [
 89,

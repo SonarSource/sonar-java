@@ -39,7 +39,8 @@ public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree
   private final SyntaxToken extendsToken;
   private final QualifiedIdentifierListTreeImpl bounds;
 
-  private Symbol symbol = Symbol.UNKNOWN_SYMBOL;
+  @Nullable
+  public Symbol.TypeSymbol typeSymbol;
 
   public TypeParameterTreeImpl(IdentifierTreeImpl identifier) {
     this(identifier, null, QualifiedIdentifierListTreeImpl.emptyList());
@@ -89,10 +90,10 @@ public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree
   }
 
   public void setSymbol(Symbol symbol) {
-    this.symbol = Objects.requireNonNull(symbol);
+    this.typeSymbol = (Symbol.TypeSymbol) Objects.requireNonNull(symbol);
   }
 
   public Symbol symbol() {
-    return symbol;
+    return typeSymbol != null ? typeSymbol : Symbol.UNKNOWN_SYMBOL;
   }
 }

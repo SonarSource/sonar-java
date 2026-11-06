@@ -192,16 +192,14 @@
 149
 ],
 "guava:src/com/google/common/collect/ImmutableCollection.java": [
-288,
-290
+288
 ],
 "guava:src/com/google/common/collect/ImmutableList.java": [
 252,
 256,
 274,
 305,
-374,
-376
+374
 ],
 "guava:src/com/google/common/collect/ImmutableListMultimap.java": [
 299

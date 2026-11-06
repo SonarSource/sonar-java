@@ -16,12 +16,14 @@
  */
 package org.sonar.java.model;
 
-import org.eclipse.jdt.core.dom.IPackageBinding;
-
 final class JPackageSymbol extends JSymbol {
 
-  JPackageSymbol(JSema sema, IPackageBinding binding) {
-    super(sema, binding);
+  JPackageSymbol(JSema sema, String name) {
+    super(sema, Kind.PACKAGE, name, name);
   }
 
+  @Override
+  public boolean isUnknown() {
+    return false;
+  }
 }

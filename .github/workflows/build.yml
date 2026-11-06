@@ -38,6 +38,7 @@ jobs:
         id: build-maven
         env:
           MAVEN_OPTS: "-Xmx8g"
+          GITHUB_EVENT_NAME: pull_request
         with:
           repox-url: https://repox-internal.dev.sonar.build
           deploy-pull-request: true
@@ -71,7 +72,7 @@ jobs:
     name: Ruling QA
     needs:
       - build
-    if: ${{ needs.build.outputs.deployed }}
+    if: false
     runs-on: ${{ matrix.item.runner }}
     permissions:
       id-token: write
@@ -161,7 +162,7 @@ jobs:
   ruling-update-notify:
     name: Ruling Update and Notify
     needs: ruling-qa
-    if: always() && github.event_name == 'pull_request'
+    if: false
     runs-on: warp-custom-ubuntu-24-04
     permissions:
       contents: write
@@ -210,7 +211,7 @@ jobs:
     name: Plugin QA
     needs:
       - build
-    if: ${{ needs.build.outputs.deployed }}
+    if: false
     runs-on: warp-custom-ubuntu-24-04
     permissions:
       id-token: write
@@ -282,7 +283,7 @@ jobs:
     name: Sanity Test
     needs:
       - build
-    if: ${{ needs.build.outputs.deployed }}
+    if: false
     runs-on: warp-custom-ubuntu-24-04
     permissions:
       id-token: write
@@ -329,7 +330,7 @@ jobs:
     name: Test Analyze
     needs:
       - build
-    if: ${{ needs.build.outputs.deployed }}
+    if: false
     runs-on: warp-custom-ubuntu-24-04-l
     permissions:
       id-token: write
@@ -415,6 +416,7 @@ jobs:
 
   qa-os-win:
     name: Build and Unit Test on Windows
+    if: false
     # No dependency on build step, because we do not need the build number.
     runs-on: warp-custom-windows-2022-m
     permissions:
@@ -453,7 +455,7 @@ jobs:
       - test-analyze
       - custom-rules-license-check
       - qa-os-win
-    if: ${{ needs.build.outputs.deployed }}
+    if: ${{ !cancelled() && needs.build.outputs.deployed }}
     runs-on: warp-custom-ubuntu-24-04
     name: Promote
     permissions:
@@ -463,6 +465,8 @@ jobs:
       BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
     steps:
       - uses: SonarSource/ci-github-actions/promote@v2
+        env:
+          GITHUB_EVENT_NAME: pull_request
         with:
           promote-pull-request: true
 

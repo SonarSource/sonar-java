@@ -26,6 +26,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -97,6 +98,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.sonar.java.model.JParserTestUtils.sema;
 import static org.sonar.java.model.JParserTestUtils.symbolOf;
 import static org.sonar.java.model.JParserTestUtils.typeOf;
 import static org.sonar.java.model.assertions.TreeAssert.assertThat;
@@ -206,7 +208,7 @@ class JParserSemanticTest {
       .isSameAs(typeOf(Objects.requireNonNull((ClassTreeImpl) keywordThis.symbolType().symbol().declaration())))
       .isSameAs(typeOf(c));
     assertThat(keywordThis.symbol())
-      .isSameAs(((JTypeSymbol) typeOf(c).symbol()).thisSymbol);
+      .isSameAs(sema(cu).receiverSymbol(typeOf(c).symbol(), "this", typeOf(c)));
     assertThat(keywordThis.symbol().isVariableSymbol())
       .isTrue();
   }
@@ -230,7 +232,7 @@ class JParserSemanticTest {
       .isSameAs(typeOf(Objects.requireNonNull((ClassTreeImpl) keywordThis.symbolType().symbol().declaration())))
       .isSameAs(typeOf(c1));
     assertThat(keywordThis.symbol())
-      .isSameAs(((JTypeSymbol) typeOf(c1).symbol()).thisSymbol);
+      .isSameAs(sema(cu).receiverSymbol(typeOf(c1).symbol(), "this", typeOf(c1)));
     assertThat(keywordThis.symbol().isVariableSymbol())
       .isTrue();
   }
@@ -276,7 +278,7 @@ class JParserSemanticTest {
     assertThat(keywordSuper.symbolType().symbol().declaration())
       .isSameAs(superClass.symbol().declaration());
     assertThat(keywordSuper.symbol())
-      .isSameAs(((JTypeSymbol) typeOf(c).symbol()).superSymbol);
+      .isSameAs(sema(cu).receiverSymbol(typeOf(c).symbol(), "super", typeOf(c).symbol().superClass()));
 
     IdentifierTreeImpl identifier = (IdentifierTreeImpl) expression.identifier();
     assertThat(symbolOf(identifier))
@@ -312,7 +314,7 @@ class JParserSemanticTest {
       .isSameAs(Objects.requireNonNull((ClassTreeImpl) keywordSuper.symbolType().symbol().declaration()))
       .isSameAs(superClass);
     assertThat(keywordSuper.symbol())
-      .isSameAs(((JTypeSymbol) typeOf(t).symbol()).superSymbol);
+      .isSameAs(sema(cu).receiverSymbol(typeOf(t).symbol(), "super", typeOf(t).symbol().superClass()));
 
     IdentifierTreeImpl identifier = (IdentifierTreeImpl) expression.identifier();
     assertThat(symbolOf(identifier))
@@ -480,7 +482,7 @@ class JParserSemanticTest {
     assertThat(keywordSuper.symbolType().symbol().declaration())
       .isSameAs(superClass.symbol().declaration());
     assertThat(keywordSuper.symbol())
-      .isSameAs(((JTypeSymbol) typeOf(c).symbol()).superSymbol);
+      .isSameAs(sema(cu).receiverSymbol(typeOf(c).symbol(), "super", typeOf(c).symbol().superClass()));
 
     IdentifierTreeImpl identifier = (IdentifierTreeImpl) creationReference.method();
     assertThat(symbolOf(identifier))
@@ -518,7 +520,7 @@ class JParserSemanticTest {
     assertThat(keywordSuper.symbolType().symbol().declaration())
       .isSameAs(superClass.symbol().declaration());
     assertThat(keywordSuper.symbol())
-      .isSameAs(((JTypeSymbol) typeOf(c).symbol()).superSymbol);
+      .isSameAs(sema(cu).receiverSymbol(typeOf(c).symbol(), "super", typeOf(c).symbol().superClass()));
 
     IdentifierTreeImpl identifier = (IdentifierTreeImpl) creationReference.method();
     assertThat(symbolOf(identifier))
@@ -674,7 +676,7 @@ class JParserSemanticTest {
     assertThat(keywordSuper.symbolType().symbol().declaration())
       .isSameAs(superClass.symbol().declaration());
     assertThat(keywordSuper.symbol())
-      .isSameAs(((JTypeSymbol) typeOf(c).symbol()).superSymbol);
+      .isSameAs(sema(cu).receiverSymbol(typeOf(c).symbol(), "super", typeOf(c).symbol().superClass()));
 
     IdentifierTreeImpl i = (IdentifierTreeImpl) e2.identifier();
     assertThat(symbolOf(i))
@@ -738,7 +740,7 @@ class JParserSemanticTest {
     assertThat(keywordSuper.symbolType().symbol().declaration())
       .isSameAs(superClass);
     assertThat(keywordSuper.symbol())
-      .isSameAs(((JTypeSymbol) typeOf(t).symbol()).superSymbol);
+      .isSameAs(sema(cu).receiverSymbol(typeOf(t).symbol(), "super", typeOf(t).symbol().superClass()));
 
     IdentifierTreeImpl identifier = (IdentifierTreeImpl) qualifiedMethodName.identifier();
     assertThat(symbolOf(identifier))

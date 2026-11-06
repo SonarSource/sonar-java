@@ -22,10 +22,6 @@
 "guava:src/com/google/common/collect/ConcurrentHashMultiset.java": [
 144
 ],
-"guava:src/com/google/common/collect/Constraints.java": [
-69,
-112
-],
 "guava:src/com/google/common/collect/EvictingQueue.java": [
 80
 ],
@@ -41,16 +37,11 @@
 "guava:src/com/google/common/collect/ImmutableMapEntrySet.java": [
 42
 ],
-"guava:src/com/google/common/collect/Lists.java": [
-813
-],
 "guava:src/com/google/common/collect/MapConstraints.java": [
-309,
 653,
 658
 ],
 "guava:src/com/google/common/collect/Maps.java": [
-767,
 1316,
 1320,
 3133,

@@ -11,9 +11,6 @@
 "guava:src/com/google/common/cache/Striped64.java": [
 138
 ],
-"guava:src/com/google/common/collect/ComputingConcurrentHashMap.java": [
-292
-],
 "guava:src/com/google/common/collect/MapConstraints.java": [
 359
 ],

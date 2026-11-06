@@ -17,15 +17,12 @@
 package org.sonar.java.model.declaration;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.InferedTypeTree;
@@ -35,7 +32,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.Objects;
 
 public class VariableTreeImpl extends JavaTree implements VariableTree {
   private ModifiersTree modifiers;
@@ -47,8 +48,8 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   private ExpressionTree initializer;
   @Nullable
   private SyntaxToken endToken;
-
-  private Symbol symbol = Symbol.UNKNOWN_SYMBOL;
+  @Nullable
+  public Symbol.VariableSymbol variableSymbol;
 
   public VariableTreeImpl(
     ModifiersTree modifiers,
@@ -128,12 +129,12 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   }
 
   public void setSymbol(Symbol symbol) {
-    this.symbol = Objects.requireNonNull(symbol);
+    this.variableSymbol = (Symbol.VariableSymbol) Objects.requireNonNull(symbol);
   }
 
   @Override
   public Symbol symbol() {
-    return symbol;
+    return variableSymbol != null ? variableSymbol : Symbol.UNKNOWN_SYMBOL;
   }
 
   @Override

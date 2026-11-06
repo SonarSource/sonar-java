@@ -355,6 +355,7 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>license-maven-plugin</artifactId>
           <configuration>
+            <includedLicenses>apache_v2|bouncy_castle|bsd|cddl_gpl|cddl_v1|epl_v1|epl_v2|h2|jaxen|lgpl_v2_1|lgpl_v3|mit|public_domain|tmate|SSALv1|0BSD</includedLicenses>
             <licenseMerges combine.children="append">
               <licenseMerge>bsd|The BSD 2-Clause License</licenseMerge>
             </licenseMerges>

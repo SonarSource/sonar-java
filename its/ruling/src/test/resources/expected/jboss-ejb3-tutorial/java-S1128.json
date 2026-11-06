@@ -5,5 +5,14 @@
 "jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/bean/ServiceThreeManagement.java": [
 24,
 25
+],
+"jboss-ejb3-tutorial:service_deployment_descriptor/src/org/jboss/tutorial/service_deployment_descriptor/client/Client.java": [
+25
+],
+"jboss-ejb3-tutorial:stateful_deployment_descriptor/src/org/jboss/tutorial/stateful_deployment_descriptor/client/Client.java": [
+31
+],
+"jboss-ejb3-tutorial:stateless/src/org/jboss/tutorial/stateless/client/Client.java": [
+25
 ]
 }

@@ -5,9 +5,6 @@
 "commons-beanutils:src/main/java/org/apache/commons/beanutils2/MappedPropertyDescriptor.java": [
 521
 ],
-"commons-beanutils:src/main/java/org/apache/commons/beanutils2/ResultSetDynaClass.java": [
-241
-],
 "commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/ClassConverter.java": [
 102
 ]

@@ -37,10 +37,6 @@
 559,
 637
 ],
-"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/preventers/AbstractLeakPreventer.java": [
-48,
-49
-],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
 243
 ],

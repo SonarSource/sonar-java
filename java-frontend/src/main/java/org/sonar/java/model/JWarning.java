@@ -28,16 +28,12 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.CheckForNull;
-import org.eclipse.jdt.core.compiler.IProblem;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.location.InternalPosition;
 import org.sonar.plugins.java.api.diagnostics.ProblemKind;
 import org.sonar.plugins.java.api.diagnostics.Warning;
 import org.sonar.plugins.java.api.location.Position;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.plugins.java.api.location.Position.endOf;
@@ -55,9 +51,16 @@ public final class JWarning extends JProblem implements Warning {
     this.end = InternalPosition.atOffset(endLine, endColumnOffset);
   }
 
+  JWarning(String message, ProblemKind type, Tree syntaxTree) {
+    super(message, type);
+    this.start = startOf(syntaxTree);
+    this.end = endOf(syntaxTree);
+    this.syntaxTree = syntaxTree;
+  }
+
   @Override
   public Tree syntaxTree() {
-    return Objects.requireNonNull(syntaxTree, "Warning has not been associated with a syntax tree");
+    return Objects.requireNonNull(syntaxTree);
   }
 
   Position start() {
@@ -92,13 +95,8 @@ public final class JWarning extends JProblem implements Warning {
 
   public static class Mapper extends SubscriptionVisitor {
 
-    private static final Map<ProblemKind, Set<Tree.Kind>> WARNING_KINDS = Map.of(
-      ProblemKind.UNUSED_IMPORT, Set.of(Tree.Kind.IMPORT),
-      ProblemKind.REDUNDANT_CAST, Set.of(Tree.Kind.TYPE_CAST, Tree.Kind.PARENTHESIZED_EXPRESSION),
-      ProblemKind.ASSIGNMENT_HAS_NO_EFFECT, Set.of(Tree.Kind.ASSIGNMENT),
-      ProblemKind.MASKED_CATCH, Set.of(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT));
-
-    private static final Set<Tree.Kind> KINDS = WARNING_KINDS.values().stream()
+    private static final Set<Tree.Kind> KINDS = Stream.of(ProblemKind.values())
+      .map(JProblem::kinds)
       .flatMap(Set::stream)
       .collect(Collectors.toSet());
 
@@ -106,44 +104,11 @@ public final class JWarning extends JProblem implements Warning {
 
     private final PriorityQueue<JWarning> warnings = new PriorityQueue<>(Comparator.comparing(JWarning::start).thenComparing(JWarning::end));
 
-    private Mapper(CompilationUnit ast, LineColumnConverter lineColumnConverter) {
-      WARNING_KINDS.keySet().forEach(kind -> warningsByType.put(kind, new LinkedHashSet<>()));
-      Stream.of(ast.getProblems())
-        .map(problem -> convert(problem, lineColumnConverter))
-        .filter(Objects::nonNull)
-        .forEach(warnings::add);
+    private Mapper() {
     }
 
-    @CheckForNull
-    @VisibleForTesting
-    static JWarning convert(IProblem problem, LineColumnConverter lineColumnConverter) {
-      ProblemKind kind = JProblem.kindOf(problem);
-      if (kind == null || !WARNING_KINDS.containsKey(kind)) {
-        return null;
-      }
-      LineColumnConverter.Pos start = lineColumnConverter.toPos(problem.getSourceStart());
-      LineColumnConverter.Pos end = lineColumnConverter.toPos(problem.getSourceEnd());
-      return new JWarning(problem.getMessage(), kind, start.line(), start.columnOffset(), end.line(), end.columnOffset());
-    }
-
-    public static Mapper warningsFor(CompilationUnit ast, LineColumnConverter lineColumnConverter) {
-      return new Mapper(ast, lineColumnConverter);
-    }
-
-    /**
-     * Associates compiler warnings with the most precise matching syntax trees and stores them by kind in the compilation unit.
-     * Unmatched warnings are omitted. Redundant-cast warnings are unwrapped from parentheses and retained only when they identify a type cast.
-     *
-     * @param cut the compilation unit to scan and populate with mapped warnings
-     */
     public void mappedInto(JavaTree.CompilationUnitTreeImpl cut) {
       scanTree(cut);
-      warningsByType.get(ProblemKind.REDUNDANT_CAST).removeIf(warning -> {
-        if (warning.syntaxTree instanceof ExpressionTree expression) {
-          warning.syntaxTree = ExpressionUtils.skipParentheses(expression);
-        }
-        return !warning.syntaxTree().is(Tree.Kind.TYPE_CAST);
-      });
       cut.addWarnings(warningsByType);
     }
 
@@ -179,7 +144,7 @@ public final class JWarning extends JProblem implements Warning {
 
     @VisibleForTesting
     static boolean isInsideTree(JWarning warning, Tree tree) {
-      if (!WARNING_KINDS.getOrDefault(warning.type(), Set.of()).contains(tree.kind())) {
+      if (JProblem.kinds(warning.type()).stream().noneMatch(tree::is)) {
         // wrong kind
         return false;
       }

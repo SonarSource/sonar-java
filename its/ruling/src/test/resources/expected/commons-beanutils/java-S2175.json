@@ -1,0 +1,65 @@
+{
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaBean.java": [
+119,
+146,
+200,
+232,
+274,
+341,
+383
+],
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaClass.java": [
+180
+],
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java": [
+247,
+270,
+335,
+393,
+403,
+502,
+531,
+555,
+602,
+612,
+628,
+640,
+730,
+733
+],
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java": [
+550,
+565
+],
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java": [
+217,
+714,
+2206
+],
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/WeakFastHashMap.java": [
+159,
+162,
+206,
+209,
+223,
+226,
+293,
+299,
+350,
+350,
+354,
+370,
+370,
+374,
+517,
+523,
+532,
+538,
+581,
+584
+],
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaClass.java": [
+181,
+251
+]
+}

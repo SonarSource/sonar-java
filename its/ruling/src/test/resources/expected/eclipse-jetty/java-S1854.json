@@ -83,6 +83,9 @@
 175,
 188
 ],
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SlowClientsTest.java": [
+100
+],
 "eclipse-jetty:jetty-util-ajax/src/main/java/org/eclipse/jetty/util/ajax/AsyncJSON.java": [
 586,
 629,
@@ -92,12 +95,19 @@
 149,
 191
 ],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SocketAddressResolver.java": [
+156
+],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/UrlEncoded.java": [
 214
 ],
 "eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/Password.java": [
 159,
 162
+],
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/thread/ExecutorThreadPool.java": [
+331,
+357
 ],
 "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java": [
 259
@@ -108,5 +118,11 @@
 "eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/PoolTest.java": [
 366,
 519
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/Utf8AppendableTest.java": [
+285
+],
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/thread/SerializedExecutorTest.java": [
+59
 ]
 }

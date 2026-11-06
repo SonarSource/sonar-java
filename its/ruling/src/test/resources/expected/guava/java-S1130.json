@@ -1,5 +1,11 @@
 {
+"guava:src/com/google/common/io/Closer.java": [
+145,
+167,
+191
+],
 "guava:src/com/google/common/io/Files.java": [
+312,
 678
 ],
 "guava:src/com/google/common/io/LittleEndianDataInputStream.java": [
