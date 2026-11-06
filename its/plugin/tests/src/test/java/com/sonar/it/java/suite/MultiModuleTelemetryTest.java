@@ -44,6 +44,13 @@ public class MultiModuleTelemetryTest {
     assertThat(buildResult.getLogs())
       .containsOnlyOnce("Telemetry java.language.version: 8")
       .containsOnlyOnce("Telemetry java.module_count: 2")
+      .containsOnlyOnce("Telemetry java.analysis.main.success.file_count: 2")
+      .containsOnlyOnce("Telemetry java.analysis.main.semantic.files_evaluated: 2")
+      .containsOnlyOnce("Telemetry java.analysis.main.semantic.modules_evaluated: 2")
+      .containsOnlyOnce("Telemetry java.analysis.test.semantic.files_evaluated: 2")
+      .containsOnlyOnce("Telemetry java.analysis.test.semantic.modules_evaluated: 2")
+      .containsOnlyOnce("Telemetry java.classpath.main.module_count: 2")
+      .containsOnlyOnce("Telemetry java.classpath.test.module_count: 2")
       .containsOnlyOnce("Telemetry java.scanner_app: ScannerMaven")
       .containsOnlyOnce("Telemetry java.is_autoscan: false")
       .containsOnlyOnce("Telemetry java.dependency.lombok: 1.18.30,1.18.38");

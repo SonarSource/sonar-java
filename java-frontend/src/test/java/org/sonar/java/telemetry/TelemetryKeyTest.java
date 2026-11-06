@@ -42,7 +42,7 @@ class TelemetryKeyTest {
   void testCompoundKeys() {
     for (String artifact : List.of("main.", "test.", "generated.")) {
       for (String result : List.of("success.", "parse_errors.", "exceptions.")) {
-        for (String metric : List.of("size_chars", "time_ms")) {
+        for (String metric : List.of("size_chars", "time_ms", "file_count")) {
           assertTelemetryNameExists("java.analysis." + artifact + result + metric);
         }
       }
@@ -73,7 +73,8 @@ class TelemetryKeyTest {
     );
     Map<String, Function<SpeedKeys, TelemetryKey>> metrics = Map.of(
       "size_chars", SpeedKeys::sizeCharsKey,
-      "time_ms", SpeedKeys::timeMsKey
+      "time_ms", SpeedKeys::timeMsKey,
+      "file_count", SpeedKeys::fileCountKey
     );
     artifacts.forEach((artifactName, artifact) -> {
       String typeErrorName = artifactName + "success.type_error_count";

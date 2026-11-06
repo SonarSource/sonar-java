@@ -73,9 +73,22 @@ public class JavaTutorialTest {
 
     assertThat(extractTelemetryLogs(buildResult))
       .matches(patternWithLiteralDot("""
+        Telemetry java.analysis.main.semantic.files_evaluated: 8
+        Telemetry java.analysis.main.semantic.files_with_resolution_errors: 0
+        Telemetry java.analysis.main.semantic.modules_evaluated: 1
+        Telemetry java.analysis.main.semantic.modules_with_resolution_errors: 0
+        Telemetry java.analysis.main.semantic.resolution_error_count: 0
+        Telemetry java.analysis.main.success.file_count: 8
         Telemetry java.analysis.main.success.size_chars: \\d{4}
         Telemetry java.analysis.main.success.time_ms: \\d+
         Telemetry java.analysis.main.success.type_error_count: 0
+        Telemetry java.classpath.main.module_count: 1
+        Telemetry java.classpath.main.modules_missing_binaries: 0
+        Telemetry java.classpath.main.modules_missing_libraries: 0
+        Telemetry java.classpath.main.modules_with_invalid_jdk: 0
+        Telemetry java.classpath.main.modules_with_unmatched_entries: 0
+        Telemetry java.classpath.main.modules_without_binary_entries: 0
+        Telemetry java.classpath.main.modules_without_library_entries: 0
         Telemetry java.dependency.lombok: absent
         Telemetry java.dependency.spring-boot: absent
         Telemetry java.dependency.spring-web: 5.3.18
