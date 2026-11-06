@@ -320,10 +320,10 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     } else if (isAnnotatedOverride()) {
       isOverriding = true;
     } else {
-      Symbol.MethodSymbol symbol = symbol();
-      List<Symbol.MethodSymbol> overriddenSymbols = symbol.overriddenSymbols();
+      Symbol.MethodSymbol methodSymbol = symbol();
+      List<Symbol.MethodSymbol> overriddenSymbols = methodSymbol.overriddenSymbols();
       if (overriddenSymbols.isEmpty()) {
-        isOverriding = JUtils.hasUnknownTypePreventingOverrideResolution(symbol) ? null : false;
+        isOverriding = JUtils.hasUnknownTypePreventingOverrideResolution(methodSymbol) ? null : false;
       } else {
         isOverriding = overriddenSymbols.stream().allMatch(Symbol::isUnknown) ? null : true;
       }
