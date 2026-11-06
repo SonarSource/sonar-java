@@ -130,6 +130,12 @@ public final class JWarning extends JProblem implements Warning {
       return new Mapper(ast, lineColumnConverter);
     }
 
+    /**
+     * Associates compiler warnings with the most precise matching syntax trees and stores them by kind in the compilation unit.
+     * Unmatched warnings are omitted. Redundant-cast warnings are unwrapped from parentheses and retained only when they identify a type cast.
+     *
+     * @param cut the compilation unit to scan and populate with mapped warnings
+     */
     public void mappedInto(JavaTree.CompilationUnitTreeImpl cut) {
       scanTree(cut);
       warningsByType.get(ProblemKind.REDUNDANT_CAST).removeIf(warning -> {
@@ -173,7 +179,7 @@ public final class JWarning extends JProblem implements Warning {
 
     @VisibleForTesting
     static boolean isInsideTree(JWarning warning, Tree tree) {
-      if (WARNING_KINDS.getOrDefault(warning.type(), Set.of()).stream().noneMatch(tree::is)) {
+      if (!WARNING_KINDS.getOrDefault(warning.type(), Set.of()).contains(tree.kind())) {
         // wrong kind
         return false;
       }
