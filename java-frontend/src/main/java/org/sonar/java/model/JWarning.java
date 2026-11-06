@@ -31,33 +31,36 @@ import java.util.stream.Stream;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.location.InternalPosition;
+import org.sonar.plugins.java.api.diagnostics.ProblemKind;
+import org.sonar.plugins.java.api.diagnostics.Warning;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.plugins.java.api.location.Position.endOf;
 import static org.sonar.plugins.java.api.location.Position.startOf;
 
-public final class JWarning extends JProblem {
+public final class JWarning extends JProblem implements Warning {
   private final Position start;
   private final Position end;
 
   private Tree syntaxTree;
 
-  JWarning(String message, Type type, int startLine, int startColumnOffset, int endLine, int endColumnOffset) {
+  JWarning(String message, ProblemKind type, int startLine, int startColumnOffset, int endLine, int endColumnOffset) {
     super(message, type);
     this.start = InternalPosition.atOffset(startLine, startColumnOffset);
     this.end = InternalPosition.atOffset(endLine, endColumnOffset);
   }
 
-  JWarning(String message, Type type, Tree syntaxTree) {
+  JWarning(String message, ProblemKind type, Tree syntaxTree) {
     super(message, type);
     this.start = startOf(syntaxTree);
     this.end = endOf(syntaxTree);
     this.syntaxTree = syntaxTree;
   }
 
+  @Override
   public Tree syntaxTree() {
-    return syntaxTree;
+    return Objects.requireNonNull(syntaxTree);
   }
 
   Position start() {
@@ -92,12 +95,12 @@ public final class JWarning extends JProblem {
 
   public static class Mapper extends SubscriptionVisitor {
 
-    private static final Set<Tree.Kind> KINDS = Stream.of(Type.values())
-      .map(Type::getKinds)
+    private static final Set<Tree.Kind> KINDS = Stream.of(ProblemKind.values())
+      .map(JProblem::kinds)
       .flatMap(Set::stream)
       .collect(Collectors.toSet());
 
-    private final Map<Type, Set<JWarning>> warningsByType = new EnumMap<>(Type.class);
+    private final Map<ProblemKind, Set<JWarning>> warningsByType = new EnumMap<>(ProblemKind.class);
 
     private final PriorityQueue<JWarning> warnings = new PriorityQueue<>(Comparator.comparing(JWarning::start).thenComparing(JWarning::end));
 
@@ -141,7 +144,7 @@ public final class JWarning extends JProblem {
 
     @VisibleForTesting
     static boolean isInsideTree(JWarning warning, Tree tree) {
-      if (warning.type().getKinds().stream().noneMatch(tree::is)) {
+      if (JProblem.kinds(warning.type()).stream().noneMatch(tree::is)) {
         // wrong kind
         return false;
       }

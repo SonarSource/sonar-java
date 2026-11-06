@@ -32,6 +32,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.diagnostics.ProblemKind;
 import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -314,7 +315,7 @@ public final class JSema implements Sema {
       applyTypeInfo(created, info);
     } else if (typesLoaded && !isWellKnown(fqn)) {
       created.unknown(true);
-      undefinedTypes.add(new JProblem(fqn, JProblem.Type.UNDEFINED_TYPE));
+      undefinedTypes.add(new JProblem(fqn, ProblemKind.UNDEFINED_TYPE));
     }
     return created;
   }
