@@ -18,6 +18,8 @@ package org.sonar.java.model.declaration;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.cfg.ControlFlowGraph;
@@ -238,6 +240,47 @@ class MethodTreeImplTest {
     assertThat(cfg.methodSymbol()).isSameAs(method.symbol());
     assertThat(method.cfg()).isSameAs(cfg);
     assertThat(method.block().body()).containsExactlyElementsOf(statements);
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {
+    "class R { R(int value) { value = 42; } }",
+    "record R(int value) { R(int value) { this.value = value; value = 42; } }",
+    "record R(int value) { R(int value, boolean ignored) { this(value); ignored = false; } }"
+  })
+  void explicit_constructor_cfg_has_no_implicit_parameter_reads(String source) {
+    MethodTreeImpl method = getUniqueMethod(source);
+
+    CFG cfg = method.cfg();
+
+    assertThat(cfg.entryBlock().elements()).extracting(Tree::kind).endsWith(Tree.Kind.ASSIGNMENT);
+  }
+
+  @Test
+  void compact_constructor_cfg_only_adds_reads_for_its_own_parameters() {
+    MethodTreeImpl method = getUniqueMethod("""
+      record R(int value) {
+        R {
+          int local = 42;
+          value = local;
+          class Local {
+            void update(int value) {
+              value = 24;
+            }
+          }
+        }
+      }
+      """);
+
+    CFG cfg = method.cfg();
+
+    assertThat(cfg.entryBlock().elements())
+      .filteredOn(tree -> tree.is(Tree.Kind.IDENTIFIER))
+      .map(tree -> ((IdentifierTree) tree).symbol())
+      .extracting(Symbol::name)
+      .containsExactly("local", "value");
+    IdentifierTree implicitRead = (IdentifierTree) cfg.entryBlock().elements().getLast();
+    assertThat(implicitRead.symbol().owner()).isEqualTo(method.symbol());
   }
 
   @Test
