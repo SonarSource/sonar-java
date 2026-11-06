@@ -121,7 +121,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
   private final ClasspathForMain javaClasspath;
   private final ClasspathForTest javaTestClasspath;
-  private final Map<ProblemKey, List<String>> problemsToFilePaths = new HashMap<>();
+  private final Map<ProblemGroupKey, List<String>> problemsToFilePaths = new HashMap<>();
 
   private final CheckFactory checkFactory;
   private final ActiveRules activeRules;
@@ -616,8 +616,8 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
   public void collectUndefinedTypes(String pathToFile, Set<? extends Problem> semanticProblems) {
     semanticProblems.forEach(problem -> {
-      ProblemKey problemKey = new ProblemKey(problem.type(), problem.message());
-      List<String> filesAffectedByProblem = problemsToFilePaths.computeIfAbsent(problemKey, key -> new ArrayList<>());
+      ProblemGroupKey problemGroupKey = new ProblemGroupKey(problem.type(), problem.message());
+      List<String> filesAffectedByProblem = problemsToFilePaths.computeIfAbsent(problemGroupKey, key -> new ArrayList<>());
       filesAffectedByProblem.add(pathToFile);
     });
   }
@@ -655,8 +655,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     );
   }
 
-  private static void logParserMessages(Stream<Map.Entry<ProblemKey, List<String>>> messages, int maxProblems, String warningMessage,
-                                        String debugMessage) {
+  private static void logParserMessages(Stream<Map.Entry<ProblemGroupKey, List<String>>> messages, int maxProblems, String warningMessage, String debugMessage) {
     String problemDelimiter = System.lineSeparator() + "- ";
     List<List<String>> messagesList = messages
       .sorted(Comparator.comparing(entry -> entry.getKey().message()))
@@ -702,6 +701,6 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     return context.config();
   }
 
-  private record ProblemKey(ProblemKind type, String message) {}
+  private record ProblemGroupKey(ProblemKind type, String message) {}
 
 }
