@@ -28,11 +28,13 @@ import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.java.Preconditions;
-import org.sonar.java.annotations.Beta;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.expression.AssessableExpressionTree;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
+import org.sonar.plugins.java.api.diagnostics.Problem;
+import org.sonar.plugins.java.api.diagnostics.ProblemKind;
+import org.sonar.plugins.java.api.diagnostics.Warning;
 import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -162,10 +164,10 @@ public abstract class JavaTree implements Tree {
     private final ModuleDeclarationTree moduleDeclaration;
     private final SyntaxToken eofToken;
     public Sema sema;
-    private Set<JProblem> undefinedTypes = Set.of();
+    private Set<Problem> semanticProblems = Set.of();
     private Runnable environmentCleaner = () -> {};
 
-    private final Map<JProblem.Type, Set<JWarning>> warnings = new EnumMap<>(JProblem.Type.class);
+    private final Map<ProblemKind, List<Warning>> warnings = new EnumMap<>(ProblemKind.class);
 
     public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports, List<Tree> types,
       @Nullable ModuleDeclarationTree moduleDeclaration, SyntaxToken eofToken) {
@@ -177,14 +179,15 @@ public abstract class JavaTree implements Tree {
       this.eofToken = eofToken;
     }
 
-    public void setSemanticModel(Sema sema, Set<JProblem> undefinedTypes, Runnable environmentCleaner) {
+    public void setSemanticModel(Sema sema, Set<? extends Problem> semanticProblems, Runnable environmentCleaner) {
       this.sema = Objects.requireNonNull(sema);
-      this.undefinedTypes = Set.copyOf(undefinedTypes);
+      this.semanticProblems = Set.copyOf(semanticProblems);
       this.environmentCleaner = Objects.requireNonNull(environmentCleaner);
     }
 
-    public Set<JProblem> undefinedTypes() {
-      return undefinedTypes;
+    @Override
+    public Set<Problem> semanticProblems() {
+      return semanticProblems;
     }
 
     public Runnable getEnvironmentCleaner() {
@@ -206,9 +209,14 @@ public abstract class JavaTree implements Tree {
       return types;
     }
 
-    @Beta
-    public List<JWarning> warnings(JProblem.Type type) {
-      return Collections.unmodifiableList(new ArrayList<>(warnings.getOrDefault(type, Collections.emptySet())));
+    @Override
+    public Set<ProblemKind> supportedWarningKinds() {
+      return Set.copyOf(warnings.keySet());
+    }
+
+    @Override
+    public List<Warning> warnings(ProblemKind kind) {
+      return warnings.getOrDefault(kind, List.of());
     }
 
     @Override
@@ -245,8 +253,8 @@ public abstract class JavaTree implements Tree {
       return eofToken;
     }
 
-    public void addWarnings(Map<JProblem.Type, Set<JWarning>> warnings) {
-      this.warnings.putAll(warnings);
+    public void addWarnings(Map<ProblemKind, ? extends Set<? extends Warning>> warnings) {
+      warnings.forEach((kind, values) -> this.warnings.put(kind, List.copyOf(values)));
     }
 
   }

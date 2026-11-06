@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,17 +28,15 @@ import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.model.JProblem;
-import org.sonar.java.model.JWarning;
-import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.diagnostics.ProblemKind;
+import org.sonar.plugins.java.api.diagnostics.Warning;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
@@ -50,7 +47,6 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @Rule(key = "S1128")
 public class UselessImportCheck extends IssuableSubscriptionVisitor {
 
-  private static final Pattern COMPILER_WARNING = Pattern.compile("The import ([$\\w]++(\\.[$\\w]++)*+) is never used");
   private static final Pattern NON_WORDS_CHARACTERS = Pattern.compile("\\W+");
   private static final Pattern JAVADOC_REFERENCE = Pattern.compile("\\{@link[^\\{\\}]++\\}|(@see|@throws)[^\r\n]++[\r\n]");
   private static final Pattern MARKDOWN_REFERENCE = Pattern.compile("\\[[^\\[\\]\\r\\n]++\\]");
@@ -88,50 +84,40 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   @Override
   public void leaveNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      handleWarnings(((CompilationUnitTreeImpl) tree).warnings(JProblem.Type.UNUSED_IMPORT));
+      handleWarnings(((CompilationUnitTree) tree).warnings(ProblemKind.UNUSED_IMPORT));
       imports.clear();
     }
   }
 
-  private void handleWarnings(List<JWarning> warnings) {
-    for (JWarning warning : warnings) {
-      Matcher matcher = COMPILER_WARNING.matcher(warning.message());
-      Optional<String> fqn = matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
-      fqn.ifPresent(importName -> {
-        if (!usedInJavaDoc.contains(importName) && !importName.startsWith("java.lang")) {
-          String message;
-          if (duplicatedImports.contains(importName)) {
-            message = "Remove this duplicated import.";
-          } else if (isImportFromSamePackage(importName, warning.syntaxTree())) {
-            message = "Remove this unnecessary import: same package classes are always implicitly imported.";
-          } else {
-            message = "Remove this unused import '" + importName + "'.";
-          }
-          ImportTree reportTree = (ImportTree) warning.syntaxTree();
-          QuickFixHelper.newIssue(context)
-            .forRule(this)
-            .onTree(reportTree.qualifiedIdentifier())
-            .withMessage(message)
-            .withQuickFix(() -> quickFix(reportTree, imports))
-            .report();
+  private void handleWarnings(List<Warning> warnings) {
+    for (Warning warning : warnings) {
+      ImportTree reportTree = (ImportTree) warning.syntaxTree();
+      String importName = ExpressionsHelper.concatenate((ExpressionTree) reportTree.qualifiedIdentifier());
+      boolean onDemand = importName.endsWith(".*");
+      if (onDemand) {
+        importName = importName.substring(0, importName.length() - 2);
+      }
+      if (!usedInJavaDoc.contains(importName) && !importName.startsWith("java.lang")) {
+        String message;
+        if (duplicatedImports.contains(importName)) {
+          message = "Remove this duplicated import.";
+        } else if (isImportFromSamePackage(importName, onDemand)) {
+          message = "Remove this unnecessary import: same package classes are always implicitly imported.";
+        } else {
+          message = "Remove this unused import '" + importName + "'.";
         }
-      });
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(reportTree.qualifiedIdentifier())
+          .withMessage(message)
+          .withQuickFix(() -> quickFix(reportTree, imports))
+          .report();
+      }
     }
   }
 
-  private boolean isImportFromSamePackage(String importName, Tree tree) {
-    // ECJ warning message does not contain the ".*" in case of star import, we have to find out if we are in this case.
-    // Defensive programming, the syntax tree of the warning should always be an ImportTree.
-    if (tree.is(Tree.Kind.IMPORT)) {
-      Tree qualifiedIdentifier = ((ImportTree) tree).qualifiedIdentifier();
-      // Defensive programming, the qualifiedIdentifier should always be a MemberSelectTree.
-      if (qualifiedIdentifier.is(Tree.Kind.MEMBER_SELECT) &&
-        "*".equals(((MemberSelectExpressionTree) qualifiedIdentifier).identifier().name())) {
-        return importName.equals(currentPackage);
-      }
-    }
-
-    return importName.substring(0, importName.lastIndexOf(".")).equals(currentPackage);
+  private boolean isImportFromSamePackage(String importName, boolean onDemand) {
+    return onDemand ? importName.equals(currentPackage) : importName.substring(0, importName.lastIndexOf('.')).equals(currentPackage);
   }
 
   private void handleImportTree(ImportTree importTree) {
