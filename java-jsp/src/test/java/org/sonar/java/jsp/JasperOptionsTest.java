@@ -60,7 +60,7 @@ class JasperOptionsTest {
     assertThat(options.getCompiler()).isNull();
     assertThat(options.getCompilerTargetVM()).isNull();
     assertThat(options.getCompilerSourceVM()).isNull();
-    assertThat(options.getCompilerClassName()).isNull();
+    assertThat(options.getCompilerClassName()).isEqualTo(JasperCompiler.class.getName());
     assertThat(options.getTldCache()).isNotNull();
     assertThat(options.getJavaEncoding()).isEqualTo("UTF-8");
     assertThat(options.getFork()).isFalse();

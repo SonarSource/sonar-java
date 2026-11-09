@@ -83,6 +83,7 @@
     <license.title>SonarQube Java</license.title>
 
     <jdk.min.version>21</jdk.min.version>
+    <intellij.version>262.10968.63</intellij.version>
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 

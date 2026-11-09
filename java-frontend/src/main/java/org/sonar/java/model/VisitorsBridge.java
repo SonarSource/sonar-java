@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
@@ -292,7 +293,7 @@ public class VisitorsBridge {
       Throwable rootCause = ThrowableUtils.getRootCause(e);
       if (rootCause instanceof InterruptedIOException
         || rootCause instanceof InterruptedException
-        || rootCause instanceof CancellationException
+        || ExceptionUtils.indexOfType(e, CancellationException.class) >= 0
         || analysisCancelled()) {
         throw e;
       }

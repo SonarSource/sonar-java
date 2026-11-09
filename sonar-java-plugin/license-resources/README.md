@@ -1,5 +1,5 @@
-The plugin JAR contains a `licenses/` folder which contains the licenses of all the used libraries.
-These licenses have to be txt files. However, some libraries ship html files, in which case they need to be overwritten.
+The plugin JAR contains a `licenses/` folder with the licenses of its dependencies.
 
-The files which overwrite the html file are located in this folder. The overwriting itself is configured
-in the `pom.xml` of the plugin module.
+This directory supplies local plain-text license sources and dependency metadata overrides for Maven license generation. URL replacements and stable shared output names are configured in the plugin module's `pom.xml`. Dependencies with the same license text share one file under `licenses/THIRD_PARTY_LICENSES`.
+
+Run the existing `updateLicenses` profile after changing dependencies. Normal verification compares regenerated licenses with the committed resources.

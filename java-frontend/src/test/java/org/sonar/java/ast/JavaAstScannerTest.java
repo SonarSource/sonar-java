@@ -258,6 +258,22 @@ class JavaAstScannerTest {
       .hasCauseInstanceOf(RecognitionException.class);
   }
 
+  @ParameterizedTest
+  @ValueSource(booleans = {false, true})
+  void should_interrupt_analysis_when_cancellation_retains_its_original_cause(boolean batch) throws Exception {
+    var original = new IllegalStateException("PSI cancellation");
+    var cancellation = new CancellationException("cancelled");
+    cancellation.initCause(original);
+    List<InputFile> inputs = List.of(TestUtils.inputFile("src/test/files/metrics/NoSonar.java"));
+    List<JavaFileScanner> visitors = List.of(new CheckThrowingException(cancellation));
+
+    AnalysisException failure = assertThrows(AnalysisException.class,
+      () -> scanFilesWithVisitors(inputs, visitors, -1, false, batch));
+
+    assertThat(failure).hasMessage("Analysis cancelled").hasCause(cancellation);
+    assertThat(cancellation).hasCause(original);
+  }
+
   @Test
   void should_interrupt_analysis_when_is_cancelled() {
     List<InputFile> inputFiles = Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/NoSonar.java"));

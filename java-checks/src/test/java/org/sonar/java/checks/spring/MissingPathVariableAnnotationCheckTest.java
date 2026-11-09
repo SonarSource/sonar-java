@@ -16,16 +16,20 @@
  */
 package org.sonar.java.checks.spring;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -48,6 +52,22 @@ class MissingPathVariableAnnotationCheckTest {
   private static final JavaFileScanner check = new MissingPathVariableAnnotationCheck();
   private static final Map<String, Type> testTypes = new HashMap<>();
   private static final Map<String, Type> testRecords = new HashMap<>();
+  private static final List<Runnable> semanticCleaners = new ArrayList<>();
+
+  @AfterAll
+  static void releaseSemanticModels() {
+    testTypes.clear();
+    testRecords.clear();
+    semanticCleaners.forEach(Runnable::run);
+    semanticCleaners.clear();
+  }
+
+  private static void retainSemanticModel(Tree tree) {
+    if (tree instanceof JavaTree.CompilationUnitTreeImpl root) {
+      semanticCleaners.add(root.getEnvironmentCleaner());
+      root.setSemanticModel(root.sema, root.semanticProblems(), () -> {});
+    }
+  }
 
   @BeforeAll
   static void scanTestFiles() {
@@ -59,11 +79,15 @@ class MissingPathVariableAnnotationCheckTest {
     IssuableSubscriptionVisitor typeCollector = new IssuableSubscriptionVisitor() {
       @Override
       public java.util.List<Tree.Kind> nodesToVisit() {
-        return java.util.List.of(Tree.Kind.CLASS);
+        return java.util.List.of(Tree.Kind.COMPILATION_UNIT, Tree.Kind.CLASS);
       }
 
       @Override
       public void visitNode(Tree tree) {
+        if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
+          retainSemanticModel(tree);
+          return;
+        }
         ClassTree classTree = (ClassTree) tree;
         Symbol.TypeSymbol symbol = classTree.symbol();
         testTypes.put(symbol.name(), symbol.type());
@@ -80,11 +104,15 @@ class MissingPathVariableAnnotationCheckTest {
     IssuableSubscriptionVisitor recordCollector = new IssuableSubscriptionVisitor() {
       @Override
       public java.util.List<Tree.Kind> nodesToVisit() {
-        return java.util.List.of(Tree.Kind.CLASS, Tree.Kind.RECORD);
+        return java.util.List.of(Tree.Kind.COMPILATION_UNIT, Tree.Kind.CLASS, Tree.Kind.RECORD);
       }
 
       @Override
       public void visitNode(Tree tree) {
+        if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
+          retainSemanticModel(tree);
+          return;
+        }
         ClassTree classTree = (ClassTree) tree;
         Symbol.TypeSymbol symbol = classTree.symbol();
         testRecords.put(symbol.name(), symbol.type());

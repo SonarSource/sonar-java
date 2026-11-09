@@ -85,13 +85,17 @@ public class JParserTestUtils {
   }
 
   public static CompilationUnitTree parse(File file, List<File> classpath) {
+    return parse(file, classpath, JParserConfig.Mode.FILE_BY_FILE::create);
+  }
+
+  public static CompilationUnitTree parse(File file, List<File> classpath, JParserConfig.ParserConfigConstructor constructor) {
     String source;
     try {
       source = Files.readLines(file, StandardCharsets.UTF_8).stream().collect(Collectors.joining("\n"));
     } catch (Exception e) {
       throw new IllegalStateException("Unable to read file", e);
     }
-    return parse(file.getName(), source, classpath);
+    return constructor.apply(JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION, classpath, false).parse(file.getName(), source);
   }
 
   public static CompilationUnitTree parse(String source) {
