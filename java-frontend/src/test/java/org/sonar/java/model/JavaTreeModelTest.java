@@ -246,8 +246,6 @@ class JavaTreeModelTest {
    * (Preview in Java 13) http://openjdk.java.net/jeps/355
    * (Second Preview in Java 14) https://openjdk.java.net/jeps/368
    * https://openjdk.java.net/jeps/378
-   *
-   * @see org.eclipse.jdt.core.dom.TextBlock
    */
   @Test
   void expression_text_block() {
@@ -262,9 +260,6 @@ class JavaTreeModelTest {
 
   /**
    * Switch Expressions http://openjdk.java.net/jeps/361
-   *
-   * @see org.eclipse.jdt.core.dom.SwitchExpression
-   * @see org.eclipse.jdt.core.dom.YieldStatement
    */
   @Test
   void expression_switch() {

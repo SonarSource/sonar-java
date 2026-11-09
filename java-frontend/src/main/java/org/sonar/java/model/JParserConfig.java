@@ -23,7 +23,7 @@ import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalysisProgress;
-import org.sonar.java.jdt.JDTParserConfig;
+import org.sonar.java.psi.PsiParserConfig;
 import org.sonar.plugins.java.api.JavaVersion;
 
 public interface JParserConfig {
@@ -46,7 +46,7 @@ public interface JParserConfig {
     }
 
     public JParserConfig create(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
-      return JDTParserConfig.create(this, javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
+      return PsiParserConfig.create(this, javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
     }
   }
 

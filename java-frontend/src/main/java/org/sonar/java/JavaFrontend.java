@@ -217,7 +217,7 @@ public class JavaFrontend {
   }
 
   private void scanInBatches(BatchModeContext context, List<InputFile> allInputFiles) {
-    String logUsingBatch = String.format("Using ECJ batch to parse %d %s java source files", allInputFiles.size(), context.descriptor());
+    String logUsingBatch = String.format("Using PSI batch to parse %d %s java source files", allInputFiles.size(), context.descriptor());
     AnalysisProgress analysisProgress = new AnalysisProgress(allInputFiles.size());
     long batchModeSizeInKB = sonarComponents.getBatchModeSizeInKB();
     if (batchModeSizeInKB < 0L || batchModeSizeInKB >= Long.MAX_VALUE / 1_000L) {
@@ -240,7 +240,6 @@ public class JavaFrontend {
     JParserConfig.Mode.BATCH
       .create(javaVersion, context.getClasspath(), sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage())
       .parse(batchFiles, sonarComponents::analysisCancelled, analysisProgress, (input, result) -> scanAsBatchCallback(input, result, context, environmentsCleaners));
-    // Due to a bug in ECJ, JAR files remain locked after the analysis on Windows, we unlock them manually, at the end of each batches. See SONARJAVA-3609.
     environmentsCleaners.forEach(Runnable::run);
     analysisProgress.endBatch();
   }

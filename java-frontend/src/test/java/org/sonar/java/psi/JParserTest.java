@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.jdt;
+package org.sonar.java.psi;
 
 import com.sonar.sslr.api.RecognitionException;
 import java.io.BufferedInputStream;
@@ -27,10 +27,9 @@ import java.nio.file.ProviderNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
@@ -39,14 +38,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import org.apache.commons.io.FileUtils;
-import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.internal.compiler.parser.TerminalToken;
-import org.eclipse.jdt.internal.formatter.Token;
-import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
@@ -84,7 +75,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.RecordPatternTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
-import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypePatternTree;
@@ -104,8 +94,6 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.jdt.JDTParser.convertTokenTypeToCommentKind;
-import static org.sonar.java.jdt.JDTParser.isComment;
 import static org.sonar.java.model.JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
 import static org.sonar.java.model.JParserConfig.Mode.BATCH;
 import static org.sonar.java.model.JParserConfig.Mode.FILE_BY_FILE;
@@ -130,14 +118,6 @@ class JParserTest {
     assertThrows(RecognitionException.class,
       () -> test("import a; ; import b;"),
       "Parse error at line 1 column 10: Syntax error on token \";\", delete this token");
-  }
-
-  @Test
-  void should_recover_if_parser_fails() {
-    String version = "12";
-    List<File> classpath = Collections.singletonList(new File("unknownFile"));
-    ASTParser astParser = ((JDTParserConfig) FILE_BY_FILE.create(JavaVersionImpl.fromString(version), classpath)).jdtParser();
-    assertThrows(RecognitionException.class, () -> JDTParser.parse(astParser, version, "A", "class A { }"));
   }
 
   @Test
@@ -179,7 +159,7 @@ class JParserTest {
       .when(inputFile).absolutePath();
 
     Set<InputFile> inputFiles = Collections.singleton(inputFile);
-    JParserConfig config = JParserConfig.Mode.FILE_BY_FILE.create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList());
+    JParserConfig config = FILE_BY_FILE.create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList());
 
     AnalysisProgress analysisProgress = new AnalysisProgress(inputFiles.size());
     RuntimeException actual = assertThrows(RuntimeException.class, () -> config.parse(inputFiles, () -> false,
@@ -198,8 +178,7 @@ class JParserTest {
     doThrow(IOException.class)
       .when(inputFile).contents();
 
-    FILE_BY_FILE
-      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
+    FILE_BY_FILE.create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
       .parse(Collections.singleton(inputFile), () -> false, new AnalysisProgress(1), consumer);
 
     Result result = results.get(0);
@@ -213,8 +192,7 @@ class JParserTest {
     InputFile inputFile = spy(TestUtils.inputFile("src/test/files/metrics/Classes.java"));
     when(inputFile.contents()).thenThrow(IOException.class);
 
-    BATCH
-      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
+    BATCH.create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
       .parse(Collections.singleton(inputFile), () -> false, new AnalysisProgress(1), consumer);
 
     Result result = results.get(0);
@@ -510,86 +488,6 @@ class JParserTest {
   }
 
   @Test
-  void test_first_index_of_tokens_in_eclipse_ast() {
-    String version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION.effectiveJavaVersionAsString();
-    String unitName = "C.java";
-    String source = "class C { }";
-
-    ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
-    JavaCore.setComplianceOptions(version, JavaCore.getOptions());
-    astParser.setResolveBindings(true);
-    astParser.setUnitName(unitName);
-    astParser.setSource(source.toCharArray());
-    CompilationUnit compilationUnit = (CompilationUnit) astParser.createAST(null);
-    TokenManager tokenManager = JDTParser.createTokenManager(version, unitName, source);
-
-    assertThat(JDTParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameIdentifier, TerminalToken.TokenNameLBRACE)).isEqualTo(1);
-    assertThat(JDTParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameLBRACE, TerminalToken.TokenNameIdentifier)).isEqualTo(1);
-    assertThat(JDTParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameRBRACE, TerminalToken.TokenNameLBRACE)).isEqualTo(2);
-    assertThatThrownBy(() -> JDTParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNamebreak, TerminalToken.TokenNameconst))
-      .isInstanceOf(IllegalStateException.class)
-      .hasMessage("Failed to find token TokenNamebreak or TokenNameconst in the tokens of a org.eclipse.jdt.core.dom.CompilationUnit");
-  }
-
-  @Test
-  void test_comment_tokens() {
-    String version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION.effectiveJavaVersionAsString();
-    String unitName = "C.java";
-    String source = """
-      class A {
-        // line comment
-        /* block comment */
-        /// markdown comment 1
-        /// markdown comment 2
-        /**
-          * javadoc comment
-          */
-        void foo() {}
-      }
-      """;
-    TokenManager tokens = JDTParser.createTokenManager(version, unitName, source);
-
-    assertThat(tokens.size()).isEqualTo(15);
-
-    Token token0 = tokens.get(0);
-    assertThat(token0.toString(source)).isEqualTo("class");
-    assertThat(token0.isComment()).isFalse();
-    assertThat(isComment(token0)).isFalse();
-    assertThatThrownBy(() -> convertTokenTypeToCommentKind(token0))
-      .isInstanceOf(IllegalStateException.class)
-      .hasMessage("Unexpected value: TokenNameclass");
-
-    Token token3 = tokens.get(3);
-    assertThat(token3.toString(source)).isEqualTo("// line comment");
-    assertThat(token3.isComment()).isTrue();
-    assertThat(isComment(token3)).isTrue();
-    assertThat(convertTokenTypeToCommentKind(token3)).isEqualTo(CommentKind.LINE);
-
-    Token token4 = tokens.get(4);
-    assertThat(token4.toString(source)).isEqualTo("/* block comment */");
-    assertThat(token4.isComment()).isTrue();
-    assertThat(isComment(token4)).isTrue();
-    assertThat(convertTokenTypeToCommentKind(token4)).isEqualTo(CommentKind.BLOCK);
-
-    Token token5 = tokens.get(5);
-    assertThat(token5.toString(source)).isEqualTo("/// markdown comment 1\n  /// markdown comment 2");
-    assertThat(token5.isComment()).isTrue();
-    assertThat(isComment(token5)).isTrue();
-    assertThat(convertTokenTypeToCommentKind(token5)).isEqualTo(CommentKind.MARKDOWN);
-
-    Token token6 = tokens.get(6);
-    assertThat(token6.toString(source)).isEqualTo("/**\n    * javadoc comment\n    */");
-    assertThat(token6.isComment()).isTrue();
-    assertThat(isComment(token6)).isTrue();
-    assertThat(convertTokenTypeToCommentKind(token6)).isEqualTo(CommentKind.JAVADOC);
-
-    Token token7 = tokens.get(7);
-    assertThat(token7.toString(source)).isEqualTo("void");
-    assertThat(token7.isComment()).isFalse();
-    assertThat(isComment(token7)).isFalse();
-  }
-
-  @Test
   void dont_include_running_VM_Bootclasspath_if_jvm_rt_jar_already_provided_in_classpath(@TempDir Path tempFolder) throws IOException {
     VariableTree s1 = parseAndGetVariable("class C { void m() { String a; } }");
     assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
@@ -644,8 +542,7 @@ class JParserTest {
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
     List<Result> results = new ArrayList<>();
     List<InputFile> inputFilesProcessed = new ArrayList<>();
-    FILE_BY_FILE
-      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
+    FILE_BY_FILE.create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
       .parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), (inputFile, result) -> {
         results.add(result);
         inputFilesProcessed.add(inputFile);
@@ -660,63 +557,13 @@ class JParserTest {
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
     List<Result> results = new ArrayList<>();
     List<InputFile> inputFilesProcessed = new ArrayList<>();
-    BATCH
-      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
+    BATCH.create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
       .parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), (inputFile, result) -> {
         results.add(result);
         inputFilesProcessed.add(inputFile);
       });
 
     assertResultsOfParsing(results, inputFilesProcessed);
-  }
-
-  @Test
-  void failing_batch_mode_should_continue_file_by_file() {
-    List<InputFile> inputFiles = Arrays.asList(
-      TestUtils.inputFile("src/test/files/metrics/Classes.java"),
-      TestUtils.inputFile("src/test/files/metrics/Methods.java"));
-    List<String> trace = new ArrayList<>();
-    BiConsumer<InputFile, Result> action = (inputFile, result) -> {
-      trace.addAll(logTester.logs());
-      logTester.clear();
-      try {
-        JavaTree.CompilationUnitTreeImpl tree = result.get();
-        trace.add("[action] analyse class " + ((ClassTree)tree.types().get(0)).simpleName().name() + " in " + inputFile.filename());
-      } catch (Exception e) {
-        trace.add("[action] handle " + e.getClass().getSimpleName() + ": " + e.getMessage());
-      }
-    };
-    BatchWithException batchWithException = new BatchWithException();
-    // exception before the first file
-    batchWithException.exceptions.push(new NullPointerException("Boom!"));
-    batchWithException.parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), action);
-    trace.addAll(logTester.logs());
-    logTester.clear();
-    assertThat(trace).containsExactly(
-      "Unexpected NullPointerException: Boom!",
-      "Fallback to file by file analysis for 2 files",
-      "[action] analyse class HelloWorld in Classes.java",
-      "[action] analyse class MyClass in Methods.java");
-  }
-
-  @Test
-  void successful_batch_mode_with_missing_analyzed_files_should_continue_file_by_file() {
-    List<InputFile> inputFiles = Arrays.asList(
-      TestUtils.inputFile("src/test/files/metrics/Classes.java"),
-      TestUtils.inputFile("src/test/files/metrics/Methods.java"));
-    BiConsumer<InputFile, Result> doNothingAction = (inputFile, result) -> {};
-    JDTParserConfig config = spy((JDTParserConfig) JParserConfig.Mode.BATCH
-      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false));
-    // Return a lazy ASTParser that do nothing to ensure that we have not analyzed files
-    ASTParser astParser = mock(ASTParser.class);
-    when(config.jdtParser()).thenReturn(astParser);
-
-    config.parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), doNothingAction);
-
-    assertThat(logTester.logs()).containsExactly(
-      "Unexpected AnalysisException: 2/2 files were not analyzed by the batch mode",
-      "Fallback to file by file analysis for 2 files");
-    logTester.clear();
   }
 
   @Test
@@ -739,11 +586,10 @@ class JParserTest {
       }
     };
 
-    JParserConfig config = BATCH
-      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false);
+    JParserConfig config = BATCH.create(MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false);
     AnalysisProgress analysisProgress = new AnalysisProgress(inputFiles.size());
     assertThatThrownBy(() -> config.parse(inputFiles, isCanceled::get, analysisProgress, action))
-      .isInstanceOf(OperationCanceledException.class);
+      .isInstanceOf(CancellationException.class);
 
     trace.addAll(logTester.logs());
     logTester.clear();
@@ -809,38 +655,7 @@ class JParserTest {
     return tokens;
   }
 
-  @Test
-  void failing_batch_mode_with_empty_file_list_should_not_continue_file_by_file() {
-    List<InputFile> inputFiles = List.of();
-    List<String> trace = new ArrayList<>();
-    BiConsumer<InputFile, Result> action = (inputFile, result) -> trace.add("should not be called ");
-    BatchWithException batchWithException = new BatchWithException();
-    // exception before the first file
-    batchWithException.exceptions.push(new NullPointerException("Boom!"));
-    batchWithException.parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), action);
-    trace.addAll(logTester.logs());
-    logTester.clear();
-    assertThat(trace).containsExactly(
-      "Unexpected NullPointerException: Boom!");
-  }
 
-  static class BatchWithException extends JDTParserConfig.Batch {
-
-    Deque<RuntimeException> exceptions = new LinkedList<>();
-
-    public BatchWithException() {
-      super(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH, false);
-    }
-
-    @Override
-    public ASTParser jdtParser() {
-      if (!exceptions.isEmpty()) {
-        throw exceptions.pop();
-      }
-      return super.jdtParser();
-    }
-
-  }
 
   private void assertResultsOfParsing(List<Result> results, List<InputFile> inputFilesProcessed) throws Exception {
     assertThat(inputFilesProcessed).hasSize(2);
@@ -864,8 +679,7 @@ class JParserTest {
     BiConsumer<InputFile, Result> action = mock(BiConsumer.class);
     BooleanSupplier isCanceled = mock(BooleanSupplier.class);
 
-    FILE_BY_FILE
-      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
+    FILE_BY_FILE.create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
       .parse(inputFiles, isCanceled, new AnalysisProgress(inputFiles.size()), action);
 
     InOrder inOrder = inOrder(action, isCanceled);
@@ -880,8 +694,7 @@ class JParserTest {
     List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
     List<Result> results = new ArrayList<>();
-    FILE_BY_FILE
-      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
+    FILE_BY_FILE.create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
       .parse(inputFiles, () -> true, new AnalysisProgress(inputFiles.size()), (inputFile, result) -> results.add(result));
 
     assertThat(results).isEmpty();

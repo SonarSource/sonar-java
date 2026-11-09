@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
-import org.eclipse.core.runtime.OperationCanceledException;
+import java.util.concurrent.CancellationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
@@ -513,7 +513,7 @@ class JavaFrontendTest {
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
-      .doesNotContain("Using ECJ batch to parse source files.")
+      .doesNotContain("Using PSI batch to parse source files.")
       .contains("2 source files to be analyzed");
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(2);
     assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
@@ -602,7 +602,7 @@ class JavaFrontendTest {
     assertThatThrownBy(() -> scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B { A a; }"))
       .isInstanceOf(AnalysisException.class)
       .hasMessage("Analysis cancelled")
-      .hasCauseInstanceOf(OperationCanceledException.class);
+      .hasCauseInstanceOf(CancellationException.class);
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
     assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
   }
@@ -731,7 +731,7 @@ class JavaFrontendTest {
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
       .doesNotContain("Unresolved imports/types")
-      .contains("Using ECJ batch to parse 2 Main and Test java source files in a single batch.");
+      .contains("Using PSI batch to parse 2 Main and Test java source files in a single batch.");
   }
 
   @Test
@@ -743,7 +743,7 @@ class JavaFrontendTest {
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
       .doesNotContain("Unresolved imports/types")
-      .containsOnlyOnce("Using ECJ batch to parse 2 Main java source files with batch size 1 KB.");
+      .containsOnlyOnce("Using PSI batch to parse 2 Main java source files with batch size 1 KB.");
   }
 
   @Test
@@ -757,7 +757,7 @@ class JavaFrontendTest {
     assertThat(allLogs)
       .doesNotContain("Unresolved imports/types")
       .doesNotContainPattern("Scanning with batch size .*")
-      .contains("Using ECJ batch to parse 2 Main java source files in a single batch.");
+      .contains("Using PSI batch to parse 2 Main java source files in a single batch.");
   }
 
   @Test
@@ -769,7 +769,7 @@ class JavaFrontendTest {
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
       .contains("Unresolved imports/types")
-      .contains("Using ECJ batch to parse 2 Main java source files with batch size 0 KB.");
+      .contains("Using PSI batch to parse 2 Main java source files with batch size 0 KB.");
   }
 
   @Test

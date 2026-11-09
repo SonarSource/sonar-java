@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.jdt;
+package org.sonar.java.psi;
 
 import com.google.common.io.Files;
 import java.io.File;

@@ -14,12 +14,13 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.jdt;
+package org.sonar.java.psi;
 
-import java.io.File;
-import org.eclipse.jdt.core.dom.IAnnotationBinding;
-import org.junit.jupiter.api.Test;
+import org.sonar.plugins.java.api.semantic.Sema;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.model.JParserTestUtils;
+import java.io.File;
+import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.Symbols;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -39,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.jdt.JdtTestUtils.sema;
+import static org.sonar.java.model.JParserTestUtils.sema;
 
 class SymbolsTest {
 
@@ -99,17 +100,6 @@ class SymbolsTest {
     File file = new File("src/main/java/org/sonar/java/model/package-info.java");
     CompilationUnitTree tree = JParserTestUtils.parse(file);
     SymbolMetadata metadata = tree.packageDeclaration().packageName().symbolType().symbol().metadata();
-    assertThat(metadata.nullabilityData().type()).isEqualTo(NullabilityType.UNKNOWN);
-    assertThat(metadata.nullabilityData(NullabilityTarget.METHOD).type()).isEqualTo(NullabilityType.UNKNOWN);
-  }
-
-  @Test
-  void metadata_with_unknown_symbol_and_unsupported_declaration() {
-    Tree unsupportedDeclaration = mock(Tree.class);
-    Symbol symbol = spy(Symbol.UNKNOWN_SYMBOL);
-    when(symbol.declaration()).thenReturn(unsupportedDeclaration);
-    SymbolMetadata metadata = new JDTSymbolMetadata(JUtilsTest.SEMA, symbol, new IAnnotationBinding[0]);
-    assertThat(metadata.findAnnotationTree(mock(AnnotationInstance.class))).isNull();
     assertThat(metadata.nullabilityData().type()).isEqualTo(NullabilityType.UNKNOWN);
     assertThat(metadata.nullabilityData(NullabilityTarget.METHOD).type()).isEqualTo(NullabilityType.UNKNOWN);
   }
@@ -207,8 +197,8 @@ class SymbolsTest {
 
   @Test
   void testIsAnnotation() {
-    JDTSema sema = sema(((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("")));
-    Type objectType = sema.type(sema.resolveType("java.lang.Object"));
+    Sema sema = sema(((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("")));
+    Type objectType = sema.getClassType("java.lang.Object");
     JavaTree.CompilationUnitTreeImpl cu = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("@interface Anno { Unknown u; }");
     ClassTreeImpl anno = (ClassTreeImpl) cu.types().get(0);
 

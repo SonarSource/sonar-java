@@ -155,6 +155,21 @@
     </resources>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>3.5.2</version>
+        <configuration>
+          <systemPropertyVariables>
+            <psi.plugin.artifact>${project.build.directory}/${project.build.finalName}.jar</psi.plugin.artifact>
+          </systemPropertyVariables>
+        </configuration>
+        <executions>
+          <execution>
+            <goals><goal>integration-test</goal><goal>verify</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
         <artifactId>sonar-packaging-maven-plugin</artifactId>
         <configuration>
@@ -184,8 +199,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>59000000</maxsize>
-                  <minsize>54000000</minsize>
+                  <maxsize>50000000</maxsize>
+                  <minsize>45000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>
@@ -393,10 +408,6 @@
                 <licenseUrlReplacement>
                     <regexp>http://www.opensource.org/licenses/bsd-license.php</regexp>
                     <replacement>${project.baseUri}/license-resources/bsd.txt</replacement>
-                </licenseUrlReplacement>
-                <licenseUrlReplacement>
-                    <regexp>https://www.eclipse.org/legal/epl-2.0/</regexp>
-                    <replacement>${project.baseUri}/license-resources/epl.txt</replacement>
                 </licenseUrlReplacement>
             </licenseUrlReplacements>
             <licenseUrlFileNames>

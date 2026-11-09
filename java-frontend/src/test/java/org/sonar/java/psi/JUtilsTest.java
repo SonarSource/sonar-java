@@ -14,10 +14,11 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.jdt;
+package org.sonar.java.psi;
 
 import java.util.List;
 import java.util.Set;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.AbstractTypedTree;
@@ -33,6 +34,7 @@ import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
+import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -42,21 +44,26 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.jdt.JdtTestUtils.methodBinding;
-import static org.sonar.java.jdt.JdtTestUtils.sema;
+import static org.sonar.java.model.JParserTestUtils.sema;
 import static org.sonar.java.model.JParserTestUtils.symbolOf;
 import static org.sonar.java.model.JParserTestUtils.typeOf;
 
 class JUtilsTest {
 
-  static final JDTSema SEMA = sema(test(""));
-  private static final Type OBJECT_TYPE = SEMA.type(SEMA.resolveType("java.lang.Object"));
+  private static final JavaTree.CompilationUnitTreeImpl SEMA_TREE = test("");
+  static final Sema SEMA = sema(SEMA_TREE);
+  private static final Type OBJECT_TYPE = SEMA.getClassType("java.lang.Object");
+
+  @AfterAll
+  static void release_semantic_environment() {
+    SEMA_TREE.getEnvironmentCleaner().run();
+  }
 
   @Nested
   class PrimitiveType {
     @Test
     void java_lang_Byte() {
-      Type wrapperType = SEMA.type(SEMA.resolveType("java.lang.Byte"));
+      Type wrapperType = SEMA.getClassType("java.lang.Byte");
       Type primitiveType = wrapperType.primitiveType();
 
       assertThat(primitiveType).isNotNull();
@@ -73,7 +80,7 @@ class JUtilsTest {
   class PrimitiveWrapperType {
     @Test
     void java_lang_Byte() {
-      Type primitiveType = SEMA.type(SEMA.resolveType("byte"));
+      Type primitiveType = SEMA.getClassType("byte");
       Type wrapperType = primitiveType.primitiveWrapperType();
 
       assertThat(wrapperType).isNotNull();
@@ -88,7 +95,7 @@ class JUtilsTest {
 
   @Nested
   class IsPrimitiveWrapper {
-    private final Type primitiveType = SEMA.type(SEMA.resolveType("byte"));
+    private final Type primitiveType = SEMA.getClassType("byte");
 
     @Test
     void wrapper() {
@@ -105,7 +112,7 @@ class JUtilsTest {
 
     @Test
     void not_a_class() {
-      Type objectArrayType = SEMA.type(SEMA.resolveType("java.lang.Object[]"));
+      Type objectArrayType = SEMA.getClassType("java.lang.Object[]");
       assertThat(objectArrayType.isPrimitiveWrapper()).isFalse();
     }
   }
@@ -114,7 +121,7 @@ class JUtilsTest {
   class WrapTypeIfPrimitiveTest {
     @Test
     void prim_to_wrapped() {
-      Type primitiveType = SEMA.type(SEMA.resolveType("byte"));
+      Type primitiveType = SEMA.getClassType("byte");
       Type wrappedType = JUtils.wrapTypeIfPrimitive(primitiveType);
       assertThat(wrappedType).isNotNull();
       assertThat(wrappedType.isPrimitive()).isFalse();
@@ -123,7 +130,7 @@ class JUtilsTest {
 
     @Test
     void already_wrapped() {
-      Type boxedType = SEMA.type(SEMA.resolveType("java.lang.Byte"));
+      Type boxedType = SEMA.getClassType("java.lang.Byte");
       Type wrappedType = JUtils.wrapTypeIfPrimitive(boxedType);
       assertThat(wrappedType).isNotNull();
       assertThat(wrappedType.isPrimitive()).isFalse();
@@ -132,7 +139,7 @@ class JUtilsTest {
 
     @Test
     void unrelated() {
-      Type otherType = SEMA.type(SEMA.resolveType("java.lang.Object"));
+      Type otherType = SEMA.getClassType("java.lang.Object");
       Type wrappedType = JUtils.wrapTypeIfPrimitive(otherType);
       assertThat(wrappedType).isNotNull();
       assertThat(wrappedType.isPrimitive()).isFalse();
@@ -149,14 +156,14 @@ class JUtilsTest {
     void nullType() {
       ReturnStatementTreeImpl s = (ReturnStatementTreeImpl) m1.block().body().get(0);
       AbstractTypedTree e = (AbstractTypedTree) s.expression();
-      assertThat(((JDTType) typeOf(e)).isNullType())
+      assertThat(((Type) typeOf(e)).isNullType())
         .isEqualTo(e.symbolType().isNullType())
         .isTrue();
     }
 
     @Test
     void a_non_null_type_is_not_null_type() {
-      assertThat(sema(cu).type(methodBinding(m1).getReturnType()).isNullType())
+      assertThat(m1.symbol().returnType().type().isNullType())
         .isEqualTo(m1.returnType().symbolType().isNullType())
         .isFalse();
     }
@@ -164,7 +171,7 @@ class JUtilsTest {
     @Test
     void unresolved_type_is_not_null_type() {
       MethodTreeImpl m2 = nthMethod(c, 1);
-      assertThat(sema(cu).type(methodBinding(m2).getReturnType()).isNullType())
+      assertThat(m2.symbol().returnType().type().isNullType())
         .isEqualTo(m2.returnType().symbolType().isNullType())
         .isFalse();
     }
@@ -187,14 +194,14 @@ class JUtilsTest {
     @Test
     void intersection_type() {
       TypeCastExpressionTreeImpl e = (TypeCastExpressionTreeImpl) f.initializer();
-      assertThat(JUtils.isIntersectionType(((JDTType) typeOf(e))))
+      assertThat(JUtils.isIntersectionType(((Type) typeOf(e))))
         .isEqualTo(JUtils.isIntersectionType(e.symbolType()))
         .isTrue();
     }
 
     @Test
     void non_intersection_type() {
-      assertThat(JUtils.isIntersectionType(((JDTType) symbolOf(f).type())))
+      assertThat(JUtils.isIntersectionType(((Type) symbolOf(f).type())))
         .isEqualTo(JUtils.isIntersectionType(f.symbol().type()))
         .isFalse();
     }
@@ -202,7 +209,7 @@ class JUtilsTest {
     @Test
     void unresolved_type_is_not_an_intersection_type() {
       VariableTreeImpl u = nthField(c, 1);
-      assertThat(JUtils.isIntersectionType(((JDTType) symbolOf(u).type())))
+      assertThat(JUtils.isIntersectionType(((Type) symbolOf(u).type())))
         .isEqualTo(JUtils.isIntersectionType(u.symbol().type()))
         .isFalse();
     }
@@ -216,7 +223,7 @@ class JUtilsTest {
     @Test
     void type_var() {
       VariableTreeImpl t = firstField(c);
-      assertThat(((JDTType) symbolOf(t).type()).isTypeVar())
+      assertThat(((Type) symbolOf(t).type()).isTypeVar())
         .isEqualTo(t.symbol().type().isTypeVar())
         .isTrue();
     }
@@ -229,7 +236,7 @@ class JUtilsTest {
     @Test
     void unresolved_type_is_not_a_type_var() {
       VariableTreeImpl u = nthField(c, 1);
-      assertThat(((JDTType) symbolOf(u).type()).isTypeVar())
+      assertThat(((Type) symbolOf(u).type()).isTypeVar())
         .isEqualTo(u.symbol().type().isTypeVar())
         .isFalse();
     }
@@ -393,22 +400,22 @@ class JUtilsTest {
       JavaTree.CompilationUnitTreeImpl specificCu = test("interface I { short SHORT = 42; char CHAR = 42; byte BYTE = 42; boolean BOOLEAN = false; }");
       ClassTreeImpl specificC = firstClass(specificCu);
 
-      Symbol.VariableSymbol shortConstant = ((JDTVariableSymbol) symbolOf(firstField(specificC)));
+      Symbol.VariableSymbol shortConstant = ((Symbol.VariableSymbol) symbolOf(firstField(specificC)));
       assertThat(shortConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
-      Symbol.VariableSymbol charConstant = ((JDTVariableSymbol) symbolOf(nthField(specificC, 1)));
+      Symbol.VariableSymbol charConstant = ((Symbol.VariableSymbol) symbolOf(nthField(specificC, 1)));
       assertThat(charConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
-      Symbol.VariableSymbol byteConstant = ((JDTVariableSymbol) symbolOf(nthField(specificC, 2)));
+      Symbol.VariableSymbol byteConstant = ((Symbol.VariableSymbol) symbolOf(nthField(specificC, 2)));
       assertThat(byteConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Integer.class)
         .isEqualTo(42);
 
-      Symbol.VariableSymbol booleanConstant = ((JDTVariableSymbol) symbolOf(nthField(specificC, 3)));
+      Symbol.VariableSymbol booleanConstant = ((Symbol.VariableSymbol) symbolOf(nthField(specificC, 3)));
       assertThat(booleanConstant.constantValue().orElseThrow(AssertionError::new))
         .isInstanceOf(Boolean.class)
         .isEqualTo(Boolean.FALSE);
@@ -714,13 +721,11 @@ class JUtilsTest {
       ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) m.block().body().get(0);
       MethodInvocationTreeImpl methodInvocation = (MethodInvocationTreeImpl) s.expression();
 
-      assertThat(((JDTMethodSymbol) symbolOf(m)).isParametrizedMethod())
+      assertThat(((Symbol.MethodSymbol) symbolOf(m)).isParametrizedMethod())
         .isEqualTo(m.symbol().isParametrizedMethod())
-        .isEqualTo(methodBinding(m).isGenericMethod())
         .isTrue();
-      assertThat(((JDTMethodSymbol) symbolOf(methodInvocation)).isParametrizedMethod())
+      assertThat(((Symbol.MethodSymbol) symbolOf(methodInvocation)).isParametrizedMethod())
         .isEqualTo(methodInvocation.methodSymbol().isParametrizedMethod())
-        .isEqualTo(methodBinding(methodInvocation).isParameterizedMethod())
         .isTrue();
     }
 
@@ -1025,12 +1030,6 @@ class JUtilsTest {
     assertThat(parameterAnnotations.annotations()).hasSize(1);
     assertThat(parameterAnnotations.isAnnotatedWith("org.foo.MyAnnotation")).isTrue();
     assertThat(parameterAnnotations.valuesForAnnotation("org.foo.MyAnnotation")).isNotNull();
-  }
-
-  @Test
-  void test_has_unknown_type_in_hierarchy_with_unexpected_null_owner() {
-    JDTInitializerBlockSymbol method = new JDTInitializerBlockSymbol(null, true);
-    assertThat(JUtils.hasUnknownTypePreventingOverrideResolution(method)).isTrue();
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {
