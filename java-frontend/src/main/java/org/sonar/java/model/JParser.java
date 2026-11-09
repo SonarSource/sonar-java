@@ -41,14 +41,14 @@ public final class JParser {
   }
 
   /**
-   * Parses and attributes one compilation unit on its own, against the running JDK only. Batch analysis goes
-   * through {@link JParserConfig}, which scans every file of the project before translating.
+   * Parses and attributes one compilation unit without provisioning an external classpath. Batch analysis goes
+   * through {@link JParserConfig}, which scans the current batch before translating.
    */
   public static JavaTree.CompilationUnitTreeImpl parse(String version, String unitName, String source) {
     return parse(version, unitName, source, List.of());
   }
 
-  /** {@link #parse(String, String, String)} with a classpath, as ECJ attributed single sources. */
+  /** The classpath parameter is retained for compatibility and is not forwarded to SemSitter. */
   public static JavaTree.CompilationUnitTreeImpl parse(String version, String unitName, String source, List<File> classpath) {
     Objects.requireNonNull(version);
     Objects.requireNonNull(unitName);
@@ -61,7 +61,7 @@ public final class JParser {
       Files.writeString(file, source, StandardCharsets.UTF_8);
       JsonObject document;
       synchronized (bridge) {
-        bridge.analyze(directory, List.of(file), JParserConfig.bridgeClasspath(classpath));
+        bridge.analyze(directory, List.of(file), List.of());
         document = bridge.cst(file.toString());
       }
       JSema sema = new JSema();

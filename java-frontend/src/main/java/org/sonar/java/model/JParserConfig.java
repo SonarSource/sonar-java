@@ -212,26 +212,12 @@ public abstract class JParserConfig {
         bridge.analyze(
           root == null ? Path.of(".") : root,
           files.stream().map(file -> file.path().toAbsolutePath()).toList(),
-          bridgeClasspath(classpath));
+          List.of());
       }
     } catch (Exception failure) {
       closeBridge();
       LOG.warn("SemSitter bridge did not start ({})", failure.toString());
     }
-  }
-
-  /**
-   * The project classpath preceded by the runtime image of the running JDK, which is the JDK ECJ resolved
-   * against, so JDK classes win over a library copy as on the boot classpath.
-   */
-  static List<String> bridgeClasspath(List<File> classpath) {
-    List<String> entries = new ArrayList<>();
-    Path image = Path.of(System.getProperty("java.home"), "lib", "modules");
-    if (image.toFile().isFile()) {
-      entries.add(image.toString());
-    }
-    classpath.stream().map(File::getAbsolutePath).forEach(entries::add);
-    return entries;
   }
 
   void closeBridge() {
