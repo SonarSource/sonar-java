@@ -244,6 +244,9 @@
                   <includes>
                     <include>**</include>
                   </includes>
+                  <excludes>
+                    <exclude>org/apache/jasper/compiler/JDTCompiler*.class</exclude>
+                  </excludes>
                 </filter>
                 <!-- this is needed because org.apache.el.ExpressionFactoryImpl is instantiated with reflection -->
                 <filter>
