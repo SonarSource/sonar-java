@@ -88,6 +88,16 @@ Note that `Java 21` can be used to build and test all modules except under `java
 If you are adding or moving rule test samples, see [java-checks-test-sources/README.md](java-checks-test-sources/README.md)
 for guidance on when samples belong in the dedicated test-source modules instead of `java-checks/src/test/files`.
 
+### Mise tasks
+
+The commands used by CI are available locally through [mise](https://mise.jdx.dev/). Run `mise install` once, then list tasks and their arguments with `mise tasks ls` and `mise run <task> --help`.
+
+    mise run verify
+    mise run normalize-version 10.2
+    mise run ruling without-sonarqube-project LATEST_RELEASE
+
+The ruling and plugin tasks require `ORCHESTRATOR_CONFIG_URL` and `ORCHESTRATOR_HOME`, as described under Integration Tests below. They take the SonarQube version as an argument; ruling also takes the Maven profile. Tasks that produce GitHub outputs print their result when run locally.
+
 ### Build the Project and Run Unit Tests
 
 To build the plugin and run its unit tests, execute this command from the project's root directory:

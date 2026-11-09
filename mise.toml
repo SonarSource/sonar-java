@@ -1,3 +1,161 @@
 [tools]
 java = ["26", "21", "17"]
 maven = "3.9"
+
+[tasks."select-java-21"]
+shell = "bash -e -o pipefail -c"
+description = "Select Java 21 for CI integration tests"
+run = '''
+JAVA_21_HOME="$(mise where java@21)"
+echo "$JAVA_21_HOME"
+if [[ -n "${GITHUB_ENV:-}" && -n "${GITHUB_PATH:-}" ]]; then
+  echo "JAVA_HOME=${JAVA_21_HOME}" >> "$GITHUB_ENV"
+  echo "${JAVA_21_HOME}/bin" >> "$GITHUB_PATH"
+fi
+'''
+
+[tasks."configure-orchestrator"]
+shell = "bash -e -o pipefail -c"
+description = "Write the production Orchestrator configuration"
+run = '''
+umask 077
+config_dir="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/orchestrator-production-config"
+mkdir -p "$config_dir"
+printf '%s\n' \
+  'orchestrator.artifactory.url=https://repox-internal.sonar.build/artifactory' \
+  "orchestrator.artifactory.accessToken=${ORCHESTRATOR_ACCESS_TOKEN:?}" > "$config_dir/orchestrator.properties"
+config_path="$config_dir/orchestrator.properties"
+if [[ "${RUNNER_OS:-}" == Windows ]]; then
+  config_path="/$(cygpath -m "$config_path")"
+fi
+config_path="${config_path// /%20}"
+config_url="file://$config_path"
+echo "$config_url"
+if [[ -n "${GITHUB_ENV:-}" ]]; then
+  echo "ORCHESTRATOR_CONFIG_URL=$config_url" >> "$GITHUB_ENV"
+fi
+'''
+
+[tasks."ruling"]
+shell = "bash -e -o pipefail -c"
+description = "Run ruling integration tests"
+tools = { java = "21" }
+usage = '''
+arg "<profile>" help="Ruling profile"
+arg "<sq-version>" help="SonarQube version"
+'''
+run = '''
+cd its/ruling
+extra_args=()
+if [[ "${RUNNER_OS:-}" != "Windows" ]]; then
+  extra_args+=(-Dparallel=methods -DuseUnlimitedThreads=true)
+fi
+mvn "-Dorchestrator.configUrl=${ORCHESTRATOR_CONFIG_URL:?}" "-Dorchestrator.home=${ORCHESTRATOR_HOME:?}" package ${MAVEN_OUTPUT_ARGS:-} "-Pit-ruling,$usage_profile" "-Dsonar.runtimeVersion=$usage_sq_version" -Dmaven.test.redirectTestOutputToFile=false "${extra_args[@]}"
+'''
+
+[tasks."plugin-qa"]
+shell = "bash -e -o pipefail -c"
+description = "Run plugin integration tests"
+tools = { java = "21" }
+usage = 'arg "<sq-version>" help="SonarQube version"'
+run = '''
+cd its/plugin
+mvn "-Dorchestrator.configUrl=${ORCHESTRATOR_CONFIG_URL:?}" "-Dorchestrator.home=${ORCHESTRATOR_HOME:?}" package ${MAVEN_OUTPUT_ARGS:-} -Pit-plugin "-Dsonar.runtimeVersion=$usage_sq_version" -Dmaven.test.redirectTestOutputToFile=false -Dparallel=classes -DuseUnlimitedThreads=true
+'''
+
+[tasks."compile-test-sources"]
+shell = "bash -e -o pipefail -c"
+run = "mvn clean compile --batch-mode -f java-checks-test-sources/pom.xml"
+
+[tasks."sanity"]
+shell = "bash -e -o pipefail -c"
+run = "mvn verify ${MAVEN_OUTPUT_ARGS:-} -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest"
+
+[tasks."custom-rules"]
+shell = "bash -e -o pipefail -c"
+run = "mvn clean package -f docs/java-custom-rules-example/pom_SQ_10_6_LATEST.xml --batch-mode"
+
+[tasks."license"]
+shell = "bash -e -o pipefail -c"
+run = '''
+mvn org.codehaus.mojo:license-maven-plugin:aggregate-add-third-party \
+  --batch-mode \
+  "-Dlicense.missingFile=${PWD}/missing-dep-licenses.properties" \
+  -DuseMissingFile
+'''
+
+[tasks."verify"]
+shell = "bash -e -o pipefail -c"
+run = "mvn clean verify --batch-mode"
+
+[tasks."normalize-version"]
+shell = "bash -e -o pipefail -c"
+usage = 'arg "<version>" help="Version without the SNAPSHOT suffix"'
+run = '''
+version="$usage_version"
+if [[ "$version" =~ ^[0-9]+\.[0-9]+$ ]]; then
+  version="${version}.0"
+fi
+full_version="${version}-SNAPSHOT"
+echo "$full_version"
+if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+  echo "full-version=$full_version" >> "$GITHUB_OUTPUT"
+fi
+'''
+
+[tasks."set-version"]
+shell = "bash -e -o pipefail -c"
+usage = 'arg "<version>" help="New Maven project version"'
+run = 'mvn versions:set -DgenerateBackupPoms=false "-DnewVersion=$usage_version"'
+
+[tasks."latest-version"]
+shell = "bash -e -o pipefail -c"
+usage = 'arg "[version]" help="Use this version instead of querying Artifactory"'
+run = '''
+if [[ -z "${usage_version:-}" ]]; then
+  echo "version not provided, pulling latest version from $REPO."
+  latest_version="$(curl -fsS -u "${ARTIFACTORY_PRIVATE_USERNAME:?}:${ARTIFACTORY_PRIVATE_PASSWORD:?}" "${ARTIFACTORY_URL:?}/api/search/latestVersion?g=${GROUP_ID:?}&a=${ARTIFACT_ID:?}&repos=${REPO:?}")"
+else
+  latest_version="$usage_version"
+fi
+echo "$latest_version"
+if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+  echo "LATEST_VERSION=$latest_version" >> "$GITHUB_OUTPUT"
+fi
+'''
+
+[tasks."orchestrator-cache-vars"]
+shell = "bash -e -o pipefail -c"
+run = '''
+cache_key="$(date +'%Y-%U')"
+orchestrator_home="${GITHUB_WORKSPACE:-$PWD}/orchestrator"
+echo "ORCHESTRATOR_CACHE_KEY=$cache_key"
+echo "ORCHESTRATOR_HOME=$orchestrator_home"
+if [[ -n "${GITHUB_ENV:-}" ]]; then
+  echo "ORCHESTRATOR_CACHE_KEY=$cache_key" >> "$GITHUB_ENV"
+  echo "ORCHESTRATOR_HOME=$orchestrator_home" >> "$GITHUB_ENV"
+fi
+'''
+
+[tasks."orchestrator-home"]
+shell = "bash -e -o pipefail -c"
+run = '''
+orchestrator_home="${ORCHESTRATOR_HOME:-$PWD/orchestrator}"
+mkdir -p "$orchestrator_home"
+ls -lRh "$orchestrator_home"
+'''
+
+[tasks."ruling-diff"]
+shell = "bash -e -o pipefail -c"
+usage = '''
+arg "<it-dir>" help="Integration test directory"
+arg "<expected-dir>" help="Expected results path relative to it-dir"
+arg "<actual-dir>" help="Actual results path relative to it-dir"
+arg "<name>" help="Diff report name"
+'''
+run = '''
+cd "$usage_it_dir"
+mkdir -p target
+diff --unified --recursive --strip-trailing-cr "$usage_expected_dir" "$usage_actual_dir" > target/test.diff || true
+npx diff2html-cli --input file --style side --file "target/diff_${usage_name}.html" -- target/test.diff
+'''

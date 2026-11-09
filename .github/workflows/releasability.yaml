@@ -16,6 +16,11 @@ jobs:
       id-token: write      # required by SonarSource/vault-action-wrapper
       contents: read       # required by checkout
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: jdx/mise-action@6612f0ef07ed2a736cd1e00a94a065522dd41195 # v5.2.5
+        with:
+          version: 2026.10.20
+          install: false
       - name: Retrieve Vault Secrets
         id: secrets
         uses: SonarSource/vault-action-wrapper@v3
@@ -34,15 +39,8 @@ jobs:
           REPO: sonarsource-public-builds
           GROUP_ID: org.sonarsource.java
           ARTIFACT_ID: sonar-java-plugin
-        run: |
-          if [[ -z "${{ github.event.inputs.version }}" ]]; then
-            echo "version not provided, pulling latest version from $REPO."
-            echo LATEST_VERSION=$(curl -s -u ${ARTIFACTORY_PRIVATE_USERNAME}:${ARTIFACTORY_PRIVATE_PASSWORD} \
-            "${ARTIFACTORY_URL}/api/search/latestVersion?g=${GROUP_ID}&a=${ARTIFACT_ID}&repos=${REPO}") >> "$GITHUB_OUTPUT"
-          else
-            echo "version is provided, using its value: ${{ github.event.inputs.version }}."
-            echo "LATEST_VERSION=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
-          fi
+          REQUESTED_VERSION: ${{ github.event.inputs.version }}
+        run: mise run --skip-tools latest-version "$REQUESTED_VERSION"
 
       - uses: SonarSource/gh-action_releasability@v3
         id: releasability

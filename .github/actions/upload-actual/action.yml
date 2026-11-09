@@ -38,11 +38,7 @@ runs:
         EXPECTED_DIR: ${{ inputs.expected-dir }}
         ACTUAL_DIR: ${{ inputs.actual-dir }}
         NAME: ${{ inputs.name }}
-      run: |
-        cd "${IT_DIR}"
-        mkdir -p target
-        diff --unified --recursive --strip-trailing-cr "${EXPECTED_DIR}" "${ACTUAL_DIR}" > "target/test.diff" || true
-        npx diff2html-cli --input file --style side --file "target/diff_${NAME}.html" -- "target/test.diff"
+      run: mise run ruling-diff "$IT_DIR" "$EXPECTED_DIR" "$ACTUAL_DIR" "$NAME"
 
     - name: Upload Diff Report
       if: runner.os != 'Windows'

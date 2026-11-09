@@ -28,15 +28,12 @@ jobs:
         id: version
         env:
           VERSION: ${{ inputs.version }}
-        run: |
-          if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+$ ]]; then
-            VERSION="${VERSION}.0"
-          fi
-          echo "full-version=${VERSION}-SNAPSHOT" >> $GITHUB_OUTPUT
+        run: mise run normalize-version "$VERSION"
 
       - name: Update Version Number
-        run: |
-          mvn versions:set -DgenerateBackupPoms=false -DnewVersion="${{ steps.version.outputs.full-version }}"
+        env:
+          FULL_VERSION: ${{ steps.version.outputs.full-version }}
+        run: mise run set-version "$FULL_VERSION"
 
       - name: Create Pull Request
         uses: SonarSource/release-github-actions/create-pull-request@v1

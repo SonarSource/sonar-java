@@ -11,11 +11,7 @@ runs:
   steps:
     - name: Set Orchestrator Cache Variables
       shell: bash
-      run: |
-        # year-week
-        CACHE_KEY=$(date +'%Y-%U')
-        echo "ORCHESTRATOR_CACHE_KEY=$CACHE_KEY" >> $GITHUB_ENV
-        echo "ORCHESTRATOR_HOME=${{ github.workspace }}/orchestrator" >> $GITHUB_ENV
+      run: mise run orchestrator-cache-vars
 
     - name: Cache Orchestrator
       if: github.event_name != 'pull_request' && inputs.sq-version != 'DEV'
@@ -27,6 +23,4 @@ runs:
 
     - name: Setup Orchestrator Home Directory
       shell: bash
-      run: |
-        mkdir -p "$ORCHESTRATOR_HOME"
-        ls -lRh "$ORCHESTRATOR_HOME"
+      run: mise run orchestrator-home
