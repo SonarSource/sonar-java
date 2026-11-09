@@ -22,7 +22,8 @@ import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
 import org.sonar.java.TestUtils;
-import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -33,6 +34,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class JavaFileTypeClassifierTest {
+  private final List<JavaTree.CompilationUnitTreeImpl> trees = new java.util.ArrayList<>();
+
+  @org.junit.jupiter.api.AfterEach
+  void releaseEnvironments() {
+    trees.forEach(tree -> tree.getEnvironmentCleaner().run());
+  }
+
 
   /**
    * A {@link Configuration} that does not declare {@code sonar.tests}, so the path/naming
@@ -152,12 +160,15 @@ class JavaFileTypeClassifierTest {
       .isEqualTo(expected);
   }
 
-  private static JavaFileScannerContext contextFor(String filePath) {
+  private JavaFileScannerContext contextFor(String filePath) {
     var classpath = TestClasspathUtils.DEFAULT_MODULE.getClassPath();
     var bridge = new VisitorsBridgeForTests.Builder(List.of())
       .enableSemanticWithProjectClasspath(classpath)
       .build();
-    JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile(filePath), bridge);
+    var tree = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(new java.io.File(filePath), classpath);
+    trees.add(tree);
+    bridge.setCurrentFile(TestUtils.inputFile(filePath));
+    bridge.visitFile(tree, false);
     return bridge.testContexts().get(0);
   }
 
