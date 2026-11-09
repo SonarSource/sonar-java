@@ -184,8 +184,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>21500000</maxsize>
-                  <minsize>19000000</minsize>
+                  <maxsize>59000000</maxsize>
+                  <minsize>54000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>
@@ -209,7 +209,88 @@
               <shadedArtifactAttached>false</shadedArtifactAttached>
               <createDependencyReducedPom>false</createDependencyReducedPom>
               <minimizeJar>true</minimizeJar>
+              <relocations>
+                <relocation>
+                  <pattern>com.intellij</pattern>
+                  <shadedPattern>org.sonar.java.psi.internal.intellij</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>kotlin</pattern>
+                  <shadedPattern>org.sonar.java.psi.internal.kotlin</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>kotlinx</pattern>
+                  <shadedPattern>org.sonar.java.psi.internal.kotlinx</shadedPattern>
+                </relocation>
+              </relocations>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              </transformers>
               <filters>
+                <filter>
+                  <artifact>com.jetbrains.intellij.*:*</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>org.jetbrains.*:*</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>io.opentelemetry*:*</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>at.yawk.lz4:lz4-java</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.fasterxml:aalto-xml</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>com.google.guava:*</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>commons-codec:commons-codec</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>commons-io:commons-io</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>dk.brics:automaton</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>jaxen:jaxen</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>net.java.dev.jna:*</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>one.util:streamex</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>org.apache.commons:commons-compress</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>org.codehaus.woodstox:stax2-api</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>org.slf4j:log4j-over-slf4j</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
+                <filter>
+                  <artifact>oro:oro</artifact>
+                  <includes><include>**</include></includes>
+                </filter>
                 <filter>
                   <artifact>*:*</artifact>
                   <excludes>
@@ -285,36 +366,46 @@
           <version>2.7.1</version>
           <configuration>
             <errorRemedy>xmlOutput</errorRemedy>
+            <licensesConfigFile>${project.basedir}/license-resources/psi-licenses.xml</licensesConfigFile>
             <writeVersions>false</writeVersions>
             <socketTimeout>20000</socketTimeout>
             <licensesOutputDirectory>${project.build.directory}/temp-licenses/THIRD_PARTY_LICENSES</licensesOutputDirectory>
             <licensesOutputFile>${project.build.directory}/licenses.xml</licensesOutputFile>
-            <organizeLicensesByDependencies>true</organizeLicensesByDependencies>
+            <organizeLicensesByDependencies>false</organizeLicensesByDependencies>
             <excludedGroups>com.sonarsource|org.sonarsource.java</excludedGroups>
             <licenseUrlReplacements>
+                <licenseUrlReplacement>
+                    <regexp>https://asm\.ow2\.io/license\.html</regexp>
+                    <replacement>${project.baseUri}/license-resources/asm.txt</replacement>
+                </licenseUrlReplacement>
+                <licenseUrlReplacement>
+                    <regexp>https://www\.apache\.org/licenses/LICENSE-1\.1</regexp>
+                    <replacement>${project.baseUri}/license-resources/oro.txt</replacement>
+                </licenseUrlReplacement>
+                <licenseUrlReplacement>
+                    <regexp>https?://www\.apache\.org/licenses/LICENSE-2\.0(?:\.txt)?$</regexp>
+                    <replacement>${project.baseUri}/license-resources/apache.txt</replacement>
+                </licenseUrlReplacement>
                <licenseUrlReplacement>
                     <regexp>http://www.gnu.org/licenses/lgpl.txt</regexp>
                     <replacement>${project.baseUri}/license-resources/lgpl.txt</replacement>
                 </licenseUrlReplacement>
                 <licenseUrlReplacement>
-                    <regexp>https://www.eclipse.org/legal/epl-2.0/</regexp>
-                    <replacement>${project.baseUri}/license-resources/epl.txt</replacement>
-                </licenseUrlReplacement>
-                <licenseUrlReplacement>
                     <regexp>http://www.opensource.org/licenses/bsd-license.php</regexp>
                     <replacement>${project.baseUri}/license-resources/bsd.txt</replacement>
                 </licenseUrlReplacement>
+                <licenseUrlReplacement>
+                    <regexp>https://www.eclipse.org/legal/epl-2.0/</regexp>
+                    <replacement>${project.baseUri}/license-resources/epl.txt</replacement>
+                </licenseUrlReplacement>
             </licenseUrlReplacements>
-            <licenseUrlFileNameSanitizers>
-              <LicenseUrlReplacement>
-                <regexp>_.*\.txt</regexp>
-              </LicenseUrlReplacement>
-              <!--                 Append -LICENSE.txt -->
-              <LicenseUrlReplacement>
-                <regexp>$</regexp>
-                <replacement>-LICENSE.txt</replacement>
-              </LicenseUrlReplacement>
-            </licenseUrlFileNameSanitizers>
+            <licenseUrlFileNames>
+              <Apache-2.0-LICENSE.txt>.*/license-resources/apache\.txt</Apache-2.0-LICENSE.txt>
+              <Apache-1.1-LICENSE.txt>.*/license-resources/oro\.txt</Apache-1.1-LICENSE.txt>
+              <BSD-3-Clause-ASM-LICENSE.txt>.*/license-resources/asm\.txt</BSD-3-Clause-ASM-LICENSE.txt>
+              <BSD-StaxMate-LICENSE.txt>.*/license-resources/bsd\.txt</BSD-StaxMate-LICENSE.txt>
+              <LGPL-3.0-LICENSE.txt>.*/license-resources/lgpl\.txt</LGPL-3.0-LICENSE.txt>
+            </licenseUrlFileNames>
           </configuration>
           <executions>
             <execution>

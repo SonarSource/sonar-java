@@ -14,8 +14,16 @@
   <description>Code Analyzer for Java :: Front-end (Java Parser)</description>
 
   <properties>
+    <psi.test.repositoryRoot>${project.basedir}/..</psi.test.repositoryRoot>
     <commons-collections.version>3.2.1</commons-collections.version>
   </properties>
+
+  <repositories>
+    <repository>
+      <id>sonarsource</id>
+      <url>https://repox.jfrog.io/artifactory/sonarsource</url>
+    </repository>
+  </repositories>
 
   <dependencies>
     <dependency>
@@ -23,6 +31,62 @@
       <artifactId>jdt-package</artifactId>
       <version>1.10.0.12296</version>
     </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.java</groupId>
+      <artifactId>java-psi</artifactId>
+      <version>${intellij.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.java</groupId>
+      <artifactId>java-psi-impl</artifactId>
+      <version>${intellij.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.java</groupId>
+      <artifactId>java-syntax</artifactId>
+      <version>${intellij.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.java</groupId>
+      <artifactId>java-frontback-psi</artifactId>
+      <version>${intellij.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.java</groupId>
+      <artifactId>java-frontback-psi-impl</artifactId>
+      <version>${intellij.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.platform</groupId>
+      <artifactId>core</artifactId>
+      <version>${intellij.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.platform</groupId>
+      <artifactId>core-impl</artifactId>
+      <version>${intellij.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.platform</groupId>
+      <artifactId>syntax-psi</artifactId>
+      <version>${intellij.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.platform</groupId>
+      <artifactId>util</artifactId>
+      <version>${intellij.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.platform</groupId>
+      <artifactId>util-base</artifactId>
+      <version>${intellij.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jetbrains.intellij.platform</groupId>
+      <artifactId>extensions</artifactId>
+      <version>${intellij.version}</version>
+    </dependency>
+
 
     <dependency>
       <groupId>org.sonarsource.api.plugin</groupId>
@@ -145,6 +209,15 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <psi.test.repositoryRoot>${psi.test.repositoryRoot}</psi.test.repositoryRoot>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>

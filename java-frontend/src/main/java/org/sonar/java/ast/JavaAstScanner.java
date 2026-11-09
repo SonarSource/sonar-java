@@ -114,7 +114,6 @@ public class JavaAstScanner {
           this::analysisCancelled,
           analysisProgress,
           (i, r) -> simpleScan(i, r,
-            // Due to a bug in ECJ, JAR files remain locked after the analysis on Windows, we unlock them manually. See SONARJAVA-3609.
             JavaAstScanner::cleanUpAst,
             modifyCompilationUnit));
     } finally {
@@ -227,7 +226,7 @@ public class JavaAstScanner {
     Throwable cause = ExceptionUtils.getRootCause(e);
     if (cause instanceof InterruptedException
       || cause instanceof InterruptedIOException
-      || cause instanceof CancellationException
+      || ExceptionUtils.indexOfType(e, CancellationException.class) >= 0
       || analysisCancelled()) {
       throw new AnalysisException("Analysis cancelled", e);
     }
