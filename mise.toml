@@ -39,6 +39,7 @@ fi
 [tasks."ruling"]
 shell = "bash -e -o pipefail -c"
 description = "Run ruling integration tests"
+depends = ["orchestrator-home"]
 tools = { java = "21" }
 usage = '''
 arg "<profile>" help="Ruling profile"
@@ -56,6 +57,7 @@ mvn "-Dorchestrator.configUrl=${ORCHESTRATOR_CONFIG_URL:?}" "-Dorchestrator.home
 [tasks."plugin-qa"]
 shell = "bash -e -o pipefail -c"
 description = "Run plugin integration tests"
+depends = ["orchestrator-home"]
 tools = { java = "21" }
 usage = 'arg "<sq-version>" help="SonarQube version"'
 run = '''
@@ -69,6 +71,7 @@ run = "mvn clean compile --batch-mode -f java-checks-test-sources/pom.xml"
 
 [tasks."sanity"]
 shell = "bash -e -o pipefail -c"
+depends = ["compile-test-sources"]
 run = "mvn verify ${MAVEN_OUTPUT_ARGS:-} -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest"
 
 [tasks."custom-rules"]

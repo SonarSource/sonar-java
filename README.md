@@ -90,7 +90,7 @@ for guidance on when samples belong in the dedicated test-source modules instead
 
 ### Mise tasks
 
-The commands used by CI are available locally through [mise](https://mise.jdx.dev/). Run `mise install` once, then list tasks and their arguments with `mise tasks ls` and `mise run <task> --help`.
+The commands used by CI are available locally through [mise](https://mise.jdx.dev/). Run `mise install` once, then list tasks and their arguments with `mise tasks ls` and `mise run <task> --help`. Use `mise tasks deps <task>` to see its prerequisites; `mise run <task>` runs them first.
 
     mise run verify
     mise run normalize-version 10.2
