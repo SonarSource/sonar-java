@@ -212,12 +212,16 @@ public abstract class JParserConfig {
         bridge.analyze(
           root == null ? Path.of(".") : root,
           files.stream().map(file -> file.path().toAbsolutePath()).toList(),
-          List.of());
+          jdkClasspath());
       }
     } catch (Exception failure) {
       closeBridge();
       LOG.warn("SemSitter bridge did not start ({})", failure.toString());
     }
+  }
+
+  static List<String> jdkClasspath() {
+    return List.of(Path.of(System.getProperty("java.home"), "lib", "modules").toString());
   }
 
   void closeBridge() {
