@@ -473,6 +473,7 @@ jobs:
           develocity-url: ${{ env.DEVELOCITY_URL }}
           disable-caching: 'true'
       - name: Run Maven
+        shell: bash
         env:
           JAVA_TOOL_OPTIONS: ""
           MAVEN_OPTS: "-Xmx8g"
