@@ -15,6 +15,11 @@
   <name>SonarQube Java :: Plugin</name>
   <description>Code Analyzer for Java</description>
 
+  <properties>
+    <maven.build.cache.skipCache>true</maven.build.cache.skipCache>
+    <maven.build.cache.skipSave>true</maven.build.cache.skipSave>
+  </properties>
+
   <!--
     Do not remove. Without <url> and <scm>, maven uses the values from the parent and wrongly appends
     "/sonar-java-plugin" at the end. The "sonar-packaging-maven-plugin" uses these values to define in

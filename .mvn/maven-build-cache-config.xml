@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cache xmlns="http://maven.apache.org/BUILD-CACHE-CONFIG/1.2.0"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://maven.apache.org/BUILD-CACHE-CONFIG/1.2.0 https://maven.apache.org/xsd/build-cache-config-1.2.0.xsd">
+  <configuration>
+    <enabled>false</enabled>
+    <attachedOutputs>
+      <dirNames>
+        <dirName>classes</dirName>
+        <dirName>test-classes</dirName>
+        <dirName>generated-sources</dirName>
+        <dirName>generated-resources</dirName>
+        <dirName>surefire-reports</dirName>
+        <dirName>test-jars</dirName>
+        <dirName>test-projects</dirName>
+        <dirName>temp-licenses</dirName>
+        <dirName glob="test-classpath.txt"></dirName>
+        <dirName glob="jacoco.exec"></dirName>
+      </dirNames>
+    </attachedOutputs>
+  </configuration>
+  <input>
+    <global>
+      <glob>*</glob>
+      <includes>
+        <include>src/main</include>
+        <include>src/test</include>
+        <include>LICENSE.txt</include>
+        <include>../LICENSE.txt</include>
+        <include>license-resources</include>
+      </includes>
+    </global>
+  </input>
+  <executionControl>
+    <runAlways>
+      <goalsLists>
+        <goalsList artifactId="maven-install-plugin">
+          <goals><goal>install</goal></goals>
+        </goalsList>
+        <goalsList artifactId="maven-deploy-plugin">
+          <goals><goal>deploy</goal></goals>
+        </goalsList>
+      </goalsLists>
+      <executions>
+        <execution artifactId="license-maven-plugin">
+          <execIds><execId>download-licenses</execId></execIds>
+        </execution>
+        <execution artifactId="exec-maven-plugin">
+          <execIds><execId>validate-license-files</execId></execIds>
+        </execution>
+      </executions>
+    </runAlways>
+  </executionControl>
+</cache>
