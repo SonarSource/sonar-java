@@ -29,6 +29,7 @@ jobs:
     outputs:
       build-number: ${{ steps.build-maven.outputs.BUILD_NUMBER }}
       deployed: ${{ steps.build-maven.outputs.deployed }}
+      project-version: ${{ steps.build-maven.outputs.project-version }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: jdx/mise-action@6612f0ef07ed2a736cd1e00a94a065522dd41195 # v5.2.5
@@ -306,6 +307,7 @@ jobs:
           namespace: sanity
       - uses: SonarSource/ci-github-actions/config-maven@v2
         with:
+          working-directory: .mvn
           repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
@@ -328,7 +330,9 @@ jobs:
           SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_TOKEN }}
           MAVEN_OPTS: "-Xmx8g"
+          DEPLOYED_PROJECT_VERSION: ${{ needs.build.outputs.project-version }}
         run: |
+          mvn org.codehaus.mojo:versions-maven-plugin:2.7:set -DnewVersion="$DEPLOYED_PROJECT_VERSION" -DgenerateBackupPoms=false -Dmaven.build.cache.enabled=false
           mvn verify ${MAVEN_OUTPUT_ARGS} -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest -Dmaven.build.cache.enabled=false
       - name: Save Apache Maven build cache
         if: >-
@@ -467,6 +471,7 @@ jobs:
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v2
         with:
+          working-directory: .mvn
           repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
