@@ -54,8 +54,9 @@ class Foo {
   public void foo8() { // Noncompliant
   }
 
-  @java.lang.Deprecated // Compliant - no one does this
-  public void foo9() {
+  @java.lang.Deprecated
+  public void foo9() { // Noncompliant {{Do not forget to remove this deprecated code someday.}}
+//            ^^^^
 
     @Deprecated
     int local1 = 0; // Noncompliant
