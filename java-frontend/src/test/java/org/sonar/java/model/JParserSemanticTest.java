@@ -1437,10 +1437,10 @@ class JParserSemanticTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     VariableTreeImpl parameter = (VariableTreeImpl) m.parameters().get(0);
-    assertThat(parameter.symbol().metadata().annotations().size())
-      .isEqualTo(1);
-    assertThat(m.symbol().declarationParameters().get(0).metadata().annotations().size())
-      .isEqualTo(1);
+    assertThat(parameter.symbol().metadata().annotations())
+      .hasSize(1);
+    assertThat(m.symbol().declarationParameters().get(0).metadata().annotations())
+      .hasSize(1);
   }
 
   @Test
