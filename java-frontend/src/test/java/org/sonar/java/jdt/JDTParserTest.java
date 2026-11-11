@@ -54,7 +54,6 @@ import static org.sonar.java.jdt.JDTParser.isComment;
 import static org.sonar.java.model.JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
 import static org.sonar.java.model.JParserConfig.Mode.BATCH;
 import static org.sonar.java.model.JParserTestUtils.DEFAULT_CLASSPATH;
-import static org.sonar.java.model.JParserTestUtils.parse;
 
 class JDTParserTest {
 
