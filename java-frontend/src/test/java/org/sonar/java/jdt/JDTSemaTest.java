@@ -23,7 +23,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.model.JParserConfig;
+import org.sonar.java.model.JParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,7 +42,7 @@ class JDTSemaTest {
   @BeforeEach
   void setup() {
     ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
-    String version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION.effectiveJavaVersionAsString();
+    String version = JParser.MAXIMUM_SUPPORTED_JAVA_VERSION.effectiveJavaVersionAsString();
     JavaCore.setComplianceOptions(version, JavaCore.getOptions());
     astParser.setEnvironment(
       new String[]{"target/test-classes"},

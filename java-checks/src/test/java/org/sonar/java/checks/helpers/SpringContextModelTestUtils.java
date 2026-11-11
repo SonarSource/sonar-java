@@ -28,7 +28,7 @@ import java.util.function.UnaryOperator;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.verifier.TestUtils;
-import org.sonar.java.model.JParserConfig;
+import org.sonar.java.model.JParser;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.model.springcontext.BeanDefinitionGatherer;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
@@ -172,7 +172,7 @@ public final class SpringContextModelTestUtils {
     } catch (Exception e) {
       throw new IllegalStateException("Unable to read file '" + file.getAbsolutePath() + "'", e);
     }
-    JavaVersion version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    return JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).parse(file.getName(), source);
+    JavaVersion version = JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    return JParser.Mode.FILE_BY_FILE.create(version, classpath).parse(version.effectiveJavaVersionAsString(), file.getName(), source);
   }
 }

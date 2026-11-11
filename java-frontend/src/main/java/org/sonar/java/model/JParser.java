@@ -16,12 +16,34 @@
  */
 package org.sonar.java.model;
 
+import java.io.File;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.BooleanSupplier;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.AnalysisProgress;
+import org.sonar.java.jdt.JDTParser;
+import org.sonar.plugins.java.api.JavaVersion;
+
 public interface JParser {
+
+  JavaVersion MAXIMUM_SUPPORTED_JAVA_VERSION = new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED, true);
+
+  enum Mode {
+    BATCH,
+    FILE_BY_FILE;
+
+    public JParser create(JavaVersion javaVersion, List<File> classpath) {
+      return create(javaVersion, classpath, false);
+    }
+
+    public JParser create(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
+      return JDTParser.create(this, javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
+    }
+  }
 
   JavaTree.CompilationUnitTreeImpl parse(String version, String unitName, String source);
 
-  static JavaTree.CompilationUnitTreeImpl parse(JParser parser, String version, String unitName, String source) {
-    return parser.parse(version, unitName, source);
-  }
+  void parse(Iterable<InputFile> inputFiles, BooleanSupplier isCanceled, AnalysisProgress analysisProgress, BiConsumer<InputFile, JParseResult> action);
 
 }

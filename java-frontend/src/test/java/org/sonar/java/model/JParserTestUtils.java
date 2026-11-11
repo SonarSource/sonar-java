@@ -115,11 +115,11 @@ public class JParserTestUtils {
   }
 
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath) {
-    return parse(unitName, source, classpath, JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION);
+    return parse(unitName, source, classpath, JParser.MAXIMUM_SUPPORTED_JAVA_VERSION);
   }
 
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath, JavaVersion version) {
-    return JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).parse(unitName, source);
+    return JParser.Mode.FILE_BY_FILE.create(version, classpath).parse(version.effectiveJavaVersionAsString(), unitName, source);
   }
 
   public static List<File> checksTestClassPath() throws IOException {

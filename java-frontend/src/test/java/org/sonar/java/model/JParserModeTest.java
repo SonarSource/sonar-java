@@ -24,17 +24,17 @@ import org.sonar.java.testing.ThreadLocalLogTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JParserConfigTest {
+class JParserModeTest {
   @RegisterExtension
   public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.INFO);
 
   @Test
   void a_debug_message_is_logged_when_shouldIgnoreUnnamedModuleForSplitPackage_is_set() {
-    JParserConfig.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList());
+    JParser.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList());
     assertThat(logTester.logs()).isEmpty();
-    JParserConfig.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), false);
+    JParser.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), false);
     assertThat(logTester.logs()).isEmpty();
-    JParserConfig.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), true);
+    JParser.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), true);
     assertThat(logTester.logs()).containsExactly("The Java analyzer will ignore the unnamed module for split packages.");
   }
 }
