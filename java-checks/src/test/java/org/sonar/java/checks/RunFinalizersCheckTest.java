@@ -47,8 +47,7 @@ class RunFinalizersCheckTest {
         .withJavaVersion(11)
         .verifyNoIssues();
     } else {
-      // No issue raised by default starting JDK 11 as the related APIs were removed from JDK and cannot be resolved,
-      // unless the analyzed Java version is 10, for which the APIs of that release are visible
+      // No issue raised starting JDK 11 as the related APIs were removed from JDK and cannot be resolved
       CheckVerifier.newVerifier()
         .onFile(nonCompilingTestSourcesPath("checks/RunFinalizersCheckNoIssue.java"))
         .withCheck(new RunFinalizersCheck())
@@ -59,10 +58,10 @@ class RunFinalizersCheckTest {
         .withJavaVersion(javaVersion)
         .verifyNoIssues();
       CheckVerifier.newVerifier()
-        .onFile(nonCompilingTestSourcesPath("checks/RunFinalizersCheckSample.java"))
+        .onFile(nonCompilingTestSourcesPath("checks/RunFinalizersCheckNoIssue.java"))
         .withCheck(new RunFinalizersCheck())
         .withJavaVersion(10)
-        .verifyIssues();
+        .verifyNoIssues();
     }
   }
 

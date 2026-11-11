@@ -128,6 +128,24 @@ class JParserTest {
   }
 
   @Test
+  void should_see_the_whole_jdk_api_when_the_release_option_is_not_used() {
+    assumeRunningJdkCanServeOlderReleases();
+    String source = """
+      class Example {
+        java.util.jar.Pack200 removedInJdk14;
+        java.lang.Record addedInJdk16;
+      }
+      """;
+    ASTParser astParser = FILE_BY_FILE.create(JavaVersionImpl.fromString("11"), List.of()).astParser();
+
+    Set<String> undefinedTypes = JParser.parse(astParser, "11", "Example", source).sema.undefinedTypes.stream()
+      .map(Object::toString)
+      .collect(Collectors.toSet());
+
+    assertThat(undefinedTypes).containsExactly("java.util.jar.Pack200 cannot be resolved to a type");
+  }
+
+  @Test
   void should_use_the_release_api_of_the_jdk_provided_in_the_classpath() {
     File runtimeImage = new File(System.getProperty("java.home"), "lib/jrt-fs.jar");
     assumeTrue(runtimeImage.isFile());
@@ -158,7 +176,7 @@ class JParserTest {
     List<Set<String>> undefinedTypes = new ArrayList<>();
 
     BATCH
-      .create(JavaVersionImpl.fromString("11"), List.of())
+      .create(JavaVersionImpl.fromString("11"), List.of(), false, true)
       .parse(Set.of(TestUtils.inputFile(file.toFile())), () -> false, new AnalysisProgress(1), (inputFile, result) -> {
         try {
           undefinedTypes.add(result.get().sema.undefinedTypes.stream().map(Object::toString).collect(Collectors.toSet()));
@@ -180,7 +198,7 @@ class JParserTest {
   }
 
   private static Set<String> undefinedTypes(String release, String source, List<File> classpath) {
-    ASTParser astParser = FILE_BY_FILE.create(JavaVersionImpl.fromString(release), classpath).astParser();
+    ASTParser astParser = FILE_BY_FILE.create(JavaVersionImpl.fromString(release), classpath, false, true).astParser();
     return JParser.parse(astParser, release, "Example", source).sema.undefinedTypes.stream()
       .map(Object::toString)
       .collect(Collectors.toSet());
@@ -899,7 +917,7 @@ class JParserTest {
     Deque<RuntimeException> exceptions = new LinkedList<>();
 
     public BatchWithException() {
-      super(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH, false);
+      super(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH, false, false);
     }
 
     @Override

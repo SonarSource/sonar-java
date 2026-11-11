@@ -173,7 +173,7 @@ class JParserConfigTest {
   }
 
   private static JParserConfig config(String release, List<File> classpath) {
-    return JParserConfig.Mode.FILE_BY_FILE.create(JavaVersionImpl.fromString(release), classpath);
+    return JParserConfig.Mode.FILE_BY_FILE.create(JavaVersionImpl.fromString(release), classpath, false, true);
   }
 
   private static Map<String, String> releaseOptions(String release) {

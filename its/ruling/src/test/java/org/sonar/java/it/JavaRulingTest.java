@@ -474,6 +474,7 @@ public class JavaRulingTest {
         Paths.get("target/performance/sonar.java.performance.measure.json").toAbsolutePath().toString())
       .setProperty("sonar.import_unknown_files", "true")
       .setProperty("sonar.skipPackageDesign", "true")
+      .setProperty("sonar.java.useJdkReleaseOption", "true")
       .setProperty("sonar.lits.dump.old", effectiveDumpOldFolder.resolve(projectName).toString())
       .setProperty("sonar.lits.dump.new", FileLocation.of("target/actual/" + projectName).getFile().getAbsolutePath())
       .setProperty("sonar.lits.differences", litsDifferencesPath(projectName))

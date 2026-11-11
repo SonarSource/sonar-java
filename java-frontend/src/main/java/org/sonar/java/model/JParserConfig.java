@@ -64,11 +64,14 @@ public abstract class JParserConfig {
   final JavaVersion javaVersion;
   final List<File> classpath;
   final boolean shouldIgnoreUnnamedModuleForSplitPackage;
+  final boolean shouldUseJdkReleaseOption;
 
-  private JParserConfig(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
+  private JParserConfig(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage,
+    boolean shouldUseJdkReleaseOption) {
     this.javaVersion = javaVersion;
     this.classpath = classpath;
     this.shouldIgnoreUnnamedModuleForSplitPackage = shouldIgnoreUnnamedModuleForSplitPackage;
+    this.shouldUseJdkReleaseOption = shouldUseJdkReleaseOption;
   }
 
   public abstract void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled,
@@ -89,10 +92,15 @@ public abstract class JParserConfig {
     }
 
     public JParserConfig create(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
+      return create(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage, false);
+    }
+
+    public JParserConfig create(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage,
+      boolean shouldUseJdkReleaseOption) {
       if (shouldIgnoreUnnamedModuleForSplitPackage) {
         LOG.info("The Java analyzer will ignore the unnamed module for split packages.");
       }
-      return supplier.apply(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
+      return supplier.apply(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage, shouldUseJdkReleaseOption);
     }
   }
 
@@ -133,8 +141,11 @@ public abstract class JParserConfig {
     JProblem.Type.compilerOptions()
       .forEach(option -> options.put(option, "warning"));
 
-    options.put(SystemReleaseClasspath.OPTION_RELEASE, javaVersion.effectiveJavaVersionAsString());
-    List<File> environment = useReleaseApiOfConfiguredJdk(options);
+    List<File> environment = classpath;
+    if (shouldUseJdkReleaseOption) {
+      options.put(SystemReleaseClasspath.OPTION_RELEASE, javaVersion.effectiveJavaVersionAsString());
+      environment = useReleaseApiOfConfiguredJdk(options);
+    }
 
     astParser.setCompilerOptions(options);
 
@@ -201,8 +212,8 @@ public abstract class JParserConfig {
   @VisibleForTesting
   static class Batch extends JParserConfig {
 
-    Batch(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
-      super(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
+    Batch(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage, boolean shouldUseJdkReleaseOption) {
+      super(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage, shouldUseJdkReleaseOption);
     }
 
     @Override
@@ -279,8 +290,9 @@ public abstract class JParserConfig {
 
   private static class FileByFile extends JParserConfig {
 
-    private FileByFile(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
-      super(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
+    private FileByFile(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage,
+      boolean shouldUseJdkReleaseOption) {
+      super(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage, shouldUseJdkReleaseOption);
     }
 
     @Override
@@ -338,7 +350,7 @@ public abstract class JParserConfig {
 
   @FunctionalInterface
   public interface ParserConfigConstructor {
-    JParserConfig apply(JavaVersion version, List<File> files, Boolean shouldIgnoreUnnamedModuleForSplitPackage);
+    JParserConfig apply(JavaVersion version, List<File> files, Boolean shouldIgnoreUnnamedModuleForSplitPackage, Boolean shouldUseJdkReleaseOption);
   }
 
 }
