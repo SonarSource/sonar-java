@@ -17,6 +17,7 @@
 package org.sonar.java.model;
 
 import com.sonar.sslr.api.RecognitionException;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -116,7 +117,11 @@ class JParserTest {
     String version = "12";
     List<File> classpath = Collections.singletonList(new File("unknownFile"));
     JParser config = FILE_BY_FILE.create(JavaVersionImpl.fromString(version), classpath);
-    assertThrows(RecognitionException.class, () -> config.parse(version, "A", "class A { }"));
+    InputFile inputFile = new TestInputFileBuilder("", "A.java").setContents("class A { }").build();
+    List<JParseResult> results = new ArrayList<>();
+    config.parse(List.of(inputFile), () -> false, new AnalysisProgress(1), (input, result) -> results.add(result));
+    assertThat(results).hasSize(1);
+    assertThrows(RecognitionException.class, results.getFirst()::get);
   }
 
   @Test

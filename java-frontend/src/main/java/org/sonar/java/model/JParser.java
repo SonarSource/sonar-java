@@ -42,8 +42,6 @@ public interface JParser {
     }
   }
 
-  JavaTree.CompilationUnitTreeImpl parse(String version, String unitName, String source);
-
   void parse(Iterable<InputFile> inputFiles, BooleanSupplier isCanceled, AnalysisProgress analysisProgress, BiConsumer<InputFile, JParseResult> action);
 
 }

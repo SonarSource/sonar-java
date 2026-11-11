@@ -81,23 +81,6 @@ public abstract class JDTParser implements JParser {
     this.shouldIgnoreUnnamedModuleForSplitPackage = shouldIgnoreUnnamedModuleForSplitPackage;
   }
 
-  @Override
-  public JavaTree.CompilationUnitTreeImpl parse(String version, String unitName, String source) {
-    ASTParser parser = jdtAstParser();
-    parser.setUnitName(unitName);
-    parser.setSource(source.toCharArray());
-
-    CompilationUnit astNode;
-    try {
-      astNode = (CompilationUnit) parser.createAST(null);
-    } catch (Exception e) {
-      LOG.error("ECJ: Unable to parse file", e);
-      throw new RecognitionException(-1, "ECJ: Unable to parse file.", e);
-    }
-
-    return JDTAstConverter.convert(version, unitName, source, astNode);
-  }
-
   protected ASTParser jdtAstParser() {
     ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
     Map<String, String> options = new HashMap<>(JavaCore.getOptions());
@@ -251,6 +234,22 @@ public abstract class JDTParser implements JParser {
         parseDuration.stop();
       }
       action.accept(inputFile, result);
+    }
+
+    private JavaTree.CompilationUnitTreeImpl parse(String version, String unitName, String source) {
+      ASTParser parser = jdtAstParser();
+      parser.setUnitName(unitName);
+      parser.setSource(source.toCharArray());
+
+      CompilationUnit astNode;
+      try {
+        astNode = (CompilationUnit) parser.createAST(null);
+      } catch (Exception e) {
+        LOG.error("ECJ: Unable to parse file", e);
+        throw new RecognitionException(-1, "ECJ: Unable to parse file.", e);
+      }
+
+      return JDTAstConverter.convert(version, unitName, source, astNode);
     }
   }
 
