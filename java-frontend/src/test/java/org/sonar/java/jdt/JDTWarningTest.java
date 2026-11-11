@@ -47,7 +47,7 @@ import static org.sonar.java.jdt.JDTWarning.Mapper.isMorePreciseTree;
 import static org.sonar.java.jdt.JDTWarning.Mapper.matchesTreeExactly;
 import static org.sonar.java.jdt.JDTWarning.Mapper.setSyntaxTree;
 
-class JWarningTest {
+class JDTWarningTest {
 
   @ParameterizedTest
   @CsvSource({"7, 2, 5", "13, 3, 4"})

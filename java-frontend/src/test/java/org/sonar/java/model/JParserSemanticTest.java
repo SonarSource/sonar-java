@@ -14,33 +14,16 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.jdt;
+package org.sonar.java.model;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.SwitchStatement;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.JParserConfig;
-import org.sonar.java.model.JParserTestUtils;
-import org.sonar.java.model.JUtils;
-import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.KeywordSuper;
-import org.sonar.java.model.KeywordThis;
-import org.sonar.java.model.TypeParameterTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -64,7 +47,6 @@ import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.model.statement.StaticInitializerTreeImpl;
 import org.sonar.java.model.statement.SwitchExpressionTreeImpl;
 import org.sonar.java.model.statement.YieldStatementTreeImpl;
-import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.diagnostics.ProblemKind;
 import org.sonar.plugins.java.api.diagnostics.Warning;
 import org.sonar.plugins.java.api.location.Position;
@@ -104,7 +86,6 @@ import org.sonar.plugins.java.api.tree.YieldStatementTree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.sonar.java.model.JParserTestUtils.symbolOf;
 import static org.sonar.java.model.JParserTestUtils.typeOf;
 import static org.sonar.java.model.assertions.TreeAssert.assertThat;
@@ -132,9 +113,6 @@ class JParserSemanticTest {
       .isSameAs(typeOf(e));
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.InfixExpression#extendedOperands()
-   */
   @Test
   void extended_operands() {
     BinaryExpressionTreeImpl e = (BinaryExpressionTreeImpl) expression("1 - 2 - 3");
@@ -143,9 +121,6 @@ class JParserSemanticTest {
     assertThat(typeOf(leftOperand)).isSameAs(typeOf(e));
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.SimpleName
-   */
   @Test
   void expression_simple_name() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { int f; Object m() { return f; } }");
@@ -157,9 +132,6 @@ class JParserSemanticTest {
     assertThat(symbolOf(i).usages()).containsOnly(i);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.QualifiedName
-   */
   @Test
   void expression_qualified_name() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return java.lang.System.out; } }");
@@ -171,7 +143,7 @@ class JParserSemanticTest {
 
     MemberSelectExpressionTreeImpl javaLangSystem = (MemberSelectExpressionTreeImpl) javaLangSystemOut.expression();
     assertThat(typeOf(javaLangSystem)).isNotSameAs(Type.UNKNOWN);
-    assertThat(((JDTType) typeOf(javaLangSystem)).is("java.lang.System"))
+    Assertions.assertThat(typeOf(javaLangSystem).is("java.lang.System"))
       .isEqualTo(javaLangSystem.symbolType().is("java.lang.System"))
       .isTrue();
 
@@ -195,14 +167,11 @@ class JParserSemanticTest {
       .isNotNull()
       .isSameAs(typeOf(system).symbol());
     assertThat(symbolOf(system).isTypeSymbol()).isTrue();
-    assertThat(((JDTType) typeOf(system)).is("java.lang.System"))
+    assertThat(typeOf(system).is("java.lang.System"))
       .isEqualTo(system.symbolType().is("java.lang.System"))
       .isTrue();
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.ThisExpression
-   */
   @Test
   void expression_this() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return this; } }");
@@ -213,15 +182,12 @@ class JParserSemanticTest {
     assertThat(typeOf(keywordThis)).isNotSameAs(Type.UNKNOWN)
       .isSameAs(typeOf(Objects.requireNonNull((ClassTreeImpl) keywordThis.symbolType().symbol().declaration())))
       .isSameAs(typeOf(c));
-    assertThat(keywordThis.symbol())
-      .isSameAs(((JDTTypeSymbol) typeOf(c).symbol()).thisSymbol);
+    assertThat(keywordThis.symbol().owner()).isSameAs(c.symbol());
+    assertThat(keywordThis.symbol().type()).isSameAs(keywordThis.symbolType());
     assertThat(keywordThis.symbol().isVariableSymbol())
       .isTrue();
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.ThisExpression
-   */
   @Test
   void expression_this_qualified() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C1 { class C2 { Object m() { return C1.this; } } }");
@@ -237,15 +203,12 @@ class JParserSemanticTest {
     assertThat(typeOf(keywordThis)).isNotSameAs(Type.UNKNOWN)
       .isSameAs(typeOf(Objects.requireNonNull((ClassTreeImpl) keywordThis.symbolType().symbol().declaration())))
       .isSameAs(typeOf(c1));
-    assertThat(keywordThis.symbol())
-      .isSameAs(((JDTTypeSymbol) typeOf(c1).symbol()).thisSymbol);
+    assertThat(keywordThis.symbol().owner()).isSameAs(c1.symbol());
+    assertThat(keywordThis.symbol().type()).isSameAs(keywordThis.symbolType());
     assertThat(keywordThis.symbol().isVariableSymbol())
       .isTrue();
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.FieldAccess
-   */
   @Test
   void expression_field_access() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { int f; Object m() { return this.f; } }");
@@ -267,9 +230,6 @@ class JParserSemanticTest {
       .containsOnly(identifier);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.SuperFieldAccess
-   */
   @Test
   void expression_super_field_access() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C extends S { Object m() { return super.f; } } class S { int f; }");
@@ -283,8 +243,8 @@ class JParserSemanticTest {
     KeywordSuper keywordSuper = (KeywordSuper) expression.expression();
     assertThat(keywordSuper.symbolType().symbol().declaration())
       .isSameAs(superClass.symbol().declaration());
-    assertThat(keywordSuper.symbol())
-      .isSameAs(((JDTTypeSymbol) typeOf(c).symbol()).superSymbol);
+    assertThat(keywordSuper.symbol().owner()).isSameAs(c.symbol());
+    assertThat(keywordSuper.symbol().type()).isSameAs(keywordSuper.symbolType());
 
     IdentifierTreeImpl identifier = (IdentifierTreeImpl) expression.identifier();
     assertThat(symbolOf(identifier))
@@ -296,9 +256,6 @@ class JParserSemanticTest {
       .containsOnly(identifier);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.SuperFieldAccess
-   */
   @Test
   void expression_super_field_access_qualified() {
     JavaTree.CompilationUnitTreeImpl cu = test("class T extends S { class C { Object m() { return T.super.f; } } } class S { int f; }");
@@ -319,8 +276,8 @@ class JParserSemanticTest {
     assertThat(keywordSuper.symbolType().symbol().declaration())
       .isSameAs(Objects.requireNonNull((ClassTreeImpl) keywordSuper.symbolType().symbol().declaration()))
       .isSameAs(superClass);
-    assertThat(keywordSuper.symbol())
-      .isSameAs(((JDTTypeSymbol) typeOf(t).symbol()).superSymbol);
+    assertThat(keywordSuper.symbol().owner()).isSameAs(t.symbol());
+    assertThat(keywordSuper.symbol().type()).isSameAs(keywordSuper.symbolType());
 
     IdentifierTreeImpl identifier = (IdentifierTreeImpl) expression.identifier();
     assertThat(symbolOf(identifier))
@@ -332,9 +289,6 @@ class JParserSemanticTest {
       .containsOnly(identifier);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.TypeLiteral
-   */
   @Test
   void expression_type_literal() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return C.class; } }");
@@ -352,9 +306,6 @@ class JParserSemanticTest {
       .isTrue();
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.ClassInstanceCreation
-   */
   @Test
   void expression_class_instance_creation() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return new C(); } C(){} }");
@@ -376,9 +327,6 @@ class JParserSemanticTest {
       .containsOnly(i);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.ClassInstanceCreation
-   */
   @Test
   void expression_anonymous_class_instance_creation() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return new C() { }; } protected C(){} }");
@@ -403,9 +351,6 @@ class JParserSemanticTest {
       .containsOnly(identifier);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.CreationReference
-   */
   @Test
   void expression_creation_reference() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { C() { } java.util.function.Supplier m() { return C::new; } }");
@@ -424,9 +369,6 @@ class JParserSemanticTest {
       .containsOnly(keywordNew);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.MethodReference
-   */
   @Test
   void expression_method_reference() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { java.util.function.Supplier m() { return this::m; } }");
@@ -444,9 +386,6 @@ class JParserSemanticTest {
       .containsOnly(identifier);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.TypeMethodReference
-   */
   @Test
   void expression_type_method_reference() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { static java.util.function.Supplier m() { return C::m; } }");
@@ -464,9 +403,6 @@ class JParserSemanticTest {
       .containsOnly(identifier);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.SuperMethodReference
-   */
   @Test
   void expression_super_method_reference() {
     JavaTree.CompilationUnitTreeImpl cu = test("""
@@ -487,8 +423,8 @@ class JParserSemanticTest {
     KeywordSuper keywordSuper = (KeywordSuper) creationReference.expression();
     assertThat(keywordSuper.symbolType().symbol().declaration())
       .isSameAs(superClass.symbol().declaration());
-    assertThat(keywordSuper.symbol())
-      .isSameAs(((JDTTypeSymbol) typeOf(c).symbol()).superSymbol);
+    assertThat(keywordSuper.symbol().owner()).isSameAs(c.symbol());
+    assertThat(keywordSuper.symbol().type()).isSameAs(keywordSuper.symbolType());
 
     IdentifierTreeImpl identifier = (IdentifierTreeImpl) creationReference.method();
     assertThat(symbolOf(identifier))
@@ -500,9 +436,6 @@ class JParserSemanticTest {
       .containsOnly(identifier);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.SuperMethodReference
-   */
   @Test
   void expression_super_method_reference_qualified() {
     JavaTree.CompilationUnitTreeImpl cu = test("""
@@ -525,8 +458,8 @@ class JParserSemanticTest {
     KeywordSuper keywordSuper = (KeywordSuper) mseti.identifier();
     assertThat(keywordSuper.symbolType().symbol().declaration())
       .isSameAs(superClass.symbol().declaration());
-    assertThat(keywordSuper.symbol())
-      .isSameAs(((JDTTypeSymbol) typeOf(c).symbol()).superSymbol);
+    assertThat(keywordSuper.symbol().owner()).isSameAs(c.symbol());
+    assertThat(keywordSuper.symbol().type()).isSameAs(keywordSuper.symbolType());
 
     IdentifierTreeImpl identifier = (IdentifierTreeImpl) creationReference.method();
     assertThat(symbolOf(identifier))
@@ -538,10 +471,6 @@ class JParserSemanticTest {
       .containsOnly(identifier);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.SwitchExpression
-   * @see org.eclipse.jdt.core.dom.YieldStatement
-   */
   @Test
   void expression_switch() {
     {
@@ -596,14 +525,6 @@ class JParserSemanticTest {
     assertThat(switchExpression.symbolType().isUnknown()).isTrue();
   }
 
-  /**
-   * Pattern Matching for instanceof
-   * (Preview in Java 14) https://openjdk.java.net/jeps/305
-   * (Second Preview in Java 15) https://openjdk.java.net/jeps/375
-   * (Final in Java 16) https://openjdk.java.net/jeps/394
-   *
-   * @see org.eclipse.jdt.core.dom.InstanceofExpression
-   */
   @Test
   void expression_pattern_instanceof() {
     PatternInstanceOfTree e = (PatternInstanceOfTree) expression("o instanceof String s");
@@ -619,9 +540,6 @@ class JParserSemanticTest {
     assertThat(i.symbol().declaration()).isEqualTo(v);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.MethodInvocation
-   */
   @Test
   void expression_method_invocation() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return m(); } }");
@@ -643,9 +561,6 @@ class JParserSemanticTest {
       .containsOnly(i);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.MethodInvocation
-   */
   @Test
   void expression_method_invocation_recovery() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { Object m() { return m(42); } }");
@@ -659,9 +574,6 @@ class JParserSemanticTest {
     assertThat(symbolOf(method).usages()).isEmpty();
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.SuperMethodInvocation
-   */
   @Test
   void expression_super_method_invocation() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C extends S { Object m() { return super.m(); } } class S { Object m() { return null; } }");
@@ -681,8 +593,8 @@ class JParserSemanticTest {
     KeywordSuper keywordSuper = (KeywordSuper) e2.expression();
     assertThat(keywordSuper.symbolType().symbol().declaration())
       .isSameAs(superClass.symbol().declaration());
-    assertThat(keywordSuper.symbol())
-      .isSameAs(((JDTTypeSymbol) typeOf(c).symbol()).superSymbol);
+    assertThat(keywordSuper.symbol().owner()).isSameAs(c.symbol());
+    assertThat(keywordSuper.symbol().type()).isSameAs(keywordSuper.symbolType());
 
     IdentifierTreeImpl i = (IdentifierTreeImpl) e2.identifier();
     assertThat(symbolOf(i))
@@ -693,9 +605,6 @@ class JParserSemanticTest {
       .containsOnly(i);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.SuperMethodInvocation
-   */
   @Test
   void expression_super_method_invocation_recovery() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C extends S { Object m() { return super.m(42); } } class S { Object m() { return null; } }");
@@ -713,9 +622,6 @@ class JParserSemanticTest {
     assertThat(symbolOf(superClassMethod).usages()).isEmpty();
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.SuperMethodInvocation
-   */
   @Test
   void expression_super_method_invocation_qualified() {
     JavaTree.CompilationUnitTreeImpl cu = test("class T extends S { class C { Object m() { return T.super.m(); } } } class S { Object m() { return null; } }");
@@ -745,8 +651,8 @@ class JParserSemanticTest {
     KeywordSuper keywordSuper = (KeywordSuper) qualifiedSuper.identifier();
     assertThat(keywordSuper.symbolType().symbol().declaration())
       .isSameAs(superClass);
-    assertThat(keywordSuper.symbol())
-      .isSameAs(((JDTTypeSymbol) typeOf(t).symbol()).superSymbol);
+    assertThat(keywordSuper.symbol().owner()).isSameAs(t.symbol());
+    assertThat(keywordSuper.symbol().type()).isSameAs(keywordSuper.symbolType());
 
     IdentifierTreeImpl identifier = (IdentifierTreeImpl) qualifiedMethodName.identifier();
     assertThat(symbolOf(identifier))
@@ -797,10 +703,10 @@ class JParserSemanticTest {
     var lambda = (LambdaExpressionTree) f.initializer();
     var p = (VariableTreeImpl) lambda.parameters().get(0);
 
-    Symbol newSymbol = ((JDTVariableSymbol) symbolOf(p));
+    Symbol newSymbol = p.symbol();
     assertThat(newSymbol.declaration().firstToken().range().start().line()).isEqualTo(3);
     Symbol newOwner = newSymbol.owner();
-    assertTrue(newOwner instanceof JDTMethodSymbol methodSymbol && methodSymbol.isLambda());
+    assertThat(newOwner).isSameAs(lambda.symbol());
   }
 
   /**
@@ -828,9 +734,9 @@ class JParserSemanticTest {
     VariableTreeImpl p = (VariableTreeImpl) lambda.parameters().get(0);
 
     // owner of lambda parameter is the field or variable to which it is assigned
-    Symbol newSymbol = ((JDTVariableSymbol) symbolOf(p));
+    Symbol newSymbol = p.symbol();
     Symbol newOwner = newSymbol.owner();
-    assertTrue(newOwner instanceof JDTMethodSymbol methodSymbol && methodSymbol.isLambda());
+    assertThat(newOwner).isSameAs(lambda.symbol());
   }
 
   @Test
@@ -858,12 +764,9 @@ class JParserSemanticTest {
     LambdaExpressionTreeImpl l2 = (LambdaExpressionTreeImpl) r.expression();
 
     assertThat(typeOf(l2)).isNotSameAs(Type.UNKNOWN);
-    assertThat(((JDTType) typeOf(l2)).is("java.util.function.Supplier")).isTrue();
+    assertThat(typeOf(l2).is("java.util.function.Supplier")).isTrue();
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.ConditionalExpression
-   */
   @Test
   void conditional_expression() {
     String source = """
@@ -884,15 +787,15 @@ class JParserSemanticTest {
     IdentifierTreeImpl c2 = (IdentifierTreeImpl) cond.falseExpression();
 
     assertThat(typeOf(cond)).isNotSameAs(Type.UNKNOWN);
-    JDTType tcond = ((JDTType) typeOf(cond));
+    Type tcond = typeOf(cond);
     assertThat(tcond.is("java.lang.Class[]")).isTrue();
 
     assertThat(typeOf(c1)).isNotSameAs(Type.UNKNOWN);
-    JDTType tc1 = ((JDTType) typeOf(c1));
+    Type tc1 = typeOf(c1);
     assertThat(tc1.is("java.lang.Class[]")).isTrue();
 
     assertThat(typeOf(c2)).isNotSameAs(Type.UNKNOWN);
-    JDTType tc2 = ((JDTType) typeOf(c2));
+    Type tc2 = typeOf(c2);
     assertThat(tc2.is("java.lang.Class[]")).isTrue();
 
     assertThat(tc2)
@@ -900,9 +803,6 @@ class JParserSemanticTest {
       .isEqualTo(tcond);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.ConstructorInvocation
-   */
   @Test
   void statement_constructor_invocation() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { C() { this(null); } C(Object p) { } }");
@@ -928,9 +828,6 @@ class JParserSemanticTest {
       .containsOnly(i);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.ConstructorInvocation
-   */
   @Test
   void statement_constructor_invocation_recovery() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { C() { this(42); } }");
@@ -947,9 +844,6 @@ class JParserSemanticTest {
     assertThat(symbolOf(m).usages()).isEmpty();
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.SuperConstructorInvocation
-   */
   @Test
   void statement_super_constructor_invocation() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C extends S { C() { super(); } } class S { S() { } }");
@@ -976,9 +870,6 @@ class JParserSemanticTest {
       .containsOnly(i);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.SuperConstructorInvocation
-   */
   @Test
   void statement_super_constructor_invocation_recovery() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C extends S { C() { super(42); } } class S { S() { } }");
@@ -1026,9 +917,6 @@ class JParserSemanticTest {
     assertThat(symbolOf(v).declaration()).isSameAs(v);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.ImportDeclaration
-   */
   @Test
   void declaration_import() {
     JavaTree.CompilationUnitTreeImpl cu = test("import java.util.List;");
@@ -1060,14 +948,6 @@ class JParserSemanticTest {
     assertThat(typeParameter.symbol().isUnknown()).isTrue();
   }
 
-  /**
-   * Records
-   * (Preview in Java 14) https://openjdk.java.net/jeps/359
-   * (Second Preview in Java 15) https://openjdk.java.net/jeps/384
-   * (Final in Java 16) https://openjdk.java.net/jeps/395
-   *
-   * @see org.eclipse.jdt.core.dom.RecordDeclaration
-   */
   @Test
   void declaration_record() {
     JavaTree.CompilationUnitTreeImpl cu = test("record R<T>(int component1, int component2) implements java.io.Serializable { public R { } }");
@@ -1087,14 +967,6 @@ class JParserSemanticTest {
     assertThat(m.closeParenToken()).isNull();
   }
 
-  /**
-   * Sealed Classes
-   * (Preview in Java 15) https://openjdk.java.net/jeps/360
-   * (Second Preview in Java 16) https://openjdk.java.net/jeps/397
-   * (Final in Java 17) https://openjdk.java.net/jeps/409
-   *
-   * @see org.eclipse.jdt.core.dom.TypeDeclaration
-   */
   @Test
   void declaration_sealed_class() {
     JavaTree.CompilationUnitTreeImpl cu = test("sealed class Shape permits Circle, Package.Rectangle { }");
@@ -1124,10 +996,6 @@ class JParserSemanticTest {
     assertThat(c.modifiers().get(0).firstToken()).is("non-sealed");
   }
 
-  /**
-   * {@link org.eclipse.jdt.core.dom.ITypeBinding#getTypeDeclaration()} should be used
-   * for {@link JDTSymbol#usages()} and {@link JDTSymbol#declaration()}
-   */
   @Test
   void declaration_type_parameterized() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C<T> { C<String> field; }");
@@ -1138,17 +1006,12 @@ class JParserSemanticTest {
     assertThat(typeOf(c).symbol().usages())
       .containsOnly(i);
     assertThat(typeOf(fieldType)).isNotSameAs(Type.UNKNOWN);
-    assertThat(((JDTTypeSymbol) typeOf(fieldType).symbol()).declaration())
-      .isSameAs(fieldType.symbolType().symbol().declaration())
+    assertThat(fieldType.symbolType().symbol().declaration())
       .isSameAs(c);
-    assertThat(((JDTTypeSymbol) typeOf(fieldType).symbol()).usages())
-      .containsExactlyElementsOf(fieldType.symbolType().symbol().usages())
+    assertThat(fieldType.symbolType().symbol().usages())
       .containsOnly(i);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.EnumConstantDeclaration
-   */
   @Test
   void declaration_enum_constant() {
     JavaTree.CompilationUnitTreeImpl cu = test("enum E { C ; E() { } }");
@@ -1169,9 +1032,6 @@ class JParserSemanticTest {
       .containsOnly(i);
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.EnumConstantDeclaration
-   */
   @Test
   void declaration_enum_constant_recovered_constructor() {
     JavaTree.CompilationUnitTreeImpl cu = test("@GenerateConstructor enum E { A(0), B(1) ; @GenerateGetter Integer value;  }");
@@ -1183,9 +1043,6 @@ class JParserSemanticTest {
     assertThat(i.symbol().isUnknown()).isTrue();
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.EnumConstantDeclaration
-   */
   @Test
   void declaration_enum_constant_anonymous() {
     JavaTree.CompilationUnitTreeImpl cu = test("enum E { C { }; E(){} }");
@@ -1223,10 +1080,6 @@ class JParserSemanticTest {
     assertThat(symbolOf(m).declaration()).isSameAs(m);
   }
 
-  /**
-   * {@link org.eclipse.jdt.core.dom.IMethodBinding#getMethodDeclaration()} should be used
-   * for {@link JDTSymbol#usages()} and {@link JDTSymbol#declaration()}
-   */
   @Test
   void declaration_method_parameterized() {
     JavaTree.CompilationUnitTreeImpl cu = test("class C { <T> void m(T t) { m(42); } }");
@@ -1240,11 +1093,9 @@ class JParserSemanticTest {
       .containsOnly(i);
     assertThat(symbolOf(methodInvocation))
       .isNotNull();
-    assertThat(((JDTMethodSymbol) symbolOf(methodInvocation)).declaration())
-      .isSameAs(methodInvocation.methodSymbol().declaration())
+    assertThat(methodInvocation.methodSymbol().declaration())
       .isSameAs(m);
-    assertThat(((JDTMethodSymbol) symbolOf(methodInvocation)).usages())
-      .containsExactlyElementsOf(methodInvocation.methodSymbol().usages())
+    assertThat(methodInvocation.methodSymbol().usages())
       .containsOnly(i);
   }
 
@@ -1447,7 +1298,7 @@ class JParserSemanticTest {
       VariableTreeImpl v = (VariableTreeImpl) s.resourceList().get(0);
       AbstractTypedTree t = (AbstractTypedTree) v.type();
       assertThat(typeOf(t)).isNotSameAs(Type.UNKNOWN);
-      JDTType t2 = (JDTType) v.symbol().type();
+      Type t2 = v.symbol().type();
       assertThat(t2).isNotNull();
       assertThat(t2.isUnknown()).isTrue();
       assertThat(t2).isNotSameAs(Type.UNKNOWN);
@@ -1575,9 +1426,8 @@ class JParserSemanticTest {
       .isFalse();
 
     assertThat(i.symbolType().isIntersectionType()).isFalse();
-    assertThat(i.symbolType().getIntersectionTypes())
-      .extracting(Type::fullyQualifiedName)
-      .containsExactly("Recovered#typeBindingLUnknownInterface;0");
+    assertThat(i.symbolType().isUnknown()).isTrue();
+    assertThat(i.symbolType().getIntersectionTypes()).containsExactly(i.symbolType());
   }
 
   @Test
@@ -1587,11 +1437,9 @@ class JParserSemanticTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     VariableTreeImpl parameter = (VariableTreeImpl) m.parameters().get(0);
-    assertThat(((JDTVariableSymbol) symbolOf(parameter)).metadata().annotations().size())
-      .isEqualTo(parameter.symbol().metadata().annotations().size())
+    assertThat(parameter.symbol().metadata().annotations().size())
       .isEqualTo(1);
-    assertThat(JUtils.parameterAnnotations(((JDTMethodSymbol) symbolOf(m)), 0).annotations().size())
-      .isEqualTo(JUtils.parameterAnnotations(m.symbol(), 0).annotations().size())
+    assertThat(m.symbol().declarationParameters().get(0).metadata().annotations().size())
       .isEqualTo(1);
   }
 
@@ -1608,15 +1456,9 @@ class JParserSemanticTest {
     assertThat(annotations.get(0).symbol().name()).isEqualTo("Annotation");
   }
 
-  /**
-   * @see org.eclipse.jdt.core.dom.LabeledStatement
-   */
   @Nested
   class Labels {
-    /**
-     * @see org.eclipse.jdt.core.dom.BreakStatement
-     */
-    @Test
+      @Test
     void statement_break() {
       CompilationUnitTree cu = test("class C { void m() { i: break i; } }");
       ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
@@ -1645,10 +1487,7 @@ class JParserSemanticTest {
         .containsOnly(i);
     }
 
-    /**
-     * @see org.eclipse.jdt.core.dom.ContinueStatement
-     */
-    @Test
+      @Test
     void statement_continue() {
       CompilationUnitTree cu = test("class C { void m() { i: for(;;) continue i; } }");
       ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
@@ -1750,39 +1589,12 @@ class JParserSemanticTest {
   @Test
   void not_need_to_skip_implicit_break_statement() {
     final String source = "class C { void m() { switch (0) { case 0 -> { } } } }";
-    CompilationUnit cu = createAST(source);
-    TypeDeclaration c = (TypeDeclaration) cu.types().get(0);
-    MethodDeclaration m = c.getMethods()[0];
-    SwitchStatement s = (SwitchStatement) m.getBody().statements().get(0);
-    Block block = (Block) s.statements().get(1);
-    assertThat(block.statements()).isEmpty();
-
     CompilationUnitTree compilationUnit = test(source);
     ClassTree cls = (ClassTree) compilationUnit.types().get(0);
     MethodTree method = (MethodTree) cls.members().get(0);
     SwitchStatementTree switchStatement = (SwitchStatementTree) Objects.requireNonNull(method.block()).body().get(0);
     BlockTree blockStatement = (BlockTree) switchStatement.cases().get(0).body().get(0);
     assertThat(blockStatement.body()).isEmpty();
-  }
-
-  private CompilationUnit createAST(String source) {
-    JavaVersion version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
-    Map<String, String> options =  new HashMap<>(JavaCore.getOptions());
-    JavaCore.setComplianceOptions(version.effectiveJavaVersionAsString(), options);
-    options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
-    astParser.setCompilerOptions(options);
-    astParser.setEnvironment(
-      new String[]{},
-      new String[]{},
-      new String[]{},
-      true
-    );
-    astParser.setUnitName("File.java");
-    astParser.setResolveBindings(true);
-    astParser.setBindingsRecovery(true);
-    astParser.setSource(source.toCharArray());
-    return (CompilationUnit) astParser.createAST(null);
   }
 
   @Test
@@ -1912,9 +1724,9 @@ class JParserSemanticTest {
     assertNotEquals(symbol1, p2.symbol());
 
     Symbol owner1 = symbol1.owner();
-    assertTrue(owner1 instanceof JDTMethodSymbol methodSymbol && methodSymbol.isLambda());
+    assertThat(owner1).isSameAs(lambda2.symbol());
     Symbol owner2 = symbol2.owner();
-    assertTrue(owner2 instanceof JDTMethodSymbol methodSymbol && methodSymbol.isLambda());
+    assertThat(owner2).isSameAs(lambdaA.symbol());
     assertNotEquals(owner1, owner2);
   }
 
@@ -1939,7 +1751,7 @@ class JParserSemanticTest {
     Symbol jOwner = j.symbol().owner();
     Symbol kOwner = k.symbol().owner();
     assertNotEquals(jOwner, kOwner);
-    assertTrue(iOwner instanceof JDTMethodSymbol methodSymbol && methodSymbol.isLambda());
+    assertThat(iOwner).isSameAs(lambda.symbol());
   }
 
   @Test
@@ -1982,14 +1794,16 @@ class JParserSemanticTest {
       """);
     ClassTree classTree = (ClassTree) cu.types().get(0);
     var k = (VariableTree) classTree.members().get(0);
-    Symbol s1 = ((LambdaExpressionTree) k.initializer()).parameters().get(0).symbol();
+    var lambda1 = (LambdaExpressionTree) k.initializer();
+    Symbol s1 = lambda1.parameters().get(0).symbol();
     Symbol s1Owner = s1.owner();
-    assertThat(s1Owner instanceof JDTMethodSymbol methodSymbol && methodSymbol.isLambda()).isTrue();
+    assertThat(s1Owner).isSameAs(lambda1.symbol());
 
     var j = (VariableTree) classTree.members().get(1);
-    Symbol s2 = ((LambdaExpressionTree) j.initializer()).parameters().get(0).symbol();
+    var lambda2 = (LambdaExpressionTree) j.initializer();
+    Symbol s2 = lambda2.parameters().get(0).symbol();
     Symbol s2Owner = s2.owner();
-    assertThat(s2Owner instanceof JDTMethodSymbol methodSymbol && methodSymbol.isLambda()).isTrue();
+    assertThat(s2Owner).isSameAs(lambda2.symbol());
     assertNotEquals(s1Owner, s2Owner);
 
     // For sanity, check that the symbols are not equal
@@ -2031,9 +1845,9 @@ class JParserSemanticTest {
     Symbol ownerC = pOfC.symbol().owner();
     Symbol ownerB = pOfB.symbol().owner();
 
-    assertThat(ownerA instanceof JDTMethodSymbol methodSymbol && methodSymbol.isLambda()).isTrue();
-    assertThat(ownerB instanceof JDTMethodSymbol methodSymbol && methodSymbol.isLambda()).isTrue();
-    assertThat(ownerC instanceof JDTMethodSymbol methodSymbol && methodSymbol.isLambda()).isTrue();
+    assertThat(ownerA).isSameAs(lambdaA.symbol());
+    assertThat(ownerB).isSameAs(lambdaB.symbol());
+    assertThat(ownerC).isSameAs(lambdaC.symbol());
     assertNotEquals(ownerA, ownerC);
     assertNotEquals(ownerA, ownerB);
     assertNotEquals(ownerC, ownerB);

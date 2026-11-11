@@ -24,9 +24,9 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
-final class JdtTestUtils {
+final class JDTTestUtils {
 
-  private JdtTestUtils() {
+  private JDTTestUtils() {
   }
 
   static JDTSema sema(CompilationUnitTree tree) {
