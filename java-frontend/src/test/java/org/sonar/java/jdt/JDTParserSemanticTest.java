@@ -27,7 +27,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.model.JParserConfig;
+import org.sonar.java.model.JParser;
 import org.sonar.plugins.java.api.JavaVersion;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,7 +46,7 @@ class JDTParserSemanticTest {
   }
 
   private CompilationUnit createAST(String source) {
-    JavaVersion version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    JavaVersion version = JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
     ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
     Map<String, String> options =  new HashMap<>(JavaCore.getOptions());
     JavaCore.setComplianceOptions(version.effectiveJavaVersionAsString(), options);

@@ -184,8 +184,8 @@ class MethodSymbolTest {
       TestUtils.inputFile("src/test/files/semantic/GenericDependency.java"),
       TestUtils.inputFile("src/test/files/semantic/Nullable.java"));
     List<String> processed = new ArrayList<>();
-    JParserConfig.Mode.BATCH
-      .create(JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION, JParserTestUtils.DEFAULT_CLASSPATH)
+    JParser.Mode.BATCH
+      .create(JParser.MAXIMUM_SUPPORTED_JAVA_VERSION, JParserTestUtils.DEFAULT_CLASSPATH)
       .parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), (inputFile, result) -> {
         processed.add(inputFile.filename());
         if (inputFile.filename().equals("Main.java")) {

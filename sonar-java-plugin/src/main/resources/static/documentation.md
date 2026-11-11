@@ -155,13 +155,11 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 **Breaking**
 
-* `org.sonar.java.model.JParser` is now an interface. Its instance method `parse(String version, String unitName, String source)` returns a `JavaTree.CompilationUnitTreeImpl`.
-  The static helper `JParser.parse(...)` now takes a `JParser` as its first argument instead of an ECJ `ASTParser`.
-* `org.sonar.java.model.JParserConfig` is now an interface. `astParser()` returns a `JParser` instead of an ECJ `ASTParser`.
-  Use the new `parse(String unitName, String source)` method to parse source with the configured Java version, or call `astParser().parse(version, unitName, source)` to supply the version explicitly.
-  The `Mode.BATCH.create(...)` and `Mode.FILE_BY_FILE.create(...)` factories and the multi-file `parse(...)` method remain available.
+* `org.sonar.java.model.JParser` is now an interface, independent of the underlying parser implementation, and replaces `JParserConfig`.
+  Create parsers with `JParser.Mode#create(...)` and parse individual sources with `JParser#parse(String version, String unitName, String source)`.
+  Use `JParser#parse(Iterable, BooleanSupplier, AnalysisProgress, BiConsumer)` to parse input files in batch or file-by-file mode.
   The multi-file `parse(...)` method now takes `Iterable<InputFile>` instead of `Iterable<? extends InputFile>`; callers must supply an `Iterable<InputFile>`, and implementations must update their override signatures. This change preserves binary compatibility because type erasure is unchanged.
-  `JParserConfig.Result` is now final and provides `success(tree)` and `failure(exception)` factories; `get()` returns the tree or rethrows the parsing exception.
+  Parsing callbacks now receive `org.sonar.java.model.JParseResult` instead of `JParserConfig.Result`. `JParseResult` is final and provides `success(tree)` and `failure(exception)` factories; `get()` returns the tree or rethrows the parsing exception.
 * AST node implementations no longer expose ECJ-specific bindings such as `IBinding`, `ITypeBinding`, `IMethodBinding`, and `IVariableBinding`.
   Nodes store `org.sonar.plugins.java.api.semantic.Type` and `Symbol` values, including `Symbol.TypeSymbol` and `Symbol.MethodSymbol`, directly.
   Custom rules accessing implementation fields such as `binding` or `typeBinding` must use the tree API's `symbol()`, `methodSymbol()`, and `symbolType()` accessors instead.
