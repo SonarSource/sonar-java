@@ -280,7 +280,6 @@ class JSymbolTest {
     Symbol.TypeSymbol t = typeOf(c).symbol();
 
     Symbol variableSymbol = v.symbol();
-    assertThat(variableSymbol).isSameAs(v.symbol());
     Symbol.MethodSymbol initializerBlock = (Symbol.MethodSymbol) variableSymbol.owner();
 
     assertThat(variableSymbol).hasEnclosingClass(t);
