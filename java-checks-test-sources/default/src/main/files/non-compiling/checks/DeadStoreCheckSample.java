@@ -9,6 +9,8 @@ abstract class DeadStoreCheckSample {
       int x = 1; // Compliant
       return y + x;
     });
+    lambdas_not_resolved(y -> ++y);
+    lambdas_not_resolved(y -> y += 2);
   }
 
   void fpLambdaWithAssignment(boolean cond) {

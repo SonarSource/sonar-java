@@ -27,16 +27,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.IBinding;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.Preconditions;
-import org.sonar.java.annotations.Beta;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.expression.AssessableExpressionTree;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
+import org.sonar.plugins.java.api.diagnostics.Problem;
+import org.sonar.plugins.java.api.diagnostics.ProblemKind;
+import org.sonar.plugins.java.api.diagnostics.Warning;
+import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -164,9 +163,11 @@ public abstract class JavaTree implements Tree {
     @Nullable
     private final ModuleDeclarationTree moduleDeclaration;
     private final SyntaxToken eofToken;
-    public JSema sema;
+    public Sema sema;
+    private Set<Problem> semanticProblems = Set.of();
+    private Runnable environmentCleaner = () -> {};
 
-    private final Map<JProblem.Type, Set<JWarning>> warnings = new EnumMap<>(JProblem.Type.class);
+    private final Map<ProblemKind, List<Warning>> warnings = new EnumMap<>(ProblemKind.class);
 
     public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports, List<Tree> types,
       @Nullable ModuleDeclarationTree moduleDeclaration, SyntaxToken eofToken) {
@@ -176,6 +177,21 @@ public abstract class JavaTree implements Tree {
       this.types = types;
       this.moduleDeclaration = moduleDeclaration;
       this.eofToken = eofToken;
+    }
+
+    public void setSemanticModel(Sema sema, Set<? extends Problem> semanticProblems, Runnable environmentCleaner) {
+      this.sema = Objects.requireNonNull(sema);
+      this.semanticProblems = Set.copyOf(semanticProblems);
+      this.environmentCleaner = Objects.requireNonNull(environmentCleaner);
+    }
+
+    @Override
+    public Set<Problem> semanticProblems() {
+      return semanticProblems;
+    }
+
+    public Runnable getEnvironmentCleaner() {
+      return environmentCleaner;
     }
 
     @Override
@@ -193,9 +209,14 @@ public abstract class JavaTree implements Tree {
       return types;
     }
 
-    @Beta
-    public List<JWarning> warnings(JProblem.Type type) {
-      return Collections.unmodifiableList(new ArrayList<>(warnings.getOrDefault(type, Collections.emptySet())));
+    @Override
+    public Set<ProblemKind> supportedWarningKinds() {
+      return Set.copyOf(warnings.keySet());
+    }
+
+    @Override
+    public List<Warning> warnings(ProblemKind kind) {
+      return warnings.getOrDefault(kind, List.of());
     }
 
     @Override
@@ -232,8 +253,8 @@ public abstract class JavaTree implements Tree {
       return eofToken;
     }
 
-    public void addWarnings(Map<JProblem.Type, Set<JWarning>> warnings) {
-      this.warnings.putAll(warnings);
+    public void addWarnings(Map<ProblemKind, ? extends Set<? extends Warning>> warnings) {
+      warnings.forEach((kind, values) -> this.warnings.put(kind, List.copyOf(values)));
     }
 
   }
@@ -326,7 +347,8 @@ public abstract class JavaTree implements Tree {
     @Nullable
     private final SyntaxToken moduleToken;
 
-    public IBinding binding;
+    @Nullable
+    private Symbol symbol;
 
     public ImportTreeImpl(InternalSyntaxToken importToken, @Nullable InternalSyntaxToken staticToken,
                           @Nullable InternalSyntaxToken moduleToken,
@@ -342,17 +364,11 @@ public abstract class JavaTree implements Tree {
 
     @Nullable
     public Symbol symbol() {
-      if (binding != null) {
-        switch (binding.getKind()) {
-          case IBinding.TYPE:
-            return root.sema.typeSymbol((ITypeBinding) binding);
-          case IBinding.METHOD:
-            return root.sema.methodSymbol((IMethodBinding) binding);
-          case IBinding.VARIABLE:
-            return root.sema.variableSymbol((IVariableBinding) binding);
-        }
-      }
-      return null;
+      return symbol;
+    }
+
+    public void setSymbol(@Nullable Symbol symbol) {
+      this.symbol = symbol;
     }
 
     @Override

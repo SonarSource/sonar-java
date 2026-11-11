@@ -18,10 +18,11 @@ package org.sonar.java.model.declaration;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.sonar.java.Preconditions;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
@@ -33,6 +34,7 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -73,8 +75,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   @Nullable
   private CFG cfg;
 
-  @Nullable
-  public IMethodBinding methodBinding;
+  private Symbol.MethodSymbol symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
 
   /**
    * Cache for {@link #isOverriding()}.
@@ -216,11 +217,13 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     return defaultValue;
   }
 
+  public void setSymbol(Symbol.MethodSymbol symbol) {
+    this.symbol = Objects.requireNonNull(symbol);
+  }
+
   @Override
   public Symbol.MethodSymbol symbol() {
-    return methodBinding != null
-      ? root.sema.methodSymbol(methodBinding)
-      : Symbol.MethodSymbol.UNKNOWN_METHOD;
+    return symbol;
   }
 
   @Override
@@ -249,9 +252,29 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
       return null;
     }
     if (cfg == null) {
-      cfg = CFG.build(this);
+      // Compact record constructors have no parameter-list parentheses.
+      cfg = is(Tree.Kind.CONSTRUCTOR) && openParenToken == null
+        ? CFG.build(this, compactConstructorElements(block))
+        : CFG.build(this);
     }
     return cfg;
+  }
+
+  private List<Tree> compactConstructorElements(BlockTree body) {
+    List<Tree> elements = new ArrayList<>(body.body());
+    Set<Symbol> params = new HashSet<>();
+    Symbol.MethodSymbol constructorSymbol = symbol();
+    body.accept(new BaseTreeVisitor() {
+      @Override
+      public void visitIdentifier(IdentifierTree identifier) {
+        Symbol identSymbol = identifier.symbol();
+        if (identSymbol.isParameter() && constructorSymbol.equals(identSymbol.owner()) && params.add(identSymbol)) {
+          // Add an artificial read to model the implicit assignment to the record field.
+          elements.add(identifier);
+        }
+      }
+    });
+    return elements;
   }
 
   @Override
@@ -297,10 +320,10 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     } else if (isAnnotatedOverride()) {
       isOverriding = true;
     } else {
-      Symbol.MethodSymbol symbol = symbol();
-      List<Symbol.MethodSymbol> overriddenSymbols = symbol.overriddenSymbols();
+      Symbol.MethodSymbol methodSymbol = symbol();
+      List<Symbol.MethodSymbol> overriddenSymbols = methodSymbol.overriddenSymbols();
       if (overriddenSymbols.isEmpty()) {
-        isOverriding = JUtils.hasUnknownTypePreventingOverrideResolution(symbol) ? null : false;
+        isOverriding = JUtils.hasUnknownTypePreventingOverrideResolution(methodSymbol) ? null : false;
       } else {
         isOverriding = overriddenSymbols.stream().allMatch(Symbol::isUnknown) ? null : true;
       }

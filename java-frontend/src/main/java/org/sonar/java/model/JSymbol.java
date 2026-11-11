@@ -230,7 +230,7 @@ abstract class JSymbol implements Symbol {
         case CLASS,
              RECORD,
              ENUM:
-          JTypeSymbol typeSymbol = sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
+          JTypeSymbol typeSymbol = (JTypeSymbol) ((ClassTreeImpl) node).symbol();
           if (initializerBlock) {
             return sema.initializerBlockSymbol(typeSymbol);
           }
@@ -460,7 +460,7 @@ abstract class JSymbol implements Symbol {
              ENUM:
           // variable declaration in a static or instance initializer
           // or local variable declaration in recovered method
-          return sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
+          return ((ClassTreeImpl) node).symbol();
         default:
           // continue exploring parent
           break;

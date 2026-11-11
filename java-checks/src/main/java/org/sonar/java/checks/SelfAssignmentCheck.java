@@ -15,6 +15,7 @@
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
 package org.sonar.java.checks;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -22,15 +23,15 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JProblem;
-import org.sonar.java.model.JWarning;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.diagnostics.ProblemKind;
+import org.sonar.plugins.java.api.diagnostics.Warning;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -45,7 +46,7 @@ import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 public class SelfAssignmentCheck extends IssuableSubscriptionVisitor {
 
   private static final String ISSUE_MESSAGE = "Remove or correct this useless self-assignment.";
-  private final Set<JWarning> warnings = new HashSet<>();
+  private final Set<Warning> warnings = new HashSet<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -56,7 +57,7 @@ public class SelfAssignmentCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
       warnings.clear();
-      warnings.addAll(((JavaTree.CompilationUnitTreeImpl) tree).warnings(JProblem.Type.ASSIGNMENT_HAS_NO_EFFECT));
+      warnings.addAll(((CompilationUnitTree) tree).warnings(ProblemKind.ASSIGNMENT_HAS_NO_EFFECT));
       return;
     }
     AssignmentExpressionTree node = (AssignmentExpressionTree) tree;

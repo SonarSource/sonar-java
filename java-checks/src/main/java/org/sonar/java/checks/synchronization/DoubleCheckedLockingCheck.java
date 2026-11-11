@@ -16,7 +16,14 @@
  */
 package org.sonar.java.checks.synchronization;
 
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -34,19 +41,15 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.EQUAL_TO;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.IDENTIFIER;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.IF_STATEMENT;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.LOGICAL_COMPLEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.MEMBER_SELECT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.METHOD;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.NOT_EQUAL_TO;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.NULL_LITERAL;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.SYNCHRONIZED_STATEMENT;
 
@@ -90,10 +93,18 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
       return Optional.empty();
     }
     IfStatementTree ifTree = (IfStatementTree) tree;
-    if (!ifTree.condition().is(EQUAL_TO)) {
+
+    ExpressionTree condition = ExpressionUtils.skipParentheses(ifTree.condition());
+    boolean negated = false;
+    while (condition.is(LOGICAL_COMPLEMENT)) {
+      negated = !negated;
+      condition = ExpressionUtils.skipParentheses(((UnaryExpressionTree) condition).expression());
+    }
+    if (!condition.is(negated ? NOT_EQUAL_TO : EQUAL_TO)) {
       return Optional.empty();
     }
-    BinaryExpressionTree eqRelation = (BinaryExpressionTree) ifTree.condition();
+
+    BinaryExpressionTree eqRelation = (BinaryExpressionTree) condition;
     if (eqRelation.rightOperand().is(NULL_LITERAL)) {
       return isField(eqRelation.leftOperand()).map(f -> new IfFieldEqNull(ifTree, f));
     }

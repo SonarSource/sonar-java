@@ -251,7 +251,7 @@ public class JavaFrontend {
     Duration duration = PerformanceMeasure.start(context.descriptor(inputFile));
     scanner.simpleScan(inputFile, result, ast ->
       // In batch mode, we delay the cleaning of the environment as it will be used in later processing.
-      environmentsCleaners.add(ast.sema.getEnvironmentCleaner())
+      environmentsCleaners.add(ast.getEnvironmentCleaner())
     );
     duration.stop();
   }

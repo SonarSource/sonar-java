@@ -21,14 +21,14 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.NumericConversionUtils;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.JProblem;
-import org.sonar.java.model.JWarning;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.diagnostics.ProblemKind;
+import org.sonar.plugins.java.api.diagnostics.Warning;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -40,7 +40,7 @@ import static org.sonar.java.model.ExpressionUtils.skipParenthesesUpwards;
 @Rule(key = "S1905")
 public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
 
-  private List<JWarning> warnings;
+  private List<Warning> warnings;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -50,7 +50,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      warnings = ((JavaTree.CompilationUnitTreeImpl) tree).warnings(JProblem.Type.REDUNDANT_CAST);
+      warnings = ((CompilationUnitTree) tree).warnings(ProblemKind.REDUNDANT_CAST);
       return;
     }
 
@@ -95,7 +95,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       // returns Class<? extends (receiver type)> at compile time. To prevent false-positives, we ignore this case.
       return false;
     }
-    return warnings.stream().anyMatch(warning -> matchesWarning(warning, typeCastTree));
+    return warnings.stream().anyMatch(warning -> typeCastTree.equals(warning.syntaxTree()));
   }
 
   private static boolean isMethodInvocationReceiverOfGetClass(TypeCastTree typeCastTree) {
@@ -104,16 +104,6 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       "getClass".equals(memberSelect.identifier().name()) &&
       memberSelect.parent() instanceof MethodInvocationTree methodInvocation &&
       methodInvocation.arguments().isEmpty();
-  }
-
-  private static boolean matchesWarning(JWarning warning, TypeCastTree tree) {
-    Tree warningTree = warning.syntaxTree();
-    if (warningTree.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      // When a cast expression is nested inside one or more parenthesized expression, Eclipse raises the warning on
-      // the outermost parenthesized expression rather than the cast expression, so we need to take that into account
-      return tree.equals(skipParentheses(warningTree));
-    }
-    return tree.equals(warningTree);
   }
 
   @Override

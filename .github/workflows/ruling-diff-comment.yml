@@ -4,8 +4,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      # Trigger on ruling JSON file changes
-      - 'its/ruling/src/test/resources/**/*.json'
+      - 'its/ruling/src/test/resources/expected/**/*.sarif'
       # Uncomment to test action changes
       - '.github/workflows/ruling-diff-comment.yml'
   workflow_dispatch:
@@ -41,11 +40,10 @@ jobs:
           submodules: true
 
       - name: Install uv
-        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
           enable-cache: true
 
-      # Use the action from the branch we just pushed
       - name: Post ruling diff comment
         uses: SonarSource/core-languages-tooling-public/ruling-diff-comment@master
         with:
@@ -53,7 +51,6 @@ jobs:
           repository: ${{ github.repository }}
           base-sha: ${{ inputs.base-sha || github.event.pull_request.base.sha }}
           head-sha: ${{ inputs.head-sha || github.event.pull_request.head.sha }}
-          ruling-root: 'its/ruling/src/test/resources/expected'
           sources-root: 'its/sources'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

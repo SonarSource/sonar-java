@@ -62,6 +62,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.scanner.plugin.api.impl.config.MapSettings;
 
@@ -469,7 +470,7 @@ class JavaAstScannerTest {
       assertThat(clazz.simpleName().name()).isEqualTo("C");
       assertThat(clazz.simpleName().symbol().isUnknown()).isFalse();
       IdentifierTreeImpl identifierTree = (IdentifierTreeImpl) clazz.simpleName();
-      identifierTree.binding = null;
+      identifierTree.setSymbol(Symbol.UNKNOWN_SYMBOL);
     });
 
   }

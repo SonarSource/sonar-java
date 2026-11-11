@@ -58,10 +58,10 @@ import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.TestUtils;
-import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.diagnostics.Problem;
 import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -94,8 +94,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -138,8 +138,7 @@ class JParserTest {
       """;
     ASTParser astParser = FILE_BY_FILE.create(JavaVersionImpl.fromString("11"), List.of()).astParser();
 
-    Set<String> undefinedTypes = JParser.parse(astParser, "11", "Example", source).sema.undefinedTypes.stream()
-      .map(Object::toString)
+    Set<String> undefinedTypes = JParser.parse(astParser, "11", "Example", source).semanticProblems().stream().map(Problem::message)
       .collect(Collectors.toSet());
 
     assertThat(undefinedTypes).containsExactly("java.util.jar.Pack200 cannot be resolved to a type");
@@ -179,7 +178,7 @@ class JParserTest {
       .create(JavaVersionImpl.fromString("11"), List.of(), false, true)
       .parse(Set.of(TestUtils.inputFile(file.toFile())), () -> false, new AnalysisProgress(1), (inputFile, result) -> {
         try {
-          undefinedTypes.add(result.get().sema.undefinedTypes.stream().map(Object::toString).collect(Collectors.toSet()));
+          undefinedTypes.add(result.get().semanticProblems().stream().map(Problem::message).collect(Collectors.toSet()));
         } catch (Exception e) {
           throw new IllegalStateException(e);
         }
@@ -199,8 +198,7 @@ class JParserTest {
 
   private static Set<String> undefinedTypes(String release, String source, List<File> classpath) {
     ASTParser astParser = FILE_BY_FILE.create(JavaVersionImpl.fromString(release), classpath, false, true).astParser();
-    return JParser.parse(astParser, release, "Example", source).sema.undefinedTypes.stream()
-      .map(Object::toString)
+    return JParser.parse(astParser, release, "Example", source).semanticProblems().stream().map(Problem::message)
       .collect(Collectors.toSet());
   }
 
@@ -243,7 +241,7 @@ class JParserTest {
   void unknown_types_are_collected() {
     // import org.foo missing, type Bar unknown
     CompilationUnitTree cut = test("import org.foo.Bar;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes.stream().map(Object::toString))
+    assertThat(cut.semanticProblems().stream().map(Problem::message))
       .containsExactlyInAnyOrder("The import org.foo cannot be resolved", "Bar cannot be resolved to a type");
   }
 
@@ -251,7 +249,7 @@ class JParserTest {
   void warnings_are_collected() {
     // import org.foo missing, type Bar unknown
     CompilationUnitTree cut = test("import java.util.List;\n import java.util.ArrayList;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((CompilationUnitTreeImpl) cut).sema.undefinedTypes.stream().map(Object::toString))
+    assertThat(cut.semanticProblems().stream().map(Problem::message))
       .containsExactlyInAnyOrder("Bar cannot be resolved to a type");
   }
 
@@ -562,7 +560,6 @@ class JParserTest {
     assertThat(variableTree.simpleName().symbol()).isEqualTo(Symbol.UNKNOWN_SYMBOL);
     assertThat(variableTree.simpleName().isUnnamedVariable()).isTrue();
   }
-
 
   @Test
   void unnamed_pattern() {

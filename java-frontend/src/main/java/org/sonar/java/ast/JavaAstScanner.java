@@ -39,7 +39,6 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.InputFileUtils;
 import org.sonar.java.model.JParserConfig;
-import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.telemetry.NoOpTelemetry;
@@ -47,6 +46,7 @@ import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.java.telemetry.TelemetryKey.JavaAnalysisKeys;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.diagnostics.Problem;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static java.lang.System.currentTimeMillis;
@@ -101,7 +101,6 @@ public class JavaAstScanner {
   public void scanForTesting(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit) {
     scan(inputFiles, modifyCompilationUnit);
   }
-
 
   private void scan(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit) {
     List<? extends InputFile> filesNames = filterModuleInfo(inputFiles).toList();
@@ -168,7 +167,7 @@ public class JavaAstScanner {
       modifyCompilationUnit.accept(ast);
       visitor.visitFile(ast, sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile));
       String path = inputFile.toString();
-      Set<JProblem> undefinedTypes = ast.sema.undefinedTypes();
+      Set<Problem> undefinedTypes = ast.semanticProblems();
       collectUndefinedTypes(path, undefinedTypes);
       cleanUp.accept(ast);
       telemetryAnalysisKeys = javaAnalysisKeys.success();
@@ -198,10 +197,10 @@ public class JavaAstScanner {
 
   private static void cleanUpAst(JavaTree.CompilationUnitTreeImpl ast) {
     // release environment used for semantic resolution
-    ast.sema.getEnvironmentCleaner().run();
+    ast.getEnvironmentCleaner().run();
   }
 
-  private void collectUndefinedTypes(String path, Set<JProblem> undefinedTypes) {
+  private void collectUndefinedTypes(String path, Set<Problem> undefinedTypes) {
     if (sonarComponents != null) {
       sonarComponents.collectUndefinedTypes(path, undefinedTypes);
     }

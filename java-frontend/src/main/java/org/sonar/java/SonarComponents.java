@@ -64,7 +64,6 @@ import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.model.GeneratedFile;
-import org.sonar.java.model.JProblem;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaIssue;
@@ -74,6 +73,8 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JspCodeVisitor;
 import org.sonar.plugins.java.api.caching.SonarLintCache;
+import org.sonar.plugins.java.api.diagnostics.Problem;
+import org.sonar.plugins.java.api.diagnostics.ProblemKind;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 import org.sonarsource.sonarlint.plugin.api.SonarLintRuntime;
 
@@ -125,7 +126,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
   private final ClasspathForMain javaClasspath;
   private final ClasspathForTest javaTestClasspath;
-  private final Map<JProblem, List<String>> problemsToFilePaths = new HashMap<>();
+  private final Map<ProblemGroupKey, List<String>> problemsToFilePaths = new HashMap<>();
 
   private final CheckFactory checkFactory;
   private final ActiveRules activeRules;
@@ -622,9 +623,10 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     return context.project();
   }
 
-  public void collectUndefinedTypes(String pathToFile, Set<JProblem> undefinedTypes) {
-    undefinedTypes.forEach(problem -> {
-      List<String> filesAffectedByProblem = problemsToFilePaths.computeIfAbsent(problem, key -> new ArrayList<>());
+  public void collectUndefinedTypes(String pathToFile, Set<? extends Problem> semanticProblems) {
+    semanticProblems.forEach(problem -> {
+      ProblemGroupKey problemGroupKey = new ProblemGroupKey(problem.type(), problem.message());
+      List<String> filesAffectedByProblem = problemsToFilePaths.computeIfAbsent(problemGroupKey, key -> new ArrayList<>());
       filesAffectedByProblem.add(pathToFile);
     });
   }
@@ -648,31 +650,30 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   private void logUndefinedTypes(int maxLines) {
     logParserMessages(
       problemsToFilePaths.entrySet().stream()
-        .filter(entry -> entry.getKey().type() == JProblem.Type.UNDEFINED_TYPE),
+        .filter(entry -> entry.getKey().type() == ProblemKind.UNDEFINED_TYPE),
       maxLines,
       "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.",
       "Unresolved imports/types:"
     );
     logParserMessages(
       problemsToFilePaths.entrySet().stream()
-        .filter(entry -> entry.getKey().type() == JProblem.Type.PREVIEW_FEATURE_USED),
+        .filter(entry -> entry.getKey().type() == ProblemKind.PREVIEW_FEATURE_USED),
       maxLines,
       "Use of preview features have been detected during analysis. Enable DEBUG mode to see them.",
       "Use of preview features:"
     );
   }
 
-  private static void logParserMessages(Stream<Map.Entry<JProblem, List<String>>> messages, int maxProblems, String warningMessage,
-                                        String debugMessage) {
+  private static void logParserMessages(Stream<Map.Entry<ProblemGroupKey, List<String>>> messages, int maxProblems, String warningMessage, String debugMessage) {
     String problemDelimiter = System.lineSeparator() + "- ";
     List<List<String>> messagesList = messages
-      .sorted(Comparator.comparing(entry -> entry.getKey().toString()))
+      .sorted(Comparator.comparing(entry -> entry.getKey().message()))
       // We only consider the first `maxProblems` elements. We keep an extra one to know if we passed the threshold in later tests.
       .limit(maxProblems + 1L)
       .map(entry -> {
         List<String> paths = entry.getValue();
         List<String> problemAndPaths = new ArrayList<>(paths.size() + 1);
-        problemAndPaths.add(problemDelimiter + entry.getKey().toString());
+        problemAndPaths.add(problemDelimiter + entry.getKey().message());
         paths.forEach(path -> problemAndPaths.add("  * " + path));
         return problemAndPaths;
       })
@@ -708,5 +709,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   public Configuration getConfiguration() {
     return context.config();
   }
+
+  private record ProblemGroupKey(ProblemKind type, String message) {}
 
 }

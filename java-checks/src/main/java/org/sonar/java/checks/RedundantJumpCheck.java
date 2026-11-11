@@ -24,8 +24,10 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.cfg.CFGUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S3626")
@@ -35,14 +37,22 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
   public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(
       Tree.Kind.METHOD,
-      Tree.Kind.CONSTRUCTOR);
+      Tree.Kind.CONSTRUCTOR,
+      Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    MethodTree methodTree = (MethodTree) tree;
-    if (methodTree.block() != null) {
-      CFG cfg = (CFG) methodTree.cfg();
+    CFG cfg = null;
+    if (tree instanceof MethodTree methodTree) {
+      if (methodTree.block() != null) {
+        cfg = (CFG) methodTree.cfg();
+      }
+    } else {
+      // Expression-bodied lambdas can contain redundant continue statements in loops inside switch expressions.
+      cfg = (CFG) ((LambdaExpressionTree) tree).cfg();
+    }
+    if (cfg != null) {
       cfg.blocks().forEach(this::checkBlock);
     }
   }
@@ -64,7 +74,9 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
         Block successor = CFGUtils.nonEmptySuccessor(successors.next());
         if (successor.equals(successorWithoutJump)
           && !CFGUtils.isJumpThroughFinallyWithDistinctContinuation(terminator, successor)) {
-          reportIssue(terminator, "Remove this redundant jump.");
+          SyntaxToken fstToken = terminator.firstToken();
+          String jump = fstToken != null ? fstToken.text() : "jump";
+          reportIssue(terminator, "Remove this redundant %s.".formatted(jump));
         }
       }
     }

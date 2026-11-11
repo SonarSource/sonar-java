@@ -1,3 +1,7 @@
+import java.util.function.IntSupplier;
+import java.util.function.IntUnaryOperator;
+import java.util.function.Supplier;
+
 abstract class A {
 
   public void reproducer() {
@@ -328,5 +332,116 @@ abstract class A {
     } finally {
       foo();
     }
+  }
+
+  Runnable emptyLambda = () -> {};
+
+  Runnable expressionLambda = () -> System.out.println("expression");
+
+  Supplier<Runnable> expressionReturningLambda = () -> () -> {
+    return; // Noncompliant {{Remove this redundant return.}}
+//  ^^^^^^^
+  };
+
+  Runnable fieldInitializer = () -> {
+    System.out.println("field");
+    return; // Noncompliant {{Remove this redundant return.}}
+//  ^^^^^^^
+  };
+
+  void immediatelyInvokedLambda(int x) {
+    Runnable r = () -> {
+      System.out.println(x);
+      return; // Noncompliant {{Remove this redundant return.}}
+//    ^^^^^^^
+    };
+    r.run();
+    System.out.println("after lambda");
+  }
+
+  Runnable conditionalReturns(int x) {
+    return () -> {
+      if (x < 0) {
+        return;
+      }
+      System.out.println(x);
+      if (x == 0) {
+        return; // Noncompliant {{Remove this redundant return.}}
+//      ^^^^^^^
+      }
+    };
+  }
+
+  IntSupplier valueReturningLambda(int x) {
+    return () -> {
+      System.out.println(x);
+      return x;
+    };
+  }
+
+  Runnable nestedLambdas(int x) {
+    return () -> {
+      Runnable inner = () -> {
+        System.out.println(x);
+        return; // Noncompliant {{Remove this redundant return.}}
+//      ^^^^^^^
+      };
+      inner.run();
+      System.out.println("after inner lambda");
+    };
+  }
+
+  Runnable loopJumps(int x) {
+    return () -> {
+      for (int i = 0; i < x; i++) {
+        if (i == 1) {
+          continue;
+        }
+        if (i == 2) {
+          return;
+        }
+        System.out.println(i);
+        continue; // Noncompliant {{Remove this redundant continue.}}
+//      ^^^^^^^^^
+      }
+    };
+  }
+
+  Runnable returnThroughFinally(int x) {
+    return () -> {
+      try {
+        System.out.println(x);
+        return; // Noncompliant {{Remove this redundant return.}}
+//      ^^^^^^^
+      } finally {
+        System.out.println("cleanup");
+      }
+    };
+  }
+
+  Runnable earlyReturnThroughFinally(int x) {
+    return () -> {
+      try {
+        if (x < 0) {
+          return;
+        }
+      } finally {
+        System.out.println("cleanup");
+      }
+      System.out.println(x);
+    };
+  }
+
+  IntUnaryOperator continueInSwitchExpressionLambda() {
+    return x -> switch (x) {
+      default -> {
+        for (int i = 0; i < x; i++) {
+          System.out.println(i);
+          continue; // Noncompliant {{Remove this redundant continue.}}
+//        ^^^^^^^^^
+        }
+        yield x;
+      }
+    };
   }
 }

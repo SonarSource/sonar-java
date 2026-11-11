@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.LongSupplier;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
@@ -81,7 +82,6 @@ import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JParserTestUtils;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.CheckRegistrar;
@@ -90,6 +90,8 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JspCodeVisitor;
 import org.sonar.plugins.java.api.caching.SonarLintCache;
+import org.sonar.plugins.java.api.diagnostics.Problem;
+import org.sonar.plugins.java.api.diagnostics.ProblemKind;
 import org.sonar.scanner.plugin.api.impl.config.MapSettings;
 import org.sonar.scanner.plugin.api.impl.rule.ActiveRulesBuilder;
 import org.sonar.scanner.plugin.api.impl.rule.NewActiveRule;
@@ -1189,13 +1191,46 @@ class SonarComponentsTest {
     }
 
     @Test
+    void groups_frontend_independent_problems_and_logs_their_messages() {
+      Problem first = independentProblem();
+      Problem second = independentProblem();
+      sonarComponents.collectUndefinedTypes("First.java", Set.of(first));
+      sonarComponents.collectUndefinedTypes("Second.java", Set.of(second));
+      sonarComponents.logUndefinedTypes();
+
+      assertThat(loggingLogTester.logs(Level.DEBUG)).containsExactly(
+        "Unresolved imports/types:" + System.lineSeparator()
+          + "- Unknown type" + System.lineSeparator()
+          + "  * First.java" + System.lineSeparator()
+          + "  * Second.java");
+      loggingLogTester.clear();
+      sonarComponents.logUndefinedTypes();
+      assertThat(loggingLogTester.logs(Level.WARN)).isEmpty();
+      assertThat(loggingLogTester.logs(Level.DEBUG)).isEmpty();
+    }
+
+    private Problem independentProblem() {
+      return new Problem() {
+        @Override
+        public ProblemKind type() {
+          return ProblemKind.UNDEFINED_TYPE;
+        }
+
+        @Override
+        public String message() {
+          return "Unknown type";
+        }
+      };
+    }
+
+    @Test
     void log_only_50_undefined_types() {
       loggingLogTester.setLevel(Level.DEBUG);
       String source = generateSource(26);
 
       // artificially populated the semantic errors with 26 unknown types and 52 errors
       sonarComponents.collectUndefinedTypes(DEFAULT_PATH,
-        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+        JParserTestUtils.parse(source).semanticProblems());
 
       // triggers log
       sonarComponents.logUndefinedTypes();
@@ -1226,7 +1261,7 @@ class SonarComponentsTest {
       loggingLogTester.setLevel(Level.ERROR);
       String source = generateSource(26);
       sonarComponents.collectUndefinedTypes(DEFAULT_PATH,
-        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+        JParserTestUtils.parse(source).semanticProblems());
       sonarComponents.logUndefinedTypes();
 
       assertThat(loggingLogTester.logs(Level.WARN)).isEmpty();
@@ -1240,7 +1275,7 @@ class SonarComponentsTest {
 
       // artificially populated the semantic errors with 1 unknown types and 2 errors
       sonarComponents.collectUndefinedTypes(DEFAULT_PATH,
-        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+        JParserTestUtils.parse(source).semanticProblems());
 
       // triggers log
       sonarComponents.logUndefinedTypes();
@@ -1296,9 +1331,9 @@ class SonarComponentsTest {
 
       // artificially populated the semantic errors with 1 unknown types and 2 errors
       sonarComponents.collectUndefinedTypes(mainFile.toString(),
-        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+        JParserTestUtils.parse(source).semanticProblems());
       sonarComponents.collectUndefinedTypes(testFile.toString(),
-        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+        JParserTestUtils.parse(source).semanticProblems());
       sonarComponents.logUndefinedTypes();
 
       List<String> debugMessage = loggingLogTester.logs(Level.DEBUG);
@@ -1331,7 +1366,7 @@ class SonarComponentsTest {
 
       // artificially populated the semantic errors with 1 unknown types and 2 errors
       sonarComponents.collectUndefinedTypes(DEFAULT_PATH,
-        ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
+        JParserTestUtils.parse(source).semanticProblems());
 
       // Call these methods to initiate Main and Test ClassPath
       sonarComponents.getJavaClasspath();

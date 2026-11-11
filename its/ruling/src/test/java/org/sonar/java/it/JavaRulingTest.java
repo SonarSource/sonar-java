@@ -108,7 +108,7 @@ public class JavaRulingTest {
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
       .addPlugin(FileLocation.of(TestClasspathUtils.findModuleJarPath("../../sonar-java-plugin").toFile()))
-      .addPlugin(MavenLocation.of("org.sonarsource.sonar-lits-plugin", "sonar-lits-plugin", "0.11.0.2659"));
+      .addPlugin(MavenLocation.of("org.sonarsource.sonar-lits-plugin", "sonar-lits-plugin", "0.13.0.16223"));
 
     if (isCommunityEditionTestsOnly()) {
       orchestratorBuilder.setEdition(Edition.COMMUNITY);
@@ -182,9 +182,9 @@ public class JavaRulingTest {
       throw new IllegalStateException("Unable to create directory: " + dstProjectDir.toString());
     }
     SUBSET_OF_ENABLED_RULES.stream()
-      .map(ruleKey -> srcProjectDir.resolve("java-" + ruleKey + ".json"))
+      .map(ruleKey -> srcProjectDir.resolve("java-" + ruleKey + ".sarif"))
       .filter(p -> p.toFile().exists())
-      .forEach(srcJsonFile -> copyFile(srcJsonFile, dstProjectDir));
+      .forEach(srcSarifFile -> copyFile(srcSarifFile, dstProjectDir));
   }
 
   private static void copyFile(Path source, Path targetDir) {
@@ -474,7 +474,6 @@ public class JavaRulingTest {
         Paths.get("target/performance/sonar.java.performance.measure.json").toAbsolutePath().toString())
       .setProperty("sonar.import_unknown_files", "true")
       .setProperty("sonar.skipPackageDesign", "true")
-      .setProperty("sonar.java.useJdkReleaseOption", "true")
       .setProperty("sonar.lits.dump.old", effectiveDumpOldFolder.resolve(projectName).toString())
       .setProperty("sonar.lits.dump.new", FileLocation.of("target/actual/" + projectName).getFile().getAbsolutePath())
       .setProperty("sonar.lits.differences", litsDifferencesPath(projectName))

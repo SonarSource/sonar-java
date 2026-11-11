@@ -17,6 +17,8 @@
 package org.sonar.java.model;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -43,8 +45,8 @@ class KeywordThisTest {
     assertThat(keywordThis.symbolType().name()).isEqualTo("A");
 
     // simulate a binding problem
-    keywordThis.binding = null;
-    keywordThis.typeBinding = null;
+    keywordThis.setSymbol(Symbol.UNKNOWN_SYMBOL);
+    keywordThis.setSymbolType(Type.UNKNOWN);
 
     assertThat(keywordThis.symbol().isUnknown()).isTrue();
     assertThat(keywordThis.symbolType().isUnknown()).isTrue();

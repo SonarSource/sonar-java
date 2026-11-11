@@ -1,14 +1,158 @@
 package checks;
 
 import com.google.common.collect.Lists;
-
-import java.lang.Exception;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.List;
+import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
+import java.util.function.IntUnaryOperator;
+import java.util.function.Supplier;
 
 class DeadStoreCheckSample {
 
+  record AnalysisResult(List<Integer> issues) {
+    public AnalysisResult {
+      issues = List.copyOf(issues);
+    }
+
+    AnalysisResult(List<Integer> issues, boolean ignored) {
+      this(issues);
+      issues = List.of(); // Noncompliant {{Remove this useless assignment to local variable "issues".}}
+//           ^^^^^^^^^^^
+      ignored = false; // Noncompliant {{Remove this useless assignment to local variable "ignored".}}
+//            ^^^^^^^
+    }
+
+    void update(List<Integer> issues) {
+      issues = List.copyOf(issues); // Noncompliant {{Remove this useless assignment to local variable "issues".}}
+//           ^^^^^^^^^^^^^^^^^^^^^
+    }
+  }
+
+  record OverwrittenRecordParameter(List<Integer> issues) {
+    OverwrittenRecordParameter {
+      issues = List.copyOf(issues); // Noncompliant {{Remove this useless assignment to local variable "issues".}}
+//           ^^^^^^^^^^^^^^^^^^^^^
+      issues = List.of();
+    }
+  }
+
+  record AssignedRecordParameter(int value) {
+    AssignedRecordParameter {
+      value = 42;
+      int local = 42; // Noncompliant {{Remove this useless assignment to local variable "local".}}
+//              ^^^^
+    }
+  }
+
+  record ConditionalRecordParameters(int value, boolean replace) {
+    ConditionalRecordParameters {
+      value = 42;
+      if (replace) {
+        value = 24;
+      }
+      replace = false;
+    }
+  }
+
+  record OverwrittenConditionalRecordParameter(int value, boolean replace) {
+    OverwrittenConditionalRecordParameter {
+      value = 42; // Noncompliant {{Remove this useless assignment to local variable "value".}}
+//          ^^^^
+      if (replace) {
+        value = 24;
+      } else {
+        value = 12;
+      }
+    }
+  }
+
+  record LoopRecordParameter(int value, boolean repeat) {
+    LoopRecordParameter {
+      value = 42;
+      while (repeat) {
+        value = 24;
+        repeat = false;
+      }
+    }
+  }
+
+  record IncrementedRecordParameters(int value, int other) {
+    IncrementedRecordParameters {
+      value++;
+      ++other;
+    }
+  }
+
+  record CompoundRecordParameter(int value) {
+    CompoundRecordParameter {
+      value += 2; // Noncompliant {{Remove this useless assignment to local variable "value".}}
+//          ^^^^
+      value = 42;
+      value += 2;
+    }
+  }
+
+  record NestedRecordParameter(int value) {
+    NestedRecordParameter {
+      value = 42;
+      class Local {
+        void update(int value) {
+          value = 24; // Noncompliant {{Remove this useless assignment to local variable "value".}}
+//              ^^^^
+        }
+      }
+    }
+  }
+
+  record ThrowingRecordParameter(int value) {
+    ThrowingRecordParameter {
+      value = 42; // Noncompliant {{Remove this useless assignment to local variable "value".}}
+//          ^^^^
+      throw new IllegalArgumentException();
+    }
+  }
+
+  record ExplicitCanonicalConstructor(int value) {
+    ExplicitCanonicalConstructor(int value) {
+      this.value = value;
+      value = 42; // Noncompliant {{Remove this useless assignment to local variable "value".}}
+//          ^^^^
+    }
+  }
+
   int var;
+
+  class ConstructorDeadStores {
+    ConstructorDeadStores(int value) {
+      int x = compute(); // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//          ^^^^^^^^^^^
+      x = 3;
+      value = compute(); // Noncompliant {{Remove this useless assignment to local variable "value".}}
+//          ^^^^^^^^^^^
+      value = x;
+      var = value;
+    }
+  }
+
+  class ConstructorWithLambdaCapture {
+    ConstructorWithLambdaCapture(boolean condition) {
+      int captured = compute();
+      if (condition) {
+        System.out.println("branch");
+      }
+      Runnable runnable = () -> {
+        int unused = compute(); // Noncompliant {{Remove this useless assignment to local variable "unused".}}
+//                 ^^^^^^^^^^^
+        System.out.println(captured);
+      };
+      runnable.run();
+    }
+  }
 
   void singleAssignment(){
     int z = 10; // Noncompliant
@@ -33,6 +177,14 @@ class DeadStoreCheckSample {
     return 0;
   }
 
+  void dead_store_in_condition(BufferedReader reader) throws IOException {
+    String line;
+    if ((line = reader.readLine()) != null) { // Noncompliant {{Remove this useless assignment to local variable "line".}}
+//            ^^^^^^^^^^^^^^^^^^^
+      System.out.println("Line available");
+    }
+  }
+
   void fields() {
     this.var = 2; // Compliant
     var = 3; // Compliant - do not check fields
@@ -49,6 +201,213 @@ class DeadStoreCheckSample {
   void lambdas_using_local_vars(IntFunction lambda) {
     int a = 42;
     lambdas_using_local_vars(y -> a + y);
+  }
+
+  void dead_store_in_lambda() {
+    int captured = compute();
+    Runnable r = () -> {
+      int live = compute();
+      int x = compute(); // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//          ^^^^^^^^^^^
+      x = 3;
+      System.out.println(x + live + captured);
+    };
+    r.run();
+  }
+
+  IntFunction<Integer> dead_store_in_lambda_parameter() {
+    return x -> {
+      x = compute(); // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//      ^^^^^^^^^^^
+      x = 3;
+      return x;
+    };
+  }
+
+  IntFunction<Integer> assignment_result_used_in_block_lambda() {
+    return x -> {
+      int y = x = x + 1; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//              ^^^^^^^
+      return y;
+    };
+  }
+
+  IntFunction<Integer> dead_store_in_expression_lambda() {
+    return x -> x++; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//              ^^^
+  }
+
+  IntConsumer prefix_increment_lambda = x -> ++x; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//                                           ^^^
+
+  IntConsumer compound_assignment_lambda = x -> x += 2; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//                                                ^^^^
+
+  IntConsumer assignment_lambda = x -> x = 2; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//                                       ^^^
+
+  IntConsumer prefix_increment_block_lambda = x -> {
+    System.out.println(++x);
+    ++x; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//  ^^^
+  };
+
+  IntConsumer compound_assignment_block_lambda = x -> {
+    System.out.println(x += 2);
+    x += 2; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//    ^^^^
+  };
+
+  IntUnaryOperator prefix_increment_result_lambda = x -> ++x; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+  IntUnaryOperator compound_assignment_result_lambda = x -> x += 2; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+  IntUnaryOperator assignment_result_lambda = x -> x = x + 1; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//                                                   ^^^^^^^
+  IntUnaryOperator assignment_result_block_lambda = x -> {
+    return x = x + 1; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//           ^^^^^^^
+  };
+
+  Runnable prefix_increment_field_lambda = () -> ++var;
+  Runnable compound_assignment_field_lambda = () -> var += 2;
+  Runnable empty_lambda = () -> {};
+
+  Runnable dead_store_in_nested_lambda(boolean condition) {
+    return () -> {
+      int captured = compute();
+      if (condition) {
+        System.out.println("branch");
+      }
+      Runnable nested = () -> {
+        int x = compute(); // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//            ^^^^^^^^^^^
+        x = captured;
+        System.out.println(x);
+      };
+      nested.run();
+    };
+  }
+
+  Supplier<Runnable> expression_lambda_returning_lambda() {
+    return () -> () -> {
+      int x = compute(); // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//          ^^^^^^^^^^^
+      x = 3;
+      System.out.println(x);
+    };
+  }
+
+  Runnable classes_in_lambda_capturing_local_variables(boolean condition) {
+    return () -> {
+      int capturedByAnonymousClass = compute();
+      int capturedByLocalClass = compute();
+      class Local {
+        void print() {
+          System.out.println(capturedByLocalClass);
+        }
+      }
+      if (condition) {
+        System.out.println("branch");
+      }
+      new Runnable() {
+        @Override
+        public void run() {
+          System.out.println(capturedByAnonymousClass);
+          new Local().print();
+        }
+      }.run();
+    };
+  }
+
+  Runnable method_reference_in_lambda_using_local_variable(boolean condition) {
+    return () -> {
+      Object captured = new Object();
+      if (condition) {
+        System.out.println("branch");
+      }
+      Supplier<String> reference = captured::toString;
+      System.out.println(reference.get());
+    };
+  }
+
+  IntFunction<Integer> lambda_with_conditional_assignment() {
+    return condition -> {
+      int x = compute();
+      if (condition > 0) {
+        x = compute(); // Noncompliant {{Remove this useless assignment to local variable "x".}}
+//        ^^^^^^^^^^^
+        x = 3;
+      }
+      return x;
+    };
+  }
+
+  Runnable lambda_using_local_variable_in_finally() {
+    return () -> {
+      int x = compute();
+      try {
+        x = compute();
+      } finally {
+        System.out.println(x);
+      }
+    };
+  }
+
+  Runnable lambda_using_local_variable_in_catch() {
+    return () -> {
+      int x = compute();
+      try {
+        x = compute();
+        System.out.println(x);
+      } catch (RuntimeException e) {
+        System.out.println(x);
+      }
+    };
+  }
+
+  Runnable lambda_with_resource_used_only_by_implicit_close() {
+    return () -> {
+      try (FileInputStream stream = new FileInputStream("...")) {
+      } catch (java.io.IOException e) {
+        throw new java.io.UncheckedIOException(e);
+      }
+    };
+  }
+
+  Runnable dead_store_in_lambda_inside_try_finally() {
+    int x = compute();
+    try {
+      return () -> {
+        int y = compute(); // Noncompliant {{Remove this useless assignment to local variable "y".}}
+//            ^^^^^^^^^^^
+        y = 3;
+        System.out.println(y);
+      };
+    } finally {
+      System.out.println(x);
+    }
+  }
+
+  Runnable try_finally_in_nested_lambda_should_not_exclude_enclosing_scopes() {
+    int unused = compute(); // Noncompliant {{Remove this useless assignment to local variable "unused".}}
+//             ^^^^^^^^^^^
+    int capturedByOuterLambda = compute();
+    return () -> {
+      int unusedInLambda = compute(); // Noncompliant {{Remove this useless assignment to local variable "unusedInLambda".}}
+//                       ^^^^^^^^^^^
+      int capturedByInnerLambda = compute();
+      Runnable nested = () -> {
+        try {
+          System.out.println("try");
+        } finally {
+          System.out.println(capturedByOuterLambda + capturedByInnerLambda);
+        }
+      };
+      nested.run();
+    };
+  }
+
+  private int compute() {
+    return 1;
   }
 
   void ignore_try_finally() {
@@ -137,15 +496,15 @@ class DeadStoreCheckSample {
     ++b; // Noncompliant
 //  ^^^
     int c = 0;
-    foo(++c); // compliant not last element of block
+    foo(++c); // Noncompliant {{Remove this useless assignment to local variable "c".}}
     int j = -1;
-    while ((j = foo(++j)) != -1) {
+    while ((j = foo(++j)) != -1) { // Noncompliant {{Remove this useless assignment to local variable "j".}}
       System.out.println("");
     }
     if(i != 0) {
       return i++; // Noncompliant
     } else {
-      return ++i;
+      return ++i; // Noncompliant
     }
   }
 
@@ -226,7 +585,7 @@ class DeadStoreCheckSample {
       n = 2;
       n += 12; // Noncompliant
       int order = 0;
-      return (short) (order &= 12);
+      return (short) (order &= 12); // Noncompliant
     }
   }
 

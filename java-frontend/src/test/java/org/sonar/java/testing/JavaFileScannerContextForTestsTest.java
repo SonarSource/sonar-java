@@ -44,6 +44,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.sonar.java.model.JParserTestUtils.sema;
 
 class JavaFileScannerContextForTestsTest {
 
@@ -71,7 +72,7 @@ class JavaFileScannerContextForTestsTest {
 
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
 
-    context = new JavaFileScannerContextForTests(cut, inputFile, cut.sema, sonarComponents, javaVersion, false, false, null);
+    context = new JavaFileScannerContextForTests(cut, inputFile, sema(cut), sonarComponents, javaVersion, false, false, null);
   }
 
   @BeforeEach

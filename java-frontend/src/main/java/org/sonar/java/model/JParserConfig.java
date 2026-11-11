@@ -138,7 +138,7 @@ public abstract class JParserConfig {
       options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
     }
     // enabling all supported compiler warnings
-    JProblem.Type.compilerOptions()
+    JProblem.compilerOptions()
       .forEach(option -> options.put(option, "warning"));
 
     List<File> environment = classpath;
