@@ -16,6 +16,8 @@
  */
 package org.sonar.java.jdt;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
@@ -33,6 +35,7 @@ import org.eclipse.jdt.internal.formatter.Token;
 import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.slf4j.event.Level;
@@ -245,14 +248,20 @@ class JDTParserTest {
 
   @ParameterizedTest
   @EnumSource(JParser.Mode.class)
-  void should_preserve_configuration_between_parses(JParser.Mode mode) {
+  void should_preserve_configuration_between_parses(JParser.Mode mode, @TempDir Path directory) throws Exception {
     JParser parser = mode.create(new JavaVersionImpl(17), List.of());
     for (String name : List.of("A", "B")) {
-      var tree = parser.parse("17", name + ".java", "record " + name + "(String value) {}");
+      Path sourceFile = Files.writeString(directory.resolve(name + ".java"), "record " + name + "(String value) {}");
+      InputFile inputFile = TestUtils.inputFile(sourceFile.toFile());
+      List<JParseResult> results = new ArrayList<>();
+      parser.parse(List.of(inputFile), () -> false, new AnalysisProgress(1), (input, result) -> results.add(result));
+      assertThat(results).hasSize(1);
+      var tree = results.getFirst().get();
       assertThat(tree.semanticProblems()).isEmpty();
       ClassTree record = (ClassTree) tree.types().get(0);
       assertThat(record.recordComponents().get(0).symbol().type().is("java.lang.String")).isTrue();
     }
+    assertThat(logTester.logs(Level.WARN)).isEmpty();
   }
 
   @Test
