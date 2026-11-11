@@ -125,7 +125,7 @@ public abstract class JDTParserConfig implements JParserConfig {
     }
 
     @Override
-    public void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled,
+    public void parse(Iterable<InputFile> inputFiles, BooleanSupplier isCanceled,
       AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action) {
 
       List<String> sourceFilePaths = new ArrayList<>();
@@ -204,7 +204,7 @@ public abstract class JDTParserConfig implements JParserConfig {
     }
 
     @Override
-    public void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled,
+    public void parse(Iterable<InputFile> inputFiles, BooleanSupplier isCanceled,
       AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action) {
       boolean successfullyCompleted = false;
       boolean cancelled = false;

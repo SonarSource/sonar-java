@@ -34,7 +34,7 @@ public interface JParserConfig {
 
   JavaTree.CompilationUnitTreeImpl parse(String unitName, String source);
 
-  void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled,
+  void parse(Iterable<InputFile> inputFiles, BooleanSupplier isCanceled,
     AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action);
 
   enum Mode {

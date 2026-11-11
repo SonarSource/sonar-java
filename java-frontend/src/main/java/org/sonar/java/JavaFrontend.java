@@ -234,7 +234,7 @@ public class JavaFrontend {
     }
   }
 
-  private <T extends InputFile> void scanBatch(BatchModeContext context, List<T> batchFiles, AnalysisProgress analysisProgress) {
+  private void scanBatch(BatchModeContext context, List<InputFile> batchFiles, AnalysisProgress analysisProgress) {
     analysisProgress.startBatch(batchFiles.size());
     Set<Runnable> environmentsCleaners = new HashSet<>();
     JParserConfig.Mode.BATCH
