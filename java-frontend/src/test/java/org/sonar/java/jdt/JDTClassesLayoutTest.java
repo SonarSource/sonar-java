@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.testing.ClassLayoutTestUtils.countFields;
 
-class JdtClassesLayoutTest {
+class JDTClassesLayoutTest {
 
   @Test
   void type() {

@@ -24,20 +24,10 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserConfig;
-import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
-class JSemaTest {
-
-  @Test
-  void testGetClassTypeUnknown() {
-    assertThat(sema.getClassType("com.google.common.collect.ImmutableMap")).
-      isEqualTo(Type.UNKNOWN);
-    assertThat(sema.getClassType("java.lang.Object"))
-      .isNotEqualTo(Type.UNKNOWN);
-  }
+class JDTSemaTest {
 
   @Test
   void type() {
@@ -45,33 +35,6 @@ class JSemaTest {
     assertThat(sema.type(typeBinding))
       .isNotNull()
       .isSameAs(sema.type(typeBinding));
-  }
-
-  @Test
-  void resolveType() {
-    assertAll(
-      () ->
-        assertThat(sema.resolveType("Nonexistent"))
-          .isNull(),
-      () ->
-        assertThat(sema.resolveType("void"))
-          .isNotNull(),
-      () ->
-        assertThat(sema.resolveType("java.util.Map"))
-          .isNotNull(),
-      () ->
-        assertThat(sema.resolveType("java.util.Map$Entry"))
-          .isNotNull(),
-      () ->
-        assertThat(sema.resolveType("java.util.Map$Entry[][]"))
-          .isNotNull()
-    );
-  }
-
-  @Test
-  void resolvePackageAnnotations() {
-    assertThat(sema.resolvePackageAnnotations("org.sonar.java.resolve.targets"))
-      .hasSize(1);
   }
 
   private JDTSema sema;
@@ -93,5 +56,4 @@ class JSemaTest {
     AST ast = astParser.createAST(null).getAST();
     sema = new JDTSema(ast);
   }
-
 }

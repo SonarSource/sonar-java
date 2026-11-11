@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.jdt.JdtTestUtils.sema;
+import static org.sonar.java.jdt.JDTTestUtils.sema;
 
 class SymbolsTest {
 
@@ -108,7 +108,7 @@ class SymbolsTest {
     Tree unsupportedDeclaration = mock(Tree.class);
     Symbol symbol = spy(Symbol.UNKNOWN_SYMBOL);
     when(symbol.declaration()).thenReturn(unsupportedDeclaration);
-    SymbolMetadata metadata = new JDTSymbolMetadata(JUtilsTest.SEMA, symbol, new IAnnotationBinding[0]);
+    SymbolMetadata metadata = new JDTSymbolMetadata(sema(JParserTestUtils.parse("")), symbol, new IAnnotationBinding[0]);
     assertThat(metadata.findAnnotationTree(mock(AnnotationInstance.class))).isNull();
     assertThat(metadata.nullabilityData().type()).isEqualTo(NullabilityType.UNKNOWN);
     assertThat(metadata.nullabilityData(NullabilityTarget.METHOD).type()).isEqualTo(NullabilityType.UNKNOWN);
@@ -207,7 +207,7 @@ class SymbolsTest {
 
   @Test
   void testIsAnnotation() {
-    JDTSema sema = sema(((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("")));
+    JDTSema sema = sema(JParserTestUtils.parse(""));
     Type objectType = sema.type(sema.resolveType("java.lang.Object"));
     JavaTree.CompilationUnitTreeImpl cu = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse("@interface Anno { Unknown u; }");
     ClassTreeImpl anno = (ClassTreeImpl) cu.types().get(0);
