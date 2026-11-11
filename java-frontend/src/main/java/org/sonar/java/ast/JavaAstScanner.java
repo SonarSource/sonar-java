@@ -103,7 +103,7 @@ public class JavaAstScanner {
   }
 
   private void scan(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit) {
-    List<? extends InputFile> filesNames = filterModuleInfo(inputFiles).toList();
+    List<InputFile> filesNames = filterModuleInfo(inputFiles).collect(Collectors.toList());
     AnalysisProgress analysisProgress = new AnalysisProgress(filesNames.size());
     try {
       boolean shouldIgnoreUnnamedModuleForSplitPacakge = sonarComponents != null &&
