@@ -31,8 +31,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import org.sonar.java.semsitter.BridgeExtractor;
-import org.sonar.java.semsitter.PlatformDetection;
 import org.sonar.java.semsitter.SemsitterBridge;
 
 public final class JParser {
@@ -132,20 +130,16 @@ public final class JParser {
     return Files.createTempDirectory("sonar-java-unit");
   }
 
+  /** The {@code udg-gen} executable: {@code -Dsonar.java.semsitter.udg}, else {@code SEMSITTER_UDG_GEN}. */
   static Path bridgePath() {
-    String configured = System.getProperty("sonar.java.semsitter.bridge");
+    String configured = System.getProperty("sonar.java.semsitter.udg");
     if (configured == null || configured.isBlank()) {
-      configured = System.getenv("SEMSITTER_BRIDGE");
+      configured = System.getenv("SEMSITTER_UDG_GEN");
     }
-    if (configured != null && !configured.isBlank()) {
-      return Path.of(configured);
+    if (configured == null || configured.isBlank()) {
+      throw new RecognitionException(1, "SemSitter server is unavailable: set -Dsonar.java.semsitter.udg or SEMSITTER_UDG_GEN");
     }
-    try {
-      Path target = Path.of(System.getProperty("java.io.tmpdir"), "sonar-java", "semsitter-bridge");
-      return BridgeExtractor.extract(target, new PlatformDetection().getPlatform());
-    } catch (Exception failure) {
-      throw new RecognitionException(1, "SemSitter bridge is unavailable: " + failure.getMessage(), failure);
-    }
+    return Path.of(configured);
   }
 
 }
