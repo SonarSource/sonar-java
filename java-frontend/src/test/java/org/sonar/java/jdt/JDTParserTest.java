@@ -258,8 +258,8 @@ class JDTParserTest {
       assertThat(results).hasSize(1);
       var tree = results.getFirst().get();
       assertThat(tree.semanticProblems()).isEmpty();
-      ClassTree record = (ClassTree) tree.types().get(0);
-      assertThat(record.recordComponents().get(0).symbol().type().is("java.lang.String")).isTrue();
+      ClassTree recordTree = (ClassTree) tree.types().get(0);
+      assertThat(recordTree.recordComponents().get(0).symbol().type().is("java.lang.String")).isTrue();
     }
     assertThat(logTester.logs(Level.WARN)).isEmpty();
   }
