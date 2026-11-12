@@ -168,6 +168,16 @@ public class SpringSecurityDisableCSRFCheckSample extends WebSecurityConfigurerA
   }
 
   @Bean
+  SecurityFilterChain statelessResourceServerX509(HttpSecurity http) throws Exception {
+    http.csrf(AbstractHttpConfigurer::disable); // Noncompliant
+//                                    ^^^^^^^
+    http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    http.oauth2ResourceServer(o -> o.jwt());
+    http.x509(withDefaults());
+    return http.build();
+  }
+
+  @Bean
   SecurityFilterChain statelessPartialExemptions(HttpSecurity http) throws Exception {
     http.csrf(c -> c.ignoringAntMatchers("/ignored")); // Noncompliant
 //                   ^^^^^^^^^^^^^^^^^^^

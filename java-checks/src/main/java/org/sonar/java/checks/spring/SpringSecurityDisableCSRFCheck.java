@@ -68,7 +68,8 @@ public class SpringSecurityDisableCSRFCheck extends AbstractMethodDetection {
   private static final MethodMatchers DEFAULT_CUSTOMIZER = MethodMatchers.create()
     .ofTypes("org.springframework.security.config.Customizer").names("withDefaults").addWithoutParametersMatcher().build();
   private static final MethodMatchers BROWSER_AUTHENTICATION = MethodMatchers.create()
-    .ofTypes(HTTP_SECURITY).names("httpBasic", "formLogin", "rememberMe", "oauth2Login").withAnyParameters().build();
+    .ofTypes(HTTP_SECURITY).names("httpBasic", "formLogin", "rememberMe", "oauth2Login", "x509", "jee", "saml2Login")
+    .withAnyParameters().build();
   private static final MethodMatchers REQUIRE_CSRF_MATCHER = MethodMatchers.create()
     .ofTypes(CSRF_CONFIGURER_CLASS).names("requireCsrfProtectionMatcher")
     .addParametersMatcher("org.springframework.security.web.util.matcher.RequestMatcher").build();
