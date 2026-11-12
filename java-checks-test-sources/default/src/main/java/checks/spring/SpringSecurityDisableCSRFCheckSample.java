@@ -471,4 +471,57 @@ public class SpringSecurityDisableCSRFCheckSample extends WebSecurityConfigurerA
     return http.build();
   }
 
+  private SecurityFilterChain cachedChain;
+  private static final SessionCreationPolicy POLICY = SessionCreationPolicy.STATELESS;
+
+  @Bean
+  SecurityFilterChain statelessDefaultResourceServer(HttpSecurity http) throws Exception {
+    http.csrf(AbstractHttpConfigurer::disable);
+    http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    http.oauth2ResourceServer(withDefaults());
+    return http.build();
+  }
+
+  @Bean
+  SecurityFilterChain opaqueResourceServerCustomizer(HttpSecurity http) throws Exception {
+    http.csrf(AbstractHttpConfigurer::disable); // Noncompliant
+//                                    ^^^^^^^
+    http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    http.oauth2ResourceServer(resourceServerCustomizer());
+    return http.build();
+  }
+
+  org.springframework.security.config.Customizer<org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer<HttpSecurity>> resourceServerCustomizer() {
+    return o -> o.jwt();
+  }
+
+  @Bean
+  SecurityFilterChain returnsAnotherChain(HttpSecurity http) throws Exception {
+    http.csrf(AbstractHttpConfigurer::disable); // Noncompliant
+//                                    ^^^^^^^
+    http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    http.oauth2ResourceServer(o -> o.jwt());
+    return cachedChain;
+  }
+
+  @Bean
+  SecurityFilterChain statelessNotFalseMatchers(HttpSecurity http) throws Exception {
+    http.csrf(c -> c.requireCsrfProtectionMatcher(request -> true)); // Noncompliant
+//                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    http.csrf(c -> c.requireCsrfProtectionMatcher(request -> { boolean secure = request.isSecure(); return false; })); // Noncompliant
+//                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    http.oauth2ResourceServer(o -> o.jwt());
+    return http.build();
+  }
+
+  @Bean
+  SecurityFilterChain constantSessionPolicy(HttpSecurity http) throws Exception {
+    http.csrf(AbstractHttpConfigurer::disable); // Noncompliant
+//                                    ^^^^^^^
+    http.sessionManagement(s -> s.sessionCreationPolicy(POLICY));
+    http.oauth2ResourceServer(o -> o.jwt());
+    return http.build();
+  }
+
 }
