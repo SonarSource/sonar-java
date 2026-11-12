@@ -1,16 +1,21 @@
 package checks.spring;
 
+import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -118,8 +123,8 @@ public class SpringSecurityDisableCSRFCheckSample extends WebSecurityConfigurerA
   }
 
   @Bean
-  SecurityFilterChain statelessCustomFilter(HttpSecurity http, javax.servlet.Filter filter) throws Exception {
-    http.addFilterBefore(filter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+  SecurityFilterChain statelessCustomFilter(HttpSecurity http, Filter filter) throws Exception {
+    http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
     http.csrf(AbstractHttpConfigurer::disable); // Noncompliant
 //                                    ^^^^^^^
     http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -286,7 +291,7 @@ public class SpringSecurityDisableCSRFCheckSample extends WebSecurityConfigurerA
     return http.build();
   }
 
-  void makeStateful(org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer<HttpSecurity> session) {
+  void makeStateful(SessionManagementConfigurer<HttpSecurity> session) {
     session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
   }
 
@@ -319,7 +324,7 @@ public class SpringSecurityDisableCSRFCheckSample extends WebSecurityConfigurerA
     return http.build();
   }
 
-  void removeResourceServer(org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer<HttpSecurity> resourceServer) {
+  void removeResourceServer(OAuth2ResourceServerConfigurer<HttpSecurity> resourceServer) {
     resourceServer.disable();
   }
 
@@ -491,7 +496,7 @@ public class SpringSecurityDisableCSRFCheckSample extends WebSecurityConfigurerA
     return http.build();
   }
 
-  org.springframework.security.config.Customizer<org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer<HttpSecurity>> resourceServerCustomizer() {
+  Customizer<OAuth2ResourceServerConfigurer<HttpSecurity>> resourceServerCustomizer() {
     return o -> o.jwt();
   }
 
