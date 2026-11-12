@@ -298,7 +298,7 @@
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
-        <version>1.4.0</version>
+        <version>99.0-does-not-exist</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
