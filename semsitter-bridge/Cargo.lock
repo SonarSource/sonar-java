@@ -889,6 +889,7 @@ dependencies = [
  "tree-sitter-java",
  "udg-family-jvm",
  "udg-gen",
+ "udg-lang-java",
  "udg-lang-sdk",
  "udg-semantic",
 ]

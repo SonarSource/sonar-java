@@ -23,6 +23,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -204,7 +205,12 @@ public abstract class JParserConfig {
           return null;
         }
         try {
-          return bridge.types(names);
+          JsonObject answered = bridge.types(names);
+          if (answered == null) {
+            answered = new JsonObject();
+          }
+          FrameworkDb.complete(answered, names);
+          return answered;
         } catch (IOException failure) {
           throw new UncheckedIOException(failure);
         }
@@ -275,7 +281,14 @@ public abstract class JParserConfig {
   }
 
   static List<String> jdkClasspath() {
-    return List.of(Path.of(System.getProperty("java.home"), "lib", "modules").toString());
+    List<String> classpath = new ArrayList<>();
+    classpath.add(Path.of(System.getProperty("java.home"), "lib", "modules").toString());
+    // Experiment: library jars the bridge reads in addition to the JDK, to measure what resolving them brings back.
+    String extra = System.getProperty("sonar.java.semsitter.extraClasspath", System.getenv("SEMSITTER_EXTRA_CLASSPATH"));
+    if (extra != null && !extra.isBlank()) {
+      Arrays.stream(extra.split(File.pathSeparator)).filter(entry -> !entry.isBlank()).forEach(classpath::add);
+    }
+    return classpath;
   }
 
   void closeBridge() {

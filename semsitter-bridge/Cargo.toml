@@ -17,6 +17,7 @@ tree-sitter = "0.27"
 tree-sitter-java = "0.23.5"
 udg-gen = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "22d846d83268f460e68912d1fd3ebb8843bafce9", default-features = false, features = ["lang-java"] }
 udg-family-jvm = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "22d846d83268f460e68912d1fd3ebb8843bafce9" }
+udg-lang-java = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "22d846d83268f460e68912d1fd3ebb8843bafce9" }
 udg-lang-sdk = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "22d846d83268f460e68912d1fd3ebb8843bafce9", features = ["unstable-sdk"] }
 udg-semantic = { git = "ssh://git@github.com/SonarSource/semsitter.git", rev = "22d846d83268f460e68912d1fd3ebb8843bafce9" }
 
