@@ -153,8 +153,6 @@ import org.eclipse.jdt.internal.compiler.parser.TerminalToken;
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;
 import org.eclipse.jdt.internal.formatter.Token;
 import org.eclipse.jdt.internal.formatter.TokenManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
@@ -259,8 +257,6 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 final class JDTAstConverter {
-
-  private static final Logger LOG = LoggerFactory.getLogger(JDTAstConverter.class);
 
   private CompilationUnit compilationUnit;
 
