@@ -23,19 +23,22 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SpringSecurityDisableCSRFCheckTest {
 
+  private static final String SAMPLE = "checks/spring/SpringSecurityDisableCSRFCheckSample.java";
+  private static final SpringSecurityDisableCSRFCheck CHECK = new SpringSecurityDisableCSRFCheck();
+
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/SpringSecurityDisableCSRFCheckSample.java"))
-      .withCheck(new SpringSecurityDisableCSRFCheck())
+      .onFile(mainCodeSourcesPath(SAMPLE))
+      .withCheck(CHECK)
       .verifyIssues();
   }
 
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/SpringSecurityDisableCSRFCheckSample.java"))
-      .withCheck(new SpringSecurityDisableCSRFCheck())
+      .onFile(mainCodeSourcesPath(SAMPLE))
+      .withCheck(CHECK)
       .withoutSemantic()
       .verifyNoIssues();
   }
