@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Protobuf codec of {@code semsitter-bridge/proto/bridge.proto}. Field numbers live here and in
+ * Protobuf codec of the analyzer protocol definition. Field numbers live here and in
  * the Rust encoder so the CST framing can move into SemSitter without a second schema.
  */
 final class BridgeFrames {
