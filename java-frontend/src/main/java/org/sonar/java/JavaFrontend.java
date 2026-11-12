@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.semsitter.SemsitterBridge;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -237,6 +239,18 @@ public class JavaFrontend {
   private <T extends InputFile> void scanBatch(BatchModeContext context, List<T> batchFiles, AnalysisProgress analysisProgress) {
     analysisProgress.startBatch(batchFiles.size());
     Set<Runnable> environmentsCleaners = new HashSet<>();
+    if (sonarComponents.context() != null) {
+      SemsitterBridge.moduleRoot(sonarComponents.context().fileSystem().baseDir().toPath());
+      var config = sonarComponents.context().config();
+      Map<String, List<String>> settings = new HashMap<>();
+      settings.put("jvm.libraries", List.of(config.getStringArray("sonar.java.libraries")));
+      settings.put("jvm.binaries", List.of(config.getStringArray("sonar.java.binaries")));
+      settings.put("jvm.test_libraries", List.of(config.getStringArray("sonar.java.test.libraries")));
+      settings.put("jvm.test_binaries", List.of(config.getStringArray("sonar.java.test.binaries")));
+      config.get("sonar.java.jdkHome").ifPresent(home -> settings.put("jvm.jdk_home", List.of(home)));
+      settings.values().removeIf(List::isEmpty);
+      SemsitterBridge.moduleSettings(settings);
+    }
     JParserConfig.Mode.BATCH
       .create(javaVersion, context.getClasspath(), sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage())
       .parse(batchFiles, sonarComponents::analysisCancelled, analysisProgress, (input, result) -> scanAsBatchCallback(input, result, context, environmentsCleaners));

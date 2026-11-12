@@ -158,13 +158,6 @@
       <resource>
         <directory>src/main/resources</directory>
       </resource>
-      <resource>
-        <directory>${maven.multiModuleProjectDirectory}/semsitter-bridge/prebuilt</directory>
-        <includes>
-          <include>bridge-*.xz</include>
-        </includes>
-        <targetPath>bridge</targetPath>
-      </resource>
     </resources>
     <plugins>
       <plugin>
