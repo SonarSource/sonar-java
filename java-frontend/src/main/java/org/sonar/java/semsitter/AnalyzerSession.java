@@ -59,6 +59,7 @@ final class AnalyzerSession {
   private Process process;
   private OutputStream toServer;
   private DataInputStream fromServer;
+  private String startedRoot;
   private String scannedKey;
   private static volatile Path moduleRoot;
   private static volatile Map<String, List<String>> moduleSettings = Map.of();
@@ -67,7 +68,7 @@ final class AnalyzerSession {
   private final Set<String> absent = new HashSet<>();
   private int nextId = 1;
 
-  private AnalyzerSession(Path executable) {
+  AnalyzerSession(Path executable) {
     this.executable = executable;
   }
 
@@ -89,15 +90,23 @@ final class AnalyzerSession {
     return shared;
   }
 
-  /** The module is scanned once: later batches of the same root only iterate its files. */
+  /**
+   * A module is scanned once per classpath: later batches with the same root and classpath only iterate its files. The
+   * server takes its root on the command line, so a new root restarts it.
+   */
   synchronized JsonObject analyze(JsonObject request) throws IOException {
     String root = projectRoot(request);
+    if (process != null && !root.equals(startedRoot)) {
+      stop();
+    }
     if (process == null) {
       start(root);
     }
-    if (!root.equals(scannedKey)) {
-      scan(request);
-      scannedKey = root;
+    JsonObject settings = settings(request);
+    String key = root + "\n" + settings;
+    if (!key.equals(scannedKey)) {
+      scan(settings);
+      scannedKey = key;
     }
     JsonObject result = new JsonObject();
     result.addProperty("ok", true);
@@ -142,19 +151,42 @@ final class AnalyzerSession {
     ProcessBuilder builder = new ProcessBuilder(command);
     builder.redirectError(ProcessBuilder.Redirect.INHERIT);
     process = builder.start();
+    startedRoot = root;
     toServer = new BufferedOutputStream(process.getOutputStream());
     fromServer = new DataInputStream(process.getInputStream());
-    JsonObject hello = new JsonObject();
-    hello.addProperty("cmd", "hello");
-    String protocol = send(hello, false).header.get("protocol").getAsString();
-    if (!protocol.startsWith("1.")) {
-      throw new IOException("unsupported analyzer protocol " + protocol);
+    try {
+      JsonObject hello = new JsonObject();
+      hello.addProperty("cmd", "hello");
+      String protocol = send(hello, false).header.get("protocol").getAsString();
+      if (!protocol.startsWith("1.")) {
+        throw new IOException("unsupported analyzer protocol " + protocol);
+      }
+    } catch (IOException | RuntimeException e) {
+      stop();
+      throw e;
     }
   }
 
-  private void scan(JsonObject request) throws IOException {
+  /** Ends the process and forgets everything tied to it, so the next request starts a fresh one. */
+  private void stop() {
+    if (process != null) {
+      process.destroy();
+    }
+    process = null;
+    toServer = null;
+    fromServer = null;
+    startedRoot = null;
+    scannedKey = null;
+    stableTypes.clear();
     batchTypes.clear();
     absent.clear();
+  }
+
+  /**
+   * The module {@code jvm.*} settings win when they name libraries or binaries; otherwise the request classpath is used,
+   * minus the JDK runtime image, which the server reads from {@code jvm.jdk_home}.
+   */
+  private static JsonObject settings(JsonObject request) {
     JsonObject settings = new JsonObject();
     Map<String, List<String>> configured = moduleSettings;
     for (Map.Entry<String, List<String>> entry : configured.entrySet()) {
@@ -165,7 +197,7 @@ final class AnalyzerSession {
     if (!settings.has("jvm.libraries") && !settings.has("jvm.binaries")) {
       JsonArray libraries = new JsonArray();
       for (JsonElement entry : request.getAsJsonArray("classpath")) {
-        if (!entry.getAsString().endsWith("/lib/modules")) {
+        if (!isJdkImage(entry.getAsString())) {
           libraries.add(entry.getAsString());
         }
       }
@@ -176,6 +208,17 @@ final class AnalyzerSession {
       home.add(System.getProperty("java.home"));
       settings.add("jvm.jdk_home", home);
     }
+    return settings;
+  }
+
+  /** The JDK runtime image ({@code lib/modules}), whichever separator the entry uses. */
+  static boolean isJdkImage(String entry) {
+    return entry.replace('\\', '/').endsWith("/lib/modules");
+  }
+
+  private void scan(JsonObject settings) throws IOException {
+    batchTypes.clear();
+    absent.clear();
     if (System.getenv("SEMSITTER_COUNTERS_FILE") != null) {
       System.err.println("SEMSITTER-SETTINGS " + settings);
     }
@@ -282,6 +325,9 @@ final class AnalyzerSession {
       return exchange(request);
     } catch (IOException | RuntimeException e) {
       System.err.println("SERVER-ERROR " + request.get("cmd") + " " + e);
+      if (process != null && !process.isAlive()) {
+        stop();
+      }
       throw e;
     }
   }

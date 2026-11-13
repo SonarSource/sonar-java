@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import org.sonar.java.semsitter.EmbeddedAnalyzer;
 import org.sonar.java.semsitter.SemsitterBridge;
 
 public final class JParser {
@@ -130,16 +131,20 @@ public final class JParser {
     return Files.createTempDirectory("sonar-java-unit");
   }
 
-  /** The SemSitter analyzer executable: {@code -Dsonar.java.semsitter.executable}, else {@code SEMSITTER_ANALYZER}. */
+  /** The SemSitter analyzer executable: {@code -Dsonar.java.semsitter.executable}, else {@code SEMSITTER_ANALYZER}, else the packaged one. */
   static Path bridgePath() {
     String configured = System.getProperty("sonar.java.semsitter.executable");
     if (configured == null || configured.isBlank()) {
       configured = System.getenv("SEMSITTER_ANALYZER");
     }
-    if (configured == null || configured.isBlank()) {
-      throw new RecognitionException(1, "SemSitter server is unavailable: set -Dsonar.java.semsitter.executable or SEMSITTER_ANALYZER");
+    if (configured != null && !configured.isBlank()) {
+      return Path.of(configured);
     }
-    return Path.of(configured);
+    try {
+      return EmbeddedAnalyzer.extract();
+    } catch (IOException failure) {
+      throw new RecognitionException(1, "SemSitter server is unavailable: " + failure.getMessage(), failure);
+    }
   }
 
 }
