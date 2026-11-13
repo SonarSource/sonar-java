@@ -32,6 +32,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.sonarsource.scanner.engine</groupId>
+      <artifactId>sensor-test-fixtures</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <scope>test</scope>

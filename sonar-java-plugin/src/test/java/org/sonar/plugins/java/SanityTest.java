@@ -49,7 +49,7 @@ import org.sonar.java.GeneratedCheckList;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.FilesUtils;
-import org.sonar.java.model.JParserConfig;
+import org.sonar.java.model.JParser;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.java.testing.VisitorsBridgeForTests;
@@ -232,7 +232,7 @@ class SanityTest {
   private static List<SanityCheckException> scanFiles(File moduleBaseDir, List<InputFile> inputFiles, List<JavaCheck> checks, List<File> classpath) {
     SonarComponents sonarComponents = sonarComponents(moduleBaseDir, inputFiles);
     JavaAstScanner scanner = new JavaAstScanner(sonarComponents, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
-    JavaVersion javaVersion = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    JavaVersion javaVersion = JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
     scanner.setVisitorBridge(new VisitorsBridgeForTests.Builder(checks)
       .enableSemanticWithProjectClasspath(classpath)
       .withSonarComponents(sonarComponents)
@@ -240,7 +240,7 @@ class SanityTest {
       .build());
     List<SanityCheckException> exceptions = new ArrayList<>();
     AnalysisProgress analysisProgress = new AnalysisProgress(inputFiles.size());
-    JParserConfig.Mode.BATCH
+    JParser.Mode.BATCH
       .create(javaVersion, classpath, true)
       .parse(inputFiles, () -> false, analysisProgress, (input, result) -> {
         try {

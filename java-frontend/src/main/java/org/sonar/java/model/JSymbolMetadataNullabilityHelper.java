@@ -38,8 +38,8 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 
-import static org.sonar.java.model.JSymbolMetadata.noNullabilityAnnotationAt;
-import static org.sonar.java.model.JSymbolMetadata.unknownNullabilityAt;
+import static org.sonar.java.model.JNullabilityData.noNullabilityAnnotationAt;
+import static org.sonar.java.model.JNullabilityData.unknownNullabilityAt;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.CLASS;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.VARIABLE;
@@ -327,7 +327,7 @@ public class JSymbolMetadataNullabilityHelper {
     } else if (annotationInstance == null) {
       return noNullabilityAnnotationAt(level);
     }
-    return new JSymbolMetadata.JNullabilityData(nullabilityType, level,
+    return new JNullabilityData(nullabilityType, level,
       annotationInstance, metadata.findAnnotationTree(annotationInstance), isMetaAnnotated);
   }
 

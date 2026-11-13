@@ -31,9 +31,9 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityType;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -69,10 +69,10 @@ class JSymbolMetadataTest {
   void should_convert_annotation_values() {
     JavaTree.CompilationUnitTreeImpl cu = test("import java.lang.annotation.*; @Target({ElementType.TYPE, ElementType.METHOD}) @interface A { }");
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
-    Object[] value = (Object[]) ((JTypeSymbol) typeOf(c).symbol()).metadata().annotations().get(0).values().get(0).value();
+    Object[] value = (Object[]) typeOf(c).symbol().metadata().annotations().get(0).values().get(0).value();
     assertThat(value).hasSize(2);
-    assertThat(((JVariableSymbol) value[0]).isEnum()).isTrue();
-    assertThat(((JVariableSymbol) value[1]).isEnum()).isTrue();
+    assertThat(((Symbol.VariableSymbol) value[0]).isEnum()).isTrue();
+    assertThat(((Symbol.VariableSymbol) value[1]).isEnum()).isTrue();
   }
 
   @Test
@@ -244,7 +244,7 @@ class JSymbolMetadataTest {
     @Test
     void nullability_data_non_null() {
       SymbolMetadata.NullabilityData nonNullAtVariable =
-        new JSymbolMetadata.JNullabilityData(NON_NULL, VARIABLE, null, null, false);
+        new JNullabilityData(NON_NULL, VARIABLE, null, null, false);
 
       assertThat(nonNullAtVariable.isNonNull(VARIABLE, true, false)).isTrue();
       assertThat(nonNullAtVariable.isStrongNullable(VARIABLE, true, false)).isFalse();
@@ -254,7 +254,7 @@ class JSymbolMetadataTest {
     @Test
     void nullability_data_weak_nullable() {
       SymbolMetadata.NullabilityData nonNullAtVariable =
-        new JSymbolMetadata.JNullabilityData(WEAK_NULLABLE, VARIABLE, null, null, false);
+        new JNullabilityData(WEAK_NULLABLE, VARIABLE, null, null, false);
 
       assertThat(nonNullAtVariable.isNonNull(VARIABLE, true, false)).isFalse();
       assertThat(nonNullAtVariable.isStrongNullable(VARIABLE, true, false)).isFalse();
@@ -264,7 +264,7 @@ class JSymbolMetadataTest {
     @Test
     void nullability_data_strong_nullable() {
       SymbolMetadata.NullabilityData nonNullAtVariable =
-        new JSymbolMetadata.JNullabilityData(STRONG_NULLABLE, VARIABLE, null, null, false);
+        new JNullabilityData(STRONG_NULLABLE, VARIABLE, null, null, false);
 
       assertThat(nonNullAtVariable.isNonNull(VARIABLE, true, false)).isFalse();
       assertThat(nonNullAtVariable.isStrongNullable(VARIABLE, true, false)).isTrue();
@@ -275,7 +275,7 @@ class JSymbolMetadataTest {
     @Test
     void nullability_data_level_variable() {
       SymbolMetadata.NullabilityData nonNullAtVariable =
-        new JSymbolMetadata.JNullabilityData(NON_NULL, VARIABLE, null, null, false);
+        new JNullabilityData(NON_NULL, VARIABLE, null, null, false);
 
       assertThat(nonNullAtVariable.isNonNull(VARIABLE, true, false)).isTrue();
       assertThat(nonNullAtVariable.isNonNull(METHOD, true, false)).isTrue();
@@ -286,7 +286,7 @@ class JSymbolMetadataTest {
     @Test
     void nullability_data_level_method() {
       SymbolMetadata.NullabilityData nonNullAtVariable =
-        new JSymbolMetadata.JNullabilityData(NON_NULL, METHOD, null, null, false);
+        new JNullabilityData(NON_NULL, METHOD, null, null, false);
 
       assertThat(nonNullAtVariable.isNonNull(VARIABLE, true, false)).isFalse();
       assertThat(nonNullAtVariable.isNonNull(METHOD, true, false)).isTrue();
@@ -297,7 +297,7 @@ class JSymbolMetadataTest {
     @Test
     void nullability_data_level_class() {
       SymbolMetadata.NullabilityData nonNullAtVariable =
-        new JSymbolMetadata.JNullabilityData(NON_NULL, CLASS, null, null, false);
+        new JNullabilityData(NON_NULL, CLASS, null, null, false);
 
       assertThat(nonNullAtVariable.isNonNull(VARIABLE, true, false)).isFalse();
       assertThat(nonNullAtVariable.isNonNull(METHOD, true, false)).isFalse();
@@ -308,7 +308,7 @@ class JSymbolMetadataTest {
     @Test
     void nullability_data_level_package() {
       SymbolMetadata.NullabilityData nonNullAtVariable =
-        new JSymbolMetadata.JNullabilityData(NON_NULL, PACKAGE, null, null, false);
+        new JNullabilityData(NON_NULL, PACKAGE, null, null, false);
 
       assertThat(nonNullAtVariable.isNonNull(VARIABLE, true, false)).isFalse();
       assertThat(nonNullAtVariable.isNonNull(METHOD, true, false)).isFalse();
@@ -319,7 +319,7 @@ class JSymbolMetadataTest {
     @Test
     void nullability_data_ignore_meta_annotation() {
       SymbolMetadata.NullabilityData nonNullAtVariable =
-        new JSymbolMetadata.JNullabilityData(NON_NULL, VARIABLE, null, null, true);
+        new JNullabilityData(NON_NULL, VARIABLE, null, null, true);
 
       assertThat(nonNullAtVariable.isNonNull(VARIABLE, true, false)).isFalse();
       assertThat(nonNullAtVariable.isNonNull(METHOD, true, false)).isFalse();
@@ -330,7 +330,7 @@ class JSymbolMetadataTest {
     @Test
     void nullability_data_do_not_ignore_meta_annotation() {
       SymbolMetadata.NullabilityData nonNullAtVariable =
-        new JSymbolMetadata.JNullabilityData(NON_NULL, CLASS, null, null, true);
+        new JNullabilityData(NON_NULL, CLASS, null, null, true);
 
       assertThat(nonNullAtVariable.isNonNull(VARIABLE, false, false)).isFalse();
       assertThat(nonNullAtVariable.isNonNull(METHOD, false, false)).isFalse();
@@ -341,7 +341,7 @@ class JSymbolMetadataTest {
     @Test
     void nullability_unknown_type() {
       SymbolMetadata.NullabilityData nonNullAtVariable =
-        new JSymbolMetadata.JNullabilityData(UNKNOWN, VARIABLE, null, null, false);
+        new JNullabilityData(UNKNOWN, VARIABLE, null, null, false);
 
       assertThat(nonNullAtVariable.isStrongNullable(VARIABLE, true, false)).isFalse();
       assertThat(nonNullAtVariable.isNullable(VARIABLE, true, false)).isFalse();

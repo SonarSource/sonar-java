@@ -17,6 +17,7 @@
 package org.sonar.java.model;
 
 import com.google.common.io.Files;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -26,10 +27,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.sonar.java.AnalysisProgress;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -49,6 +50,10 @@ public class JParserTestUtils {
 
   private JParserTestUtils() {
     // Utility class
+  }
+
+  public static Sema sema(CompilationUnitTree tree) {
+    return ((JavaTree.CompilationUnitTreeImpl) tree).sema;
   }
 
   public static Type typeOf(Tree tree) {
@@ -71,22 +76,6 @@ public class JParserTestUtils {
       case JavaTree.ImportTreeImpl importTree -> importTree.symbol();
       default -> throw new IllegalArgumentException(tree.kind().name());
     };
-  }
-
-  public static JSema sema(CompilationUnitTree tree) {
-    return (JSema) ((JavaTree.CompilationUnitTreeImpl) tree).sema;
-  }
-
-  public static ITypeBinding typeBinding(ClassTree tree) {
-    return ((JType) tree.symbol().type()).typeBinding;
-  }
-
-  public static IMethodBinding methodBinding(MethodTree tree) {
-    return tree.symbol() instanceof JMethodSymbol symbol ? symbol.methodBinding() : null;
-  }
-
-  public static IMethodBinding methodBinding(MethodInvocationTree tree) {
-    return tree.methodSymbol() instanceof JMethodSymbol symbol ? symbol.methodBinding() : null;
   }
 
   public static final List<File> DEFAULT_CLASSPATH = Arrays.asList(new File("target/test-classes"), new File("target/classes"));
@@ -128,11 +117,24 @@ public class JParserTestUtils {
   }
 
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath) {
-    return parse(unitName, source, classpath, JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION);
+    return parse(unitName, source, classpath, JParser.MAXIMUM_SUPPORTED_JAVA_VERSION);
   }
 
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath, JavaVersion version) {
-    return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version.toString(), unitName, source);
+    var inputFile = new TestInputFileBuilder("", unitName)
+      .setContents(source)
+      .setCharset(StandardCharsets.UTF_8)
+      .build();
+    List<JParseResult> results = new ArrayList<>();
+    JParser.Mode.FILE_BY_FILE.create(version, classpath)
+      .parse(List.of(inputFile), () -> false, new AnalysisProgress(1), (input, result) -> results.add(result));
+    try {
+      return results.getFirst().get();
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new IllegalStateException("Unable to parse source", e);
+    }
   }
 
   public static List<File> checksTestClassPath() throws IOException {

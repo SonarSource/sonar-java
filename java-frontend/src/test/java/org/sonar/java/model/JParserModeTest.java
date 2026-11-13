@@ -23,36 +23,18 @@ import org.slf4j.event.Level;
 import org.sonar.java.testing.ThreadLocalLogTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.model.JParserConfig.shouldEnablePreviewFlag;
 
-class JParserConfigTest {
+class JParserModeTest {
   @RegisterExtension
   public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.INFO);
 
   @Test
-  void should_enable_preview() {
-    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl())).isFalse();
-    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(8))).isFalse();
-    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(11))).isFalse();
-    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(16))).isFalse();
-    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(17))).isFalse();
-    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(18))).isFalse();
-    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(19))).isFalse();
-    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(20))).isFalse();
-    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(42))).isFalse();
-    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(42, true))).isTrue();
-
-    assertThat(shouldEnablePreviewFlag(JavaVersionImpl.fromString("1.8"))).isFalse();
-    assertThat(shouldEnablePreviewFlag(JavaVersionImpl.fromString("1.8", "True"))).isTrue();
-  }
-
-  @Test
   void a_debug_message_is_logged_when_shouldIgnoreUnnamedModuleForSplitPackage_is_set() {
-    JParserConfig.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList());
+    JParser.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList());
     assertThat(logTester.logs()).isEmpty();
-    JParserConfig.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), false);
+    JParser.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), false);
     assertThat(logTester.logs()).isEmpty();
-    JParserConfig.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), true);
+    JParser.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), true);
     assertThat(logTester.logs()).containsExactly("The Java analyzer will ignore the unnamed module for split packages.");
   }
 }

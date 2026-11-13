@@ -14,8 +14,9 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
+import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,18 +42,17 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.ExecutionTimeReport;
-import org.sonar.java.ProgressMonitor;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.model.JParseResult;
+import org.sonar.java.model.JParser;
+import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonarsource.analyzer.commons.ProgressReport;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 
-public abstract class JParserConfig {
+public abstract class JDTParser implements JParser {
 
-  public static final JavaVersion MAXIMUM_SUPPORTED_JAVA_VERSION = new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED, true);
-
-  private static final Logger LOG = LoggerFactory.getLogger(JParserConfig.class);
-
+  private static final Logger LOG = LoggerFactory.getLogger(JDTParser.class);
   private static final String MAXIMUM_ECJ_WARNINGS = "42000";
   private static final Set<String> JRE_JARS = new HashSet<>(Arrays.asList("rt.jar", "jrt-fs.jar", "android.jar"));
 
@@ -60,60 +60,28 @@ public abstract class JParserConfig {
   final List<File> classpath;
   final boolean shouldIgnoreUnnamedModuleForSplitPackage;
 
-  private JParserConfig(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
+  public static JParser create(JParser.Mode mode, JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
+    if (shouldIgnoreUnnamedModuleForSplitPackage) {
+      LOG.info("The Java analyzer will ignore the unnamed module for split packages.");
+    }
+    return switch (mode) {
+      case BATCH -> new Batch(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
+      case FILE_BY_FILE -> new FileByFile(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
+    };
+  }
+
+  @VisibleForTesting
+  static boolean shouldEnablePreviewFlag(JavaVersion currentVersion) {
+    return currentVersion.arePreviewFeaturesEnabled();
+  }
+
+  private JDTParser(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
     this.javaVersion = javaVersion;
     this.classpath = classpath;
     this.shouldIgnoreUnnamedModuleForSplitPackage = shouldIgnoreUnnamedModuleForSplitPackage;
   }
 
-  public abstract void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled,
-    AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action);
-
-  public enum Mode {
-    BATCH(Batch::new),
-    FILE_BY_FILE(FileByFile::new);
-
-    private final ParserConfigConstructor supplier;
-
-    Mode(ParserConfigConstructor supplier) {
-      this.supplier = supplier;
-    }
-
-    public JParserConfig create(JavaVersion javaVersion, List<File> classpath) {
-      return create(javaVersion, classpath, false);
-    }
-
-    public JParserConfig create(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
-      if (shouldIgnoreUnnamedModuleForSplitPackage) {
-        LOG.info("The Java analyzer will ignore the unnamed module for split packages.");
-      }
-      return supplier.apply(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
-    }
-  }
-
-  public static class Result {
-    private final Exception e;
-    private final JavaTree.CompilationUnitTreeImpl t;
-
-    private Result(Exception e) {
-      this.e = e;
-      this.t = null;
-    }
-
-    private Result(JavaTree.CompilationUnitTreeImpl t) {
-      this.e = null;
-      this.t = t;
-    }
-
-    public JavaTree.CompilationUnitTreeImpl get() throws Exception {
-      if (e != null) {
-        throw e;
-      }
-      return t;
-    }
-  }
-
-  public ASTParser astParser() {
+  protected ASTParser jdtAstParser() {
     ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
     Map<String, String> options = new HashMap<>(JavaCore.getOptions());
     JavaCore.setComplianceOptions(javaVersion.effectiveJavaVersionAsString(), options);
@@ -125,7 +93,7 @@ public abstract class JParserConfig {
       options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
     }
     // enabling all supported compiler warnings
-    JProblem.compilerOptions()
+    JDTProblem.compilerOptions()
       .forEach(option -> options.put(option, "warning"));
 
     astParser.setCompilerOptions(options);
@@ -135,7 +103,7 @@ public abstract class JParserConfig {
 
     astParser.setEnvironment(classpath.stream()
       .map(File::getAbsolutePath)
-      .toArray(String[]::new), new String[] {}, new String[] {}, includeRunningVMBootclasspath);
+      .toArray(String[]::new), new String[]{}, new String[]{}, includeRunningVMBootclasspath);
 
     astParser.setResolveBindings(true);
     astParser.setBindingsRecovery(true);
@@ -144,16 +112,14 @@ public abstract class JParserConfig {
   }
 
   @VisibleForTesting
-  static class Batch extends JParserConfig {
+  static class Batch extends JDTParser {
 
     Batch(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
       super(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
     }
 
     @Override
-    public void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled,
-      AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action) {
-
+    public void parse(Iterable<InputFile> inputFiles, BooleanSupplier isCanceled, AnalysisProgress analysisProgress, BiConsumer<InputFile, JParseResult> action) {
       List<String> sourceFilePaths = new ArrayList<>();
       Set<InputFile> notYetAnalyzedFiles = new LinkedHashSet<>();
       List<String> encodings = new ArrayList<>();
@@ -170,17 +136,18 @@ public abstract class JParserConfig {
       ProgressMonitor monitor = new ProgressMonitor(isCanceled, analysisProgress);
       PerformanceMeasure.Duration batchPerformance = PerformanceMeasure.start("ParseAsBatch");
       try {
-        astParser().createASTs(sourceFilePaths.toArray(new String[0]), encodings.toArray(new String[0]), new String[0], new FileASTRequestor() {
+        ASTParser astParser = jdtAstParser();
+        astParser.createASTs(sourceFilePaths.toArray(new String[0]), encodings.toArray(new String[0]), new String[0], new FileASTRequestor() {
           @Override
           public void acceptAST(String sourceFilePath, CompilationUnit ast) {
             PerformanceMeasure.Duration convertDuration = PerformanceMeasure.start("Convert");
             InputFile inputFile = inputs.get(new File(sourceFilePath));
             executionTimeReport.start(inputFile);
-            Result result;
+            JParseResult result;
             try {
-              result = new Result(JParser.convert(javaVersion.effectiveJavaVersionAsString(), inputFile.filename(), inputFile.contents(), ast));
+              result = JParseResult.success(JDTAstConverter.convert(javaVersion.effectiveJavaVersionAsString(), inputFile.filename(), inputFile.contents(), ast));
             } catch (Exception e) {
-              result = new Result(e);
+              result = JParseResult.failure(e);
             }
             convertDuration.stop();
             PerformanceMeasure.Duration analyzeDuration = PerformanceMeasure.start("Analyze");
@@ -200,7 +167,7 @@ public abstract class JParserConfig {
       } catch (RuntimeException e) {
         LOG.warn("Unexpected {}: {}", e.getClass().getSimpleName(), e.getMessage());
         if (!notYetAnalyzedFiles.isEmpty()) {
-          fallbackToFileByFileMode(notYetAnalyzedFiles.stream().toList(), isCanceled, action);
+          fallbackToFileByFileMode(notYetAnalyzedFiles.stream().toList(), isCanceled, analysisProgress, action);
         }
       } finally {
         batchPerformance.stop();
@@ -210,27 +177,21 @@ public abstract class JParserConfig {
       }
     }
 
-    private void fallbackToFileByFileMode(List<InputFile> inputFiles, BooleanSupplier isCanceled, BiConsumer<InputFile, Result> action) {
+    private void fallbackToFileByFileMode(List<InputFile> inputFiles, BooleanSupplier isCanceled, AnalysisProgress analysisProgress, BiConsumer<InputFile, JParseResult> action) {
       LOG.warn("Fallback to file by file analysis for {} files", inputFiles.size());
-      for (InputFile inputFile : inputFiles) {
-        if (isCanceled.getAsBoolean()) {
-          break;
-        }
-        FileByFile.parse(astParser(), inputFile, javaVersion, action);
-      }
+      FileByFile fileByFile = new FileByFile(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
+      fileByFile.parse(inputFiles, isCanceled, analysisProgress, action);
     }
-
   }
 
-  private static class FileByFile extends JParserConfig {
+  private static class FileByFile extends JDTParser {
 
     private FileByFile(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
       super(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
     }
 
     @Override
-    public void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled,
-      AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action) {
+    public void parse(Iterable<InputFile> inputFiles, BooleanSupplier isCanceled, AnalysisProgress analysisProgress, BiConsumer<InputFile, JParseResult> action) {
       boolean successfullyCompleted = false;
       boolean cancelled = false;
 
@@ -247,7 +208,7 @@ public abstract class JParserConfig {
             break;
           }
           executionTimeReport.start(inputFile);
-          parse(astParser(), inputFile, javaVersion, action);
+          parse(inputFile, javaVersion, action);
           executionTimeReport.end();
           progressReport.nextFile();
         }
@@ -262,27 +223,34 @@ public abstract class JParserConfig {
       }
     }
 
-    private static void parse(ASTParser astParser, InputFile inputFile, JavaVersion javaVersion, BiConsumer<InputFile, Result> action) {
-      Result result;
+    private void parse(InputFile inputFile, JavaVersion javaVersion, BiConsumer<InputFile, JParseResult> action) {
+      JParseResult result;
       PerformanceMeasure.Duration parseDuration = PerformanceMeasure.start("JParser");
       try {
-        result = new Result(JParser.parse(astParser, javaVersion.effectiveJavaVersionAsString(), inputFile.filename(), inputFile.contents()));
+        result = JParseResult.success(parse(javaVersion.effectiveJavaVersionAsString(), inputFile.filename(), inputFile.contents()));
       } catch (Exception e) {
-        result = new Result(e);
+        result = JParseResult.failure(e);
       } finally {
         parseDuration.stop();
       }
       action.accept(inputFile, result);
     }
-  }
 
-  @VisibleForTesting
-  static boolean shouldEnablePreviewFlag(JavaVersion currentVersion) {
-    return currentVersion.arePreviewFeaturesEnabled();
-  }
-  @FunctionalInterface
-  public interface ParserConfigConstructor {
-    JParserConfig apply(JavaVersion version, List<File> files, Boolean shouldIgnoreUnnamedModuleForSplitPackage);
+    private JavaTree.CompilationUnitTreeImpl parse(String version, String unitName, String source) {
+      ASTParser parser = jdtAstParser();
+      parser.setUnitName(unitName);
+      parser.setSource(source.toCharArray());
+
+      CompilationUnit astNode;
+      try {
+        astNode = (CompilationUnit) parser.createAST(null);
+      } catch (Exception e) {
+        LOG.error("ECJ: Unable to parse file", e);
+        throw new RecognitionException(-1, "ECJ: Unable to parse file.", e);
+      }
+
+      return JDTAstConverter.convert(version, unitName, source, astNode);
+    }
   }
 
 }

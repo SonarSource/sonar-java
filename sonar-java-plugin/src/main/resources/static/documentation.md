@@ -151,6 +151,36 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **8.47**
+
+**Breaking**
+
+* `org.sonar.java.model.JParser` is now an interface, independent of the underlying parser implementation, and replaces `JParserConfig`.
+  Create parsers with `JParser.Mode.BATCH.create(JavaVersion, List<File>)` or `JParser.Mode.FILE_BY_FILE.create(JavaVersion, List<File>)`. Both factories also accept an optional third `boolean` argument to ignore the unnamed module for split packages.
+  The string-based `parse(String version, String unitName, String source)` overload has been removed. Use `JParser#parse(Iterable<InputFile>, BooleanSupplier, AnalysisProgress, BiConsumer<InputFile, JParseResult>)` for all parsing, including a single file supplied as `List.of(inputFile)`.
+  The Java version and classpath are set when creating the parser; source contents, filename, and charset come from each `InputFile`.
+  The input parameter now takes `Iterable<InputFile>` instead of `Iterable<? extends InputFile>`; callers must supply an `Iterable<InputFile>`, and implementations must update their override signatures. Code compiled against `JParserConfig` must be recompiled.
+  Parsing callbacks now receive `org.sonar.java.model.JParseResult` instead of `JParserConfig.Result`. `JParseResult` is final and provides `success(tree)` and `failure(exception)` factories; `get()` returns the tree or rethrows the parsing exception.
+* ECJ-specific implementation classes have moved from `org.sonar.java.model` to `org.sonar.java.jdt` and use the `JDT` prefix, including `JSema`, `JType`, `JSymbol`, `JMethodSymbol`, `JTypeSymbol`, `JVariableSymbol`, `JInitializerBlockSymbol`, `JSymbolMetadata`, `JProblem`, and `JWarning`.
+  Custom rules should use the semantic and diagnostics interfaces in `org.sonar.plugins.java.api` instead of depending on these implementations.
+* `JSymbolMetadata.JNullabilityData` is now the top-level class `org.sonar.java.model.JNullabilityData`. The `noNullabilityAnnotationAt(...)` and `unknownNullabilityAt(...)` factories have also moved from `JSymbolMetadata` to `JNullabilityData`.
+* `JUtils#collectSuperTypes(Set<Type>, JSema, ITypeBinding)` has been removed. Use `TypeSymbol#superTypes()` to retrieve the transitive supertypes through the semantic API.
+  `JUtils#defaultValue(MethodSymbol)` now returns values in the same representation as `SymbolMetadata.AnnotationValue#value()`, rather than ECJ bindings. Callers handling class, enum, or annotation defaults must use the semantic API types.
+* AST node implementations no longer expose ECJ-specific bindings such as `IBinding`, `ITypeBinding`, `IMethodBinding`, and `IVariableBinding`.
+  Nodes store `org.sonar.plugins.java.api.semantic.Type` and `Symbol` values, including `Symbol.TypeSymbol` and `Symbol.MethodSymbol`, directly.
+  Custom rules accessing implementation fields such as `binding` or `typeBinding` must use the tree API's `symbol()`, `methodSymbol()`, and `symbolType()` accessors instead.
+  Code constructing AST nodes must use the corresponding `setSymbol(...)`, `setMethodSymbol(...)`, and `setSymbolType(...)` methods with API types.
+
+**Added**
+
+* New method: `Symbol.MethodSymbol#annotationElementDefaultValue()`. Returns an annotation element's default value, or `null` if it has none.
+  Values use the same representation as `SymbolMetadata.AnnotationValue#value()`: constants, type symbols, variable symbols, annotation instances, or arrays of these values.
+* New beta interfaces in `org.sonar.plugins.java.api.diagnostics`: `Problem` exposes `type()` and `message()`; `Warning` extends `Problem` and adds `syntaxTree()`, which returns the associated, non-null AST node.
+* New beta enum: `ProblemKind`, with `UNDEFINED_TYPE`, `PREVIEW_FEATURE_USED`, `UNUSED_IMPORT`, `REDUNDANT_CAST`, `ASSIGNMENT_HAS_NO_EFFECT`, and `MASKED_CATCH`.
+* New methods on `CompilationUnitTree`: `semanticProblems()` returns an immutable `Set<Problem>` for unresolved types and uses of preview features; `supportedWarningKinds()` returns the warning kinds supported by the frontend; `warnings(ProblemKind)` returns an immutable `List<Warning>` in frontend encounter order.
+  An unsupported warning kind returns an empty list, so use `supportedWarningKinds()` to distinguish lack of support from an absence of warnings.
+  Custom rules can use these methods directly without casting to `JavaTree.CompilationUnitTreeImpl` or depending on ECJ diagnostic implementations.
+
 #### **8.41**
 
 **Breaking**  

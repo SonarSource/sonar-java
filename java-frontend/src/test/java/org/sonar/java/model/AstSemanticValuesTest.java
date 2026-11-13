@@ -149,7 +149,7 @@ class AstSemanticValuesTest {
       try (var bytecode = tree.getResourceAsStream("/" + tree.getName().replace('.', '/') + ".class")) {
         assertThat(new String(bytecode.readAllBytes(), ISO_8859_1))
           .as(tree.getName())
-          .doesNotContain("org/eclipse/jdt/", "org.eclipse.jdt.", "org/sonar/java/model/JSema");
+          .doesNotContain("org/eclipse/jdt/", "org.eclipse.jdt.", "org/sonar/java/jdt/");
       }
     }
   }
