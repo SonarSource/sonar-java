@@ -38,8 +38,18 @@ public final class EmbeddedUdgGen {
     String os = osName == null ? "" : osName.toLowerCase(Locale.ROOT);
     String arch = osArch == null ? "" : osArch.toLowerCase(Locale.ROOT);
     boolean x64 = arch.equals("amd64") || arch.equals("x86_64");
-    // The packaged executable is statically linked, so it also runs on musl distributions.
-    return os.contains("linux") && x64 ? "/udg-gen/udg-gen-linux-x64.xz" : null;
+    boolean arm64 = arch.equals("aarch64") || arch.equals("arm64");
+    // The Linux executables are statically linked, so they also run on musl distributions.
+    if (os.contains("linux") && x64) {
+      return "/udg-gen/udg-gen-linux-x64.xz";
+    }
+    if (os.contains("linux") && arm64) {
+      return "/udg-gen/udg-gen-linux-aarch64.xz";
+    }
+    if (os.contains("mac") && arm64) {
+      return "/udg-gen/udg-gen-macos-aarch64.xz";
+    }
+    return null;
   }
 
   public static synchronized Path extract() throws IOException {

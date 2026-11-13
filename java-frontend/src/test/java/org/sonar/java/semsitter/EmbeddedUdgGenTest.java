@@ -28,18 +28,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 class EmbeddedUdgGenTest {
 
   @Test
-  void only_linux_x64_is_packaged() {
+  void packaged_platforms_are_linux_x64_linux_aarch64_and_macos_aarch64() {
     assertThat(EmbeddedUdgGen.resourceName("Linux", "amd64")).isEqualTo("/udg-gen/udg-gen-linux-x64.xz");
     assertThat(EmbeddedUdgGen.resourceName("Linux", "x86_64")).isEqualTo("/udg-gen/udg-gen-linux-x64.xz");
-    assertThat(EmbeddedUdgGen.resourceName("Linux", "aarch64")).isNull();
+    assertThat(EmbeddedUdgGen.resourceName("Linux", "aarch64")).isEqualTo("/udg-gen/udg-gen-linux-aarch64.xz");
+    assertThat(EmbeddedUdgGen.resourceName("Mac OS X", "aarch64")).isEqualTo("/udg-gen/udg-gen-macos-aarch64.xz");
     assertThat(EmbeddedUdgGen.resourceName("Mac OS X", "x86_64")).isNull();
     assertThat(EmbeddedUdgGen.resourceName("Windows 11", "amd64")).isNull();
     assertThat(EmbeddedUdgGen.resourceName(null, null)).isNull();
   }
 
   @Test
-  @EnabledOnOs(OS.LINUX)
-  void extracts_an_executable_on_linux() throws IOException {
+  @EnabledOnOs({OS.LINUX, OS.MAC})
+  void extracts_an_executable_for_the_running_platform() throws IOException {
     if (EmbeddedUdgGen.resourceName(System.getProperty("os.name"), System.getProperty("os.arch")) == null) {
       return;
     }
