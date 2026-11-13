@@ -39,17 +39,16 @@ public final class EmbeddedUdgGen {
     String arch = osArch == null ? "" : osArch.toLowerCase(Locale.ROOT);
     boolean x64 = arch.equals("amd64") || arch.equals("x86_64");
     boolean arm64 = arch.equals("aarch64") || arch.equals("arm64");
-    // The Linux executables are statically linked, so they also run on musl distributions.
-    if (os.contains("linux") && x64) {
-      return "/udg-gen/udg-gen-linux-x64.xz";
+    String platform = null;
+    if (os.contains("linux")) {
+      // Statically linked, so they also run on musl distributions.
+      platform = x64 ? "linux-x64" : arm64 ? "linux-aarch64" : null;
+    } else if (os.contains("mac")) {
+      platform = x64 ? "macos-x64" : arm64 ? "macos-aarch64" : null;
+    } else if (os.contains("win") && x64) {
+      platform = "windows-x64";
     }
-    if (os.contains("linux") && arm64) {
-      return "/udg-gen/udg-gen-linux-aarch64.xz";
-    }
-    if (os.contains("mac") && arm64) {
-      return "/udg-gen/udg-gen-macos-aarch64.xz";
-    }
-    return null;
+    return platform == null ? null : "/udg-gen/udg-gen-" + platform + ".xz";
   }
 
   public static synchronized Path extract() throws IOException {
@@ -64,7 +63,7 @@ public final class EmbeddedUdgGen {
         + ": set -Dsonar.java.semsitter.udg or SEMSITTER_UDG_GEN");
     }
     Path dir = Files.createTempDirectory("sonar-java-udg-gen");
-    Path target = dir.resolve("udg-gen");
+    Path target = dir.resolve(resource.contains("windows") ? "udg-gen.exe" : "udg-gen");
     try (InputStream packaged = EmbeddedUdgGen.class.getResourceAsStream(resource)) {
       if (packaged == null) {
         throw new IOException("packaged udg-gen " + resource + " is missing from the plugin");
