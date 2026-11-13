@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,14 +25,15 @@ import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
-final class JType implements Type, Type.ArrayType {
+final class JDTType implements Type.ArrayType {
 
-  private static final Logger LOG = LoggerFactory.getLogger(JType.class);
+  private static final Logger LOG = LoggerFactory.getLogger(JDTType.class);
 
-  final JSema sema;
+  final JDTSema sema;
   final ITypeBinding typeBinding;
 
   private final String fullyQualifiedName;
@@ -57,7 +58,7 @@ final class JType implements Type, Type.ArrayType {
    */
   private List<Type> typeArguments;
 
-  JType(JSema sema, ITypeBinding typeBinding) {
+  JDTType(JDTSema sema, ITypeBinding typeBinding) {
     this.sema = Objects.requireNonNull(sema);
     this.typeBinding = Objects.requireNonNull(typeBinding);
     this.fullyQualifiedName = fullyQualifiedName(typeBinding);
@@ -76,7 +77,7 @@ final class JType implements Type, Type.ArrayType {
   @Override
   public boolean isSubtypeOf(Type superType) {
     return !superType.isUnknown()
-      && isSubtype(this.typeBinding, ((JType) superType).typeBinding);
+      && isSubtype(this.typeBinding, ((JDTType) superType).typeBinding);
   }
 
   private static boolean isSubtype(ITypeBinding left, ITypeBinding right) {
@@ -267,7 +268,7 @@ final class JType implements Type, Type.ArrayType {
   }
 
   /**
-   * @see JSymbol#name()
+   * @see JDTSymbol#name()
    */
   @Override
   public String name() {
@@ -305,7 +306,7 @@ final class JType implements Type, Type.ArrayType {
     if (this == obj) {
       return true;
     }
-    if (obj instanceof JType other) {
+    if (obj instanceof JDTType other) {
       return areEqual(this.typeBinding, other.typeBinding);
     }
     return false;

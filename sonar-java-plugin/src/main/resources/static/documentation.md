@@ -151,6 +151,32 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **8.47**
+
+**Breaking**
+
+* `org.sonar.java.model.JParser` is now an interface. Its instance method `parse(String version, String unitName, String source)` returns a `JavaTree.CompilationUnitTreeImpl`.
+  The static helper `JParser.parse(...)` now takes a `JParser` as its first argument instead of an ECJ `ASTParser`.
+* `org.sonar.java.model.JParserConfig` is now an interface. `astParser()` returns a `JParser` instead of an ECJ `ASTParser`.
+  Use the new `parse(String unitName, String source)` method to parse source with the configured Java version, or call `astParser().parse(version, unitName, source)` to supply the version explicitly.
+  The `Mode.BATCH.create(...)` and `Mode.FILE_BY_FILE.create(...)` factories and the multi-file `parse(...)` method remain available.
+  The multi-file `parse(...)` method now takes `Iterable<InputFile>` instead of `Iterable<? extends InputFile>`; callers must supply an `Iterable<InputFile>`, and implementations must update their override signatures. This change preserves binary compatibility because type erasure is unchanged.
+  `JParserConfig.Result` is now final and provides `success(tree)` and `failure(exception)` factories; `get()` returns the tree or rethrows the parsing exception.
+* AST node implementations no longer expose ECJ-specific bindings such as `IBinding`, `ITypeBinding`, `IMethodBinding`, and `IVariableBinding`.
+  Nodes store `org.sonar.plugins.java.api.semantic.Type` and `Symbol` values, including `Symbol.TypeSymbol` and `Symbol.MethodSymbol`, directly.
+  Custom rules accessing implementation fields such as `binding` or `typeBinding` must use the tree API's `symbol()`, `methodSymbol()`, and `symbolType()` accessors instead.
+  Code constructing AST nodes must use the corresponding `setSymbol(...)`, `setMethodSymbol(...)`, and `setSymbolType(...)` methods with API types.
+
+**Added**
+
+* New method: `Symbol.MethodSymbol#annotationElementDefaultValue()`. Returns an annotation element's default value, or `null` if it has none.
+  Values use the same representation as `SymbolMetadata.AnnotationValue#value()`: constants, type symbols, variable symbols, annotation instances, or arrays of these values.
+* New beta interfaces in `org.sonar.plugins.java.api.diagnostics`: `Problem` exposes `type()` and `message()`; `Warning` extends `Problem` and adds `syntaxTree()`, which returns the associated, non-null AST node.
+* New beta enum: `ProblemKind`, with `UNDEFINED_TYPE`, `PREVIEW_FEATURE_USED`, `UNUSED_IMPORT`, `REDUNDANT_CAST`, `ASSIGNMENT_HAS_NO_EFFECT`, and `MASKED_CATCH`.
+* New methods on `CompilationUnitTree`: `semanticProblems()` returns an immutable `Set<Problem>` for unresolved types and uses of preview features; `supportedWarningKinds()` returns the warning kinds supported by the frontend; `warnings(ProblemKind)` returns an immutable `List<Warning>` in frontend encounter order.
+  An unsupported warning kind returns an empty list, so use `supportedWarningKinds()` to distinguish lack of support from an absence of warnings.
+  Custom rules can use these methods directly without casting to `JavaTree.CompilationUnitTreeImpl` or depending on ECJ diagnostic implementations.
+
 #### **8.41**
 
 **Breaking**  
