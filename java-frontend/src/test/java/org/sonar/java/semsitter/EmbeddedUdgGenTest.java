@@ -28,18 +28,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 class EmbeddedUdgGenTest {
 
   @Test
-  void packaged_platforms_are_linux_x64_linux_aarch64_and_macos_aarch64() {
+  void packaged_platforms_follow_the_detected_os_and_architecture() {
     assertThat(EmbeddedUdgGen.resourceName("Linux", "amd64")).isEqualTo("/udg-gen/udg-gen-linux-x64.xz");
     assertThat(EmbeddedUdgGen.resourceName("Linux", "x86_64")).isEqualTo("/udg-gen/udg-gen-linux-x64.xz");
     assertThat(EmbeddedUdgGen.resourceName("Linux", "aarch64")).isEqualTo("/udg-gen/udg-gen-linux-aarch64.xz");
     assertThat(EmbeddedUdgGen.resourceName("Mac OS X", "aarch64")).isEqualTo("/udg-gen/udg-gen-macos-aarch64.xz");
-    assertThat(EmbeddedUdgGen.resourceName("Mac OS X", "x86_64")).isNull();
-    assertThat(EmbeddedUdgGen.resourceName("Windows 11", "amd64")).isNull();
+    assertThat(EmbeddedUdgGen.resourceName("Mac OS X", "x86_64")).isEqualTo("/udg-gen/udg-gen-macos-x64.xz");
+    assertThat(EmbeddedUdgGen.resourceName("Windows 11", "amd64")).isEqualTo("/udg-gen/udg-gen-windows-x64.xz");
+    assertThat(EmbeddedUdgGen.resourceName("Windows 11", "aarch64")).isNull();
+    assertThat(EmbeddedUdgGen.resourceName("FreeBSD", "amd64")).isNull();
     assertThat(EmbeddedUdgGen.resourceName(null, null)).isNull();
   }
 
   @Test
-  @EnabledOnOs({OS.LINUX, OS.MAC})
+  @EnabledOnOs({OS.LINUX, OS.MAC, OS.WINDOWS})
   void extracts_an_executable_for_the_running_platform() throws IOException {
     if (EmbeddedUdgGen.resourceName(System.getProperty("os.name"), System.getProperty("os.arch")) == null) {
       return;
