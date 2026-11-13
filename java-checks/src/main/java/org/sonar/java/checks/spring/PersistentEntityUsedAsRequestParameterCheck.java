@@ -19,6 +19,8 @@ package org.sonar.java.checks.spring;
 import java.util.Collections;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -79,9 +81,11 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
 
     if (isRequestMappingAnnotated(methodSymbol)) {
+      List<String> allowedAnnotations = Stream.concat(PARAMETER_ANNOTATION_EXCEPTIONS.stream(), split(excludedAnnotations)).toList();
+      Set<String> excludedTypeNames = split(excludedTypes).collect(Collectors.toSet());
       methodTree.parameters().stream()
-        .filter(this::hasNoAllowedAnnotations)
-        .filter(this::isNotExcludedType)
+        .filter(p -> allowedAnnotations.stream().noneMatch(p.symbol().metadata()::isAnnotatedWith))
+        .filter(p -> !excludedTypeNames.contains(p.type().symbolType().fullyQualifiedName()))
         .filter(PersistentEntityUsedAsRequestParameterCheck::isPersistentEntity)
         .filter(PersistentEntityUsedAsRequestParameterCheck::hasNoCustomSerialization)
         .forEach(p -> reportIssue(p.simpleName(), "Replace this persistent entity with a simple POJO or DTO object."));
@@ -94,16 +98,6 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
 
   private static boolean isPersistentEntity(VariableTree variableTree) {
     return ENTITY_ANNOTATIONS.stream().anyMatch(variableTree.type().symbolType().symbol().metadata()::isAnnotatedWith);
-  }
-
-  private boolean hasNoAllowedAnnotations(VariableTree variableTree) {
-    return Stream.concat(PARAMETER_ANNOTATION_EXCEPTIONS.stream(), split(excludedAnnotations))
-      .noneMatch(variableTree.symbol().metadata()::isAnnotatedWith);
-  }
-
-  private boolean isNotExcludedType(VariableTree variableTree) {
-    String typeName = variableTree.type().symbolType().fullyQualifiedName();
-    return split(excludedTypes).noneMatch(typeName::equals);
   }
 
   private static Stream<String> split(String commaSeparated) {
