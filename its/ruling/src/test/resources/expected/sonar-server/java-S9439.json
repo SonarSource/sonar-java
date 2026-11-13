@@ -1,0 +1,57 @@
+{
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/MeasureComputerDefinitionImpl.java": [
+85
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LanguageDistributionMeasuresStep.java": [
+58
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/NewSizeMeasuresStep.java": [
+169
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/UnitTestMeasuresStep.java": [
+53
+],
+"sonar-server:src/main/java/org/sonar/server/measure/index/ProjectMeasuresIndex.java": [
+112,
+113,
+114
+],
+"sonar-server:src/main/java/org/sonar/server/plugins/ServerPluginRepository.java": [
+78
+],
+"sonar-server:src/main/java/org/sonar/server/rule/ws/SearchAction.java": [
+106
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/MaintainabilityMeasuresVisitorTest.java": [
+69
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewMaintainabilityMeasuresVisitorTest.java": [
+68
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/RatingGridTest.java": [
+44
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/source/HighlightingLineReaderTest.java": [
+126
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadMeasureComputersStepTest.java": [
+61,
+70,
+85,
+105,
+122,
+132,
+142,
+149,
+177,
+187,
+221
+],
+"sonar-server:src/test/java/org/sonar/server/platform/web/WebPagesFilterTest.java": [
+179
+],
+"sonar-server:src/test/java/org/sonar/server/qualityprofile/QProfileExportersTest.java": [
+74,
+76
+]
+}

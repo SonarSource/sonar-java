@@ -1,0 +1,59 @@
+{
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ComponentFunctionsTest.java": [
+35
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/duplication/TextBlockTest.java": [
+90
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/filemove/MutableMovedFilesRepositoryImplTest.java": [
+96
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/source/HighlightingLineReaderTest.java": [
+303
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ReportPersistComponentsStepTest.java": [
+771
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ViewsPersistComponentsStepTest.java": [
+375
+],
+"sonar-server:src/test/java/org/sonar/server/organization/OrganizationValidationImplTest.java": [
+77
+],
+"sonar-server:src/test/java/org/sonar/server/organization/ws/SearchActionTest.java": [
+141
+],
+"sonar-server:src/test/java/org/sonar/server/project/ws/UpdateVisibilityActionTest.java": [
+98
+],
+"sonar-server:src/test/java/org/sonar/server/projectlink/ws/CreateActionTest.java": [
+240
+],
+"sonar-server:src/test/java/org/sonar/server/projectlink/ws/SearchActionTest.java": [
+228
+],
+"sonar-server:src/test/java/org/sonar/server/qualityprofile/BuiltInQProfileRepositoryImplTest.java": [
+160
+],
+"sonar-server:src/test/java/org/sonar/server/qualityprofile/BuiltInQualityProfilesNotificationTest.java": [
+37
+],
+"sonar-server:src/test/java/org/sonar/server/qualityprofile/RegisterQualityProfilesNotificationTest.java": [
+70
+],
+"sonar-server:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java": [
+842
+],
+"sonar-server:src/test/java/org/sonar/server/rule/CachingRuleFinderTest.java": [
+129
+],
+"sonar-server:src/test/java/org/sonar/server/setting/ws/ResetActionTest.java": [
+416
+],
+"sonar-server:src/test/java/org/sonar/server/setting/ws/SetActionTest.java": [
+1001
+],
+"sonar-server:src/test/java/org/sonar/server/user/ServerUserSessionTest.java": [
+393
+]
+}

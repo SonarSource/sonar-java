@@ -1,0 +1,21 @@
+{
+"sonar-server:src/main/java/org/sonar/server/computation/task/container/TaskContainerImpl.java": [
+44
+],
+"sonar-server:src/main/java/org/sonar/server/es/DefaultIndexSettingsElement.java": [
+292
+],
+"sonar-server:src/main/java/org/sonar/server/platform/platformlevel/PlatformLevel.java": [
+44,
+50
+],
+"sonar-server:src/main/java/org/sonar/server/qualityprofile/index/ActiveRuleDoc.java": [
+40
+],
+"sonar-server:src/main/java/org/sonar/server/setting/ThreadLocalSettings.java": [
+71
+],
+"sonar-server:src/main/java/org/sonar/server/ws/DeprecatedPropertiesWsFilter.java": [
+140
+]
+}

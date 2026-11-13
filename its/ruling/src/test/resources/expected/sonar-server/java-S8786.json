@@ -1,0 +1,14 @@
+{
+"sonar-server:src/main/java/org/sonar/server/component/ws/FilterParser.java": [
+45
+],
+"sonar-server:src/main/java/org/sonar/server/debt/DebtModelXMLExporter.java": [
+102
+],
+"sonar-server:src/main/java/org/sonar/server/platform/UrlSettings.java": [
+47
+],
+"sonar-server:src/main/java/org/sonar/server/util/MetricKeyValidator.java": [
+50
+]
+}

@@ -1,0 +1,14 @@
+{
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistFileSourcesStep.java": [
+135
+],
+"sonar-server:src/main/java/org/sonar/server/issue/ws/AvatarResolverImpl.java": [
+39
+],
+"sonar-server:src/main/java/org/sonar/server/platform/ServerIdGenerator.java": [
+102
+],
+"sonar-server:src/main/java/org/sonar/server/user/UserUpdater.java": [
+381
+]
+}

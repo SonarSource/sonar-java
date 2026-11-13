@@ -1,0 +1,21 @@
+{
+"sonar-server:src/test/java/org/sonar/server/app/TomcatContextsTest.java": [
+60
+],
+"sonar-server:src/test/java/org/sonar/server/authentication/OAuth2CallbackFilterTest.java": [
+75
+],
+"sonar-server:src/test/java/org/sonar/server/issue/ws/ComponentTagsActionTest.java": [
+93,
+117
+],
+"sonar-server:src/test/java/org/sonar/server/plugins/StaticResourcesServletTest.java": [
+145
+],
+"sonar-server:src/test/java/org/sonar/server/rule/RegisterRulesTest.java": [
+486
+],
+"sonar-server:src/test/java/org/sonar/server/rule/WebServerRuleFinderImplTest.java": [
+41
+]
+}

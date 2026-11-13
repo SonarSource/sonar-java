@@ -1,0 +1,11 @@
+{
+"sonar-server:src/main/java/org/sonar/server/debt/DebtRulesXMLImporter.java": [
+195
+],
+"sonar-server:src/main/java/org/sonar/server/platform/monitoring/EsMonitor.java": [
+139
+],
+"sonar-server:src/main/java/org/sonar/server/platform/monitoring/SystemMonitor.java": [
+71
+]
+}

@@ -1,0 +1,20 @@
+{
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/counter/SumCounter.java": [
+25
+],
+"sonar-server:src/main/java/org/sonar/server/es/EsUtils.java": [
+162,
+166
+],
+"sonar-server:src/main/java/org/sonar/server/es/SearchIdResult.java": [
+30,
+59
+],
+"sonar-server:src/main/java/org/sonar/server/es/SearchResult.java": [
+28
+],
+"sonar-server:src/main/java/org/sonar/server/user/ws/SearchAction.java": [
+164,
+168
+]
+}
