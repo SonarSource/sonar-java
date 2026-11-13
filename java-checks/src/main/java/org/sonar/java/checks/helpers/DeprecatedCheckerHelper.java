@@ -39,6 +39,7 @@ import static org.sonar.java.model.ExpressionUtils.annotationAttributeName;
 
 public class DeprecatedCheckerHelper {
 
+  private static final String DEPRECATED_ANNOTATION = "java.lang.Deprecated";
   private static final String DEPRECATED_TAG = "@deprecated";
   private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();
   private static final Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
@@ -148,8 +149,10 @@ public class DeprecatedCheckerHelper {
   }
 
   private static boolean isDeprecated(AnnotationTree tree) {
-    return tree.annotationType().is(Kind.IDENTIFIER) &&
-      "Deprecated".equals(((IdentifierTree) tree.annotationType()).name());
+    if (tree.annotationType().is(Kind.IDENTIFIER)) {
+      return "Deprecated".equals(((IdentifierTree) tree.annotationType()).name());
+    }
+    return tree.annotationType().symbolType().is(DEPRECATED_ANNOTATION);
   }
 
   /**
