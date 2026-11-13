@@ -44,6 +44,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -1138,6 +1139,24 @@ class SonarComponentsTest {
     assertThat(sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage()).isFalse();
     settings.setProperty("sonar.java.ignoreUnnamedModuleForSplitPackage", "true");
     assertThat(sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage()).isTrue();
+  }
+
+  @Test
+  void getSourcepath_is_empty_by_default() {
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(new MapSettings()));
+    assertThat(sonarComponents.getSourcepath()).isEmpty();
+  }
+
+  @Test
+  void getSourcepath_resolves_entries_against_the_base_directory(@TempDir File baseDir) throws IOException {
+    File absolute = new File(baseDir, "other/src/main/java").getAbsoluteFile();
+    MapSettings settings = new MapSettings().setProperty("sonar.java.internal.sourcepath", " src/main/java , ," + absolute.getPath());
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    sonarComponents.setSensorContext(SensorContextTester.create(baseDir).setSettings(settings));
+    assertThat(sonarComponents.getSourcepath())
+      .extracting(File::getCanonicalFile)
+      .containsExactly(new File(baseDir, "src/main/java").getCanonicalFile(), absolute.getCanonicalFile());
   }
 
   @Test

@@ -20,10 +20,14 @@ import com.google.gson.JsonObject;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 import org.sonar.java.semsitter.SemsitterBridge;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
@@ -47,6 +51,7 @@ public abstract class JParserConfig {
   final List<File> classpath;
   final boolean shouldIgnoreUnnamedModuleForSplitPackage;
   private SemsitterBridge bridge;
+  private List<File> sourcepath = List.of();
 
   private JParserConfig(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
     this.javaVersion = javaVersion;
@@ -56,6 +61,14 @@ public abstract class JParserConfig {
 
   public abstract void parse(Iterable<? extends InputFile> inputFiles, BooleanSupplier isCanceled,
     AnalysisProgress analysisProgress, BiConsumer<InputFile, Result> action);
+
+  /**
+   * Directories whose Java files are read to resolve types, without being analyzed.
+   */
+  public JParserConfig withSourcepath(List<File> sourcepath) {
+    this.sourcepath = List.copyOf(sourcepath);
+    return this;
+  }
 
   public enum Mode {
     BATCH(Batch::new),
@@ -211,12 +224,53 @@ public abstract class JParserConfig {
         Path root = files.get(0).path().toAbsolutePath().getParent();
         bridge.analyze(
           root == null ? Path.of(".") : root,
-          files.stream().map(file -> file.path().toAbsolutePath()).toList(),
+          filesToScan(files.stream().map(file -> file.path().toAbsolutePath()).toList(), sourcepath),
           jdkClasspath());
       }
     } catch (Exception failure) {
       closeBridge();
       LOG.warn("SemSitter bridge did not start ({})", failure.toString());
+    }
+  }
+
+  /**
+   * The files the bridge scans: the analyzed files, then the Java files under the sourcepath directories that are not
+   * analyzed. The bridge resolves types across all of them, but only the analyzed files are parsed and reach the rules.
+   */
+  @VisibleForTesting
+  static List<Path> filesToScan(List<Path> analyzedFiles, List<File> sourcepath) {
+    if (sourcepath.isEmpty()) {
+      return analyzedFiles;
+    }
+    Set<Path> seen = new HashSet<>();
+    analyzedFiles.forEach(file -> seen.add(realPath(file)));
+    List<Path> result = new ArrayList<>(analyzedFiles);
+    for (File directory : sourcepath) {
+      if (!directory.isDirectory()) {
+        LOG.debug("Skipping sourcepath entry that is not a directory: {}", directory);
+        continue;
+      }
+      try (Stream<Path> walk = Files.walk(directory.toPath())) {
+        walk.filter(file -> file.toString().endsWith(".java") && Files.isRegularFile(file))
+          .map(Path::toAbsolutePath)
+          .forEach(file -> {
+            if (seen.add(realPath(file))) {
+              result.add(file);
+            }
+          });
+      } catch (IOException | UncheckedIOException e) {
+        LOG.warn("Could not read sourcepath directory {} ({})", directory, e.toString());
+      }
+    }
+    LOG.debug("SemSitter reads {} sourcepath files next to {} analyzed files", result.size() - analyzedFiles.size(), analyzedFiles.size());
+    return result;
+  }
+
+  private static Path realPath(Path file) {
+    try {
+      return file.toRealPath();
+    } catch (IOException e) {
+      return file.normalize();
     }
   }
 

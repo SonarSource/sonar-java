@@ -112,6 +112,12 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
    */
   public static final String SONAR_FAIL_ON_STACKOVERFLOW = "sonar.java.internal.failOnStackOverflow";
 
+  /**
+   * Comma-separated directories whose Java files are read to resolve types, without being analyzed.
+   * Relative paths are resolved against the module base directory. Only the SemSitter bridge reads them.
+   */
+  public static final String SONAR_SOURCEPATH_KEY = "sonar.java.internal.sourcepath";
+
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
   private static final Version SONARQUBE_9_2 = Version.parse("9.2");
   @VisibleForTesting
@@ -504,6 +510,17 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
   public boolean shouldFailOnStackOverflow() {
     return context.config().getBoolean(SONAR_FAIL_ON_STACKOVERFLOW).orElse(true);
+  }
+
+  public List<File> getSourcepath() {
+    if (context == null || context.config() == null) {
+      return List.of();
+    }
+    return Stream.of(context.config().getStringArray(SONAR_SOURCEPATH_KEY))
+      .map(String::trim)
+      .filter(path -> !path.isEmpty())
+      .map(context.fileSystem()::resolvePath)
+      .toList();
   }
 
   private static long computeIdealBatchSize() {

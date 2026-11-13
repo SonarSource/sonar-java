@@ -17,7 +17,7 @@
 
 //! Type declarations by erased binary name (`java.util.Map$Entry`), from the first source that
 //! knows the type: the scanned project graph, the classpath index (jars and the JDK runtime
-//! image), then the JDK table SemSitter embeds.
+//! image), the JDK table SemSitter embeds, then SemSitter's framework API database of third-party libraries.
 
 use std::collections::{BTreeSet, HashMap, VecDeque};
 
@@ -26,6 +26,7 @@ use udg_family_jvm::external::classpath::{
   Annotation, ClasspathDeclaration, ClasspathIndex, ClasspathType, ConstantValue, ElementValue,
 };
 use udg_family_jvm::external::jdk_table::{JdkMemberKind, JdkType, jdk_type, parameter_type_variables};
+use udg_lang_java::java_db::{JAVA_DB, erase as erase_spelled};
 
 const ACC_STATIC: u16 = 0x0008;
 const ACC_FINAL: u16 = 0x0010;
@@ -99,7 +100,8 @@ pub fn lookup(
     }
     let info = project_type(&name, project, facts)
       .or_else(|| classpath.get(&name).map(|ty| classpath_type(&name, ty, classpath.declaration(&name))))
-      .or_else(|| jdk_type(&name).map(jdk_type_info));
+      .or_else(|| jdk_type(&name).map(jdk_type_info))
+      .or_else(|| framework_type(&name));
     let Some(info) = info else {
       continue;
     };
@@ -111,6 +113,85 @@ pub fn lookup(
     found.insert(name, info);
   }
   found
+}
+
+/// A library type no jar and no JDK table declares, from SemSitter's framework API database (`java.txt` and the generated
+/// taint rows). The graph already binds library calls with it; without this the sonar-java frontend gets no declaration
+/// for the owner of such a call and cannot type it. Its rows state erased, source-spelled parameter and return types,
+/// which become the JVM descriptors the other sources report.
+fn framework_type(name: &str) -> Option<Value> {
+  let entry = JAVA_DB.type_entry(name);
+  let owner = JAVA_DB.methods.get(name);
+  if entry.is_none() && owner.is_none() {
+    return None;
+  }
+  let kind = entry
+    .and_then(|e| e.kind)
+    .map(|k| format!("{k:?}").to_lowercase())
+    .unwrap_or_else(|| "class".to_string());
+  let interface_like = kind == "interface" || kind == "annotation";
+  let superclass = if interface_like || name == "java.lang.Object" {
+    None
+  } else {
+    Some(
+      entry
+        .and_then(|e| e.super_class)
+        .map(|s| erase_spelled(s).to_string())
+        .unwrap_or_else(|| "java.lang.Object".to_string()),
+    )
+  };
+  let interfaces: Vec<String> = entry
+    .map(|e| e.interfaces.iter().map(|i| erase_spelled(i).to_string()).collect())
+    .unwrap_or_default();
+  let mut members: Vec<Value> = Vec::new();
+  if let Some(owner) = owner {
+    let mut names: Vec<&str> = owner.keys().copied().collect();
+    names.sort_unstable();
+    for method in names {
+      for row in owner.get(method).into_iter().flatten() {
+        let Some(parameters) = row.param_types.as_ref() else {
+          continue;
+        };
+        let descriptor = format!(
+          "({}){}",
+          parameters.iter().map(|p| spelled_descriptor(p)).collect::<String>(),
+          spelled_descriptor(row.return_type.unwrap_or("void"))
+        );
+        let flags: Vec<&str> = row.modifiers.split(',').map(str::trim).collect();
+        members.push(json!({
+          "k": "m",
+          "name": method,
+          "desc": descriptor,
+          "static": flags.contains(&"static"),
+          "abstract": flags.contains(&"abstract"),
+          "varargs": flags.contains(&"varargs"),
+          "vis": row.effective_visibility.unwrap_or("public"),
+          "annotations": row.annotations.iter().map(|a| json!({"name": a, "values": []})).collect::<Vec<_>>(),
+        }));
+      }
+    }
+  }
+  Some(json!({
+    "origin": "framework",
+    "kind": kind,
+    "super": superclass,
+    "interfaces": interfaces,
+    "modifiers": ["public"],
+    "annotations": [],
+    "members": members,
+  }))
+}
+
+/// The JVM descriptor of a type as the framework database spells it: `void`, a primitive, a binary name, each followed
+/// by one `[]` per array dimension. A `$T` marker (a type variable) is its erasure, `Object`.
+fn spelled_descriptor(spelled: &str) -> String {
+  if spelled == "void" {
+    return "V".to_string();
+  }
+  if spelled.is_empty() || spelled.starts_with('$') {
+    return "Ljava/lang/Object;".to_string();
+  }
+  field_descriptor(spelled)
 }
 
 fn strings(value: &Value, key: &str) -> Vec<String> {
