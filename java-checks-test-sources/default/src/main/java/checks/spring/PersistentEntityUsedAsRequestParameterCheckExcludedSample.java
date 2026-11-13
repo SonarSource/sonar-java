@@ -27,7 +27,11 @@ class PersistentEntityUsedAsRequestParameterCheckExcludedSample {
     }
 
     @GetMapping("/b")
-    public void typed(Other other, UserDetail userDetail) { // Noncompliant
+    public void excludedType(UserDetail userDetail) { // Compliant, type declared
+    }
+
+    @GetMapping("/d")
+    public void notExcludedType(Other other) { // Noncompliant
     }
 
     @GetMapping("/c")
