@@ -13,6 +13,10 @@
   <name>SonarQube Java :: Checks Test tool kit</name>
   <description>Code Analyzer for Java :: Checks Test tool kit</description>
 
+  <properties>
+    <maven.build.cache.input.1>../java-checks-test-sources/default/src</maven.build.cache.input.1>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.sonarsource.java</groupId>

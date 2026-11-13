@@ -13,6 +13,15 @@
   <name>SonarQube Java :: Checks</name>
   <description>Code Analyzer for Java :: Analyzer's checks</description>
 
+  <properties>
+    <maven.build.cache.input.1>../java-checks-test-sources/aws/src</maven.build.cache.input.1>
+    <maven.build.cache.input.2>../java-checks-test-sources/default/src</maven.build.cache.input.2>
+    <maven.build.cache.input.3>../java-checks-test-sources/java-17/src</maven.build.cache.input.3>
+    <maven.build.cache.input.4>../java-checks-test-sources/spring-3.2/src</maven.build.cache.input.4>
+    <maven.build.cache.input.5>../java-checks-test-sources/spring-web-4.0/src</maven.build.cache.input.5>
+    <maven.build.cache.input.6>../java-checks-test-sources/quarkus-arc-3.15/src</maven.build.cache.input.6>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.sonarsource.api.plugin</groupId>

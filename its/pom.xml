@@ -22,6 +22,8 @@
 
   <properties>
     <skipTests>true</skipTests>
+    <maven.build.cache.skipCache>true</maven.build.cache.skipCache>
+    <maven.build.cache.skipSave>true</maven.build.cache.skipSave>
   </properties>
 
 </project>

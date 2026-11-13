@@ -29,6 +29,7 @@ jobs:
     outputs:
       build-number: ${{ steps.build-maven.outputs.BUILD_NUMBER }}
       deployed: ${{ steps.build-maven.outputs.deployed }}
+      project-version: ${{ steps.build-maven.outputs.project-version }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
@@ -48,6 +49,7 @@ jobs:
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
           maven-args: >
+            --define maven.build.cache.enabled=false
             --define maven.test.skip=true
             --define sonar.skip=true
             --projects !java-checks-test-sources/aws,!java-checks-test-sources/default,!java-checks-test-sources/java-17,!java-checks-test-sources/spring-3.2,!java-checks-test-sources/spring-web-4.0
@@ -148,7 +150,7 @@ jobs:
           if [[ "${RUNNER_OS}" != "Windows" ]]; then
             extra_args+=(-Dparallel=methods -DuseUnlimitedThreads=true)
           fi
-          mvn "-Dorchestrator.configUrl=$ORCHESTRATOR_CONFIG_URL" "-Dorchestrator.home=$ORCHESTRATOR_HOME" package ${MAVEN_OUTPUT_ARGS} "-Pit-ruling,${{ matrix.item.profile }}" -Dsonar.runtimeVersion=${{ matrix.item.sq_version }} -Dmaven.test.redirectTestOutputToFile=false "${extra_args[@]}"
+          mvn "-Dorchestrator.configUrl=$ORCHESTRATOR_CONFIG_URL" "-Dorchestrator.home=$ORCHESTRATOR_HOME" package ${MAVEN_OUTPUT_ARGS} "-Pit-ruling,${{ matrix.item.profile }}" -Dsonar.runtimeVersion=${{ matrix.item.sq_version }} -Dmaven.test.redirectTestOutputToFile=false -Dmaven.build.cache.enabled=false "${extra_args[@]}"
       - name: Upload Actual Results On Failure
         if: failure()
         uses: ./.github/actions/upload-actual
@@ -276,7 +278,7 @@ jobs:
           ORCHESTRATOR_HOME: ${{ github.event_name == 'pull_request' && format('{0}/orchestrator-production', runner.temp) || env.ORCHESTRATOR_HOME }}
         run: |
           cd its/plugin
-          mvn "-Dorchestrator.configUrl=$ORCHESTRATOR_CONFIG_URL" "-Dorchestrator.home=$ORCHESTRATOR_HOME" package ${MAVEN_OUTPUT_ARGS} -Pit-plugin -Dsonar.runtimeVersion=${{ matrix.sq_version }} -Dmaven.test.redirectTestOutputToFile=false -Dparallel=classes -DuseUnlimitedThreads=true
+          mvn "-Dorchestrator.configUrl=$ORCHESTRATOR_CONFIG_URL" "-Dorchestrator.home=$ORCHESTRATOR_HOME" package ${MAVEN_OUTPUT_ARGS} -Pit-plugin -Dsonar.runtimeVersion=${{ matrix.sq_version }} -Dmaven.test.redirectTestOutputToFile=false -Dparallel=classes -DuseUnlimitedThreads=true -Dmaven.build.cache.enabled=false
 
   sanity:
     name: Sanity Test
@@ -305,25 +307,42 @@ jobs:
           namespace: sanity
       - uses: SonarSource/ci-github-actions/config-maven@v2
         with:
+          working-directory: .mvn
           repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
           disable-caching: 'true'
+      - name: Restore Apache Maven build cache
+        id: apache-build-cache
+        uses: ./.github/actions/apache-maven-build-cache
+        with:
+          namespace: sanity-sources
       - name: Compile Test Sources
         env:
           SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_TOKEN }}
         working-directory: java-checks-test-sources
         run: |
-          mvn clean compile --batch-mode
+          mvn clean compile --batch-mode -Dmaven.build.cache.enabled=true -Ddevelocity.cache.local.enabled=false -Ddevelocity.cache.remote.enabled=false
       - name: Sanity Test
         env:
           SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_TOKEN }}
           MAVEN_OPTS: "-Xmx8g"
+          DEPLOYED_PROJECT_VERSION: ${{ needs.build.outputs.project-version }}
         run: |
-          mvn verify ${MAVEN_OUTPUT_ARGS} -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest
+          mvn org.codehaus.mojo:versions-maven-plugin:2.7:set -DnewVersion="$DEPLOYED_PROJECT_VERSION" -DgenerateBackupPoms=false -Dmaven.build.cache.enabled=false
+          mvn verify ${MAVEN_OUTPUT_ARGS} -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest -Dmaven.build.cache.enabled=false
+      - name: Save Apache Maven build cache
+        if: >-
+          github.repository == 'SonarSource/sonar-java' &&
+          ((github.event_name == 'push' && github.ref == 'refs/heads/master') ||
+          (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository))
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/.m2/build-cache
+          key: ${{ steps.apache-build-cache.outputs.key }}
 
   test-analyze:
     name: Test Analyze
@@ -398,13 +417,18 @@ jobs:
           SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_TOKEN }}
           JAVA_TOOL_OPTIONS: "" # Set an empty value to avoid issues with runners hanging and significantly slowing down builds
+      - name: Restore Apache Maven build cache
+        id: apache-build-cache
+        uses: ./.github/actions/apache-maven-build-cache
+        with:
+          namespace: custom-rules
       - name: Build Java Custom Rules Example
         env:
           SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_TOKEN }}
         working-directory: docs/java-custom-rules-example
         run: |
-          mvn clean package -f pom_SQ_10_6_LATEST.xml --batch-mode
+          mvn clean package -f pom_SQ_10_6_LATEST.xml --batch-mode -Dmaven.build.cache.enabled=true -Ddevelocity.cache.local.enabled=false -Ddevelocity.cache.remote.enabled=false
       - name: Check License Compliance
         run: |
           # See https://xtranet.sonarsource.com/display/DEV/Open+Source+Licenses
@@ -412,6 +436,15 @@ jobs:
             --batch-mode \
             "-Dlicense.missingFile=${PWD}/missing-dep-licenses.properties" \
             -DuseMissingFile
+      - name: Save Apache Maven build cache
+        if: >-
+          github.repository == 'SonarSource/sonar-java' &&
+          ((github.event_name == 'push' && github.ref == 'refs/heads/master') ||
+          (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository))
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/.m2/build-cache
+          key: ${{ steps.apache-build-cache.outputs.key }}
 
   qa-os-win:
     name: Build and Unit Test on Windows
@@ -419,7 +452,7 @@ jobs:
     runs-on: warp-custom-windows-2022-m
     permissions:
       id-token: write  # Required for Vault OIDC authentication
-      contents: write  # Required for repository access and tagging
+      contents: read
     steps:
       - name: Config Git
         run: git config --global core.autocrlf input
@@ -430,19 +463,35 @@ jobs:
       - uses: ./.github/actions/maven-cache
         with:
           namespace: qa-os-win
+      - name: Restore Apache Maven build cache
+        id: apache-build-cache
+        uses: ./.github/actions/apache-maven-build-cache
+        with:
+          namespace: qa-os-win
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v2
         with:
+          working-directory: .mvn
           repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
           disable-caching: 'true'
       - name: Run Maven
+        shell: bash
         env:
           JAVA_TOOL_OPTIONS: ""
           MAVEN_OPTS: "-Xmx8g"
-        run: mvn clean verify --batch-mode
+        run: mvn clean verify --batch-mode -Dmaven.build.cache.enabled=true -Ddevelocity.cache.local.enabled=false -Ddevelocity.cache.remote.enabled=false
+      - name: Save Apache Maven build cache
+        if: >-
+          github.repository == 'SonarSource/sonar-java' &&
+          ((github.event_name == 'push' && github.ref == 'refs/heads/master') ||
+          (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository))
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/.m2/build-cache
+          key: ${{ steps.apache-build-cache.outputs.key }}
 
   promote:
     needs:
