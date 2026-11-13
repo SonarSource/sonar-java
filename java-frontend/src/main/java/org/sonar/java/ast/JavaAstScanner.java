@@ -108,8 +108,10 @@ public class JavaAstScanner {
     try {
       boolean shouldIgnoreUnnamedModuleForSplitPacakge = sonarComponents != null &&
         sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage();
+      boolean shouldUseJdkReleaseOption = sonarComponents != null &&
+        sonarComponents.shouldUseJdkReleaseOption();
       JParserConfig.Mode.FILE_BY_FILE
-        .create(visitor.getJavaVersion(), visitor.getClasspath(), shouldIgnoreUnnamedModuleForSplitPacakge)
+        .create(visitor.getJavaVersion(), visitor.getClasspath(), shouldIgnoreUnnamedModuleForSplitPacakge, shouldUseJdkReleaseOption)
         .parse(filesNames,
           this::analysisCancelled,
           analysisProgress,

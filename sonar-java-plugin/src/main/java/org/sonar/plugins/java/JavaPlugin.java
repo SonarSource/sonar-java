@@ -125,6 +125,27 @@ public class JavaPlugin implements Plugin {
         .type(PropertyType.BOOLEAN)
         .defaultValue("False")
         .build(),
+      PropertyDefinition.builder(SonarComponents.SONAR_USE_JDK_RELEASE_OPTION)
+        .name("Use the JDK release option")
+        .description(
+          "<p>" +
+            "Make the Java parser see the JDK API of the analyzed Java version, instead of the API of the JDK used to run the analysis." +
+            "</p>" +
+            "<p>" +
+            "Enabled by default. When the JDK cannot provide the API of that version (Java 8 and older, or a JDK without " +
+            "<code>lib/ct.sym</code>), the whole API of the JDK is visible, as when this property is disabled." +
+            "</p>" +
+            "<p>" +
+            "Disable it if the analysis of a project regressed: the whole API of the JDK is then visible, whatever the Java version " +
+            "of the analyzed project is." +
+            "</p>"
+        )
+        .category(JavaConstants.JAVA_CATEGORY)
+        .subCategory("Language")
+        .onConfigScopes(Set.of(PropertyDefinition.ConfigScope.PROJECT))
+        .type(PropertyType.BOOLEAN)
+        .defaultValue("True")
+        .build(),
       JavaSensor.class,
       PostAnalysisIssueFilter.class));
 

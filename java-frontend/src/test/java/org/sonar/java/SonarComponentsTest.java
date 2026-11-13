@@ -1130,6 +1130,19 @@ class SonarComponentsTest {
   }
 
   @Test
+  void shouldUseJdkReleaseOption_is_true_by_default_and_false_when_analysis_parameter_disables_it() {
+    MapSettings settings = new MapSettings();
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
+
+    assertThat(sonarComponents.shouldUseJdkReleaseOption()).isTrue();
+    settings.setProperty("sonar.java.useJdkReleaseOption", "false");
+    assertThat(sonarComponents.shouldUseJdkReleaseOption()).isFalse();
+    settings.setProperty("sonar.java.useJdkReleaseOption", "true");
+    assertThat(sonarComponents.shouldUseJdkReleaseOption()).isTrue();
+  }
+
+  @Test
   void shouldIgnoreUnnamedModuleForSplitPackage_returns_true_when_analysis_parameter_is_set() {
     MapSettings settings = new MapSettings();
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
