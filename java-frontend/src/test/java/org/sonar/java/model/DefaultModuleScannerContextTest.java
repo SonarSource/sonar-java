@@ -52,7 +52,7 @@ class DefaultModuleScannerContextTest {
     doNothing().when(sonarComponents).addIssue(any(InputComponent.class), any(JavaCheck.class), any(int.class), any(String.class), any(int.class));
     var context = new DefaultModuleScannerContext(
       sonarComponents,
-      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
       null
     );
@@ -67,7 +67,7 @@ class DefaultModuleScannerContextTest {
   void test_getJavaVersion_returns_expected_version() {
     var context = new DefaultModuleScannerContext(
       null,
-      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
       null
     );
@@ -85,14 +85,14 @@ class DefaultModuleScannerContextTest {
   void test_inAndroidContext_returns_expected_version() {
     var context = new DefaultModuleScannerContext(
       null,
-      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
       null
     );
     assertThat(context.inAndroidContext()).isTrue();
     context = new DefaultModuleScannerContext(
       null,
-      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
       null
     );
@@ -108,7 +108,7 @@ class DefaultModuleScannerContextTest {
     doReturn(inputComponent).when(sonarComponents).project();
     var context = new DefaultModuleScannerContext(
       sonarComponents,
-      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
       null
     );
@@ -127,7 +127,7 @@ class DefaultModuleScannerContextTest {
     doReturn(expectedWorkDir).when(sonarComponents).projectLevelWorkDir();
     var context = new DefaultModuleScannerContext(
       sonarComponents,
-      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
       null
     );
@@ -143,7 +143,7 @@ class DefaultModuleScannerContextTest {
     doReturn(null).when(sonarComponents).context();
     var context = new DefaultModuleScannerContext(
       sonarComponents,
-      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
       null
     );
@@ -162,7 +162,7 @@ class DefaultModuleScannerContextTest {
 
     var context = new DefaultModuleScannerContext(
       sonarComponents,
-      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
       null
     );
@@ -177,7 +177,7 @@ class DefaultModuleScannerContextTest {
     var cacheContext = mock(CacheContext.class);
     var context = new DefaultModuleScannerContext(
       null,
-      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
       cacheContext
     );
@@ -192,7 +192,7 @@ class DefaultModuleScannerContextTest {
 
     var context = new DefaultModuleScannerContext(
       sonarComponents,
-      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
       null
     );
@@ -213,7 +213,7 @@ class DefaultModuleScannerContextTest {
 
     var context = new DefaultModuleScannerContext(
       sonarComponents,
-      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
       null
     );
@@ -226,7 +226,7 @@ class DefaultModuleScannerContextTest {
   void should_not_report_product_if_sonarcomponents_is_not_available() {
     var context = new DefaultModuleScannerContext(
       null,
-      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
       null
     );
@@ -242,7 +242,7 @@ class DefaultModuleScannerContextTest {
 
     var context = new DefaultModuleScannerContext(
       sonarComponents,
-      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
       null
     );
@@ -259,7 +259,7 @@ class DefaultModuleScannerContextTest {
 
     var context = new DefaultModuleScannerContext(
       sonarComponents,
-      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
       null
     );
