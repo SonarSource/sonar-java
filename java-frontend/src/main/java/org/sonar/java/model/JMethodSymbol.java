@@ -35,6 +35,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   private List<Type> parameterTypes = List.of();
   private TypeSymbol returnTypeSymbol = TypeSymbol.UNKNOWN_TYPE;
   private boolean varArgs;
+  private boolean varArgsKnown;
   private boolean lambda;
   private boolean parametrized;
   private final String signature;
@@ -71,12 +72,21 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     this.varArgs = varArgs;
   }
 
+  /** The declaring answer says whether the method is variable arity, so a trailing array parameter proves nothing. */
+  void varArgsKnown(boolean known) {
+    this.varArgsKnown = known;
+  }
+
   void lambda(boolean lambda) {
     this.lambda = lambda;
   }
 
   boolean isLambda() {
     return lambda;
+  }
+
+  boolean substitutes(List<Type> parameters, Type returned) {
+    return !returned.equals(returnTypeSymbol.type()) || !parameters.equals(parameterTypes);
   }
 
   void parametrized(boolean parametrized) {
@@ -132,6 +142,34 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     return declaredReturn;
   }
 
+  /** Whether the declared signature is written with a type variable of this method itself, which makes it a generic method. */
+  private boolean declaresTypeVariable() {
+    if (id == null) {
+      return false;
+    }
+    String prefix = id + "<";
+    if (mentionsVariable(returnTypeSymbol == null ? null : returnTypeSymbol.type(), prefix)) {
+      return true;
+    }
+    return parameterTypes.stream().anyMatch(type -> mentionsVariable(type, prefix));
+  }
+
+  private static boolean mentionsVariable(@Nullable Type type, String prefix) {
+    if (type == null) {
+      return false;
+    }
+    if (type.isArray()) {
+      return mentionsVariable(((Type.ArrayType) type).elementType(), prefix);
+    }
+    if (type instanceof JType jType && jType.typeVarId != null && jType.typeVarId.startsWith(prefix)) {
+      return true;
+    }
+    if (type instanceof JType jType && jType.element != null && mentionsVariable(jType.element, prefix)) {
+      return true;
+    }
+    return type.typeArguments().stream().anyMatch(argument -> mentionsVariable(argument, prefix));
+  }
+
   /**
    * A per-invocation view with substituted parameter and return types. Equality stays on the SemSitter id,
    * so the view still denotes the same method as the declaration.
@@ -147,8 +185,9 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     view.declaredReturn = declaredReturn;
     view.returnTypeSymbol = returnType.symbol();
     view.varArgs = varArgs;
+    view.varArgsKnown = varArgsKnown;
     view.lambda = lambda;
-    view.parametrized = parametrized || !returnType.equals(returnTypeSymbol.type()) || !view.parameterTypes.equals(this.parameterTypes);
+    view.parametrized = parametrized || declaresTypeVariable();
     view.returnTypeParameter = returnTypeParameter;
     view.returnsSelf = returnsSelf;
     view.thrownTypes = thrownTypes;
@@ -244,7 +283,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     List<MethodSymbol> found = new ArrayList<>();
     Set<String> visited = new HashSet<>();
     if (typeSymbol.isInterface()) {
-      match(found, sema.typeSymbol("java.lang.Object"));
+      match(found, sema.typeSymbol("java.lang.Object"), null);
     }
     walk(found, visited, typeSymbol.superClass());
     for (Type iface : typeSymbol.interfaces()) {
@@ -258,7 +297,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
       return;
     }
     if (type.symbol() instanceof JTypeSymbol parent) {
-      match(found, parent);
+      match(found, parent, type);
       walk(found, visited, parent.superClass());
       for (Type iface : parent.interfaces()) {
         walk(found, visited, iface);
@@ -266,22 +305,25 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     }
   }
 
-  private void match(List<MethodSymbol> found, TypeSymbol parent) {
+  private void match(List<MethodSymbol> found, TypeSymbol parent, @Nullable Type declaring) {
     for (Symbol member : parent.memberSymbols()) {
-      if (member.isMethodSymbol() && name().equals(member.name()) && sameSignature((MethodSymbol) member)) {
+      if (member.isMethodSymbol() && name().equals(member.name()) && sameSignature((MethodSymbol) member, declaring)) {
         found.add((MethodSymbol) member);
         return;
       }
     }
   }
 
-  private boolean sameSignature(MethodSymbol other) {
+  private boolean sameSignature(MethodSymbol other, @Nullable Type declaring) {
     List<Type> theirs = other.parameterTypes();
     if (parameterTypes.size() != theirs.size()) {
       return false;
     }
     for (int i = 0; i < parameterTypes.size(); i++) {
-      if (!parameterTypes.get(i).erasure().is(theirs.get(i).erasure().fullyQualifiedName())) {
+      String mine = parameterTypes.get(i).erasure().fullyQualifiedName();
+      boolean same = mine.equals(theirs.get(i).erasure().fullyQualifiedName())
+        || (declaring != null && mine.equals(sema.asMemberOf(theirs.get(i), declaring).erasure().fullyQualifiedName()));
+      if (!same) {
         return false;
       }
     }
@@ -366,6 +408,9 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     }
     if (varArgs) {
       return true;
+    }
+    if (varArgsKnown) {
+      return false;
     }
     if (declaration() instanceof MethodTree method) {
       List<VariableTree> parameters = method.parameters();

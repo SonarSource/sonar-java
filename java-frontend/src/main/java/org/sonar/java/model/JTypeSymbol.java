@@ -27,6 +27,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 
 final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
@@ -84,6 +85,18 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
   boolean isTypeParameter() {
     return typeParameter;
+  }
+
+  private List<TypeTree> boundTrees = List.of();
+
+  void boundTrees(List<TypeTree> bounds) {
+    this.boundTrees = List.copyOf(bounds);
+  }
+
+  /** The first declared bound of a type parameter, or {@code null} when it has none. */
+  @Nullable
+  Type firstBound() {
+    return boundTrees.isEmpty() ? null : boundTrees.get(0).symbolType();
   }
 
   int typeParameterCount() {
@@ -169,6 +182,14 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
   @Override
   public List<Type> interfaces() {
+    List<Type> declared = ownInterfaces();
+    if (generic == null || type() == null || !type().isParameterized()) {
+      return declared;
+    }
+    return declared.stream().map(iface -> sema.instantiateSupertype(type(), iface)).toList();
+  }
+
+  private List<Type> ownInterfaces() {
     if (elementFqn != null) {
       return List.of(sema.getClassType("java.lang.Cloneable"), sema.getClassType("java.io.Serializable"));
     }
