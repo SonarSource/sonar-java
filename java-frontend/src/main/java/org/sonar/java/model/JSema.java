@@ -405,7 +405,7 @@ public final class JSema implements Sema {
         if (member.get("facts") instanceof JsonObject memberFact) {
           projectMemberFacts.putIfAbsent(id, memberFact);
         }
-        if (member.get("declaredType") instanceof JsonObject declared && declared.get("args") instanceof JsonArray) {
+        if (member.get("declaredType") instanceof JsonObject declared && (declared.get("args") instanceof JsonArray || "typevar".equals(text(declared, "kind")))) {
           projectFieldTypes.putIfAbsent(id, declared);
         }
       }
@@ -573,12 +573,19 @@ public final class JSema implements Sema {
       }
     }
     Type declared = method.returnType().type();
+    if ((declared == null || declared.isUnknown()) && declaredReturn != null) {
+      // the declaration comes later in the file than this call
+      JType plain = typeFromFact(declaredReturn, Map.of(), true);
+      if (!plain.isUnknown() && !mentionsMethodTypeVariable(method, plain)) {
+        return plain;
+      }
+    }
     return declared == null ? Type.UNKNOWN : declared;
   }
 
   /** Maps the type variables of {@code method} itself to the arguments they are inferred from. */
   private Map<String, Type> methodSubstitution(JMethodSymbol method, List<Type> arguments) {
-    JsonObject member = arguments.isEmpty() ? null : lookupGenericMember(method);
+    JsonObject member = arguments.isEmpty() && explicitTypeArguments.isEmpty() ? null : lookupGenericMember(method);
     if (member == null || !(member.get("typeVars") instanceof JsonArray names)) {
       return Map.of();
     }
@@ -590,7 +597,74 @@ public final class JSema implements Sema {
         substitution.put(names.get(i).getAsString(), inferred);
       }
     }
+    Set<String> own = new HashSet<>();
+    names.forEach(name -> own.add(name.getAsString()));
+    List<JsonObject> declared = declaredParameters(method);
+    for (int i = 0; i < declared.size() && i < arguments.size(); i++) {
+      bindFromType(declared.get(i), arguments.get(i), own, substitution);
+    }
     return substitution;
+  }
+
+  /**
+   * The type {@code method} returns when the type its call is passed as fixes the type variables of the
+   * method, or null when they stay open.
+   */
+  @Nullable
+  Type targetedReturn(JMethodSymbol method, Type target) {
+    JsonObject member = lookupGenericMember(method);
+    JsonObject declared = declaredReturn(method);
+    if (member == null || declared == null || !(member.get("typeVars") instanceof JsonArray names) || names.isEmpty()) {
+      return null;
+    }
+    Set<String> own = new HashSet<>();
+    names.forEach(name -> own.add(name.getAsString()));
+    Map<String, Type> bound = new HashMap<>();
+    bindFromType(declared, target, own, bound);
+    if (bound.isEmpty()) {
+      return null;
+    }
+    JType result = typeFromFact(declared, bound);
+    return result.isUnknown() || mentionsTypeVariable(result) ? null : result;
+  }
+
+  /**
+   * Binds the type variables of {@code variables} that the declared type {@code declared} names to the types
+   * {@code actual} gives them at the same position. Open type variables and unbounded wildcards bind nothing.
+   */
+  private void bindFromType(JsonObject declared, Type actual, Set<String> variables, Map<String, Type> bound) {
+    Type known = actual;
+    while (known instanceof JType wildcard && wildcard.isWildcard()) {
+      JType ground = wildcard.groundType();
+      known = ground == wildcard.element && !ground.is("java.lang.Object") ? JType.capture(this, ground) : ground;
+    }
+    if (known.isUnknown() || known.isNullType() || known.isTypeVar() || (actual != known && known.is("java.lang.Object"))) {
+      return;
+    }
+    String kind = text(declared, "kind");
+    if ("typevar".equals(kind)) {
+      String id = text(declared, "id");
+      if (variables.contains(id)) {
+        bound.putIfAbsent(id, known.isPrimitive() ? known.primitiveWrapperType() : known);
+      }
+    } else if ("wildcard".equals(kind)) {
+      JsonObject limit = declared.get("super") instanceof JsonObject lower ? lower : declared.get("extends") instanceof JsonObject upper ? upper : null;
+      if (limit != null) {
+        bindFromType(limit, known, variables, bound);
+      }
+    } else if (ARRAY.equals(kind) && declared.get("elem") instanceof JsonObject element && known instanceof Type.ArrayType array) {
+      bindFromType(element, array.elementType(), variables, bound);
+    } else if (declared.get("args") instanceof JsonArray arguments && !arguments.isEmpty() && text(declared, "id") != null) {
+      Type aligned = asSuperType(known, erase(text(declared, "id")), new HashSet<>());
+      if (aligned == null || !aligned.isParameterized() || aligned.typeArguments().size() != arguments.size()) {
+        return;
+      }
+      for (int i = 0; i < arguments.size(); i++) {
+        if (arguments.get(i) instanceof JsonObject argument) {
+          bindFromType(argument, aligned.typeArguments().get(i), variables, bound);
+        }
+      }
+    }
   }
 
   private static boolean mentionsTypeVariable(Type type) {
@@ -615,6 +689,34 @@ public final class JSema implements Sema {
       return mentionsTypeVariable(((Type.ArrayType) type).elementType(), variable);
     }
     return type.isParameterized() && type.typeArguments().stream().anyMatch(argument -> mentionsTypeVariable(argument, variable));
+  }
+
+  /** {@code declared}, written in terms of the type variables of {@code declaring}'s class, as it reads for that parameterization. */
+  Type asMemberOf(Type declared, Type declaring) {
+    if (!(declared instanceof JType type) || !(declaring instanceof JType owner) || !owner.isParameterized()) {
+      return declared;
+    }
+    return type.substitute(typeArgumentsOf(owner));
+  }
+
+  /** The type of {@code field} read through {@code receiver}: the owner's type variables take the receiver's type arguments. */
+  Type fieldTypeOn(Symbol.VariableSymbol field, @Nullable Type receiver) {
+    Type declared = field.type();
+    if (!(declared instanceof JType type) || receiver == null || field.isStatic() || !(field.owner() instanceof Symbol.TypeSymbol owner) || owner.type() == null) {
+      return declared;
+    }
+    String ownerFqn = owner.type().erasure().fullyQualifiedName();
+    JsonObject info = typeInfos.get(sourceName(ownerFqn));
+    List<String> names = info == null ? List.of() : strings(info, "typeVars");
+    Type declaring = names.isEmpty() ? null : asSuperType(receiver, ownerFqn, new HashSet<>());
+    if (declaring == null || declaring.typeArguments().isEmpty()) {
+      return declared;
+    }
+    Map<String, Type> substitution = new HashMap<>();
+    for (int i = 0; i < names.size() && i < declaring.typeArguments().size(); i++) {
+      substitution.put(names.get(i), declaring.typeArguments().get(i));
+    }
+    return type.substitute(substitution);
   }
 
   /** The supertype of {@code receiver} that declares {@code method}, with the receiver's type arguments applied. */
@@ -679,9 +781,24 @@ public final class JSema implements Sema {
     return JType.named(this, type.fullyQualifiedName(), captured);
   }
 
+  /**
+   * Whether {@code method} declares type variables of its own. A constructor, whose diamond infers them, and a
+   * method whose declaration is unknown count when their types are substituted.
+   */
+  private boolean declaresTypeVariables(JMethodSymbol method, boolean substituted) {
+    JsonObject member = "<init>".equals(method.name()) ? null : lookupGenericMember(method);
+    if (member == null) {
+      return substituted;
+    }
+    return member.get("typeVars") instanceof JsonArray names && !names.isEmpty();
+  }
+
   /** The method as seen from {@code receiver}, so its owner keeps that parameterization. */
   JMethodSymbol invocationView(JMethodSymbol method, @Nullable Type receiver, List<Type> parameters, Type returned) {
     JMethodSymbol view = method.withSignature(parameters, returned);
+    if (!view.isParametrizedMethod() && declaresTypeVariables(method, method.substitutes(parameters, returned))) {
+      view.parametrized(true);
+    }
     if (receiver != null && !method.isStatic() && method.owner().type() != null) {
       Type declaring = asSuperType(captureWildcards(receiver), method.owner().type().erasure().fullyQualifiedName(), new HashSet<>());
       if (declaring != null && declaring.isParameterized()) {
@@ -727,20 +844,21 @@ public final class JSema implements Sema {
   /**
    * Fills in the parameters that are not a type variable on their own but are written in terms of one,
    * such as {@code Consumer<T>}. Their declared form is substituted for the arguments the receiver gives
-   * the declaring type, which may be a supertype of the receiver's own type.
+   * the declaring type, which may be a supertype of the receiver's own type. Without such arguments, a declared
+   * parameterized type that names no type variable is taken as written.
    */
   private void substituteDeclaredParameters(JMethodSymbol method, @Nullable Type receiver, List<String> variables, List<Type> result) {
     List<JsonObject> declared = declaredParameters(method);
-    if (declared.size() != result.size() || receiver == null) {
+    if (declared.size() != result.size()) {
       return;
     }
-    Map<String, Type> substitution = classSubstitution(method, receiver);
-    if (substitution.isEmpty()) {
-      return;
-    }
+    Map<String, Type> substitution = receiver == null ? Map.of() : classSubstitution(method, receiver);
     for (int i = 0; i < declared.size(); i++) {
       if (variables.isEmpty() || variables.get(i).isEmpty()) {
-        result.set(i, typeFromFact(declared.get(i), substitution));
+        JType type = typeFromFact(declared.get(i), substitution);
+        if (!substitution.isEmpty() || (type.isParameterized() && !mentionsTypeVariable(type))) {
+          result.set(i, type);
+        }
       }
     }
   }
@@ -838,8 +956,31 @@ public final class JSema implements Sema {
     return receiver.typeArguments().get(index);
   }
 
+  private List<Type> explicitTypeArguments = List.of();
+
+  /** Runs {@code action} with the type arguments an invocation spells out, which fix the type variables of its method. */
+  <T> T withExplicitTypeArguments(List<Type> explicit, java.util.function.Supplier<T> action) {
+    List<Type> previous = explicitTypeArguments;
+    explicitTypeArguments = explicit;
+    try {
+      return action.get();
+    } finally {
+      explicitTypeArguments = previous;
+    }
+  }
+
   @Nullable
-  private static Type methodArgument(List<String> variables, String base, List<Type> arguments) {
+  private Type methodArgument(List<String> variables, String base, List<Type> arguments) {
+    if (base.charAt(0) == 'm' && !explicitTypeArguments.isEmpty()) {
+      try {
+        int index = Integer.parseInt(base.substring(1));
+        if (index < explicitTypeArguments.size() && !explicitTypeArguments.get(index).isUnknown()) {
+          return explicitTypeArguments.get(index);
+        }
+      } catch (NumberFormatException e) {
+        // not a method type variable
+      }
+    }
     for (int i = 0; i < variables.size() && i < arguments.size(); i++) {
       String variable = variables.get(i);
       if (!variable.replace("[]", "").equals(base)) {
@@ -947,7 +1088,7 @@ public final class JSema implements Sema {
       }
       String constant = text(member, "constant");
       if (constant != null) {
-        field.constantValue(constant);
+        field.constantValue(constantOf(field.type(), constant));
       }
       symbols.put(id, field);
       return field;
@@ -967,8 +1108,9 @@ public final class JSema implements Sema {
     if (!thrown.isEmpty()) {
       method.thrownTypes(thrown.stream().map(this::typeFromName).toList());
     }
-    if (member.has("varargs") && member.get("varargs").getAsBoolean()) {
-      method.varArgs(true);
+    if (member.has("varargs") && member.get("varargs").isJsonPrimitive()) {
+      method.varArgs(member.get("varargs").getAsBoolean());
+      method.varArgsKnown(true);
     }
     if (member.has("retParam") && !member.get("retParam").isJsonNull()) {
       method.returnTypeParameter(member.get("retParam").getAsInt());
@@ -1064,6 +1206,34 @@ public final class JSema implements Sema {
     }
   }
 
+  /** A constant spelled as text, as the boxed value of the field's primitive type. */
+  private static Object constantOf(@Nullable Type type, String text) {
+    String name = type == null ? "" : type.fullyQualifiedName();
+    try {
+      return switch (name) {
+        case "int" -> Integer.valueOf(text);
+        case "long" -> Long.valueOf(text);
+        case "short" -> Short.valueOf(text);
+        case "byte" -> Byte.valueOf(text);
+        case "float" -> Float.valueOf(text);
+        case "double" -> Double.valueOf(text);
+        case "boolean" -> Boolean.valueOf(text);
+        case "char" -> text.length() == 1 ? (Object) text.charAt(0) : text;
+        default -> text;
+      };
+    } catch (NumberFormatException e) {
+      return text;
+    }
+  }
+
+  /** The upper bound of the type variable with this id: its first declared bound, or {@code Object}. */
+  Type typeVariableBound(@Nullable String id) {
+    if (id != null && symbols.get(id) instanceof JTypeSymbol parameter && parameter.firstBound() instanceof Type bound && !bound.isUnknown()) {
+      return bound;
+    }
+    return getClassType("java.lang.Object");
+  }
+
   private JSymbol typeParameter(String id) {
     int open = id.lastIndexOf('<');
     String name = open >= 0 && id.endsWith(">") ? id.substring(open + 1, id.length() - 1) : id;
@@ -1132,7 +1302,12 @@ public final class JSema implements Sema {
       field.owner(owner);
       JsonObject fieldFact = factOf(id);
       List<String> fieldType = fieldFact == null ? List.of() : flat(fieldFact, "type");
-      if (fieldFact == null || fieldType.isEmpty()) {
+      if (fieldFact != null && fieldType.isEmpty() && owner instanceof JTypeSymbol enumType && enumType.isEnum() && enumType.type() != null) {
+        // the facts of an enum constant carry no type: it is of its enum
+        applyFact(field, fieldFact);
+        field.type(enumType.type());
+        field.enumSymbol(true);
+      } else if (fieldFact == null || fieldType.isEmpty()) {
         field.unknown(true);
       } else {
         applyFact(field, fieldFact);
@@ -1319,9 +1494,12 @@ public final class JSema implements Sema {
   }
 
   /** The overload that matches {@code arguments} when {@code candidate} is more specific than {@code current}. */
-  Symbol.MethodSymbol preferOverload(Symbol.MethodSymbol current, @Nullable Symbol.MethodSymbol candidate, List<Type> arguments) {
+  Symbol.MethodSymbol preferOverload(Symbol.MethodSymbol current, @Nullable Symbol.MethodSymbol candidate, List<Type> arguments, Set<Integer> functions) {
     if (candidate == null || candidate == current || candidate.isUnknown()) {
       return current;
+    }
+    if (!functions.isEmpty() && takesNoFunction(current, functions) && !takesNoFunction(candidate, functions)) {
+      return candidate;
     }
     for (int phase = 0; phase < 3; phase++) {
       boolean currentOk = applicable(current, arguments, phase);

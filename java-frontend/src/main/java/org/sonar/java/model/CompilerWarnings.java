@@ -95,7 +95,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
     Type cast = tree.type().symbolType();
     Type operand = tree.expression().symbolType();
     if (!cast.isUnknown() && !operand.isUnknown() && operand.isSubtypeOf(cast)) {
-      if (cast.erasure().fullyQualifiedName().equals(operand.erasure().fullyQualifiedName())) {
+      if (cast.erasure().fullyQualifiedName().equals(operand.erasure().fullyQualifiedName()) && cast.typeArguments().isEmpty() == operand.typeArguments().isEmpty()) {
         add(ProblemKind.REDUNDANT_CAST, "Unnecessary cast to " + cast.erasure().name(), tree);
       }
     }
@@ -243,9 +243,25 @@ final class CompilerWarnings extends BaseTreeVisitor {
     for (IdentifierTree identifier : identifiers) {
       Symbol symbol = identifier.symbol();
       // a symbol found in the scope of the file does not consult the import
-      boolean inScope = !symbol.isUnknown() && symbol.declaration() != null;
+      boolean inScope = !symbol.isUnknown() && symbol.declaration() != null && isInScope(symbol, identifier);
       if (!inScope && uses(importTree, name, qualifier, identifier)) {
         return true;
+      }
+    }
+    return false;
+  }
+
+  /** A member of another type of the same file is in scope only through an import, one of an enclosing or inherited type is not. */
+  private static boolean isInScope(Symbol symbol, IdentifierTree identifier) {
+    if (!(symbol.owner() instanceof Symbol.TypeSymbol owner) || owner.isUnknown()) {
+      return true;
+    }
+    for (Tree tree = identifier.parent(); tree != null; tree = tree.parent()) {
+      if (tree instanceof org.sonar.plugins.java.api.tree.ClassTree declared) {
+        Symbol.TypeSymbol enclosing = declared.symbol();
+        if (enclosing.equals(owner) || enclosing.type().isSubtypeOf(owner.type().erasure())) {
+          return true;
+        }
       }
     }
     return false;
@@ -262,7 +278,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
     if (symbol.isUnknown()) {
       return true;
     }
-    return importTree.isStatic() ? isMemberOf(symbol, qualifier) : denotesType(symbol, name, identifier);
+    return importTree.isStatic() ? isMemberOf(symbol, qualifier) || (symbol.isTypeSymbol() && dottedType(symbol).equals(name)) : denotesType(symbol, name, identifier);
   }
 
   /** A static import also brings in the members the named type inherits. */

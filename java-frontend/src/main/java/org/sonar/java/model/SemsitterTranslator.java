@@ -1608,7 +1608,7 @@ final class SemsitterTranslator {
 
   /** The method SemSitter left unresolved, looked up in the receiver type, or in the enclosing types and static imports of an unqualified call. */
   @Nullable
-  private Symbol.MethodSymbol libraryMethod(@Nullable ExpressionTree qualifier, String name, List<Type> arguments) {
+  private Symbol.MethodSymbol libraryMethod(@Nullable ExpressionTree qualifier, String name, List<Type> arguments, Set<Integer> functions) {
     List<String> owners = new ArrayList<>();
     if (qualifier != null) {
       Type receiver = qualifier.symbolType().erasure();
@@ -1629,9 +1629,9 @@ final class SemsitterTranslator {
       }
       owners.addAll(staticOnDemandImports);
     }
-    Symbol.MethodSymbol found = owners.stream().map(owner -> sema.declaredMethod(owner, name, arguments)).filter(Objects::nonNull).findFirst().orElse(null);
+    Symbol.MethodSymbol found = owners.stream().map(owner -> sema.declaredMethod(owner, name, arguments, functions)).filter(Objects::nonNull).findFirst().orElse(null);
     if (found == null && qualifier != null && !owners.contains("java.lang.Object")) {
-      found = sema.declaredMethod("java.lang.Object", name, arguments);
+      found = sema.declaredMethod("java.lang.Object", name, arguments, functions);
     }
     return found;
   }
@@ -1644,6 +1644,12 @@ final class SemsitterTranslator {
     }
     if (expression instanceof NewClassTreeImpl newClass) {
       inferDiamond(newClass, target);
+    }
+    if (expression instanceof MethodInvocationTreeImpl call && call.methodSymbol() instanceof JMethodSymbol generic && !generic.isUnknown() && !call.symbolType().isParameterized()) {
+      Type inferred = sema.targetedReturn(generic, target);
+      if (inferred != null) {
+        ascribe(call, inferred);
+      }
     }
     if (expression instanceof LambdaExpressionTreeImpl lambda) {
       bindLambdaParameterOwner(lambda, lambda.symbolType());
@@ -1688,6 +1694,7 @@ final class SemsitterTranslator {
       types.add(type == null || type.isUnknown() ? functional.parameterTypes().get(i) : type);
     }
     JMethodSymbol view = sema.invocationView(functional, target, types, sema.invocationReturn(functional, target, List.of()));
+    lambda.setSymbol(view);
     for (VariableTree parameter : lambda.parameters()) {
       if (parameter.symbol() instanceof JVariableSymbol symbol) {
         symbol.owner(view);
@@ -1700,6 +1707,14 @@ final class SemsitterTranslator {
           symbol.owner(view);
         }
         super.visitVariable(tree);
+      }
+
+      @Override
+      public void visitIdentifier(IdentifierTree tree) {
+        if (tree instanceof IdentifierTreeImpl use && use.symbolType().isUnknown() && use.symbol() instanceof JVariableSymbol variable
+          && lambda.parameters().stream().anyMatch(parameter -> parameter.symbol().equals(variable)) && variable.type() != null && !variable.type().isUnknown()) {
+          ascribe(use, variable.type());
+        }
       }
 
       @Override
@@ -1838,6 +1853,12 @@ final class SemsitterTranslator {
         }
       }
       bindQualifierPackages(qualifier, identifier);
+      if (identifier.symbol() instanceof JVariableSymbol field && !field.isUnknown() && field.type() != null) {
+        Type read = sema.fieldTypeOn(field, qualifier.symbolType());
+        if (read != field.type()) {
+          ascribe(identifier, read);
+        }
+      }
     }
     List<AnnotationTree> annotations = node.children().stream().filter(SemsitterTranslator::isAnnotation).<AnnotationTree>map(this::annotation).toList();
     if (!annotations.isEmpty()) {
@@ -1909,20 +1930,28 @@ final class SemsitterTranslator {
     if (identifier.symbol().isUnknown() || arityOnly) {
       Symbol.MethodSymbol method = arityOnly
         ? sema.declaredMethod(JSema.erase(target.substring(0, target.indexOf('#'))), identifier.name(), arguments)
-        : libraryMethod(qualifier, identifier.name(), arguments);
+        : libraryMethod(qualifier, identifier.name(), arguments, functionArguments(tree.arguments()));
       if (method != null) {
         identifier.symbol = method;
       }
     } else if (identifier.symbol() instanceof Symbol.MethodSymbol bound) {
-      identifier.symbol = sema.preferOverload(bound, libraryMethod(qualifier, identifier.name(), arguments), arguments);
+      Set<Integer> functions = functionArguments(tree.arguments());
+      identifier.symbol = sema.preferOverload(bound, libraryMethod(qualifier, identifier.name(), arguments, functions), arguments, functions);
     }
     if (identifier.symbol instanceof JMethodSymbol method && !method.isUnknown() && !JSema.arityMatches(method, arguments.size())) {
       identifier.symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
     }
     if (identifier.symbol instanceof JMethodSymbol method) {
-      List<Type> parameters = sema.invocationParameters(method, receiver, arguments);
+      List<Type> explicit = tree.typeArguments() == null ? List.of() : tree.typeArguments().stream().map(argument -> ((TypeTree) argument).symbolType()).toList();
+      List<Type> parameters = sema.withExplicitTypeArguments(explicit, () -> sema.invocationParameters(method, receiver, arguments));
       ascribeArguments(method, parameters, tree.arguments());
-      Type returned = sema.invocationReturn(method, receiver, arguments);
+      List<Type> typed = new ArrayList<>(arguments);
+      for (int i = 0; i < typed.size(); i++) {
+        if (tree.arguments().get(i).is(Tree.Kind.METHOD_INVOCATION)) {
+          typed.set(i, tree.arguments().get(i).symbolType());
+        }
+      }
+      Type returned = sema.withExplicitTypeArguments(explicit, () -> sema.invocationReturn(method, receiver, typed));
       JMethodSymbol view = sema.invocationView(method, receiver, parameters, returned);
       tree.methodSymbol = view;
       identifier.symbol = view;
@@ -2457,6 +2486,9 @@ final class SemsitterTranslator {
     }
     if (name.symbol instanceof Symbol.TypeSymbol typeSymbol) {
       tree.typeSymbol = typeSymbol;
+    }
+    if (bound != null && name.symbol instanceof JTypeSymbol parameter && parameter.isTypeParameter()) {
+      parameter.boundTrees(tree.bounds());
     }
     return tree;
   }
