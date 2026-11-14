@@ -19,7 +19,7 @@ package org.sonar.java.model;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -46,6 +47,11 @@ import org.sonar.plugins.java.api.tree.Tree;
  */
 public final class JSema implements Sema {
   private static final String ANNOTATIONS = "annotations";
+  private static final String MEMBERS = "members";
+  private static final String THROWS = "throws";
+  private static final int MEMBER_IDS_LIMIT = 200_000;
+  private static final Map<String, MemberId> MEMBER_IDS = new ConcurrentHashMap<>();
+  private static final MemberId NOT_A_MEMBER = new MemberId("", "", null, false, -1, List.of());
   private static final String STATIC = "static";
   private static final String ABSTRACT = "abstract";
   private static final String RECORD = "record";
@@ -60,6 +66,7 @@ public final class JSema implements Sema {
   private final Map<String, JsonObject> dumpSymbols = new HashMap<>();
   private final Map<String, JsonObject> typeInfos = new HashMap<>();
   private final Map<String, List<DeclaredAnnotation>> libraryAnnotations = new HashMap<>();
+  private final Map<String, List<String>> projectThrows = new HashMap<>();
   private final Map<String, JSymbol> symbols = new HashMap<>();
   private final Map<String, JTypeSymbol> typesByName = new HashMap<>();
   private final Map<String, JType> rawTypes = new HashMap<>();
@@ -167,6 +174,7 @@ public final class JSema implements Sema {
     for (Map.Entry<String, JsonElement> entry : types.entrySet()) {
       JsonObject info = entry.getValue().getAsJsonObject();
       typeInfos.put(entry.getKey(), info);
+      registerProjectMembers(info);
       JTypeSymbol symbol = typesByName.get(entry.getKey());
       if (symbol == null) {
         symbol = new JTypeSymbol(this, entry.getKey(), simpleName(entry.getKey()), false);
@@ -358,39 +366,39 @@ public final class JSema implements Sema {
     if (id == null) {
       return List.of();
     }
+    List<DeclaredAnnotation> typed = libraryAnnotations.get(id);
+    if (typed != null && !typed.isEmpty()) {
+      return typed;
+    }
     JsonObject fact = facts.get(id);
-    List<DeclaredAnnotation> fromValues = fact == null ? List.of() : annotationValues(fact);
-    if (!fromValues.isEmpty()) {
-      return fromValues;
-    }
-    List<String> fromFact = fact == null ? List.of() : strings(fact, ANNOTATIONS);
-    if (!fromFact.isEmpty()) {
-      List<DeclaredAnnotation> library = libraryAnnotations.getOrDefault(id, List.of());
-      if (!library.isEmpty()) {
-        return library;
-      }
-      return fromFact.stream().map(name -> new DeclaredAnnotation(erase(name), List.of())).toList();
-    }
-    return libraryAnnotations.getOrDefault(id, List.of());
+    return fact == null ? List.of() : strings(fact, ANNOTATIONS).stream().map(name -> new DeclaredAnnotation(erase(name), List.of(), false)).toList();
   }
 
-  private List<DeclaredAnnotation> annotationValues(JsonObject fact) {
-    if (!fact.has("props") || !fact.get("props").isJsonObject()) {
-      return List.of();
+  /** Thrown types a {@code types} answer gives a project method, or null when it was not answered. */
+  @Nullable
+  List<Type> projectThrown(@Nullable String id) {
+    List<String> names = id == null ? null : projectThrows.get(id);
+    return names == null ? null : names.stream().map(this::typeFromName).toList();
+  }
+
+  /** The typed annotations and thrown types of the project members of a {@code types} answer. */
+  private void registerProjectMembers(JsonObject info) {
+    if (!"project".equals(text(info, "origin")) || !(info.get(MEMBERS) instanceof JsonArray members)) {
+      return;
     }
-    List<DeclaredAnnotation> annotations = new ArrayList<>();
-    for (String encoded : strings(fact.getAsJsonObject("props"), "annotationValues")) {
-      JsonElement parsed = JsonParser.parseString(encoded);
-      if (!parsed.isJsonObject()) {
+    for (JsonElement element : members) {
+      if (!(element instanceof JsonObject member) || !(member.get("id") instanceof JsonPrimitive memberId)) {
         continue;
       }
-      JsonObject annotation = parsed.getAsJsonObject();
-      String name = text(annotation, "name");
-      if (name != null) {
-        annotations.add(new DeclaredAnnotation(erase(name), readAnnotationValues(annotation.get("values"))));
+      String id = memberId.getAsString();
+      List<DeclaredAnnotation> annotations = readAnnotations(member);
+      if (!annotations.isEmpty()) {
+        libraryAnnotations.put(id, annotations);
+      }
+      if (member.get(THROWS) instanceof JsonArray) {
+        projectThrows.put(id, strings(member, THROWS));
       }
     }
-    return annotations;
   }
 
   /** Annotations and deprecation a {@code types} answer gives a library type or member. */
@@ -865,7 +873,7 @@ public final class JSema implements Sema {
     if (!declaresType(ownerFqn)) {
       return null;
     }
-    JsonArray members = typeInfos.get(sourceName(ownerFqn)).getAsJsonArray("members");
+    JsonArray members = typeInfos.get(sourceName(ownerFqn)).getAsJsonArray(MEMBERS);
     if (members == null) {
       return null;
     }
@@ -883,7 +891,11 @@ public final class JSema implements Sema {
 
   Symbol memberFromTypeInfo(JTypeSymbol owner, JsonObject member) {
     if (member.has("id") && !member.get("id").isJsonNull()) {
-      return resolve(member.get("id").getAsString());
+      JSymbol project = resolve(member.get("id").getAsString());
+      if (declaredAnnotations(project.id).stream().anyMatch(annotation -> "java.lang.Deprecated".equals(annotation.name()))) {
+        project.deprecated(true);
+      }
+      return project;
     }
     String name = text(member, "name");
     String descriptor = text(member, "desc");
@@ -921,7 +933,7 @@ public final class JSema implements Sema {
       method.addModifiers(List.of("default"));
     }
     libraryAnnotations(method, id, member);
-    List<String> thrown = strings(member, "throws");
+    List<String> thrown = strings(member, THROWS);
     if (!thrown.isEmpty()) {
       method.thrownTypes(thrown.stream().map(this::typeFromName).toList());
     }
@@ -1016,7 +1028,7 @@ public final class JSema implements Sema {
     }
     applyMemberFlags(symbol, member);
     libraryAnnotations(symbol, id, member);
-    List<String> thrown = strings(member, "throws");
+    List<String> thrown = strings(member, THROWS);
     if (symbol instanceof JMethodSymbol method && !thrown.isEmpty()) {
       method.thrownTypes(thrown.stream().map(this::typeFromName).toList());
     }
@@ -1102,7 +1114,7 @@ public final class JSema implements Sema {
     }
     if (method.parameterTypes().isEmpty() && !parsed.arityOnly && parsed.params != null && !parsed.params.isEmpty()) {
       List<Type> types = new ArrayList<>();
-      for (String param : splitParams(parsed.params)) {
+      for (String param : parsed.paramList()) {
         types.add(typeFromName(param));
       }
       method.parameterTypes(types);
@@ -1161,7 +1173,7 @@ public final class JSema implements Sema {
       return;
     }
     JsonObject info = typeInfos.get(sourceName(ownerFqn));
-    JsonArray members = info.getAsJsonArray("members");
+    JsonArray members = info.getAsJsonArray(MEMBERS);
     if (members != null) {
       for (JsonElement element : members) {
         if (memberFromTypeInfo(typeSymbol(ownerFqn), element.getAsJsonObject()) instanceof JMethodSymbol method && !method.isUnknown() && method.isAbstract()
@@ -1185,7 +1197,7 @@ public final class JSema implements Sema {
       return null;
     }
     JsonObject info = typeInfos.get(sourceName(ownerFqn));
-    JsonArray members = info.getAsJsonArray("members");
+    JsonArray members = info.getAsJsonArray(MEMBERS);
     if (members != null) {
       for (JsonElement element : members) {
         JsonObject member = element.getAsJsonObject();
@@ -1210,7 +1222,7 @@ public final class JSema implements Sema {
       return;
     }
     JsonObject info = typeInfos.get(sourceName(ownerFqn));
-    JsonArray members = info.getAsJsonArray("members");
+    JsonArray members = info.getAsJsonArray(MEMBERS);
     if (members != null) {
       for (JsonElement element : members) {
         JsonObject member = element.getAsJsonObject();
@@ -1296,7 +1308,7 @@ public final class JSema implements Sema {
       return null;
     }
     JsonObject info = typeInfos.get(sourceName(ownerFqn));
-    JsonObject found = matchMembers(info == null ? null : info.getAsJsonArray("members"), parsed, match);
+    JsonObject found = matchMembers(info == null ? null : info.getAsJsonArray(MEMBERS), parsed, match);
     if (found != null) {
       return found;
     }
@@ -1357,7 +1369,7 @@ public final class JSema implements Sema {
     List<Type> declaredParams = parameterTypesOf(descriptor);
     int declaredCount = declaredParams.size();
     return switch (match) {
-      case TYPED -> declaredCount == parsed.arity && sameErasures(declaredParams, splitParams(parsed.params));
+      case TYPED -> declaredCount == parsed.arity && sameErasures(declaredParams, parsed.paramList());
       case ARITY -> declaredCount == parsed.arity;
       case VARARGS -> declaredCount > 0 && parsed.arity >= declaredCount - 1 && declaredParams.get(declaredCount - 1).isArray();
     };
@@ -1409,7 +1421,7 @@ public final class JSema implements Sema {
       method.parameterTypes(types);
     } else if (parsed != null && !parsed.arityOnly && parsed.params != null && !parsed.params.isEmpty()) {
       List<Type> types = new ArrayList<>();
-      for (String param : splitParams(parsed.params)) {
+      for (String param : parsed.paramList()) {
         types.add(typeFromName(param));
       }
       method.parameterTypes(types);
@@ -1418,12 +1430,6 @@ public final class JSema implements Sema {
       method.returnTypeSymbol(primitiveSymbol("void"));
     }
     method.parametrized(id.indexOf('<') >= 0);
-    if (fact != null && fact.get("props") instanceof JsonObject props) {
-      List<String> thrown = strings(props, "thrownTypes");
-      if (!thrown.isEmpty()) {
-        method.thrownTypes(thrown.stream().map(this::typeFromName).toList());
-      }
-    }
   }
 
   private void applyFact(JSymbol symbol, JsonObject fact) {
@@ -1506,8 +1512,8 @@ public final class JSema implements Sema {
       symbol.typeParameterCount(info.get("typeParameters").getAsInt());
     }
     List<JsonObject> members = new ArrayList<>();
-    if (info.has("members")) {
-      for (JsonElement member : info.getAsJsonArray("members")) {
+    if (info.has(MEMBERS)) {
+      for (JsonElement member : info.getAsJsonArray(MEMBERS)) {
         members.add(member.getAsJsonObject());
       }
     }
@@ -1754,7 +1760,22 @@ public final class JSema implements Sema {
     return symbol;
   }
 
+  /** Member ids repeat across lookups and files, so their parse is kept; the cache is dropped when it grows large. */
+  @Nullable
   private static MemberId parseMember(String id) {
+    MemberId cached = MEMBER_IDS.get(id);
+    if (cached == null) {
+      cached = parseMemberUncached(id);
+      if (MEMBER_IDS.size() >= MEMBER_IDS_LIMIT) {
+        MEMBER_IDS.clear();
+      }
+      MEMBER_IDS.put(id, cached == null ? NOT_A_MEMBER : cached);
+    }
+    return cached == NOT_A_MEMBER ? null : cached;
+  }
+
+  @Nullable
+  private static MemberId parseMemberUncached(String id) {
     int hash = id.indexOf('#');
     if (hash < 0) {
       return null;
@@ -1763,13 +1784,14 @@ public final class JSema implements Sema {
     String rest = id.substring(hash + 1);
     int paren = rest.endsWith(")") ? rest.lastIndexOf('(') : -1;
     if (paren < 0) {
-      return new MemberId(owner, rest, null, false, -1);
+      return new MemberId(owner, rest, null, false, -1, List.of());
     }
     String name = rest.substring(0, paren);
     String params = rest.substring(paren + 1, rest.length() - 1);
     boolean arityOnly = !params.isEmpty() && params.chars().allMatch(Character::isDigit);
-    int arity = arityOnly ? Integer.parseInt(params) : (params.isEmpty() ? 0 : splitParams(params).size());
-    return new MemberId(owner, name, params, arityOnly, arity);
+    List<String> paramList = splitParams(params);
+    int arity = arityOnly ? Integer.parseInt(params) : paramList.size();
+    return new MemberId(owner, name, params, arityOnly, arity, paramList);
   }
 
   private static List<String> splitParams(String params) {
@@ -1795,6 +1817,9 @@ public final class JSema implements Sema {
   }
 
   static String erase(String id) {
+    if (id.indexOf('`') < 0) {
+      return id;
+    }
     StringBuilder out = new StringBuilder(id.length());
     for (int i = 0; i < id.length(); i++) {
       char current = id.charAt(i);
@@ -1825,12 +1850,9 @@ public final class JSema implements Sema {
   }
 
   @Nullable
-  private static String text(JsonObject object, String key) {
-    if (object == null || !object.has(key) || object.get(key).isJsonNull()) {
-      return null;
-    }
-    JsonElement element = object.get(key);
-    return element.isJsonPrimitive() ? element.getAsString() : null;
+  private static String text(@Nullable JsonObject object, String key) {
+    JsonElement element = object == null ? null : object.get(key);
+    return element != null && element.isJsonPrimitive() ? element.getAsString() : null;
   }
 
   private static boolean truth(JsonObject object, String key) {
@@ -1869,9 +1891,12 @@ public final class JSema implements Sema {
     return values;
   }
 
-  private record MemberId(String owner, String name, @Nullable String params, boolean arityOnly, int arity) {
+  private record MemberId(String owner, String name, @Nullable String params, boolean arityOnly, int arity, List<String> paramList) {
   }
 
-  record DeclaredAnnotation(String name, List<SymbolMetadata.AnnotationValue> values) {
+  record DeclaredAnnotation(String name, List<SymbolMetadata.AnnotationValue> values, boolean valuesKnown) {
+    DeclaredAnnotation(String name, List<SymbolMetadata.AnnotationValue> values) {
+      this(name, values, true);
+    }
   }
 }
