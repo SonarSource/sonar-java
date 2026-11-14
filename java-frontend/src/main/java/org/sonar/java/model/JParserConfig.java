@@ -185,6 +185,7 @@ public abstract class JParserConfig {
       }
       JsonObject document = bridge.cst(inputFile.path().toAbsolutePath().toString());
       JSema sema = new JSema();
+      sema.noLibraries(classpath.isEmpty());
       sema.ingestDocument(document);
       sema.loadTypes(names -> {
         if (bridge == null) {

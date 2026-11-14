@@ -414,7 +414,8 @@ final class JType implements Type, Type.ArrayType {
       return element == null || element.is("java.lang.Object") ? "?" : "? extends " + element.name();
     }
     int boundary = Math.max(fqn.lastIndexOf('.'), fqn.lastIndexOf('$'));
-    return boundary < 0 ? fqn : fqn.substring(boundary + 1);
+    String simple = boundary < 0 ? fqn : fqn.substring(boundary + 1);
+    return JSema.isAnonymousName(simple) ? "" : simple;
   }
 
   @Override

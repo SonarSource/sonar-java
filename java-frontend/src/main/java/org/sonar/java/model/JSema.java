@@ -171,10 +171,23 @@ public final class JSema implements Sema {
     ingestTypes(loader.apply(names));
   }
 
+  /** Types of the built-in library table, which are not on the analyzed classpath; off to leave them unresolved. */
+  private static final boolean FRAMEWORK_TYPES = Boolean.parseBoolean(System.getProperty("sonar.java.semsitter.frameworkTypes", "true"));
+
+  private boolean noLibraries;
+
+  /** Without any library, a method of a type nothing declares is unknown instead of named after its written owner. */
+  public void noLibraries(boolean noLibraries) {
+    this.noLibraries = noLibraries;
+  }
+
   public void ingestTypes(JsonObject types) {
     typesLoaded = true;
     for (Map.Entry<String, JsonElement> entry : types.entrySet()) {
       JsonObject info = entry.getValue().getAsJsonObject();
+      if (!FRAMEWORK_TYPES && "framework-db".equals(text(info, "origin"))) {
+        continue;
+      }
       typeInfos.put(entry.getKey(), info);
       registerProjectMembers(info);
       JTypeSymbol symbol = typesByName.get(entry.getKey());
@@ -1123,6 +1136,26 @@ public final class JSema implements Sema {
     return method;
   }
 
+  /** The value a field of type {@code descriptor} holds, from the text Java prints for it. */
+  @Nullable
+  private static Object libraryConstant(@Nullable String descriptor, String text) {
+    try {
+      return switch (descriptor == null ? "" : descriptor) {
+        case "Z" -> Boolean.valueOf(text);
+        case "B" -> Byte.valueOf(text);
+        case "S" -> Short.valueOf(text);
+        case "C" -> text.length() == 1 ? (Object) text.charAt(0) : null;
+        case "I" -> Integer.valueOf(text);
+        case "J" -> Long.valueOf(text);
+        case "F" -> Float.valueOf(text);
+        case "D" -> Double.valueOf(text);
+        default -> text;
+      };
+    } catch (NumberFormatException notANumber) {
+      return null;
+    }
+  }
+
   private void createDumpSymbol(String id) {
     if (symbols.containsKey(id)) {
       return;
@@ -1319,8 +1352,9 @@ public final class JSema implements Sema {
       return field;
     }
     JMethodSymbol method = new JMethodSymbol(this, id, parsed.name);
-    method.owner(parsed.arityOnly ? Symbol.TypeSymbol.UNKNOWN_TYPE : owner);
-    method.unknown(parsed.arityOnly);
+    boolean undeclaredOwner = noLibraries && member == null && !declaresType(ownerName);
+    method.owner(parsed.arityOnly || undeclaredOwner ? Symbol.TypeSymbol.UNKNOWN_TYPE : owner);
+    method.unknown(parsed.arityOnly || undeclaredOwner);
     fillMethod(method, factOf(id), id);
     if ("<init>".equals(parsed.name) && factOf(id) == null && member == null) {
       // The implicit default constructor has the access of its class.
@@ -2099,7 +2133,13 @@ public final class JSema implements Sema {
 
   private static String simpleName(String fqn) {
     int boundary = Math.max(fqn.lastIndexOf('.'), fqn.lastIndexOf('$'));
-    return boundary < 0 ? fqn : fqn.substring(boundary + 1);
+    String name = boundary < 0 ? fqn : fqn.substring(boundary + 1);
+    return isAnonymousName(name) ? "" : name;
+  }
+
+  /** An anonymous class is named by its ordinal, which a source name never is. */
+  static boolean isAnonymousName(String name) {
+    return !name.isEmpty() && name.chars().allMatch(Character::isDigit);
   }
 
   private static String packageName(String fqn) {

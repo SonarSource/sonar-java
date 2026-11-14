@@ -1978,7 +1978,8 @@ final class SemsitterTranslator {
     ClassTreeImpl classBody = null;
     if (body != null) {
       classBody = new ClassTreeImpl(Tree.Kind.CLASS, token(required(body, "{")), membersOf(body), token(required(body, "}")));
-      bindType(classBody, body);
+      // An anonymous class is declared at its creation expression, whatever its members.
+      bindType(classBody, node.decl() != null ? node : body);
     }
     NewClassTreeImpl tree = new NewClassTreeImpl(type, args, classBody).completeWithNewKeyword(token(required(node, "new")));
     Node enclosing = node.children().get(0);

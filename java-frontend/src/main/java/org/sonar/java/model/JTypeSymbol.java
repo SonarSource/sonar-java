@@ -17,6 +17,7 @@
 package org.sonar.java.model;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -248,12 +249,19 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     if (members == null) {
       List<Symbol> resolved = new ArrayList<>();
       for (JsonObject member : memberFacts) {
-        resolved.add(sema.memberFromTypeInfo(this, member));
+        if (!isTypeParameterFact(member)) {
+          resolved.add(sema.memberFromTypeInfo(this, member));
+        }
       }
       addImplicitConstructor(resolved);
       members = resolved;
     }
     return members;
+  }
+
+  /** A type parameter is listed among the members of a project type but is not a member symbol. */
+  private static boolean isTypeParameterFact(JsonObject member) {
+    return member.get("facts") instanceof JsonObject facts && facts.get("kind") instanceof JsonPrimitive kind && "typeparameter".equals(kind.getAsString());
   }
 
   /** A class of this file that declares no constructor still has the default one as a member. */
