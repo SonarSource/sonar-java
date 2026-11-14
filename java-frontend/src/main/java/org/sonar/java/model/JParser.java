@@ -64,6 +64,7 @@ public final class JParser {
         document = bridge.cst(file.toString());
       }
       JSema sema = new JSema();
+      sema.noLibraries(classpath.isEmpty());
       sema.ingestDocument(document);
       // Types load lazily while rules run, so the bridge outlives this call.
       sema.loadTypes(names -> {

@@ -65,6 +65,7 @@ final class AnalyzerSession {
   private String startedRoot;
   private boolean flatFrames;
   private String scannedKey;
+  private String typesSettings;
   private static volatile Path moduleRoot;
   private static volatile Map<String, List<String>> moduleSettings = Map.of();
   private static volatile List<String> scanFiles = List.of();
@@ -140,9 +141,24 @@ final class AnalyzerSession {
       start(root);
     }
     JsonObject settings = settings(request);
-    String key = root + "\n" + settings + "\n" + scanFilesKey;
+    String settingsKey = settings.toString();
+    if (process != null && typesSettings != null && !settingsKey.equals(typesSettings)) {
+      // The server does not send a library type again, so types answered for another classpath need a new process.
+      stop();
+      start(root);
+    }
+    typesSettings = settingsKey;
+    List<String> toScan = scanFiles;
+    if (toScan.isEmpty() && moduleRoot == null) {
+      // Without a module, a request stands alone: its siblings on disk are not part of it.
+      toScan = new ArrayList<>();
+      for (JsonElement file : request.getAsJsonArray(FILES)) {
+        toScan.add(file.getAsString());
+      }
+    }
+    String key = root + "\n" + settings + "\n" + toScan.hashCode();
     if (!key.equals(scannedKey)) {
-      scan(settings);
+      scan(settings, toScan);
       scannedKey = key;
     }
     JsonObject result = new JsonObject();
@@ -216,6 +232,7 @@ final class AnalyzerSession {
     startedRoot = null;
     flatFrames = false;
     scannedKey = null;
+    typesSettings = null;
     stableTypes.clear();
     batchTypes.clear();
     absent.clear();
@@ -255,7 +272,7 @@ final class AnalyzerSession {
     return entry.replace('\\', '/').endsWith("/lib/modules");
   }
 
-  private void scan(JsonObject settings) throws IOException {
+  private void scan(JsonObject settings, List<String> files) throws IOException {
     batchTypes.clear();
     absent.clear();
     if (System.getenv("SEMSITTER_COUNTERS_FILE") != null) {
@@ -267,7 +284,6 @@ final class AnalyzerSession {
     send(set, false);
     JsonObject full = new JsonObject();
     full.addProperty("cmd", "full-gen");
-    List<String> files = scanFiles;
     if (!files.isEmpty()) {
       JsonArray array = new JsonArray(files.size());
       files.forEach(array::add);
