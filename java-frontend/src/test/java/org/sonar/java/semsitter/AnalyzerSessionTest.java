@@ -42,6 +42,7 @@ class AnalyzerSessionTest {
   void reset() {
     AnalyzerSession.moduleRoot(null);
     AnalyzerSession.moduleSettings(Map.of());
+    AnalyzerSession.scanFiles(List.of());
   }
 
   @Test
@@ -88,6 +89,41 @@ class AnalyzerSessionTest {
     session.analyze(request("a", "x.jar", "test.jar"));
     session.analyze(request("a", "other.jar"));
     assertThat(commands("set-settings")).isEqualTo(3);
+  }
+
+  @Test
+  void analyzed_files_are_sent_once_and_a_change_of_the_list_rescans() throws IOException {
+    AnalyzerSession session = new AnalyzerSession(fakeServer("1.4.0"));
+
+    AnalyzerSession.scanFiles(List.of("/m/A.java", "/m/B.java"));
+    session.analyze(request("a", "x.jar"));
+    session.analyze(request("a", "x.jar"));
+    assertThat(commands("full-gen")).isEqualTo(1);
+    assertThat(Files.readAllLines(temp.resolve("log"))).anyMatch(line -> line.contains("\"cmd\":\"full-gen\"") && line.contains("\"files\":[\"/m/A.java\",\"/m/B.java\"]"));
+
+    AnalyzerSession.scanFiles(List.of("/m/A.java"));
+    session.analyze(request("a", "x.jar"));
+    assertThat(commands("full-gen")).isEqualTo(2);
+
+    AnalyzerSession.scanFiles(List.of());
+    session.analyze(request("a", "x.jar"));
+    assertThat(commands("full-gen")).isEqualTo(3);
+    assertThat(Files.readAllLines(temp.resolve("log")).get(Files.readAllLines(temp.resolve("log")).size() - 1)).doesNotContain("files");
+  }
+
+  @Test
+  void flat_frame_is_requested_only_from_protocol_1_8() throws IOException {
+    for (String protocol : List.of("1.7.0", "1.8.0")) {
+      Files.deleteIfExists(temp.resolve("log"));
+      AnalyzerSession session = new AnalyzerSession(fakeServer(protocol));
+      session.analyze(request("a", "x.jar"));
+      JsonObject get = new JsonObject();
+      get.addProperty("path", "A.java");
+      session.cst(get);
+      assertThat(Files.readAllLines(temp.resolve("log")).stream().filter(line -> line.contains("\"cmd\":\"get-file\"")).toList())
+        .singleElement()
+        .satisfies(line -> assertThat(line.contains("\"flat\":true")).isEqualTo(protocol.equals("1.8.0")));
+    }
   }
 
   private Path fakeServer(String protocol) throws IOException {

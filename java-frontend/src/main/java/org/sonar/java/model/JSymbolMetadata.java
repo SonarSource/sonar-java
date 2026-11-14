@@ -98,7 +98,7 @@ final class JSymbolMetadata implements SymbolMetadata {
     }
     List<AnnotationInstance> fromFacts = new ArrayList<>();
     for (JSema.DeclaredAnnotation annotation : symbol.sema.declaredAnnotations(symbol.id)) {
-      fromFacts.add(new FactAnnotation(symbol.sema, JSema.erase(annotation.name()), annotation.values()));
+      fromFacts.add(new FactAnnotation(symbol.sema, JSema.erase(annotation.name()), annotation.values(), annotation.valuesKnown()));
     }
     return fromFacts;
   }
@@ -379,9 +379,10 @@ final class JSymbolMetadata implements SymbolMetadata {
     private final Symbol symbol;
     private final List<AnnotationValue> values;
 
-    private FactAnnotation(JSema sema, String fqn, List<AnnotationValue> values) {
+    private FactAnnotation(JSema sema, String fqn, List<AnnotationValue> values, boolean valuesKnown) {
       this.symbol = sema.typeSymbol(fqn);
-      this.values = values;
+      // An annotation known by name only keeps one unknown value, so a consumer that reads a value never meets an empty list.
+      this.values = valuesKnown ? values : List.of(new AnnotationValueImpl("value", null));
     }
 
     @Override

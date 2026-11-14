@@ -115,7 +115,7 @@ final class BridgeFrames {
     object.add("files", files);
   }
 
-  private static JsonObject document(byte[] bytes) {
+  static JsonObject document(byte[] bytes) {
     Cursor cursor = new Cursor(bytes);
     JsonObject object = new JsonObject();
     object.addProperty("hasError", false);
@@ -340,19 +340,19 @@ final class BridgeFrames {
     }
   }
 
-  private static final class Cursor {
+  static final class Cursor {
     private final byte[] bytes;
     private int at;
 
-    private Cursor(byte[] bytes) {
+    Cursor(byte[] bytes) {
       this.bytes = bytes;
     }
 
-    private boolean remaining() {
+    boolean remaining() {
       return at < bytes.length;
     }
 
-    private long varint() {
+    long varint() {
       long value = 0;
       int shift = 0;
       while (at < bytes.length && shift < 64) {
@@ -366,7 +366,7 @@ final class BridgeFrames {
       throw new IllegalArgumentException("truncated varint");
     }
 
-    private byte[] bytes() {
+    byte[] bytes() {
       int len = (int) varint();
       byte[] out = new byte[len];
       System.arraycopy(bytes, at, out, 0, len);
@@ -374,11 +374,11 @@ final class BridgeFrames {
       return out;
     }
 
-    private String text() {
+    String text() {
       return new String(bytes(), StandardCharsets.UTF_8);
     }
 
-    private void skip(int wire) {
+    void skip(int wire) {
       switch (wire) {
         case 0 -> varint();
         case 1 -> at += 8;

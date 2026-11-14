@@ -48,6 +48,9 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 final class AnalyzerSession {
 
+  private static final String LIBRARIES = "jvm.libraries";
+  private static final String FILES = "files";
+
   static final AtomicLong BYTES_IN = new AtomicLong();
   static final AtomicLong BYTES_OUT = new AtomicLong();
   static final AtomicLong REQUESTS = new AtomicLong();
@@ -60,9 +63,12 @@ final class AnalyzerSession {
   private OutputStream toServer;
   private DataInputStream fromServer;
   private String startedRoot;
+  private boolean flatFrames;
   private String scannedKey;
   private static volatile Path moduleRoot;
   private static volatile Map<String, List<String>> moduleSettings = Map.of();
+  private static volatile List<String> scanFiles = List.of();
+  private static volatile int scanFilesKey;
   private final Map<String, JsonObject> stableTypes = new HashMap<>();
   private final Map<String, JsonObject> batchTypes = new HashMap<>();
   private final Set<String> absent = new HashSet<>();
@@ -77,9 +83,40 @@ final class AnalyzerSession {
     moduleRoot = root;
   }
 
+  /** The files the server scans, in place of the walk of its source roots; the switch is {@code sonar.java.semsitter.scanFiles}. */
+  static void scanFiles(List<String> files) {
+    scanFiles = Boolean.parseBoolean(System.getProperty("sonar.java.semsitter.scanFiles", "true")) ? List.copyOf(files) : List.of();
+    scanFilesKey = scanFiles.hashCode();
+  }
+
   /** Server settings of the module (the {@code jvm.*} classpath keys), as the scanner properties give them. */
   static void moduleSettings(Map<String, List<String>> settings) {
     moduleSettings = settings;
+  }
+
+  /**
+   * Starts the server and scans the module in the background when the settings name its libraries or binaries, so the
+   * first request finds the scan done or waits for it. Failures surface at the first request.
+   */
+  static void prepareAsync(Path executable) {
+    Path module = moduleRoot;
+    if (module == null || (!moduleSettings.containsKey(LIBRARIES) && !moduleSettings.containsKey("jvm.binaries"))) {
+      return;
+    }
+    JsonObject request = new JsonObject();
+    request.addProperty("root", module.toAbsolutePath().toString());
+    request.add(FILES, new JsonArray());
+    request.add("classpath", new JsonArray());
+    AnalyzerSession session = shared(executable);
+    Thread thread = new Thread(() -> {
+      try {
+        session.analyze(request);
+      } catch (IOException | RuntimeException ignored) {
+        // the first request starts again and reports the failure
+      }
+    }, "sonar-java-module-scan");
+    thread.setDaemon(true);
+    thread.start();
   }
 
   static synchronized AnalyzerSession shared(Path executable) {
@@ -103,7 +140,7 @@ final class AnalyzerSession {
       start(root);
     }
     JsonObject settings = settings(request);
-    String key = root + "\n" + settings;
+    String key = root + "\n" + settings + "\n" + scanFilesKey;
     if (!key.equals(scannedKey)) {
       scan(settings);
       scannedKey = key;
@@ -111,7 +148,7 @@ final class AnalyzerSession {
     JsonObject result = new JsonObject();
     result.addProperty("ok", true);
     result.addProperty("root", root);
-    result.add("files", request.getAsJsonArray("files"));
+    result.add(FILES, request.getAsJsonArray(FILES));
     return result;
   }
 
@@ -126,7 +163,7 @@ final class AnalyzerSession {
     }
     Path root = Path.of(request.get("root").getAsString());
     List<Path> files = new ArrayList<>();
-    request.getAsJsonArray("files").forEach(f -> files.add(Path.of(f.getAsString())));
+    request.getAsJsonArray(FILES).forEach(f -> files.add(Path.of(f.getAsString())));
     if (files.isEmpty() || files.stream().allMatch(f -> f.startsWith(root))) {
       return root.toString();
     }
@@ -143,7 +180,7 @@ final class AnalyzerSession {
     List<String> command = new ArrayList<>();
     command.add(executable.toAbsolutePath().toString());
     command.addAll(List.of("--server", "--lang", "java", "--modifiers", "--structural", "--decl-location", "--field-items",
-      "--field-reference-edges", "--override-edges", "--src", root, "--project-root", root));
+      "--override-edges", "--src", root, "--project-root", root));
     String extra = System.getProperty("sonar.java.semsitter.args");
     if (extra != null && !extra.isBlank()) {
       command.addAll(List.of(extra.split(" ")));
@@ -161,6 +198,7 @@ final class AnalyzerSession {
       if (!protocol.startsWith("1.")) {
         throw new IOException("unsupported analyzer protocol " + protocol);
       }
+      flatFrames = atLeastMinor(protocol, 8);
     } catch (IOException | RuntimeException e) {
       stop();
       throw e;
@@ -176,6 +214,7 @@ final class AnalyzerSession {
     toServer = null;
     fromServer = null;
     startedRoot = null;
+    flatFrames = false;
     scannedKey = null;
     stableTypes.clear();
     batchTypes.clear();
@@ -194,14 +233,14 @@ final class AnalyzerSession {
       entry.getValue().forEach(values::add);
       settings.add(entry.getKey(), values);
     }
-    if (!settings.has("jvm.libraries") && !settings.has("jvm.binaries")) {
+    if (!settings.has(LIBRARIES) && !settings.has("jvm.binaries")) {
       JsonArray libraries = new JsonArray();
       for (JsonElement entry : request.getAsJsonArray("classpath")) {
         if (!isJdkImage(entry.getAsString())) {
           libraries.add(entry.getAsString());
         }
       }
-      settings.add("jvm.libraries", libraries);
+      settings.add(LIBRARIES, libraries);
     }
     if (!settings.has("jvm.jdk_home")) {
       JsonArray home = new JsonArray();
@@ -228,6 +267,12 @@ final class AnalyzerSession {
     send(set, false);
     JsonObject full = new JsonObject();
     full.addProperty("cmd", "full-gen");
+    List<String> files = scanFiles;
+    if (!files.isEmpty()) {
+      JsonArray array = new JsonArray(files.size());
+      files.forEach(array::add);
+      full.add(FILES, array);
+    }
     send(full, false);
   }
 
@@ -235,19 +280,34 @@ final class AnalyzerSession {
     JsonObject get = new JsonObject();
     get.addProperty("cmd", "get-file");
     get.addProperty("path", request.get("path").getAsString());
-    String ahead = System.getProperty("sonar.java.semsitter.prefetch");
-    if (ahead != null) {
-      get.addProperty("ahead", Integer.parseInt(ahead));
+    int ahead = Integer.getInteger("sonar.java.semsitter.prefetch", 1);
+    if (ahead > 0) {
+      get.addProperty("ahead", ahead);
+    }
+    if (flatFrames) {
+      get.addProperty("flat", true);
     }
     Answer answer = send(get, true);
-    // The bridge's response message around the document: ok = true, document = field 5.
-    ByteArrayOutputStream wrapped = new ByteArrayOutputStream(answer.payload.length + 16);
-    wrapped.write(0x10);
-    wrapped.write(0x01);
-    wrapped.write(0x2a);
-    varint(wrapped, answer.payload.length);
-    wrapped.write(answer.payload);
-    return BridgeFrames.response(wrapped.toByteArray());
+    JsonElement format = answer.header.get("format");
+    if (format != null && "protobuf-flat".equals(format.getAsString())) {
+      return FlatFrame.document(answer.payload, Files.readAllBytes(resolve(request.get("path").getAsString())));
+    }
+    return BridgeFrames.document(answer.payload);
+  }
+
+  private Path resolve(String path) {
+    Path file = Path.of(path);
+    return file.isAbsolute() || startedRoot == null ? file : Path.of(startedRoot).resolve(file);
+  }
+
+  /** Whether a {@code 1.<minor>.<patch>} protocol version has at least that minor. */
+  static boolean atLeastMinor(String protocol, int minor) {
+    String[] parts = protocol.split("\\.");
+    try {
+      return parts.length >= 2 && Integer.parseInt(parts[0]) == 1 && Integer.parseInt(parts[1]) >= minor;
+    } catch (NumberFormatException e) {
+      return false;
+    }
   }
 
   /** The declarations of {@code names} and their supertypes, asking the server only for names never seen. */
@@ -364,14 +424,6 @@ final class AnalyzerSession {
       line.write(b);
     }
     return line.toString(StandardCharsets.UTF_8);
-  }
-
-  private static void varint(ByteArrayOutputStream out, long value) {
-    while ((value & ~0x7FL) != 0) {
-      out.write((int) ((value & 0x7F) | 0x80));
-      value >>>= 7;
-    }
-    out.write((int) value);
   }
 
   private synchronized void quit() {

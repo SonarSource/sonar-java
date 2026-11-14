@@ -223,7 +223,8 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     }
     MethodTree method = declaration();
     if (method == null) {
-      return Collections.emptyList();
+      List<Type> served = sema.projectThrown(id);
+      return served == null ? Collections.emptyList() : served;
     }
     return method.throwsClauses().stream().map(TypeTree::symbolType).toList();
   }

@@ -132,7 +132,7 @@ public final class JParser {
   }
 
   /** The SemSitter analyzer executable: {@code -Dsonar.java.semsitter.executable}, else {@code SEMSITTER_ANALYZER}, else the packaged one. */
-  static Path bridgePath() {
+  public static Path bridgePath() {
     String configured = System.getProperty("sonar.java.semsitter.executable");
     if (configured == null || configured.isBlank()) {
       configured = System.getenv("SEMSITTER_ANALYZER");

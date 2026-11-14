@@ -51,6 +51,16 @@ public final class SemsitterBridge implements AutoCloseable {
     AnalyzerSession.moduleSettings(settings);
   }
 
+  /** Starts the scan of the module in the background, ahead of the first file. */
+  public static void prepare(Path executable) {
+    AnalyzerSession.prepareAsync(executable);
+  }
+
+  /** Sets the files of the whole analysis, which the server scans exactly; empty means the source roots. */
+  public static void scanFiles(List<String> files) {
+    AnalyzerSession.scanFiles(files);
+  }
+
   /** Sets the module base directory the server scans. */
   public static void moduleRoot(Path root) {
     AnalyzerSession.moduleRoot(root);
@@ -75,7 +85,7 @@ public final class SemsitterBridge implements AutoCloseable {
   public JsonObject cst(String path) throws IOException {
     JsonObject request = new JsonObject();
     request.addProperty("path", path);
-    return server.cst(request).getAsJsonObject("cst");
+    return server.cst(request);
   }
 
   /**
