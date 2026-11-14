@@ -121,7 +121,7 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
   @Override
   public boolean isLocalVariable() {
-    return local || (owner().isMethodSymbol() && !parameter);
+    return local || owner().isMethodSymbol();
   }
 
   @Override

@@ -198,7 +198,7 @@ final class JType implements Type, Type.ArrayType {
     if (!visited.add(fullyQualifiedName() + ">" + superType.fullyQualifiedName())) {
       return false;
     }
-    if (sameErasure(superType) && argumentsMatch(superType)) {
+    if (!isArray() && sameErasure(superType) && argumentsMatch(superType)) {
       return true;
     }
     if (isPrimitive() && superType.isPrimitive()) {
