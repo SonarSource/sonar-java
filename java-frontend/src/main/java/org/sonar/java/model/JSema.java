@@ -67,6 +67,8 @@ public final class JSema implements Sema {
   private final Map<String, JsonObject> typeInfos = new HashMap<>();
   private final Map<String, List<DeclaredAnnotation>> libraryAnnotations = new HashMap<>();
   private final Map<String, List<String>> projectThrows = new HashMap<>();
+  private final Map<String, JsonObject> projectMemberFacts = new HashMap<>();
+  private final Map<String, JsonObject> projectFieldTypes = new HashMap<>();
   private final Map<String, JSymbol> symbols = new HashMap<>();
   private final Map<String, JTypeSymbol> typesByName = new HashMap<>();
   private final Map<String, JType> rawTypes = new HashMap<>();
@@ -390,13 +392,22 @@ public final class JSema implements Sema {
       if (!(element instanceof JsonObject member) || !(member.get("id") instanceof JsonPrimitive memberId)) {
         continue;
       }
-      String id = memberId.getAsString();
+      List<String> spellings = new ArrayList<>(strings(member, "useIds"));
+      spellings.add(memberId.getAsString());
       List<DeclaredAnnotation> annotations = readAnnotations(member);
-      if (!annotations.isEmpty()) {
-        libraryAnnotations.put(id, annotations);
-      }
-      if (member.get(THROWS) instanceof JsonArray) {
-        projectThrows.put(id, strings(member, THROWS));
+      for (String id : spellings) {
+        if (!annotations.isEmpty()) {
+          libraryAnnotations.put(id, annotations);
+        }
+        if (member.get(THROWS) instanceof JsonArray) {
+          projectThrows.put(id, strings(member, THROWS));
+        }
+        if (member.get("facts") instanceof JsonObject memberFact) {
+          projectMemberFacts.putIfAbsent(id, memberFact);
+        }
+        if (member.get("declaredType") instanceof JsonObject declared && declared.get("args") instanceof JsonArray) {
+          projectFieldTypes.putIfAbsent(id, declared);
+        }
       }
     }
   }
@@ -527,6 +538,9 @@ public final class JSema implements Sema {
    * capture of it when the receiver leaves its own type argument as a wildcard.
    */
   Type invocationReturn(JMethodSymbol method, @Nullable Type receiver, List<Type> arguments) {
+    if (receiver != null && receiver.isArray() && "clone".equals(method.name()) && arguments.isEmpty()) {
+      return receiver;
+    }
     Integer index = method.returnTypeParameter();
     if (method.returnsSelf() && receiver instanceof JType returned && returned.isCapture()) {
       return returned;
@@ -776,7 +790,7 @@ public final class JSema implements Sema {
   }
 
   /** Applies {@code from}'s type arguments to a supertype written with those type variables. */
-  private Type instantiateSupertype(Type from, Type supertype) {
+  Type instantiateSupertype(Type from, Type supertype) {
     if (!from.isParameterized() || !(from instanceof JType fromType) || !(supertype instanceof JType superType)) {
       return supertype;
     }
@@ -877,16 +891,32 @@ public final class JSema implements Sema {
     if (members == null) {
       return null;
     }
-    List<String> erased = method.parameterTypes().stream().map(t -> t.erasure().fullyQualifiedName()).toList();
+    List<Type> parameters = method.parameterTypes();
     for (JsonElement element : members) {
       JsonObject member = element.getAsJsonObject();
       String descriptor = text(member, "desc");
       if (method.name().equals(text(member, "name")) && descriptor != null && member.has("paramVars") && member.get("paramVars").isJsonArray()
-        && parameterTypesOf(descriptor).stream().map(t -> t.erasure().fullyQualifiedName()).toList().equals(erased)) {
+        && sameParameters(parameters, parameterTypesOf(descriptor))) {
         return member;
       }
     }
     return null;
+  }
+
+  /** Whether the parameters match the descriptor's erasures; a type variable, which the symbol cannot name, stands for what the descriptor erases it to. */
+  private static boolean sameParameters(List<Type> parameters, List<Type> descriptor) {
+    if (parameters.size() != descriptor.size()) {
+      return false;
+    }
+    for (int i = 0; i < parameters.size(); i++) {
+      Type parameter = parameters.get(i);
+      String name = parameter.erasure().fullyQualifiedName();
+      boolean variable = parameter.isUnknown() || parameter.isTypeVar() || name.contains("::");
+      if (!variable && !name.equals(descriptor.get(i).erasure().fullyQualifiedName())) {
+        return false;
+      }
+    }
+    return true;
   }
 
   Symbol memberFromTypeInfo(JTypeSymbol owner, JsonObject member) {
@@ -1100,15 +1130,24 @@ public final class JSema implements Sema {
     if (parsed.params == null) {
       JVariableSymbol field = new JVariableSymbol(this, id, parsed.name, "field");
       field.owner(owner);
-      field.unknown(true);
+      JsonObject fieldFact = factOf(id);
+      List<String> fieldType = fieldFact == null ? List.of() : flat(fieldFact, "type");
+      if (fieldFact == null || fieldType.isEmpty()) {
+        field.unknown(true);
+      } else {
+        applyFact(field, fieldFact);
+        JsonObject declared = projectFieldTypes.get(id);
+        field.type(declared != null ? typeFromFact(declared) : typeFromName(fieldType.get(0)));
+      }
+      markDeprecated(field, id);
       symbols.put(id, field);
       return field;
     }
     JMethodSymbol method = new JMethodSymbol(this, id, parsed.name);
     method.owner(parsed.arityOnly ? Symbol.TypeSymbol.UNKNOWN_TYPE : owner);
     method.unknown(parsed.arityOnly);
-    fillMethod(method, facts.get(id), id);
-    if ("<init>".equals(parsed.name) && facts.get(id) == null && member == null) {
+    fillMethod(method, factOf(id), id);
+    if ("<init>".equals(parsed.name) && factOf(id) == null && member == null) {
       // The implicit default constructor has the access of its class.
       method.addModifiers(List.of("public", "protected", "private").stream().filter(owner::hasModifier).toList());
     }
@@ -1119,8 +1158,26 @@ public final class JSema implements Sema {
       }
       method.parameterTypes(types);
     }
+    JsonObject methodFact = factOf(id);
+    if (methodFact != null && !parsed.arityOnly) {
+      applyFact(method, methodFact);
+    }
+    markDeprecated(method, id);
     symbols.put(id, method);
     return method;
+  }
+
+  /** The facts of a project member: those of this file, else those a {@code types} answer gave with it. */
+  @Nullable
+  private JsonObject factOf(String id) {
+    JsonObject fact = facts.get(id);
+    return fact != null ? fact : projectMemberFacts.get(id);
+  }
+
+  private void markDeprecated(JSymbol symbol, String id) {
+    if (declaredAnnotations(id).stream().anyMatch(annotation -> "java.lang.Deprecated".equals(annotation.name()))) {
+      symbol.deprecated(true);
+    }
   }
 
   /**
@@ -1129,11 +1186,20 @@ public final class JSema implements Sema {
    */
   @Nullable
   Symbol.MethodSymbol declaredMethod(String ownerFqn, String name, List<Type> arguments) {
+    return declaredMethod(ownerFqn, name, arguments, Set.of());
+  }
+
+  /** [declaredMethod] where the arguments at {@code functions} are lambdas or method references, which only a functional interface takes. */
+  @Nullable
+  Symbol.MethodSymbol declaredMethod(String ownerFqn, String name, List<Type> arguments, Set<Integer> functions) {
     if (!declaresType(ownerFqn)) {
       return null;
     }
     List<Symbol.MethodSymbol> candidates = new ArrayList<>();
     collectMethods(ownerFqn, name, new HashSet<>(), candidates);
+    if (!functions.isEmpty()) {
+      candidates.removeIf(method -> takesNoFunction(method, functions));
+    }
     for (int phase = 0; phase < 3; phase++) {
       int current = phase;
       List<Symbol.MethodSymbol> applicable = candidates.stream().filter(method -> applicable(method, arguments, current)).toList();
@@ -1148,6 +1214,20 @@ public final class JSema implements Sema {
       return sameArity.get(0);
     }
     return null;
+  }
+
+  private static boolean takesNoFunction(Symbol.MethodSymbol method, Set<Integer> functions) {
+    List<Type> parameters = method.parameterTypes();
+    for (int index : functions) {
+      if (index >= parameters.size()) {
+        continue;
+      }
+      Type target = parameters.get(index).erasure();
+      if (target.isPrimitive() || target.isArray() || (target.isClass() && !target.isUnknown() && !target.isTypeVar() && !target.symbol().isInterface() && !target.symbol().isUnknown())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /** ECJ leaves a call unresolved when no declaration takes this many arguments, rather than guessing one. */
@@ -1428,6 +1508,11 @@ public final class JSema implements Sema {
     }
     if ("<init>".equals(method.name())) {
       method.returnTypeSymbol(primitiveSymbol("void"));
+    }
+    JsonObject factProps = fact == null ? null : fact.getAsJsonObject("props");
+    List<String> declaredParams = factProps == null ? List.of() : flat(factProps, "param_types");
+    if (!declaredParams.isEmpty() && declaredParams.get(declaredParams.size() - 1).endsWith("...")) {
+      method.varArgs(true);
     }
     method.parametrized(id.indexOf('<') >= 0);
   }

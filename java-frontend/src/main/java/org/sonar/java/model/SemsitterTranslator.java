@@ -24,11 +24,13 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -539,7 +541,7 @@ final class SemsitterTranslator {
     bindDeclaration(tree, nameNode(node), name);
     if (tree.symbol() instanceof JTypeSymbol declared) {
       if (tree.superClass() != null
-        && tree.superClass().symbolType().symbol() instanceof JTypeSymbol parent && parent.id != null && !parent.equals(declared)) {
+        && tree.superClass().symbolType().symbol() instanceof JTypeSymbol parent && parent.id != null && !parent.isUnknown() && !parent.equals(declared)) {
         declared.superName(parent.id);
       } else if (kind == Tree.Kind.RECORD) {
         declared.superName("java.lang.Record");
@@ -1221,9 +1223,9 @@ final class SemsitterTranslator {
     }
     return new TryStatementTreeImpl(
       token(required(node, "try")),
-      resources.isEmpty() ? null : token(required(node, "(")),
+      resources.isEmpty() ? null : token(required(resourceNode, "(")),
       resources,
-      resources.isEmpty() ? null : token(required(node, ")")),
+      resources.isEmpty() ? null : token(required(resourceNode, ")")),
       body == null ? block(node) : block(body),
       catches,
       finallyBlock == null ? null : token(required(finallyBlock, "finally")),
@@ -1729,6 +1731,16 @@ final class SemsitterTranslator {
     }
   }
 
+  private static Set<Integer> functionArguments(List<ExpressionTree> arguments) {
+    Set<Integer> functions = new HashSet<>();
+    for (int i = 0; i < arguments.size(); i++) {
+      if (arguments.get(i).is(Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.METHOD_REFERENCE)) {
+        functions.add(i);
+      }
+    }
+    return functions;
+  }
+
   private static List<Type> argumentTypes(List<ExpressionTree> arguments) {
     return arguments.stream().map(ExpressionTree::symbolType).toList();
   }
@@ -1978,7 +1990,7 @@ final class SemsitterTranslator {
       bindType(identifier, imported);
     }
     String owner = tree.classBody() != null && type.symbol().isInterface() ? "java.lang.Object" : type.fullyQualifiedName();
-    Symbol.MethodSymbol declared = type.isClass() ? sema.declaredMethod(owner, "<init>", argumentTypes(tree.arguments())) : null;
+    Symbol.MethodSymbol declared = type.isClass() ? sema.declaredMethod(owner, "<init>", argumentTypes(tree.arguments()), functionArguments(tree.arguments())) : null;
     if (declared != null && JSema.arityMatches(declared, tree.arguments().size())) {
       identifier.symbol = declared;
       recordUse(declared, identifier);
@@ -2096,8 +2108,19 @@ final class SemsitterTranslator {
     String text = operator == null ? "!" : operator.text();
     ExpressionTree value = expression(operand);
     InternalPrefixUnaryExpression tree = new InternalPrefixUnaryExpression(unaryKind(text, true), operator == null ? synthetic(text) : token(operator), value);
-    ascribe(tree, "!".equals(text) ? sema.getClassType("boolean") : value.symbolType());
+    ascribe(tree, "!".equals(text) ? sema.getClassType("boolean") : unaryPromoted(text, value.symbolType()));
     return tree;
+  }
+
+  /** {@code +}, {@code -} and {@code ~} promote a byte, short or char operand to int. */
+  private Type unaryPromoted(String operator, Type operand) {
+    Type primitive = unboxed(operand);
+    boolean promoting = "+".equals(operator) || "-".equals(operator) || "~".equals(operator);
+    boolean narrow = primitive.is("byte") || primitive.is("short") || primitive.is("char");
+    if (!promoting || !primitive.isPrimitive()) {
+      return operand;
+    }
+    return narrow ? sema.getClassType("int") : primitive;
   }
 
   private ExpressionTree update(Node node) {
@@ -2134,9 +2157,19 @@ final class SemsitterTranslator {
   }
 
   private TypeCastExpressionTreeImpl cast(Node node) {
-    TypeTree type = type(requiredField(node, "type", firstType(node)));
+    List<Node> typeNodes = node.children().stream().filter(child -> "type".equals(child.f())).toList();
+    TypeTree type = type(typeNodes.isEmpty() ? firstType(node) : typeNodes.get(0));
+    List<Node> ands = node.children().stream().filter(child -> "&".equals(child.k())).toList();
+    QualifiedIdentifierListTreeImpl bounds = QualifiedIdentifierListTreeImpl.emptyList();
+    for (int i = 1; i < typeNodes.size(); i++) {
+      bounds.add(type(typeNodes.get(i)));
+      if (i < typeNodes.size() - 1 && i < ands.size()) {
+        bounds.separators().add(token(ands.get(i)));
+      }
+    }
     ExpressionTree value = expression(requiredField(node, "value", lastNamed(node)));
-    TypeCastExpressionTreeImpl tree = new TypeCastExpressionTreeImpl(token(required(node, "(")), type, token(required(node, ")")), value);
+    InternalSyntaxToken andToken = bounds.isEmpty() || ands.isEmpty() ? null : token(ands.get(0));
+    TypeCastExpressionTreeImpl tree = new TypeCastExpressionTreeImpl(token(required(node, "(")), type, andToken, bounds, token(required(node, ")")), value);
     ascribe(tree, type.symbolType());
     return tree;
   }
@@ -2446,7 +2479,25 @@ final class SemsitterTranslator {
         list.separators().add(token(child));
       }
     }
-    return new JavaTree.UnionTypeTreeImpl(list);
+    JavaTree.UnionTypeTreeImpl union = new JavaTree.UnionTypeTreeImpl(list);
+    ascribe(union, leastUpperBound(list.stream().map(TypeTree::symbolType).toList()));
+    return union;
+  }
+
+  /** The closest class every alternative of a multi-catch descends from. */
+  private Type leastUpperBound(List<Type> alternatives) {
+    if (alternatives.stream().anyMatch(Type::isUnknown)) {
+      return Type.UNKNOWN;
+    }
+    Type candidate = alternatives.get(0);
+    while (candidate != null && !candidate.isUnknown()) {
+      Type current = candidate;
+      if (alternatives.stream().allMatch(alternative -> alternative.isSubtypeOf(current))) {
+        return current;
+      }
+      candidate = current.symbol().superClass();
+    }
+    return sema.getClassType("java.lang.Object");
   }
 
   private QualifiedIdentifierListTreeImpl separatedTypes(Node node) {
@@ -2891,10 +2942,39 @@ final class SemsitterTranslator {
     if ("+".equals(operator) && (left.is("java.lang.String") || right.is("java.lang.String"))) {
       return left instanceof JType j ? j.sema.getClassType("java.lang.String") : Type.UNKNOWN;
     }
+    Type promoted = promotedBinaryType(operator, unboxed(left), unboxed(right));
+    if (promoted != null) {
+      return promoted;
+    }
     if (left.isUnknown()) {
       return right;
     }
     return left;
+  }
+
+  private static Type unboxed(Type type) {
+    return type.isPrimitiveWrapper() ? type.primitiveType() : type;
+  }
+
+  /** The type JLS 5.6 gives an arithmetic, bitwise or shift operation, or null when an operand is not a primitive. */
+  @Nullable
+  private static Type promotedBinaryType(String operator, Type left, Type right) {
+    if (!(left instanceof JType j) || !left.isPrimitive() || !right.isPrimitive()) {
+      return null;
+    }
+    boolean bitwise = "&".equals(operator) || "|".equals(operator) || "^".equals(operator);
+    if (left.is("boolean") || right.is("boolean")) {
+      return bitwise && left.is("boolean") && right.is("boolean") ? left : null;
+    }
+    if ("<<".equals(operator) || ">>".equals(operator) || ">>>".equals(operator)) {
+      return j.sema.getClassType(left.is("long") ? "long" : "int");
+    }
+    for (String name : List.of("double", "float", "long")) {
+      if (left.is(name) || right.is(name)) {
+        return j.sema.getClassType(name);
+      }
+    }
+    return j.sema.getClassType("int");
   }
 
   private static Tree.Kind binaryKind(String operator) {

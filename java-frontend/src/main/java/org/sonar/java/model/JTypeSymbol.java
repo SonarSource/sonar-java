@@ -270,26 +270,29 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
       return Collections.emptySet();
     }
     Set<Type> collected = new HashSet<>();
-    collectSuperTypes(collected, new HashSet<>());
+    collectSuperTypes(collected, new HashSet<>(), type());
     return collected;
   }
 
-  private void collectSuperTypes(Set<Type> collected, Set<String> visited) {
+  /** Collects the supertypes, each seen with the type arguments {@code from} gives the type declaring it. */
+  private void collectSuperTypes(Set<Type> collected, Set<String> visited, Type from) {
     if (!visited.add(JSema.erase(id == null ? name() : id))) {
       return;
     }
     Type superClass = superClass();
     if (superClass != null && !superClass.isUnknown()) {
-      collected.add(superClass);
+      Type instantiated = sema.instantiateSupertype(from, superClass);
+      collected.add(instantiated);
       if (superClass.symbol() instanceof JTypeSymbol parent) {
-        parent.collectSuperTypes(collected, visited);
+        parent.collectSuperTypes(collected, visited, instantiated);
       }
     }
     for (Type iface : interfaces()) {
       if (!iface.isUnknown()) {
-        collected.add(iface);
+        Type instantiated = sema.instantiateSupertype(from, iface);
+        collected.add(instantiated);
         if (iface.symbol() instanceof JTypeSymbol parent) {
-          parent.collectSuperTypes(collected, visited);
+          parent.collectSuperTypes(collected, visited, instantiated);
         }
       }
     }

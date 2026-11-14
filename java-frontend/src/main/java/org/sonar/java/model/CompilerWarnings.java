@@ -23,6 +23,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.sonar.plugins.java.api.diagnostics.ProblemKind;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -33,6 +35,8 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 /**
@@ -41,8 +45,12 @@ import org.sonar.plugins.java.api.tree.Tree;
  */
 final class CompilerWarnings extends BaseTreeVisitor {
 
+  private static final Pattern JAVADOC_REFERENCE = Pattern.compile("\\{@(?:link|linkplain|value)\\s+([^}]*)\\}|@(?:see|throws|exception)\\s+([^\\r\\n]*)");
+  private static final Pattern JAVA_NAME = Pattern.compile("[\\p{L}_$][\\p{L}\\p{N}_$]*");
+
   private final Map<ProblemKind, Set<JWarning>> warnings = new EnumMap<>(ProblemKind.class);
   private final List<IdentifierTree> identifiers = new ArrayList<>();
+  private final Set<String> javadocNames = new HashSet<>();
   private final JSema sema;
 
   private CompilerWarnings(JSema sema) {
@@ -54,6 +62,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
     visitor.scan(unit.packageDeclaration());
     visitor.scan(unit.types());
     unit.imports().forEach(visitor::scan);
+    visitor.collectJavadocNames(unit);
     visitor.reportUnusedImports(unit);
     unit.addWarnings(visitor.warnings);
   }
@@ -91,6 +100,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
       }
     }
     super.visitTypeCast(tree);
+    scan(tree.bounds());
   }
 
   @Override
@@ -123,6 +133,44 @@ final class CompilerWarnings extends BaseTreeVisitor {
       return null;
     }
     return name.symbol();
+  }
+
+  /** The names a Javadoc reference tag ({@code @link}, {@code @value}, {@code @see}, {@code @throws}) spells, as the compiler reads them. */
+  private void collectJavadocNames(Tree tree) {
+    if (tree instanceof SyntaxToken token) {
+      for (SyntaxTrivia trivia : token.trivias()) {
+        if (trivia.comment().startsWith("/**")) {
+          addJavadocNames(trivia.comment());
+        }
+      }
+      return;
+    }
+    if (tree instanceof JavaTree javaTree && !javaTree.isLeaf()) {
+      for (Tree child : javaTree.getChildren()) {
+        if (child != null) {
+          collectJavadocNames(child);
+        }
+      }
+    }
+  }
+
+  private void addJavadocNames(String comment) {
+    Matcher matcher = JAVADOC_REFERENCE.matcher(comment);
+    while (matcher.find()) {
+      String reference = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
+      Matcher word = JAVA_NAME.matcher(reference);
+      boolean first = true;
+      while (word.find()) {
+        String name = word.group();
+        int start = word.start();
+        if (first) {
+          javadocNames.add(name);
+          first = false;
+        } else if (reference.substring(0, start).contains("(")) {
+          javadocNames.add(name);
+        }
+      }
+    }
   }
 
   private void reportUnusedImports(JavaTree.CompilationUnitTreeImpl unit) {
@@ -185,6 +233,9 @@ final class CompilerWarnings extends BaseTreeVisitor {
 
   private boolean isUsed(ImportTree importTree, String name) {
     if (importTree instanceof JavaTree.ImportTreeImpl impl && impl.isModule()) {
+      return true;
+    }
+    if (!name.endsWith(".*") && javadocNames.contains(name.substring(name.lastIndexOf('.') + 1))) {
       return true;
     }
     boolean onDemand = name.endsWith(".*");
