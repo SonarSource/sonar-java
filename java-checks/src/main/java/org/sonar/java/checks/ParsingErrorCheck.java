@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import org.sonar.check.Rule;
 import org.sonar.java.ExceptionHandler;
+import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
@@ -34,6 +35,9 @@ public class ParsingErrorCheck implements ExceptionHandler, JavaFileScanner {
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
+    if (context.getTree() instanceof JavaTree.CompilationUnitTreeImpl unit && unit.hasError()) {
+      context.addIssue(unit.errorLine(), this, "Parse error");
+    }
   }
 
   @Override

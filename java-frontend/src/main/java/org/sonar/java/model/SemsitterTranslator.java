@@ -18,7 +18,6 @@ package org.sonar.java.model;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.sonar.sslr.api.RecognitionException;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -181,23 +180,10 @@ final class SemsitterTranslator {
     CompilerWarnings.addTo(unit);
     EffectivelyFinalVariables.mark(unit);
     if (broken) {
-      throw syntaxError(root);
+      Node problem = firstProblem(root);
+      unit.setErrorLine(problem == null ? 1 : problem.line());
     }
     return unit;
-  }
-
-  /** ECJ aborts the file on a syntax error and reports the location of the first broken token. */
-  private static RecognitionException syntaxError(Node root) {
-    Node problem = firstProblem(root);
-    int line = problem == null ? 1 : problem.line();
-    int column = 1;
-    if (problem != null) {
-      column = problem.col() + 1;
-      if (problem.missing() && problem.col() == problem.endCol()) {
-        column = Math.max(1, problem.col());
-      }
-    }
-    return new RecognitionException(line, "Parse error at line " + line + " column " + column + ": SemSitter: syntax error");
   }
 
   @Nullable
@@ -649,7 +635,7 @@ final class SemsitterTranslator {
     ClassTreeImpl classBody = null;
     if (body != null) {
       classBody = new ClassTreeImpl(Tree.Kind.CLASS, token(required(body, "{")), membersOf(body), token(required(body, "}")));
-      bindType(classBody, body);
+      bindType(classBody, node.decl() != null ? node : body);
     }
     InternalSyntaxToken separator = separatorNode == null ? null : token(separatorNode);
     EnumConstantTreeImpl tree = new EnumConstantTreeImpl(modifiers(node), name, new NewClassTreeImpl(name, args, classBody), separator);

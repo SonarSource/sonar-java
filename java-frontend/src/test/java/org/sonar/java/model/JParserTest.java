@@ -111,12 +111,10 @@ class JParserTest {
   public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
 
   @Test
-  void should_throw_RecognitionException_in_case_of_syntax_error() {
-    // Note that without check for syntax errors will cause IndexOutOfBoundsException
-    RecognitionException e1 = assertThrows(RecognitionException.class, () -> test("class C"));
-    assertThat(e1.getMessage()).contains("syntax error");
+  void should_recover_a_tree_in_case_of_syntax_error() {
+    assertThat(((JavaTree.CompilationUnitTreeImpl) test("class C")).hasError()).isTrue();
 
-    test("import a; ; import b;");
+    assertThat(((JavaTree.CompilationUnitTreeImpl) test("import a; ; import b;")).hasError()).isFalse();
   }
 
 
