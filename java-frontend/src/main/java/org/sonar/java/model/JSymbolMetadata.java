@@ -219,7 +219,134 @@ final class JSymbolMetadata implements SymbolMetadata {
 
   @Override
   public SymbolMetadata[] parametersMetadata() {
-    return new SymbolMetadata[0];
+    Tree declaration = symbol.declaration();
+    return declaration == null ? new SymbolMetadata[0] : typeArgumentsMetadata(symbol.sema, declaredType(declaration));
+  }
+
+  private static SymbolMetadata[] typeArgumentsMetadata(JSema sema, @Nullable TypeTree written) {
+    if (!(written instanceof ParameterizedTypeTree parameterized)) {
+      return new SymbolMetadata[0];
+    }
+    return parameterized.typeArguments().stream()
+      .filter(TypeTree.class::isInstance)
+      .map(argument -> new TypeTreeMetadata(sema, (TypeTree) argument))
+      .toArray(SymbolMetadata[]::new);
+  }
+
+  static boolean isAnnotatedType(TypeTree type) {
+    return !outermostTypeAnnotations(type).isEmpty();
+  }
+
+  static SymbolMetadata ofTypeTree(JSema sema, TypeTree type) {
+    return new TypeTreeMetadata(sema, type);
+  }
+
+  static SymbolMetadata ofDeclared(JSema sema, List<JSema.DeclaredAnnotation> declared) {
+    return new DeclaredTypeMetadata(sema, declared);
+  }
+
+  /** The annotations written on a type, such as an argument of a parameterized type. */
+  private abstract static class AnnotatedType implements SymbolMetadata {
+
+    private List<AnnotationInstance> annotations;
+
+    abstract List<AnnotationInstance> loadAnnotations();
+
+    @Override
+    public List<AnnotationInstance> annotations() {
+      if (annotations == null) {
+        annotations = loadAnnotations();
+      }
+      return annotations;
+    }
+
+    @Override
+    public List<AnnotationInstance> symbolAnnotations() {
+      return annotations();
+    }
+
+    @Override
+    public boolean isAnnotatedWith(String fullyQualifiedName) {
+      return annotations().stream().anyMatch(annotation -> annotation.symbol().type().is(fullyQualifiedName));
+    }
+
+    @Nullable
+    @Override
+    public List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
+      return annotations().stream()
+        .filter(annotation -> annotation.symbol().type().is(fullyQualifiedNameOfAnnotation))
+        .map(AnnotationInstance::values)
+        .findFirst()
+        .orElse(null);
+    }
+
+    @Override
+    public NullabilityData nullabilityData() {
+      return nullabilityData(NullabilityTarget.PARAMETER);
+    }
+
+    @Override
+    public NullabilityData nullabilityData(NullabilityTarget target) {
+      return JSymbolMetadataNullabilityHelper.getNullabilityDataAtLevel(this, target, NullabilityLevel.VARIABLE);
+    }
+  }
+
+  private static final class TypeTreeMetadata extends AnnotatedType {
+
+    private final JSema sema;
+    private final TypeTree type;
+
+    private TypeTreeMetadata(JSema sema, TypeTree type) {
+      this.sema = sema;
+      this.type = type;
+    }
+
+    @Override
+    List<AnnotationInstance> loadAnnotations() {
+      return outermostTypeAnnotations(type).stream().<AnnotationInstance>map(annotation -> new TreeAnnotation(sema, annotation)).toList();
+    }
+
+    @Nullable
+    @Override
+    public AnnotationTree findAnnotationTree(AnnotationInstance annotationInstance) {
+      return outermostTypeAnnotations(type).stream()
+        .filter(annotation -> annotation.annotationType().symbolType().symbol().equals(annotationInstance.symbol()))
+        .findFirst()
+        .orElse(null);
+    }
+
+    @Override
+    public SymbolMetadata[] parametersMetadata() {
+      return typeArgumentsMetadata(sema, type);
+    }
+  }
+
+  /** The annotations of a type a server answer states, such as a type argument of a supertype. */
+  private static final class DeclaredTypeMetadata extends AnnotatedType {
+
+    private final JSema sema;
+    private final List<JSema.DeclaredAnnotation> declared;
+
+    private DeclaredTypeMetadata(JSema sema, List<JSema.DeclaredAnnotation> declared) {
+      this.sema = sema;
+      this.declared = declared;
+    }
+
+    @Override
+    List<AnnotationInstance> loadAnnotations() {
+      return declared.stream().<AnnotationInstance>map(annotation -> new FactAnnotation(sema, JSema.erase(annotation.name()), annotation.values(), annotation.valuesKnown())).toList();
+    }
+
+    @Nullable
+    @Override
+    public AnnotationTree findAnnotationTree(AnnotationInstance annotationInstance) {
+      return null;
+    }
+
+    @Override
+    public SymbolMetadata[] parametersMetadata() {
+      return new SymbolMetadata[0];
+    }
   }
 
   private NullabilityData resolveNullability(NullabilityTarget target) {

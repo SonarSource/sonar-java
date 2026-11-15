@@ -74,7 +74,14 @@ public final class JParser {
           throw new UncheckedIOException(failure);
         }
       });
-      return SemsitterTranslator.translate(sema, document);
+      sema.loadPackages(name -> {
+        try {
+          return bridge == null ? null : bridge.hasPackage(name);
+        } catch (IOException failure) {
+          throw new UncheckedIOException(failure);
+        }
+      });
+      return SemsitterTranslator.translate(sema, document, javaVersion(version));
     } catch (RecognitionException syntaxError) {
       throw syntaxError;
     } catch (Exception failure) {
@@ -82,6 +89,14 @@ public final class JParser {
       throw new RecognitionException(1, "SemSitter: unable to parse " + unitName, failure);
     } finally {
       deleteQuietly(directory);
+    }
+  }
+
+  private static int javaVersion(String version) {
+    try {
+      return Integer.parseInt(version);
+    } catch (NumberFormatException notANumber) {
+      return Integer.MAX_VALUE;
     }
   }
 

@@ -17,6 +17,8 @@
 package org.sonar.java.model;
 
 import com.google.gson.JsonObject;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -24,8 +26,12 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -308,10 +314,88 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   private void match(List<MethodSymbol> found, TypeSymbol parent, @Nullable Type declaring) {
     for (Symbol member : parent.memberSymbols()) {
       if (member.isMethodSymbol() && name().equals(member.name()) && sameSignature((MethodSymbol) member, declaring)) {
-        found.add((MethodSymbol) member);
+        found.add(withWrittenTypeArgument((MethodSymbol) member, declaring));
         return;
       }
     }
+  }
+
+  /**
+   * A method returning a class type variable, seen through a supertype written with an annotated type argument
+   * ({@code Converter<String, @Nullable Boolean>}), carries that annotation as the nullability of its result.
+   */
+  private MethodSymbol withWrittenTypeArgument(MethodSymbol overridden, @Nullable Type declaring) {
+    if (declaring == null || !(overridden instanceof JMethodSymbol library)) {
+      return overridden;
+    }
+    Integer position = returnedClassVariable(library, declaring);
+    SymbolMetadata metadata = position == null ? null : writtenArgumentMetadata(declaring, position);
+    if (metadata == null) {
+      return overridden;
+    }
+    return (MethodSymbol) Proxy.newProxyInstance(MethodSymbol.class.getClassLoader(), new Class<?>[] {MethodSymbol.class}, (proxy, method, arguments) -> {
+      if ("metadata".equals(method.getName()) && method.getParameterCount() == 0) {
+        return metadata;
+      }
+      if ("equals".equals(method.getName()) && method.getParameterCount() == 1) {
+        return proxy == arguments[0] || library.equals(arguments[0]);
+      }
+      try {
+        return method.invoke(library, arguments);
+      } catch (InvocationTargetException e) {
+        throw e.getCause();
+      }
+    });
+  }
+
+  /** The annotations of the type argument at {@code position} of {@code declaring}: as written in this class, or as a supertype states it. */
+  @Nullable
+  private SymbolMetadata writtenArgumentMetadata(Type declaring, int position) {
+    if (owner() instanceof JTypeSymbol typeSymbol && typeSymbol.declaration() instanceof ClassTree classTree) {
+      List<TypeTree> supertypes = new ArrayList<>(classTree.superInterfaces());
+      if (classTree.superClass() != null) {
+        supertypes.add(classTree.superClass());
+      }
+      for (TypeTree supertype : supertypes) {
+        if (supertype instanceof ParameterizedTypeTree parameterized && parameterized.symbolType().erasure().fullyQualifiedName().equals(declaring.erasure().fullyQualifiedName())
+          && position < parameterized.typeArguments().size()
+          && parameterized.typeArguments().get(position) instanceof TypeTree argument && JSymbolMetadata.isAnnotatedType(argument)) {
+          return JSymbolMetadata.ofTypeTree(sema, argument);
+        }
+      }
+    }
+    if (owner() instanceof JTypeSymbol typeSymbol) {
+      List<JSema.DeclaredAnnotation> declared = sema.supertypeArgumentAnnotations(typeSymbol.type(), declaring, position);
+      if (!declared.isEmpty()) {
+        return JSymbolMetadata.ofDeclared(sema, declared);
+      }
+    }
+    return null;
+  }
+
+  /** The position, among the type variables of its class, of the one the method returns. */
+  @Nullable
+  private Integer returnedClassVariable(JMethodSymbol method, Type declaring) {
+    if (method.returnTypeParameter() != null) {
+      return method.returnTypeParameter();
+    }
+    if (method.declaration() == null) {
+      return sema.returnedClassVariable(method, declaring);
+    }
+    if (method.declaration() instanceof MethodTree tree && tree.returnType() instanceof IdentifierTree returned
+      && method.owner() instanceof JTypeSymbol parent && parent.declaration() instanceof ClassTree parentClass) {
+      for (int i = 0; i < parentClass.typeParameters().size(); i++) {
+        if (parentClass.typeParameters().get(i).identifier().name().equals(returned.name())) {
+          return i;
+        }
+      }
+    }
+    return null;
+  }
+
+  private boolean viaClassVariable(JMethodSymbol library, int index, Type declaring, String mine) {
+    Type argument = sema.classVariableArgument(library, index, declaring);
+    return argument != null && mine.equals(argument.erasure().fullyQualifiedName());
   }
 
   private boolean sameSignature(MethodSymbol other, @Nullable Type declaring) {
@@ -322,7 +406,8 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     for (int i = 0; i < parameterTypes.size(); i++) {
       String mine = parameterTypes.get(i).erasure().fullyQualifiedName();
       boolean same = mine.equals(theirs.get(i).erasure().fullyQualifiedName())
-        || (declaring != null && mine.equals(sema.asMemberOf(theirs.get(i), declaring).erasure().fullyQualifiedName()));
+        || (declaring != null && mine.equals(sema.asMemberOf(theirs.get(i), declaring).erasure().fullyQualifiedName()))
+        || (declaring != null && other instanceof JMethodSymbol library && viaClassVariable(library, i, declaring, mine));
       if (!same) {
         return false;
       }

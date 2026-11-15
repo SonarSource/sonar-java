@@ -111,6 +111,10 @@ abstract class JSymbol implements Symbol {
     modifiers.addAll(other.modifiers);
   }
 
+  void removeModifier(String modifier) {
+    modifiers.remove(modifier);
+  }
+
   void addModifiers(Collection<String> values) {
     for (String value : values) {
       for (String part : value.split(",")) {
