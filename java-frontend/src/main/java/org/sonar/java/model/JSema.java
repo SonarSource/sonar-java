@@ -68,6 +68,8 @@ public final class JSema implements Sema {
   private final Map<String, List<DeclaredAnnotation>> libraryAnnotations = new HashMap<>();
   private final Map<String, List<String>> projectThrows = new HashMap<>();
   private final Map<String, JsonObject> projectMemberFacts = new HashMap<>();
+  private final Map<String, Boolean> projectVarArgs = new HashMap<>();
+  private final Map<String, List<DeclaredAnnotation>> packageAnnotations = new HashMap<>();
   private final Map<String, JsonObject> projectFieldTypes = new HashMap<>();
   private final Map<String, JSymbol> symbols = new HashMap<>();
   private final Map<String, JTypeSymbol> typesByName = new HashMap<>();
@@ -415,6 +417,9 @@ public final class JSema implements Sema {
         if (member.get(THROWS) instanceof JsonArray) {
           projectThrows.put(id, strings(member, THROWS));
         }
+        if (member.get("varargs") instanceof JsonPrimitive varArgs && varArgs.isBoolean()) {
+          projectVarArgs.put(id, varArgs.getAsBoolean());
+        }
         if (member.get("facts") instanceof JsonObject memberFact) {
           projectMemberFacts.putIfAbsent(id, memberFact);
         }
@@ -437,12 +442,46 @@ public final class JSema implements Sema {
     }
   }
 
+  /** The annotations of the package {@code name}, from its compiled {@code package-info}. */
+  List<DeclaredAnnotation> packageAnnotations(String name) {
+    if (!typesLoaded) {
+      return List.of();
+    }
+    List<DeclaredAnnotation> cached = packageAnnotations.get(name);
+    if (cached == null) {
+      String key = name + ".package-info";
+      JsonObject loaded = typeLoader.apply(Set.of(key));
+      cached = loaded != null && loaded.get(key) instanceof JsonObject info ? readAnnotations(info) : List.of();
+      packageAnnotations.put(name, cached);
+    }
+    return cached;
+  }
+
+  /** Annotations written on the outermost type of a field or return type are annotations of the member. */
   private List<DeclaredAnnotation> readAnnotations(JsonObject info) {
-    if (!info.has(ANNOTATIONS) || !info.get(ANNOTATIONS).isJsonArray()) {
+    List<DeclaredAnnotation> annotations = new ArrayList<>(readAnnotationList(info.get(ANNOTATIONS)));
+    if (info.get("typeAnnotations") instanceof JsonArray typed) {
+      for (JsonElement element : typed) {
+        if (element instanceof JsonObject entry && "type".equals(text(entry, "on")) && entry.get("path") instanceof JsonArray path && path.isEmpty()) {
+          JsonArray one = new JsonArray();
+          one.add(entry);
+          for (DeclaredAnnotation annotation : readAnnotationList(one)) {
+            if (annotations.stream().noneMatch(known -> known.name().equals(annotation.name()))) {
+              annotations.add(annotation);
+            }
+          }
+        }
+      }
+    }
+    return annotations;
+  }
+
+  private List<DeclaredAnnotation> readAnnotationList(@Nullable JsonElement list) {
+    if (list == null || !list.isJsonArray()) {
       return List.of();
     }
     List<DeclaredAnnotation> annotations = new ArrayList<>();
-    for (JsonElement element : info.getAsJsonArray(ANNOTATIONS)) {
+    for (JsonElement element : list.getAsJsonArray()) {
       if (element.isJsonPrimitive()) {
         annotations.add(new DeclaredAnnotation(element.getAsString(), List.of()));
       } else if (element.isJsonObject()) {
@@ -1237,6 +1276,10 @@ public final class JSema implements Sema {
     if (symbol instanceof JMethodSymbol method && !thrown.isEmpty()) {
       method.thrownTypes(thrown.stream().map(this::typeFromName).toList());
     }
+    if (symbol instanceof JMethodSymbol method && member.get("varargs") instanceof JsonPrimitive varArgs && varArgs.isBoolean()) {
+      method.varArgs(varArgs.getAsBoolean());
+      method.varArgsKnown(true);
+    }
   }
 
   /** A constant spelled as text, as the boxed value of the field's primitive type. */
@@ -1405,7 +1448,7 @@ public final class JSema implements Sema {
       return null;
     }
     List<Symbol.MethodSymbol> candidates = new ArrayList<>();
-    collectMethods(ownerFqn, name, new HashSet<>(), candidates);
+    collectMethods(ownerFqn, ownerFqn, name, new HashSet<>(), candidates);
     if (!functions.isEmpty()) {
       candidates.removeIf(method -> takesNoFunction(method, functions));
     }
@@ -1506,24 +1549,27 @@ public final class JSema implements Sema {
     return null;
   }
 
-  private void collectMethods(String ownerFqn, String name, Set<String> seen, List<Symbol.MethodSymbol> found) {
+  /** Methods named {@code name} that {@code root} has: a static method of an interface is not inherited. */
+  private void collectMethods(String root, String ownerFqn, String name, Set<String> seen, List<Symbol.MethodSymbol> found) {
     if (!seen.add(ownerFqn) || !declaresType(ownerFqn)) {
       return;
     }
     JsonObject info = typeInfos.get(sourceName(ownerFqn));
+    boolean inheritedInterface = !ownerFqn.equals(root) && typeSymbol(ownerFqn).isInterface();
     JsonArray members = info.getAsJsonArray(MEMBERS);
     if (members != null) {
       for (JsonElement element : members) {
         JsonObject member = element.getAsJsonObject();
         MemberId id = member.has("id") ? parseMember(member.get("id").getAsString()) : null;
         boolean named = id == null ? (name.equals(text(member, "name")) && "m".equals(text(member, "k"))) : (name.equals(id.name) && id.params != null);
-        if (named && memberFromTypeInfo(typeSymbol(ownerFqn), member) instanceof Symbol.MethodSymbol method && !method.isUnknown()) {
+        if (named && memberFromTypeInfo(typeSymbol(ownerFqn), member) instanceof Symbol.MethodSymbol method && !method.isUnknown()
+          && !(inheritedInterface && method.isStatic())) {
           found.add(method);
         }
       }
     }
     if (!"<init>".equals(name)) {
-      parents(info).forEach(parent -> collectMethods(erase(parent), name, seen, found));
+      parents(info).forEach(parent -> collectMethods(root, erase(parent), name, seen, found));
     }
   }
 
@@ -1723,7 +1769,11 @@ public final class JSema implements Sema {
     }
     JsonObject factProps = fact == null ? null : fact.getAsJsonObject("props");
     List<String> declaredParams = factProps == null ? List.of() : flat(factProps, "param_types");
-    if (!declaredParams.isEmpty() && declaredParams.get(declaredParams.size() - 1).endsWith("...")) {
+    Boolean served = projectVarArgs.get(id);
+    if (served != null) {
+      method.varArgs(served);
+      method.varArgsKnown(true);
+    } else if (!declaredParams.isEmpty() && declaredParams.get(declaredParams.size() - 1).endsWith("...")) {
       method.varArgs(true);
     }
     method.parametrized(id.indexOf('<') >= 0);
@@ -1825,6 +1875,9 @@ public final class JSema implements Sema {
     }
     if (truth(member, "final")) {
       modifiers.add("final");
+    }
+    if (truth(member, "synchronized")) {
+      modifiers.add("synchronized");
     }
     if (truth(member, ABSTRACT)) {
       modifiers.add(ABSTRACT);
