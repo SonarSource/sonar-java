@@ -30,7 +30,6 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -40,7 +39,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Client of the SemSitter analyzer server analyzer queries: one process for the whole JVM, one scan per module and classpath,
@@ -51,10 +49,6 @@ final class AnalyzerSession {
   private static final String LIBRARIES = "jvm.libraries";
   private static final String FILES = "files";
 
-  static final AtomicLong BYTES_IN = new AtomicLong();
-  static final AtomicLong BYTES_OUT = new AtomicLong();
-  static final AtomicLong REQUESTS = new AtomicLong();
-  static final AtomicLong TYPE_REQUESTS = new AtomicLong();
 
   private static AnalyzerSession shared;
 
@@ -278,9 +272,6 @@ final class AnalyzerSession {
     batchTypes.clear();
     absent.clear();
     packages.clear();
-    if (System.getenv("SEMSITTER_COUNTERS_FILE") != null) {
-      System.err.println("SEMSITTER-SETTINGS " + settings);
-    }
     JsonObject set = new JsonObject();
     set.addProperty("cmd", "set-settings");
     set.add("settings", settings);
@@ -344,7 +335,6 @@ final class AnalyzerSession {
       JsonArray array = new JsonArray();
       missing.forEach(array::add);
       request.add("names", array);
-      TYPE_REQUESTS.incrementAndGet();
       Answer answer = send(request, true);
       Set<String> project = new HashSet<>();
       if (answer.header.has("project")) {
@@ -437,10 +427,7 @@ final class AnalyzerSession {
     byte[] line = (request + "\n").getBytes(StandardCharsets.UTF_8);
     toServer.write(line);
     toServer.flush();
-    BYTES_OUT.addAndGet(line.length);
     String text = readLine(fromServer);
-    BYTES_IN.addAndGet(text.length() + 1L);
-    REQUESTS.incrementAndGet();
     JsonReader reader = new JsonReader(new StringReader(text));
     reader.setNestingLimit(Integer.MAX_VALUE);
     JsonObject header = JsonParser.parseReader(reader).getAsJsonObject();
@@ -450,7 +437,6 @@ final class AnalyzerSession {
     byte[] bytes = new byte[0];
     if (header.has("payload_bytes")) {
       bytes = fromServer.readNBytes(header.get("payload_bytes").getAsInt());
-      BYTES_IN.addAndGet(bytes.length);
     }
     return new Answer(header, bytes);
   }
@@ -471,15 +457,6 @@ final class AnalyzerSession {
       return;
     }
     try {
-      String counters = System.getenv("SEMSITTER_COUNTERS_FILE");
-      if (counters != null && !counters.isBlank()) {
-        JsonObject release = new JsonObject();
-        release.addProperty("cmd", "release");
-        String line = "SERVER-COUNTERS " + send(release, false).header.get("counters") + "\n"
-          + String.format("SERVER-CLIENT requests=%d type_requests=%d bytes_in=%d bytes_out=%d%n", REQUESTS.get(), TYPE_REQUESTS.get(),
-            BYTES_IN.get(), BYTES_OUT.get());
-        Files.writeString(Path.of(counters), line, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-      }
       JsonObject quit = new JsonObject();
       quit.addProperty("cmd", "quit");
       send(quit, false);
