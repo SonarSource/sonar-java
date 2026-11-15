@@ -297,8 +297,50 @@ class JSymbolTest {
 
     JVariableSymbol variableSymbol = ((JVariableSymbol) symbolOf(v));
     assertThat(variableSymbol).isSameAs(v.symbol());
-    assertThat(variableSymbol.owner()).isSameAs(t);
+    JInitializerBlockSymbol initializerBlock = (JInitializerBlockSymbol) variableSymbol.owner();
+
+    if (isStatic) {
+      assertThat(initializerBlock).isSameAs(sema(cu).staticInitializerBlockSymbol((JTypeSymbol) c.symbol()));
+    } else {
+      assertThat(initializerBlock).isSameAs(sema(cu).initializerBlockSymbol((JTypeSymbol) c.symbol()));
+    }
+
     assertThat(variableSymbol).hasEnclosingClass(t);
+    assertThat(initializerBlock).hasEnclosingClass(t).hasOwner(t);
+    assertThat(initializerBlock.isStatic()).isEqualTo(isStatic);
+    assertThat(initializerBlock).hasName(isStatic ? "<clinit> (initializer block)" : "<init> (initializer block)");
+    assertThat(initializerBlock.signature()).isEqualTo(isStatic ? "E.<clinit> (initializer block)" : "E.<init> (initializer block)");
+
+    assertThat(initializerBlock.isMethodSymbol()).isTrue();
+    assertThat(initializerBlock.isVariableSymbol()).isFalse();
+    assertThat(initializerBlock.isTypeSymbol()).isFalse();
+    assertThat(initializerBlock.isEnum()).isFalse();
+    assertThat(initializerBlock.isInterface()).isFalse();
+    assertThat(initializerBlock.isPackageSymbol()).isFalse();
+    assertThat(initializerBlock.isFinal()).isFalse();
+    assertThat(initializerBlock.isAbstract()).isFalse();
+    assertThat(initializerBlock.isPrivate()).isFalse();
+    assertThat(initializerBlock.isProtected()).isFalse();
+    assertThat(initializerBlock.isPublic()).isFalse();
+    assertThat(initializerBlock.isPackageVisibility()).isFalse();
+    assertThat(initializerBlock.isDeprecated()).isFalse();
+    assertThat(initializerBlock.isVolatile()).isFalse();
+    assertThat(initializerBlock.isUnknown()).isFalse();
+
+    assertThat(initializerBlock.declaration()).isNull();
+    assertThat(initializerBlock.returnType()).isUnknown();
+    assertThat(initializerBlock).isOfUnknownType();
+    assertThat(initializerBlock.overriddenSymbols()).isEmpty();
+    assertThat(initializerBlock.usages()).isEmpty();
+    assertThat(initializerBlock.parameterTypes()).isEmpty();
+    assertThat(initializerBlock.declarationParameters()).isEmpty();
+    assertThat(initializerBlock.thrownTypes()).isEmpty();
+    assertThat(initializerBlock.isOverridable()).isFalse();
+    assertThat(initializerBlock.isParametrizedMethod()).isFalse();
+    assertThat(initializerBlock.isDefaultMethod()).isFalse();
+    assertThat(initializerBlock.isSynchronizedMethod()).isFalse();
+    assertThat(initializerBlock.isVarArgsMethod()).isFalse();
+    assertThat(initializerBlock.isNativeMethod()).isFalse();
   }
 
   @Test
