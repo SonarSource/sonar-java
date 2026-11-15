@@ -25,6 +25,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <!-- The compiler Jasper uses to turn JSP pages into Java sources. -->
+      <groupId>${project.groupId}</groupId>
+      <artifactId>jdt-package</artifactId>
+      <version>1.9.0.1840</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-jasper</artifactId>
       <version>9.0.123</version>
