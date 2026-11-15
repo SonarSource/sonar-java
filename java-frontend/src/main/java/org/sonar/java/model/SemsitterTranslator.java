@@ -2524,7 +2524,26 @@ final class SemsitterTranslator {
         patterns.add(pattern(child));
       }
     }
-    return new RecordPatternTreeImpl(type(firstType(node)), token(required(body, "(")), patterns, token(required(body, ")")));
+    TypeTree recordType = type(firstType(node));
+    if (recordType.symbolType().symbol().declaration() instanceof ClassTree record && record.recordComponents().size() == patterns.size()) {
+      for (int i = 0; i < patterns.size(); i++) {
+        if (patterns.get(i) instanceof TypePatternTreeImpl unnamed && unnamed.patternVariable().symbol().isUnknown() && unnamed.patternVariable() instanceof VariableTreeImpl variable) {
+          typeUnnamedPattern(unnamed, variable, record.recordComponents().get(i).type().symbolType());
+        }
+      }
+    }
+    return new RecordPatternTreeImpl(recordType, token(required(body, "(")), patterns, token(required(body, ")")));
+  }
+
+  /** An unnamed pattern variable has the type of the record component it stands for. */
+  private void typeUnnamedPattern(TypePatternTreeImpl pattern, VariableTreeImpl variable, Type type) {
+    var start = ((IdentifierTreeImpl) variable.simpleName()).identifierToken().range().start();
+    JVariableSymbol symbol = new JVariableSymbol(sema, "_@" + start.line() + ":" + start.column(), "_", "local");
+    symbol.type(type);
+    sema.declare(symbol.id, variable);
+    variable.variableSymbol = symbol;
+    ascribe(variable.type(), type);
+    ascribe(pattern, type);
   }
 
   private LambdaExpressionTreeImpl lambda(Node node) {

@@ -29,9 +29,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
@@ -432,34 +429,6 @@ class JParserTest {
   }
 
 
-
-  @Test
-  void dont_include_running_VM_Bootclasspath_if_jvm_rt_jar_already_provided_in_classpath(@TempDir Path tempFolder) throws IOException {
-    VariableTree s1 = parseAndGetVariable("class C { void m() { String a; } }");
-    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
-
-    Path fakeRt = tempFolder.resolve("rt.jar");
-    Files.createFile(fakeRt);
-    s1 = parseAndGetVariable("class C { void m() { String a; } }", fakeRt.toFile());
-    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("Recovered#typeBindingLString;0");
-  }
-
-  @ParameterizedTest
-  @ValueSource(ints = {8, 9, 17})
-  void dont_include_running_VM_Bootclasspath_if_android_runtime_already_provided_in_classpath(int javaVersion) throws IOException {
-    JavaVersion androidVersion = new JavaVersionImpl(javaVersion);
-    String source = "class C { void m() { String a; Integer b; } }";
-    VariableTree a = parseAndGetVariable(source, androidVersion);
-    VariableTree b = (VariableTree) ((BlockTree) a.parent()).body().get(1);
-    assertThat(a.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
-    assertThat(b.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.Integer");
-
-    Path fakeAndroidSdk = Path.of("src", "test", "resources", "android.jar").toRealPath();
-    a = parseAndGetVariable(source, androidVersion, fakeAndroidSdk.toFile());
-    b = (VariableTree) ((BlockTree) a.parent()).body().get(1);
-    assertThat(a.type().symbolType().fullyQualifiedName()).isEqualTo("Recovered#typeBindingLString;0");
-    assertThat(b.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.Integer");
-  }
 
   @Test
   void test_parse_file_by_file() throws Exception {

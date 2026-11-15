@@ -24,8 +24,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import javax.annotation.Nullable;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
@@ -602,7 +602,7 @@ class JavaFrontendTest {
     assertThatThrownBy(() -> scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B { A a; }"))
       .isInstanceOf(AnalysisException.class)
       .hasMessage("Analysis cancelled")
-      .hasCauseInstanceOf(OperationCanceledException.class);
+      .hasCauseInstanceOf(CancellationException.class);
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
     assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
   }
