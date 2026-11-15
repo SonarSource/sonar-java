@@ -45,6 +45,10 @@ public class JProblem implements Problem {
     this.message = type == ProblemKind.PREVIEW_FEATURE_USED ? cleanMessage(message) : message;
   }
 
+  static JProblem undefinedType(String fqn) {
+    return new JProblem(fqn + " cannot be resolved to a type", ProblemKind.UNDEFINED_TYPE);
+  }
+
   @Override
   public ProblemKind type() {
     return type;

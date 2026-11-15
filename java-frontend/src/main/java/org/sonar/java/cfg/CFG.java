@@ -173,10 +173,14 @@ public class CFG implements ControlFlowGraph {
   }
 
   private Type checkTypeSemantic(Type type, String reason, @Nullable SyntaxToken location) {
-    if (type.isUnknown()) {
+    if (mentionsUnknown(type)) {
       markSemanticAsIncomplete(reason, location);
     }
     return type;
+  }
+
+  private static boolean mentionsUnknown(Type type) {
+    return type.isUnknown() || type.typeArguments().stream().anyMatch(CFG::mentionsUnknown);
   }
 
   private void markSemanticAsIncomplete(String reason, @Nullable SyntaxToken location) {

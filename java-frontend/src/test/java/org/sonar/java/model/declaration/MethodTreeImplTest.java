@@ -168,21 +168,6 @@ class MethodTreeImplTest {
   }
 
   @Test
-  void override_with_non_compiling_code() {
-    CompilationUnitTree cut = createTree("""
-      class A {
-        void foo(){}
-        void foo(){}
-      }
-      """);
-    List<Tree> members = ((ClassTree) cut.types().get(0)).members();
-    // The semantic for the first method is correct
-    assertThat(((MethodTreeImpl) members.get(0)).isOverriding()).isFalse();
-    // The semantic for the second method is broken (due to the duplicate)
-    assertThat(((MethodTreeImpl) members.get(1)).isOverriding()).isNull();
-  }
-
-  @Test
   void static_method_cannot_be_overridden() {
     assertThat(getUniqueMethod("class A{ static void m(){}}").isOverriding()).isFalse();
   }

@@ -2304,8 +2304,8 @@ final class SemsitterTranslator {
       operator == null ? token(required(node, text)) : token(operator),
       expression(requiredField(node, "right", lastNamed(node))));
     ascribe(tree, tree.variable().symbolType());
-    if (tree.is(Tree.Kind.ASSIGNMENT) && tree.expression() instanceof NewClassTreeImpl newClass) {
-      inferDiamond(newClass, tree.variable().symbolType());
+    if (tree.is(Tree.Kind.ASSIGNMENT)) {
+      ascribeTarget(tree.expression(), tree.variable().symbolType());
     }
     return tree;
   }
@@ -2695,9 +2695,10 @@ final class SemsitterTranslator {
 
   private JavaTree.WildcardTreeImpl wildcard(Node node) {
     Node bound = firstType(node);
+    List<AnnotationTree> annotations = node.children().stream().filter(SemsitterTranslator::isAnnotation).<AnnotationTree>map(this::annotation).toList();
     if (bound == null || same(bound, keyword(node, "?"))) {
       JavaTree.WildcardTreeImpl tree = new JavaTree.WildcardTreeImpl(token(required(node, "?")));
-      tree.complete(List.of());
+      tree.complete(annotations);
       return tree;
     }
     boolean upper = keyword(node, "extends") != null;
@@ -2705,7 +2706,7 @@ final class SemsitterTranslator {
       upper ? Tree.Kind.EXTENDS_WILDCARD : Tree.Kind.SUPER_WILDCARD,
       token(required(node, upper ? "extends" : "super")),
       type(bound)).complete(token(required(node, "?")));
-    tree.complete(List.of());
+    tree.complete(annotations);
     return tree;
   }
 

@@ -569,6 +569,9 @@ final class JSymbolMetadata implements SymbolMetadata {
       if (symbol instanceof Symbol.VariableSymbol variable && !variable.isUnknown()) {
         return variable.constantValue().orElse(variable);
       }
+      if (symbol != null && symbol.isUnknown()) {
+        return Symbol.UNKNOWN_SYMBOL;
+      }
       return expression.toString();
     }
 

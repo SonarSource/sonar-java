@@ -196,6 +196,20 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
   }
 
   private List<Type> ownInterfaces() {
+    List<Type> resolved = resolvedInterfaces();
+    List<Type> unresolved = declaredInterfaces.stream()
+      .filter(Type::isUnknown)
+      .filter(declared -> resolved.stream().noneMatch(known -> known.fullyQualifiedName().equals(declared.fullyQualifiedName())))
+      .toList();
+    if (unresolved.isEmpty()) {
+      return resolved;
+    }
+    List<Type> all = new ArrayList<>(resolved);
+    all.addAll(unresolved);
+    return all;
+  }
+
+  private List<Type> resolvedInterfaces() {
     if (elementFqn != null) {
       return List.of(sema.getClassType("java.lang.Cloneable"), sema.getClassType("java.io.Serializable"));
     }
