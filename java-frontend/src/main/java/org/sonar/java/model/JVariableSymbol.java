@@ -80,6 +80,11 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
     if (declaration == null || declaration.initializer() == null || declaration.type() == null || !isStaticFinalOrInterfaceMember()) {
       return null;
     }
+    Type declaredType = declaration.type().symbolType();
+    if (!declaredType.isPrimitive() && !declaredType.is("java.lang.String")) {
+      // a boxed variable is never a constant variable
+      return null;
+    }
     ExpressionTree initializer = declaration.initializer();
     Object value = initializer.is(Tree.Kind.LONG_LITERAL, Tree.Kind.FLOAT_LITERAL, Tree.Kind.DOUBLE_LITERAL)
       ? literalNumber((LiteralTree) initializer)

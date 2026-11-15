@@ -24,6 +24,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import org.sonar.java.semsitter.SemsitterBridge;
 import java.util.function.BiConsumer;
@@ -119,12 +120,12 @@ public abstract class JParserConfig {
       try {
         openBridge(files);
         for (InputFile inputFile : files) {
-          if (isCanceled.getAsBoolean()) {
-            break;
-          }
           executionTimeReport.start(inputFile);
           action.accept(inputFile, parseFile(inputFile));
           executionTimeReport.end();
+          if (isCanceled.getAsBoolean()) {
+            throw new CancellationException("Analysis cancelled");
+          }
         }
       } finally {
         closeBridge();
