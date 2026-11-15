@@ -60,6 +60,11 @@ class JTypeTest {
 
   @Test
   void isClass() {
+    sema.ingestTypes(com.google.gson.JsonParser.parseString("""
+      {"java.util.HashMap": {"origin": "project", "kind": "class", "typeParameters": 2, "annotations": [], "members": []},
+       "java.util.Map": {"origin": "project", "kind": "interface", "typeParameters": 2, "annotations": [], "members": []},
+       "java.lang.annotation.RetentionPolicy": {"origin": "project", "kind": "enum", "typeParameters": 0, "annotations": [], "members": []}}
+      """).getAsJsonObject());
     assertAll(
       () ->
         assertThat(type("java.util.HashMap").isClass())

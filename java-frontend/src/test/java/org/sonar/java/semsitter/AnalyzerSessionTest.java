@@ -77,17 +77,18 @@ class AnalyzerSessionTest {
   }
 
   @Test
-  void classpath_change_rescans_without_restart_and_module_libraries_take_priority() throws IOException {
+  void classpath_change_restarts_the_server_and_module_libraries_take_priority() throws IOException {
     AnalyzerSession session = new AnalyzerSession(fakeServer("1.2.0"));
 
     session.analyze(request("a", "x.jar"));
     session.analyze(request("a", "x.jar", "test.jar"));
-    assertThat(starts()).isEqualTo(1);
+    assertThat(starts()).isEqualTo(2);
     assertThat(commands("set-settings")).isEqualTo(2);
 
     AnalyzerSession.moduleSettings(Map.of("jvm.libraries", List.of("module.jar")));
     session.analyze(request("a", "x.jar", "test.jar"));
     session.analyze(request("a", "other.jar"));
+    assertThat(starts()).isEqualTo(3);
     assertThat(commands("set-settings")).isEqualTo(3);
   }
 

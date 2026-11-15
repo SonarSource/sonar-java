@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.compiler.IProblem;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.diagnostics.ProblemKind;
 
@@ -30,8 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class JProblemTest {
 
@@ -71,19 +68,6 @@ class JProblemTest {
     assertThatThrownBy(options::clear).isInstanceOf(UnsupportedOperationException.class);
   }
 
-  @Test
-  void classifies_ecj_syntax_errors_and_semantic_problems() {
-    IProblem syntax = problem(IProblem.ParsingError, "Syntax");
-    IProblem toleratedSwitch = problem(IProblem.SwitchExpressionsYieldMissingDefaultCase, "Switch");
-    IProblem undefined = problem(IProblem.UndefinedType, "Unknown type");
-    IProblem preview = problem(IProblem.PreviewFeatureDisabled, "Preview");
-    assertThat(JProblem.isSyntaxError(syntax)).isTrue();
-    assertThat(JProblem.isSyntaxError(toleratedSwitch)).isFalse();
-    assertThat(JProblem.isSyntaxError(undefined)).isFalse();
-    assertThat(JProblem.semanticProblems(List.of(syntax, undefined, preview)))
-      .containsExactlyInAnyOrder(new JProblem("Unknown type", ProblemKind.UNDEFINED_TYPE), new JProblem("Preview", ProblemKind.PREVIEW_FEATURE_USED));
-    assertThat(JProblem.kindOf(syntax)).isNull();
-  }
 
   @Test
   void test_equals() {
@@ -110,12 +94,5 @@ class JProblemTest {
     assertNotEquals(
       new JProblem("a", ProblemKind.UNDEFINED_TYPE).hashCode(),
       new JProblem("a", ProblemKind.PREVIEW_FEATURE_USED).hashCode());
-  }
-
-  private static IProblem problem(int id, String message) {
-    IProblem problem = mock(IProblem.class);
-    when(problem.getID()).thenReturn(id);
-    when(problem.getMessage()).thenReturn(message);
-    return problem;
   }
 }

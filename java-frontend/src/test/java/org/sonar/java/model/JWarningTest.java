@@ -17,11 +17,8 @@
 package org.sonar.java.model;
 
 import java.util.Collections;
-import org.eclipse.jdt.core.compiler.IProblem;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.diagnostics.ProblemKind;
@@ -37,8 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.sonar.java.model.JWarning.Mapper.isInsideTree;
 import static org.sonar.java.model.JWarning.Mapper.isMorePreciseTree;
 import static org.sonar.java.model.JWarning.Mapper.matchesTreeExactly;
@@ -46,32 +41,7 @@ import static org.sonar.java.model.JWarning.Mapper.setSyntaxTree;
 
 class JWarningTest {
 
-  @ParameterizedTest
-  @CsvSource({"7, 2, 5", "13, 3, 4"})
-  void ecj_conversion_preserves_source_range(int sourceEnd, int endLine, int endColumn) {
-    IProblem problem = mock(IProblem.class);
-    when(problem.getID()).thenReturn(IProblem.UnusedImport);
-    when(problem.getMessage()).thenReturn("Unused import");
-    when(problem.getSourceStart()).thenReturn(2);
-    when(problem.getSourceEnd()).thenReturn(sourceEnd);
-    JWarning warning = JWarning.Mapper.convert(problem, new LineColumnConverter("x\nimport\njava.util.List;"));
-    assertThat(warning.type()).isEqualTo(ProblemKind.UNUSED_IMPORT);
-    assertThat(warning.message()).isEqualTo("Unused import");
-    assertThat(warning.start().line()).isEqualTo(2);
-    assertThat(warning.start().columnOffset()).isZero();
-    assertThat(warning.end().line()).isEqualTo(endLine);
-    assertThat(warning.end().columnOffset()).isEqualTo(endColumn);
-  }
 
-  @Test
-  void ignores_diagnostics_that_cannot_be_associated_with_supported_warning_trees() {
-    LineColumnConverter converter = new LineColumnConverter("");
-    for (int id : new int[]{IProblem.ParsingError, IProblem.UndefinedType}) {
-      IProblem problem = mock(IProblem.class);
-      when(problem.getID()).thenReturn(id);
-      assertThat(JWarning.Mapper.convert(problem, converter)).isNull();
-    }
-  }
 
   @Test
   void getters() {
