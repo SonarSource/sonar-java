@@ -118,6 +118,7 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -1778,13 +1779,16 @@ final class SemsitterTranslator {
       }
       types.add(type == null || type.isUnknown() ? functional.parameterTypes().get(i) : type);
     }
-    JMethodSymbol view = sema.invocationView(functional, target, types, sema.invocationReturn(functional, target, List.of()));
+    JMethodSymbol shared = sema.invocationView(functional, target, types, sema.invocationReturn(functional, target, List.of()));
+    var arrow = lambda.arrowToken().range().start();
+    JMethodSymbol view = shared.lambdaView(functional.id + "$lambda$" + arrow.line() + ":" + arrow.column() + "()");
     lambda.setSymbol(view);
     for (VariableTree parameter : lambda.parameters()) {
       if (parameter.symbol() instanceof JVariableSymbol symbol) {
         symbol.owner(view);
       }
     }
+    ascribeLambdaResults(lambda, view.returnType().type());
     lambda.body().accept(new BaseTreeVisitor() {
       @Override
       public void visitVariable(VariableTree tree) {
@@ -1810,6 +1814,35 @@ final class SemsitterTranslator {
       @Override
       public void visitClass(ClassTree tree) {
         // local and anonymous classes own their variables
+      }
+    });
+  }
+
+  /** The values a lambda returns take the return type of the functional method as their target. */
+  private void ascribeLambdaResults(LambdaExpressionTreeImpl lambda, Type returned) {
+    if (returned.isUnknown() || returned.isVoid()) {
+      return;
+    }
+    if (lambda.body() instanceof ExpressionTree value) {
+      ascribeTarget(value, returned);
+      return;
+    }
+    lambda.body().accept(new BaseTreeVisitor() {
+      @Override
+      public void visitReturnStatement(ReturnStatementTree tree) {
+        if (tree.expression() != null) {
+          ascribeTarget(tree.expression(), returned);
+        }
+      }
+
+      @Override
+      public void visitLambdaExpression(LambdaExpressionTree tree) {
+        // nested lambdas have their own results
+      }
+
+      @Override
+      public void visitClass(ClassTree tree) {
+        // local and anonymous classes have their own methods
       }
     });
   }
@@ -1923,7 +1956,7 @@ final class SemsitterTranslator {
     Node scope = object == null ? firstNamed(node) : object;
     ExpressionTree qualifier = object == null && compoundName(scope) ? typeExpression(scope) : (object == null ? primary(scope) : superQualifier(node, object));
     Node nameNode = name == null ? lastNamed(node) : name;
-    IdentifierTreeImpl identifier = identifier(nameNode);
+    IdentifierTreeImpl identifier = receiverKeyword(identifier(nameNode));
     bindUse(identifier, name != null || nameNode.json.has("refs") ? nameNode : node, true);
     if (!naming) {
       bindQualifiedReceiver(qualifier, identifier);
@@ -1955,15 +1988,26 @@ final class SemsitterTranslator {
     return tree;
   }
 
+  /** The {@code this} or {@code super} written after a qualifier is a keyword, not a name. */
+  private static IdentifierTreeImpl receiverKeyword(IdentifierTreeImpl identifier) {
+    return switch (identifier.name()) {
+      case "this" -> new KeywordThis((InternalSyntaxToken) identifier.identifierToken());
+      case "super" -> new KeywordSuper((InternalSyntaxToken) identifier.identifierToken());
+      default -> identifier;
+    };
+  }
+
   private ExpressionTree superQualifier(Node node, Node object) {
     ExpressionTree qualifier = expression(object);
     Node superNode = keyword(node, "super");
     if (superNode == null || same(superNode, object)) {
       return qualifier;
     }
-    IdentifierTreeImpl identifier = new IdentifierTreeImpl(token(superNode));
+    IdentifierTreeImpl identifier = new KeywordSuper(token(superNode));
     bindQualifiedReceiver(qualifier, identifier);
-    return new MemberSelectExpressionTreeImpl(qualifier, token(required(node, ".")), identifier);
+    MemberSelectExpressionTreeImpl select = new MemberSelectExpressionTreeImpl(qualifier, token(required(node, ".")), identifier);
+    ascribe(select, identifier.symbolType());
+    return select;
   }
 
   private void bindQualifiedReceiver(ExpressionTree qualifier, IdentifierTreeImpl identifier) {
@@ -2372,7 +2416,14 @@ final class SemsitterTranslator {
     ExpressionTree value = expression(requiredField(node, "value", lastNamed(node)));
     InternalSyntaxToken andToken = bounds.isEmpty() || ands.isEmpty() ? null : token(ands.get(0));
     TypeCastExpressionTreeImpl tree = new TypeCastExpressionTreeImpl(token(required(node, "(")), type, andToken, bounds, token(required(node, ")")), value);
-    ascribe(tree, type.symbolType());
+    if (bounds.isEmpty()) {
+      ascribe(tree, type.symbolType());
+    } else {
+      List<JType> parts = new ArrayList<>();
+      parts.add(sema.asJType(type.symbolType()));
+      bounds.forEach(bound -> parts.add(sema.asJType(bound.symbolType())));
+      ascribe(tree, JType.intersection(sema, parts));
+    }
     return tree;
   }
 
@@ -3099,6 +3150,7 @@ final class SemsitterTranslator {
       if (label.name().equals(identifier.name())) {
         label.addUsage(identifier);
         identifier.labelSymbol = label;
+        break;
       }
     }
     return identifier;
