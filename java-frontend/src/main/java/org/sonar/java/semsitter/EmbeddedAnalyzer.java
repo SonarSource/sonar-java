@@ -21,11 +21,14 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 
 /** The SemSitter analyzer executable packaged in the plugin, extracted once per JVM to a temporary file. */
 public final class EmbeddedAnalyzer {
+
+  private static final AtomicInteger FAILED_EXTRACTIONS = new AtomicInteger();
 
   private static Path extracted;
 
@@ -51,7 +54,21 @@ public final class EmbeddedAnalyzer {
     return platform == null ? null : "/semsitter/analyzer-" + platform + ".xz";
   }
 
-  public static synchronized Path extract() throws IOException {
+  /** How many times no packaged analyzer could be provided; tests use it to tell a missing analyzer from a real failure. */
+  public static int failedExtractions() {
+    return FAILED_EXTRACTIONS.get();
+  }
+
+  public static Path extract() throws IOException {
+    try {
+      return extractOnce();
+    } catch (IOException unavailable) {
+      FAILED_EXTRACTIONS.incrementAndGet();
+      throw unavailable;
+    }
+  }
+
+  private static synchronized Path extractOnce() throws IOException {
     if (extracted != null && Files.isExecutable(extracted)) {
       return extracted;
     }
