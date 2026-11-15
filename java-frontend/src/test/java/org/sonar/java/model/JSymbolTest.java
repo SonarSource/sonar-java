@@ -773,7 +773,7 @@ class JSymbolTest {
   }
 
   @Test
-  void methods_with_different_type_parameters_have_different_symbols() {
+  void generic_method_and_its_invocation_share_one_symbol() {
     CompilationUnitTree cu = test("""
       class C {
         <T> int f(String s);
@@ -788,12 +788,12 @@ class JSymbolTest {
     var expression1 = (ExpressionStatementTree) block.body().get(0);
     var invocation1 = (MethodInvocationTree) expression1.expression();
 
-    assertNotEquals(methodDeclaration.symbol(), invocation1.methodSymbol());
-    assertNotEquals(invocation1.methodSymbol(), methodDeclaration.symbol());
+    assertEquals(methodDeclaration.symbol(), invocation1.methodSymbol());
+    assertEquals(invocation1.methodSymbol(), methodDeclaration.symbol());
   }
 
   @Test
-  void methods_with_different_type_arguments_have_different_symbols() {
+  void constructors_of_different_parameterizations_share_one_symbol() {
     CompilationUnitTree cu = test("""
       class C<T> {
         {
@@ -810,8 +810,8 @@ class JSymbolTest {
     var expression2 = (ExpressionStatementTree) block.body().get(1);
     var invocation2 = (NewClassTree) expression2.expression();
 
-    assertNotEquals(invocation2.methodSymbol(), invocation1.methodSymbol());
-    assertNotEquals(invocation1.methodSymbol(), invocation2.methodSymbol());
+    assertEquals(invocation2.methodSymbol(), invocation1.methodSymbol());
+    assertEquals(invocation1.methodSymbol(), invocation2.methodSymbol());
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {

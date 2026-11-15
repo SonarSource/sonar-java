@@ -556,6 +556,10 @@ final class SemsitterTranslator {
       tree.completePermittedTypes(token(required(permits, "permits")), separatedTypes(permits));
     }
     bindDeclaration(tree, nameNode(node), name);
+    if (kind == Tree.Kind.RECORD && tree.symbol() instanceof JTypeSymbol record) {
+      // the components of a record belong to the record, not to its canonical constructor
+      tree.recordComponents().stream().map(VariableTree::symbol).filter(JVariableSymbol.class::isInstance).map(JVariableSymbol.class::cast).forEach(component -> component.owner(record));
+    }
     if (tree.symbol() instanceof JTypeSymbol declared) {
       if (tree.superClass() != null
         && tree.superClass().symbolType().symbol() instanceof JTypeSymbol parent && parent.id != null && !parent.isUnknown() && !parent.equals(declared)) {
@@ -874,7 +878,10 @@ final class SemsitterTranslator {
     }
     bindDeclaration(tree, nameNode(node) == null ? node : nameNode(node), name);
     Type declared = tree.type().symbolType();
-    if (declared.isParameterized() && tree.symbol() instanceof JSymbol symbol) {
+    if (tree.type() instanceof VarTypeTreeImpl && tree.initializer() != null && tree.initializer().symbolType().isIntersectionType() && tree.symbol() instanceof JSymbol symbol) {
+      symbol.type(tree.initializer().symbolType());
+      ascribe(tree.type(), tree.initializer().symbolType());
+    } else if (declared.isParameterized() && tree.symbol() instanceof JSymbol symbol) {
       symbol.type(declared);
     } else if (tree.symbol().type() != null && !tree.symbol().type().isUnknown()) {
       ascribe(tree.type(), tree.symbol().type());
@@ -2989,8 +2996,6 @@ final class SemsitterTranslator {
     }
     sema.declare(symbol.id, variable);
     variable.variableSymbol = symbol;
-    identifier.symbol = symbol;
-    ascribe(identifier, symbol.type());
   }
 
   /**
