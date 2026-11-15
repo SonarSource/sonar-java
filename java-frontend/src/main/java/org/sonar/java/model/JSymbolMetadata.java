@@ -19,10 +19,13 @@ package org.sonar.java.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -34,6 +37,7 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityTarget;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -41,7 +45,10 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 /**
  * Annotations of one symbol, taken from its declaration tree when the file contains it and from
@@ -91,16 +98,72 @@ final class JSymbolMetadata implements SymbolMetadata {
     Tree declaration = symbol.declaration();
     if (declaration != null) {
       List<AnnotationInstance> fromTree = new ArrayList<>();
+      TypeTree written = declaredType(declaration);
+      boolean array = written instanceof ArrayTypeTree;
       for (AnnotationTree annotation : ModifiersUtils.getAnnotations(declaration)) {
-        fromTree.add(new TreeAnnotation(symbol.sema, annotation));
+        // an annotation only a type can carry, written before an array type, is on its elements
+        if (!(array && isTypeUseOnly(annotation))) {
+          fromTree.add(new TreeAnnotation(symbol.sema, annotation));
+        }
+      }
+      if (written != null) {
+        for (AnnotationTree annotation : outermostTypeAnnotations(written)) {
+          fromTree.add(new TreeAnnotation(symbol.sema, annotation));
+        }
       }
       return fromTree;
     }
     List<AnnotationInstance> fromFacts = new ArrayList<>();
-    for (JSema.DeclaredAnnotation annotation : symbol.sema.declaredAnnotations(symbol.id)) {
+    List<JSema.DeclaredAnnotation> declared = symbol instanceof JPackageSymbol ? symbol.sema.packageAnnotations(symbol.name()) : symbol.sema.declaredAnnotations(symbol.id);
+    for (JSema.DeclaredAnnotation annotation : declared) {
       fromFacts.add(new FactAnnotation(symbol.sema, JSema.erase(annotation.name()), annotation.values(), annotation.valuesKnown()));
     }
     return fromFacts;
+  }
+
+  @Nullable
+  private static TypeTree declaredType(Tree declaration) {
+    if (declaration instanceof MethodTree method) {
+      return method.returnType();
+    }
+    return declaration instanceof VariableTree variable ? variable.type() : null;
+  }
+
+  /** The annotations written on the type itself: on an array type those of its first dimension. */
+  private static List<AnnotationTree> outermostTypeAnnotations(TypeTree type) {
+    TypeTree current = type;
+    while (current instanceof ArrayTypeTree array && array.type() instanceof ArrayTypeTree inner) {
+      current = inner;
+    }
+    if (current instanceof ArrayTypeTree array) {
+      return array.annotations();
+    }
+    if (current instanceof IdentifierTree identifier) {
+      return identifier.annotations();
+    }
+    return current instanceof ParameterizedTypeTree parameterized ? parameterized.annotations() : List.of();
+  }
+
+  private static boolean isTypeUseOnly(AnnotationTree annotation) {
+    List<AnnotationValue> targets = annotation.annotationType().symbolType().symbol().metadata().valuesForAnnotation("java.lang.annotation.Target");
+    if (targets == null) {
+      return false;
+    }
+    Set<String> names = new HashSet<>();
+    for (AnnotationValue target : targets) {
+      collectTargets(target.value(), names);
+    }
+    return names.contains("TYPE_USE") && Stream.of("METHOD", "FIELD", "PARAMETER", "LOCAL_VARIABLE").noneMatch(names::contains);
+  }
+
+  private static void collectTargets(@Nullable Object value, Set<String> names) {
+    if (value instanceof Object[] values) {
+      for (Object item : values) {
+        collectTargets(item, names);
+      }
+    } else if (value instanceof Symbol symbol) {
+      names.add(symbol.name());
+    }
   }
 
   @Override
@@ -175,6 +238,10 @@ final class JSymbolMetadata implements SymbolMetadata {
       return NO_ANNOTATION_NULLABILITY[level.ordinal()];
     }
     Symbol owner = symbol.owner();
+    // a local or anonymous class is declared in a method or initializer; the contract of that member is not its own
+    while (symbol.isTypeSymbol() && owner != null && (owner.isMethodSymbol() || owner.isVariableSymbol())) {
+      owner = owner.owner();
+    }
     if (owner == null || owner.isUnknown()) {
       return unknownNullabilityAt(level);
     }

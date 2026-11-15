@@ -79,6 +79,13 @@ final class CompilerWarnings extends BaseTreeVisitor {
   @Override
   public void visitIdentifier(IdentifierTree tree) {
     identifiers.add(tree);
+    super.visitIdentifier(tree);
+  }
+
+  @Override
+  public void visitArrayType(org.sonar.plugins.java.api.tree.ArrayTypeTree tree) {
+    scan(tree.annotations());
+    super.visitArrayType(tree);
   }
 
   /** Only simple names use an import: the member of a qualified name is not one. */

@@ -107,6 +107,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -699,7 +700,19 @@ final class SemsitterTranslator {
     Node body = field(node, "body");
     BlockTreeImpl block = body == null ? null : block(body);
     Node typeNode = field(node, "type");
-    TypeTree returnType = typeNode == null || "constructor_declaration".equals(node.k()) ? null : arrayType(recoverQualifiedType(type(typeNode)), field(node, "dimensions"));
+    TypeTree returnType = null;
+    if (typeNode != null && !"constructor_declaration".equals(node.k())) {
+      TypeTree written = recoverQualifiedType(type(typeNode));
+      List<AnnotationTree> afterTypeParameters = node.children().stream().filter(SemsitterTranslator::isAnnotation).<AnnotationTree>map(this::annotation).toList();
+      TypeTree element = written;
+      while (element instanceof ArrayTypeTree array) {
+        element = array.type();
+      }
+      if (!afterTypeParameters.isEmpty() && element instanceof JavaTree.AnnotatedTypeTree annotated) {
+        annotated.complete(afterTypeParameters);
+      }
+      returnType = arrayType(written, field(node, "dimensions"));
+    }
     IdentifierTreeImpl name = identifier(requiredField(node, "name", firstOf(node, "identifier")));
     Node thrown = childKind(node, "throws");
     MethodTreeImpl tree = new MethodTreeImpl(
