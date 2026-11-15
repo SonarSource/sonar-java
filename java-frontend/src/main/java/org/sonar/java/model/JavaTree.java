@@ -166,6 +166,7 @@ public abstract class JavaTree implements Tree {
     public Sema sema;
     private Set<Problem> semanticProblems = Set.of();
     private Runnable environmentCleaner = () -> {};
+    private int errorLine;
 
     private final Map<ProblemKind, List<Warning>> warnings = new EnumMap<>(ProblemKind.class);
 
@@ -177,6 +178,20 @@ public abstract class JavaTree implements Tree {
       this.types = types;
       this.moduleDeclaration = moduleDeclaration;
       this.eofToken = eofToken;
+    }
+
+    /** True when the source has syntax errors and the tree was recovered around them. */
+    public boolean hasError() {
+      return errorLine > 0;
+    }
+
+    /** Line of the first syntax error, 0 when the source has none. */
+    public int errorLine() {
+      return errorLine;
+    }
+
+    public void setErrorLine(int errorLine) {
+      this.errorLine = errorLine;
     }
 
     public void setSemanticModel(Sema sema, Set<? extends Problem> semanticProblems, Runnable environmentCleaner) {
