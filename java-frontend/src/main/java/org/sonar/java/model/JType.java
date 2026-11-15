@@ -500,8 +500,11 @@ final class JType implements Type, Type.ArrayType {
     if (this == obj) {
       return true;
     }
-    if (!(obj instanceof JType other) || kind == Kind.WILDCARD || kind == Kind.CAPTURE) {
+    if (!(obj instanceof JType other) || kind == Kind.CAPTURE) {
       return false;
+    }
+    if (kind == Kind.WILDCARD) {
+      return other.kind == Kind.WILDCARD && Objects.equals(element, other.element) && Objects.equals(lower, other.lower);
     }
     return kind == other.kind && fqn.equals(other.fqn) && args.equals(other.args) && (kind != Kind.ARRAY || Objects.equals(element, other.element)) && sameTypeVariable(other);
   }

@@ -179,7 +179,7 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
     @Override
     public boolean isEffectivelyFinal() {
-      return true;
+      return false;
     }
 
     @Override

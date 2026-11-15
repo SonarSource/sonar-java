@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityTarget;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -102,7 +103,7 @@ final class JSymbolMetadata implements SymbolMetadata {
       boolean array = written instanceof ArrayTypeTree;
       for (AnnotationTree annotation : ModifiersUtils.getAnnotations(declaration)) {
         // an annotation only a type can carry, written before an array type, is on its elements
-        if (!(array && isTypeUseOnly(annotation))) {
+        if (!(array && isTypeUseOnly(annotation)) && !namesDeclaredNonAnnotation(annotation)) {
           fromTree.add(new TreeAnnotation(symbol.sema, annotation));
         }
       }
@@ -119,6 +120,11 @@ final class JSymbolMetadata implements SymbolMetadata {
       fromFacts.add(new FactAnnotation(symbol.sema, JSema.erase(annotation.name()), annotation.values(), annotation.valuesKnown()));
     }
     return fromFacts;
+  }
+
+  /** A class or interface declared in the sources is not an annotation, whatever the code writes after the {@code @}. */
+  private static boolean namesDeclaredNonAnnotation(AnnotationTree annotation) {
+    return annotation.annotationType().symbolType().symbol().declaration() instanceof ClassTree declared && !declared.is(Tree.Kind.ANNOTATION_TYPE);
   }
 
   @Nullable

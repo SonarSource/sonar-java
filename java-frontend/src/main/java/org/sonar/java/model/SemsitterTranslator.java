@@ -117,6 +117,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
+import org.sonar.plugins.java.api.tree.InferedTypeTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -895,11 +896,41 @@ final class SemsitterTranslator {
       body = node;
     }
     BlockTreeImpl block = block(body);
+    ownInitializerVariables(block, true);
     return new StaticInitializerTreeImpl(token(required(node, "static")), (InternalSyntaxToken) block.openBraceToken(), block.body(), (InternalSyntaxToken) block.closeBraceToken());
+  }
+
+  /** Variables declared in an initializer block belong to the block, not to the class. */
+  private void ownInitializerVariables(BlockTreeImpl block, boolean isStatic) {
+    Symbol.TypeSymbol enclosing = types.peek();
+    if (!(enclosing instanceof JTypeSymbol enclosingType)) {
+      return;
+    }
+    JInitializerBlockSymbol owner = isStatic ? sema.staticInitializerBlockSymbol(enclosingType) : sema.initializerBlockSymbol(enclosingType);
+    block.accept(new BaseTreeVisitor() {
+      @Override
+      public void visitVariable(VariableTree tree) {
+        if (tree.symbol() instanceof JVariableSymbol variable && enclosing.equals(variable.owner())) {
+          variable.owner(owner);
+        }
+        super.visitVariable(tree);
+      }
+
+      @Override
+      public void visitClass(ClassTree tree) {
+        // members of local and anonymous classes keep their own owner
+      }
+
+      @Override
+      public void visitLambdaExpression(LambdaExpressionTree tree) {
+        // lambda variables belong to the lambda
+      }
+    });
   }
 
   private BlockTreeImpl initializer(Node node) {
     BlockTreeImpl block = block(node);
+    ownInitializerVariables(block, false);
     return new BlockTreeImpl(Tree.Kind.INITIALIZER, (InternalSyntaxToken) block.openBraceToken(), block.body(), (InternalSyntaxToken) block.closeBraceToken());
   }
 
@@ -1013,6 +1044,11 @@ final class SemsitterTranslator {
       invocation.methodSymbol = method;
       ascribe(invocation, method.owner().type());
       ascribe(identifier, Type.UNKNOWN);
+    }
+    Symbol.TypeSymbol enclosing = types.peek();
+    if (invocation.symbolType().isUnknown() && enclosing != null) {
+      Type constructed = "this".equals(identifier.name()) ? enclosing.type() : enclosing.superClass();
+      ascribe(invocation, constructed == null ? Type.UNKNOWN : constructed);
     }
     return new ExpressionStatementTreeImpl(invocation, token(required(node, ";")));
   }
@@ -1776,6 +1812,9 @@ final class SemsitterTranslator {
         type = substituted.get(i);
         symbol.type(type);
         ascribe((IdentifierTreeImpl) parameter.simpleName(), type);
+      }
+      if (parameter.type() instanceof InferedTypeTree inferred && inferred.symbolType().isUnknown() && type != null && !type.isUnknown()) {
+        ascribe(inferred, type);
       }
       types.add(type == null || type.isUnknown() ? functional.parameterTypes().get(i) : type);
     }
@@ -2600,7 +2639,13 @@ final class SemsitterTranslator {
     JavaTree.ParameterizedTypeTreeImpl tree = new JavaTree.ParameterizedTypeTreeImpl(raw, arguments == null ? new TypeArgumentListTreeImpl(synthetic("<"), synthetic(">")) : typeArguments(arguments));
     List<Type> args = new ArrayList<>();
     for (TypeTree argument : tree.typeArguments()) {
-      args.add(argument instanceof WildcardTree wildcard ? wildcardType(wildcard) : argument.symbolType());
+      if (argument instanceof WildcardTree wildcard) {
+        Type wildcardType = wildcardType(wildcard);
+        ascribe(argument, wildcardType);
+        args.add(wildcardType);
+      } else {
+        args.add(argument.symbolType());
+      }
     }
     if (raw.symbolType() instanceof JType) {
       List<JType> typeArguments = new ArrayList<>();
@@ -2883,6 +2928,9 @@ final class SemsitterTranslator {
     }
     String id = name.decl();
     if (id == null) {
+      if (tree instanceof VariableTreeImpl variable && "_".equals(identifier.name())) {
+        bindUnnamedVariable(variable, identifier);
+      }
       return;
     }
     if (id.contains("#<init>(")) {
@@ -2928,6 +2976,20 @@ final class SemsitterTranslator {
     } else if (tree instanceof VariableTreeImpl variable && symbol instanceof Symbol.VariableSymbol variableSymbol) {
       variable.variableSymbol = variableSymbol;
     }
+  }
+
+  /** An unnamed variable declares nothing the scan records, so it gets a local symbol of its own. */
+  private void bindUnnamedVariable(VariableTreeImpl variable, IdentifierTreeImpl identifier) {
+    var start = identifier.identifierToken().range().start();
+    JVariableSymbol symbol = new JVariableSymbol(sema, "_@" + start.line() + ":" + start.column(), "_", "local");
+    Type declared = variable.type() == null ? Type.UNKNOWN : variable.type().symbolType();
+    if (isKnownOrRecovered(declared)) {
+      symbol.type(declared);
+    }
+    sema.declare(symbol.id, variable);
+    variable.variableSymbol = symbol;
+    identifier.symbol = symbol;
+    ascribe(identifier, symbol.type());
   }
 
   /**
@@ -2991,6 +3053,14 @@ final class SemsitterTranslator {
     return type.isUnknown() || (type.isParameterized() && type.typeArguments().stream().anyMatch(SemsitterTranslator::mentionsUnknown));
   }
 
+  private static boolean isTypeVariable(Type type) {
+    Type base = type;
+    while (base.isArray()) {
+      base = ((Type.ArrayType) base).elementType();
+    }
+    return base.isTypeVar();
+  }
+
   private static boolean sameErasure(Type left, Type right) {
     return left.erasure().fullyQualifiedName().equals(right.erasure().fullyQualifiedName());
   }
@@ -3004,7 +3074,7 @@ final class SemsitterTranslator {
     List<Type> declared = new ArrayList<>();
     for (int i = 0; i < parameters.size(); i++) {
       Type type = parameters.get(i).type().symbolType();
-      if (type.isUnknown() || !sameErasure(type, erased.get(i))) {
+      if (type.isUnknown() || !(isTypeVariable(type) || sameErasure(type, erased.get(i)))) {
         return;
       }
       declared.add(type);

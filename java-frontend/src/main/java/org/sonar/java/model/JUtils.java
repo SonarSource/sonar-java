@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
@@ -77,7 +78,8 @@ public final class JUtils {
 
   @Nullable
   public static Object defaultValue(Symbol.MethodSymbol method) {
-    return null;
+    MethodTree declaration = method.declaration();
+    return declaration == null || declaration.defaultValue() == null ? null : ExpressionUtils.resolveAsConstant(declaration.defaultValue());
   }
 
   /**

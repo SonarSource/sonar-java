@@ -72,6 +72,7 @@ public final class JSema implements Sema {
   private final Map<String, List<DeclaredAnnotation>> packageAnnotations = new HashMap<>();
   private final Map<String, JsonObject> projectFieldTypes = new HashMap<>();
   private final Map<String, JSymbol> symbols = new HashMap<>();
+  private final Map<String, JVariableSymbol.ParameterPlaceholderSymbol> placeholders = new HashMap<>();
   private final Map<String, JTypeSymbol> typesByName = new HashMap<>();
   private final Map<String, JType> rawTypes = new HashMap<>();
   private final Map<String, String> binaryNames = new HashMap<>();
@@ -2132,6 +2133,24 @@ public final class JSema implements Sema {
 
   private JType primitiveType(String name) {
     return rawTypes.computeIfAbsent(name, key -> JType.primitive(this, key));
+  }
+
+  private final Map<Symbol.TypeSymbol, JInitializerBlockSymbol> initializerBlockSymbols = new HashMap<>();
+  private final Map<Symbol.TypeSymbol, JInitializerBlockSymbol> staticInitializerBlockSymbols = new HashMap<>();
+
+  JInitializerBlockSymbol initializerBlockSymbol(JTypeSymbol owner) {
+    return initializerBlockSymbols.computeIfAbsent(owner, k -> new JInitializerBlockSymbol(k, false));
+  }
+
+  JInitializerBlockSymbol staticInitializerBlockSymbol(JTypeSymbol owner) {
+    return staticInitializerBlockSymbols.computeIfAbsent(owner, k -> new JInitializerBlockSymbol(k, true));
+  }
+
+  /** The parameter of a method no source declares: one symbol per method and position, whichever call it is seen from. */
+  JVariableSymbol.ParameterPlaceholderSymbol parameterPlaceholder(JMethodSymbol method, int index, Type type) {
+    String key = method.id + "#" + index + "#" + type.fullyQualifiedName();
+    return method.id == null ? new JVariableSymbol.ParameterPlaceholderSymbol(index, method, type)
+      : placeholders.computeIfAbsent(key, k -> new JVariableSymbol.ParameterPlaceholderSymbol(index, method, type));
   }
 
   JType asJType(Type type) {

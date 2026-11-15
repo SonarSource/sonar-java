@@ -258,7 +258,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     }
     List<Symbol> placeholders = new ArrayList<>();
     for (int i = 0; i < parameterTypes.size(); i++) {
-      placeholders.add(new JVariableSymbol.ParameterPlaceholderSymbol(i, this, parameterTypes.get(i)));
+      placeholders.add(sema.parameterPlaceholder(this, i, parameterTypes.get(i)));
     }
     return placeholders;
   }
@@ -301,6 +301,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     Set<String> visited = new HashSet<>();
     if (typeSymbol.isInterface()) {
       match(found, sema.typeSymbol("java.lang.Object"), null);
+      visited.add("java.lang.Object");
     }
     walk(found, visited, typeSymbol.superClass());
     for (Type iface : typeSymbol.interfaces()) {
@@ -484,7 +485,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
 
   @Override
   public boolean isParametrizedMethod() {
-    return !isUnknown() && parametrized;
+    return !isUnknown() && (parametrized || (declaration() != null && !declaration().typeParameters().isEmpty()));
   }
 
   @Override
