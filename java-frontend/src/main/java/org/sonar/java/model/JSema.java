@@ -893,8 +893,9 @@ public final class JSema implements Sema {
 
   /** The method as seen from {@code receiver}, so its owner keeps that parameterization. */
   JMethodSymbol invocationView(JMethodSymbol method, @Nullable Type receiver, List<Type> parameters, Type returned) {
+    boolean substituted = method.substitutes(parameters, returned);
     JMethodSymbol view = method.withSignature(parameters, returned);
-    if (!view.isParametrizedMethod() && declaresTypeVariables(method, method.substitutes(parameters, returned))) {
+    if (!view.isParametrizedMethod() && declaresTypeVariables(method, substituted)) {
       view.parametrized(true);
     }
     if (receiver != null && !method.isStatic() && method.owner().type() != null) {
@@ -903,7 +904,8 @@ public final class JSema implements Sema {
         view.owner(declaring.symbol());
       }
     }
-    return view;
+    boolean same = !substituted && view.owner() == method.owner() && view.isParametrizedMethod() == method.isParametrizedMethod();
+    return same ? method : view;
   }
 
   /**
@@ -1428,6 +1430,14 @@ public final class JSema implements Sema {
       return bound;
     }
     return getClassType("java.lang.Object");
+  }
+
+  /** Every declared bound of the type variable with this id, or {@code Object} when it has none. */
+  List<Type> typeVariableBounds(@Nullable String id) {
+    if (id != null && symbols.get(id) instanceof JTypeSymbol parameter && !parameter.bounds().isEmpty()) {
+      return parameter.bounds();
+    }
+    return List.of(getClassType("java.lang.Object"));
   }
 
   private JSymbol typeParameter(String id) {
@@ -2124,7 +2134,7 @@ public final class JSema implements Sema {
     return rawTypes.computeIfAbsent(name, key -> JType.primitive(this, key));
   }
 
-  private JType asJType(Type type) {
+  JType asJType(Type type) {
     return type instanceof JType jType ? jType : JType.unknown(this);
   }
 

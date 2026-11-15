@@ -226,7 +226,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Set<ProblemKind> supportedWarningKinds() {
-      return Set.copyOf(warnings.keySet());
+      return CompilerWarnings.SUPPORTED_KINDS;
     }
 
     @Override

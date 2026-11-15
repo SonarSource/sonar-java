@@ -38,7 +38,11 @@ import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.UnionTypeTree;
 
 /**
  * The compiler diagnostics the checks read from the compilation unit, derived from the tree and its symbols:
@@ -51,6 +55,8 @@ final class CompilerWarnings extends BaseTreeVisitor {
   private static final Pattern JAVA_NAME = Pattern.compile("[\\p{L}_$][\\p{L}\\p{N}_$]*");
 
   private static final Map<String, Integer> NUMERIC_RANK = Map.of("byte", 0, "short", 1, "char", 1, "int", 2, "long", 3, "float", 4, "double", 5);
+
+  static final Set<ProblemKind> SUPPORTED_KINDS = Set.of(ProblemKind.UNUSED_IMPORT, ProblemKind.REDUNDANT_CAST, ProblemKind.ASSIGNMENT_HAS_NO_EFFECT, ProblemKind.MASKED_CATCH);
 
   private final Map<ProblemKind, Set<JWarning>> warnings = new EnumMap<>(ProblemKind.class);
   private final List<IdentifierTree> identifiers = new ArrayList<>();
@@ -107,7 +113,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
     Type operand = tree.expression().symbolType();
     if (!cast.isUnknown() && !operand.isUnknown() && operand.isSubtypeOf(cast)) {
       if (cast.erasure().fullyQualifiedName().equals(operand.erasure().fullyQualifiedName()) && cast.typeArguments().isEmpty() == operand.typeArguments().isEmpty()) {
-        add(ProblemKind.REDUNDANT_CAST, "Unnecessary cast to " + cast.erasure().name(), tree);
+        add(ProblemKind.REDUNDANT_CAST, "Unnecessary cast from " + operand.erasure().name() + " to " + cast.erasure().name(), tree);
       }
     }
     super.visitTypeCast(tree);
@@ -129,14 +135,18 @@ final class CompilerWarnings extends BaseTreeVisitor {
       String rightType = promotionInput(right, rightCast);
       if (leftType != null && rightType != null && sameOperandTypes(tree.kind(), leftType, rightType, left, right)) {
         if (leftCast) {
-          add(ProblemKind.REDUNDANT_CAST, "Unnecessary cast to " + left.symbolType().name(), left);
+          add(ProblemKind.REDUNDANT_CAST, castMessage(left), left);
         }
         if (rightCast) {
-          add(ProblemKind.REDUNDANT_CAST, "Unnecessary cast to " + right.symbolType().name(), right);
+          add(ProblemKind.REDUNDANT_CAST, castMessage(right), right);
         }
       }
     }
     super.visitBinaryExpression(tree);
+  }
+
+  private static String castMessage(ExpressionTree cast) {
+    return "Unnecessary cast from " + ((org.sonar.plugins.java.api.tree.TypeCastTree) cast).expression().symbolType().name() + " to " + cast.symbolType().name();
   }
 
   private static boolean isWideningPrimitiveCast(ExpressionTree tree) {
@@ -185,6 +195,24 @@ final class CompilerWarnings extends BaseTreeVisitor {
     String a = unaryPromoted(left);
     String b = unaryPromoted(right);
     return NUMERIC_RANK.get(a) >= NUMERIC_RANK.get(b) ? a : b;
+  }
+
+  @Override
+  public void visitTryStatement(TryStatementTree tree) {
+    List<Type> caught = new ArrayList<>();
+    for (CatchTree catchTree : tree.catches()) {
+      TypeTree parameterType = catchTree.parameter().type();
+      List<TypeTree> alternatives = parameterType instanceof UnionTypeTree union ? union.typeAlternatives() : List.of(parameterType);
+      for (TypeTree alternative : alternatives) {
+        Type type = alternative.symbolType();
+        Type hiding = type.isUnknown() ? null : caught.stream().filter(type::isSubtypeOf).findFirst().orElse(null);
+        if (hiding != null) {
+          add(ProblemKind.MASKED_CATCH, "Unreachable catch block for " + type.name() + ". It is already handled by the catch block for " + hiding.name(), alternative);
+        }
+      }
+      alternatives.stream().map(TypeTree::symbolType).filter(type -> !type.isUnknown()).forEach(caught::add);
+    }
+    super.visitTryStatement(tree);
   }
 
   @Override

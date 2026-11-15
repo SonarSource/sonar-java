@@ -100,6 +100,11 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     return boundTrees.isEmpty() ? null : boundTrees.get(0).symbolType();
   }
 
+  /** Every declared bound of a type parameter. */
+  List<Type> bounds() {
+    return boundTrees.stream().map(TypeTree::symbolType).toList();
+  }
+
   int typeParameterCount() {
     return typeParameterCount;
   }

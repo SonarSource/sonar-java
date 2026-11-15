@@ -212,6 +212,9 @@ final class JType implements Type, Type.ArrayType {
     if (isPrimitive() && superType.isPrimitive()) {
       return widensTo(fullyQualifiedName(), superType.fullyQualifiedName());
     }
+    if (kind == Kind.INTERSECTION) {
+      return intersection.stream().anyMatch(bound -> bound.isSubtypeOf(superType, visited));
+    }
     if (isArray()) {
       if (superType.isArray()) {
         return elementType().isSubtypeOf(((Type.ArrayType) superType).elementType());
@@ -219,8 +222,8 @@ final class JType implements Type, Type.ArrayType {
       return superType.is("java.lang.Object") || superType.is("java.lang.Cloneable") || superType.is("java.io.Serializable");
     }
     if (isTypeVar()) {
-      Type bound = sema.typeVariableBound(typeVarId);
-      return bound instanceof JType upper && !upper.isUnknown() && upper != this && upper.isSubtypeOf(superType, visited);
+      return sema.typeVariableBounds(typeVarId).stream()
+        .anyMatch(bound -> bound instanceof JType upper && !upper.isUnknown() && upper != this && upper.isSubtypeOf(superType, visited));
     }
     if (isPrimitive() || superType.isPrimitive()) {
       return false;
@@ -500,7 +503,7 @@ final class JType implements Type, Type.ArrayType {
     if (!(obj instanceof JType other) || kind == Kind.WILDCARD || kind == Kind.CAPTURE) {
       return false;
     }
-    return kind == other.kind && fqn.equals(other.fqn) && args.equals(other.args) && sameTypeVariable(other);
+    return kind == other.kind && fqn.equals(other.fqn) && args.equals(other.args) && (kind != Kind.ARRAY || Objects.equals(element, other.element)) && sameTypeVariable(other);
   }
 
   /** A type variable a signature names by its simple name is the one of that name the declaration spells with its full id. */

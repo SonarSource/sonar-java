@@ -181,7 +181,18 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
    * so the view still denotes the same method as the declaration.
    */
   JMethodSymbol withSignature(List<Type> parameterTypes, Type returnType) {
-    JMethodSymbol view = new JMethodSymbol(sema, id, name());
+    return withSignature(id, parameterTypes, returnType);
+  }
+
+  /** The view of the functional method a lambda implements, with an identity of its own: two lambdas are never the same symbol. */
+  JMethodSymbol lambdaView(String lambdaId) {
+    JMethodSymbol view = withSignature(lambdaId, parameterTypes, returnTypeSymbol.type());
+    view.lambda = true;
+    return view;
+  }
+
+  private JMethodSymbol withSignature(@Nullable String viewId, List<Type> parameterTypes, Type returnType) {
+    JMethodSymbol view = new JMethodSymbol(sema, viewId, name());
     view.owner(owner());
     view.addModifiers(modifiersCopy());
     view.parameterTypes = List.copyOf(parameterTypes);
