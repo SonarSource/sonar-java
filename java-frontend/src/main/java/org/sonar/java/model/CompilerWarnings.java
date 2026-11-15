@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
@@ -46,7 +47,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 final class CompilerWarnings extends BaseTreeVisitor {
 
   private static final Pattern JAVADOC_REFERENCE = Pattern.compile("\\{@(?:link|linkplain|value)\\s+([^}]*)\\}|@(?:see|throws|exception)\\s+([^\\r\\n]*)");
+  private static final Pattern MARKDOWN_LINK = Pattern.compile("\\[([^\\]\\r\\n]*)\\]");
   private static final Pattern JAVA_NAME = Pattern.compile("[\\p{L}_$][\\p{L}\\p{N}_$]*");
+
+  private static final Map<String, Integer> NUMERIC_RANK = Map.of("byte", 0, "short", 1, "char", 1, "int", 2, "long", 3, "float", 4, "double", 5);
 
   private final Map<ProblemKind, Set<JWarning>> warnings = new EnumMap<>(ProblemKind.class);
   private final List<IdentifierTree> identifiers = new ArrayList<>();
@@ -110,6 +114,79 @@ final class CompilerWarnings extends BaseTreeVisitor {
     scan(tree.bounds());
   }
 
+  /**
+   * A widening primitive cast on an operand is unnecessary when the operator promotes the operands to the same types without it
+   * (all casts of the expression are removed together).
+   */
+  @Override
+  public void visitBinaryExpression(BinaryExpressionTree tree) {
+    ExpressionTree left = ExpressionUtils.skipParentheses(tree.leftOperand());
+    ExpressionTree right = ExpressionUtils.skipParentheses(tree.rightOperand());
+    boolean leftCast = isWideningPrimitiveCast(left);
+    boolean rightCast = isWideningPrimitiveCast(right);
+    if (leftCast || rightCast) {
+      String leftType = promotionInput(left, leftCast);
+      String rightType = promotionInput(right, rightCast);
+      if (leftType != null && rightType != null && sameOperandTypes(tree.kind(), leftType, rightType, left, right)) {
+        if (leftCast) {
+          add(ProblemKind.REDUNDANT_CAST, "Unnecessary cast to " + left.symbolType().name(), left);
+        }
+        if (rightCast) {
+          add(ProblemKind.REDUNDANT_CAST, "Unnecessary cast to " + right.symbolType().name(), right);
+        }
+      }
+    }
+    super.visitBinaryExpression(tree);
+  }
+
+  private static boolean isWideningPrimitiveCast(ExpressionTree tree) {
+    if (!(tree instanceof org.sonar.plugins.java.api.tree.TypeCastTree cast)) {
+      return false;
+    }
+    String from = cast.expression().symbolType().fullyQualifiedName();
+    String to = cast.type().symbolType().fullyQualifiedName();
+    return NUMERIC_RANK.containsKey(from) && NUMERIC_RANK.containsKey(to) && (from.equals(to) || isWidening(from, to));
+  }
+
+  private static boolean isWidening(String from, String to) {
+    if ("char".equals(to)) {
+      return false;
+    }
+    if ("char".equals(from)) {
+      return NUMERIC_RANK.get(to) >= NUMERIC_RANK.get("int");
+    }
+    return NUMERIC_RANK.get(from) < NUMERIC_RANK.get(to);
+  }
+
+  /** The type the operand has once its cast is dropped, or null when the operand is not a numeric primitive. */
+  private static String promotionInput(ExpressionTree operand, boolean dropCast) {
+    Type type = dropCast ? ((org.sonar.plugins.java.api.tree.TypeCastTree) operand).expression().symbolType() : operand.symbolType();
+    String name = type.fullyQualifiedName();
+    return NUMERIC_RANK.containsKey(name) ? name : null;
+  }
+
+  private static boolean sameOperandTypes(Tree.Kind kind, String leftWithout, String rightWithout, ExpressionTree left, ExpressionTree right) {
+    String leftWith = left.symbolType().fullyQualifiedName();
+    String rightWith = right.symbolType().fullyQualifiedName();
+    if (!NUMERIC_RANK.containsKey(leftWith) || !NUMERIC_RANK.containsKey(rightWith)) {
+      return false;
+    }
+    if (kind == Tree.Kind.LEFT_SHIFT || kind == Tree.Kind.RIGHT_SHIFT || kind == Tree.Kind.UNSIGNED_RIGHT_SHIFT) {
+      return unaryPromoted(leftWith).equals(unaryPromoted(leftWithout)) && unaryPromoted(rightWith).equals(unaryPromoted(rightWithout));
+    }
+    return binaryPromoted(leftWith, rightWith).equals(binaryPromoted(leftWithout, rightWithout));
+  }
+
+  private static String unaryPromoted(String type) {
+    return NUMERIC_RANK.get(type) < NUMERIC_RANK.get("int") ? "int" : type;
+  }
+
+  private static String binaryPromoted(String left, String right) {
+    String a = unaryPromoted(left);
+    String b = unaryPromoted(right);
+    return NUMERIC_RANK.get(a) >= NUMERIC_RANK.get(b) ? a : b;
+  }
+
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
     if (tree.is(Tree.Kind.ASSIGNMENT)) {
@@ -146,7 +223,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
   private void collectJavadocNames(Tree tree) {
     if (tree instanceof SyntaxToken token) {
       for (SyntaxTrivia trivia : token.trivias()) {
-        if (trivia.comment().startsWith("/**")) {
+        if (trivia.comment().startsWith("/**") || trivia.comment().startsWith("///")) {
           addJavadocNames(trivia.comment());
         }
       }
@@ -164,25 +241,44 @@ final class CompilerWarnings extends BaseTreeVisitor {
   private void addJavadocNames(String comment) {
     Matcher matcher = JAVADOC_REFERENCE.matcher(comment);
     while (matcher.find()) {
-      String reference = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
-      Matcher word = JAVA_NAME.matcher(reference);
-      boolean first = true;
-      while (word.find()) {
-        String name = word.group();
-        int start = word.start();
-        if (first) {
-          javadocNames.add(name);
-          first = false;
-        } else if (reference.substring(0, start).contains("(")) {
-          javadocNames.add(name);
-        }
+      addReferenceNames(matcher.group(1) != null ? matcher.group(1) : matcher.group(2));
+    }
+    if (comment.startsWith("///")) {
+      Matcher link = MARKDOWN_LINK.matcher(comment);
+      while (link.find()) {
+        addReferenceNames(link.group(1));
+      }
+    }
+  }
+
+  private void addReferenceNames(String reference) {
+    Matcher word = JAVA_NAME.matcher(reference);
+    boolean first = true;
+    while (word.find()) {
+      String name = word.group();
+      int start = word.start();
+      if (first) {
+        javadocNames.add(name);
+        first = false;
+      } else if (reference.substring(0, start).contains("(")) {
+        javadocNames.add(name);
       }
     }
   }
 
   private void reportUnusedImports(JavaTree.CompilationUnitTreeImpl unit) {
+    if (unit.moduleDeclaration() != null) {
+      // The compiler reports no unused import in a module declaration unit.
+      return;
+    }
     Set<String> seen = new HashSet<>();
     String currentPackage = unit.packageDeclaration() == null ? "" : dotted(unit.packageDeclaration().packageName());
+    // Loads the imported types first, so that an on-demand import of their package is known to exist.
+    for (ImportClauseTree clause : unit.imports()) {
+      if (clause instanceof ImportTree importTree && !importTree.isStatic() && !dotted(importTree.qualifiedIdentifier()).endsWith(".*")) {
+        declaresImported(dotted(importTree.qualifiedIdentifier()));
+      }
+    }
     for (ImportClauseTree clause : unit.imports()) {
       if (!(clause instanceof ImportTree importTree)) {
         continue;
@@ -196,6 +292,10 @@ final class CompilerWarnings extends BaseTreeVisitor {
     }
   }
 
+  private void declaresImported(String name) {
+    binaryName(name);
+  }
+
   /** Like the compiler, only an import that resolves can be reported as unused. */
   private boolean isResolvable(ImportTree importTree, String name, String currentPackage) {
     if (importTree instanceof JavaTree.ImportTreeImpl impl && impl.isModule()) {
@@ -203,7 +303,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
     }
     boolean onDemand = name.endsWith(".*");
     String qualifier = onDemand ? name.substring(0, name.length() - 2) : name;
-    if (onDemand && !importTree.isStatic() && qualifier.equals(currentPackage)) {
+    if (onDemand && !importTree.isStatic() && (qualifier.equals(currentPackage) || sema.knowsPackage(qualifier))) {
       return true;
     }
     return resolvesType(importTree.isStatic() && !onDemand ? qualifier.substring(0, Math.max(0, qualifier.lastIndexOf('.'))) : qualifier);
@@ -258,20 +358,33 @@ final class CompilerWarnings extends BaseTreeVisitor {
     return false;
   }
 
-  /** A member of another type of the same file is in scope only through an import, one of an enclosing or inherited type is not. */
+  /**
+   * A member of another type of the same file is in scope only through an import, one of an enclosing or inherited type is not.
+   * The annotations of a class are outside its scope, and a method looked up through an incomplete hierarchy may still come from an import.
+   */
   private static boolean isInScope(Symbol symbol, IdentifierTree identifier) {
     if (!(symbol.owner() instanceof Symbol.TypeSymbol owner) || owner.isUnknown()) {
       return true;
     }
-    for (Tree tree = identifier.parent(); tree != null; tree = tree.parent()) {
+    boolean incompleteHierarchy = false;
+    boolean inScope = false;
+    Tree previous = identifier;
+    for (Tree tree = identifier.parent(); tree != null; previous = tree, tree = tree.parent()) {
       if (tree instanceof org.sonar.plugins.java.api.tree.ClassTree declared) {
+        incompleteHierarchy |= declared.superClass() != null && declared.superClass().symbolType().isUnknown();
         Symbol.TypeSymbol enclosing = declared.symbol();
-        if (enclosing.equals(owner) || enclosing.type().isSubtypeOf(owner.type().erasure())) {
-          return true;
+        if (!isOutsideBody(declared, previous) && (enclosing.equals(owner) || enclosing.type().isSubtypeOf(owner.type().erasure()))) {
+          inScope = true;
         }
       }
     }
-    return false;
+    return inScope && !(symbol.isMethodSymbol() && incompleteHierarchy);
+  }
+
+  /** The annotations, type parameters and supertypes of a class are not part of its body, where its members are in scope. */
+  private static boolean isOutsideBody(org.sonar.plugins.java.api.tree.ClassTree declared, Tree child) {
+    return child == declared.modifiers() || child == declared.typeParameters() || child == declared.superClass()
+      || child == declared.superInterfaces();
   }
 
   private boolean uses(ImportTree importTree, String name, String qualifier, IdentifierTree identifier) {
@@ -319,6 +432,10 @@ final class CompilerWarnings extends BaseTreeVisitor {
       return false;
     }
     if (isStatic) {
+      if (symbol.isTypeSymbol()) {
+        String type = dottedType(symbol);
+        return type.startsWith(qualifier + ".") && type.indexOf('.', qualifier.length() + 1) < 0;
+      }
       return symbol.owner() instanceof Symbol.TypeSymbol owner && dottedType(owner).equals(qualifier);
     }
     Symbol type = symbol;

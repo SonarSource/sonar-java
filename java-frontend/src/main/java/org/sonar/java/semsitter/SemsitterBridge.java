@@ -95,6 +95,11 @@ public final class SemsitterBridge implements AutoCloseable {
     return server.types(new HashSet<>(names)).getAsJsonObject("types");
   }
 
+  /** Whether the package is declared by the project, the classpath or the JDK; null when the server cannot tell. */
+  public Boolean hasPackage(String name) throws IOException {
+    return server.hasPackage(name);
+  }
+
   /** Single-source parses have no module to scan, so the server does not serve them. */
   public JsonObject parse(String source) throws IOException {
     throw new IOException("single-source parse is not supported by the analyzer server");

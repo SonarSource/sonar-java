@@ -73,6 +73,7 @@ final class AnalyzerSession {
   private final Map<String, JsonObject> stableTypes = new HashMap<>();
   private final Map<String, JsonObject> batchTypes = new HashMap<>();
   private final Set<String> absent = new HashSet<>();
+  private final Map<String, Boolean> packages = new HashMap<>();
   private int nextId = 1;
 
   AnalyzerSession(Path executable) {
@@ -236,6 +237,7 @@ final class AnalyzerSession {
     stableTypes.clear();
     batchTypes.clear();
     absent.clear();
+    packages.clear();
   }
 
   /**
@@ -275,6 +277,7 @@ final class AnalyzerSession {
   private void scan(JsonObject settings, List<String> files) throws IOException {
     batchTypes.clear();
     absent.clear();
+    packages.clear();
     if (System.getenv("SEMSITTER_COUNTERS_FILE") != null) {
       System.err.println("SEMSITTER-SETTINGS " + settings);
     }
@@ -392,6 +395,27 @@ final class AnalyzerSession {
     response.addProperty("ok", true);
     response.add("types", found);
     return response;
+  }
+
+  /**
+   * Whether a type of the project, the classpath or the JDK is declared in the package {@code name} or one of its subpackages;
+   * null when the server could not tell (an answer with warnings, such as a scan with no classpath).
+   */
+  synchronized Boolean hasPackage(String name) throws IOException {
+    Boolean known = packages.get(name);
+    if (known == null && !packages.containsKey(name)) {
+      JsonObject request = new JsonObject();
+      request.addProperty("cmd", "has-package");
+      JsonArray array = new JsonArray();
+      array.add(name);
+      request.add("names", array);
+      JsonObject header = send(request, false).header;
+      boolean trusted = !header.has("warnings") || header.get("warnings").isJsonNull() || header.getAsJsonArray("warnings").isEmpty();
+      JsonElement answer = header.has("packages") && header.get("packages").isJsonObject() ? header.getAsJsonObject("packages").get(name) : null;
+      known = answer != null && answer.isJsonPrimitive() && (answer.getAsBoolean() || trusted) ? Boolean.valueOf(answer.getAsBoolean()) : null;
+      packages.put(name, known);
+    }
+    return known;
   }
 
   private record Answer(JsonObject header, byte[] payload) {}

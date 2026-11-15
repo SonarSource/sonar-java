@@ -160,14 +160,26 @@ final class SemsitterTranslator {
   private final List<String> staticOnDemandImports = new ArrayList<>();
   private final Deque<Map<String, Symbol>> scopes = new ArrayDeque<>();
   private final Deque<Type> returnTargets = new ArrayDeque<>();
+  private final Set<Tree> rawResults = new HashSet<>();
+
+  /** Whether {@code _} declares an unnamed variable (Java 22 and later) instead of a plain name. */
+  private boolean unnamedVariables = true;
+  /** Whether consecutive {@code ///} lines form one Markdown comment (Java 23 and later). */
+  private boolean markdownComments = true;
 
   private SemsitterTranslator(JSema sema) {
     this.sema = sema;
   }
 
   static JavaTree.CompilationUnitTreeImpl translate(JSema sema, JsonObject document) {
+    return translate(sema, document, Integer.MAX_VALUE);
+  }
+
+  static JavaTree.CompilationUnitTreeImpl translate(JSema sema, JsonObject document, int javaVersion) {
     boolean broken = document.has("hasError") && document.get("hasError").getAsBoolean();
     SemsitterTranslator translator = new SemsitterTranslator(sema);
+    translator.unnamedVariables = javaVersion >= 22;
+    translator.markdownComments = javaVersion >= 23;
     if (document.has("path") && document.get("path").isJsonPrimitive()) {
       String fileName = Path.of(document.get("path").getAsString()).getFileName().toString();
       translator.implicitClassName = fileName.endsWith(".java") ? fileName.substring(0, fileName.length() - 5) : fileName;
@@ -210,7 +222,14 @@ final class SemsitterTranslator {
     List<SyntaxTrivia> pending = new ArrayList<>();
     for (Node leaf : leaves) {
       if (isComment(leaf)) {
-        pending.add(trivia(leaf));
+        SyntaxTrivia previous = pending.isEmpty() ? null : pending.get(pending.size() - 1);
+        if (markdownComments && previous != null && previous.isComment(SyntaxTrivia.CommentKind.MARKDOWN) && leaf.text().startsWith("///")
+          && previous.range().end().line() + 1 == leaf.line()) {
+          pending.set(pending.size() - 1, new InternalSyntaxTrivia(SyntaxTrivia.CommentKind.MARKDOWN,
+            previous.comment() + "\n" + " ".repeat(leaf.col()) + trivia(leaf).comment(), previous.range().start().line(), previous.range().start().columnOffset()));
+        } else {
+          pending.add(trivia(leaf));
+        }
       } else {
         tokens.put(leaf.json, new InternalSyntaxToken(leaf.line(), leaf.col(), leaf.text(), pending, false));
         pending = new ArrayList<>();
@@ -492,14 +511,23 @@ final class SemsitterTranslator {
       default -> "class";
     };
     IdentifierTreeImpl name = identifier(requiredField(node, "name", firstOf(node, "identifier", "type_identifier")));
-    tree.complete(modifiers(node), token(required(node, keyword)), name);
+    InternalSyntaxToken keywordToken = token(required(node, keyword));
+    InternalSyntaxToken atToken = null;
+    if (kind == Tree.Kind.ANNOTATION_TYPE && "@interface".equals(keywordToken.text())) {
+      // The grammar has one token for both; the tree keeps the at sign and the keyword apart.
+      atToken = new InternalSyntaxToken(keywordToken.line(), keywordToken.column(), "@", keywordToken.trivias(), false);
+      keywordToken = new InternalSyntaxToken(keywordToken.line(), keywordToken.column() + 1, "interface", List.of(), false);
+    }
+    tree.complete(modifiers(node), keywordToken, name);
     Node typeParameters = field(node, "type_parameters");
     if (typeParameters != null) {
       tree.completeTypeParameters(typeParameters(typeParameters));
     }
     if (kind == Tree.Kind.ANNOTATION_TYPE) {
       Node at = keyword(node, "@");
-      if (at != null) {
+      if (atToken != null) {
+        tree.completeAtToken(atToken);
+      } else if (at != null) {
         tree.completeAtToken(token(at));
       }
     }
@@ -642,6 +670,10 @@ final class SemsitterTranslator {
     EnumConstantTreeImpl tree = new EnumConstantTreeImpl(modifiers(node), name, new NewClassTreeImpl(name, args, classBody), separator);
     bindDeclaration(tree, nameNode(node), name);
     Symbol.TypeSymbol enumType = types.peek();
+    if (classBody != null && enumType instanceof JSymbol enumSymbol) {
+      // An enum with a constant body is not final.
+      enumSymbol.removeModifier("final");
+    }
     if (enumType != null && !enumType.isUnknown()) {
       String owner = enumType.type().fullyQualifiedName();
       Symbol.MethodSymbol constructor = sema.declaredMethod(owner, "<init>", argumentTypes(args));
@@ -1510,6 +1542,9 @@ final class SemsitterTranslator {
         bindType(identifier, type);
       }
     }
+    if (!naming && identifier.symbol().isUnknown() && node.unresolved() && !"type_identifier".equals(node.k())) {
+      importedField(identifier);
+    }
     if (!naming && "type_identifier".equals(node.k())) {
       preferSingleImport(identifier);
       recoverType(identifier);
@@ -1577,7 +1612,41 @@ final class SemsitterTranslator {
     candidates.add(packageName.isEmpty() ? name : (packageName + "." + name));
     onDemandImports.forEach(prefix -> candidates.add(prefix + "." + name));
     candidates.add("java.lang." + name);
-    return candidates.stream().filter(sema::declaresType).findFirst().orElse(null);
+    String found = candidates.stream().filter(sema::declaresType).findFirst().orElse(null);
+    return found != null ? found : staticMemberType(name);
+  }
+
+  /** A member type that a static import, single or on demand, brings in. */
+  @Nullable
+  private String staticMemberType(String name) {
+    List<String> owners = new ArrayList<>();
+    if (staticImports.containsKey(name)) {
+      owners.add(staticImports.get(name));
+    }
+    owners.addAll(staticOnDemandImports);
+    for (String owner : owners) {
+      String binary = binaryTypeName(owner);
+      if (binary != null && sema.declaresType(binary + "$" + name)) {
+        return binary + "$" + name;
+      }
+    }
+    return null;
+  }
+
+  /** The binary name of the type a dotted name denotes, trying each dot as a nesting boundary. */
+  @Nullable
+  private String binaryTypeName(String dotted) {
+    String candidate = dotted;
+    while (true) {
+      if (sema.declaresType(candidate)) {
+        return candidate;
+      }
+      int dot = candidate.lastIndexOf('.');
+      if (dot < 0) {
+        return null;
+      }
+      candidate = candidate.substring(0, dot) + "$" + candidate.substring(dot + 1);
+    }
   }
 
   private void resolveQualifiedType(ExpressionTree qualifier, IdentifierTreeImpl identifier) {
@@ -1605,6 +1674,23 @@ final class SemsitterTranslator {
     return qualifier instanceof IdentifierTree name ? importedType(name.name()) : null;
   }
 
+  /** A name SemSitter left unresolved that a static import brings in as a field. */
+  private void importedField(IdentifierTreeImpl identifier) {
+    List<String> owners = new ArrayList<>();
+    if (staticImports.containsKey(identifier.name())) {
+      owners.add(staticImports.get(identifier.name()));
+    }
+    owners.addAll(staticOnDemandImports);
+    for (String owner : owners) {
+      Symbol.VariableSymbol field = sema.declaredField(owner, identifier.name());
+      if (field != null && field.isStatic()) {
+        identifier.symbol = field;
+        ascribe(identifier, field.type());
+        return;
+      }
+    }
+  }
+
   /** The method SemSitter left unresolved, looked up in the receiver type, or in the enclosing types and static imports of an unqualified call. */
   @Nullable
   private Symbol.MethodSymbol libraryMethod(@Nullable ExpressionTree qualifier, String name, List<Type> arguments, Set<Integer> functions) {
@@ -1629,7 +1715,7 @@ final class SemsitterTranslator {
       owners.addAll(staticOnDemandImports);
     }
     Symbol.MethodSymbol found = owners.stream().map(owner -> sema.declaredMethod(owner, name, arguments, functions)).filter(Objects::nonNull).findFirst().orElse(null);
-    if (found == null && qualifier != null && !owners.contains("java.lang.Object")) {
+    if (found == null && qualifier != null && !qualifier.symbolType().isUnknown() && !owners.contains("java.lang.Object")) {
       found = sema.declaredMethod("java.lang.Object", name, arguments, functions);
     }
     return found;
@@ -1736,7 +1822,8 @@ final class SemsitterTranslator {
   private void ascribeArguments(Symbol.MethodSymbol method, List<Type> parameters, List<ExpressionTree> arguments) {
     for (int i = 0; i < arguments.size() && !parameters.isEmpty(); i++) {
       Type parameter = parameters.get(Math.min(i, parameters.size() - 1));
-      if (method.isVarArgsMethod() && i >= parameters.size() - 1 && parameter.isArray() && arguments.size() != parameters.size()) {
+      if (method.isVarArgsMethod() && i >= parameters.size() - 1 && parameter.isArray()
+        && (arguments.size() != parameters.size() || arguments.get(i).is(Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.METHOD_REFERENCE))) {
         parameter = ((Type.ArrayType) parameter).elementType();
       }
       if (i < parameters.size() || method.isVarArgsMethod()) {
@@ -1803,7 +1890,7 @@ final class SemsitterTranslator {
 
   private IdentifierTreeImpl identifier(Node node) {
     String text = node.text().isEmpty() ? node.k() : node.text();
-    return new IdentifierTreeImpl(tokens.getOrDefault(node.json, new InternalSyntaxToken(node.line(), node.col(), text, List.of(), false)), "_".equals(text));
+    return new IdentifierTreeImpl(tokens.getOrDefault(node.json, new InternalSyntaxToken(node.line(), node.col(), text, List.of(), false)), unnamedVariables && "_".equals(text));
   }
 
   private LiteralTreeImpl integerLiteral(Node node) {
@@ -1951,11 +2038,22 @@ final class SemsitterTranslator {
         }
       }
       Type returned = sema.withExplicitTypeArguments(explicit, () -> sema.invocationReturn(method, receiver, typed));
+      Type erased = qualifier != null && receiver.isRawType() && isWrittenRaw(qualifier) ? sema.rawReturn(method) : null;
+      if (erased != null) {
+        // a member of a raw type has the erasure of its declared type
+        returned = erased;
+        rawResults.add(tree);
+      }
       JMethodSymbol view = sema.invocationView(method, receiver, parameters, returned);
       tree.methodSymbol = view;
       identifier.symbol = view;
       ascribe(identifier, returned);
       ascribe(tree, returned);
+    } else if (tree.methodSymbol == null) {
+      // An unresolved call keeps its written name, as a recovered binding does.
+      JMethodSymbol unresolved = new JMethodSymbol(sema, null, identifier.name());
+      unresolved.unknown(true);
+      tree.methodSymbol = unresolved;
     }
     return tree;
   }
@@ -2029,12 +2127,22 @@ final class SemsitterTranslator {
     }
   }
 
+  /** Whether a receiver is raw because of what is written: a variable declared with a raw type, or the erased result of such a call. */
+  private boolean isWrittenRaw(ExpressionTree qualifier) {
+    if (rawResults.contains(qualifier)) {
+      return true;
+    }
+    Symbol symbol = qualifier instanceof IdentifierTree identifier ? identifier.symbol() : Symbol.UNKNOWN_SYMBOL;
+    return symbol.isVariableSymbol() && symbol.declaration() instanceof VariableTree variable
+      && variable.type() instanceof IdentifierTree && !"var".equals(((IdentifierTree) variable.type()).name());
+  }
+
   private NewArrayTreeImpl arrayCreation(Node node) {
     Node initializer = field(node, "value");
-    String dimensionsKind = initializer == null ? "dimensions_expr" : "dimensions";
     List<ArrayDimensionTree> dims = new ArrayList<>();
     for (Node child : node.children()) {
-      if (dimensionsKind.equals(child.k())) {
+      // sized dimensions, then unsized ones: new byte[n][]
+      if ("dimensions_expr".equals(child.k()) || "dimensions".equals(child.k())) {
         dims.addAll(dimensions(child));
       }
     }
@@ -2061,7 +2169,8 @@ final class SemsitterTranslator {
   private AssignmentExpressionTreeImpl elementValuePair(Node node) {
     Node key = requiredField(node, "key", firstNamed(node));
     IdentifierTreeImpl name = identifier(key);
-    bindUse(name, key);
+    // An element name is never a local variable or a parameter of the same name.
+    bindUse(name, key, true);
     ExpressionTree value = expression(requiredField(node, "value", lastNamed(node)));
     AssignmentExpressionTreeImpl tree = new AssignmentExpressionTreeImpl(Tree.Kind.ASSIGNMENT, name, token(required(node, "=")), value);
     ascribe(tree, value.symbolType());
@@ -2181,8 +2290,72 @@ final class SemsitterTranslator {
     ExpressionTree then = expression(requiredField(node, "consequence", firstNamed(node)));
     ExpressionTree otherwise = expression(requiredField(node, "alternative", lastNamed(node)));
     ConditionalExpressionTreeImpl tree = new ConditionalExpressionTreeImpl(condition, token(required(node, "?")), then, token(required(node, ":")), otherwise);
-    ascribe(tree, then.symbolType().isUnknown() ? otherwise.symbolType() : then.symbolType());
+    ascribe(tree, conditionalType(then, otherwise));
     return tree;
+  }
+
+  /** The type of a conditional: operands of numeric or boolean types are unboxed and promoted, others keep the more general operand type. */
+  private Type conditionalType(ExpressionTree then, ExpressionTree otherwise) {
+    Type first = then.symbolType();
+    Type second = otherwise.symbolType();
+    if (first.isUnknown() || second.isUnknown()) {
+      return first.isUnknown() ? second : first;
+    }
+    if (first.equals(second)) {
+      return first;
+    }
+    Type left = first.isPrimitive() ? first : first.primitiveType();
+    Type right = second.isPrimitive() ? second : second.primitiveType();
+    boolean oneIsPrimitive = first.isPrimitive() || second.isPrimitive();
+    if (left != null && right != null && (oneIsPrimitive || (first.isPrimitiveWrapper() && second.isPrimitiveWrapper() && !left.equals(right)))) {
+      if (left.equals(right)) {
+        return left;
+      }
+      if (left.is("boolean") || right.is("boolean")) {
+        return first;
+      }
+      return numericPromotion(left, right, then, otherwise);
+    }
+    if (first.isNullType() && second.isPrimitive()) {
+      return second.primitiveWrapperType();
+    }
+    if (second.isNullType() && first.isPrimitive()) {
+      return first.primitiveWrapperType();
+    }
+    if (first.isNullType()) {
+      return second;
+    }
+    if (second.isNullType()) {
+      return first;
+    }
+    if (!first.isPrimitive() && !second.isPrimitive() && second.isSubtypeOf(first.erasure())) {
+      return first;
+    }
+    if (!first.isPrimitive() && !second.isPrimitive() && first.isSubtypeOf(second.erasure())) {
+      return second;
+    }
+    return first;
+  }
+
+  private Type numericPromotion(Type left, Type right, ExpressionTree then, ExpressionTree otherwise) {
+    List<String> order = List.of("byte", "short", "char", "int", "long", "float", "double");
+    int a = order.indexOf(left.fullyQualifiedName());
+    int b = order.indexOf(right.fullyQualifiedName());
+    if (a < 0 || b < 0) {
+      return left;
+    }
+    boolean byteAndShort = (a == 0 && b == 1) || (a == 1 && b == 0);
+    if (byteAndShort) {
+      return sema.getClassType("short");
+    }
+    // a constant int that fits the narrower operand keeps that type
+    if (a < 3 && right.is("int") && otherwise.is(Tree.Kind.INT_LITERAL)) {
+      return left;
+    }
+    if (b < 3 && left.is("int") && then.is(Tree.Kind.INT_LITERAL)) {
+      return right;
+    }
+    return sema.getClassType(order.get(Math.max(3, Math.max(a, b))));
   }
 
   private TypeCastExpressionTreeImpl cast(Node node) {
@@ -2213,7 +2386,7 @@ final class SemsitterTranslator {
       tree = new InstanceOfTreeImpl(left, token(required(node, "instanceof")), pattern(patternNode));
     } else if (name != null && right != null) {
       VariableTreeImpl variable = new VariableTreeImpl(modifiers(node), type(right), identifier(name));
-      bindDeclaration(variable, name, identifier(name));
+      bindDeclaration(variable, name, (IdentifierTreeImpl) variable.simpleName());
       TypePatternTreeImpl pattern = new TypePatternTreeImpl(variable);
       ascribe(pattern, variable.symbol().type().isUnknown() ? variable.type().symbolType() : variable.symbol().type());
       tree = new InstanceOfTreeImpl(left, token(required(node, "instanceof")), pattern);
@@ -3106,13 +3279,13 @@ final class SemsitterTranslator {
     return "line_comment".equals(node.k()) || "block_comment".equals(node.k());
   }
 
-  private static SyntaxTrivia trivia(Node node) {
+  private SyntaxTrivia trivia(Node node) {
     String text = node.text();
     if (text.startsWith("//") && text.endsWith("\r")) {
       text = text.substring(0, text.length() - 1);
     }
     SyntaxTrivia.CommentKind kind;
-    if (text.startsWith("///")) {
+    if (markdownComments && text.startsWith("///")) {
       kind = SyntaxTrivia.CommentKind.MARKDOWN;
     } else if (text.startsWith("/**") && !"/**/".equals(text)) {
       kind = SyntaxTrivia.CommentKind.JAVADOC;

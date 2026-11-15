@@ -254,6 +254,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
         }
       }
       addImplicitConstructor(resolved);
+      addImplicitEnumMethods(resolved);
       members = resolved;
     }
     return members;
@@ -262,6 +263,29 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
   /** A type parameter is listed among the members of a project type but is not a member symbol. */
   private static boolean isTypeParameterFact(JsonObject member) {
     return member.get("facts") instanceof JsonObject facts && facts.get("kind") instanceof JsonPrimitive kind && "typeparameter".equals(kind.getAsString());
+  }
+
+  /** An enum declared in this file has the static methods {@code values()} and {@code valueOf(String)}. */
+  private void addImplicitEnumMethods(List<Symbol> resolved) {
+    if (id == null || isUnknown() || !isEnum() || declaration() == null || !(type() instanceof JType declared)) {
+      return;
+    }
+    if (resolved.stream().noneMatch(member -> member.isMethodSymbol() && "values".equals(member.name()))) {
+      JMethodSymbol values = implicitEnumMethod("values", List.of(), JType.array(sema, declared));
+      resolved.add(values);
+    }
+    if (resolved.stream().noneMatch(member -> member.isMethodSymbol() && "valueOf".equals(member.name()))) {
+      resolved.add(implicitEnumMethod("valueOf", List.of(sema.getClassType("java.lang.String")), declared));
+    }
+  }
+
+  private JMethodSymbol implicitEnumMethod(String name, List<Type> parameters, Type returned) {
+    JMethodSymbol method = new JMethodSymbol(sema, id + "#" + name + "(" + (parameters.isEmpty() ? "" : "java.lang.String") + ")", name);
+    method.owner(this);
+    method.addModifiers(List.of("public", "static"));
+    method.parameterTypes(parameters);
+    method.returnTypeSymbol(returned.symbol());
+    return method;
   }
 
   /** A class of this file that declares no constructor still has the default one as a member. */

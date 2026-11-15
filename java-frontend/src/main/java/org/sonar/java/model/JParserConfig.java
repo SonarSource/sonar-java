@@ -197,7 +197,14 @@ public abstract class JParserConfig {
           throw new UncheckedIOException(failure);
         }
       });
-      return new Result(SemsitterTranslator.translate(sema, document));
+      sema.loadPackages(name -> {
+        try {
+          return bridge == null ? null : bridge.hasPackage(name);
+        } catch (IOException failure) {
+          throw new UncheckedIOException(failure);
+        }
+      });
+      return new Result(SemsitterTranslator.translate(sema, document, javaVersion.isNotSet() ? Integer.MAX_VALUE : javaVersion.asInt()));
     } catch (Exception e) {
       return new Result(e);
     } finally {
