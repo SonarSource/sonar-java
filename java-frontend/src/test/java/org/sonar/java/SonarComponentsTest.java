@@ -1234,10 +1234,8 @@ class SonarComponentsTest {
       assertThat(list)
         .startsWith("Unresolved imports/types: (Limited to 50)")
         .endsWith("- ...")
-        .contains("- org.package01.A cannot be resolved to a type")
-        .contains("- org.package50.T49 cannot be resolved to a type")
-        .doesNotContain("org.package51.")
-        .doesNotContain("org.package60.");
+        .contains("- A cannot be resolved to a type");
+      assertThat(list.lines().filter(line -> line.startsWith("- ") && !line.equals("- ...")).count()).isEqualTo(50);
     }
 
     @Test
@@ -1273,7 +1271,7 @@ class SonarComponentsTest {
       assertThat(debugLogs.get(0))
         .startsWith("Unresolved imports/types:")
         .doesNotContain("- ...")
-        .contains("- org.package01.A cannot be resolved to a type");
+        .contains("- A cannot be resolved to a type");
     }
 
     @Test
@@ -1330,7 +1328,7 @@ class SonarComponentsTest {
       assertThat(linesInDebugMessage)
         .containsExactly(
           "Unresolved imports/types:",
-          "- org.package01.A cannot be resolved to a type",
+          "- A cannot be resolved to a type",
           "  * fooMain.java",
           "  * fooTest.java"
         );
