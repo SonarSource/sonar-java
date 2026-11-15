@@ -325,7 +325,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
 
   private void match(List<MethodSymbol> found, TypeSymbol parent, @Nullable Type declaring) {
     for (Symbol member : parent.memberSymbols()) {
-      if (member.isMethodSymbol() && name().equals(member.name()) && sameSignature((MethodSymbol) member, declaring)) {
+      if (member.isMethodSymbol() && !member.isStatic() && name().equals(member.name()) && sameSignature((MethodSymbol) member, declaring)) {
         found.add(withWrittenTypeArgument((MethodSymbol) member, declaring));
         return;
       }

@@ -199,7 +199,7 @@ public final class JSema implements Sema {
     for (String fqn : missing) {
       if (!typeInfos.containsKey(fqn)) {
         typesByName.get(fqn).unknown(true);
-        undefinedTypes.add(new JProblem(fqn, ProblemKind.UNDEFINED_TYPE));
+        undefinedTypes.add(JProblem.undefinedType(fqn));
       }
     }
   }
@@ -371,7 +371,7 @@ public final class JSema implements Sema {
       applyTypeInfo(created, info);
     } else if (typesLoaded && !isWellKnown(fqn)) {
       created.unknown(true);
-      undefinedTypes.add(new JProblem(fqn, ProblemKind.UNDEFINED_TYPE));
+      undefinedTypes.add(JProblem.undefinedType(fqn));
     }
     return created;
   }
