@@ -17,6 +17,7 @@
 package org.sonar.java.model;
 
 import com.google.gson.JsonObject;
+import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -204,7 +205,11 @@ public abstract class JParserConfig {
           throw new UncheckedIOException(failure);
         }
       });
-      return new Result(SemsitterTranslator.translate(sema, document, javaVersion.isNotSet() ? Integer.MAX_VALUE : javaVersion.asInt()));
+      JavaTree.CompilationUnitTreeImpl unit = SemsitterTranslator.translate(sema, document, javaVersion.isNotSet() ? Integer.MAX_VALUE : javaVersion.asInt());
+      if (unit.hasError()) {
+        return new Result(new RecognitionException(unit.errorLine(), "Parse error at line " + unit.errorLine() + " column " + unit.errorColumn()));
+      }
+      return new Result(unit);
     } catch (Exception e) {
       return new Result(e);
     } finally {

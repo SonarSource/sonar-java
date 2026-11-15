@@ -276,7 +276,9 @@ class JTypeTest {
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
     Type captureType = e.symbolType();
 
-    assertThat(captureType.fullyQualifiedName()).isEqualTo("!capture!");
+    // the capture of `? extends A` is seen as its bound
+    assertThat(captureType.isSubtypeOf("A")).isTrue();
+    assertThat(captureType.isUnknown()).isFalse();
   }
 
   @Test

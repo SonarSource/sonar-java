@@ -167,6 +167,7 @@ public abstract class JavaTree implements Tree {
     private Set<Problem> semanticProblems = Set.of();
     private Runnable environmentCleaner = () -> {};
     private int errorLine;
+    private int errorColumn;
 
     private final Map<ProblemKind, List<Warning>> warnings = new EnumMap<>(ProblemKind.class);
 
@@ -188,6 +189,16 @@ public abstract class JavaTree implements Tree {
     /** Line of the first syntax error, 0 when the source has none. */
     public int errorLine() {
       return errorLine;
+    }
+
+    /** Column, counted from 1, of the first syntax error. */
+    public int errorColumn() {
+      return errorColumn;
+    }
+
+    public void setError(int line, int column) {
+      this.errorLine = line;
+      this.errorColumn = column;
     }
 
     public void setErrorLine(int errorLine) {

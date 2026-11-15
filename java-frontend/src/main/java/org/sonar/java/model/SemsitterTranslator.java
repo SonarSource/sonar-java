@@ -196,7 +196,7 @@ final class SemsitterTranslator {
     EffectivelyFinalVariables.mark(unit);
     if (broken) {
       Node problem = firstProblem(root);
-      unit.setErrorLine(problem == null ? 1 : problem.line());
+      unit.setError(problem == null ? 1 : problem.line(), problem == null ? 1 : problem.col() + 1);
     }
     return unit;
   }
