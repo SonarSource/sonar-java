@@ -459,6 +459,9 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <runOrder>alphabetical</runOrder>
+          <properties>
+            <configurationParameters>junit.jupiter.extensions.autodetection.enabled = true</configurationParameters>
+          </properties>
           <environmentVariables>
             <M2_REPO>${settings.localRepository}</M2_REPO>
           </environmentVariables>
