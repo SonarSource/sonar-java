@@ -37,7 +37,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
   private final boolean typeParameter;
   private int typeParameterCount;
-  private JType declarationType;
+  private JType declaringType;
   @Nullable
   private String superName;
   private List<String> interfaceNames = List.of();
@@ -106,16 +106,16 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     return boundTrees.stream().map(TypeTree::symbolType).toList();
   }
 
-  @Override
-  public Type type() {
-    Type own = super.type();
-    if (typeParameterCount > 0 && own instanceof JType named && named.kind == JType.Kind.NAMED && named.args.isEmpty() && !named.isDeclaration()) {
-      if (declarationType == null || !declarationType.equals(named)) {
-        declarationType = named.asDeclaration();
+  /** The generic declaration of a raw use of this type: its type parameters as arguments, one instance per symbol. */
+  JType declaringType(JType raw) {
+    if (declaringType == null) {
+      List<JType> variables = new ArrayList<>();
+      for (int i = 0; i < typeParameterCount; i++) {
+        variables.add(JType.typeVar(sema, "T" + i, raw.fqn + "<" + i + ">"));
       }
-      return declarationType;
+      declaringType = JType.named(sema, raw.fqn, variables);
     }
-    return own;
+    return declaringType;
   }
 
   int typeParameterCount() {
