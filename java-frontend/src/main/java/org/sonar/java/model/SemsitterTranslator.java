@@ -2139,6 +2139,10 @@ final class SemsitterTranslator {
     if (identifier.symbol instanceof JMethodSymbol method && !method.isUnknown() && !JSema.arityMatches(method, arguments.size())) {
       identifier.symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
     }
+    if (qualifier != null && receiver.isUnknown() && !receiver.symbol().isUnknown() && !naming) {
+      // a member of a parameterization with an undeclared argument is not bound
+      identifier.symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
+    }
     if (identifier.symbol instanceof JMethodSymbol method) {
       List<Type> explicit = tree.typeArguments() == null ? List.of() : tree.typeArguments().stream().map(argument -> ((TypeTree) argument).symbolType()).toList();
       List<Type> parameters = sema.withExplicitTypeArguments(explicit, () -> sema.invocationParameters(method, receiver, arguments));
@@ -2646,7 +2650,7 @@ final class SemsitterTranslator {
     return tree;
   }
 
-  /** The compiler leaves the body of a lambda without a target unresolved: its inferred parameters are not bound where used. */
+  /** The compiler leaves the receivers of a lambda without a target unresolved: its inferred parameters are not bound where they qualify a member. */
   private void unbindUntypedParameters(LambdaExpressionTreeImpl lambda) {
     if (naming || !lambda.symbolType().isUnknown()) {
       return;
@@ -2662,11 +2666,12 @@ final class SemsitterTranslator {
     }
     lambda.body().accept(new BaseTreeVisitor() {
       @Override
-      public void visitIdentifier(IdentifierTree tree) {
-        if (tree instanceof IdentifierTreeImpl use && untyped.contains(use.symbol())) {
+      public void visitMemberSelectExpression(MemberSelectExpressionTree select) {
+        if (select.expression() instanceof IdentifierTreeImpl use && untyped.contains(use.symbol())) {
           use.symbol().usages().remove(use);
           use.symbol = Symbol.UNKNOWN_SYMBOL;
         }
+        super.visitMemberSelectExpression(select);
       }
     });
   }
