@@ -2180,7 +2180,9 @@ final class SemsitterTranslator {
         // the static type of the call is Class<? extends |T|> where T is the static type of the receiver
         returned = JType.named(sema, "java.lang.Class", List.of(JType.wildcard(sema, erasedReceiver)));
       }
-      JMethodSymbol view = sema.invocationView(method, receiver, parameters, returned);
+      List<Type> thrownArguments = withCreatedTypes(tree.arguments(), typed);
+      List<Type> thrown = sema.withExplicitTypeArguments(explicit, () -> sema.invocationThrown(method, receiver, thrownArguments));
+      JMethodSymbol view = sema.invocationView(method, receiver, parameters, returned, thrown);
       tree.methodSymbol = view;
       identifier.symbol = view;
       ascribe(identifier, returned);
@@ -2192,6 +2194,27 @@ final class SemsitterTranslator {
       tree.methodSymbol = unresolved;
     }
     return tree;
+  }
+
+  /**
+   * The argument types with each supplier of a created object, {@code Type::new} or {@code () -> new Type(..)},
+   * typed as {@code Supplier<Type>}: the type a generic throws clause is inferred from.
+   */
+  private List<Type> withCreatedTypes(List<ExpressionTree> expressions, List<Type> types) {
+    List<Type> result = new ArrayList<>(types);
+    for (int i = 0; i < result.size(); i++) {
+      Type created = null;
+      ExpressionTree argument = expressions.get(i);
+      if (argument instanceof MethodReferenceTreeImpl reference && "new".equals(reference.method().name()) && reference.expression() instanceof TypeTree qualifier) {
+        created = qualifier.symbolType();
+      } else if (argument instanceof LambdaExpressionTreeImpl lambda && lambda.parameters().isEmpty() && lambda.body() instanceof NewClassTreeImpl creation) {
+        created = creation.symbolType();
+      }
+      if (created != null && !created.isUnknown() && created.isClass()) {
+        result.set(i, JType.named(sema, "java.util.function.Supplier", List.of(sema.asJType(created))));
+      }
+    }
+    return result;
   }
 
   private ExpressionTree typeExpression(Node node) {

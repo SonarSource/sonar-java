@@ -740,6 +740,36 @@ public final class JSema implements Sema {
     return info != null && !strings(info, "typeVars").isEmpty();
   }
 
+  /**
+   * The thrown types of a call when the method throws a type variable, taken from the arguments the variable is
+   * inferred from, or null when the erased thrown types stand.
+   */
+  @Nullable
+  List<Type> invocationThrown(JMethodSymbol method, @Nullable Type receiver, List<Type> arguments) {
+    JsonObject member = method.isUnknown() ? null : lookupGenericMember(method);
+    if (member == null || !(member.get("throwsTypes") instanceof JsonArray facts) || facts.isEmpty()) {
+      return null;
+    }
+    Map<String, Type> substitution = new HashMap<>(methodSubstitution(method, arguments));
+    if (receiver != null) {
+      substitution.putAll(classSubstitution(method, receiver));
+    }
+    List<Type> erased = method.thrownTypes();
+    List<Type> result = new ArrayList<>();
+    boolean changed = false;
+    for (int i = 0; i < facts.size(); i++) {
+      Type fallback = i < erased.size() ? erased.get(i) : Type.UNKNOWN;
+      Type inferred = facts.get(i) instanceof JsonObject fact && "typevar".equals(text(fact, "kind")) ? typeFromFact(fact, substitution, true) : null;
+      if (inferred == null || inferred.isUnknown() || mentionsTypeVariable(inferred)) {
+        result.add(fallback);
+      } else {
+        result.add(inferred);
+        changed = true;
+      }
+    }
+    return changed ? result : null;
+  }
+
   /** Maps the type variables of {@code method} itself to the arguments they are inferred from. */
   private Map<String, Type> methodSubstitution(JMethodSymbol method, List<Type> arguments) {
     JsonObject member = arguments.isEmpty() && explicitTypeArguments.isEmpty() ? null : lookupGenericMember(method);
@@ -1032,8 +1062,16 @@ public final class JSema implements Sema {
 
   /** The method as seen from {@code receiver}, so its owner keeps that parameterization. */
   JMethodSymbol invocationView(JMethodSymbol method, @Nullable Type receiver, List<Type> parameters, Type returned) {
-    boolean substituted = method.substitutes(parameters, returned);
+    return invocationView(method, receiver, parameters, returned, null);
+  }
+
+  /** As above, with the thrown types the call infers when the method throws a type variable. */
+  JMethodSymbol invocationView(JMethodSymbol method, @Nullable Type receiver, List<Type> parameters, Type returned, @Nullable List<Type> thrown) {
+    boolean substituted = method.substitutes(parameters, returned) || thrown != null;
     JMethodSymbol view = method.withSignature(parameters, returned);
+    if (thrown != null) {
+      view.thrownTypes(thrown);
+    }
     if (!view.isParametrizedMethod() && declaresTypeVariables(method, substituted)) {
       view.parametrized(true);
     }
