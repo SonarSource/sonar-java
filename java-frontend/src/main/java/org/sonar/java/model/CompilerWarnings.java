@@ -61,6 +61,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
   private final Map<ProblemKind, Set<JWarning>> warnings = new EnumMap<>(ProblemKind.class);
   private final List<IdentifierTree> identifiers = new ArrayList<>();
   private final Set<String> javadocNames = new HashSet<>();
+  private final List<TryStatementTree> tries = new ArrayList<>();
   private final JSema sema;
 
   private CompilerWarnings(JSema sema) {
@@ -74,6 +75,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
     unit.imports().forEach(visitor::scan);
     visitor.collectJavadocNames(unit);
     visitor.reportUnusedImports(unit);
+    visitor.reportUnreachableCatches(unit);
     unit.addWarnings(visitor.warnings);
   }
 
@@ -233,7 +235,149 @@ final class CompilerWarnings extends BaseTreeVisitor {
       }
       alternatives.stream().map(TypeTree::symbolType).filter(type -> !type.isUnknown()).forEach(caught::add);
     }
+    tries.add(tree);
     super.visitTryStatement(tree);
+  }
+
+  /** Flow analysis is not done for a unit that has unresolved names. */
+  private void reportUnreachableCatches(JavaTree.CompilationUnitTreeImpl unit) {
+    String currentPackage = unit.packageDeclaration() == null ? "" : dotted(unit.packageDeclaration().packageName());
+    boolean unresolved = identifiers.stream().anyMatch(identifier -> identifier.symbol().isUnknown())
+      || unit.imports().stream().anyMatch(clause -> clause instanceof ImportTree tree && !isResolvable(tree, dotted(tree.qualifiedIdentifier()), currentPackage));
+    if (!unresolved) {
+      tries.forEach(this::reportUnreachableCatches);
+    }
+  }
+
+  /** A catch of a checked exception that nothing left over by the previous catches can reach. */
+  private void reportUnreachableCatches(TryStatementTree tree) {
+    ThrownTypes body = new ThrownTypes();
+    body.scanTry(tree.resourceList(), tree.block());
+    if (body.unknown) {
+      return;
+    }
+    List<Type> remaining = new ArrayList<>(body.thrown);
+    for (CatchTree catchTree : tree.catches()) {
+      TypeTree parameterType = catchTree.parameter().type();
+      List<TypeTree> alternatives = parameterType instanceof UnionTypeTree union ? union.typeAlternatives() : List.of(parameterType);
+      List<Type> handled = new ArrayList<>();
+      for (TypeTree alternative : alternatives) {
+        Type type = alternative.symbolType();
+        if (type.isUnknown()) {
+          return;
+        }
+        handled.add(type);
+        if (isCheckedException(type) && remaining.stream().noneMatch(thrown -> thrown.isSubtypeOf(type) || type.isSubtypeOf(thrown))) {
+          add(ProblemKind.MASKED_CATCH, "Unreachable catch block for " + type.name() + ". Only more specific exceptions are thrown and handled by previous catch block(s)", alternative);
+        }
+      }
+      remaining.removeIf(thrown -> handled.stream().anyMatch(thrown::isSubtypeOf));
+    }
+  }
+
+  /** Neither unchecked nor a supertype of the unchecked ones. */
+  private static boolean isCheckedException(Type type) {
+    return type.isClass() && type.isSubtypeOf("java.lang.Throwable") && !type.isSubtypeOf("java.lang.RuntimeException") && !type.isSubtypeOf("java.lang.Error")
+      && !type.is("java.lang.Exception") && !type.is("java.lang.Throwable");
+  }
+
+  /** The exception types the statements of a try body can throw, not looking inside lambdas and nested classes. */
+  private static final class ThrownTypes extends BaseTreeVisitor {
+    final List<Type> thrown = new ArrayList<>();
+    boolean unknown;
+
+    void scanTry(List<Tree> resources, Tree block) {
+      for (Tree resource : resources) {
+        scan(resource);
+        Type type = resource instanceof org.sonar.plugins.java.api.tree.VariableTree variable ? variable.type().symbolType()
+          : resource instanceof ExpressionTree expression ? expression.symbolType() : null;
+        addClose(type);
+      }
+      scan(block);
+    }
+
+    private void addClose(Type type) {
+      if (type == null || type.isUnknown()) {
+        unknown = true;
+        return;
+      }
+      List<Type> candidates = new ArrayList<>(List.of(type));
+      type.symbol().superTypes().forEach(candidates::add);
+      for (Type candidate : candidates) {
+        for (Symbol member : candidate.symbol().memberSymbols()) {
+          if (member instanceof Symbol.MethodSymbol method && "close".equals(method.name()) && method.parameterTypes().isEmpty()) {
+            addAll(method);
+            return;
+          }
+        }
+      }
+      unknown = true;
+    }
+
+    private void addAll(Symbol.MethodSymbol method) {
+      if (method.isUnknown()) {
+        unknown = true;
+        return;
+      }
+      method.thrownTypes().forEach(this::add);
+    }
+
+    private void add(Type type) {
+      if (type.isUnknown() || !type.isClass()) {
+        unknown = true;
+      } else {
+        thrown.add(type);
+      }
+    }
+
+    @Override
+    public void visitMethodInvocation(org.sonar.plugins.java.api.tree.MethodInvocationTree tree) {
+      super.visitMethodInvocation(tree);
+      addAll(tree.methodSymbol());
+    }
+
+    @Override
+    public void visitNewClass(org.sonar.plugins.java.api.tree.NewClassTree tree) {
+      scan(tree.enclosingExpression());
+      scan(tree.arguments());
+      addAll(tree.methodSymbol());
+    }
+
+    @Override
+    public void visitThrowStatement(org.sonar.plugins.java.api.tree.ThrowStatementTree tree) {
+      super.visitThrowStatement(tree);
+      add(tree.expression().symbolType());
+    }
+
+    @Override
+    public void visitTryStatement(TryStatementTree tree) {
+      ThrownTypes inner = new ThrownTypes();
+      inner.scanTry(tree.resourceList(), tree.block());
+      unknown |= inner.unknown;
+      List<Type> caught = new ArrayList<>();
+      tree.catches().forEach(catchTree -> {
+        TypeTree parameterType = catchTree.parameter().type();
+        (parameterType instanceof UnionTypeTree union ? union.typeAlternatives() : List.of(parameterType)).forEach(alternative -> caught.add(alternative.symbolType()));
+        scan(catchTree.block());
+      });
+      inner.thrown.stream().filter(type -> caught.stream().noneMatch(type::isSubtypeOf)).forEach(thrown::add);
+      scan(tree.finallyBlock());
+    }
+
+    @Override
+    public void visitLambdaExpression(org.sonar.plugins.java.api.tree.LambdaExpressionTree tree) {
+      // not thrown by the enclosing statements
+    }
+
+    @Override
+    public void visitMethodReference(org.sonar.plugins.java.api.tree.MethodReferenceTree tree) {
+      scan(tree.expression());
+    }
+
+    @Override
+    public void visitClass(org.sonar.plugins.java.api.tree.ClassTree tree) {
+      // a nested class has its own callables
+    }
   }
 
   @Override
