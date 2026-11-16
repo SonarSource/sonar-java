@@ -1786,7 +1786,8 @@ final class SemsitterTranslator {
   /** Types a lambda, a method reference or an array initializer from the type its context expects. */
   private void ascribeTarget(ExpressionTree expression, Type target) {
     boolean targetTyped = expression.is(Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.METHOD_REFERENCE) || (expression instanceof NewArrayTreeImpl array && array.type() == null);
-    if (targetTyped && expression.symbolType().isUnknown() && !target.isUnknown()) {
+    // an erased type variable (Object) is not a functional interface: wait for the inferred parameter
+    if (targetTyped && expression.symbolType().isUnknown() && !target.isUnknown() && !target.is("java.lang.Object")) {
       ascribe(expression, expression instanceof NewArrayTreeImpl ? target : sema.groundType(target));
     }
     if (expression instanceof NewClassTreeImpl newClass) {
@@ -1804,6 +1805,10 @@ final class SemsitterTranslator {
       Type inferred = sema.targetedReturn(generic, target);
       if (inferred != null) {
         ascribe(call, inferred);
+        List<Type> parameters = sema.targetedParameters(generic, target);
+        if (parameters != null && parameters.size() == generic.parameterTypes().size()) {
+          ascribeArguments(generic, parameters, call.arguments());
+        }
       }
     }
     if (expression instanceof LambdaExpressionTreeImpl lambda) {
@@ -2260,14 +2265,31 @@ final class SemsitterTranslator {
     }
   }
 
+  /** A diamond without a target takes the class arguments its constructor arguments fix. */
+  private void inferDiamondFromArguments(NewClassTreeImpl tree, JMethodSymbol constructor) {
+    if (!(tree.identifier() instanceof JavaTree.ParameterizedTypeTreeImpl generic) || !generic.typeArguments().isEmpty()) {
+      return;
+    }
+    Type inferred = sema.inferDiamondFromArguments(constructor, generic.symbolType(), argumentTypes(tree.arguments()));
+    if (inferred.isParameterized()) {
+      ascribe(generic, inferred);
+    }
+  }
+
   /** A generic constructor is seen with the type arguments its call infers for the parameters. */
   private void viewWithInferredParameters(NewClassTreeImpl tree, IdentifierTreeImpl identifier) {
     if (!(identifier.symbol() instanceof JMethodSymbol constructor) || constructor.isUnknown()) {
       return;
     }
+    inferDiamondFromArguments(tree, constructor);
     List<Type> parameters = sema.invocationParameters(constructor, tree.identifier().symbolType(), argumentTypes(tree.arguments()));
     if (!parameters.equals(constructor.parameterTypes())) {
-      identifier.symbol = sema.invocationView(constructor, tree.identifier().symbolType(), parameters, constructor.returnType().type());
+      JMethodSymbol view = sema.invocationView(constructor, tree.identifier().symbolType(), parameters, constructor.returnType().type());
+      if (view != constructor && !constructor.isParametrizedMethod()) {
+        // the class arguments written at the call do not make the constructor generic
+        view.parametrized(false);
+      }
+      identifier.symbol = view;
     }
   }
 
