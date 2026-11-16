@@ -194,7 +194,7 @@ public class LeastSpecificTypeCheckGenericsSample {
     clazz.getAnnotation(Resource.class);
   }
 
-  public static void testConstructor(Constructor constructor) { // FN can't distinguish Array Generic Types
+  public static void testConstructor(Constructor constructor) { // Noncompliant {{Use 'java.lang.reflect.Executable' here; it is a more general type than 'Constructor'.}}
     constructor.getName();
     Class[] parameterTypes = constructor.getParameterTypes();
   }
