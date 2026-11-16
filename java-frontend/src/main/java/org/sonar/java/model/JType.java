@@ -51,6 +51,7 @@ final class JType implements Type, Type.ArrayType {
   private final List<JType> intersection;
   @Nullable
   private final JType lower;
+  private boolean inferred;
 
   private JType(JSema sema, Kind kind, String fqn, List<JType> args, @Nullable JType element, @Nullable String typeVarId, List<JType> intersection) {
     this(sema, kind, fqn, args, element, typeVarId, intersection, null);
@@ -70,6 +71,13 @@ final class JType implements Type, Type.ArrayType {
 
   static JType named(JSema sema, String fqn, List<JType> args) {
     return new JType(sema, Kind.NAMED, fqn, List.copyOf(args), null, null, List.of());
+  }
+
+  /** A parameterization the compiler builds itself, like the type of a class literal: its arguments are not checked. */
+  static JType inferred(JSema sema, String fqn, List<JType> args) {
+    JType type = named(sema, fqn, args);
+    type.inferred = true;
+    return type;
   }
 
   static JType primitive(JSema sema, String name) {
@@ -382,7 +390,7 @@ final class JType implements Type, Type.ArrayType {
     if (kind == Kind.NAMED) {
       Symbol.TypeSymbol owner = declaredSymbol();
       // the compiler cannot bind a parameterization with an argument nothing declares
-      return owner.isUnknown() || args.stream().anyMatch(JType::isUnknown);
+      return owner.isUnknown() || (!inferred && args.stream().anyMatch(JType::isUnknown));
     }
     return false;
   }
