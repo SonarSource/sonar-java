@@ -1777,6 +1777,51 @@ public final class JSema implements Sema {
     return current;
   }
 
+  /** The most specific variable-arity overload of {@code chosen} applicable to the arguments, when no earlier phase applies to {@code chosen}. */
+  JMethodSymbol mostSpecificVarArgs(JMethodSymbol chosen, List<Type> arguments) {
+    if (chosen.isUnknown() || !chosen.isVarArgsMethod() || !(chosen.owner() instanceof Symbol.TypeSymbol owner) || applicable(chosen, arguments, 0) || applicable(chosen, arguments, 1)
+      || arguments.stream().anyMatch(Type::isUnknown)) {
+      return chosen;
+    }
+    List<JMethodSymbol> candidates = new ArrayList<>();
+    for (Symbol member : owner.lookupSymbols(chosen.name())) {
+      if (member instanceof JMethodSymbol method && !method.isUnknown() && method.isVarArgsMethod() && method.isStatic() == chosen.isStatic() && applicable(method, arguments, 2)) {
+        candidates.add(method);
+      }
+    }
+    for (JMethodSymbol candidate : candidates) {
+      if (candidates.stream().allMatch(other -> other == candidate || moreSpecificVarArgs(candidate, other, arguments.size()))) {
+        return candidate;
+      }
+    }
+    return chosen;
+  }
+
+  private static boolean moreSpecificVarArgs(Symbol.MethodSymbol method, Symbol.MethodSymbol other, int count) {
+    for (int i = 0; i < Math.max(count, Math.max(method.parameterTypes().size(), other.parameterTypes().size())); i++) {
+      if (!expanded(method, i).erasure().isSubtypeOf(expanded(other, i).erasure())) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static Type expanded(Symbol.MethodSymbol method, int index) {
+    List<Type> parameters = method.parameterTypes();
+    return index < parameters.size() - 1 ? parameters.get(index) : ((Type.ArrayType) parameters.get(parameters.size() - 1)).elementType();
+  }
+
+  /** Moves a recorded use of a method to another overload. */
+  void moveUse(@Nullable String from, @Nullable String to, IdentifierTree use) {
+    List<IdentifierTree> old = from == null ? null : usages.get(from);
+    if (old != null) {
+      old.remove(use);
+    }
+    if (to != null) {
+      use(to, use);
+    }
+  }
+
   private static boolean applicable(Symbol.MethodSymbol method, List<Type> arguments, int phase) {
     List<Type> parameters = method.parameterTypes();
     int count = parameters.size();

@@ -2143,6 +2143,13 @@ final class SemsitterTranslator {
     if (identifier.symbol instanceof JMethodSymbol method && !method.isUnknown() && !JSema.arityMatches(method, arguments.size())) {
       identifier.symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
     }
+    if (identifier.symbol instanceof JMethodSymbol chosen && !naming) {
+      JMethodSymbol specific = sema.mostSpecificVarArgs(chosen, arguments);
+      if (specific != chosen) {
+        sema.moveUse(chosen.id, specific.id, identifier);
+        identifier.symbol = specific;
+      }
+    }
     if (qualifier != null && receiver.isUnknown() && !receiver.symbol().isUnknown() && !naming) {
       // a member of a parameterization with an undeclared argument is not bound
       identifier.symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
