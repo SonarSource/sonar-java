@@ -728,6 +728,10 @@ public final class JSema implements Sema {
       return null;
     }
     JType plain = typeFromFact(declaredReturn, Map.of(), true);
+    if (plain.isTypeVar() && !method.returnType().type().isUnknown()) {
+      // the descriptor erases a type variable to its bound
+      return method.returnType().type();
+    }
     return plain.isUnknown() ? null : plain.erasure();
   }
 
