@@ -503,6 +503,14 @@ public final class JSema implements Sema {
 
   /** Annotations and deprecation a {@code types} answer gives a library type or member. */
   private void libraryAnnotations(JSymbol symbol, String id, JsonObject info) {
+    if (info.get("parameterAnnotations") instanceof JsonArray parameters) {
+      for (int i = 0; i < parameters.size(); i++) {
+        List<DeclaredAnnotation> onParameter = readAnnotationList(parameters.get(i));
+        if (!onParameter.isEmpty()) {
+          libraryAnnotations.putIfAbsent(parameterKey(id, i), onParameter);
+        }
+      }
+    }
     List<DeclaredAnnotation> annotations = readAnnotations(info);
     if (annotations.isEmpty()) {
       return;
