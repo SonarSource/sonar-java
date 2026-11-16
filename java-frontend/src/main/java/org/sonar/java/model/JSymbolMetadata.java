@@ -528,6 +528,10 @@ final class JSymbolMetadata implements SymbolMetadata {
     @Override
     public List<AnnotationValue> values() {
       List<AnnotationValue> values = new ArrayList<>();
+      if (symbol().isUnknown()) {
+        // the members of an annotation nothing declares cannot be told apart from other expressions
+        return values;
+      }
       for (ExpressionTree argument : tree.arguments()) {
         if (argument instanceof AssignmentExpressionTree assignment) {
           String name = assignment.variable().toString();

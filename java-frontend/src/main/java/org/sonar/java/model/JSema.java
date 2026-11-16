@@ -194,9 +194,10 @@ public final class JSema implements Sema {
         missing.add(fqn);
       }
     }
-    missing.removeIf(name -> !requestedTypes.add(name));
-    if (!missing.isEmpty()) {
-      ingestTypes(typeLoader.apply(missing));
+    Set<String> fresh = new HashSet<>(missing);
+    fresh.removeIf(name -> !requestedTypes.add(name));
+    if (!fresh.isEmpty()) {
+      ingestTypes(typeLoader.apply(fresh));
     }
     for (String fqn : missing) {
       if (!typeInfos.containsKey(fqn)) {
