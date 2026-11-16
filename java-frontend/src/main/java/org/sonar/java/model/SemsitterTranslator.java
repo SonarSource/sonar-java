@@ -1213,6 +1213,9 @@ final class SemsitterTranslator {
     if (expression instanceof NewClassTreeImpl newClass && !returnTargets.isEmpty()) {
       inferDiamond(newClass, returnTargets.peek());
     }
+    if (expression != null && expression.is(Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.METHOD_REFERENCE) && !returnTargets.isEmpty() && !returnTargets.peek().isUnknown()) {
+      ascribeTarget(expression, returnTargets.peek());
+    }
     return new ReturnStatementTreeImpl(token(required(node, "return")), expression, token(required(node, ";")));
   }
 
@@ -2150,6 +2153,10 @@ final class SemsitterTranslator {
         returned = erased;
         rawResults.add(tree);
       }
+      if ("getClass".equals(method.name()) && arguments.isEmpty() && method.owner().type().is("java.lang.Object") && !receiver.isUnknown() && receiver.erasure() instanceof JType erasedReceiver) {
+        // the static type of the call is Class<? extends |T|> where T is the static type of the receiver
+        returned = JType.named(sema, "java.lang.Class", List.of(JType.wildcard(sema, erasedReceiver)));
+      }
       JMethodSymbol view = sema.invocationView(method, receiver, parameters, returned);
       tree.methodSymbol = view;
       identifier.symbol = view;
@@ -2214,6 +2221,7 @@ final class SemsitterTranslator {
         identifier.symbol = resolved;
         recordUse(resolved, identifier);
         ascribeArguments(method, tree.arguments());
+        viewWithInferredParameters(tree, identifier);
         return;
       }
     }
@@ -2228,8 +2236,20 @@ final class SemsitterTranslator {
       identifier.symbol = declared;
       recordUse(declared, identifier);
       ascribeArguments(declared, tree.arguments());
+      viewWithInferredParameters(tree, identifier);
     } else if (!(identifier.symbol() instanceof Symbol.MethodSymbol)) {
       identifier.symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
+    }
+  }
+
+  /** A generic constructor is seen with the type arguments its call infers for the parameters. */
+  private void viewWithInferredParameters(NewClassTreeImpl tree, IdentifierTreeImpl identifier) {
+    if (!(identifier.symbol() instanceof JMethodSymbol constructor) || constructor.isUnknown()) {
+      return;
+    }
+    List<Type> parameters = sema.invocationParameters(constructor, tree.identifier().symbolType(), argumentTypes(tree.arguments()));
+    if (!parameters.equals(constructor.parameterTypes())) {
+      identifier.symbol = sema.invocationView(constructor, tree.identifier().symbolType(), parameters, constructor.returnType().type());
     }
   }
 
@@ -3218,7 +3238,7 @@ final class SemsitterTranslator {
       symbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
     }
     symbol = typedField(symbol);
-    if (!qualified && (symbol.isUnknown() || symbol.isVariableSymbol())) {
+    if (!qualified && (symbol.isUnknown() || (symbol.isVariableSymbol() && !isField(symbol)))) {
       Symbol local = scopedVariable(identifier.name());
       if (local != null) {
         symbol = local;
@@ -3227,6 +3247,11 @@ final class SemsitterTranslator {
     identifier.symbol = symbol;
     ascribe(identifier, identifierType(symbol));
     sema.use(usageId(symbol, target), identifier);
+  }
+
+  /** A field is not hidden by a local variable of an enclosing method: a local class declares its own members. */
+  private static boolean isField(Symbol variable) {
+    return variable.owner() != null && variable.owner().isTypeSymbol();
   }
 
   @Nullable
