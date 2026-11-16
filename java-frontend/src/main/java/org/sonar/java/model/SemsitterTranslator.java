@@ -2327,7 +2327,7 @@ final class SemsitterTranslator {
     MemberSelectExpressionTreeImpl tree = new MemberSelectExpressionTreeImpl(type, token(required(node, ".")), className);
     Type literal = type.symbolType().isPrimitive() ? type.symbolType().primitiveWrapperType() : type.symbolType();
     JType argument = literal instanceof JType jType ? jType : JType.unknown(sema);
-    ascribe(tree, JType.named(sema, "java.lang.Class", List.of(argument)));
+    ascribe(tree, JType.inferred(sema, "java.lang.Class", List.of(argument)));
     return tree;
   }
 
