@@ -439,7 +439,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
   private boolean uses(ImportTree importTree, String name, String qualifier, IdentifierTree identifier) {
     Symbol symbol = identifier.symbol();
     if (name.endsWith(".*")) {
-      return declaredIn(symbol, qualifier, importTree.isStatic());
+      return declaredIn(symbol, qualifier.replace('$', '.'), importTree.isStatic());
     }
     if (!identifier.name().equals(name.substring(name.lastIndexOf('.') + 1))) {
       return false;
@@ -447,7 +447,9 @@ final class CompilerWarnings extends BaseTreeVisitor {
     if (symbol.isUnknown()) {
       return true;
     }
-    return importTree.isStatic() ? isMemberOf(symbol, qualifier) || (symbol.isTypeSymbol() && dottedType(symbol).equals(name)) : denotesType(symbol, name, identifier);
+    // a class named with a dollar sign is a top-level class, as written in the import, not a nested one
+    String dotted = name.replace('$', '.');
+    return importTree.isStatic() ? isMemberOf(symbol, qualifier.replace('$', '.')) || (symbol.isTypeSymbol() && dottedType(symbol).equals(dotted)) : denotesType(symbol, dotted, identifier);
   }
 
   /** A static import also brings in the members the named type inherits. */
