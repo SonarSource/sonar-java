@@ -149,7 +149,7 @@ public final class JUtils {
     Set<Type> result = new HashSet<>();
     Symbol.TypeSymbol symbol = type.symbol();
     Type superClass = symbol.superClass();
-    if (superClass != null && !superClass.isUnknown()) {
+    if (superClass != null && (!superClass.isUnknown() || isRecovered(superClass))) {
       result.add(superClass);
     }
     symbol.interfaces().stream()

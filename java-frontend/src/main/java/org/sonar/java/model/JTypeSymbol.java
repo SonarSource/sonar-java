@@ -292,9 +292,25 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
       }
       addImplicitConstructor(resolved);
       addImplicitEnumMethods(resolved);
+      addDeclaredMembers(resolved);
       members = resolved;
     }
     return members;
+  }
+
+  /** A local type has no member facts besides its constructor: its members are those its declaration writes. */
+  private void addDeclaredMembers(List<Symbol> resolved) {
+    if (!(declaration() instanceof org.sonar.plugins.java.api.tree.ClassTree tree) || resolved.stream().anyMatch(member -> !member.name().endsWith("<init>"))) {
+      return;
+    }
+    tree.recordComponents().forEach(component -> resolved.add(component.symbol()));
+    for (org.sonar.plugins.java.api.tree.Tree member : tree.members()) {
+      if (member instanceof org.sonar.plugins.java.api.tree.VariableTree variable) {
+        resolved.add(variable.symbol());
+      } else if (member instanceof org.sonar.plugins.java.api.tree.MethodTree method && !method.is(org.sonar.plugins.java.api.tree.Tree.Kind.CONSTRUCTOR)) {
+        resolved.add(method.symbol());
+      }
+    }
   }
 
   /** A type parameter is listed among the members of a project type but is not a member symbol. */
@@ -370,7 +386,9 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
       return;
     }
     Type superClass = superClass();
-    if (superClass != null && !superClass.isUnknown()) {
+    if (superClass != null && superClass.isUnknown() && JUtils.isRecovered(superClass)) {
+      collected.add(superClass);
+    } else if (superClass != null && !superClass.isUnknown()) {
       Type instantiated = sema.instantiateSupertype(from, superClass);
       collected.add(instantiated);
       if (superClass.symbol() instanceof JTypeSymbol parent) {
