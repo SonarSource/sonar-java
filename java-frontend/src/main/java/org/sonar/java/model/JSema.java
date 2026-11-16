@@ -1138,7 +1138,8 @@ public final class JSema implements Sema {
       Type argument = arguments.get(i);
       if (!variable.equals(base)) {
         boolean last = i == variables.size() - 1;
-        if (arguments.size() == variables.size() && argument.isArray()) {
+        // an array of a primitive type cannot be the array of a type variable: it is one element of the variable arity
+        if (arguments.size() == variables.size() && argument.isArray() && !((Type.ArrayType) argument).elementType().isPrimitive()) {
           argument = ((Type.ArrayType) argument).elementType();
         } else if (!last) {
           continue;
