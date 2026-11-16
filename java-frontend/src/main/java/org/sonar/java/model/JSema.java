@@ -74,6 +74,7 @@ public final class JSema implements Sema {
   private final Map<String, List<DeclaredAnnotation>> packageAnnotations = new HashMap<>();
   private final Map<String, JsonObject> projectFieldTypes = new HashMap<>();
   private final Map<String, JSymbol> symbols = new HashMap<>();
+  private final Map<String, Object> annotationDefaults = new HashMap<>();
   private final Map<String, Symbol> placeholders = new HashMap<>();
   private final Map<String, JTypeSymbol> typesByName = new HashMap<>();
   private final Map<String, JType> rawTypes = new HashMap<>();
@@ -1440,8 +1441,20 @@ public final class JSema implements Sema {
       method.declaredReturn(retType);
     }
     method.returnsSelf(member.has("retSelf") && member.get("retSelf").getAsBoolean());
+    if (member.get("default") instanceof JsonObject defaultValue) {
+      Object value = readAnnotationElement(defaultValue);
+      if (value != null) {
+        annotationDefaults.put(id, value);
+      }
+    }
     symbols.put(id, method);
     return method;
+  }
+
+  /** The default of an annotation element read from a class file. */
+  @Nullable
+  Object annotationDefault(JMethodSymbol method) {
+    return method.id == null ? null : annotationDefaults.get(method.id);
   }
 
   /** The value a field of type {@code descriptor} holds, from the text Java prints for it. */
