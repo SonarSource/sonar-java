@@ -19,6 +19,8 @@ package org.sonar.java.model;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,7 +74,7 @@ public final class JSema implements Sema {
   private final Map<String, List<DeclaredAnnotation>> packageAnnotations = new HashMap<>();
   private final Map<String, JsonObject> projectFieldTypes = new HashMap<>();
   private final Map<String, JSymbol> symbols = new HashMap<>();
-  private final Map<String, JVariableSymbol.ParameterPlaceholderSymbol> placeholders = new HashMap<>();
+  private final Map<String, Symbol> placeholders = new HashMap<>();
   private final Map<String, JTypeSymbol> typesByName = new HashMap<>();
   private final Map<String, JType> rawTypes = new HashMap<>();
   private final Map<String, String> binaryNames = new HashMap<>();
@@ -309,9 +311,16 @@ public final class JSema implements Sema {
     return rawNamed(fullyQualifiedName);
   }
 
+  /** Nothing is held open per file; the instance is per sema so cleaners of different files stay distinct. */
+  private final Runnable environmentCleaner = new Runnable() {
+    @Override
+    public void run() {
+      // no file or jar stays open
+    }
+  };
+
   public Runnable getEnvironmentCleaner() {
-    return () -> {
-    };
+    return environmentCleaner;
   }
 
   public Set<JProblem> undefinedTypes() {
@@ -445,6 +454,7 @@ public final class JSema implements Sema {
         if (!annotations.isEmpty()) {
           libraryAnnotations.put(id, annotations);
         }
+        registerParameterAnnotations(id, member);
         if (member.get(THROWS) instanceof JsonArray) {
           projectThrows.put(id, strings(member, THROWS));
         }
@@ -459,6 +469,35 @@ public final class JSema implements Sema {
         }
       }
     }
+  }
+
+  /** Annotations written directly on the parameters of a method, as the member's type-annotation facts tell them. */
+  private void registerParameterAnnotations(String methodId, JsonObject member) {
+    if (!(member.get("facts") instanceof JsonObject facts && facts.get("props") instanceof JsonObject props)) {
+      return;
+    }
+    for (String encoded : strings(props, "type_annotation_values")) {
+      JsonElement parsed;
+      try {
+        parsed = JsonParser.parseString(encoded);
+      } catch (JsonParseException e) {
+        continue;
+      }
+      if (!(parsed instanceof JsonArray entries)) {
+        continue;
+      }
+      for (JsonElement entry : entries) {
+        if (entry instanceof JsonObject annotation && "param".equals(text(annotation, "on")) && annotation.get("path") instanceof JsonArray path && path.isEmpty()
+          && annotation.get("index") instanceof JsonPrimitive index && text(annotation, "id") != null) {
+          libraryAnnotations.computeIfAbsent(parameterKey(methodId, index.getAsInt()), key -> new ArrayList<>())
+            .add(new DeclaredAnnotation(text(annotation, "id"), List.of()));
+        }
+      }
+    }
+  }
+
+  private static String parameterKey(String methodId, int index) {
+    return methodId + "@param" + index;
   }
 
   /** Annotations and deprecation a {@code types} answer gives a library type or member. */
@@ -2147,8 +2186,16 @@ public final class JSema implements Sema {
   }
 
   /** The parameter of a method no source declares: one symbol per method and position, whichever call it is seen from. */
-  JVariableSymbol.ParameterPlaceholderSymbol parameterPlaceholder(JMethodSymbol method, int index, Type type) {
+  Symbol parameterPlaceholder(JMethodSymbol method, int index, Type type) {
     String key = method.id + "#" + index + "#" + type.fullyQualifiedName();
+    if (method.id != null && libraryAnnotations.containsKey(parameterKey(method.id, index))) {
+      return placeholders.computeIfAbsent(key, k -> {
+        JVariableSymbol annotated = new JVariableSymbol(this, parameterKey(method.id, index), "arg" + index, "param");
+        annotated.owner(method);
+        annotated.type(type);
+        return annotated;
+      });
+    }
     return method.id == null ? new JVariableSymbol.ParameterPlaceholderSymbol(index, method, type)
       : placeholders.computeIfAbsent(key, k -> new JVariableSymbol.ParameterPlaceholderSymbol(index, method, type));
   }

@@ -147,7 +147,10 @@ final class JSymbolMetadata implements SymbolMetadata {
     if (current instanceof IdentifierTree identifier) {
       return identifier.annotations();
     }
-    return current instanceof ParameterizedTypeTree parameterized ? parameterized.annotations() : List.of();
+    if (current instanceof MemberSelectExpressionTree select) {
+      return select.identifier().annotations();
+    }
+    return current instanceof ParameterizedTypeTree parameterized ? outermostTypeAnnotations(parameterized.type()) : List.of();
   }
 
   private static boolean isTypeUseOnly(AnnotationTree annotation) {

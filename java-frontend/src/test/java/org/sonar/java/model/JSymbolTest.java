@@ -153,7 +153,8 @@ class JSymbolTest {
     assertThat(listFieldTypeTree.typeArguments()).hasSize(1);
     Type wildcardType = listFieldTypeTree.typeArguments().get(0);
     assertThat(wildcardType.name()).isEqualTo("?");
-    assertThat(wildcardType.symbol().owner()).isEqualTo(Symbol.ROOT_PACKAGE);
+    // a wildcard answers the symbol of its bound
+    assertThat(wildcardType.symbol().owner().name()).isEqualTo("java.lang");
   }
 
   @Test
@@ -430,7 +431,8 @@ class JSymbolTest {
     SymbolMetadata metadata = declarationSymbol.metadata();
     assertThat(metadata).isNotNull();
     SymbolMetadata parameterMetadata = m.parameters().get(0).symbol().metadata();
-    assertThat(parameterMetadata.annotations()).hasSize(1);
+    // an annotation on a type argument belongs to the argument, not to the parameter
+    assertThat(parameterMetadata.annotations()).isEmpty();
   }
 
 

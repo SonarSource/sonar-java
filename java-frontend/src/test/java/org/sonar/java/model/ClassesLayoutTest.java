@@ -70,12 +70,12 @@ class ClassesLayoutTest {
 
   @Test
   void type() {
-    assertThat(countFields(JType.class)).isEqualTo(8);
+    assertThat(countFields(JType.class)).isEqualTo(9);
   }
 
   @Test
   void symbol_type() {
-    assertThat(countFields(JTypeSymbol.class)).isEqualTo(28);
+    assertThat(countFields(JTypeSymbol.class)).isEqualTo(29);
   }
 
   @Test

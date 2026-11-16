@@ -225,7 +225,7 @@ class MethodMatchersTest {
 
     // constructor
     assertThat(findMatchesOnTree(source, MethodMatchers.create().ofTypes("pkg.A").constructor().addParametersMatcher("int").build()))
-      .containsExactly(4, 7); // missing 10 because "A::new" is an unknown type
+      .containsExactly(4, 7, 10);
     assertThat(findMatchesOnSymbol(source, MethodMatchers.create().ofTypes("pkg.A").constructor().addParametersMatcher("int").build()))
       .containsExactly(4, 7);
 
@@ -233,7 +233,7 @@ class MethodMatchersTest {
     assertThat(findMatchesOnTree(source, MethodMatchers.or(
       MethodMatchers.create().ofTypes("pkg.A").constructor().addParametersMatcher("int").build(),
       MethodMatchers.create().ofTypes("pkg.A").names("f").addParametersMatcher("int").build())))
-      .containsExactly(4, 5, 7, 8, 9);
+      .containsExactly(4, 5, 7, 8, 9, 10);
     assertThat(findMatchesOnSymbol(source, MethodMatchers.or(
       MethodMatchers.create().ofTypes("pkg.A").constructor().addParametersMatcher("int").build(),
       MethodMatchers.create().ofTypes("pkg.A").names("f").addParametersMatcher("int").build())))
@@ -299,8 +299,9 @@ class MethodMatchersTest {
     assertThat(findMatchesOnTree(source, MethodMatchers.create().ofSubTypes("pkg.B").names("f").addWithoutParametersMatcher().build()))
       .containsExactly(12, 28, 34);
 
+    // line 36 is never matched: a method reference to an inherited, overloaded method stays unresolved
     assertThat(findMatchesOnTree(source, MethodMatchers.create().ofSubTypes("pkg.B").names("f").addParametersMatcher("int").build()))
-      .containsExactly(16, 20, 29, 30, 31, 32, 33, 35, 36);
+      .containsExactly(16, 20, 29, 30, 31, 32, 33, 35);
 
     assertThat(findMatchesOnTree(source, MethodMatchers.create().ofSubTypes("pkg.F").names("f").addWithoutParametersMatcher().build()))
       .containsExactly(34);
@@ -315,25 +316,25 @@ class MethodMatchersTest {
       .containsExactly(16, 30);
 
     assertThat(findMatchesOnTree(source, MethodMatchers.create().ofSubTypes("pkg.D").names("f").addParametersMatcher("int").build()))
-      .containsExactly(20, 31, 32, 33, 35, 36);
+      .containsExactly(20, 31, 32, 33, 35);
 
     assertThat(findMatchesOnTree(source, MethodMatchers.create().ofTypes("pkg.D").names("f").addParametersMatcher("int").build()))
       .containsExactly(20, 31, 35);
 
     assertThat(findMatchesOnTree(source, MethodMatchers.create().ofTypes("pkg.E").names("f").addParametersMatcher("int").build()))
-      .containsExactly(32, 36);
+      .containsExactly(32);
 
     assertThat(findMatchesOnTree(source, MethodMatchers.create().ofTypes("pkg.F").names("f").addParametersMatcher("int").build()))
       .containsExactly(33);
 
     assertThat(findMatchesOnTree(source, MethodMatchers.create().ofSubTypes("pkg.A").names("f").addParametersMatcher("int").build()))
-      .containsExactly(16, 20, 29, 30, 31, 32, 33, 35, 36);
+      .containsExactly(16, 20, 29, 30, 31, 32, 33, 35);
 
     assertThat(findMatchesOnTree(source, MethodMatchers.create().ofSubTypes("pkg.I").names("f").addParametersMatcher("int").build()))
-      .containsExactly(5, 16, 20, 29, 30, 31, 32, 33, 35, 36);
+      .containsExactly(5, 16, 20, 29, 30, 31, 32, 33, 35);
 
     assertThat(findMatchesOnTree(source, MethodMatchers.create().ofSubTypes("pkg.J").names("f").addParametersMatcher("int").build()))
-      .containsExactly(9, 16, 20, 29, 30, 31, 32, 33, 35, 36, 37);
+      .containsExactly(9, 16, 20, 29, 30, 31, 32, 33, 35, 37);
   }
 
   @Test

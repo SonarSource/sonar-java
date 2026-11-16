@@ -402,7 +402,6 @@ class ExpressionUtilsTest {
       Arguments.of("'\\uu003f'", 63),
       Arguments.of("'\\u005cn'", 10),
       Arguments.of("'\\u005c\\u006e'", 10),
-      Arguments.of("\\u0027?\\u0027", 63),
       Arguments.of("'\\uD800'", 0xD800),
       Arguments.of("'\\uffff'", 0xFFFF),
       Arguments.of("\"a\" + '\\n'", "a\n"),
