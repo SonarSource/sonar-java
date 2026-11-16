@@ -26,7 +26,7 @@ class ObjectFinalizeOverriddenCheckSample {
     }
 
     @Override
-    protected boolean finalize() { // Compliant
+    protected boolean finalize() { // Noncompliant {{Do not override the Object.finalize() method.}}
     }
 
   }
@@ -41,7 +41,7 @@ class ObjectFinalizeOverriddenCheckSample {
     }
 
     @Override
-    protected boolean finalize() { // Compliant
+    protected boolean finalize() { // Noncompliant {{Do not override the Object.finalize() method.}}
       doSomething();
     }
   }
