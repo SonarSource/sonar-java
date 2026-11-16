@@ -605,7 +605,8 @@ public final class JSema implements Sema {
       case "float" -> raw == null || !raw.isJsonPrimitive() ? null : Float.valueOf(raw.getAsFloat());
       case "double" -> raw == null || !raw.isJsonPrimitive() ? null : Double.valueOf(raw.getAsDouble());
       case "char" -> raw == null || !raw.isJsonPrimitive() ? null : Character.valueOf((char) raw.getAsInt());
-      case "string", "class" -> raw == null || !raw.isJsonPrimitive() ? null : raw.getAsString();
+      case "string" -> raw == null || !raw.isJsonPrimitive() ? null : raw.getAsString();
+      case "class" -> raw == null || !raw.isJsonPrimitive() ? null : typeSymbol(erase(raw.getAsString()));
       case "enum" -> enumConstant(text(value, "type"), text(value, "const"));
       case "array" -> readAnnotationArray(raw);
       case "annotation" -> raw != null && raw.isJsonObject() ? text(raw.getAsJsonObject(), "name") : null;
