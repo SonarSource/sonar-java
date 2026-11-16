@@ -79,6 +79,9 @@ public final class JUtils {
   @Nullable
   public static Object defaultValue(Symbol.MethodSymbol method) {
     MethodTree declaration = method.declaration();
+    if (declaration == null && method instanceof JMethodSymbol library) {
+      return library.sema.annotationDefault(library);
+    }
     return declaration == null || declaration.defaultValue() == null ? null : ExpressionUtils.resolveAsConstant(declaration.defaultValue());
   }
 
