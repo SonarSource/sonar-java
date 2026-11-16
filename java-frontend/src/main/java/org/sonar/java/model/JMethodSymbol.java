@@ -410,19 +410,9 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     return argument != null && mine.equals(argument.erasure().fullyQualifiedName());
   }
 
-  /** A method returning void or a primitive type cannot override one returning another such type. */
-  private boolean incompatibleReturn(MethodSymbol other) {
-    Type mine = returnType().type();
-    Type theirs = other.returnType().type();
-    if (mine == null || theirs == null || mine.isUnknown() || theirs.isUnknown()) {
-      return false;
-    }
-    return (mine.isVoid() || mine.isPrimitive() || theirs.isVoid() || theirs.isPrimitive()) && !mine.fullyQualifiedName().equals(theirs.fullyQualifiedName());
-  }
-
   private boolean sameSignature(MethodSymbol other, @Nullable Type declaring) {
     List<Type> theirs = other.parameterTypes();
-    if (parameterTypes.size() != theirs.size() || incompatibleReturn(other)) {
+    if (parameterTypes.size() != theirs.size()) {
       return false;
     }
     for (int i = 0; i < parameterTypes.size(); i++) {
