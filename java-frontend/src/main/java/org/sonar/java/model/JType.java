@@ -172,7 +172,8 @@ final class JType implements Type, Type.ArrayType {
 
   @Override
   public boolean is(String fullyQualifiedName) {
-    return fullyQualifiedName.equals(this.fullyQualifiedName());
+    // a name the sources use but nothing declares is not the type of that name
+    return fullyQualifiedName.equals(this.fullyQualifiedName()) && !(kind == Kind.NAMED && isUnknown());
   }
 
   @Override

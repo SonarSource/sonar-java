@@ -116,8 +116,29 @@ final class CompilerWarnings extends BaseTreeVisitor {
         add(ProblemKind.REDUNDANT_CAST, "Unnecessary cast from " + operand.erasure().name() + " to " + cast.erasure().name(), tree);
       }
     }
+    if (!cast.isUnknown() && !operand.isUnknown() && operand.isSubtypeOf(cast) && assignedTo(tree).filter(target -> !target.isUnknown() && operand.isSubtypeOf(target) && cast.isSubtypeOf(target)).isPresent()) {
+      // the cast widens a value that is assigned to a type accepting it as is
+      add(ProblemKind.REDUNDANT_CAST, "Unnecessary cast from " + operand.erasure().name() + " to " + cast.erasure().name(), tree);
+    }
     super.visitTypeCast(tree);
     scan(tree.bounds());
+  }
+
+  /** The declared type of the variable the cast initializes or is assigned to. */
+  private static java.util.Optional<Type> assignedTo(org.sonar.plugins.java.api.tree.TypeCastTree cast) {
+    Tree child = cast;
+    Tree parent = cast.parent();
+    while (parent instanceof org.sonar.plugins.java.api.tree.ParenthesizedTree) {
+      child = parent;
+      parent = parent.parent();
+    }
+    if (parent instanceof org.sonar.plugins.java.api.tree.VariableTree variable && variable.initializer() == child && !(variable.type() instanceof org.sonar.plugins.java.api.tree.VarTypeTree)) {
+      return java.util.Optional.of(variable.type().symbolType());
+    }
+    if (parent instanceof AssignmentExpressionTree assignment && assignment.is(Tree.Kind.ASSIGNMENT) && assignment.expression() == child) {
+      return java.util.Optional.of(assignment.variable().symbolType());
+    }
+    return java.util.Optional.empty();
   }
 
   /**

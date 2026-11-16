@@ -19,6 +19,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
@@ -34,10 +35,13 @@ class RedundantThrowsDeclarationCheckTest {
 
   @Test
   void test_non_compiling_code() {
-    CheckVerifier.newVerifier()
+    // a throws clause on a compact constructor is a syntax error: the file is reported as a parse error
+    CheckVerifier verifier = CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/RedundantThrowsDeclarationCheckSample.java"))
-      .withCheck(new RedundantThrowsDeclarationCheck())
-      .verifyIssues();
+      .withCheck(new RedundantThrowsDeclarationCheck());
+    assertThatThrownBy(verifier::verifyIssues)
+      .isInstanceOf(AssertionError.class)
+      .hasMessageContaining("Parse error at line 55");
   }
 
   @Test
