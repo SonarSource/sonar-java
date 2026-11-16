@@ -108,7 +108,11 @@ abstract class EncryptionAlgorithmCheckSample {
       Cipher.getInstance("aeswrap"); // Compliant
       Cipher.getInstance("AESWRAP_128"); // Compliant
       Cipher.getInstance("aesWrapPad_256"); // Compliant
+      Cipher.getInstance("AESWrap/ECB/NoPadding"); // Compliant
+      Cipher.getInstance("aeswrap/ecb/nopadding"); // Compliant
+      Cipher.getInstance("AESWrapPad/KWP/NoPadding"); // Compliant
       Cipher.getInstance("AESWrap_64"); // Noncompliant
+      Cipher.getInstance("AESWrap_64/ECB/NoPadding"); // Noncompliant
 
     } catch (Exception  e) {
     }

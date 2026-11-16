@@ -85,6 +85,9 @@ public class EncryptionAlgorithmCheck extends AbstractMethodDetection {
     Matcher matcher = ALGORITHM_PATTERN.matcher(algorithmName);
     if (matcher.matches()) {
       String algorithm = matcher.group(1);
+      if (KEY_WRAP_PATTERN.matcher(algorithm).matches()) {
+        return Optional.empty();
+      }
       String mode = matcher.group(2);
       String padding = matcher.group(3);
 
