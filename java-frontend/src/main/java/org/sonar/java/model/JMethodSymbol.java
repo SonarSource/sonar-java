@@ -294,7 +294,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   }
 
   private List<MethodSymbol> findOverridden() {
-    if (!(owner() instanceof JTypeSymbol typeSymbol) || isUnknown() || isStatic() || isPrivate() || "<init>".equals(name())) {
+    if (!(owner() instanceof JTypeSymbol typeSymbol) || isUnknown() || isStatic() || isPrivate()) {
       return List.of();
     }
     List<MethodSymbol> found = new ArrayList<>();
