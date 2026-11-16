@@ -381,7 +381,8 @@ final class JType implements Type, Type.ArrayType {
     }
     if (kind == Kind.NAMED) {
       Symbol.TypeSymbol owner = declaredSymbol();
-      return owner.isUnknown();
+      // the compiler cannot bind a parameterization with an argument nothing declares
+      return owner.isUnknown() || args.stream().anyMatch(JType::isUnknown);
     }
     return false;
   }
