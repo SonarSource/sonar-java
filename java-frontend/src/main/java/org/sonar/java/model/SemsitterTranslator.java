@@ -1792,6 +1792,10 @@ final class SemsitterTranslator {
     if (expression instanceof NewClassTreeImpl newClass) {
       inferDiamond(newClass, target);
     }
+    // a switch expression is a poly expression: in an assignment context it has the target type
+    if (expression.is(Tree.Kind.SWITCH_EXPRESSION) && !target.isUnknown() && !target.isPrimitive() && !expression.symbolType().isPrimitive()) {
+      ascribe(expression, target);
+    }
     // a reference conditional is a poly expression: in an assignment context it has the target type
     if (expression instanceof ConditionalExpressionTree && keepsArguments(target) && sameErasure(target, expression.symbolType())) {
       ascribe(expression, target);
