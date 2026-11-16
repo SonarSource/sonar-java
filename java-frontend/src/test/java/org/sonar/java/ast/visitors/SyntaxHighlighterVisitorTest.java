@@ -101,10 +101,8 @@ class SyntaxHighlighterVisitorTest {
     assertThatHasBeenHighlighted(componentKey, 10, 1, 10, 5, TypeOfText.KEYWORD); // open
     assertThatHasBeenHighlighted(componentKey, 10, 6, 10, 12, TypeOfText.KEYWORD); // module
     assertThatHasBeenHighlighted(componentKey, 11, 3, 11, 11, TypeOfText.KEYWORD); // requires
-    assertThatHasBeenHighlighted(componentKey, 11, 12, 11, 22, /* due to bug in ECJ */ TypeOfText.KEYWORD); // transitive as identifier
     assertThatHasBeenHighlighted(componentKey, 12, 3, 12, 11, TypeOfText.KEYWORD); // requires
     assertThatHasBeenHighlighted(componentKey, 12, 12, 12, 18, TypeOfText.KEYWORD); // static
-    assertThatHasBeenHighlighted(componentKey, 12, 19, 12, 29, /* due to bug in ECJ */ TypeOfText.KEYWORD); // transitive as identifier
     assertThatHasBeenHighlighted(componentKey, 13, 3, 13, 11, TypeOfText.KEYWORD); // requires
     assertThatHasBeenHighlighted(componentKey, 13, 12, 13, 18, TypeOfText.KEYWORD); // static
     assertThatHasBeenHighlighted(componentKey, 13, 19, 13, 29, TypeOfText.KEYWORD); // transitive as keyword

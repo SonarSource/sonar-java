@@ -108,6 +108,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -169,6 +170,9 @@ final class SemsitterTranslator {
   /** Whether consecutive {@code ///} lines form one Markdown comment (Java 23 and later). */
   private boolean markdownComments = true;
 
+  /** Work that needs declarations met later in the file. */
+  private final List<Runnable> deferred = new ArrayList<>();
+
   private SemsitterTranslator(JSema sema) {
     this.sema = sema;
   }
@@ -190,6 +194,7 @@ final class SemsitterTranslator {
     translator.indexTokens(root);
     translator.declareGenericReturns(root);
     JavaTree.CompilationUnitTreeImpl unit = translator.compilationUnit(root);
+    translator.deferred.forEach(Runnable::run);
     unit.setSemanticModel(sema, sema.undefinedTypes(), sema.getEnvironmentCleaner());
     setParents(unit);
     CompilerWarnings.addTo(unit);
@@ -453,6 +458,8 @@ final class SemsitterTranslator {
       String fqn = dottedName(name);
       if (sema.declaresType(fqn) && sema.resolve(fqn) instanceof Symbol.TypeSymbol type) {
         imported.setSymbol(type);
+      } else if (!imported.isModule()) {
+        imported.setSymbol(Symbol.TypeSymbol.UNKNOWN_TYPE);
       }
     }
     return imported;
@@ -858,7 +865,8 @@ final class SemsitterTranslator {
 
   private TypeTree spreadType(Node node) {
     TypeTree element = type(firstType(node));
-    JavaTree.ArrayTypeTreeImpl array = new JavaTree.ArrayTypeTreeImpl(element, List.of(), token(required(node, "...")));
+    List<AnnotationTreeImpl> annotations = node.children().stream().filter(SemsitterTranslator::isAnnotation).map(this::annotation).toList();
+    JavaTree.ArrayTypeTreeImpl array = new JavaTree.ArrayTypeTreeImpl(element, annotations, token(required(node, "...")));
     ascribe(array, JType.array(sema, element.symbolType() instanceof JType elementType ? elementType : JType.unknown(sema)));
     return array;
   }
@@ -881,7 +889,7 @@ final class SemsitterTranslator {
     if (tree.type() instanceof VarTypeTreeImpl && tree.initializer() != null && tree.initializer().symbolType().isIntersectionType() && tree.symbol() instanceof JSymbol symbol) {
       symbol.type(tree.initializer().symbolType());
       ascribe(tree.type(), tree.initializer().symbolType());
-    } else if (declared.isParameterized() && tree.symbol() instanceof JSymbol symbol) {
+    } else if (keepsArguments(declared) && tree.symbol() instanceof JSymbol symbol) {
       symbol.type(declared);
     } else if (tree.symbol().type() != null && !tree.symbol().type().isUnknown()) {
       ascribe(tree.type(), tree.symbol().type());
@@ -1129,9 +1137,13 @@ final class SemsitterTranslator {
         continue;
       }
       if ("local_variable_declaration".equals(child.k()) && semicolons == 0) {
-        init.addAll(variables(child));
+        List<VariableTreeImpl> declared = variables(child);
+        init.addAll(declared);
         InternalSyntaxToken semi = optionalToken(child, ";");
         if (semi != null) {
+          if (!declared.isEmpty()) {
+            declared.get(declared.size() - 1).setEndToken(null);
+          }
           firstSemicolon = semi;
           semicolons = 1;
         }
@@ -1773,6 +1785,10 @@ final class SemsitterTranslator {
     }
     if (expression instanceof NewClassTreeImpl newClass) {
       inferDiamond(newClass, target);
+    }
+    // a reference conditional is a poly expression: in an assignment context it has the target type
+    if (expression instanceof ConditionalExpressionTree && keepsArguments(target) && sameErasure(target, expression.symbolType())) {
+      ascribe(expression, target);
     }
     if (expression instanceof MethodInvocationTreeImpl call && call.methodSymbol() instanceof JMethodSymbol generic && !generic.isUnknown() && !call.symbolType().isParameterized()) {
       Type inferred = sema.targetedReturn(generic, target);
@@ -2525,13 +2541,15 @@ final class SemsitterTranslator {
       }
     }
     TypeTree recordType = type(firstType(node));
-    if (recordType.symbolType().symbol().declaration() instanceof ClassTree record && record.recordComponents().size() == patterns.size()) {
-      for (int i = 0; i < patterns.size(); i++) {
-        if (patterns.get(i) instanceof TypePatternTreeImpl unnamed && unnamed.patternVariable().symbol().isUnknown() && unnamed.patternVariable() instanceof VariableTreeImpl variable) {
-          typeUnnamedPattern(unnamed, variable, record.recordComponents().get(i).type().symbolType());
+    deferred.add(() -> {
+      if (recordType.symbolType().symbol().declaration() instanceof ClassTree record && record.recordComponents().size() == patterns.size()) {
+        for (int i = 0; i < patterns.size(); i++) {
+          if (patterns.get(i) instanceof TypePatternTreeImpl unnamed && unnamed.patternVariable().symbol().isUnknown() && unnamed.patternVariable() instanceof VariableTreeImpl variable) {
+            typeUnnamedPattern(unnamed, variable, record.recordComponents().get(i).type().symbolType());
+          }
         }
       }
-    }
+    });
     return new RecordPatternTreeImpl(recordType, token(required(body, "(")), patterns, token(required(body, ")")));
   }
 
@@ -2589,6 +2607,11 @@ final class SemsitterTranslator {
     Node body = field(node, "body");
     Tree lambdaBody = body == null ? block(node) : ("block".equals(body.k()) ? block(body) : expression(body));
     LambdaExpressionTreeImpl tree = new LambdaExpressionTreeImpl(open, parameters, close, token(required(node, "->")), lambdaBody);
+    deferred.add(() -> parameters.forEach(parameter -> {
+      if (parameter.type() instanceof InferedTypeTree inferred && inferred.symbolType().isUnknown() && !parameter.symbol().type().isUnknown()) {
+        ascribe(inferred, parameter.symbol().type());
+      }
+    }));
     for (VariableTree parameter : parameters) {
       if (parameter.symbol().owner() instanceof JMethodSymbol method) {
         method.lambda(true);
@@ -2610,7 +2633,7 @@ final class SemsitterTranslator {
     IdentifierTreeImpl name = identifier(nameNode == null ? node : nameNode);
     bindUse(name, nameNode == null ? node : nameNode, true);
     MethodReferenceTreeImpl tree = new MethodReferenceTreeImpl(qualifier, token(required(node, "::")));
-    Node typeArguments = field(node, "type_arguments");
+    Node typeArguments = firstOf(node, "type_arguments");
     tree.complete(typeArguments == null ? null : typeArguments(typeArguments), name);
     ascribe(tree, Type.UNKNOWN);
     return tree;
@@ -2638,7 +2661,17 @@ final class SemsitterTranslator {
 
   private TypeTree annotate(TypeTree type, Node node) {
     List<AnnotationTree> annotations = node.children().stream().filter(SemsitterTranslator::isAnnotation).<AnnotationTree>map(this::annotation).toList();
-    if (!annotations.isEmpty() && type instanceof JavaTree.AnnotatedTypeTree annotated) {
+    TypeTree target = type;
+    while (true) {
+      if (target instanceof ParameterizedTypeTree parameterized) {
+        target = parameterized.type();
+      } else if (target instanceof MemberSelectExpressionTree select && select.expression() instanceof TypeTree outer && !(target instanceof ArrayTypeTree)) {
+        target = outer;
+      } else {
+        break;
+      }
+    }
+    if (!annotations.isEmpty() && target instanceof JavaTree.AnnotatedTypeTree annotated) {
       annotated.complete(annotations);
     }
     return type;
@@ -2977,12 +3010,16 @@ final class SemsitterTranslator {
     }
     if (tree instanceof VariableTreeImpl variable && symbol instanceof JSymbol variableSymbol && symbol.isVariableSymbol() && variable.type() != null) {
       Type declared = variable.type().symbolType();
-      if (symbol.type().isUnknown() ? isKnownOrRecovered(declared) : declared.isParameterized() && sameErasure(declared, symbol.type())) {
+      if (symbol.type().isUnknown() ? isKnownOrRecovered(declared) : keepsArguments(declared) && sameErasure(declared, symbol.type())) {
         variableSymbol.type(declared);
       }
     }
     if (tree instanceof MethodTreeImpl method && symbol instanceof JMethodSymbol methodSymbol && method.returnType() != null
       && methodSymbol.returnType().type().isUnknown() && isKnownOrRecovered(method.returnType().symbolType())) {
+      methodSymbol.returnTypeSymbol(method.returnType().symbolType().symbol());
+    } else if (tree instanceof MethodTreeImpl method && symbol instanceof JMethodSymbol methodSymbol && method.returnType() != null
+      && method.returnType().symbolType().isParameterized() && !methodSymbol.returnType().type().isParameterized()
+      && sameErasure(method.returnType().symbolType(), methodSymbol.returnType().type())) {
       methodSymbol.returnTypeSymbol(method.returnType().symbolType().symbol());
     }
     identifier.symbol = symbol;
@@ -3028,7 +3065,7 @@ final class SemsitterTranslator {
       String id = name == null ? null : name.decl();
       if (typeNode != null && id != null && sema.resolve(id) instanceof JMethodSymbol method) {
         Type declared = syntacticType(typeNode);
-        if (declared.isParameterized() && !mentionsUnknown(declared) && sameErasure(declared, method.returnType().type())) {
+        if (declared.isParameterized() && sameErasure(declared, method.returnType().type())) {
           method.returnTypeSymbol(declared.symbol());
         }
       }
@@ -3084,6 +3121,11 @@ final class SemsitterTranslator {
       base = ((Type.ArrayType) base).elementType();
     }
     return base.isTypeVar();
+  }
+
+  /** Whether a declared type, or the element type of a declared array, spells type arguments. */
+  private static boolean keepsArguments(Type type) {
+    return type.isParameterized() || (type.isArray() && keepsArguments(((Type.ArrayType) type).elementType()));
   }
 
   private static boolean sameErasure(Type left, Type right) {

@@ -37,6 +37,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
   private final boolean typeParameter;
   private int typeParameterCount;
+  private JType declarationType;
   @Nullable
   private String superName;
   private List<String> interfaceNames = List.of();
@@ -103,6 +104,18 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
   /** Every declared bound of a type parameter. */
   List<Type> bounds() {
     return boundTrees.stream().map(TypeTree::symbolType).toList();
+  }
+
+  @Override
+  public Type type() {
+    Type own = super.type();
+    if (typeParameterCount > 0 && own instanceof JType named && named.kind == JType.Kind.NAMED && named.args.isEmpty() && !named.isDeclaration()) {
+      if (declarationType == null || !declarationType.equals(named)) {
+        declarationType = named.asDeclaration();
+      }
+      return declarationType;
+    }
+    return own;
   }
 
   int typeParameterCount() {
@@ -199,6 +212,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     List<Type> resolved = resolvedInterfaces();
     List<Type> unresolved = declaredInterfaces.stream()
       .filter(Type::isUnknown)
+      .filter(distinctByName(new HashSet<>()))
       .filter(declared -> resolved.stream().noneMatch(known -> known.fullyQualifiedName().equals(declared.fullyQualifiedName())))
       .toList();
     if (unresolved.isEmpty()) {
@@ -207,6 +221,10 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     List<Type> all = new ArrayList<>(resolved);
     all.addAll(unresolved);
     return all;
+  }
+
+  private static java.util.function.Predicate<Type> distinctByName(Set<String> seen) {
+    return type -> seen.add(type.name());
   }
 
   private List<Type> resolvedInterfaces() {
@@ -360,7 +378,9 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
       }
     }
     for (Type iface : interfaces()) {
-      if (!iface.isUnknown()) {
+      if (iface.isUnknown() && JUtils.isRecovered(iface)) {
+        collected.add(iface);
+      } else if (!iface.isUnknown()) {
         Type instantiated = sema.instantiateSupertype(from, iface);
         collected.add(instantiated);
         if (iface.symbol() instanceof JTypeSymbol parent) {

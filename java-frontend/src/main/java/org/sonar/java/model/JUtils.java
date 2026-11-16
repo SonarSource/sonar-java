@@ -153,9 +153,14 @@ public final class JUtils {
       result.add(superClass);
     }
     symbol.interfaces().stream()
-      .filter(iface -> !iface.isUnknown())
+      .filter(iface -> !iface.isUnknown() || isRecovered(iface))
       .forEach(result::add);
     return result;
+  }
+
+  /** A type the sources name but nothing declares: it is kept among supertypes, unlike the unknown type itself. */
+  static boolean isRecovered(Type type) {
+    return type.isUnknown() && type != Type.UNKNOWN && !type.name().isEmpty() && !type.fullyQualifiedName().startsWith("!");
   }
 
   @Nullable
