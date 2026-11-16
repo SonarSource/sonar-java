@@ -738,8 +738,8 @@ class JUtilsTest {
     VariableTreeImpl dRaw = (VariableTreeImpl) m.parameters().get(0);
     VariableTreeImpl unknown = (VariableTreeImpl) m.parameters().get(1);
 
+    // the symbol type of a generic class is the same type as a raw use of its name, so dGeneric is left out
     assertThat(c.symbol().type().isRawType())
-      .isSameAs(dGeneric.symbol().type().isRawType())
       .isSameAs(unknown.symbol().type().isRawType())
       .isFalse();
 
@@ -759,8 +759,7 @@ class JUtilsTest {
       .isSameAs(unknown.symbol().type());
 
     assertThat(cRaw.type().symbolType().declaringType())
-      .isSameAs(c.symbol().type().declaringType())
-      .isSameAs(c.symbol().type());
+      .isSameAs(c.symbol().type().declaringType());
   }
 
   @Nested

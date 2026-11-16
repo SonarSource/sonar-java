@@ -51,8 +51,6 @@ final class JType implements Type, Type.ArrayType {
   private final List<JType> intersection;
   @Nullable
   private final JType lower;
-  /** The type a generic class declares for itself, as opposed to a raw use of its name. */
-  private boolean declaration;
 
   private JType(JSema sema, Kind kind, String fqn, List<JType> args, @Nullable JType element, @Nullable String typeVarId, List<JType> intersection) {
     this(sema, kind, fqn, args, element, typeVarId, intersection, null);
@@ -72,16 +70,6 @@ final class JType implements Type, Type.ArrayType {
 
   static JType named(JSema sema, String fqn, List<JType> args) {
     return new JType(sema, Kind.NAMED, fqn, List.copyOf(args), null, null, List.of());
-  }
-
-  boolean isDeclaration() {
-    return declaration;
-  }
-
-  JType asDeclaration() {
-    JType copy = new JType(sema, kind, fqn, args, element, typeVarId, intersection, lower);
-    copy.declaration = true;
-    return copy;
   }
 
   static JType primitive(JSema sema, String name) {
@@ -369,7 +357,7 @@ final class JType implements Type, Type.ArrayType {
       return false;
     }
     Symbol.TypeSymbol owner = declaredSymbol();
-    return !declaration && owner instanceof JTypeSymbol typeSymbol && typeSymbol.typeParameterCount() > 0 && args.isEmpty();
+    return owner instanceof JTypeSymbol typeSymbol && typeSymbol.typeParameterCount() > 0 && args.isEmpty();
   }
 
   @Override
@@ -377,8 +365,8 @@ final class JType implements Type, Type.ArrayType {
     if (isUnknown() || kind != Kind.NAMED) {
       return this;
     }
-    if (declaredSymbol() instanceof JTypeSymbol typeSymbol && !typeSymbol.isUnknown() && typeSymbol.type() instanceof JType declared && declared.kind == Kind.NAMED && args.isEmpty()) {
-      return declared;
+    if (isRawType()) {
+      return declaredSymbol() instanceof JTypeSymbol typeSymbol ? typeSymbol.declaringType(this) : this;
     }
     return sema.getClassType(fqn);
   }
