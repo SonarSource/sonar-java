@@ -677,6 +677,10 @@ public final class JSema implements Sema {
     if (method.returnsSelf() && receiver instanceof JType returned && returned.isCapture()) {
       return returned;
     }
+    if (receiver instanceof JType captured && captured.isCapture() && captured.element != null && captured.element.isClass() && !method.isStatic()) {
+      // a member of a capture is a member of its bound
+      return invocationReturn(method, captured.element, arguments);
+    }
     Type declaring = index == null || receiver == null ? null : declaringType(method, receiver);
     if (declaring != null && declaring.isParameterized() && declaring.typeArguments().size() > index) {
       Type argument = declaring.typeArguments().get(index);
@@ -768,12 +772,62 @@ public final class JSema implements Sema {
     Set<String> own = new HashSet<>();
     names.forEach(name -> own.add(name.getAsString()));
     Map<String, Type> bound = new HashMap<>();
-    bindFromType(declared, target, own, bound);
+    bindReturnToTarget(declared, target, own, bound);
     if (bound.isEmpty()) {
       return null;
     }
     JType result = typeFromFact(declared, bound);
     return result.isUnknown() || mentionsTypeVariable(result) ? null : result;
+  }
+
+  /**
+   * The parameter types of {@code method} when the type its call is passed as fixes the type variables of the
+   * method, or null when they stay open.
+   */
+  @Nullable
+  List<Type> targetedParameters(JMethodSymbol method, Type target) {
+    JsonObject member = lookupGenericMember(method);
+    JsonObject declared = declaredReturn(method);
+    if (member == null || declared == null || !(member.get("typeVars") instanceof JsonArray names) || names.isEmpty()) {
+      return null;
+    }
+    Set<String> own = new HashSet<>();
+    names.forEach(name -> own.add(name.getAsString()));
+    Map<String, Type> bound = new HashMap<>();
+    bindReturnToTarget(declared, target, own, bound);
+    List<JsonObject> parameters = declaredParameters(method);
+    if (bound.isEmpty() || parameters.isEmpty()) {
+      return null;
+    }
+    List<Type> result = new ArrayList<>();
+    for (JsonObject parameter : parameters) {
+      JType type = typeFromFact(parameter, bound);
+      result.add(type.isUnknown() || mentionsTypeVariable(type) ? Type.UNKNOWN : type);
+    }
+    return result;
+  }
+
+  /**
+   * Binds the type variables a declared return type names from the type the call is passed as. The target may be a
+   * supertype of the declared type: its arguments are read through the supertype of the declared type it names.
+   */
+  private void bindReturnToTarget(JsonObject declared, Type target, Set<String> variables, Map<String, Type> bound) {
+    bindFromType(declared, target, variables, bound);
+    if (!bound.isEmpty() || !(target instanceof JType expected) || !expected.isParameterized() || declared.get("args") == null) {
+      return;
+    }
+    JType written = typeFromFact(declared);
+    Type aligned = written.isParameterized() ? asSuperType(written, expected.erasure().fullyQualifiedName(), new HashSet<>()) : null;
+    if (aligned == null || !aligned.isParameterized() || aligned.typeArguments().size() != expected.args.size()) {
+      return;
+    }
+    for (int i = 0; i < expected.args.size(); i++) {
+      Type argument = aligned.typeArguments().get(i);
+      JType given = expected.args.get(i);
+      if (argument.isTypeVar() && variables.contains(argument.name()) && !given.isWildcard() && !given.isUnknown()) {
+        bound.putIfAbsent(argument.name(), given);
+      }
+    }
   }
 
   /**
@@ -912,6 +966,36 @@ public final class JSema implements Sema {
     return JType.named(this, raw.fullyQualifiedName(), arguments);
   }
 
+  /**
+   * The parameterization of {@code created} a diamond infers from the arguments of its constructor: each type
+   * parameter of the class takes the argument type it is passed as, or {@code created} when one stays open.
+   */
+  Type inferDiamondFromArguments(JMethodSymbol constructor, Type created, List<Type> arguments) {
+    if (!(created.erasure() instanceof JType raw) || raw.isUnknown() || created.isParameterized()) {
+      return created;
+    }
+    JsonObject info = typeInfos.get(sourceName(raw.fullyQualifiedName()));
+    List<String> names = info == null ? List.of() : strings(info, "typeVars");
+    List<JsonObject> declared = names.isEmpty() ? List.of() : declaredParameters(constructor);
+    if (declared.isEmpty() || declared.size() != arguments.size()) {
+      return created;
+    }
+    Set<String> own = new HashSet<>(names);
+    Map<String, Type> bound = new HashMap<>();
+    for (int i = 0; i < declared.size(); i++) {
+      bindFromType(declared.get(i), arguments.get(i), own, bound);
+    }
+    List<JType> inferred = new ArrayList<>();
+    for (String name : names) {
+      Type argument = bound.get(name);
+      if (argument == null || argument.isUnknown()) {
+        return created;
+      }
+      inferred.add(asJType(argument));
+    }
+    return JType.named(this, raw.fullyQualifiedName(), inferred);
+  }
+
   /** The type a lambda or method reference implements for a wildcard-parameterized target (JLS 9.9). */
   Type groundType(Type target) {
     if (!(target instanceof JType type) || !type.isParameterized() || type.args.stream().noneMatch(JType::isWildcard)) {
@@ -1031,6 +1115,24 @@ public final class JSema implements Sema {
       substitution.put(names.get(i), arguments.get(i));
     }
     return substitution;
+  }
+
+  /** Whether {@code from}, read as {@code to}'s class, gives it the type arguments {@code to} names; a wildcard argument takes any. */
+  boolean preservesArguments(Type from, Type to) {
+    if (!to.isParameterized()) {
+      return true;
+    }
+    Type aligned = asSuperType(from, to.erasure().fullyQualifiedName(), new HashSet<>());
+    if (aligned == null || !aligned.isParameterized() || aligned.typeArguments().size() != to.typeArguments().size()) {
+      return false;
+    }
+    for (int i = 0; i < to.typeArguments().size(); i++) {
+      Type written = to.typeArguments().get(i);
+      if (!(written instanceof JType type && type.isWildcard()) && !written.equals(aligned.typeArguments().get(i))) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /** The instantiation of {@code targetFqn} reached from {@code from}, which is itself or one of its supertypes. */
@@ -2002,7 +2104,7 @@ public final class JSema implements Sema {
     } else if (!declaredParams.isEmpty() && declaredParams.get(declaredParams.size() - 1).endsWith("...")) {
       method.varArgs(true);
     }
-    method.parametrized(id.indexOf('<') >= 0);
+    method.parametrized(id.replace("<init>", "").replace("<clinit>", "").indexOf('<') >= 0);
   }
 
   private void applyFact(JSymbol symbol, JsonObject fact) {
@@ -2171,7 +2273,35 @@ public final class JSema implements Sema {
     if (PRIMITIVES.contains(erased)) {
       return primitiveType(erased);
     }
+    if (captureWildcard) {
+      boundCaptures(erased, args);
+    }
     return JType.named(this, erased, args);
+  }
+
+  /** An unbounded wildcard argument is captured with the bound its type parameter declares. */
+  private void boundCaptures(String owner, List<JType> arguments) {
+    for (int i = 0; i < arguments.size(); i++) {
+      JType argument = arguments.get(i);
+      if (argument.isCapture() && argument.element != null && argument.element.is("java.lang.Object")) {
+        JType bound = declaredBound(owner, i);
+        if (bound != null) {
+          arguments.set(i, JType.capture(this, bound));
+        }
+      }
+    }
+  }
+
+  /** The class bound the {@code index}th type parameter of {@code owner} declares, when it is more than Object. */
+  @Nullable
+  private JType declaredBound(String owner, int index) {
+    JsonObject info = typeInfos.get(sourceName(owner));
+    if (info == null || !(info.get("typeVarBounds") instanceof JsonArray bounds) || bounds.size() <= index
+      || !(bounds.get(index) instanceof JsonArray list) || list.isEmpty() || !(list.get(0) instanceof JsonObject fact)) {
+      return null;
+    }
+    JType bound = typeFromFact(fact);
+    return bound.isUnknown() || bound.is("java.lang.Object") ? null : bound;
   }
 
   private JType wildcardFromFact(JsonObject fact, Map<String, Type> substitution, boolean capture) {

@@ -113,17 +113,59 @@ final class CompilerWarnings extends BaseTreeVisitor {
   public void visitTypeCast(org.sonar.plugins.java.api.tree.TypeCastTree tree) {
     Type cast = tree.type().symbolType();
     Type operand = tree.expression().symbolType();
-    if (!cast.isUnknown() && !operand.isUnknown() && operand.isSubtypeOf(cast)) {
+    boolean widening = !cast.isUnknown() && !operand.isUnknown() && operand.isSubtypeOf(cast) && sema.preservesArguments(operand, cast) && !changesTypeFor(tree, operand);
+    if (widening) {
       if (cast.erasure().fullyQualifiedName().equals(operand.erasure().fullyQualifiedName()) && cast.typeArguments().isEmpty() == operand.typeArguments().isEmpty()) {
         add(ProblemKind.REDUNDANT_CAST, "Unnecessary cast from " + operand.erasure().name() + " to " + cast.erasure().name(), tree);
       }
     }
-    if (!cast.isUnknown() && !operand.isUnknown() && operand.isSubtypeOf(cast) && assignedTo(tree).filter(target -> !target.isUnknown() && operand.isSubtypeOf(target) && cast.isSubtypeOf(target)).isPresent()) {
+    if (widening && assignedTo(tree).filter(target -> !target.isUnknown() && operand.isSubtypeOf(target) && cast.isSubtypeOf(target)).isPresent()) {
       // the cast widens a value that is assigned to a type accepting it as is
+      add(ProblemKind.REDUNDANT_CAST, "Unnecessary cast from " + operand.erasure().name() + " to " + cast.erasure().name(), tree);
+    }
+    if (widening && cast.isArray() && isIndexedArray(tree)) {
       add(ProblemKind.REDUNDANT_CAST, "Unnecessary cast from " + operand.erasure().name() + " to " + cast.erasure().name(), tree);
     }
     super.visitTypeCast(tree);
     scan(tree.bounds());
+  }
+
+  /** Whether the cast is the array an element is read from. */
+  private static boolean isIndexedArray(org.sonar.plugins.java.api.tree.TypeCastTree cast) {
+    Tree child = cast;
+    Tree parent = cast.parent();
+    while (parent instanceof org.sonar.plugins.java.api.tree.ParenthesizedTree) {
+      child = parent;
+      parent = parent.parent();
+    }
+    return parent instanceof org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree access && access.expression() == child;
+  }
+
+  /** Whether the cast is the operand of another cast that the operand's own type cannot reach without it. */
+  private boolean changesTypeFor(org.sonar.plugins.java.api.tree.TypeCastTree cast, Type operand) {
+    Tree parent = cast.parent();
+    while (parent instanceof org.sonar.plugins.java.api.tree.ParenthesizedTree) {
+      parent = parent.parent();
+    }
+    if (!(parent instanceof org.sonar.plugins.java.api.tree.TypeCastTree outer)) {
+      return false;
+    }
+    Type target = outer.type().symbolType();
+    return target.isParameterized() && operand.isParameterized() && !sema.preservesArguments(operand, target) && !sema.preservesArguments(target, operand);
+  }
+
+  /** The type of the parameter {@code argument} is passed to, when no other method of the owner could take the call instead. */
+  private static java.util.Optional<Type> soleParameterType(org.sonar.plugins.java.api.tree.Arguments arguments, Tree argument) {
+    Symbol.MethodSymbol method = arguments.parent() instanceof org.sonar.plugins.java.api.tree.MethodInvocationTree call ? call.methodSymbol()
+      : arguments.parent() instanceof org.sonar.plugins.java.api.tree.NewClassTree creation ? creation.methodSymbol() : null;
+    int index = arguments.indexOf(argument);
+    if (method == null || method.isUnknown() || index < 0 || index >= method.parameterTypes().size() || method.isVarArgsMethod() || !(method.owner() instanceof Symbol.TypeSymbol owner)) {
+      return java.util.Optional.empty();
+    }
+    long sameArity = owner.memberSymbols().stream()
+      .filter(member -> member.isMethodSymbol() && member.name().equals(method.name()) && ((Symbol.MethodSymbol) member).parameterTypes().size() == arguments.size())
+      .count();
+    return sameArity == 1 ? java.util.Optional.of(method.parameterTypes().get(index)) : java.util.Optional.empty();
   }
 
   /** The declared type of the variable the cast initializes or is assigned to. */
@@ -139,6 +181,9 @@ final class CompilerWarnings extends BaseTreeVisitor {
     }
     if (parent instanceof AssignmentExpressionTree assignment && assignment.is(Tree.Kind.ASSIGNMENT) && assignment.expression() == child) {
       return java.util.Optional.of(assignment.variable().symbolType());
+    }
+    if (parent instanceof org.sonar.plugins.java.api.tree.Arguments arguments) {
+      return soleParameterType(arguments, child);
     }
     return java.util.Optional.empty();
   }

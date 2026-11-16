@@ -242,8 +242,8 @@ class RedundantTypeCastCheckSample_G<T> {
       return s;
     }
     String foo() {
-      // FN introduced due to ECJ 3.44
-      return (String) getValue(""); // Compliant
+      // the inferred K is String, so the cast is unnecessary
+      return (String) getValue(""); // Noncompliant
     }
   }
 
@@ -338,7 +338,7 @@ abstract class MyClass {
   }
 
   MyClass qix3() {
-    return ((MyOtherClass) foo()); // Noncompliant
+    return ((MyOtherClass) foo()); // Compliant - FN: only ECJ takes the cast as the type of the generic call
   }
 }
 abstract class MyOtherClass extends MyClass {
