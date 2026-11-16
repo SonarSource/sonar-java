@@ -38,6 +38,8 @@ public class EncryptionAlgorithmCheck extends AbstractMethodDetection {
 
   private static final Pattern ALGORITHM_PATTERN = Pattern.compile("([^/]+)/([^/]+)/([^/]+)");
 
+  private static final Pattern KEY_WRAP_PATTERN = Pattern.compile("AESWrap(Pad)?(_(128|192|256))?", Pattern.CASE_INSENSITIVE);
+
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
     return MethodMatchers.create()
@@ -77,6 +79,9 @@ public class EncryptionAlgorithmCheck extends AbstractMethodDetection {
   }
 
   private static Optional<String> getInsecureAlgorithmMessage(String algorithmName) {
+    if (KEY_WRAP_PATTERN.matcher(algorithmName).matches()) {
+      return Optional.empty();
+    }
     Matcher matcher = ALGORITHM_PATTERN.matcher(algorithmName);
     if (matcher.matches()) {
       String algorithm = matcher.group(1);
