@@ -191,7 +191,7 @@ final class AnalyzerSession {
     List<String> command = new ArrayList<>();
     command.add(executable.toAbsolutePath().toString());
     command.addAll(List.of("--server", "--lang", "java", "--modifiers", "--structural", "--decl-location", "--field-items",
-      "--override-edges", "--src", root, "--project-root", root));
+      "--field-reference-edges", "--override-edges", "--src", root, "--project-root", root));
     String extra = System.getProperty("sonar.java.semsitter.args");
     if (extra != null && !extra.isBlank()) {
       command.addAll(List.of(extra.split(" ")));
