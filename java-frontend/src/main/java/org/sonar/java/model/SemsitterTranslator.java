@@ -799,6 +799,9 @@ final class SemsitterTranslator {
       type = type(typeNode);
       if ("field_declaration".equals(declaration.k()) || "constant_declaration".equals(declaration.k())) {
         type = recoverQualifiedType(type);
+      } else if (!naming && type instanceof MemberSelectExpressionTreeImpl select && select.symbolType().isUnknown()) {
+        // an unresolved qualified name of a local or a parameter is not typed by what is written
+        ascribe(select, JType.unknown(sema));
       }
     } else if ("spread_parameter".equals(declaration.k())) {
       type = spreadType(declaration);
@@ -2304,7 +2307,7 @@ final class SemsitterTranslator {
   }
 
   private MemberSelectExpressionTreeImpl classLiteral(Node node) {
-    ExpressionTree type = (ExpressionTree) type(firstNamed(node));
+    ExpressionTree type = (ExpressionTree) recoverQualifiedType(type(firstNamed(node)));
     IdentifierTreeImpl className = new IdentifierTreeImpl(token(required(node, "class")));
     MemberSelectExpressionTreeImpl tree = new MemberSelectExpressionTreeImpl(type, token(required(node, ".")), className);
     Type literal = type.symbolType().isPrimitive() ? type.symbolType().primitiveWrapperType() : type.symbolType();
@@ -2632,6 +2635,7 @@ final class SemsitterTranslator {
         ascribe(inferred, parameter.symbol().type());
       }
     }));
+    deferred.add(() -> unbindUntypedParameters(tree));
     for (VariableTree parameter : parameters) {
       if (parameter.symbol().owner() instanceof JMethodSymbol method) {
         method.lambda(true);
@@ -2640,6 +2644,31 @@ final class SemsitterTranslator {
       }
     }
     return tree;
+  }
+
+  /** The compiler leaves the body of a lambda without a target unresolved: its inferred parameters are not bound where used. */
+  private void unbindUntypedParameters(LambdaExpressionTreeImpl lambda) {
+    if (naming || !lambda.symbolType().isUnknown()) {
+      return;
+    }
+    Set<Symbol> untyped = new HashSet<>();
+    for (VariableTree parameter : lambda.parameters()) {
+      if (parameter.type() instanceof InferedTypeTree && parameter.symbol().type().isUnknown()) {
+        untyped.add(parameter.symbol());
+      }
+    }
+    if (untyped.isEmpty()) {
+      return;
+    }
+    lambda.body().accept(new BaseTreeVisitor() {
+      @Override
+      public void visitIdentifier(IdentifierTree tree) {
+        if (tree instanceof IdentifierTreeImpl use && untyped.contains(use.symbol())) {
+          use.symbol().usages().remove(use);
+          use.symbol = Symbol.UNKNOWN_SYMBOL;
+        }
+      }
+    });
   }
 
   private MethodReferenceTreeImpl methodReference(Node node) {
@@ -2978,6 +3007,10 @@ final class SemsitterTranslator {
     }
     AnnotationTreeImpl tree = new AnnotationTreeImpl(token(required(node, "@")), type, arguments);
     ascribe(tree, annotationType(type));
+    if (!naming && type instanceof MemberSelectExpressionTreeImpl select && select.symbolType().isUnknown()) {
+      // the written qualified name is the annotation's type; the name tree itself stays unresolved
+      ascribe(select, JType.unknown(sema));
+    }
     for (ExpressionTree argument : arguments) {
       if (argument instanceof AssignmentExpressionTree assignment && assignment.variable() instanceof IdentifierTreeImpl element && element.symbol().isUnknown()
         && type.symbolType().isClass()) {
