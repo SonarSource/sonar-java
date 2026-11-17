@@ -171,8 +171,9 @@ public class DataHashingCheck extends AbstractMethodDetection {
 
   private static final Set<InsecureAlgorithm> EXEMPTABLE_ALGORITHMS = EnumSet.of(InsecureAlgorithm.MD5, InsecureAlgorithm.SHA, InsecureAlgorithm.SHA1);
 
-  private static final Set<String> DATA_SINKS = Set.of("update", "digest", "doFinal", "hashBytes");
-  private static final Set<String> FINALIZERS = Set.of("digest", "doFinal");
+  private static final String DIGEST = "digest";
+  private static final Set<String> DATA_SINKS = Set.of("update", DIGEST, "doFinal", "hashBytes");
+  private static final Set<String> FINALIZERS = Set.of(DIGEST, "doFinal");
   private static final Set<String> NEUTRAL_CALLS = Set.of("init", "reset");
 
   private static final MethodMatchers ONE_SHOT_DIGESTS = MethodMatchers.or(
@@ -297,14 +298,12 @@ public class DataHashingCheck extends AbstractMethodDetection {
    * Heuristic: the array returned by digest() has byte 6 OR-ed with 0x50 and byte 8 OR-ed with 0x80.
    */
   private static boolean isUuidV5Digest(MethodInvocationTree factoryCall) {
-    Tree parent = factoryCall.parent();
-    if (parent.is(Tree.Kind.VARIABLE) && ((VariableTree) parent).initializer() == factoryCall) {
-      Symbol digest = ((VariableTree) parent).symbol();
-      if (!digest.isVariableSymbol() || !digest.owner().isMethodSymbol()) {
+    if (factoryCall.parent() instanceof VariableTree variable) {
+      if (!variable.symbol().owner().isMethodSymbol()) {
         return false;
       }
       boolean hasUuidDigest = false;
-      for (IdentifierTree usage : digest.usages()) {
+      for (IdentifierTree usage : variable.symbol().usages()) {
         if (isUuidV5DigestResult(usage)) {
           hasUuidDigest = true;
         } else if (!isUpdateOrReset(usage)) {
@@ -318,21 +317,15 @@ public class DataHashingCheck extends AbstractMethodDetection {
 
   private static boolean isUpdateOrReset(ExpressionTree digestUse) {
     return digestUse.parent() instanceof MemberSelectExpressionTree select
-      && select.expression() == digestUse
-      && select.parent() instanceof MethodInvocationTree
       && Set.of("update", "reset").contains(select.identifier().name());
   }
 
   private static boolean isUuidV5DigestResult(ExpressionTree digestUse) {
     if (digestUse.parent() instanceof MemberSelectExpressionTree select
-      && select.expression() == digestUse
-      && "digest".equals(select.identifier().name())
-      && select.parent() instanceof MethodInvocationTree call) {
-      Tree holder = call.parent();
-      if (holder.is(Tree.Kind.VARIABLE) && ((VariableTree) holder).initializer() == call) {
-        Symbol hash = ((VariableTree) holder).symbol();
-        return hash.isVariableSymbol() && setsVersionBits(hash, 6, 0x50) && setsVersionBits(hash, 8, 0x80);
-      }
+      && DIGEST.equals(select.identifier().name())
+      && select.parent().parent() instanceof VariableTree holder) {
+      Symbol hash = holder.symbol();
+      return setsVersionBits(hash, 6, 0x50) && setsVersionBits(hash, 8, 0x80);
     }
     return false;
   }
@@ -340,7 +333,6 @@ public class DataHashingCheck extends AbstractMethodDetection {
   private static boolean setsVersionBits(Symbol array, int index, int bits) {
     return array.usages().stream().anyMatch(usage -> {
       if (!(usage.parent() instanceof ArrayAccessExpressionTree access)
-        || access.expression() != usage
         || !access.dimension().expression().asConstant(Integer.class).filter(i -> i == index).isPresent()
         || !(access.parent() instanceof AssignmentExpressionTree assignment)
         || assignment.variable() != access) {
@@ -359,7 +351,8 @@ public class DataHashingCheck extends AbstractMethodDetection {
     if (expr.is(Tree.Kind.TYPE_CAST)) {
       return isOrWith(((TypeCastTree) expr).expression(), bits);
     }
-    if (expr instanceof BinaryExpressionTree binary && binary.is(Tree.Kind.OR)) {
+    if (expr.is(Tree.Kind.OR)) {
+      BinaryExpressionTree binary = (BinaryExpressionTree) expr;
       return isConstant(binary.leftOperand(), bits) || isConstant(binary.rightOperand(), bits);
     }
     return false;

@@ -362,6 +362,68 @@ class NotProvenToBeFileData {
     }
   }
 
+  java.util.UUID uuidV5ConstantOnTheLeft(byte[] data) throws NoSuchAlgorithmException {
+    MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+    byte[] hash = sha1.digest(data);
+    hash[6] = (byte) (0x50 | (hash[6] & 0x0f));
+    hash[8] = (byte) (0x80 | (hash[8] & 0x3f));
+    return new java.util.UUID(0, 0);
+  }
+
+  void uuidV5NonConstantIndex(byte[] data, int i) throws NoSuchAlgorithmException {
+    MessageDigest sha1 = MessageDigest.getInstance("SHA-1"); // Noncompliant
+    byte[] hash = sha1.digest(data);
+    hash[i] = (byte) ((hash[i] & 0x0f) | 0x50);
+    hash[8] = (byte) ((hash[8] & 0x3f) | 0x80);
+  }
+
+  void uuidV5WrongBitValue(byte[] data) throws NoSuchAlgorithmException {
+    MessageDigest sha1 = MessageDigest.getInstance("SHA-1"); // Noncompliant
+    byte[] hash = sha1.digest(data);
+    hash[6] |= 0x10;
+    hash[8] |= 0x80;
+  }
+
+  void uuidV5OrWithOtherConstant(byte[] data) throws NoSuchAlgorithmException {
+    MessageDigest sha1 = MessageDigest.getInstance("SHA-1"); // Noncompliant
+    byte[] hash = sha1.digest(data);
+    hash[6] = (byte) ((hash[6] & 0x0f) | 0x10);
+    hash[8] = (byte) ((hash[8] & 0x3f) | 0x80);
+  }
+
+  void uuidV5NotAnOrExpression(byte[] data) throws NoSuchAlgorithmException {
+    MessageDigest sha1 = MessageDigest.getInstance("SHA-1"); // Noncompliant
+    byte[] hash = sha1.digest(data);
+    hash[6] = 0x50;
+    hash[8] = (byte) (hash[8] & 0x80);
+  }
+
+  void uuidV5BitsOnlyRead(byte[] data) throws NoSuchAlgorithmException {
+    MessageDigest sha1 = MessageDigest.getInstance("SHA-1"); // Noncompliant
+    byte[] hash = sha1.digest(data);
+    byte version;
+    byte variant;
+    version = hash[6];
+    variant = hash[8];
+  }
+
+  void uuidV5ResetAndUpdate(byte[] namespaceBytes, byte[] data) throws NoSuchAlgorithmException {
+    MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+    sha1.reset();
+    sha1.update(namespaceBytes);
+    byte[] hash = sha1.digest(data);
+    hash[6] |= 0x50;
+    hash[8] |= 0x80;
+  }
+
+  void uuidV5DigestEscapes(byte[] data) throws NoSuchAlgorithmException {
+    MessageDigest sha1 = MessageDigest.getInstance("SHA-1"); // Noncompliant
+    byte[] hash = sha1.digest(data);
+    hash[6] |= 0x50;
+    hash[8] |= 0x80;
+    consume(sha1);
+  }
+
   void uuidV5OnlyVersionBits(byte[] data) throws NoSuchAlgorithmException {
     MessageDigest sha1 = MessageDigest.getInstance("SHA-1"); // Noncompliant
     byte[] hash = sha1.digest(data);
