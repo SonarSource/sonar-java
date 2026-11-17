@@ -242,11 +242,11 @@ final class JType implements Type, Type.ArrayType {
     }
     // Supertypes are walked erased: their arguments name the owner's type variables, not this type's arguments.
     Type superClass = owner.superClass();
-    if (superClass != null && ((JType) superClass.erasure()).isSubtypeOf(superType, visited)) {
+    if (superClass != null && superClass.erasure() instanceof JType erasedSuper && erasedSuper.isSubtypeOf(superType, visited)) {
       return true;
     }
     for (Type iface : owner.interfaces()) {
-      if (((JType) iface.erasure()).isSubtypeOf(superType, visited)) {
+      if (iface.erasure() instanceof JType erasedIface && erasedIface.isSubtypeOf(superType, visited)) {
         return true;
       }
     }

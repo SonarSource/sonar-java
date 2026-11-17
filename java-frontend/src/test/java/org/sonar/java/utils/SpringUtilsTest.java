@@ -311,6 +311,19 @@ class SpringUtilsTest {
     }
 
     @Test
+    void qualifier_given_by_a_constant_does_not_fail() {
+      var cu = JParserTestUtils.parse("B", """
+        class B {
+          static final String NAME = "named";
+          void m(@org.springframework.beans.factory.annotation.Qualifier(NAME) Object byConstant) {
+          }
+        }
+        """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+      var m = (MethodTreeImpl) ((ClassTreeImpl) cu.types().get(0)).members().get(1);
+      assertThat(SpringUtils.extractQualifierValue(m.parameters().get(0).symbol().metadata())).isIn("named", null);
+    }
+
+    @Test
     void returns_null_when_qualifier_value_is_blank() {
       var withBlankQualifier = method.parameters().get(1);
       assertThat(SpringUtils.extractQualifierValue(withBlankQualifier.symbol().metadata())).isNull();
