@@ -1216,7 +1216,7 @@ final class SemsitterTranslator {
     if (expression instanceof NewClassTreeImpl newClass && !returnTargets.isEmpty()) {
       inferDiamond(newClass, returnTargets.peek());
     }
-    if (expression != null && expression.is(Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.METHOD_REFERENCE) && !returnTargets.isEmpty() && !returnTargets.peek().isUnknown()) {
+    if (expression != null && expression.is(Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.METHOD_REFERENCE, Tree.Kind.METHOD_INVOCATION) && !returnTargets.isEmpty() && !returnTargets.peek().isUnknown()) {
       ascribeTarget(expression, returnTargets.peek());
     }
     return new ReturnStatementTreeImpl(token(required(node, "return")), expression, token(required(node, ";")));
@@ -1811,6 +1811,13 @@ final class SemsitterTranslator {
         }
       }
     }
+    if (expression instanceof MethodInvocationTreeImpl call && call.methodSymbol() instanceof JMethodSymbol generic && !generic.isUnknown() && call.symbolType().isParameterized()
+      && target.isParameterized() && call.arguments().stream().anyMatch(argument -> argument.is(Tree.Kind.METHOD_INVOCATION) && argument.symbolType().is("java.util.stream.Collector"))) {
+      Type retargeted = sema.retargetedElement(generic, generic.owner().type(), call.symbolType(), target);
+      if (retargeted != null) {
+        ascribe(call, retargeted);
+      }
+    }
     if (expression instanceof LambdaExpressionTreeImpl lambda) {
       bindLambdaParameterOwner(lambda, lambda.symbolType());
     }
@@ -2167,6 +2174,11 @@ final class SemsitterTranslator {
       for (int i = 0; i < typed.size(); i++) {
         if (tree.arguments().get(i).is(Tree.Kind.METHOD_INVOCATION)) {
           typed.set(i, tree.arguments().get(i).symbolType());
+        } else if (tree.arguments().get(i) instanceof MethodReferenceTreeImpl reference && i < parameters.size() && referenceResult(reference) instanceof Type produced) {
+          Type function = sema.functionProducing(parameters.get(i), produced);
+          if (function != null) {
+            typed.set(i, function);
+          }
         }
       }
       Type returned = sema.withExplicitTypeArguments(explicit, () -> sema.invocationReturn(method, receiver, typed));
@@ -2194,6 +2206,16 @@ final class SemsitterTranslator {
       tree.methodSymbol = unresolved;
     }
     return tree;
+  }
+
+  /** The type a method reference to a bound method yields, or null when it is a constructor reference or the method is generic or unknown. */
+  @Nullable
+  private static Type referenceResult(MethodReferenceTreeImpl reference) {
+    if (!(reference.method().symbol() instanceof JMethodSymbol method) || method.isUnknown() || "new".equals(method.name()) || "<init>".equals(method.name())) {
+      return null;
+    }
+    Type returned = method.returnType().type();
+    return returned == null || returned.isUnknown() || returned.isTypeVar() || returned.isVoid() ? null : returned;
   }
 
   /**

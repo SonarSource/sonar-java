@@ -816,6 +816,72 @@ public final class JSema implements Sema {
   }
 
   /**
+   * The result of a call that returns a bare method type variable, such as {@code Stream<E>.collect(collector)}, when
+   * the type it is passed as takes a supertype of the element where the result carries it: a collector factory leaves
+   * its element free, so {@code Collection<CharSequence>} fixes the result of a stream of {@code String} to
+   * {@code List<CharSequence>}. Null when the result stands.
+   */
+  @Nullable
+  Type retargetedElement(JMethodSymbol method, Type receiver, Type returned, Type target) {
+    JsonObject declared = declaredReturn(method);
+    JsonObject member = method.isUnknown() ? null : lookupGenericMember(method);
+    if (declared == null || member == null || !"typevar".equals(text(declared, "kind"))
+      || !(receiver instanceof JType owner) || owner.args.isEmpty()
+      || !(returned instanceof JType result) || !result.isParameterized() || !(target instanceof JType wantedType) || !wantedType.isParameterized()) {
+      return null;
+    }
+    JType element = owner.args.get(0);
+    if (element.isWildcard() || element.isUnknown() || element.isParameterized() || !element.isClass()) {
+      return null;
+    }
+    int open = -1;
+    for (int i = 0; i < result.args.size(); i++) {
+      if (result.args.get(i).fullyQualifiedName().equals(element.fullyQualifiedName())) {
+        if (open >= 0) {
+          return null;
+        }
+        open = i;
+      }
+    }
+    Type aligned = open < 0 ? null : asSuperType(result, wantedType.erasure().fullyQualifiedName(), new HashSet<>());
+    if (aligned == null || !aligned.isParameterized() || aligned.typeArguments().size() != wantedType.args.size()) {
+      return null;
+    }
+    for (int k = 0; k < wantedType.args.size(); k++) {
+      JType wanted = wantedType.args.get(k);
+      if (aligned.typeArguments().get(k).fullyQualifiedName().equals(element.fullyQualifiedName())
+        && !wanted.isWildcard() && !wanted.isUnknown() && !wanted.isParameterized() && wanted.isClass()
+        && !wanted.fullyQualifiedName().equals(element.fullyQualifiedName()) && element.isSubtypeOf(wanted)) {
+        List<JType> arguments = new ArrayList<>(result.args);
+        arguments.set(open, wanted);
+        return JType.named(this, result.erasure().fullyQualifiedName(), arguments);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * The functional interface {@code parameter} with only the type argument its method returns known, as the type a
+   * function that produces {@code produced} has there, or null when {@code parameter} is not such an interface.
+   */
+  @Nullable
+  Type functionProducing(Type parameter, Type produced) {
+    if (!(parameter instanceof JType declared) || !declared.isParameterized() || produced.isUnknown() || produced.isTypeVar() || mentionsTypeVariable(produced)) {
+      return null;
+    }
+    JMethodSymbol functional = functionalMethod(declared);
+    Integer position = functional == null ? null : returnedClassVariable(functional, declared);
+    if (position == null || position >= declared.args.size()) {
+      return null;
+    }
+    List<JType> arguments = new ArrayList<>();
+    for (int i = 0; i < declared.args.size(); i++) {
+      arguments.add(i == position ? asJType(produced.isPrimitive() ? produced.primitiveWrapperType() : produced) : JType.unknown(this));
+    }
+    return JType.inferred(this, declared.erasure().fullyQualifiedName(), arguments);
+  }
+
+  /**
    * The parameter types of {@code method} when the type its call is passed as fixes the type variables of the
    * method, or null when they stay open.
    */
