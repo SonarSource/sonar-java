@@ -325,7 +325,8 @@ public class DataHashingCheck extends AbstractMethodDetection {
       && DIGEST.equals(select.identifier().name())
       && select.parent().parent() instanceof VariableTree holder) {
       Symbol hash = holder.symbol();
-      return setsVersionBits(hash, 6, 0x50) && setsVersionBits(hash, 8, 0x80);
+      return ExpressionsHelper.getSingleWriteUsage(hash) != null
+        && setsVersionBits(hash, 6, 0x50) && setsVersionBits(hash, 8, 0x80);
     }
     return false;
   }

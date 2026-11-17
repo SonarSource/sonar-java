@@ -424,6 +424,15 @@ class NotProvenToBeFileData {
     consume(sha1);
   }
 
+  void uuidV5HashReassigned(byte[] data) throws NoSuchAlgorithmException {
+    MessageDigest sha1 = MessageDigest.getInstance("SHA-1"); // Noncompliant
+    byte[] hash = sha1.digest(data);
+    java.util.Arrays.hashCode(hash);
+    hash = new byte[16];
+    hash[6] = (byte) ((hash[6] & 0x0f) | 0x50);
+    hash[8] = (byte) ((hash[8] & 0x3f) | 0x80);
+  }
+
   void uuidV5OnlyVersionBits(byte[] data) throws NoSuchAlgorithmException {
     MessageDigest sha1 = MessageDigest.getInstance("SHA-1"); // Noncompliant
     byte[] hash = sha1.digest(data);
