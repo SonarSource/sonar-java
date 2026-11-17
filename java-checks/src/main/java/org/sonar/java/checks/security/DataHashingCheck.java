@@ -31,7 +31,11 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -284,7 +288,71 @@ public class DataHashingCheck extends AbstractMethodDetection {
     if (ONE_SHOT_DIGESTS.matches(mit)) {
       return !mit.arguments().isEmpty() && isFileSourced(mit.arguments().get(0));
     }
-    return DIGEST_FACTORIES.matches(mit) && isOnlyFedFileData(mit);
+    return DIGEST_FACTORIES.matches(mit)
+      && (isOnlyFedFileData(mit) || (algorithm == InsecureAlgorithm.SHA1 && isUuidV5Digest(mit)));
+  }
+
+  /**
+   * Name-based UUID version 5 is defined as SHA-1 by RFC 4122 / RFC 9562.
+   * Heuristic: the array returned by digest() has byte 6 OR-ed with 0x50 and byte 8 OR-ed with 0x80.
+   */
+  private static boolean isUuidV5Digest(MethodInvocationTree factoryCall) {
+    Tree parent = factoryCall.parent();
+    if (parent.is(Tree.Kind.VARIABLE) && ((VariableTree) parent).initializer() == factoryCall) {
+      Symbol digest = ((VariableTree) parent).symbol();
+      return digest.isVariableSymbol() && digest.usages().stream().anyMatch(DataHashingCheck::isUuidV5DigestResult);
+    }
+    return isUuidV5DigestResult(factoryCall);
+  }
+
+  private static boolean isUuidV5DigestResult(ExpressionTree digestUse) {
+    if (digestUse.parent() instanceof MemberSelectExpressionTree select
+      && select.expression() == digestUse
+      && "digest".equals(select.identifier().name())
+      && select.parent() instanceof MethodInvocationTree call) {
+      Tree holder = call.parent();
+      if (holder.is(Tree.Kind.VARIABLE) && ((VariableTree) holder).initializer() == call) {
+        Symbol hash = ((VariableTree) holder).symbol();
+        return hash.isVariableSymbol() && setsVersionBits(hash, 6, 0x50) && setsVersionBits(hash, 8, 0x80);
+      }
+    }
+    return false;
+  }
+
+  private static boolean setsVersionBits(Symbol array, int index, int bits) {
+    return array.usages().stream().anyMatch(usage -> {
+      if (!(usage.parent() instanceof ArrayAccessExpressionTree access)
+        || access.expression() != usage
+        || !access.dimension().expression().asConstant(Integer.class).filter(i -> i == index).isPresent()
+        || !(access.parent() instanceof AssignmentExpressionTree assignment)
+        || assignment.variable() != access) {
+        return false;
+      }
+      ExpressionTree value = ExpressionUtils.skipParentheses(assignment.expression());
+      if (assignment.is(Tree.Kind.OR_ASSIGNMENT)) {
+        return isConstant(value, bits);
+      }
+      return assignment.is(Tree.Kind.ASSIGNMENT) && isOrWith(value, bits);
+    });
+  }
+
+  private static boolean isOrWith(ExpressionTree expression, int bits) {
+    ExpressionTree expr = ExpressionUtils.skipParentheses(expression);
+    if (expr.is(Tree.Kind.TYPE_CAST)) {
+      return isOrWith(((TypeCastTree) expr).expression(), bits);
+    }
+    if (expr instanceof BinaryExpressionTree binary && binary.is(Tree.Kind.OR)) {
+      return isConstant(binary.leftOperand(), bits) || isConstant(binary.rightOperand(), bits);
+    }
+    return false;
+  }
+
+  private static boolean isConstant(ExpressionTree expression, int value) {
+    ExpressionTree expr = ExpressionUtils.skipParentheses(expression);
+    if (expr.is(Tree.Kind.TYPE_CAST)) {
+      return isConstant(((TypeCastTree) expr).expression(), value);
+    }
+    return expr.asConstant(Integer.class).filter(i -> i == value).isPresent();
   }
 
   private static boolean isOnlyFedFileData(MethodInvocationTree factoryCall) {
