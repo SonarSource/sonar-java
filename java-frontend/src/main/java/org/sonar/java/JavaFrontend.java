@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -210,6 +211,7 @@ public class JavaFrontend {
     for (Iterable<? extends InputFile> group : inputFiles) {
       files.addAll(astScanner.filterModuleInfo(group).toList());
     }
+    inServerOrder(files);
     try {
       try {
         if (!files.isEmpty()) {
@@ -231,6 +233,20 @@ public class JavaFrontend {
         throw new AnalysisException(BATCH_ERROR_MESSAGE, e);
       }
     }
+  }
+
+  /**
+   * Sorts the files by path, the order the server builds files ahead in: read in another order, each file it built ahead
+   * goes unused and the next one is built while the analysis waits. Files without a path keep their order.
+   */
+  private static void inServerOrder(List<InputFile> files) {
+    Map<InputFile, String> paths = new HashMap<>();
+    try {
+      files.forEach(file -> paths.put(file, file.path().toAbsolutePath().toString().replace('\\', '/')));
+    } catch (RuntimeException noPath) {
+      return;
+    }
+    files.sort(Comparator.comparing(paths::get));
   }
 
   /** The absolute paths of the files of all groups; empty when one has none, which leaves the server to its source roots. */

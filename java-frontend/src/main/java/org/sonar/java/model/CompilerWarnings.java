@@ -162,7 +162,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
     if (method == null || method.isUnknown() || index < 0 || index >= method.parameterTypes().size() || method.isVarArgsMethod() || !(method.owner() instanceof Symbol.TypeSymbol owner)) {
       return java.util.Optional.empty();
     }
-    long sameArity = owner.memberSymbols().stream()
+    long sameArity = (owner instanceof JTypeSymbol type ? type.membersNamed(method.name()) : owner.memberSymbols()).stream()
       .filter(member -> member.isMethodSymbol() && member.name().equals(method.name()) && ((Symbol.MethodSymbol) member).parameterTypes().size() == arguments.size())
       .count();
     return sameArity == 1 ? java.util.Optional.of(method.parameterTypes().get(index)) : java.util.Optional.empty();

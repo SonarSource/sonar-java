@@ -355,13 +355,60 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
   @Override
   public Collection<Symbol> lookupSymbols(String name) {
-    Set<Symbol> found = new HashSet<>();
-    for (Symbol member : memberSymbols()) {
-      if (name.equals(member.name())) {
-        found.add(member);
+    return new HashSet<>(membersNamed(name));
+  }
+
+  /**
+   * The members named {@code name}, in the order of {@link #memberSymbols()}. Of a type another file or a library declares,
+   * only the members that may have that name are created, so a type with thousands of members costs a few per lookup.
+   */
+  List<Symbol> membersNamed(String name) {
+    if (generic != null) {
+      return generic.membersNamed(name);
+    }
+    List<Symbol> found = new ArrayList<>();
+    if (members != null || id == null || sema.inDocument(id) || declaration() != null) {
+      // The implicit members of a type this file declares depend on all of its members.
+      for (Symbol member : memberSymbols()) {
+        if (name.equals(member.name())) {
+          found.add(member);
+        }
+      }
+      return found;
+    }
+    for (JsonObject member : memberFacts) {
+      if (!isTypeParameterFact(member) && mayBeNamed(member, name)) {
+        Symbol symbol = sema.memberFromTypeInfo(this, member);
+        if (name.equals(symbol.name())) {
+          found.add(symbol);
+        }
       }
     }
     return found;
+  }
+
+  /** False only when the fact surely names another member: by its written name, or by the name its id gives. */
+  private boolean mayBeNamed(JsonObject member, String name) {
+    if (member.get("id") instanceof JsonPrimitive memberId) {
+      String simple = JSema.memberName(memberId.getAsString());
+      return simple == null || simple.equals(name) || !isIdentifier(simple);
+    }
+    if (member.has("id")) {
+      return true;
+    }
+    return !(member.get("name") instanceof JsonPrimitive written) || name.equals(written.getAsString());
+  }
+
+  private static boolean isIdentifier(String text) {
+    if (text.isEmpty() || !Character.isJavaIdentifierStart(text.charAt(0))) {
+      return false;
+    }
+    for (int i = 1; i < text.length(); i++) {
+      if (!Character.isJavaIdentifierPart(text.charAt(i))) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @Nullable
