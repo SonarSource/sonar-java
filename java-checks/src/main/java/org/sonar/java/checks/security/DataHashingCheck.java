@@ -300,9 +300,27 @@ public class DataHashingCheck extends AbstractMethodDetection {
     Tree parent = factoryCall.parent();
     if (parent.is(Tree.Kind.VARIABLE) && ((VariableTree) parent).initializer() == factoryCall) {
       Symbol digest = ((VariableTree) parent).symbol();
-      return digest.isVariableSymbol() && digest.usages().stream().anyMatch(DataHashingCheck::isUuidV5DigestResult);
+      if (!digest.isVariableSymbol() || !digest.owner().isMethodSymbol()) {
+        return false;
+      }
+      boolean hasUuidDigest = false;
+      for (IdentifierTree usage : digest.usages()) {
+        if (isUuidV5DigestResult(usage)) {
+          hasUuidDigest = true;
+        } else if (!isUpdateOrReset(usage)) {
+          return false;
+        }
+      }
+      return hasUuidDigest;
     }
     return isUuidV5DigestResult(factoryCall);
+  }
+
+  private static boolean isUpdateOrReset(ExpressionTree digestUse) {
+    return digestUse.parent() instanceof MemberSelectExpressionTree select
+      && select.expression() == digestUse
+      && select.parent() instanceof MethodInvocationTree
+      && Set.of("update", "reset").contains(select.identifier().name());
   }
 
   private static boolean isUuidV5DigestResult(ExpressionTree digestUse) {

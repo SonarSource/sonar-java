@@ -336,6 +336,32 @@ class NotProvenToBeFileData {
     return hash;
   }
 
+  byte[] uuidV5ThenPasswordHash(byte[] namespaceBytes, byte[] password) throws NoSuchAlgorithmException {
+    MessageDigest sha1 = MessageDigest.getInstance("SHA-1"); // Noncompliant
+    byte[] hash = sha1.digest(namespaceBytes);
+    hash[6] = (byte) ((hash[6] & 0x0f) | 0x50);
+    hash[8] = (byte) ((hash[8] & 0x3f) | 0x80);
+    return sha1.digest(password);
+  }
+
+  static class FieldDigest {
+    private final MessageDigest sha1 = MessageDigest.getInstance("SHA-1"); // Noncompliant
+
+    FieldDigest() throws NoSuchAlgorithmException {
+    }
+
+    java.util.UUID uuidV5(byte[] data) {
+      byte[] hash = sha1.digest(data);
+      hash[6] = (byte) ((hash[6] & 0x0f) | 0x50);
+      hash[8] = (byte) ((hash[8] & 0x3f) | 0x80);
+      return new java.util.UUID(0, 0);
+    }
+
+    byte[] passwordHash(byte[] password) {
+      return sha1.digest(password);
+    }
+  }
+
   void uuidV5OnlyVersionBits(byte[] data) throws NoSuchAlgorithmException {
     MessageDigest sha1 = MessageDigest.getInstance("SHA-1"); // Noncompliant
     byte[] hash = sha1.digest(data);
