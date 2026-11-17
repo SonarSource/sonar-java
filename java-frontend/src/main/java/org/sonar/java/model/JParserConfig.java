@@ -185,6 +185,10 @@ public abstract class JParserConfig {
       if (bridge == null) {
         return new Result(JParser.parse(javaVersion.effectiveJavaVersionAsString(), inputFile.filename(), inputFile.contents()));
       }
+      if (!inputFile.filename().endsWith(".java")) {
+        // The analyzer only claims .java files; a custom suffix is reported as a file it cannot parse.
+        return new Result(new RecognitionException(1, "Parse error: unsupported file suffix for " + inputFile.filename()));
+      }
       JsonObject document = bridge.cst(inputFile.path().toAbsolutePath().toString());
       JSema sema = new JSema();
       sema.noLibraries(classpath.isEmpty());

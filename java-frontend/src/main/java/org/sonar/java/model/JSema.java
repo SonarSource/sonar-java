@@ -1913,7 +1913,7 @@ public final class JSema implements Sema {
 
   /** The overload that matches {@code arguments} when {@code candidate} is more specific than {@code current}. */
   Symbol.MethodSymbol preferOverload(Symbol.MethodSymbol current, @Nullable Symbol.MethodSymbol candidate, List<Type> arguments, Set<Integer> functions) {
-    if (candidate == null || candidate == current || candidate.isUnknown()) {
+    if (candidate == null || candidate == current || candidate.isUnknown() || !arityMatches(candidate, arguments.size())) {
       return current;
     }
     if (!functions.isEmpty() && takesNoFunction(current, functions) && !takesNoFunction(candidate, functions)) {
@@ -2156,8 +2156,9 @@ public final class JSema implements Sema {
     if (served != null) {
       method.varArgs(served);
       method.varArgsKnown(true);
-    } else if (!declaredParams.isEmpty() && declaredParams.get(declaredParams.size() - 1).endsWith("...")) {
-      method.varArgs(true);
+    } else if (!declaredParams.isEmpty()) {
+      method.varArgs(declaredParams.get(declaredParams.size() - 1).endsWith("..."));
+      method.varArgsKnown(true);
     }
     method.parametrized(id.replace("<init>", "").replace("<clinit>", "").indexOf('<') >= 0);
   }
