@@ -10,6 +10,7 @@ abstract class EncryptionAlgorithmCheckSample {
   static final String NO_PADDING = "/NONE/NoPadding";
   static final String RSA_NO_PADDING = RSA + NO_PADDING;
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
+  static final String AES_WRAP = "AESWrap";
 
   public void foo(java.util.Properties props) {
     /*
@@ -92,6 +93,26 @@ abstract class EncryptionAlgorithmCheckSample {
 //                                                       ^^^^^^^^^^^^^^^^^^^^^^>
       Cipher.getInstance(algoUpperCase); // Noncompliant
 //                       ^^^^^^^^^^^^^
+
+      Cipher.getInstance("AESWrap"); // Compliant
+      Cipher.getInstance(AES_WRAP); // Compliant
+      Cipher.getInstance("AESWrap_128"); // Compliant
+      Cipher.getInstance("AESWrap_192"); // Compliant
+      Cipher.getInstance("AESWrap_256"); // Compliant
+      Cipher.getInstance("AESWrapPad"); // Compliant
+      Cipher.getInstance("AESWrapPad_128"); // Compliant
+      Cipher.getInstance("AESWrapPad_192"); // Compliant
+      Cipher.getInstance("AESWrapPad_256"); // Compliant
+      Cipher.getInstance("AES/KW/NoPadding"); // Compliant
+      Cipher.getInstance("AES/KWP/NoPadding"); // Compliant
+      Cipher.getInstance("aeswrap"); // Compliant
+      Cipher.getInstance("AESWRAP_128"); // Compliant
+      Cipher.getInstance("aesWrapPad_256"); // Compliant
+      Cipher.getInstance("AESWrap/ECB/NoPadding"); // Compliant
+      Cipher.getInstance("aeswrap/ecb/nopadding"); // Compliant
+      Cipher.getInstance("AESWrapPad/KWP/NoPadding"); // Compliant
+      Cipher.getInstance("AESWrap_64"); // Noncompliant
+      Cipher.getInstance("AESWrap_64/ECB/NoPadding"); // Noncompliant
 
     } catch (Exception  e) {
     }
