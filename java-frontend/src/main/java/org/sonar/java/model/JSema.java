@@ -167,6 +167,18 @@ public final class JSema implements Sema {
     return sourceNames.getOrDefault(fqn, fqn);
   }
 
+  /** Whether the document of this file declares the symbol {@code id}. */
+  boolean inDocument(String id) {
+    return dumpSymbols.containsKey(id);
+  }
+
+  /** The name a member symbol created from {@code id} gets, or null when the id names no member. */
+  @Nullable
+  static String memberName(String id) {
+    MemberId parsed = parseMember(id);
+    return parsed == null ? null : parsed.name;
+  }
+
   /** Asks whether a package is declared, with null when the answer is unknown. */
   public void loadPackages(Function<String, Boolean> loader) {
     packageLoader = loader;
