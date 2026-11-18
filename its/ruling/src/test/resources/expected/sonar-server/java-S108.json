@@ -1,0 +1,9 @@
+{
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/ScmAccountToUserLoaderTest.java": [
+92
+],
+"sonar-server:src/test/java/org/sonar/server/util/ObjectInputStreamIteratorTest.java": [
+52,
+71
+]
+}

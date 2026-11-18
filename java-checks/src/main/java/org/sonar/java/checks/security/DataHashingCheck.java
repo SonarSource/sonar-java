@@ -31,7 +31,11 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -167,8 +171,9 @@ public class DataHashingCheck extends AbstractMethodDetection {
 
   private static final Set<InsecureAlgorithm> EXEMPTABLE_ALGORITHMS = EnumSet.of(InsecureAlgorithm.MD5, InsecureAlgorithm.SHA, InsecureAlgorithm.SHA1);
 
-  private static final Set<String> DATA_SINKS = Set.of("update", "digest", "doFinal", "hashBytes");
-  private static final Set<String> FINALIZERS = Set.of("digest", "doFinal");
+  private static final String DIGEST = "digest";
+  private static final Set<String> DATA_SINKS = Set.of("update", DIGEST, "doFinal", "hashBytes");
+  private static final Set<String> FINALIZERS = Set.of(DIGEST, "doFinal");
   private static final Set<String> NEUTRAL_CALLS = Set.of("init", "reset");
 
   private static final MethodMatchers ONE_SHOT_DIGESTS = MethodMatchers.or(
@@ -284,7 +289,82 @@ public class DataHashingCheck extends AbstractMethodDetection {
     if (ONE_SHOT_DIGESTS.matches(mit)) {
       return !mit.arguments().isEmpty() && isFileSourced(mit.arguments().get(0));
     }
-    return DIGEST_FACTORIES.matches(mit) && isOnlyFedFileData(mit);
+    return DIGEST_FACTORIES.matches(mit)
+      && (isOnlyFedFileData(mit) || (algorithm == InsecureAlgorithm.SHA1 && isUuidV5Digest(mit)));
+  }
+
+  /**
+   * Name-based UUID version 5 is defined as SHA-1 by RFC 4122 / RFC 9562.
+   * Heuristic: the array returned by digest() has byte 6 OR-ed with 0x50 and byte 8 OR-ed with 0x80.
+   */
+  private static boolean isUuidV5Digest(MethodInvocationTree factoryCall) {
+    if (factoryCall.parent() instanceof VariableTree variable) {
+      if (!variable.symbol().owner().isMethodSymbol()) {
+        return false;
+      }
+      boolean hasUuidDigest = false;
+      for (IdentifierTree usage : variable.symbol().usages()) {
+        if (isUuidV5DigestResult(usage)) {
+          hasUuidDigest = true;
+        } else if (!isUpdateOrReset(usage)) {
+          return false;
+        }
+      }
+      return hasUuidDigest;
+    }
+    return isUuidV5DigestResult(factoryCall);
+  }
+
+  private static boolean isUpdateOrReset(ExpressionTree digestUse) {
+    return digestUse.parent() instanceof MemberSelectExpressionTree select
+      && Set.of("update", "reset").contains(select.identifier().name());
+  }
+
+  private static boolean isUuidV5DigestResult(ExpressionTree digestUse) {
+    if (digestUse.parent() instanceof MemberSelectExpressionTree select
+      && DIGEST.equals(select.identifier().name())
+      && select.parent().parent() instanceof VariableTree holder) {
+      Symbol hash = holder.symbol();
+      return ExpressionsHelper.getSingleWriteUsage(hash) != null
+        && setsVersionBits(hash, 6, 0x50) && setsVersionBits(hash, 8, 0x80);
+    }
+    return false;
+  }
+
+  private static boolean setsVersionBits(Symbol array, int index, int bits) {
+    return array.usages().stream().anyMatch(usage -> {
+      if (!(usage.parent() instanceof ArrayAccessExpressionTree access)
+        || !access.dimension().expression().asConstant(Integer.class).filter(i -> i == index).isPresent()
+        || !(access.parent() instanceof AssignmentExpressionTree assignment)
+        || assignment.variable() != access) {
+        return false;
+      }
+      ExpressionTree value = ExpressionUtils.skipParentheses(assignment.expression());
+      if (assignment.is(Tree.Kind.OR_ASSIGNMENT)) {
+        return isConstant(value, bits);
+      }
+      return assignment.is(Tree.Kind.ASSIGNMENT) && isOrWith(value, bits);
+    });
+  }
+
+  private static boolean isOrWith(ExpressionTree expression, int bits) {
+    ExpressionTree expr = ExpressionUtils.skipParentheses(expression);
+    if (expr.is(Tree.Kind.TYPE_CAST)) {
+      return isOrWith(((TypeCastTree) expr).expression(), bits);
+    }
+    if (expr.is(Tree.Kind.OR)) {
+      BinaryExpressionTree binary = (BinaryExpressionTree) expr;
+      return isConstant(binary.leftOperand(), bits) || isConstant(binary.rightOperand(), bits);
+    }
+    return false;
+  }
+
+  private static boolean isConstant(ExpressionTree expression, int value) {
+    ExpressionTree expr = ExpressionUtils.skipParentheses(expression);
+    if (expr.is(Tree.Kind.TYPE_CAST)) {
+      return isConstant(((TypeCastTree) expr).expression(), value);
+    }
+    return expr.asConstant(Integer.class).filter(i -> i == value).isPresent();
   }
 
   private static boolean isOnlyFedFileData(MethodInvocationTree factoryCall) {

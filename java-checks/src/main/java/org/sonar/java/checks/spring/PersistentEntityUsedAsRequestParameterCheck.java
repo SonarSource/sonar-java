@@ -17,8 +17,13 @@
 package org.sonar.java.checks.spring;
 
 import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -27,6 +32,20 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S4684")
 public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscriptionVisitor {
+
+  @RuleProperty(
+    key = "excludedAnnotations",
+    description = "Comma-separated list of fully qualified annotation types. Parameters carrying one of them are not reported. "
+      + "This is an assertion about your own argument resolvers, which the analyzer does not verify.",
+    defaultValue = "")
+  public String excludedAnnotations = "";
+
+  @RuleProperty(
+    key = "excludedTypes",
+    description = "Comma-separated list of fully qualified parameter types. Parameters of one of these types are not reported. "
+      + "This is an assertion about your own argument resolvers, which the analyzer does not verify.",
+    defaultValue = "")
+  public String excludedTypes = "";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -62,8 +81,11 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
 
     if (isRequestMappingAnnotated(methodSymbol)) {
+      List<String> allowedAnnotations = Stream.concat(PARAMETER_ANNOTATION_EXCEPTIONS.stream(), split(excludedAnnotations)).toList();
+      Set<String> excludedTypeNames = split(excludedTypes).collect(Collectors.toSet());
       methodTree.parameters().stream()
-        .filter(PersistentEntityUsedAsRequestParameterCheck::hasNoAllowedAnnotations)
+        .filter(p -> allowedAnnotations.stream().noneMatch(p.symbol().metadata()::isAnnotatedWith))
+        .filter(p -> !excludedTypeNames.contains(p.type().symbolType().fullyQualifiedName()))
         .filter(PersistentEntityUsedAsRequestParameterCheck::isPersistentEntity)
         .filter(PersistentEntityUsedAsRequestParameterCheck::hasNoCustomSerialization)
         .forEach(p -> reportIssue(p.simpleName(), "Replace this persistent entity with a simple POJO or DTO object."));
@@ -78,8 +100,8 @@ public class PersistentEntityUsedAsRequestParameterCheck extends IssuableSubscri
     return ENTITY_ANNOTATIONS.stream().anyMatch(variableTree.type().symbolType().symbol().metadata()::isAnnotatedWith);
   }
 
-  private static boolean hasNoAllowedAnnotations(VariableTree variableTree) {
-    return PARAMETER_ANNOTATION_EXCEPTIONS.stream().noneMatch(variableTree.symbol().metadata()::isAnnotatedWith);
+  private static Stream<String> split(String commaSeparated) {
+    return Arrays.stream(commaSeparated.split(",")).map(String::trim).filter(s -> !s.isEmpty());
   }
 
   private static boolean hasNoCustomSerialization(VariableTree variableTree) {

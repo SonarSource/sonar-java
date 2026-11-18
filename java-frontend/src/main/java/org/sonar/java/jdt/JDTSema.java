@@ -1,0 +1,227 @@
+/*
+ * SonarQube Java
+ * Copyright (C) SonarSource Sàrl
+ * mailto:info AT sonarsource DOT com
+ *
+ * You can redistribute and/or modify this program under the terms of
+ * the Sonar Source-Available License Version 1, as published by SonarSource Sàrl.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the Sonar Source-Available License for more details.
+ *
+ * You should have received a copy of the Sonar Source-Available License
+ * along with this program; if not, see https://sonarsource.com/license/ssal/
+ */
+package org.sonar.java.jdt;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTUtils;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
+import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.IPackageBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.sonar.plugins.java.api.semantic.Sema;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+final class JDTSema implements Sema {
+
+  private final AST ast;
+  final Map<IBinding, Tree> declarations = new HashMap<>();
+  final Map<IBinding, List<IdentifierTree>> usages = new HashMap<>();
+  private final Map<ITypeBinding, JDTType> types = new HashMap<>();
+  private final Map<IBinding, JDTSymbol> symbols = new HashMap<>();
+  private final Map<Symbol.TypeSymbol, JDTInitializerBlockSymbol> initializerBlockSymbols = new HashMap<>();
+  private final Map<Symbol.TypeSymbol, JDTInitializerBlockSymbol> staticInitializerBlockSymbols = new HashMap<>();
+  private final Map<IAnnotationBinding, JDTSymbolMetadata.JAnnotationInstance> annotations = new HashMap<>();
+  private final Map<String, Type> nameToTypeCache = new HashMap<>();
+
+  JDTSema(AST ast) {
+    this.ast = ast;
+  }
+
+  Type typeOrUnknown(@Nullable ITypeBinding binding) {
+    return binding == null ? Type.UNKNOWN : type(binding);
+  }
+
+  Symbol.TypeSymbol typeSymbolOrUnknown(@Nullable ITypeBinding binding) {
+    return binding == null ? Symbol.TypeSymbol.UNKNOWN_TYPE : typeSymbol(binding);
+  }
+
+  Symbol.MethodSymbol methodSymbolOrUnknown(@Nullable IMethodBinding binding) {
+    return binding == null ? Symbol.MethodSymbol.UNKNOWN_METHOD : methodSymbol(binding);
+  }
+
+  Symbol variableSymbolOrUnknown(@Nullable IVariableBinding binding) {
+    return binding == null ? Symbol.UNKNOWN_SYMBOL : variableSymbol(binding);
+  }
+
+  Symbol symbolOrUnknown(@Nullable IBinding binding) {
+    if (binding == null) {
+      return Symbol.UNKNOWN_SYMBOL;
+    }
+    return switch (binding.getKind()) {
+      case IBinding.TYPE -> typeSymbol((ITypeBinding) binding);
+      case IBinding.METHOD -> methodSymbol((IMethodBinding) binding);
+      case IBinding.VARIABLE -> variableSymbol((IVariableBinding) binding);
+      case IBinding.PACKAGE -> packageSymbol((IPackageBinding) binding);
+      default -> Symbol.UNKNOWN_SYMBOL;
+    };
+  }
+
+  @Nullable
+  Symbol importSymbolOrUnknown(@Nullable IBinding binding) {
+    if (binding == null || (binding.getKind() != IBinding.TYPE && binding.getKind() != IBinding.METHOD && binding.getKind() != IBinding.VARIABLE)) {
+      return null;
+    }
+    return symbolOrUnknown(binding);
+  }
+
+  Symbol thisSymbolOrUnknown(@Nullable ITypeBinding binding) {
+    return binding == null ? Symbol.UNKNOWN_SYMBOL : typeSymbol(binding).thisSymbol;
+  }
+
+  Symbol superSymbolOrUnknown(@Nullable ITypeBinding binding) {
+    return binding == null ? Symbol.UNKNOWN_SYMBOL : typeSymbol(binding).superSymbol;
+  }
+
+  public JDTType type(ITypeBinding typeBinding) {
+    JDTType cached = types.get(typeBinding);
+    if (cached != null) {
+      return cached;
+    }
+    return types.computeIfAbsent(typeBinding, k -> new JDTType(this, JDTType.normalize(k)));
+  }
+
+  List<Type> types(ITypeBinding[] typeBindings) {
+    if (typeBindings.length == 0) {
+      return Collections.emptyList();
+    }
+    Type[] result = new Type[typeBindings.length];
+    for (int i = 0; i < typeBindings.length; i++) {
+      result[i] = type(typeBindings[i]);
+    }
+    return Arrays.asList(result);
+  }
+
+  public Symbol packageSymbol(@Nullable IPackageBinding packageBinding) {
+    if (packageBinding == null) {
+      return Symbol.ROOT_PACKAGE;
+    }
+    JDTSymbol cached = symbols.get(packageBinding);
+    if (cached != null) {
+      return cached;
+    }
+    return symbols.computeIfAbsent(packageBinding, k -> new JDTSymbol(this, k));
+  }
+
+  public JDTTypeSymbol typeSymbol(ITypeBinding typeBinding) {
+    JDTTypeSymbol cached = (JDTTypeSymbol) symbols.get(typeBinding);
+    if (cached != null) {
+      return cached;
+    }
+    return (JDTTypeSymbol) symbols.computeIfAbsent(typeBinding, k -> new JDTTypeSymbol(this, JDTType.normalize((ITypeBinding) k)));
+  }
+
+  public JDTMethodSymbol methodSymbol(IMethodBinding methodBinding) {
+    JDTMethodSymbol cached = (JDTMethodSymbol) symbols.get(methodBinding);
+    if (cached != null) {
+      return cached;
+    }
+    return (JDTMethodSymbol) symbols.computeIfAbsent(methodBinding, k -> new JDTMethodSymbol(this, (IMethodBinding) k));
+  }
+
+  public JDTInitializerBlockSymbol initializerBlockSymbol(JDTTypeSymbol owner) {
+    JDTInitializerBlockSymbol cached = initializerBlockSymbols.get(owner);
+    if (cached != null) {
+      return cached;
+    }
+    return initializerBlockSymbols.computeIfAbsent(owner, k -> new JDTInitializerBlockSymbol(k, false));
+  }
+
+  public JDTInitializerBlockSymbol staticInitializerBlockSymbol(JDTTypeSymbol owner) {
+    JDTInitializerBlockSymbol cached = staticInitializerBlockSymbols.get(owner);
+    if (cached != null) {
+      return cached;
+    }
+    return staticInitializerBlockSymbols.computeIfAbsent(owner, k -> new JDTInitializerBlockSymbol(k, true));
+  }
+
+  public JDTVariableSymbol variableSymbol(IVariableBinding variableBinding) {
+    JDTVariableSymbol cached = (JDTVariableSymbol) symbols.get(variableBinding);
+    if (cached != null) {
+      return cached;
+    }
+    return (JDTVariableSymbol) symbols.computeIfAbsent(variableBinding, k -> new JDTVariableSymbol(this, (IVariableBinding) k));
+  }
+
+  JDTSymbolMetadata.JAnnotationInstance annotation(IAnnotationBinding annotationBinding) {
+    JDTSymbolMetadata.JAnnotationInstance cached = annotations.get(annotationBinding);
+    if (cached != null) {
+      return cached;
+    }
+    return annotations.computeIfAbsent(annotationBinding, k -> new JDTSymbolMetadata.JAnnotationInstance(this, k));
+  }
+
+  static IBinding declarationBinding(IBinding binding) {
+    switch (binding.getKind()) {
+      case IBinding.TYPE:
+        return ((ITypeBinding) binding).getTypeDeclaration();
+      case IBinding.METHOD:
+        return ((IMethodBinding) binding).getMethodDeclaration();
+      case IBinding.VARIABLE:
+        return ((IVariableBinding) binding).getVariableDeclaration();
+      default:
+        return binding;
+    }
+  }
+
+  @Override
+  public Type getClassType(String fullyQualifiedName) {
+    Type cached = nameToTypeCache.get(fullyQualifiedName);
+    if (cached != null) {
+      return cached;
+    }
+    return nameToTypeCache.computeIfAbsent(fullyQualifiedName, t -> {
+      ITypeBinding typeBinding = resolveType(t);
+      return typeBinding != null ? type(typeBinding) : Type.UNKNOWN;
+    });
+  }
+
+  @Nullable
+  ITypeBinding resolveType(String name) {
+    int dimensions = 0;
+    int end = name.length() - 1;
+    while (name.charAt(end) == ']') {
+      end -= 2;
+      dimensions++;
+    }
+    name = name.substring(0, end + 1);
+
+    ITypeBinding typeBinding = ast.resolveWellKnownType(name);
+    if (typeBinding == null) {
+      typeBinding = ASTUtils.resolveType(ast, name);
+      if (typeBinding == null) {
+        return null;
+      }
+    }
+    return dimensions == 0 ? typeBinding : typeBinding.createArrayType(dimensions);
+  }
+
+  IAnnotationBinding[] resolvePackageAnnotations(String packageName) {
+    return ASTUtils.resolvePackageAnnotations(ast, packageName);
+  }
+
+}

@@ -16,7 +16,6 @@
  */
 package org.sonar.java.model;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -26,40 +25,36 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
 
 public final class JUtils {
 
   private JUtils() {
   }
 
-  static final Map<String, String> WRAPPER_TO_PRIMITIVE = MapBuilder.<String, String>newMap()
-    .put("java.lang.Byte", "byte")
-    .put("java.lang.Character", "char")
-    .put("java.lang.Short", "short")
-    .put("java.lang.Integer", "int")
-    .put("java.lang.Long", "long")
-    .put("java.lang.Float", "float")
-    .put("java.lang.Double", "double")
-    .put("java.lang.Boolean", "boolean")
-    .build();
+  public static final Map<String, String> WRAPPER_TO_PRIMITIVE = Map.of(
+    "java.lang.Byte", "byte",
+    "java.lang.Character", "char",
+    "java.lang.Short", "short",
+    "java.lang.Integer", "int",
+    "java.lang.Long", "long",
+    "java.lang.Float", "float",
+    "java.lang.Double", "double",
+    "java.lang.Boolean", "boolean");
 
-  static final Map<String, String> PRIMITIVE_TO_WRAPPER = MapBuilder.<String, String>newMap()
-    .put("byte", "java.lang.Byte")
-    .put("char", "java.lang.Character")
-    .put("short", "java.lang.Short")
-    .put("int", "java.lang.Integer")
-    .put("long","java.lang.Long")
-    .put("float", "java.lang.Float")
-    .put("double", "java.lang.Double")
-    .put("boolean", "java.lang.Boolean")
-    .build();
+  public static final Map<String, String> PRIMITIVE_TO_WRAPPER = Map.of(
+    "byte", "java.lang.Byte",
+    "char", "java.lang.Character",
+    "short", "java.lang.Short",
+    "int", "java.lang.Integer",
+    "long", "java.lang.Long",
+    "float", "java.lang.Float",
+    "double", "java.lang.Double",
+    "boolean", "java.lang.Boolean");
 
   public static Type wrapTypeIfPrimitive(Type type) {
     Type wrapped = type.primitiveWrapperType();
@@ -67,19 +62,7 @@ public final class JUtils {
   }
 
   public static boolean isIntersectionType(Type type) {
-    return !type.isUnknown() && ((JType) type).typeBinding.isIntersectionType();
-  }
-
-  public static void collectSuperTypes(Set<Type> result, JSema sema, ITypeBinding typeBinding) {
-    ITypeBinding s = typeBinding.getSuperclass();
-    if (s != null) {
-      result.add(sema.type(s));
-      collectSuperTypes(result, sema, s);
-    }
-    Arrays.stream(typeBinding.getInterfaces()).forEach(i -> {
-      result.add(sema.type(i));
-      collectSuperTypes(result, sema, i);
-    });
+    return !type.isUnknown() && type.isIntersectionType();
   }
 
   public static Symbol getPackage(Symbol symbol) {
@@ -94,7 +77,7 @@ public final class JUtils {
     if (method.isUnknown()) {
       return null;
     }
-    return ((JMethodSymbol) method).methodBinding().getDefaultValue();
+    return method.annotationElementDefaultValue();
   }
 
   /**
@@ -103,7 +86,7 @@ public final class JUtils {
    *
    * <p>Recording both means a lookup by erased name still finds every type it finds today, while a lookup by
    * parameterized key only finds the types actually declared with that parameterization.
-   *
+   * <p>
    * {@code java.lang.Object} and unknown/unresolved types are excluded. Recursion is guarded by erased name, so
    * a common ancestor reached through several interfaces is walked once, and a self-referential generic such as
    * {@code interface A<T> extends B<A<T>>} still terminates.
@@ -162,14 +145,12 @@ public final class JUtils {
       return Collections.emptySet();
     }
     Set<Type> result = new HashSet<>();
-    JType t = (JType) type;
-    ITypeBinding superclass = t.typeBinding.getSuperclass();
+    Symbol.TypeSymbol symbol = type.symbol();
+    Type superclass = (symbol.isInterface() || type.isArray()) ? null : symbol.superClass();
     if (superclass != null) {
-      result.add(t.sema.type(superclass));
+      result.add(superclass);
     }
-    Arrays.stream(t.typeBinding.getInterfaces())
-      .map(t.sema::type)
-      .forEach(result::add);
+    result.addAll(symbol.interfaces());
     return result;
   }
 
@@ -222,10 +203,10 @@ public final class JUtils {
   }
 
   /**
-   * @param typeSymbol to lookup recursively for unknown symbol on itself, its interfaces and its super classes hierarchy.
+   * @param typeSymbol   to lookup recursively for unknown symbol on itself, its interfaces and its super classes hierarchy.
    * @param methodSymbol a method having at least one unknown parameter type that prevent the overriding resolution
-   *                    to find any exact match. This methodSymbol will be used to find a potential match, just by
-   *                    comparing the name and parameter count.
+   *                     to find any exact match. This methodSymbol will be used to find a potential match, just by
+   *                     comparing the name and parameter count.
    * @return true if the given typeSymbol and its inheritance hierarchy is 100% known and no method in the inheritance
    * cloud match (name and parameter count) the given methodSymbol. In this case, we are sure the methodSymbol does not
    * override any another methods.

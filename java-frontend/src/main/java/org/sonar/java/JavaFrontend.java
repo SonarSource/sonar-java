@@ -40,7 +40,8 @@ import org.sonar.java.classpath.DependencyVersionInference;
 import org.sonar.java.collections.CollectionUtils;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
-import org.sonar.java.model.JParserConfig;
+import org.sonar.java.model.JParseResult;
+import org.sonar.java.model.JParser;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.telemetry.TelemetryKey;
@@ -234,10 +235,10 @@ public class JavaFrontend {
     }
   }
 
-  private <T extends InputFile> void scanBatch(BatchModeContext context, List<T> batchFiles, AnalysisProgress analysisProgress) {
+  private void scanBatch(BatchModeContext context, List<InputFile> batchFiles, AnalysisProgress analysisProgress) {
     analysisProgress.startBatch(batchFiles.size());
     Set<Runnable> environmentsCleaners = new HashSet<>();
-    JParserConfig.Mode.BATCH
+    JParser.Mode.BATCH
       .create(javaVersion, context.getClasspath(), sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage())
       .parse(batchFiles, sonarComponents::analysisCancelled, analysisProgress, (input, result) -> scanAsBatchCallback(input, result, context, environmentsCleaners));
     // Due to a bug in ECJ, JAR files remain locked after the analysis on Windows, we unlock them manually, at the end of each batches. See SONARJAVA-3609.
@@ -245,7 +246,7 @@ public class JavaFrontend {
     analysisProgress.endBatch();
   }
 
-  private static void scanAsBatchCallback(InputFile inputFile, JParserConfig.Result result, BatchModeContext context, Set<Runnable> environmentsCleaners) {
+  private static void scanAsBatchCallback(InputFile inputFile, JParseResult result, BatchModeContext context, Set<Runnable> environmentsCleaners) {
     JavaAstScanner scanner = context.selectScanner(inputFile);
     Duration duration = PerformanceMeasure.start(context.descriptor(inputFile));
     scanner.simpleScan(inputFile, result, ast ->

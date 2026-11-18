@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.CheckForNull;
-
 import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -66,12 +65,12 @@ public class Symbols {
 
     @Override
     public NullabilityData nullabilityData() {
-      return JSymbolMetadata.unknownNullabilityAt(NullabilityLevel.UNKNOWN);
+      return JNullabilityData.unknownNullabilityAt(NullabilityLevel.UNKNOWN);
     }
 
     @Override
     public NullabilityData nullabilityData(NullabilityTarget level) {
-      return JSymbolMetadata.unknownNullabilityAt(NullabilityLevel.UNKNOWN);
+      return JNullabilityData.unknownNullabilityAt(NullabilityLevel.UNKNOWN);
     }
 
     @Nullable

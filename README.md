@@ -139,7 +139,7 @@ Note for internal contributors: in order to also execute the tests that depend o
 
 #### Ruling Test
 
-The "Ruling Test" is an integration test suite that launches the analysis of a large code base, saves the issues created by the plugin in report files, and then compares those results to the set of expected issues (stored as JSON files).
+The "Ruling Test" is an integration test suite that launches the analysis of a large code base, saves the issues created by the plugin in SARIF reports, and then compares those results to the expected SARIF reports.
 
 To run the test, first make sure the submodules are checked out:
 
@@ -164,13 +164,13 @@ To run the ruling tests for only a subset of rules, use the `sonarRules` propert
 
 This test gives you the opportunity to examine the issues created by each rule and make sure they're what you expect. Any implemented rule is highly likely to raise issues on the multiple projects we use as ruling code base.
 
-* For a newly implemented rule, it means that a first build will most probably fail, caused by differences between expected results (without any values for the new rule) and the new results. You can inspect these new issues by searching for files named after your rule (`squid-SXXXX.json`) in the following folder:
+* For a newly implemented rule, the first build will most probably fail because no expected results exist for the new rule. Inspect the new issues in `java-SXXXX.sarif` for each project under:
 
         /path/to/project/sonar-java/its/ruling/target/actual/...
 
 * For existing rules which are modified, you may expect some differences between "actual" (from new analysis) and expected results. Review carefully the changes that are shown and update the expected resources accordingly.
 
-All the `json` files contain a list of lines, indexed by file, explaining where the issues raised by a specific rule are located. If/When everything looks good to you, you can copy the file with the actual issues located at:
+Each SARIF report contains a `runs[].results[]` entry for each issue, with its rule ID, message, and location. After reviewing the differences, copy the relevant actual report from:
 
     its/ruling/target/actual/
 
@@ -178,9 +178,9 @@ Into the directory with the expected issues:
 
     its/ruling/src/test/resources/expected/
 
-For example using the command:
+For example, from the repository root, to update one rule in one project:
 
-    cp its/ruling/target/actual/* its/ruling/src/test/resources/expected/
+    cp its/ruling/target/actual/<project>/java-SXXXX.sarif its/ruling/src/test/resources/expected/<project>/
 
 #### Debugging Integration Tests
 You can debug ITs by adding `-Dmaven.binary=mvnDebug` as an option when running the tests. This will cause the analyzer JVM to wait for a debugger to be attached before continuing.

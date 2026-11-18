@@ -279,7 +279,7 @@
       <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>license-maven-plugin</artifactId>
-          <version>2.7.1</version>
+          <version>2.9.0</version>
           <configuration>
             <errorRemedy>xmlOutput</errorRemedy>
             <writeVersions>false</writeVersions>
@@ -328,7 +328,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
-          <version>3.6.4</version>
+          <version>3.7.0</version>
           <executions>
             <execution>
               <id>generate-built-in-profiles</id>

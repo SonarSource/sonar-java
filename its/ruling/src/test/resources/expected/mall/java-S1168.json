@@ -1,9 +1,0 @@
-{
-"mall:mall-security/src/main/java/com/macro/mall/security/component/DynamicSecurityMetadataSource.java": [
-61
-],
-"mall:mall-security/src/main/java/com/macro/mall/security/util/JwtTokenUtil.java": [
-64,
-70
-]
-}

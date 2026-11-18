@@ -217,8 +217,8 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     return defaultValue;
   }
 
-  public void setSymbol(Symbol.MethodSymbol methodSymbol) {
-    this.symbol = Objects.requireNonNull(methodSymbol);
+  public void setSymbol(Symbol.MethodSymbol symbol) {
+    this.symbol = Objects.requireNonNull(symbol);
   }
 
   @Override
@@ -320,9 +320,10 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     } else if (isAnnotatedOverride()) {
       isOverriding = true;
     } else {
-      List<Symbol.MethodSymbol> overriddenSymbols = symbol.overriddenSymbols();
+      Symbol.MethodSymbol methodSymbol = symbol();
+      List<Symbol.MethodSymbol> overriddenSymbols = methodSymbol.overriddenSymbols();
       if (overriddenSymbols.isEmpty()) {
-        isOverriding = JUtils.hasUnknownTypePreventingOverrideResolution(symbol) ? null : false;
+        isOverriding = JUtils.hasUnknownTypePreventingOverrideResolution(methodSymbol) ? null : false;
       } else {
         isOverriding = overriddenSymbols.stream().allMatch(Symbol::isUnknown) ? null : true;
       }

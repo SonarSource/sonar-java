@@ -203,4 +203,14 @@ class PersistentEntityUsedAsRequestParameterCheckSample {
       return "";
     }
   }
+
+  @interface PartnerCampaign {
+  }
+
+  @Controller
+  class CustomAnnotationController {
+    @GetMapping("/campaign")
+    public void campaign(@PartnerCampaign Foo foo) { // Noncompliant
+    }
+  }
 }

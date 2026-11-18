@@ -18,37 +18,26 @@ package org.sonar.java.model;
 
 import java.util.Objects;
 import java.util.stream.Stream;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.slf4j.event.Level;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
-import org.sonar.java.testing.ThreadLocalLogTester;
+import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 import static org.sonar.java.model.JParserTestUtils.typeOf;
 import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 
 class JTypeTest {
-
-  @RegisterExtension
-  public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
 
   @Test
   void isArray() {
@@ -96,8 +85,7 @@ class JTypeTest {
     ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
 
-    assertThat(((JType) typeOf(e)).isParameterized())
-      .isEqualTo(e.symbolType().isParameterized())
+    assertThat(typeOf(e).isParameterized())
       .isTrue();
   }
 
@@ -109,12 +97,10 @@ class JTypeTest {
     ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
 
-    assertThat(((JType) typeOf(e)).typeArguments())
-      .hasToString(e.symbolType().typeArguments().toString())
+    assertThat(typeOf(e).typeArguments())
       .hasToString("[Integer, String]");
 
-    assertThat(((JType) typeOf(c)).typeArguments())
-      .isEqualTo(c.symbol().type().typeArguments())
+    assertThat(typeOf(c).typeArguments())
       .isEmpty();
   }
 
@@ -140,14 +126,14 @@ class JTypeTest {
   }
 
   @Test
-  void primitiveType(){
+  void primitiveType() {
     Type byteType = type("java.lang.Byte");
     assertThat(byteType.primitiveType()).isEqualTo(type("byte"));
     assertThat(byteType.primitiveType()).isNotEqualTo(type("boolean"));
   }
 
   @Test
-  void primitiveWrapperType(){
+  void primitiveWrapperType() {
     Type booleanType = type("boolean");
     assertThat(booleanType.primitiveWrapperType()).isEqualTo(type("java.lang.Boolean"));
     assertThat(booleanType.primitiveWrapperType()).isNotEqualTo(type("java.lang.Byte"));
@@ -166,32 +152,7 @@ class JTypeTest {
   }
 
   @Test
-  void primitiveWrapperType_returns_null_when_semantic_cannot_resolve_wrapper_type() {
-    // Sema that can resolve primitives, but fails to resolve wrapper types, which can happen when the classpath is not correctly set up
-    var brokenSema = spy(sema);
-    when(brokenSema.resolveType("java.lang.Byte")).thenReturn(null);
-
-    var primitiveBinding = sema.resolveType("byte");
-    var primitiveType = new JType(brokenSema, primitiveBinding);
-
-    assertThat(primitiveType.primitiveWrapperType()).isNull();
-  }
-
-  @Test
-  void primitiveType_returns_null_when_semantic_cannot_resolve_primitive_type() {
-    // Sema that can resolve wrapper types, but fails to resolve a primitive, this should never happen in practice,
-    // but we want to make sure it doesn't throw an exception and returns null instead
-    var brokenSema = spy(sema);
-    when(brokenSema.resolveType("byte")).thenReturn(null);
-
-    var wrapperBinding = sema.resolveType("java.lang.Byte");
-    var wrapperType = new JType(brokenSema, wrapperBinding);
-
-    assertThat(wrapperType.primitiveType()).isNull();
-  }
-
-  @Test
-  void declaringType(){
+  void declaringType() {
     Type byteType = type("java.lang.Byte");
     assertThat(byteType.declaringType()).isEqualTo(byteType);
     assertThat(byteType.declaringType()).isNotEqualTo(type("java.lang.Boolean"));
@@ -236,11 +197,10 @@ class JTypeTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) m.returnType());
-    JType parameterizedType = ((JType) typeOf(e));
+    Type parameterizedType = typeOf(e);
 
     assertThat(parameterizedType)
-      .hasSameNameAs(e.symbolType())
-      .hasSameNameAs(((JTypeSymbol) typeOf(e).symbol()).type())
+      .hasSameNameAs(typeOf(e).symbol().type())
       .is("java.util.List")
       .hasName("List");
   }
@@ -251,10 +211,9 @@ class JTypeTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) m.returnType());
-    JType typeVariable = ((JType) typeOf(e));
+    Type typeVariable = typeOf(e);
     assertThat(typeVariable)
-      .hasSameNameAs(e.symbolType())
-      .hasSameNameAs(((JTypeSymbol) typeOf(e).symbol()).type())
+      .hasSameNameAs(typeOf(e).symbol().type())
       .hasName("T")
       .is(e.symbolType().fullyQualifiedName())
       .is("T");
@@ -262,9 +221,8 @@ class JTypeTest {
 
   @Test
   void symbol() {
-    ITypeBinding typeBinding = Objects.requireNonNull(sema.resolveType("java.lang.Object"));
-    assertThat(sema.type(typeBinding).symbol())
-      .isSameAs(sema.typeSymbol(typeBinding));
+    assertThat(type("java.lang.Object").symbol().type())
+      .isSameAs(type("java.lang.Object"));
   }
 
   @Test
@@ -275,7 +233,7 @@ class JTypeTest {
 
   @Test
   void elementType() {
-    assertThat(type("int[][]").elementType())
+    assertThat(((Type.ArrayType) type("int[][]")).elementType())
       .isSameAs(type("int[]"));
   }
 
@@ -288,7 +246,6 @@ class JTypeTest {
         }
       }
       """);
-    cu.types().get(0);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     ReturnStatementTreeImpl s = (ReturnStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
@@ -309,35 +266,18 @@ class JTypeTest {
     AbstractTypedTree primitive = (AbstractTypedTree) m.parameters().get(0).type();
     AbstractTypedTree array = (AbstractTypedTree) m.parameters().get(1).type();
 
-    JType nullType = ((JType) typeOf(e));
-    JType classType = ((JType) typeOf(c));
-    JType primitiveType = ((JType) typeOf(primitive));
-    JType arrayType = ((JType) typeOf(array));
+    Type nullType = typeOf(e);
+    Type classType = typeOf(c);
+    Type primitiveType = typeOf(primitive);
+    Type arrayType = typeOf(array);
 
     assertThat(nullType)
-      .hasSameNameAs(e.symbolType())
       .hasName("<nulltype>")
       .is(e.symbolType().fullyQualifiedName())
       .is("<nulltype>")
       .isSubtypeOf(classType)
       .isSubtypeOf(arrayType)
       .isNotSubtypeOf(primitiveType);
-  }
-
-  @Test
-  void is_subtype_of_should_not_throw_NPE() {
-    JType objectType = type("java.lang.Object");
-    ITypeBinding brokenStringBinding = spy(Objects.requireNonNull(sema.resolveType("java.lang.String")));
-    // simulate the NullPointerException described in SONARJAVA-4390
-    when(brokenStringBinding.isSubTypeCompatible(any()))
-      .thenThrow(new NullPointerException("test NPE"));
-
-    JType stringType = new JType(sema, brokenStringBinding);
-    // should catch the NullPointerException
-    assertThat(stringType.isSubtypeOf(objectType)).isFalse();
-
-    assertThat(logTester.logs(Level.DEBUG))
-      .containsExactly("NullPointerException while resolving isSubTypeCompatible()");
   }
 
   @Test
@@ -349,9 +289,9 @@ class JTypeTest {
     JavaTree.WildcardTreeImpl w1 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(0);
     JavaTree.WildcardTreeImpl w2 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(1);
     JavaTree.WildcardTreeImpl w3 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(2);
-    JType wildcardType1 = ((JType) typeOf(w1));
-    JType wildcardType2 = ((JType) typeOf(w2));
-    JType wildcardType3 = ((JType) typeOf(w3));
+    Type wildcardType1 = typeOf(w1);
+    Type wildcardType2 = typeOf(w2);
+    Type wildcardType3 = typeOf(w3);
 
     assertThat(wildcardType1)
       .isEqualTo(wildcardType2)
@@ -362,27 +302,15 @@ class JTypeTest {
     return (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source);
   }
 
-  private JType type(String name) {
-    ITypeBinding typeBinding = Objects.requireNonNull(sema.resolveType(name));
-    return sema.type(typeBinding);
+  private Type type(String name) {
+    return sema.getClassType(name);
   }
 
-  private JSema sema;
+  private Sema sema;
 
   @BeforeEach
   void setup() {
-    ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
-    astParser.setEnvironment(
-      new String[]{},
-      new String[]{},
-      new String[]{},
-      true
-    );
-    astParser.setResolveBindings(true);
-    astParser.setUnitName("File.java");
-    astParser.setSource("".toCharArray());
-    AST ast = astParser.createAST(null).getAST();
-    sema = new JSema(ast);
+    sema = JParserTestUtils.sema(JParserTestUtils.parse(""));
   }
 
 }

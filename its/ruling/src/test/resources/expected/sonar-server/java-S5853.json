@@ -1,0 +1,77 @@
+{
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/AnalysisImplTest.java": [
+116
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/analysis/OrganizationTest.java": [
+90
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/ComponentImplTest.java": [
+107
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/MeasureComputerDefinitionImplTest.java": [
+156
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/duplication/DuplicationTest.java": [
+157
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/event/EventTest.java": [
+63
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/filemove/MatchTest.java": [
+55,
+66
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureKeyTest.java": [
+53
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/period/PeriodTest.java": [
+59
+],
+"sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/scm/ChangesetTest.java": [
+129
+],
+"sonar-server:src/test/java/org/sonar/server/es/IndexDefinitionHashTest.java": [
+34
+],
+"sonar-server:src/test/java/org/sonar/server/exceptions/MessageTest.java": [
+67
+],
+"sonar-server:src/test/java/org/sonar/server/issue/ResultTest.java": [
+74,
+78,
+90,
+95
+],
+"sonar-server:src/test/java/org/sonar/server/issue/RulesAggregationTest.java": [
+70
+],
+"sonar-server:src/test/java/org/sonar/server/issue/workflow/TransitionTest.java": [
+132
+],
+"sonar-server:src/test/java/org/sonar/server/measure/custom/ws/SearchActionTest.java": [
+107
+],
+"sonar-server:src/test/java/org/sonar/server/measure/custom/ws/UpdateActionTest.java": [
+166
+],
+"sonar-server:src/test/java/org/sonar/server/plugins/ws/PluginUpdateAggregatorTest.java": [
+76
+],
+"sonar-server:src/test/java/org/sonar/server/qualityprofile/QualityProfileTest.java": [
+71
+],
+"sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/ChangelogActionDatabaseTest.java": [
+158
+],
+"sonar-server:src/test/java/org/sonar/server/source/HtmlTextDecoratorTest.java": [
+325,
+361,
+392
+],
+"sonar-server:src/test/java/org/sonar/server/source/OpeningHtmlTagTest.java": [
+42
+],
+"sonar-server:src/test/java/org/sonar/server/user/DefaultUserTest.java": [
+33
+]
+}

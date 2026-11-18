@@ -35,4 +35,27 @@ class PersistentEntityUsedAsRequestParameterCheckTest {
       .withoutSemantic()
       .verifyNoIssues();
   }
+
+  @Test
+  void test_excluded_annotations_and_types() {
+    PersistentEntityUsedAsRequestParameterCheck check = new PersistentEntityUsedAsRequestParameterCheck();
+    check.excludedAnnotations = "checks.spring.PersistentEntityUsedAsRequestParameterCheckExcludedSample$PartnerCampaign, ";
+    check.excludedTypes = "checks.spring.PersistentEntityUsedAsRequestParameterCheckExcludedSample$UserDetail";
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/PersistentEntityUsedAsRequestParameterCheckExcludedSample.java"))
+      .withCheck(check)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_excluded_without_semantic() {
+    PersistentEntityUsedAsRequestParameterCheck check = new PersistentEntityUsedAsRequestParameterCheck();
+    check.excludedAnnotations = "checks.spring.PersistentEntityUsedAsRequestParameterCheckExcludedSample$PartnerCampaign";
+    check.excludedTypes = "checks.spring.PersistentEntityUsedAsRequestParameterCheckExcludedSample$UserDetail";
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/PersistentEntityUsedAsRequestParameterCheckExcludedSample.java"))
+      .withCheck(check)
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

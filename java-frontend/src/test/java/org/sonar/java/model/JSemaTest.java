@@ -16,14 +16,10 @@
  */
 package org.sonar.java.model;
 
-import java.util.Objects;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.semantic.Sema;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -39,58 +35,37 @@ class JSemaTest {
   }
 
   @Test
-  void type() {
-    ITypeBinding typeBinding = Objects.requireNonNull(sema.resolveType("int"));
-    assertThat(sema.type(typeBinding))
-      .isNotNull()
-      .isSameAs(sema.type(typeBinding));
-  }
-
-  @Test
-  void resolveType() {
-    assertAll(
-      () ->
-        assertThat(sema.resolveType("Nonexistent"))
-          .isNull(),
-      () ->
-        assertThat(sema.resolveType("void"))
-          .isNotNull(),
-      () ->
-        assertThat(sema.resolveType("java.util.Map"))
-          .isNotNull(),
-      () ->
-        assertThat(sema.resolveType("java.util.Map$Entry"))
-          .isNotNull(),
-      () ->
-        assertThat(sema.resolveType("java.util.Map$Entry[][]"))
-          .isNotNull()
-    );
-  }
-
-  @Test
   void resolvePackageAnnotations() {
-    assertThat(sema.resolvePackageAnnotations("org.sonar.java.resolve.targets"))
+    assertThat(sema.getClassType("org.sonar.java.resolve.targets.ClassWithConstants").symbol().owner().metadata().annotations())
       .hasSize(1);
   }
 
-  private JSema sema;
+  @Test
+  void getClassType() {
+    assertAll(
+      () ->
+        assertThat(sema.getClassType("Nonexistent"))
+          .isSameAs(Type.UNKNOWN),
+      () ->
+        assertThat(sema.getClassType("void"))
+          .isNotEqualTo(Type.UNKNOWN),
+      () ->
+        assertThat(sema.getClassType("java.util.Map"))
+          .isNotEqualTo(Type.UNKNOWN),
+      () ->
+        assertThat(sema.getClassType("java.util.Map$Entry"))
+          .isNotEqualTo(Type.UNKNOWN),
+      () ->
+        assertThat(sema.getClassType("java.util.Map$Entry[][]"))
+          .isNotEqualTo(Type.UNKNOWN)
+    );
+  }
+
+  private Sema sema;
 
   @BeforeEach
   void setup() {
-    ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
-    String version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION.effectiveJavaVersionAsString();
-    JavaCore.setComplianceOptions(version, JavaCore.getOptions());
-    astParser.setEnvironment(
-      new String[]{"target/test-classes"},
-      new String[]{},
-      new String[]{},
-      true
-    );
-    astParser.setResolveBindings(true);
-    astParser.setUnitName("File.java");
-    astParser.setSource("".toCharArray());
-    AST ast = astParser.createAST(null).getAST();
-    sema = new JSema(ast);
+    sema = JParserTestUtils.sema(JParserTestUtils.parse(""));
   }
 
 }

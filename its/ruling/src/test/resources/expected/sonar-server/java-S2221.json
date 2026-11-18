@@ -1,0 +1,164 @@
+{
+"sonar-server:src/main/java/org/sonar/server/app/EmbeddedTomcat.java": [
+100
+],
+"sonar-server:src/main/java/org/sonar/server/authentication/AuthenticationFilter.java": [
+57
+],
+"sonar-server:src/main/java/org/sonar/server/authentication/BasicAuthenticator.java": [
+90
+],
+"sonar-server:src/main/java/org/sonar/server/authentication/InitFilter.java": [
+87
+],
+"sonar-server:src/main/java/org/sonar/server/authentication/JwtSerializer.java": [
+116
+],
+"sonar-server:src/main/java/org/sonar/server/authentication/OAuth2CallbackFilter.java": [
+82
+],
+"sonar-server:src/main/java/org/sonar/server/authentication/RealmAuthenticator.java": [
+114
+],
+"sonar-server:src/main/java/org/sonar/server/component/ws/FilterParser.java": [
+68
+],
+"sonar-server:src/main/java/org/sonar/server/computation/dbcleaner/ProjectCleaner.java": [
+83,
+92
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/api/posttask/PostProjectAnalysisTasksExecutor.java": [
+107
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IntegrateIssuesVisitor.java": [
+82
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/RatingSettings.java": [
+70
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistFileSourcesStep.java": [
+123
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/webhook/WebhookCallerImpl.java": [
+67
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxyBulkRequestBuilder.java": [
+49
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxyClearCacheRequestBuilder.java": [
+43
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxyClusterHealthRequestBuilder.java": [
+43
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxyClusterStateRequestBuilder.java": [
+43
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxyClusterStatsRequestBuilder.java": [
+43
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxyCreateIndexRequestBuilder.java": [
+45
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxyDeleteRequestBuilder.java": [
+42
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxyFlushRequestBuilder.java": [
+43
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxyGetRequestBuilder.java": [
+42
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxyIndexRequestBuilder.java": [
+42
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxyIndicesExistsRequestBuilder.java": [
+43
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxyIndicesStatsRequestBuilder.java": [
+43
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxyMultiGetRequestBuilder.java": [
+43
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxyNodesStatsRequestBuilder.java": [
+43
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxyPutMappingRequestBuilder.java": [
+43
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxyRefreshRequestBuilder.java": [
+43
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxySearchRequestBuilder.java": [
+47
+],
+"sonar-server:src/main/java/org/sonar/server/es/request/ProxySearchScrollRequestBuilder.java": [
+42
+],
+"sonar-server:src/main/java/org/sonar/server/issue/index/IssueIteratorForSingleChunk.java": [
+125
+],
+"sonar-server:src/main/java/org/sonar/server/issue/ws/BulkChangeAction.java": [
+221
+],
+"sonar-server:src/main/java/org/sonar/server/notification/NotificationDaemon.java": [
+82
+],
+"sonar-server:src/main/java/org/sonar/server/notification/NotificationService.java": [
+68,
+84
+],
+"sonar-server:src/main/java/org/sonar/server/platform/BackendCleanup.java": [
+100
+],
+"sonar-server:src/main/java/org/sonar/server/platform/Platform.java": [
+290
+],
+"sonar-server:src/main/java/org/sonar/server/platform/monitoring/EsMonitor.java": [
+78
+],
+"sonar-server:src/main/java/org/sonar/server/platform/web/MasterServletFilter.java": [
+74
+],
+"sonar-server:src/main/java/org/sonar/server/platform/web/PlatformServletContextListener.java": [
+59
+],
+"sonar-server:src/main/java/org/sonar/server/platform/web/WebPagesFilter.java": [
+85
+],
+"sonar-server:src/main/java/org/sonar/server/plugins/InstalledPluginReferentialFactory.java": [
+39
+],
+"sonar-server:src/main/java/org/sonar/server/plugins/PluginDownloader.java": [
+131
+],
+"sonar-server:src/main/java/org/sonar/server/plugins/ServerPluginJarExploder.java": [
+61
+],
+"sonar-server:src/main/java/org/sonar/server/plugins/StaticResourcesServlet.java": [
+73
+],
+"sonar-server:src/main/java/org/sonar/server/plugins/UpdateCenterClient.java": [
+115
+],
+"sonar-server:src/main/java/org/sonar/server/test/index/TestResultSetIterator.java": [
+91
+],
+"sonar-server:src/main/java/org/sonar/server/util/ClassLoaderUtils.java": [
+92,
+103
+],
+"sonar-server:src/main/java/org/sonar/server/util/ObjectInputStreamIterator.java": [
+45
+],
+"sonar-server:src/main/java/org/sonar/server/view/index/ViewIndexer.java": [
+127
+],
+"sonar-server:src/main/java/org/sonar/server/ws/ServletRequest.java": [
+101
+],
+"sonar-server:src/main/java/org/sonar/server/ws/WsUtils.java": [
+59
+]
+}
