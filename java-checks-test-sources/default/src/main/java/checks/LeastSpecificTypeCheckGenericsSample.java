@@ -194,6 +194,7 @@ public class LeastSpecificTypeCheckGenericsSample {
     clazz.getAnnotation(Resource.class);
   }
 
+  // ECJ could not tell the array generic types apart and missed this issue.
   public static void testConstructor(Constructor constructor) { // Noncompliant {{Use 'java.lang.reflect.Executable' here; it is a more general type than 'Constructor'.}}
     constructor.getName();
     Class[] parameterTypes = constructor.getParameterTypes();

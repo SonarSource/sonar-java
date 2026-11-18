@@ -9,6 +9,7 @@ abstract class DeadStoreCheckSample {
       int x = 1; // Compliant
       return y + x;
     });
+    // ECJ cannot type a lambda passed to an unresolved method and reported nothing here.
     lambdas_not_resolved(y -> ++y); // Noncompliant
     lambdas_not_resolved(y -> y += 2); // Noncompliant
   }

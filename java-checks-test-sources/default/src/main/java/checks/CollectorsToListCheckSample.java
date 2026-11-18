@@ -13,7 +13,7 @@ import lombok.val;
 public class CollectorsToListCheckSample {
 
   void lombok_val() {
-    // Lombok val is typed from its initializer when the analysis does not rely on the compiler, which leaves it unknown
+    // ECJ has no Lombok support, so val stayed unknown and the call was not reported; the declared type is now inferred.
     val unknownSymbolStream = Stream.of("A", "B", "C").collect(Collectors.toList()); // Noncompliant
   }
 
