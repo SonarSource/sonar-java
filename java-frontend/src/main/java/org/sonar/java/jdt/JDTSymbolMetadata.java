@@ -14,21 +14,21 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.sonar.java.model.AnnotationValueImpl;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -36,16 +36,12 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.model.JSymbolMetadataNullabilityHelper.getNullabilityDataAtLevel;
+import static org.sonar.java.model.JNullabilityData.noNullabilityAnnotationAt;
+import static org.sonar.java.model.JNullabilityData.unknownNullabilityAt;
 
-final class JSymbolMetadata implements SymbolMetadata {
+final class JDTSymbolMetadata implements SymbolMetadata {
 
-  private static final NullabilityData[] NO_ANNOTATION_NULLABILITY =
-    forEachLevel(level -> new JNullabilityData(NullabilityType.NO_ANNOTATION, level, null, null, false));
-
-  private static final NullabilityData[] UNKNOWN_NULLABILITY =
-    forEachLevel(level -> new JNullabilityData(NullabilityType.UNKNOWN, level, null, null, false));
-
-  private final JSema sema;
+  private final JDTSema sema;
   private final Symbol symbol;
   private final IAnnotationBinding[] symbolBindings;
   private final SymbolMetadata[] parameterMetas;
@@ -65,7 +61,7 @@ final class JSymbolMetadata implements SymbolMetadata {
 
   private final boolean isTypeArgMetadata;
 
-  JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] annotationBindings) {
+  JDTSymbolMetadata(JDTSema sema, Symbol symbol, IAnnotationBinding[] annotationBindings) {
     this.sema = Objects.requireNonNull(sema);
     this.symbol = symbol;
     this.symbolBindings = annotationBindings;
@@ -75,7 +71,7 @@ final class JSymbolMetadata implements SymbolMetadata {
     this.annotationBindings = annotationBindings;
   }
 
-  private JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] symbolAnnotations, JSymbolMetadata[] parameterMetaDatas, boolean isTypeArgMetadata) {
+  private JDTSymbolMetadata(JDTSema sema, Symbol symbol, IAnnotationBinding[] symbolAnnotations, JDTSymbolMetadata[] parameterMetaDatas, boolean isTypeArgMetadata) {
     this.sema = Objects.requireNonNull(sema);
     this.symbol = symbol;
     this.symbolBindings = symbolAnnotations;
@@ -83,7 +79,7 @@ final class JSymbolMetadata implements SymbolMetadata {
     this.isTypeArgMetadata = isTypeArgMetadata;
 
     int total = symbolBindings.length;
-    for (JSymbolMetadata parameterMetaData : parameterMetaDatas) {
+    for (JDTSymbolMetadata parameterMetaData : parameterMetaDatas) {
       total += parameterMetaData.annotationBindings.length;
     }
 
@@ -91,43 +87,31 @@ final class JSymbolMetadata implements SymbolMetadata {
     int current = symbolAnnotations.length;
     System.arraycopy(symbolAnnotations, 0, this.annotationBindings, 0, symbolAnnotations.length);
 
-    for (JSymbolMetadata parameterMetaData : parameterMetaDatas) {
+    for (JDTSymbolMetadata parameterMetaData : parameterMetaDatas) {
       var paramBindings = parameterMetaData.annotationBindings;
       System.arraycopy(paramBindings, 0, this.annotationBindings, current, paramBindings.length);
       current += paramBindings.length;
     }
   }
 
-  public static JSymbolMetadata of(JSema sema, Symbol owner, ITypeBinding type, IAnnotationBinding[] externalAnnotations) {
+  public static JDTSymbolMetadata of(JDTSema sema, Symbol owner, ITypeBinding type, IAnnotationBinding[] externalAnnotations) {
     var symbolAnnotations = new IAnnotationBinding[externalAnnotations.length + type.getTypeAnnotations().length];
     System.arraycopy(externalAnnotations, 0, symbolAnnotations, 0, externalAnnotations.length);
     System.arraycopy(type.getTypeAnnotations(), 0, symbolAnnotations, externalAnnotations.length, type.getTypeAnnotations().length);
 
     var parameterMetaDatas = Arrays.stream(type.getTypeArguments())
       .map(param -> ofTypeArg(sema, owner, param))
-      .toArray(JSymbolMetadata[]::new);
+      .toArray(JDTSymbolMetadata[]::new);
 
-    return new JSymbolMetadata(sema, owner, symbolAnnotations, parameterMetaDatas, false);
+    return new JDTSymbolMetadata(sema, owner, symbolAnnotations, parameterMetaDatas, false);
   }
 
-  private static JSymbolMetadata ofTypeArg(JSema sema, Symbol owner, ITypeBinding param) {
+  private static JDTSymbolMetadata ofTypeArg(JDTSema sema, Symbol owner, ITypeBinding param) {
     var symbolAnnotations = param.getTypeAnnotations();
     var parameterMetaDatas = Arrays.stream(param.getTypeArguments())
       .map(p -> ofTypeArg(sema, owner, p))
-      .toArray(JSymbolMetadata[]::new);
-    return new JSymbolMetadata(sema, owner, symbolAnnotations, parameterMetaDatas, true);
-  }
-
-  private static NullabilityData[] forEachLevel(Function<NullabilityLevel, NullabilityData> initializer) {
-    return Arrays.stream(NullabilityLevel.values()).map(initializer).toArray(NullabilityData[]::new);
-  }
-
-  public static NullabilityData noNullabilityAnnotationAt(NullabilityLevel level) {
-    return NO_ANNOTATION_NULLABILITY[level.ordinal()];
-  }
-
-  public static NullabilityData unknownNullabilityAt(NullabilityLevel level) {
-    return UNKNOWN_NULLABILITY[level.ordinal()];
+      .toArray(JDTSymbolMetadata[]::new);
+    return new JDTSymbolMetadata(sema, owner, symbolAnnotations, parameterMetaDatas, true);
   }
 
   @Override
@@ -231,7 +215,7 @@ final class JSymbolMetadata implements SymbolMetadata {
 
     // Not annotated or meta annotated, check upper level in the ownership hierarchy...
     if (symbol.isPackageSymbol()) {
-      return NO_ANNOTATION_NULLABILITY[currentLevel.ordinal()];
+      return noNullabilityAnnotationAt(currentLevel);
     }
     Symbol owner = getEffectiveOwner(symbol, currentLevel);
     if (owner == null) return unknownNullabilityAt(currentLevel);
@@ -249,7 +233,7 @@ final class JSymbolMetadata implements SymbolMetadata {
         return nullabilityData;
       }
     }
-    return NO_ANNOTATION_NULLABILITY[level.ordinal()];
+    return noNullabilityAnnotationAt(level);
   }
 
   @CheckForNull
@@ -302,84 +286,8 @@ final class JSymbolMetadata implements SymbolMetadata {
     return null;
   }
 
-  static final class JNullabilityData implements NullabilityData {
-
-    private final NullabilityType type;
-    private final NullabilityLevel level;
-
-    @Nullable
-    private final AnnotationInstance annotation;
-    @Nullable
-    private final AnnotationTree annotationTree;
-
-    private final boolean metaAnnotation;
-
-    public JNullabilityData(NullabilityType type, NullabilityLevel level, @Nullable AnnotationInstance annotation,
-      @Nullable AnnotationTree annotationTree, boolean metaAnnotation) {
-      this.type = type;
-      this.level = level;
-      this.annotation = annotation;
-      this.annotationTree = annotationTree;
-      this.metaAnnotation = metaAnnotation;
-    }
-
-    @Override
-    public NullabilityType type() {
-      return type;
-    }
-
-    @Override
-    public NullabilityLevel level() {
-      return level;
-    }
-
-    @Override
-    public boolean metaAnnotation() {
-      return metaAnnotation;
-    }
-
-    @Override
-    public boolean isNonNull(NullabilityLevel minLevel, boolean ignoreMetaAnnotation, boolean defaultValue) {
-      return testNullabilityType(minLevel, ignoreMetaAnnotation, defaultValue, t -> t == NullabilityType.NON_NULL);
-    }
-
-    @Override
-    public boolean isNullable(NullabilityLevel minLevel, boolean ignoreMetaAnnotation, boolean defaultValue) {
-      return testNullabilityType(minLevel, ignoreMetaAnnotation, defaultValue,
-        t -> t == NullabilityType.STRONG_NULLABLE || t == NullabilityType.WEAK_NULLABLE);
-    }
-
-    @Override
-    public boolean isStrongNullable(NullabilityLevel minLevel, boolean ignoreMetaAnnotation, boolean defaultValue) {
-      return testNullabilityType(minLevel, ignoreMetaAnnotation, defaultValue, t -> t == NullabilityType.STRONG_NULLABLE);
-    }
-
-    private boolean testNullabilityType(NullabilityLevel minLevel, boolean ignoreMetaAnnotation, boolean defaultValue, Predicate<NullabilityType> typePredicate) {
-      if (type == NullabilityType.NO_ANNOTATION) {
-        return false;
-      } else if (type == NullabilityType.UNKNOWN || (ignoreMetaAnnotation && metaAnnotation)) {
-        return defaultValue;
-      } else if (typePredicate.test(type)) {
-        return minLevel.ordinal() <= level.ordinal();
-      }
-      return false;
-    }
-
-    @Nullable
-    @Override
-    public AnnotationInstance annotation() {
-      return annotation;
-    }
-
-    @Nullable
-    @Override
-    public Tree declaration() {
-      return annotationTree;
-    }
-  }
-
   static final class JAnnotationInstance implements AnnotationInstance {
-    private final JSema sema;
+    private final JDTSema sema;
     private final IAnnotationBinding annotationBinding;
 
     /**
@@ -387,7 +295,7 @@ final class JSymbolMetadata implements SymbolMetadata {
      */
     private List<AnnotationValue> values;
 
-    JAnnotationInstance(JSema sema, IAnnotationBinding annotationBinding) {
+    JAnnotationInstance(JDTSema sema, IAnnotationBinding annotationBinding) {
       this.sema = sema;
       this.annotationBinding = annotationBinding;
     }
@@ -401,27 +309,26 @@ final class JSymbolMetadata implements SymbolMetadata {
     public List<AnnotationValue> values() {
       if (values == null) {
         values = Arrays.stream(annotationBinding.getDeclaredMemberValuePairs())
-          .map(p -> new AnnotationValueImpl(p.getName(), convertAnnotationValue(p.getValue())))
+          .map(p -> new AnnotationValueImpl(p.getName(), convertAnnotationValue(sema, p.getValue())))
           .collect(Collectors.toList());
       }
       return values;
     }
-
-    private Object convertAnnotationValue(Object value) {
-      return switch (value) {
-        case IVariableBinding iVariableBinding -> sema.variableSymbol(iVariableBinding);
-        case ITypeBinding iTypeBinding -> sema.typeSymbol(iTypeBinding);
-        case IAnnotationBinding iAnnotationBinding -> sema.annotation(iAnnotationBinding);
-        case Object[] a -> {
-          Object[] result = new Object[a.length];
-          for (int i = 0; i < a.length; i++) {
-            result[i] = convertAnnotationValue(a[i]);
-          }
-          yield result;
-        }
-        case null, default -> value;
-      };
-    }
   }
 
+  static Object convertAnnotationValue(JDTSema sema, Object value) {
+    return switch (value) {
+      case IVariableBinding iVariableBinding -> sema.variableSymbol(iVariableBinding);
+      case ITypeBinding iTypeBinding -> sema.typeSymbol(iTypeBinding);
+      case IAnnotationBinding iAnnotationBinding -> sema.annotation(iAnnotationBinding);
+      case Object[] a -> {
+        Object[] result = new Object[a.length];
+        for (int i = 0; i < a.length; i++) {
+          result[i] = convertAnnotationValue(sema, a[i]);
+        }
+        yield result;
+      }
+      case null, default -> value;
+    };
+  }
 }

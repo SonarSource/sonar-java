@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.model;
+package org.sonar.java.jdt;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,19 +36,19 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public final class JSema implements Sema {
+final class JDTSema implements Sema {
 
   private final AST ast;
   final Map<IBinding, Tree> declarations = new HashMap<>();
   final Map<IBinding, List<IdentifierTree>> usages = new HashMap<>();
-  private final Map<ITypeBinding, JType> types = new HashMap<>();
-  private final Map<IBinding, JSymbol> symbols = new HashMap<>();
-  private final Map<Symbol.TypeSymbol, JInitializerBlockSymbol> initializerBlockSymbols = new HashMap<>();
-  private final Map<Symbol.TypeSymbol, JInitializerBlockSymbol> staticInitializerBlockSymbols = new HashMap<>();
-  private final Map<IAnnotationBinding, JSymbolMetadata.JAnnotationInstance> annotations = new HashMap<>();
+  private final Map<ITypeBinding, JDTType> types = new HashMap<>();
+  private final Map<IBinding, JDTSymbol> symbols = new HashMap<>();
+  private final Map<Symbol.TypeSymbol, JDTInitializerBlockSymbol> initializerBlockSymbols = new HashMap<>();
+  private final Map<Symbol.TypeSymbol, JDTInitializerBlockSymbol> staticInitializerBlockSymbols = new HashMap<>();
+  private final Map<IAnnotationBinding, JDTSymbolMetadata.JAnnotationInstance> annotations = new HashMap<>();
   private final Map<String, Type> nameToTypeCache = new HashMap<>();
 
-  JSema(AST ast) {
+  JDTSema(AST ast) {
     this.ast = ast;
   }
 
@@ -97,12 +97,12 @@ public final class JSema implements Sema {
     return binding == null ? Symbol.UNKNOWN_SYMBOL : typeSymbol(binding).superSymbol;
   }
 
-  public JType type(ITypeBinding typeBinding) {
-    JType cached = types.get(typeBinding);
+  public JDTType type(ITypeBinding typeBinding) {
+    JDTType cached = types.get(typeBinding);
     if (cached != null) {
       return cached;
     }
-    return types.computeIfAbsent(typeBinding, k -> new JType(this, JType.normalize(k)));
+    return types.computeIfAbsent(typeBinding, k -> new JDTType(this, JDTType.normalize(k)));
   }
 
   List<Type> types(ITypeBinding[] typeBindings) {
@@ -120,59 +120,59 @@ public final class JSema implements Sema {
     if (packageBinding == null) {
       return Symbol.ROOT_PACKAGE;
     }
-    JSymbol cached = symbols.get(packageBinding);
+    JDTSymbol cached = symbols.get(packageBinding);
     if (cached != null) {
       return cached;
     }
-    return symbols.computeIfAbsent(packageBinding, k -> new JPackageSymbol(this, (IPackageBinding) k));
+    return symbols.computeIfAbsent(packageBinding, k -> new JDTSymbol(this, k));
   }
 
-  public JTypeSymbol typeSymbol(ITypeBinding typeBinding) {
-    JTypeSymbol cached = (JTypeSymbol) symbols.get(typeBinding);
+  public JDTTypeSymbol typeSymbol(ITypeBinding typeBinding) {
+    JDTTypeSymbol cached = (JDTTypeSymbol) symbols.get(typeBinding);
     if (cached != null) {
       return cached;
     }
-    return (JTypeSymbol) symbols.computeIfAbsent(typeBinding, k -> new JTypeSymbol(this, JType.normalize((ITypeBinding) k)));
+    return (JDTTypeSymbol) symbols.computeIfAbsent(typeBinding, k -> new JDTTypeSymbol(this, JDTType.normalize((ITypeBinding) k)));
   }
 
-  public JMethodSymbol methodSymbol(IMethodBinding methodBinding) {
-    JMethodSymbol cached = (JMethodSymbol) symbols.get(methodBinding);
+  public JDTMethodSymbol methodSymbol(IMethodBinding methodBinding) {
+    JDTMethodSymbol cached = (JDTMethodSymbol) symbols.get(methodBinding);
     if (cached != null) {
       return cached;
     }
-    return (JMethodSymbol) symbols.computeIfAbsent(methodBinding, k -> new JMethodSymbol(this, (IMethodBinding) k));
+    return (JDTMethodSymbol) symbols.computeIfAbsent(methodBinding, k -> new JDTMethodSymbol(this, (IMethodBinding) k));
   }
 
-  public JInitializerBlockSymbol initializerBlockSymbol(JTypeSymbol owner) {
-    JInitializerBlockSymbol cached = initializerBlockSymbols.get(owner);
+  public JDTInitializerBlockSymbol initializerBlockSymbol(JDTTypeSymbol owner) {
+    JDTInitializerBlockSymbol cached = initializerBlockSymbols.get(owner);
     if (cached != null) {
       return cached;
     }
-    return initializerBlockSymbols.computeIfAbsent(owner, k -> new JInitializerBlockSymbol(k, false));
+    return initializerBlockSymbols.computeIfAbsent(owner, k -> new JDTInitializerBlockSymbol(k, false));
   }
 
-  public JInitializerBlockSymbol staticInitializerBlockSymbol(JTypeSymbol owner) {
-    JInitializerBlockSymbol cached = staticInitializerBlockSymbols.get(owner);
+  public JDTInitializerBlockSymbol staticInitializerBlockSymbol(JDTTypeSymbol owner) {
+    JDTInitializerBlockSymbol cached = staticInitializerBlockSymbols.get(owner);
     if (cached != null) {
       return cached;
     }
-    return staticInitializerBlockSymbols.computeIfAbsent(owner, k -> new JInitializerBlockSymbol(k, true));
+    return staticInitializerBlockSymbols.computeIfAbsent(owner, k -> new JDTInitializerBlockSymbol(k, true));
   }
 
-  public JVariableSymbol variableSymbol(IVariableBinding variableBinding) {
-    JVariableSymbol cached = (JVariableSymbol) symbols.get(variableBinding);
+  public JDTVariableSymbol variableSymbol(IVariableBinding variableBinding) {
+    JDTVariableSymbol cached = (JDTVariableSymbol) symbols.get(variableBinding);
     if (cached != null) {
       return cached;
     }
-    return (JVariableSymbol) symbols.computeIfAbsent(variableBinding, k -> new JVariableSymbol(this, (IVariableBinding) k));
+    return (JDTVariableSymbol) symbols.computeIfAbsent(variableBinding, k -> new JDTVariableSymbol(this, (IVariableBinding) k));
   }
 
-  JSymbolMetadata.JAnnotationInstance annotation(IAnnotationBinding annotationBinding) {
-    JSymbolMetadata.JAnnotationInstance cached = annotations.get(annotationBinding);
+  JDTSymbolMetadata.JAnnotationInstance annotation(IAnnotationBinding annotationBinding) {
+    JDTSymbolMetadata.JAnnotationInstance cached = annotations.get(annotationBinding);
     if (cached != null) {
       return cached;
     }
-    return annotations.computeIfAbsent(annotationBinding, k -> new JSymbolMetadata.JAnnotationInstance(this, k));
+    return annotations.computeIfAbsent(annotationBinding, k -> new JDTSymbolMetadata.JAnnotationInstance(this, k));
   }
 
   static IBinding declarationBinding(IBinding binding) {
@@ -222,10 +222,6 @@ public final class JSema implements Sema {
 
   IAnnotationBinding[] resolvePackageAnnotations(String packageName) {
     return ASTUtils.resolvePackageAnnotations(ast, packageName);
-  }
-
-  public Runnable getEnvironmentCleaner() {
-    return ASTUtils.getEnvironmentCleaner(ast);
   }
 
 }
