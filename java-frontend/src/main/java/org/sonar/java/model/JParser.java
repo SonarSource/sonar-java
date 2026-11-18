@@ -60,7 +60,7 @@ public final class JParser {
       Files.writeString(file, source, StandardCharsets.UTF_8);
       JsonObject document;
       synchronized (bridge) {
-        bridge.analyze(directory, List.of(file), JParserConfig.bridgeClasspath(classpath));
+        bridge.analyze(directory, List.of(file), JParserConfig.bridgeClasspath(classpath), javaVersion(version));
         document = bridge.cst(file.toString());
       }
       JSema sema = new JSema();

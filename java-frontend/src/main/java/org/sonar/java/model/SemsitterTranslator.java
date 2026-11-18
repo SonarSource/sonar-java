@@ -167,6 +167,7 @@ final class SemsitterTranslator {
 
   /** Whether {@code _} declares an unnamed variable (Java 22 and later) instead of a plain name. */
   private boolean unnamedVariables = true;
+  private boolean records = true;
   /** Whether consecutive {@code ///} lines form one Markdown comment (Java 23 and later). */
   private boolean markdownComments = true;
 
@@ -185,6 +186,7 @@ final class SemsitterTranslator {
     boolean broken = document.has("hasError") && document.get("hasError").getAsBoolean();
     SemsitterTranslator translator = new SemsitterTranslator(sema);
     translator.unnamedVariables = javaVersion >= 22;
+    translator.records = javaVersion >= 16;
     translator.markdownComments = javaVersion >= 23;
     if (document.has("path") && document.get("path").isJsonPrimitive()) {
       String fileName = Path.of(document.get("path").getAsString()).getFileName().toString();
@@ -493,7 +495,7 @@ final class SemsitterTranslator {
     Tree.Kind kind = switch (node.k()) {
       case "interface_declaration" -> Tree.Kind.INTERFACE;
       case "enum_declaration" -> Tree.Kind.ENUM;
-      case "record_declaration" -> Tree.Kind.RECORD;
+      case "record_declaration" -> records ? Tree.Kind.RECORD : Tree.Kind.CLASS;
       case "annotation_type_declaration" -> Tree.Kind.ANNOTATION_TYPE;
       default -> Tree.Kind.CLASS;
     };
@@ -517,7 +519,7 @@ final class SemsitterTranslator {
       case INTERFACE, ANNOTATION_TYPE -> "interface";
       case ENUM -> "enum";
       case RECORD -> "record";
-      default -> "class";
+      default -> "record_declaration".equals(node.k()) ? "record" : "class";
     };
     IdentifierTreeImpl name = identifier(requiredField(node, "name", firstOf(node, "identifier", "type_identifier")));
     InternalSyntaxToken keywordToken = token(required(node, keyword));

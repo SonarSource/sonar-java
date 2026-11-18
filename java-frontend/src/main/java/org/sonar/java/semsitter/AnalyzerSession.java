@@ -255,6 +255,11 @@ final class AnalyzerSession {
       }
       settings.add(LIBRARIES, libraries);
     }
+    if (request.has("javaLevel") && !settings.has("jvm.java_version")) {
+      JsonArray level = new JsonArray();
+      level.add(request.get("javaLevel").getAsString());
+      settings.add("jvm.java_version", level);
+    }
     if (!settings.has("jvm.jdk_home")) {
       JsonArray home = new JsonArray();
       home.add(System.getProperty("java.home"));

@@ -71,6 +71,11 @@ public final class SemsitterBridge implements AutoCloseable {
    * @return the response, whose {@code files} are the paths accepted by {@link #cst}
    */
   public JsonObject analyze(Path root, Collection<Path> files, Collection<String> classpath) throws IOException {
+    return analyze(root, files, classpath, Integer.MAX_VALUE);
+  }
+
+  /** As {@link #analyze(Path, Collection, Collection)}, reading the sources at the given Java level; {@link Integer#MAX_VALUE} means not set. */
+  public JsonObject analyze(Path root, Collection<Path> files, Collection<String> classpath, int javaLevel) throws IOException {
     JsonObject request = new JsonObject();
     request.addProperty("root", root.toAbsolutePath().toString());
     JsonArray fileArray = new JsonArray();
@@ -79,6 +84,9 @@ public final class SemsitterBridge implements AutoCloseable {
     JsonArray classpathArray = new JsonArray();
     classpath.forEach(classpathArray::add);
     request.add("classpath", classpathArray);
+    if (javaLevel != Integer.MAX_VALUE) {
+      request.addProperty("javaLevel", javaLevel);
+    }
     return server.analyze(request);
   }
 
