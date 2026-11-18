@@ -1,0 +1,413 @@
+{
+"sonar-server:src/main/java/org/sonar/ce/http/CeHttpClient.java": [
+110
+],
+"sonar-server:src/main/java/org/sonar/server/app/TomcatConnectors.java": [
+49,
+75,
+76,
+77,
+78
+],
+"sonar-server:src/main/java/org/sonar/server/authentication/BasicAuthenticator.java": [
+72
+],
+"sonar-server:src/main/java/org/sonar/server/authentication/JwtCsrfVerifier.java": [
+49,
+49
+],
+"sonar-server:src/main/java/org/sonar/server/authentication/JwtHttpHandler.java": [
+184
+],
+"sonar-server:src/main/java/org/sonar/server/authentication/JwtSerializer.java": [
+93,
+132
+],
+"sonar-server:src/main/java/org/sonar/server/authentication/OAuthCsrfVerifier.java": [
+44,
+44
+],
+"sonar-server:src/main/java/org/sonar/server/ce/ws/ActivityAction.java": [
+150
+],
+"sonar-server:src/main/java/org/sonar/server/component/index/ComponentDoc.java": [
+28
+],
+"sonar-server:src/main/java/org/sonar/server/component/index/ComponentIndexQuery.java": [
+89
+],
+"sonar-server:src/main/java/org/sonar/server/component/ws/FilterParser.java": [
+81,
+82,
+99,
+108
+],
+"sonar-server:src/main/java/org/sonar/server/component/ws/SearchAction.java": [
+81
+],
+"sonar-server:src/main/java/org/sonar/server/component/ws/TreeAction.java": [
+121
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/duplication/Duplication.java": [
+130
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/duplication/IntegrateCrossProjectDuplications.java": [
+125
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/SourceSimilarityImpl.java": [
+35
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/coverage/CoverageUtils.java": [
+36
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IssueCounter.java": [
+141
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/NewEffortCalculator.java": [
+63
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/AbstractCoverageRule.java": [
+69
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/CommentDensityRule.java": [
+68,
+78
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/CommonRule.java": [
+85
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/MaintainabilityMeasuresVisitor.java": [
+133
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewMaintainabilityMeasuresVisitor.java": [
+123
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/NewReliabilityAndSecurityRatingMeasuresVisitor.java": [
+170
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/RatingGrid.java": [
+49
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/RatingSettings.java": [
+65,
+66
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/CommentMeasuresStep.java": [
+114,
+157
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/DuplicationMeasuresStep.java": [
+212,
+212
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/NewSizeMeasuresStep.java": [
+239,
+239
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/UnitTestMeasuresStep.java": [
+115,
+116
+],
+"sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/webhook/WebhookDelivery.java": [
+98,
+98
+],
+"sonar-server:src/main/java/org/sonar/server/debt/DebtModelXMLExporter.java": [
+101,
+106
+],
+"sonar-server:src/main/java/org/sonar/server/es/BulkIndexer.java": [
+123,
+124,
+146
+],
+"sonar-server:src/main/java/org/sonar/server/es/EsClientProvider.java": [
+76
+],
+"sonar-server:src/main/java/org/sonar/server/es/IndexerStartupTask.java": [
+116,
+121
+],
+"sonar-server:src/main/java/org/sonar/server/es/RecoveryIndexer.java": [
+92,
+105
+],
+"sonar-server:src/main/java/org/sonar/server/es/textsearch/ComponentTextSearchFeatureRepertoire.java": [
+52,
+63,
+76,
+87,
+98,
+108,
+118
+],
+"sonar-server:src/main/java/org/sonar/server/favorite/ws/SearchAction.java": [
+69
+],
+"sonar-server:src/main/java/org/sonar/server/issue/Result.java": [
+82,
+85
+],
+"sonar-server:src/main/java/org/sonar/server/issue/index/IssueDoc.java": [
+47
+],
+"sonar-server:src/main/java/org/sonar/server/issue/index/IssueIndex.java": [
+672
+],
+"sonar-server:src/main/java/org/sonar/server/issue/index/IssueIndexDefinition.java": [
+88
+],
+"sonar-server:src/main/java/org/sonar/server/issue/index/IssueIteratorForSingleChunk.java": [
+194,
+197,
+202,
+203,
+204,
+205,
+206,
+207,
+208,
+209,
+210,
+211,
+212,
+213,
+214,
+215,
+216,
+217,
+218,
+219,
+221,
+222,
+223,
+226,
+227,
+230,
+231,
+233
+],
+"sonar-server:src/main/java/org/sonar/server/issue/notification/AbstractNewIssuesEmailTemplate.java": [
+117
+],
+"sonar-server:src/main/java/org/sonar/server/issue/notification/NewIssuesNotification.java": [
+96,
+108,
+119,
+128
+],
+"sonar-server:src/main/java/org/sonar/server/issue/ws/SearchAction.java": [
+142
+],
+"sonar-server:src/main/java/org/sonar/server/measure/custom/ws/SearchAction.java": [
+78
+],
+"sonar-server:src/main/java/org/sonar/server/measure/index/ProjectMeasuresDoc.java": [
+52
+],
+"sonar-server:src/main/java/org/sonar/server/measure/index/ProjectMeasuresIndex.java": [
+270,
+271,
+272,
+273,
+352,
+352
+],
+"sonar-server:src/main/java/org/sonar/server/measure/index/ProjectMeasuresIndexDefinition.java": [
+54
+],
+"sonar-server:src/main/java/org/sonar/server/measure/index/ProjectsTextSearchQueryFactory.java": [
+63,
+70,
+78,
+89,
+96
+],
+"sonar-server:src/main/java/org/sonar/server/measure/ws/ComponentTreeAction.java": [
+139
+],
+"sonar-server:src/main/java/org/sonar/server/metric/ws/SearchAction.java": [
+63
+],
+"sonar-server:src/main/java/org/sonar/server/notification/NotificationDaemon.java": [
+94,
+115,
+118,
+118
+],
+"sonar-server:src/main/java/org/sonar/server/notification/ws/ListAction.java": [
+154,
+155,
+191
+],
+"sonar-server:src/main/java/org/sonar/server/organization/ws/SearchAction.java": [
+69
+],
+"sonar-server:src/main/java/org/sonar/server/organization/ws/SearchMembersAction.java": [
+83,
+148
+],
+"sonar-server:src/main/java/org/sonar/server/permission/index/PermissionIndexerDao.java": [
+238,
+242,
+243,
+251,
+254
+],
+"sonar-server:src/main/java/org/sonar/server/permission/ws/SearchProjectPermissionsAction.java": [
+87
+],
+"sonar-server:src/main/java/org/sonar/server/platform/db/migration/AutoDbMigration.java": [
+105,
+109,
+110,
+127
+],
+"sonar-server:src/main/java/org/sonar/server/platform/monitoring/EsMonitor.java": [
+139,
+139
+],
+"sonar-server:src/main/java/org/sonar/server/platform/monitoring/SystemMonitor.java": [
+71
+],
+"sonar-server:src/main/java/org/sonar/server/project/ws/GhostsAction.java": [
+74
+],
+"sonar-server:src/main/java/org/sonar/server/project/ws/ProvisionedAction.java": [
+84
+],
+"sonar-server:src/main/java/org/sonar/server/project/ws/SearchAction.java": [
+78
+],
+"sonar-server:src/main/java/org/sonar/server/project/ws/SearchMyProjectsAction.java": [
+61
+],
+"sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/SearchAction.java": [
+78
+],
+"sonar-server:src/main/java/org/sonar/server/projecttag/ws/SearchAction.java": [
+50,
+50
+],
+"sonar-server:src/main/java/org/sonar/server/qualityprofile/index/ActiveRuleDoc.java": [
+39
+],
+"sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ChangelogAction.java": [
+71
+],
+"sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/ProjectsAction.java": [
+90
+],
+"sonar-server:src/main/java/org/sonar/server/rule/RegisterRules.java": [
+447
+],
+"sonar-server:src/main/java/org/sonar/server/rule/index/RuleDoc.java": [
+45
+],
+"sonar-server:src/main/java/org/sonar/server/rule/index/RuleExtensionDoc.java": [
+38
+],
+"sonar-server:src/main/java/org/sonar/server/rule/index/RuleIndex.java": [
+194,
+195,
+196,
+200,
+201,
+202
+],
+"sonar-server:src/main/java/org/sonar/server/rule/index/RuleIndexDefinition.java": [
+108
+],
+"sonar-server:src/main/java/org/sonar/server/rule/ws/ActiveRuleCompleter.java": [
+134,
+152
+],
+"sonar-server:src/main/java/org/sonar/server/rule/ws/SearchAction.java": [
+133
+],
+"sonar-server:src/main/java/org/sonar/server/source/DecorationDataHolder.java": [
+52,
+64,
+77
+],
+"sonar-server:src/main/java/org/sonar/server/test/index/CoveredFileDoc.java": [
+38
+],
+"sonar-server:src/main/java/org/sonar/server/test/index/TestDoc.java": [
+48
+],
+"sonar-server:src/main/java/org/sonar/server/test/index/TestIndexDefinition.java": [
+55
+],
+"sonar-server:src/main/java/org/sonar/server/test/index/TestResultSetIterator.java": [
+80,
+81,
+82
+],
+"sonar-server:src/main/java/org/sonar/server/test/ws/CoveredFilesAction.java": [
+68
+],
+"sonar-server:src/main/java/org/sonar/server/test/ws/ListAction.java": [
+94
+],
+"sonar-server:src/main/java/org/sonar/server/ui/PageRepository.java": [
+68
+],
+"sonar-server:src/main/java/org/sonar/server/ui/VersionFormatter.java": [
+34,
+44,
+46,
+49
+],
+"sonar-server:src/main/java/org/sonar/server/user/UserUpdater.java": [
+302,
+310,
+379
+],
+"sonar-server:src/main/java/org/sonar/server/user/index/UserIndex.java": [
+91
+],
+"sonar-server:src/main/java/org/sonar/server/user/index/UserIndexer.java": [
+149
+],
+"sonar-server:src/main/java/org/sonar/server/user/ws/GroupsAction.java": [
+85
+],
+"sonar-server:src/main/java/org/sonar/server/user/ws/SearchAction.java": [
+104
+],
+"sonar-server:src/main/java/org/sonar/server/usergroups/ws/SearchAction.java": [
+81
+],
+"sonar-server:src/main/java/org/sonar/server/usergroups/ws/UsersAction.java": [
+67
+],
+"sonar-server:src/main/java/org/sonar/server/usertoken/TokenGeneratorImpl.java": [
+30
+],
+"sonar-server:src/main/java/org/sonar/server/util/AbstractStoppableExecutorService.java": [
+52,
+56
+],
+"sonar-server:src/main/java/org/sonar/server/util/ClassLoaderUtils.java": [
+81
+],
+"sonar-server:src/main/java/org/sonar/server/view/index/ViewIndex.java": [
+56
+],
+"sonar-server:src/main/java/org/sonar/server/view/index/ViewIndexDefinition.java": [
+46
+],
+"sonar-server:src/main/java/org/sonar/server/ws/DefaultLocalResponse.java": [
+64
+],
+"sonar-server:src/main/java/org/sonar/server/ws/ServletResponse.java": [
+48,
+103
+],
+"sonar-server:src/main/java/org/sonar/server/ws/WebServiceEngine.java": [
+105,
+107,
+120
+]
+}

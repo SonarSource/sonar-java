@@ -1,0 +1,12 @@
+{
+"sonar-server:src/main/java/org/sonar/server/debt/DebtModelPluginRepository.java": [
+90,
+94
+],
+"sonar-server:src/main/java/org/sonar/server/notification/email/EmailNotificationChannel.java": [
+138
+],
+"sonar-server:src/main/java/org/sonar/server/plugins/StaticResourcesServlet.java": [
+62
+]
+}

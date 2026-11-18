@@ -1,0 +1,24 @@
+{
+"sonar-server:src/main/java/org/sonar/server/component/ws/FilterParser.java": [
+44,
+45
+],
+"sonar-server:src/main/java/org/sonar/server/debt/DebtModelXMLExporter.java": [
+102
+],
+"sonar-server:src/main/java/org/sonar/server/platform/ServerIdGenerator.java": [
+43
+],
+"sonar-server:src/main/java/org/sonar/server/projecttag/ws/SetAction.java": [
+48
+],
+"sonar-server:src/main/java/org/sonar/server/rule/RuleCreator.java": [
+146
+],
+"sonar-server:src/main/java/org/sonar/server/user/UserUpdater.java": [
+291
+],
+"sonar-server:src/main/java/org/sonar/server/util/MetricKeyValidator.java": [
+50
+]
+}
