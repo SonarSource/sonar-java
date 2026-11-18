@@ -31,9 +31,10 @@ jobs:
       deployed: ${{ steps.build-maven.outputs.deployed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@d5574b52816a478f9d4e6529a3f6ff17a8a36785 # v5.2.8
+      - uses: SonarSource/mise-action-wrapper@65aa289d3f408f4999d13a52a14cde4f54b48442 # 2.0.0
         with:
           version: 2026.10.20
+          persist_github_token: false
       - uses: SonarSource/ci-github-actions/build-maven@v2
         id: build-maven
         env:
@@ -85,9 +86,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
-      - uses: jdx/mise-action@d5574b52816a478f9d4e6529a3f6ff17a8a36785 # v5.2.8
+      - uses: SonarSource/mise-action-wrapper@65aa289d3f408f4999d13a52a14cde4f54b48442 # 2.0.0
         with:
           version: 2026.10.20
+          persist_github_token: false
       - name: Select Java Version
         shell: bash # Set explicitly so Bash is used on Windows runners too.
         run: |
@@ -174,7 +176,7 @@ jobs:
           submodules: recursive
 
       - name: Install uv
-        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        uses: step-security/setup-uv@b49aac5576b90039e3e427495dda1a21aba6aaec # v10.3.3
         with:
           enable-cache: true
 
@@ -221,9 +223,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
-      - uses: jdx/mise-action@d5574b52816a478f9d4e6529a3f6ff17a8a36785 # v5.2.8
+      - uses: SonarSource/mise-action-wrapper@65aa289d3f408f4999d13a52a14cde4f54b48442 # 2.0.0
         with:
           version: 2026.10.20
+          persist_github_token: false
       - name: Select Java Version
         shell: bash # Set explicitly so Bash is used on Windows runners too.
         run: |
@@ -291,9 +294,10 @@ jobs:
       BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@d5574b52816a478f9d4e6529a3f6ff17a8a36785 # v5.2.8
+      - uses: SonarSource/mise-action-wrapper@65aa289d3f408f4999d13a52a14cde4f54b48442 # 2.0.0
         with:
           version: 2026.10.20
+          persist_github_token: false
       - uses: SonarSource/vault-action-wrapper@v3
         id: secrets
         with:
@@ -338,9 +342,10 @@ jobs:
       BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@d5574b52816a478f9d4e6529a3f6ff17a8a36785 # v5.2.8
+      - uses: SonarSource/mise-action-wrapper@65aa289d3f408f4999d13a52a14cde4f54b48442 # 2.0.0
         with:
           version: 2026.10.20
+          persist_github_token: false
       - uses: SonarSource/vault-action-wrapper@v3
         id: secrets
         with:
@@ -375,9 +380,10 @@ jobs:
       BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@d5574b52816a478f9d4e6529a3f6ff17a8a36785 # v5.2.8
+      - uses: SonarSource/mise-action-wrapper@65aa289d3f408f4999d13a52a14cde4f54b48442 # 2.0.0
         with:
           version: 2026.10.20
+          persist_github_token: false
       - uses: SonarSource/vault-action-wrapper@v3
         id: secrets
         with:
@@ -424,9 +430,10 @@ jobs:
       - name: Config Git
         run: git config --global core.autocrlf input
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@d5574b52816a478f9d4e6529a3f6ff17a8a36785 # v5.2.8
+      - uses: SonarSource/mise-action-wrapper@65aa289d3f408f4999d13a52a14cde4f54b48442 # 2.0.0
         with:
           version: 2026.10.20
+          persist_github_token: false
       - uses: ./.github/actions/maven-cache
         with:
           namespace: qa-os-win
