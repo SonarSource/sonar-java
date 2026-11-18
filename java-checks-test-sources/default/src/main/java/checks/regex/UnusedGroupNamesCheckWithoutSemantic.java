@@ -145,7 +145,7 @@ abstract class UnusedGroupNamesCheckWithoutSemantic {
       m9.group(0);
     }
 
-    // A reassigned variable is not tracked, also when the symbols are not resolved.
+    // The reassigned variable is not effectively final, so it is not tracked. ECJ without semantic still treated it as final and tracked it.
     Pattern p10 = Pattern.compile("(?<g1>[0-9]{2})");
     if (Math.random() > 0.5) {
       p10 = Pattern.compile("(?<g2>[0-9]{2})");

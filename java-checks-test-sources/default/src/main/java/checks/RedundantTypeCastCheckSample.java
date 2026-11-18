@@ -242,7 +242,7 @@ class RedundantTypeCastCheckSample_G<T> {
       return s;
     }
     String foo() {
-      // the inferred K is String, so the cast is unnecessary
+      // ECJ 3.44 does not infer K as String here and misses the redundant cast; javac does.
       return (String) getValue(""); // Noncompliant
     }
   }
@@ -338,7 +338,8 @@ abstract class MyClass {
   }
 
   MyClass qix3() {
-    return ((MyOtherClass) foo()); // Compliant - FN: only ECJ takes the cast as the type of the generic call
+    // In a cast context foo() is typed MyClass (javac keeps the checkcast), so the downcast is needed; ECJ wrongly typed it as MyOtherClass and reported it.
+    return ((MyOtherClass) foo()); // Compliant
   }
 }
 abstract class MyOtherClass extends MyClass {
