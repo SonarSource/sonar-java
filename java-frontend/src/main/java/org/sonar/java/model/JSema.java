@@ -686,13 +686,31 @@ public final class JSema implements Sema {
     if (receiver != null && receiver.isArray() && "clone".equals(method.name()) && arguments.isEmpty()) {
       return receiver;
     }
+    Type result = invocationReturnType(method, receiver, arguments);
+    return withEnclosingArguments(method, receiver, result);
+  }
+
+  /** The inner class a member of a parameterized class returns keeps the arguments of its enclosing class. */
+  private Type withEnclosingArguments(JMethodSymbol method, @Nullable Type receiver, Type result) {
+    if (receiver == null || method.isStatic() || !(result instanceof JType inner) || !inner.isClass() || inner.isParameterized() || method.owner().type() == null) {
+      return result;
+    }
+    String ownerFqn = method.owner().type().erasure().fullyQualifiedName();
+    if (!inner.fullyQualifiedName().startsWith(ownerFqn + "$") && !inner.fullyQualifiedName().startsWith(ownerFqn + ".")) {
+      return result;
+    }
+    Type declaring = asSuperType(receiver, ownerFqn, new HashSet<>());
+    return declaring instanceof JType enclosing && enclosing.isParameterized() ? inner.withOuter(enclosing) : result;
+  }
+
+  private Type invocationReturnType(JMethodSymbol method, @Nullable Type receiver, List<Type> arguments) {
     Integer index = method.returnTypeParameter();
     if (method.returnsSelf() && receiver instanceof JType returned && returned.isCapture()) {
       return returned;
     }
     if (receiver instanceof JType captured && captured.isCapture() && captured.element != null && captured.element.isClass() && !method.isStatic()) {
       // a member of a capture is a member of its bound
-      return invocationReturn(method, captured.element, arguments);
+      return invocationReturnType(method, captured.element, arguments);
     }
     Type declaring = index == null || receiver == null ? null : declaringType(method, receiver);
     if (declaring != null && declaring.isParameterized() && declaring.typeArguments().size() > index) {
@@ -719,6 +737,13 @@ public final class JSema implements Sema {
         if (!substituted.isUnknown() && !leaks) {
           return substituted;
         }
+      }
+    }
+    if (declaredReturn != null && !method.isStatic()) {
+      // a method with no type variables in play still returns the type arguments its signature spells out
+      JType plain = typeFromFact(declaredReturn, Map.of(), true);
+      if (!plain.isUnknown() && plain.isParameterized() && !mentionsTypeVariable(plain)) {
+        return plain;
       }
     }
     Type declared = method.returnType().type();
@@ -1223,17 +1248,26 @@ public final class JSema implements Sema {
     String ownerFqn = method.owner().type().erasure().fullyQualifiedName();
     JsonObject info = typeInfos.get(sourceName(ownerFqn));
     List<String> names = info == null ? List.of() : strings(info, "typeVars");
-    if (names.isEmpty()) {
-      return Map.of();
-    }
-    Type declaring = asSuperType(receiver, ownerFqn, new HashSet<>());
-    if (declaring == null || !declaring.isParameterized()) {
-      return Map.of();
-    }
-    List<Type> arguments = declaring.typeArguments();
     Map<String, Type> substitution = new HashMap<>();
-    for (int i = 0; i < names.size() && i < arguments.size(); i++) {
-      substitution.put(names.get(i), arguments.get(i));
+    if (receiver instanceof JType inner && inner.outer() != null && inner.erasure().fullyQualifiedName().equals(ownerFqn)) {
+      substitution.putAll(enclosingSubstitution(inner.outer()));
+    }
+    Type declaring = names.isEmpty() ? null : asSuperType(receiver, ownerFqn, new HashSet<>());
+    if (declaring != null && declaring.isParameterized()) {
+      List<Type> arguments = declaring.typeArguments();
+      for (int i = 0; i < names.size() && i < arguments.size(); i++) {
+        substitution.put(names.get(i), arguments.get(i));
+      }
+    }
+    return substitution;
+  }
+
+  private Map<String, Type> enclosingSubstitution(JType enclosing) {
+    JsonObject info = typeInfos.get(sourceName(enclosing.erasure().fullyQualifiedName()));
+    List<String> names = info == null ? List.of() : strings(info, "typeVars");
+    Map<String, Type> substitution = new HashMap<>();
+    for (int i = 0; i < names.size() && i < enclosing.args.size(); i++) {
+      substitution.put(names.get(i), enclosing.args.get(i));
     }
     return substitution;
   }

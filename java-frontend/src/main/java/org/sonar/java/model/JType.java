@@ -54,6 +54,9 @@ final class JType implements Type, Type.ArrayType {
   private final List<JType> intersection;
   @Nullable
   private final JType lower;
+  /** The parameterized enclosing type of an inner class of a generic class, which gives the inner class's members the outer type arguments. */
+  @Nullable
+  private JType outer;
 
   private JType(JSema sema, Kind kind, String fqn, List<JType> args, @Nullable JType element, @Nullable String typeVarId, List<JType> intersection) {
     this(sema, kind, fqn, args, element, typeVarId, intersection, null);
@@ -69,6 +72,18 @@ final class JType implements Type, Type.ArrayType {
     this.typeVarId = typeVarId;
     this.intersection = intersection;
     this.lower = lower;
+  }
+
+  @Nullable
+  JType outer() {
+    return outer;
+  }
+
+  /** A copy of this class type that is an inner class of the parameterized {@code enclosing} type. */
+  JType withOuter(JType enclosing) {
+    JType copy = new JType(sema, kind, fqn, args, element, typeVarId, intersection, lower);
+    copy.outer = enclosing;
+    return copy;
   }
 
   static JType named(JSema sema, String fqn, List<JType> args) {
