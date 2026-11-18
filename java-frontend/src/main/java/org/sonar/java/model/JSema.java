@@ -65,7 +65,7 @@ public final class JSema implements Sema {
   private static final Pattern LAMBDA_SEGMENTS = Pattern.compile("^(\\$lambda\\$[^$()]*\\(\\))+");
 
   private final Map<String, JsonObject> facts = new HashMap<>();
-  private final Map<String, JsonObject> dumpSymbols = new HashMap<>();
+  private final Map<String, JsonObject> dumpSymbols = new LinkedHashMap<>();
   private final Map<String, JsonObject> typeInfos = new HashMap<>();
   private final Map<String, List<DeclaredAnnotation>> libraryAnnotations = new HashMap<>();
   private final Map<String, List<String>> projectThrows = new HashMap<>();
@@ -2514,7 +2514,43 @@ public final class JSema implements Sema {
     return values;
   }
 
+  /**
+   * The type variable a callable or class result names as {@code <owner>::``<position>}, the position-th variable
+   * the dump declares as {@code <owner><name>}.
+   */
+  @Nullable
+  private JTypeSymbol typeParameterItem(String name) {
+    int marker = name.lastIndexOf("::`");
+    int digits = marker < 0 ? -1 : (name.startsWith("::``", marker) ? marker + 4 : marker + 3);
+    if (marker <= 0 || name.length() == digits || !name.substring(digits).chars().allMatch(Character::isDigit)) {
+      return null;
+    }
+    String owner = name.substring(0, marker);
+    int position = Integer.parseInt(name.substring(digits));
+    int seen = 0;
+    for (Map.Entry<String, JsonObject> entry : dumpSymbols.entrySet()) {
+      String key = entry.getKey();
+      String prefix = key.startsWith(owner + "<") ? owner : (key.startsWith(erase(owner) + "<") ? erase(owner) : null);
+      boolean declared = prefix != null && key.length() > prefix.length() + 2 && key.endsWith(">")
+        && key.indexOf('<', prefix.length() + 1) < 0 && "type".equals(text(entry.getValue(), "kind"));
+      if (declared && seen++ == position) {
+        if (resolve(key) instanceof JTypeSymbol variable && variable.isTypeParameter()) {
+          if (variable.type().isUnknown()) {
+            variable.type(JType.typeVar(this, variable.name(), key));
+          }
+          return variable;
+        }
+        return null;
+      }
+    }
+    return null;
+  }
+
   private Type typeFromName(String name) {
+    JTypeSymbol variable = typeParameterItem(name);
+    if (variable != null) {
+      return variable.type();
+    }
     String erased = erase(name);
     if (PRIMITIVES.contains(erased)) {
       return primitiveType(erased);
