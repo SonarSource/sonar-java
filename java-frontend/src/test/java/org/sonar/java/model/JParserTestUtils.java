@@ -17,6 +17,7 @@
 package org.sonar.java.model;
 
 import com.google.common.io.Files;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.sonar.java.AnalysisProgress;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Sema;
@@ -115,11 +117,24 @@ public class JParserTestUtils {
   }
 
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath) {
-    return parse(unitName, source, classpath, JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION);
+    return parse(unitName, source, classpath, JParser.MAXIMUM_SUPPORTED_JAVA_VERSION);
   }
 
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath, JavaVersion version) {
-    return JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).parse(unitName, source);
+    var inputFile = new TestInputFileBuilder("", unitName)
+      .setContents(source)
+      .setCharset(StandardCharsets.UTF_8)
+      .build();
+    List<JParseResult> results = new ArrayList<>();
+    JParser.Mode.FILE_BY_FILE.create(version, classpath)
+      .parse(List.of(inputFile), () -> false, new AnalysisProgress(1), (input, result) -> results.add(result));
+    try {
+      return results.getFirst().get();
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new IllegalStateException("Unable to parse source", e);
+    }
   }
 
   public static List<File> checksTestClassPath() throws IOException {

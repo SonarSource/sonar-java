@@ -16,6 +16,8 @@
  */
 package org.sonar.java.jdt;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
@@ -33,26 +35,31 @@ import org.eclipse.jdt.internal.formatter.Token;
 import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.TestUtils;
-import org.sonar.java.model.JParserConfig;
-import org.sonar.java.model.JParserConfig.Result;
+import org.sonar.java.model.JParseResult;
+import org.sonar.java.model.JParser;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-import static org.sonar.java.jdt.JDTParser.convertTokenTypeToCommentKind;
-import static org.sonar.java.jdt.JDTParser.isComment;
-import static org.sonar.java.model.JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-import static org.sonar.java.model.JParserConfig.Mode.BATCH;
+import static org.sonar.java.jdt.JDTAstConverter.convertTokenTypeToCommentKind;
+import static org.sonar.java.jdt.JDTAstConverter.isComment;
+import static org.sonar.java.jdt.JDTParser.shouldEnablePreviewFlag;
+import static org.sonar.java.model.JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
+import static org.sonar.java.model.JParser.Mode.BATCH;
 import static org.sonar.java.model.JParserTestUtils.DEFAULT_CLASSPATH;
 
 class JDTParserTest {
@@ -62,7 +69,7 @@ class JDTParserTest {
 
   @Test
   void test_first_index_of_tokens_in_eclipse_ast() {
-    String version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION.effectiveJavaVersionAsString();
+    String version = JParser.MAXIMUM_SUPPORTED_JAVA_VERSION.effectiveJavaVersionAsString();
     String unitName = "C.java";
     String source = "class C { }";
 
@@ -72,19 +79,19 @@ class JDTParserTest {
     astParser.setUnitName(unitName);
     astParser.setSource(source.toCharArray());
     CompilationUnit compilationUnit = (CompilationUnit) astParser.createAST(null);
-    TokenManager tokenManager = JDTParser.createTokenManager(version, unitName, source);
+    TokenManager tokenManager = JDTAstConverter.createTokenManager(version, unitName, source);
 
-    assertThat(JDTParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameIdentifier, TerminalToken.TokenNameLBRACE)).isEqualTo(1);
-    assertThat(JDTParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameLBRACE, TerminalToken.TokenNameIdentifier)).isEqualTo(1);
-    assertThat(JDTParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameRBRACE, TerminalToken.TokenNameLBRACE)).isEqualTo(2);
-    assertThatThrownBy(() -> JDTParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNamebreak, TerminalToken.TokenNameconst))
+    assertThat(JDTAstConverter.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameIdentifier, TerminalToken.TokenNameLBRACE)).isEqualTo(1);
+    assertThat(JDTAstConverter.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameLBRACE, TerminalToken.TokenNameIdentifier)).isEqualTo(1);
+    assertThat(JDTAstConverter.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameRBRACE, TerminalToken.TokenNameLBRACE)).isEqualTo(2);
+    assertThatThrownBy(() -> JDTAstConverter.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNamebreak, TerminalToken.TokenNameconst))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Failed to find token TokenNamebreak or TokenNameconst in the tokens of a org.eclipse.jdt.core.dom.CompilationUnit");
   }
 
   @Test
   void test_comment_tokens() {
-    String version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION.effectiveJavaVersionAsString();
+    String version = JParser.MAXIMUM_SUPPORTED_JAVA_VERSION.effectiveJavaVersionAsString();
     String unitName = "C.java";
     String source = """
       class A {
@@ -98,7 +105,7 @@ class JDTParserTest {
         void foo() {}
       }
       """;
-    TokenManager tokens = JDTParser.createTokenManager(version, unitName, source);
+    TokenManager tokens = JDTAstConverter.createTokenManager(version, unitName, source);
 
     assertThat(tokens.size()).isEqualTo(15);
 
@@ -146,7 +153,7 @@ class JDTParserTest {
       TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
     List<String> trace = new ArrayList<>();
-    BiConsumer<InputFile, Result> action = (inputFile, result) -> {
+    BiConsumer<InputFile, JParseResult> action = (inputFile, result) -> {
       trace.addAll(logTester.logs());
       logTester.clear();
       try {
@@ -174,12 +181,12 @@ class JDTParserTest {
     List<InputFile> inputFiles = Arrays.asList(
       TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
-    BiConsumer<InputFile, Result> doNothingAction = (inputFile, result) -> {};
-    JDTParserConfig config = spy((JDTParserConfig) JParserConfig.Mode.BATCH
+    BiConsumer<InputFile, JParseResult> doNothingAction = (inputFile, result) -> {};
+    JDTParser config = spy((JDTParser) JParser.Mode.BATCH
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false));
     // Return a lazy ASTParser that do nothing to ensure that we have not analyzed files
     ASTParser astParser = mock(ASTParser.class);
-    when(config.jdtParser()).thenReturn(astParser);
+    doReturn(astParser).when(config).jdtAstParser();
 
     config.parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), doNothingAction);
 
@@ -196,7 +203,7 @@ class JDTParserTest {
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
     List<String> trace = new ArrayList<>();
     AtomicBoolean isCanceled = new AtomicBoolean(false);
-    BiConsumer<InputFile, Result> action = (inputFile, result) -> {
+    BiConsumer<InputFile, JParseResult> action = (inputFile, result) -> {
       trace.addAll(logTester.logs());
       logTester.clear();
       try {
@@ -209,7 +216,7 @@ class JDTParserTest {
       }
     };
 
-    JParserConfig config = BATCH
+    JParser config = BATCH
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false);
     AnalysisProgress analysisProgress = new AnalysisProgress(inputFiles.size());
     assertThatThrownBy(() -> config.parse(inputFiles, isCanceled::get, analysisProgress, action))
@@ -228,7 +235,7 @@ class JDTParserTest {
   void failing_batch_mode_with_empty_file_list_should_not_continue_file_by_file() {
     List<InputFile> inputFiles = List.of();
     List<String> trace = new ArrayList<>();
-    BiConsumer<InputFile, Result> action = (inputFile, result) -> trace.add("should not be called ");
+    BiConsumer<InputFile, JParseResult> action = (inputFile, result) -> trace.add("should not be called ");
     BatchWithException batchWithException = new BatchWithException();
     // exception before the first file
     batchWithException.exceptions.push(new NullPointerException("Boom!"));
@@ -239,7 +246,42 @@ class JDTParserTest {
       "Unexpected NullPointerException: Boom!");
   }
 
-  static class BatchWithException extends JDTParserConfig.Batch {
+  @ParameterizedTest
+  @EnumSource(JParser.Mode.class)
+  void should_preserve_configuration_between_parses(JParser.Mode mode, @TempDir Path directory) throws Exception {
+    JParser parser = mode.create(new JavaVersionImpl(17), List.of());
+    for (String name : List.of("A", "B")) {
+      Path sourceFile = Files.writeString(directory.resolve(name + ".java"), "record " + name + "(String value) {}");
+      InputFile inputFile = TestUtils.inputFile(sourceFile.toFile());
+      List<JParseResult> results = new ArrayList<>();
+      parser.parse(List.of(inputFile), () -> false, new AnalysisProgress(1), (input, result) -> results.add(result));
+      assertThat(results).hasSize(1);
+      var tree = results.getFirst().get();
+      assertThat(tree.semanticProblems()).isEmpty();
+      ClassTree recordTree = (ClassTree) tree.types().get(0);
+      assertThat(recordTree.recordComponents().get(0).symbol().type().is("java.lang.String")).isTrue();
+    }
+    assertThat(logTester.logs(Level.WARN)).isEmpty();
+  }
+
+  @Test
+  void should_enable_preview() {
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl())).isFalse();
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(8))).isFalse();
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(11))).isFalse();
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(16))).isFalse();
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(17))).isFalse();
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(18))).isFalse();
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(19))).isFalse();
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(20))).isFalse();
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(42))).isFalse();
+    assertThat(shouldEnablePreviewFlag(new JavaVersionImpl(42, true))).isTrue();
+
+    assertThat(shouldEnablePreviewFlag(JavaVersionImpl.fromString("1.8"))).isFalse();
+    assertThat(shouldEnablePreviewFlag(JavaVersionImpl.fromString("1.8", "True"))).isTrue();
+  }
+
+  static class BatchWithException extends JDTParser.Batch {
 
     Deque<RuntimeException> exceptions = new LinkedList<>();
 
@@ -248,11 +290,11 @@ class JDTParserTest {
     }
 
     @Override
-    public ASTParser jdtParser() {
+    public ASTParser jdtAstParser() {
       if (!exceptions.isEmpty()) {
         throw exceptions.pop();
       }
-      return super.jdtParser();
+      return super.jdtAstParser();
     }
 
   }
