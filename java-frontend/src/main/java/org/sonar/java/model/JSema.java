@@ -739,10 +739,11 @@ public final class JSema implements Sema {
         }
       }
     }
-    if (declaredReturn != null && !method.isStatic()) {
-      // a method with no type variables in play still returns the type arguments its signature spells out
+    if (declaredReturn != null && !method.isStatic() && method.declaration() == null) {
+      // a library method with no type variables in play still returns the type arguments its signature spells out
       JType plain = typeFromFact(declaredReturn, Map.of(), true);
-      if (!plain.isUnknown() && plain.isParameterized() && !mentionsTypeVariable(plain)) {
+      if (!plain.isUnknown() && plain.isParameterized() && !mentionsTypeVariable(plain)
+        && plain.args.stream().noneMatch(argument -> argument.isCapture() || argument.isWildcard())) {
         return plain;
       }
     }
