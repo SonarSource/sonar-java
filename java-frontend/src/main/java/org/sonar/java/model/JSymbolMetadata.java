@@ -505,7 +505,7 @@ final class JSymbolMetadata implements SymbolMetadata {
     }
   }
 
-  private static final class TreeAnnotation implements AnnotationInstance {
+  static final class TreeAnnotation implements AnnotationInstance {
 
     private final JSema sema;
     private final AnnotationTree tree;
@@ -559,6 +559,10 @@ final class JSymbolMetadata implements SymbolMetadata {
     }
 
     private Object literal(ExpressionTree expression) {
+      return literal(sema, expression);
+    }
+
+    static Object literal(JSema sema, ExpressionTree expression) {
       if (expression instanceof LiteralTree literal) {
         return LiteralUtils.constantValue(literal);
       }
@@ -566,7 +570,7 @@ final class JSymbolMetadata implements SymbolMetadata {
         return new TreeAnnotation(sema, annotation);
       }
       if (expression instanceof NewArrayTree array) {
-        return array.initializers().stream().map(this::literal).toArray();
+        return array.initializers().stream().map(initializer -> literal(sema, initializer)).toArray();
       }
       if (expression instanceof MemberSelectExpressionTree select && "class".equals(select.identifier().name())) {
         return select.expression().symbolType().symbol();

@@ -526,6 +526,20 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     return (MethodTree) super.declaration();
   }
 
+  @Nullable
+  @Override
+  public Object annotationElementDefaultValue() {
+    MethodTree method = declaration();
+    if (method == null) {
+      return sema.annotationDefault(this);
+    }
+    if (method.defaultValue() == null) {
+      return null;
+    }
+    Object value = JSymbolMetadata.TreeAnnotation.literal(sema, method.defaultValue());
+    return value instanceof Object[] || !returnType().type().isArray() ? value : new Object[] {value};
+  }
+
   @Override
   public boolean isNativeMethod() {
     return !isUnknown() && hasModifier("native");
