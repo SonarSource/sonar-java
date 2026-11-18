@@ -70,7 +70,7 @@ class ClassesLayoutTest {
 
   @Test
   void type() {
-    assertThat(countFields(JType.class)).isEqualTo(8);
+    assertThat(countFields(JType.class)).isEqualTo(9);
   }
 
   @Test
