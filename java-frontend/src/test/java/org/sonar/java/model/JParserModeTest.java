@@ -30,11 +30,11 @@ class JParserModeTest {
 
   @Test
   void a_debug_message_is_logged_when_shouldIgnoreUnnamedModuleForSplitPackage_is_set() {
-    JParser.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList());
+    JParserConfig.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList());
     assertThat(logTester.logs()).isEmpty();
-    JParser.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), false);
+    JParserConfig.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), false);
     assertThat(logTester.logs()).isEmpty();
-    JParser.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), true);
+    JParserConfig.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), true);
     assertThat(logTester.logs()).containsExactly("The Java analyzer will ignore the unnamed module for split packages.");
   }
 }

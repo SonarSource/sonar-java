@@ -438,7 +438,7 @@ class VisitorsBridgeTest {
       List.of(skippableVisitor, endOfAnalysisVisitor, unskippableVisitor, incompatibleVisitor),
       Collections.emptyList(),
       specificSonarComponents,
-      JParser.MAXIMUM_SUPPORTED_JAVA_VERSION
+      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION
     );
 
     verify(skippableVisitor, times(1)).nodesToVisit();

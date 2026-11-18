@@ -57,6 +57,7 @@ import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.TestUtils;
+import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -135,14 +136,14 @@ class JParserTest {
   void unknown_types_are_collected() {
     // import org.foo missing, type Bar unknown
     CompilationUnitTree cut = test("import org.foo.Bar;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((CompilationUnitTreeImpl) cut).undefinedTypes().stream().map(Object::toString))
+    assertThat(((JSema) ((CompilationUnitTreeImpl) cut).sema).undefinedTypes().stream().map(Object::toString))
       .containsExactly("Bar");
   }
 
   @Test
   void warnings_are_collected() {
     CompilationUnitTree cut = test("import java.util.List;\n import java.util.ArrayList;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((CompilationUnitTreeImpl) cut).undefinedTypes().stream().map(Object::toString))
+    assertThat(((JSema) ((CompilationUnitTreeImpl) cut).sema).undefinedTypes().stream().map(Object::toString))
       .isEmpty();
   }
 

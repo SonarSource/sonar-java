@@ -1166,7 +1166,7 @@ final class SemsitterTranslator {
     List<Node> children = node.children();
     LabeledStatementTreeImpl tree = new LabeledStatementTreeImpl(name, token(required(node, ":")), statement(children.get(children.size() - 1)));
     labels.pop();
-    symbol.declaration = tree;
+    symbol.setDeclaration(tree);
     tree.labelSymbol = symbol;
     name.labelSymbol = symbol;
     String id = nameNode(node) == null ? null : firstOf(node, "identifier").decl();
@@ -2841,7 +2841,7 @@ final class SemsitterTranslator {
     IdentifierTreeImpl identifier = identifier(name);
     for (JLabelSymbol label : labels) {
       if (label.name().equals(identifier.name())) {
-        label.usages.add(identifier);
+        label.addUsage(identifier);
         identifier.labelSymbol = label;
       }
     }

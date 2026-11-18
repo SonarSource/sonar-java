@@ -1655,8 +1655,8 @@ class JParserSemanticTest {
       assertThat(l.labelSymbol)
         .isNotNull()
         .isSameAs(i.labelSymbol);
-      assertThat(l.labelSymbol.declaration)
-        .isSameAs(i.labelSymbol.declaration)
+      assertThat(l.labelSymbol.declaration())
+        .isSameAs(i.labelSymbol.declaration())
         .isSameAs(l);
       assertThat(l.labelSymbol.usages())
         .containsExactlyElementsOf(l.symbol().usages())
@@ -1675,8 +1675,8 @@ class JParserSemanticTest {
       assertThat(l1.labelSymbol)
         .isNotNull()
         .isSameAs(i1.labelSymbol);
-      assertThat(l1.labelSymbol.declaration)
-        .isSameAs(i1.labelSymbol.declaration)
+      assertThat(l1.labelSymbol.declaration())
+        .isSameAs(i1.labelSymbol.declaration())
         .isSameAs(l1);
       assertThat(l1.labelSymbol.usages())
         .containsOnly(i1);
@@ -1691,8 +1691,8 @@ class JParserSemanticTest {
       assertThat(l2.labelSymbol)
         .isNotNull()
         .isSameAs(i2.labelSymbol);
-      assertThat(l2.labelSymbol.declaration)
-        .isSameAs(i2.labelSymbol.declaration)
+      assertThat(l2.labelSymbol.declaration())
+        .isSameAs(i2.labelSymbol.declaration())
         .isSameAs(l2);
       assertThat(l2.labelSymbol.usages())
         .containsOnly(i2);

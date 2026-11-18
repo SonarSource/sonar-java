@@ -14,17 +14,11 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.jdt;
+package org.sonar.java.model;
 
 import java.util.Collections;
-import org.eclipse.jdt.core.compiler.IProblem;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.LineColumnConverter;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.diagnostics.ProblemKind;
@@ -40,41 +34,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.sonar.java.jdt.JDTWarning.Mapper.isInsideTree;
-import static org.sonar.java.jdt.JDTWarning.Mapper.isMorePreciseTree;
-import static org.sonar.java.jdt.JDTWarning.Mapper.matchesTreeExactly;
-import static org.sonar.java.jdt.JDTWarning.Mapper.setSyntaxTree;
+import static org.sonar.java.model.JWarning.Mapper.isInsideTree;
+import static org.sonar.java.model.JWarning.Mapper.isMorePreciseTree;
+import static org.sonar.java.model.JWarning.Mapper.matchesTreeExactly;
+import static org.sonar.java.model.JWarning.Mapper.setSyntaxTree;
 
-class JDTWarningTest {
-
-  @ParameterizedTest
-  @CsvSource({"7, 2, 5", "13, 3, 4"})
-  void ecj_conversion_preserves_source_range(int sourceEnd, int endLine, int endColumn) {
-    IProblem problem = mock(IProblem.class);
-    when(problem.getID()).thenReturn(IProblem.UnusedImport);
-    when(problem.getMessage()).thenReturn("Unused import");
-    when(problem.getSourceStart()).thenReturn(2);
-    when(problem.getSourceEnd()).thenReturn(sourceEnd);
-    JDTWarning warning = JDTWarning.Mapper.convert(problem, new LineColumnConverter("x\nimport\njava.util.List;"));
-    assertThat(warning.type()).isEqualTo(ProblemKind.UNUSED_IMPORT);
-    assertThat(warning.message()).isEqualTo("Unused import");
-    assertThat(warning.start().line()).isEqualTo(2);
-    assertThat(warning.start().columnOffset()).isZero();
-    assertThat(warning.end().line()).isEqualTo(endLine);
-    assertThat(warning.end().columnOffset()).isEqualTo(endColumn);
-  }
-
-  @Test
-  void ignores_diagnostics_that_cannot_be_associated_with_supported_warning_trees() {
-    LineColumnConverter converter = new LineColumnConverter("");
-    for (int id : new int[]{IProblem.ParsingError, IProblem.UndefinedType}) {
-      IProblem problem = mock(IProblem.class);
-      when(problem.getID()).thenReturn(id);
-      assertThat(JDTWarning.Mapper.convert(problem, converter)).isNull();
-    }
-  }
+class JWarningTest {
 
   @Test
   void getters() {
@@ -84,7 +49,7 @@ class JDTWarningTest {
     int startColumn = 1;
     int endLine = 2;
     int endColumn = 3;
-    JDTWarning warning = new JDTWarning(message, type, startLine, startColumn, endLine, endColumn);
+    JWarning warning = new JWarning(message, type, startLine, startColumn, endLine, endColumn);
 
     assertThat(warning.message()).isEqualTo(message);
     assertThat(warning.type()).isEqualTo(type);
@@ -93,43 +58,43 @@ class JDTWarningTest {
 
   @Test
   void test_equals() {
-    JDTWarning j1 = new JDTWarning("a", ProblemKind.UNUSED_IMPORT, 0, 1, 2, 3);
+    JWarning j1 = new JWarning("a", ProblemKind.UNUSED_IMPORT, 0, 1, 2, 3);
     assertFalse(j1.equals(null));
     assertTrue(j1.equals(j1));
 
-    JDTWarning j2 = new JDTWarning("a", ProblemKind.UNUSED_IMPORT, 0, 1, 2, 3);
+    JWarning j2 = new JWarning("a", ProblemKind.UNUSED_IMPORT, 0, 1, 2, 3);
     assertTrue(j1.equals(j2));
 
-    // syntaxTree is ignored in JDTWarning.equals()
+    // syntaxTree is ignored in JWarning.equals()
     Tree beforeDifferentLine = importTree(4, 0, 5, 19);
     setSyntaxTree(j2, beforeDifferentLine);
     assertTrue(j1.equals(j2));
 
-    j2 = new JDTWarning("b", ProblemKind.UNUSED_IMPORT, 0, 1, 2, 3);
+    j2 = new JWarning("b", ProblemKind.UNUSED_IMPORT, 0, 1, 2, 3);
     assertFalse(j1.equals(j2));
-    j2 = new JDTWarning("a", ProblemKind.UNUSED_IMPORT, 42, 1, 2, 3);
+    j2 = new JWarning("a", ProblemKind.UNUSED_IMPORT, 42, 1, 2, 3);
     assertFalse(j1.equals(j2));
-    j2 = new JDTWarning("a", ProblemKind.UNUSED_IMPORT, 0, 1, 42, 3);
+    j2 = new JWarning("a", ProblemKind.UNUSED_IMPORT, 0, 1, 42, 3);
     assertFalse(j1.equals(j2));
   }
 
   @Test
   void test_hashcode() {
-    JDTWarning j1 = new JDTWarning("a", ProblemKind.UNUSED_IMPORT, 0, 1, 2, 3);
-    JDTWarning j2 = new JDTWarning("a", ProblemKind.UNUSED_IMPORT, 0, 1, 2, 3);
+    JWarning j1 = new JWarning("a", ProblemKind.UNUSED_IMPORT, 0, 1, 2, 3);
+    JWarning j2 = new JWarning("a", ProblemKind.UNUSED_IMPORT, 0, 1, 2, 3);
     assertEquals(j1.hashCode(), j2.hashCode());
 
-    // syntaxTree is ignored in JDTWarning.hashCode()
+    // syntaxTree is ignored in JWarning.hashCode()
     Tree beforeDifferentLine = importTree(4, 0, 5, 19);
     setSyntaxTree(j2, beforeDifferentLine);
     assertEquals(j1.hashCode(), j2.hashCode());
 
     assertNotEquals(
-      new JDTWarning("a", ProblemKind.UNUSED_IMPORT, 0, 1, 2, 3).hashCode(),
-      new JDTWarning("b", ProblemKind.UNUSED_IMPORT, 0, 1, 2, 3).hashCode());
+      new JWarning("a", ProblemKind.UNUSED_IMPORT, 0, 1, 2, 3).hashCode(),
+      new JWarning("b", ProblemKind.UNUSED_IMPORT, 0, 1, 2, 3).hashCode());
     assertNotEquals(
-      new JDTWarning("a", ProblemKind.UNUSED_IMPORT, 0, 1, 2, 3).hashCode(),
-      new JDTWarning("a", ProblemKind.REDUNDANT_CAST, 0, 1, 2, 3).hashCode());
+      new JWarning("a", ProblemKind.UNUSED_IMPORT, 0, 1, 2, 3).hashCode(),
+      new JWarning("a", ProblemKind.REDUNDANT_CAST, 0, 1, 2, 3).hashCode());
   }
 
   @Nested
@@ -140,7 +105,7 @@ class JDTWarningTest {
 
     @Test
     void inside_multiline_warning() {
-      JDTWarning warning = new JDTWarning("message", ProblemKind.UNUSED_IMPORT, 5, 20, 7, 50);
+      JWarning warning = new JWarning("message", ProblemKind.UNUSED_IMPORT, 5, 20, 7, 50);
 
       Tree beforeDifferentLine = importTree(4, 0, 5, 19);
       Tree beforeSameStartLine = importTree(5, 15, 6, 20);
@@ -161,7 +126,7 @@ class JDTWarningTest {
 
     @Test
     void inside_single_line_warning() {
-      JDTWarning warning = new JDTWarning("message", ProblemKind.UNUSED_IMPORT, 5, 20, 5, 50);
+      JWarning warning = new JWarning("message", ProblemKind.UNUSED_IMPORT, 5, 20, 5, 50);
 
       Tree beforeCompletely = importTree(3, 0, 3, 10);
       Tree beforeOverlapping = importTree(4, 0, 5, 30);
@@ -182,7 +147,7 @@ class JDTWarningTest {
 
     @Test
     void inside_wrong_kind() {
-      JDTWarning warning = new JDTWarning("message", ProblemKind.UNUSED_IMPORT, 5, 20, 7, 50);
+      JWarning warning = new JWarning("message", ProblemKind.UNUSED_IMPORT, 5, 20, 7, 50);
 
       VariableTree variableTree = variableTree(4, 55, 8, 15);
       ImportTree importTree = importTree(4, 55, 8, 15);
@@ -205,7 +170,7 @@ class JDTWarningTest {
 
     @Test
     void test_setSyntaxTree() {
-      JDTWarning warningOnType = new JDTWarning("message", ProblemKind.UNUSED_IMPORT, 1, 10, 1, 11);
+      JWarning warningOnType = new JWarning("message", ProblemKind.UNUSED_IMPORT, 1, 10, 1, 11);
       assertThatNullPointerException().isThrownBy(warningOnType::syntaxTree);
 
       setSyntaxTree(warningOnType, variable);
@@ -221,7 +186,7 @@ class JDTWarningTest {
 
     @Test
     void test_matchesTreeExactly() {
-      JDTWarning warningOnType = new JDTWarning("message", ProblemKind.UNUSED_IMPORT, 1, 10, 1, 11);
+      JWarning warningOnType = new JWarning("message", ProblemKind.UNUSED_IMPORT, 1, 10, 1, 11);
 
       setSyntaxTree(warningOnType, variable);
       assertThat(matchesTreeExactly(warningOnType)).isFalse();
@@ -229,7 +194,7 @@ class JDTWarningTest {
       setSyntaxTree(warningOnType, type);
       assertThat(matchesTreeExactly(warningOnType)).isTrue();
 
-      JDTWarning warningOnTypeAgain = new JDTWarning("message", ProblemKind.UNUSED_IMPORT, 1, 10, 1, 11);
+      JWarning warningOnTypeAgain = new JWarning("message", ProblemKind.UNUSED_IMPORT, 1, 10, 1, 11);
       setSyntaxTree(warningOnTypeAgain, name);
       assertThat(matchesTreeExactly(warningOnTypeAgain)).isFalse();
     }
