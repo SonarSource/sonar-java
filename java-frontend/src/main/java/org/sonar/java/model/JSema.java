@@ -1702,10 +1702,26 @@ public final class JSema implements Sema {
     }
     if (symbol instanceof JMethodSymbol method) {
       fillMethod(method, fact, id);
+      implicitEnumMethod(method, id, ownerId, details);
     } else if (symbol instanceof JTypeSymbol typeSymbol && typeSymbol.isTypeParameter()) {
       symbol.type(JType.typeVar(this, symbol.name(), id));
     } else if (symbol.isTypeSymbol()) {
       symbol.type(rawNamed(erase(id)));
+    }
+  }
+
+  /** The implicit valueOf and values of an enum come without a return type fact: derive it from the owner. */
+  private void implicitEnumMethod(JMethodSymbol method, String id, @Nullable String ownerId, @Nullable JsonObject details) {
+    if (details == null || !details.has("implicit") || ownerId == null) {
+      return;
+    }
+    MemberId parsed = parseMember(id);
+    boolean valueOf = "valueOf".equals(parsed.name()) && "java.lang.String".equals(parsed.params());
+    boolean values = "values".equals(parsed.name()) && parsed.params() != null && parsed.params().isEmpty();
+    if (valueOf || values) {
+      Type enumType = typeFromName(erase(ownerId));
+      method.returnTypeSymbol((valueOf ? enumType : JType.array(this, (JType) enumType)).symbol());
+      method.addModifiers(List.of("public", "static"));
     }
   }
 

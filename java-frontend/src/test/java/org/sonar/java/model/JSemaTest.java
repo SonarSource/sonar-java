@@ -124,4 +124,30 @@ class JSemaTest {
     assertThat(wild.returnType().type().isParameterized()).isFalse();
   }
 
+  @Test
+  void implicitEnumMethodsGetTheirReturnTypeFromTheEnum() {
+    sema.ingestDocument(JsonParser.parseString("""
+      {"symbols": [
+        {"id": "p.Cmd", "kind": "type", "name": "Cmd"},
+        {"id": "p.Cmd#valueOf(java.lang.String)", "kind": "method", "name": "valueOf", "owner": "p.Cmd", "facts": {"implicit": true}},
+        {"id": "p.Cmd#values()", "kind": "method", "name": "values", "owner": "p.Cmd", "facts": {"implicit": true}},
+        {"id": "p.Cmd#other()", "kind": "method", "name": "other", "owner": "p.Cmd", "facts": {"implicit": true}}]}
+      """).getAsJsonObject());
+
+    JMethodSymbol valueOf = (JMethodSymbol) sema.resolve("p.Cmd#valueOf(java.lang.String)");
+    JMethodSymbol values = (JMethodSymbol) sema.resolve("p.Cmd#values()");
+    JMethodSymbol other = (JMethodSymbol) sema.resolve("p.Cmd#other()");
+
+    // valueOf returns the enum, values its array, both public and static.
+    assertThat(valueOf.returnType().type().fullyQualifiedName()).isEqualTo("p.Cmd");
+    assertThat(values.returnType().type().isArray()).isTrue();
+    assertThat(((Type.ArrayType) values.returnType().type()).elementType().fullyQualifiedName()).isEqualTo("p.Cmd");
+    assertThat(valueOf.isPublic()).isTrue();
+    assertThat(valueOf.isStatic()).isTrue();
+    assertThat(values.isStatic()).isTrue();
+
+    // Any other implicit member keeps its unknown return type.
+    assertThat(other.returnType().type().isUnknown()).isTrue();
+  }
+
 }
