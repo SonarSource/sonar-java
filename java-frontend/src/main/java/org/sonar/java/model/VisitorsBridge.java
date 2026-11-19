@@ -32,6 +32,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalysisException;
@@ -354,7 +355,11 @@ public class VisitorsBridge {
       && !sonarComponents.isSonarLintContext()
       // don't provide semantic data (symbol highlighting) to SQ for generated files (jsp)
       && !(currentFile instanceof GeneratedFile)) {
-      SonarSymbolTableVisitor symVisitor = new SonarSymbolTableVisitor(sonarComponents.symbolizableFor(currentFile));
+      NewSymbolTable symbols = sonarComponents.symbolizableFor(currentFile);
+      if (symbols == null) {
+        return;
+      }
+      SonarSymbolTableVisitor symVisitor = new SonarSymbolTableVisitor(symbols);
       symVisitor.visitCompilationUnit(tree);
     }
   }

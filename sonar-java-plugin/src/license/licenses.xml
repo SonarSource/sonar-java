@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<licenseSummary>
+  <dependencies>
+    <dependency>
+      <groupId>\Qorg.tukaani\E</groupId>
+      <artifactId>\Qxz\E</artifactId>
+      <matchLicenses>
+        <license>
+          <name>\Q0BSD\E</name>
+          <distribution>\Qrepo\E</distribution>
+        </license>
+      </matchLicenses>
+      <licenses>
+        <license>
+          <name>0BSD</name>
+          <url>https://opensource.org/license/0bsd</url>
+          <distribution>repo</distribution>
+        </license>
+      </licenses>
+    </dependency>
+  </dependencies>
+</licenseSummary>

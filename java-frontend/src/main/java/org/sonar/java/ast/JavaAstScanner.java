@@ -38,8 +38,7 @@ import org.sonar.java.AnalysisProgress;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.InputFileUtils;
-import org.sonar.java.model.JParseResult;
-import org.sonar.java.model.JParser;
+import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.telemetry.NoOpTelemetry;
@@ -109,7 +108,7 @@ public class JavaAstScanner {
     try {
       boolean shouldIgnoreUnnamedModuleForSplitPacakge = sonarComponents != null &&
         sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage();
-      JParser.Mode.FILE_BY_FILE
+      JParserConfig.Mode.FILE_BY_FILE
         .create(visitor.getJavaVersion(), visitor.getClasspath(), shouldIgnoreUnnamedModuleForSplitPacakge)
         .parse(filesNames,
           this::analysisCancelled,
@@ -151,12 +150,12 @@ public class JavaAstScanner {
     return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
-  public void simpleScan(InputFile inputFile, JParseResult result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp) {
+  public void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp) {
     simpleScan(inputFile, result, cleanUp, compilationUnitTree -> {});
   }
 
   // modifyCompilationUnit should be used for testing.
-  public void simpleScan(InputFile inputFile, JParseResult result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp,
+  public void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp,
     Consumer<CompilationUnitTree> modifyCompilationUnit) {
     long startTime = currentTimeMillis();
     visitor.setCurrentFile(inputFile);

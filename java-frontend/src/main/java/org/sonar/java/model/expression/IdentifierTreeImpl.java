@@ -19,6 +19,7 @@ package org.sonar.java.model.expression;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import javax.annotation.Nullable;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JLabelSymbol;
 import org.sonar.java.model.JavaTree;
@@ -36,8 +37,10 @@ public class IdentifierTreeImpl extends AssessableExpressionTree implements Iden
   private final boolean isUnnamedVariable;
   private List<AnnotationTree> annotations;
 
-  private Symbol symbol = Symbol.UNKNOWN_SYMBOL;
   public JLabelSymbol labelSymbol;
+
+  @Nullable
+  public Symbol symbol;
 
   public IdentifierTreeImpl(InternalSyntaxToken nameToken) {
     this(nameToken, false);
@@ -80,7 +83,7 @@ public class IdentifierTreeImpl extends AssessableExpressionTree implements Iden
 
   @Override
   public Symbol symbol() {
-    if (!isUnnamedVariable && symbol != Symbol.UNKNOWN_SYMBOL) {
+    if (symbol != null && !isUnnamedVariable) {
       return symbol;
     }
     if (labelSymbol != null) {

@@ -16,7 +16,6 @@
  */
 package org.sonar.java.model;
 
-import java.util.HashSet;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
@@ -24,8 +23,11 @@ import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.HashSet;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.testing.ClassLayoutTestUtils.countFields;
 
 /**
  * This test warns you if you are changing classes which have a big impact
@@ -64,6 +66,40 @@ class ClassesLayoutTest {
   @Test
   void method_invocation() {
     assertThat(countFields(MethodInvocationTreeImpl.class)).isEqualTo(8);
+  }
+
+  @Test
+  void type() {
+    assertThat(countFields(JType.class)).isEqualTo(7);
+  }
+
+  @Test
+  void symbol_type() {
+    assertThat(countFields(JTypeSymbol.class)).isEqualTo(11);
+  }
+
+  @Test
+  void symbol_method() {
+    assertThat(countFields(JMethodSymbol.class)).isEqualTo(11);
+  }
+
+  @Test
+  void symbol_variable() {
+    assertThat(countFields(JVariableSymbol.class)).isEqualTo(7);
+  }
+
+  /** Count number of fields in instances, including inherited fields. */
+  private static int countFields(Class<?> clazz) {
+    int count = 0;
+    while (clazz != Object.class) {
+      for (Field f : clazz.getDeclaredFields()) {
+        if (!Modifier.isStatic(f.getModifiers())) {
+          count++;
+        }
+      }
+      clazz = clazz.getSuperclass();
+    }
+    return count;
   }
 
   static class C {

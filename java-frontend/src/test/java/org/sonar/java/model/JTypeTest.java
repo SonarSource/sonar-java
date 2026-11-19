@@ -18,26 +18,37 @@ package org.sonar.java.model;
 
 import java.util.Objects;
 import java.util.stream.Stream;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.event.Level;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
-import org.sonar.plugins.java.api.semantic.Sema;
+import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 import static org.sonar.java.model.JParserTestUtils.typeOf;
 import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 
 class JTypeTest {
+
+  @RegisterExtension
+  public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
 
   @Test
   void isArray() {
@@ -85,7 +96,8 @@ class JTypeTest {
     ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
 
-    assertThat(typeOf(e).isParameterized())
+    assertThat(((JType) typeOf(e)).isParameterized())
+      .isEqualTo(e.symbolType().isParameterized())
       .isTrue();
   }
 
@@ -97,10 +109,12 @@ class JTypeTest {
     ExpressionStatementTreeImpl s = (ExpressionStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
 
-    assertThat(typeOf(e).typeArguments())
+    assertThat(((JType) typeOf(e)).typeArguments())
+      .hasToString(e.symbolType().typeArguments().toString())
       .hasToString("[Integer, String]");
 
-    assertThat(typeOf(c).typeArguments())
+    assertThat(((JType) typeOf(c)).typeArguments())
+      .isEqualTo(c.symbol().type().typeArguments())
       .isEmpty();
   }
 
@@ -126,14 +140,14 @@ class JTypeTest {
   }
 
   @Test
-  void primitiveType() {
+  void primitiveType(){
     Type byteType = type("java.lang.Byte");
     assertThat(byteType.primitiveType()).isEqualTo(type("byte"));
     assertThat(byteType.primitiveType()).isNotEqualTo(type("boolean"));
   }
 
   @Test
-  void primitiveWrapperType() {
+  void primitiveWrapperType(){
     Type booleanType = type("boolean");
     assertThat(booleanType.primitiveWrapperType()).isEqualTo(type("java.lang.Boolean"));
     assertThat(booleanType.primitiveWrapperType()).isNotEqualTo(type("java.lang.Byte"));
@@ -151,8 +165,10 @@ class JTypeTest {
     assertThat(stringType.primitiveWrapperType()).isNull();
   }
 
+
+
   @Test
-  void declaringType() {
+  void declaringType(){
     Type byteType = type("java.lang.Byte");
     assertThat(byteType.declaringType()).isEqualTo(byteType);
     assertThat(byteType.declaringType()).isNotEqualTo(type("java.lang.Boolean"));
@@ -197,10 +213,11 @@ class JTypeTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) m.returnType());
-    Type parameterizedType = typeOf(e);
+    JType parameterizedType = ((JType) typeOf(e));
 
     assertThat(parameterizedType)
-      .hasSameNameAs(typeOf(e).symbol().type())
+      .hasSameNameAs(e.symbolType())
+      .hasSameNameAs(((JTypeSymbol) typeOf(e).symbol()).type())
       .is("java.util.List")
       .hasName("List");
   }
@@ -211,9 +228,10 @@ class JTypeTest {
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) m.returnType());
-    Type typeVariable = typeOf(e);
+    JType typeVariable = ((JType) typeOf(e));
     assertThat(typeVariable)
-      .hasSameNameAs(typeOf(e).symbol().type())
+      .hasSameNameAs(e.symbolType())
+      .hasSameNameAs(((JTypeSymbol) typeOf(e).symbol()).type())
       .hasName("T")
       .is(e.symbolType().fullyQualifiedName())
       .is("T");
@@ -221,8 +239,8 @@ class JTypeTest {
 
   @Test
   void symbol() {
-    assertThat(type("java.lang.Object").symbol().type())
-      .isSameAs(type("java.lang.Object"));
+    Type object = sema.getClassType("java.lang.Object");
+    assertThat(object.symbol().type().fullyQualifiedName()).isEqualTo("java.lang.Object");
   }
 
   @Test
@@ -233,7 +251,7 @@ class JTypeTest {
 
   @Test
   void elementType() {
-    assertThat(((Type.ArrayType) type("int[][]")).elementType())
+    assertThat(type("int[][]").elementType())
       .isSameAs(type("int[]"));
   }
 
@@ -246,6 +264,7 @@ class JTypeTest {
         }
       }
       """);
+    cu.types().get(0);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl m = (MethodTreeImpl) c.members().get(0);
     ReturnStatementTreeImpl s = (ReturnStatementTreeImpl) Objects.requireNonNull(m.block()).body().get(0);
@@ -266,12 +285,13 @@ class JTypeTest {
     AbstractTypedTree primitive = (AbstractTypedTree) m.parameters().get(0).type();
     AbstractTypedTree array = (AbstractTypedTree) m.parameters().get(1).type();
 
-    Type nullType = typeOf(e);
-    Type classType = typeOf(c);
-    Type primitiveType = typeOf(primitive);
-    Type arrayType = typeOf(array);
+    JType nullType = ((JType) typeOf(e));
+    JType classType = ((JType) typeOf(c));
+    JType primitiveType = ((JType) typeOf(primitive));
+    JType arrayType = ((JType) typeOf(array));
 
     assertThat(nullType)
+      .hasSameNameAs(e.symbolType())
       .hasName("<nulltype>")
       .is(e.symbolType().fullyQualifiedName())
       .is("<nulltype>")
@@ -279,6 +299,7 @@ class JTypeTest {
       .isSubtypeOf(arrayType)
       .isNotSubtypeOf(primitiveType);
   }
+
 
   @Test
   void wildcard() {
@@ -289,9 +310,9 @@ class JTypeTest {
     JavaTree.WildcardTreeImpl w1 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(0);
     JavaTree.WildcardTreeImpl w2 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(1);
     JavaTree.WildcardTreeImpl w3 = (JavaTree.WildcardTreeImpl) p.typeArguments().get(2);
-    Type wildcardType1 = typeOf(w1);
-    Type wildcardType2 = typeOf(w2);
-    Type wildcardType3 = typeOf(w3);
+    JType wildcardType1 = ((JType) typeOf(w1));
+    JType wildcardType2 = ((JType) typeOf(w2));
+    JType wildcardType3 = ((JType) typeOf(w3));
 
     assertThat(wildcardType1)
       .isEqualTo(wildcardType2)
@@ -302,15 +323,16 @@ class JTypeTest {
     return (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source);
   }
 
-  private Type type(String name) {
-    return sema.getClassType(name);
+  private JType type(String name) {
+    return (JType) sema.getClassType(name);
   }
 
-  private Sema sema;
+  private JSema sema;
 
   @BeforeEach
   void setup() {
-    sema = JParserTestUtils.sema(JParserTestUtils.parse(""));
+    sema = new JSema();
+    sema.ingestTypes(new com.google.gson.JsonObject());
   }
 
 }
