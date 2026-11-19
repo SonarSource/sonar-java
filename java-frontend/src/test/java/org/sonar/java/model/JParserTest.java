@@ -18,6 +18,7 @@ package org.sonar.java.model;
 
 import com.sonar.sslr.api.RecognitionException;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,6 +29,7 @@ import java.nio.file.ProviderNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -37,7 +39,9 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
+
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
@@ -103,39 +107,41 @@ class JParserTest {
     }
     """;
 
+  @TempDir
+  private static Path tempDir;
+
   @RegisterExtension
   public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
 
   @Test
-  void should_only_see_the_jdk_api_of_the_requested_release() {
+  void should_only_see_the_jdk_api_of_the_requested_release() throws IOException {
     assumeRunningJdkCanServeOlderReleases();
     Set<String> undefinedAt11 = undefinedTypes("11", JDK_API_SOURCE);
     assertThat(undefinedAt11).containsExactly("java.lang.Record cannot be resolved to a type");
-    assertThat(undefinedTypes("17", JDK_API_SOURCE)).containsExactly("java.util.jar.Pack200 cannot be resolved to a type");
+    assertThat(undefinedTypes("17", inputFile("Example24.java", JDK_API_SOURCE), List.of(runningJdkRuntimeImage()))).containsExactly("java.util.jar.Pack200 cannot be resolved to a type");
   }
 
   @Test
-  void should_see_the_whole_jdk_api_when_the_release_option_is_not_used() {
+  void should_see_the_whole_jdk_api_when_the_release_option_is_not_used() throws IOException {
     assumeRunningJdkCanServeOlderReleases();
-    ASTParser astParser = FILE_BY_FILE.create(JavaVersionImpl.fromString("11"), List.of()).astParser();
-
-    Set<String> undefinedTypes = JParser.parse(astParser, "11", "Example", JDK_API_SOURCE).semanticProblems().stream().map(Problem::message)
-      .collect(Collectors.toSet());
-
+    var useReleaseOption = false;
+    var undefinedTypes = undefinedTypes("11", inputFile("Example42.java", JDK_API_SOURCE), List.of(runningJdkRuntimeImage()), useReleaseOption);
     assertThat(undefinedTypes).containsExactly("java.util.jar.Pack200 cannot be resolved to a type");
   }
 
   @Test
-  void should_use_the_release_api_of_the_jdk_provided_in_the_classpath() {
+  void should_use_the_release_api_of_the_jdk_provided_in_the_classpath() throws IOException {
     File runtimeImage = new File(System.getProperty("java.home"), "lib/jrt-fs.jar");
-    assumeTrue(runtimeImage.isFile());
     assumeRunningJdkCanServeOlderReleases();
     List<File> classpath = List.of(runtimeImage);
     int jdkVersion = Runtime.version().feature();
 
-    assertThat(undefinedTypes("11", JDK_API_SOURCE, classpath)).containsExactly("java.lang.Record cannot be resolved to a type");
-    assertThat(undefinedTypes(Integer.toString(jdkVersion), JDK_API_SOURCE, classpath)).containsExactly("java.util.jar.Pack200 cannot be resolved to a type");
-    assertThat(undefinedTypes(Integer.toString(jdkVersion + 1), JDK_API_SOURCE, classpath)).containsExactly("java.util.jar.Pack200 cannot be resolved to a type");
+    assertThat(undefinedTypes("11", inputFile("Example1.java", JDK_API_SOURCE), classpath))
+      .containsExactly("java.lang.Record cannot be resolved to a type");
+    assertThat(undefinedTypes(Integer.toString(jdkVersion), inputFile("Example2.java", JDK_API_SOURCE), classpath))
+      .containsExactly("java.util.jar.Pack200 cannot be resolved to a type");
+    assertThat(undefinedTypes(Integer.toString(jdkVersion + 1), inputFile("Example3.java", JDK_API_SOURCE), classpath))
+      .containsExactly("java.util.jar.Pack200 cannot be resolved to a type");
   }
 
   @Test
@@ -162,7 +168,7 @@ class JParserTest {
     assumeTrue(Runtime.version().feature() > 17, "the running JVM must be newer than Java 17");
   }
 
-  private static Set<String> undefinedTypes(String release, String source) {
+  private static Set<String> undefinedTypes(String release, String source) throws IOException {
     return undefinedTypes(release, source, List.of(runningJdkRuntimeImage()));
   }
 
@@ -170,10 +176,33 @@ class JParserTest {
     return new File(System.getProperty("java.home"), "lib/jrt-fs.jar");
   }
 
-  private static Set<String> undefinedTypes(String release, String source, List<File> classpath) {
-    ASTParser astParser = FILE_BY_FILE.create(JavaVersionImpl.fromString(release), classpath, false, true).astParser();
-    return JParser.parse(astParser, release, "Example", source).semanticProblems().stream().map(Problem::message)
-      .collect(Collectors.toSet());
+  private static Set<String> undefinedTypes(String release, String source, List<File> classpath) throws IOException {
+    var inputFile = inputFile("Example.java", source);
+    return undefinedTypes(release, inputFile, classpath);
+  }
+
+  private static InputFile inputFile(String fileName, String source) throws IOException {
+    var file = Files.createFile(tempDir.resolve(fileName));
+    Files.writeString(file, source);
+    return TestUtils.inputFile(file.toString());
+  }
+
+  private static Set<String> undefinedTypes(String release, InputFile inputFile, List<File> classpath) {
+    return undefinedTypes(release, inputFile, classpath, true);
+  }
+
+  private static Set<String> undefinedTypes(String release, InputFile inputFile, List<File> classpath, boolean useReleaseOpt) {
+    JParser parser = FILE_BY_FILE.create(JavaVersionImpl.fromString(release), classpath, false, useReleaseOpt);
+    Set<String> undefinedTypes = new HashSet<>();
+    parser.parse(Set.of(inputFile), () -> false, new AnalysisProgress(1),
+      (f, result) -> {
+        try {
+          undefinedTypes.addAll(result.get().semanticProblems().stream().map(Problem::message).collect(Collectors.toSet()));
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      });
+    return undefinedTypes;
   }
 
   @Test
@@ -325,8 +354,7 @@ class JParserTest {
     EnumConstantTree c = (EnumConstantTree) t.members().get(0);
     assertSame(
       c.simpleName(),
-      c.initializer().identifier()
-    );
+      c.initializer().identifier());
   }
 
   @Test
@@ -759,7 +787,7 @@ class JParserTest {
     ForStatementTree forStatement = (ForStatementTree) ((MethodTree) ((ClassTree) unit.types().get(0)).members().get(0)).block().body().get(0);
     VariableTree variableTree = (VariableTree) forStatement.initializer().get(0);
     assertThat(variableTree.type().kind()).isEqualTo(Tree.Kind.ARRAY_TYPE);
-    assertThat(( (ArrayTypeTree) variableTree.type()).openBracketToken()).isNotNull();
+    assertThat(((ArrayTypeTree) variableTree.type()).openBracketToken()).isNotNull();
   }
 
   @Test
@@ -768,7 +796,7 @@ class JParserTest {
     ForStatementTree forStatement = (ForStatementTree) ((MethodTree) ((ClassTree) unit.types().get(0)).members().get(0)).block().body().get(0);
     VariableTree variableTree = (VariableTree) forStatement.initializer().get(0);
     assertThat(variableTree.type().kind()).isEqualTo(Tree.Kind.ARRAY_TYPE);
-    assertThat(( (ArrayTypeTree) variableTree.type()).openBracketToken()).isNotNull();
+    assertThat(((ArrayTypeTree) variableTree.type()).openBracketToken()).isNotNull();
   }
 
   @Test
@@ -777,7 +805,7 @@ class JParserTest {
     TryStatementTree tryStatementTree = (TryStatementTree) ((MethodTree) ((ClassTree) unit.types().get(0)).members().get(0)).block().body().get(0);
     VariableTree variableTree = (VariableTree) tryStatementTree.resourceList().get(0);
     assertThat(variableTree.type().kind()).isEqualTo(Tree.Kind.ARRAY_TYPE);
-    assertThat(( (ArrayTypeTree) variableTree.type()).openBracketToken()).isNotNull();
+    assertThat(((ArrayTypeTree) variableTree.type()).openBracketToken()).isNotNull();
   }
 
   private Path createFakeJrtFs(Path tempFolder) throws IOException {

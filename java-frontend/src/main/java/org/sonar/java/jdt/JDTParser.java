@@ -63,15 +63,15 @@ public abstract class JDTParser implements JParser {
   final JavaVersion javaVersion;
   final List<File> classpath;
   final boolean shouldIgnoreUnnamedModuleForSplitPackage;
-  private final boolean shouldUseJdkReleaseOption;
+  final boolean shouldUseJdkReleaseOption;
 
-  public static JParser create(JParser.Mode mode, JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
+  public static JParser create(JParser.Mode mode, JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage, boolean shouldUseJdkReleaseOption) {
     if (shouldIgnoreUnnamedModuleForSplitPackage) {
       LOG.info("The Java analyzer will ignore the unnamed module for split packages.");
     }
     return switch (mode) {
-      case BATCH -> new Batch(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
-      case FILE_BY_FILE -> new FileByFile(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
+      case BATCH -> new Batch(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage, shouldUseJdkReleaseOption);
+      case FILE_BY_FILE -> new FileByFile(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage, shouldUseJdkReleaseOption);
     };
   }
 
@@ -80,8 +80,7 @@ public abstract class JDTParser implements JParser {
     return currentVersion.arePreviewFeaturesEnabled();
   }
 
-  private JDTParser(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage,
-                    boolean shouldUseJdkReleaseOption) {
+  private JDTParser(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage, boolean shouldUseJdkReleaseOption) {
     this.javaVersion = javaVersion;
     this.classpath = classpath;
     this.shouldIgnoreUnnamedModuleForSplitPackage = shouldIgnoreUnnamedModuleForSplitPackage;

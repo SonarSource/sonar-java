@@ -16,13 +16,17 @@
  */
 package org.sonar.java.jdt;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -30,6 +34,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.SystemReleaseClasspath;
 import org.eclipse.jdt.internal.compiler.parser.TerminalToken;
 import org.eclipse.jdt.internal.formatter.Token;
 import org.eclipse.jdt.internal.formatter.TokenManager;
@@ -63,6 +68,9 @@ import static org.sonar.java.model.JParser.Mode.BATCH;
 import static org.sonar.java.model.JParserTestUtils.DEFAULT_CLASSPATH;
 
 class JDTParserTest {
+
+  @TempDir
+  Path temp;
 
   @RegisterExtension
   public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
@@ -158,7 +166,7 @@ class JDTParserTest {
       logTester.clear();
       try {
         JavaTree.CompilationUnitTreeImpl tree = result.get();
-        trace.add("[action] analyse class " + ((ClassTree)tree.types().get(0)).simpleName().name() + " in " + inputFile.filename());
+        trace.add("[action] analyse class " + ((ClassTree) tree.types().get(0)).simpleName().name() + " in " + inputFile.filename());
       } catch (Exception e) {
         trace.add("[action] handle " + e.getClass().getSimpleName() + ": " + e.getMessage());
       }
@@ -181,9 +189,9 @@ class JDTParserTest {
     List<InputFile> inputFiles = Arrays.asList(
       TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
-    BiConsumer<InputFile, JParseResult> doNothingAction = (inputFile, result) -> {};
-    JDTParser config = spy((JDTParser) JParser.Mode.BATCH
-      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false));
+    BiConsumer<InputFile, JParseResult> doNothingAction = (inputFile, result) -> {
+    };
+    JDTParser config = spy((JDTParser) JParser.Mode.BATCH.create(MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false, true));
     // Return a lazy ASTParser that do nothing to ensure that we have not analyzed files
     ASTParser astParser = mock(ASTParser.class);
     doReturn(astParser).when(config).jdtAstParser();
@@ -208,7 +216,7 @@ class JDTParserTest {
       logTester.clear();
       try {
         JavaTree.CompilationUnitTreeImpl tree = result.get();
-        trace.add("[action] analyze class " + ((ClassTree)tree.types().get(0)).simpleName().name() + " in " + inputFile.filename());
+        trace.add("[action] analyze class " + ((ClassTree) tree.types().get(0)).simpleName().name() + " in " + inputFile.filename());
         // cancel analysis after first file
         isCanceled.set(true);
       } catch (Exception e) {
@@ -217,7 +225,7 @@ class JDTParserTest {
     };
 
     JParser config = BATCH
-      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false);
+      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false, true);
     AnalysisProgress analysisProgress = new AnalysisProgress(inputFiles.size());
     assertThatThrownBy(() -> config.parse(inputFiles, isCanceled::get, analysisProgress, action))
       .isInstanceOf(OperationCanceledException.class);
@@ -286,7 +294,7 @@ class JDTParserTest {
     Deque<RuntimeException> exceptions = new LinkedList<>();
 
     public BatchWithException() {
-      super(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH, false);
+      super(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH, false, true);
     }
 
     @Override
@@ -298,4 +306,88 @@ class JDTParserTest {
     }
 
   }
+
+  @Test
+  void runtime_image_of_a_modular_jdk_is_replaced_by_the_java_home_of_that_jdk() throws IOException {
+    Path jdkHome = Files.createDirectories(temp.resolve("jdk21"));
+    File runtimeImage = runtimeImageOf(jdkHome);
+    File library = new File("lib.jar");
+    Map<String, String> options = new HashMap<>();
+
+    List<File> environment = getFileByFileParser(List.of(library, runtimeImage)).removeJdkLibsAndProvideJdtWithJavaHome(options);
+
+    assertThat(environment).containsExactly(library);
+    assertThat(options).containsExactly(Map.entry(SystemReleaseClasspath.OPTION_JAVA_HOME, jdkHome.toString()));
+  }
+
+  @Test
+  void the_other_entries_of_the_classpath_are_kept_in_order() throws IOException {
+    File runtimeImage = runtimeImageOf(Files.createDirectories(temp.resolve("jdk21")));
+    List<File> classpath = List.of(new File("a.jar"), runtimeImage, new File("b.jar"), new File("target/classes"));
+
+    List<File> environment = getFileByFileParser(classpath).removeJdkLibsAndProvideJdtWithJavaHome(new HashMap<>());
+
+    assertThat(environment).containsExactly(new File("a.jar"), new File("b.jar"), new File("target/classes"));
+  }
+
+  @Test
+  void only_the_first_runtime_image_is_replaced() throws IOException {
+    File first = runtimeImageOf(Files.createDirectories(temp.resolve("jdk17")));
+    File second = runtimeImageOf(Files.createDirectories(temp.resolve("jdk21")));
+    Map<String, String> options = new HashMap<>();
+
+    List<File> environment = getFileByFileParser(List.of(first, second)).removeJdkLibsAndProvideJdtWithJavaHome(options);
+
+    assertThat(environment).containsExactly(second);
+    assertThat(options).containsEntry(SystemReleaseClasspath.OPTION_JAVA_HOME, temp.resolve("jdk17").toString());
+  }
+
+  @Test
+  void jar_named_as_runtime_image_outside_of_a_lib_folder_is_not_considered_as_a_jdk() throws IOException {
+    Path home = Files.createDirectories(temp.resolve("not-a-jdk"));
+    Files.createFile(home.resolve("jrt-fs.jar"));
+
+    assertKept(List.of(home.resolve("jrt-fs.jar").toFile()));
+  }
+
+  @Test
+  void classpath_without_runtime_image_is_not_modified() {
+    assertKept(List.of(new File("a.jar"), new File("b.jar")));
+  }
+
+  @Test
+  void rt_jar_is_not_considered_as_a_runtime_image() {
+    assertKept(List.of(new File("jdk8/jre/lib/rt.jar")));
+  }
+
+  @Test
+  void android_jar_is_not_considered_as_a_runtime_image() {
+    assertKept(List.of(new File("sdk/platforms/android-30/android.jar")));
+  }
+
+  @Test
+  void empty_classpath_is_not_modified() {
+    assertKept(List.of());
+  }
+
+  private static void assertKept(List<File> classpath) {
+    Map<String, String> options = new HashMap<>();
+
+    List<File> environment = getFileByFileParser(classpath).removeJdkLibsAndProvideJdtWithJavaHome(options);
+
+    assertThat(environment).isSameAs(classpath);
+    assertThat(options).isEmpty();
+  }
+
+  private static JDTParser getFileByFileParser(List<File> classpath) {
+    return (JDTParser) JParser.Mode.FILE_BY_FILE.create(new JavaVersionImpl(11), classpath, false, true);
+  }
+
+  private static File runtimeImageOf(Path jdkHome) throws IOException {
+    Path image = jdkHome.resolve("lib/jrt-fs.jar");
+    Files.createDirectories(image.getParent());
+    Files.createFile(image);
+    return image.toFile();
+  }
+
 }
