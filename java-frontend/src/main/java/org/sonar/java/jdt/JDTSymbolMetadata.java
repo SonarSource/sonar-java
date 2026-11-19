@@ -135,7 +135,7 @@ final class JDTSymbolMetadata implements SymbolMetadata {
   }
 
   @Override
-  public final boolean isAnnotatedWith(String fullyQualifiedName) {
+  public boolean isAnnotatedWith(String fullyQualifiedName) {
     for (AnnotationInstance a : annotations()) {
       if (a.symbol().type().is(fullyQualifiedName)) {
         return true;
