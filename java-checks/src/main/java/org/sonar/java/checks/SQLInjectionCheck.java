@@ -133,6 +133,14 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     .addWithoutParametersMatcher()
     .build();
 
+  private static final MethodMatchers SAFE_CONCATENATION_METHODS = MethodMatchers.or(
+    CLASS_NAME_METHODS,
+    MethodMatchers.create()
+      .ofSubTypes(JAVA_SQL_STATEMENT)
+      .names("enquoteIdentifier")
+      .addParametersMatcher(JAVA_LANG_STRING, "boolean")
+      .build());
+
   private static final String MAIN_MESSAGE = "Make sure using a dynamically formatted SQL query is safe here.";
 
   @Override
@@ -227,7 +235,8 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
 
   private static boolean hasDynamicConcatenationOperand(ExpressionTree arg) {
     ExpressionTree expression = ExpressionUtils.skipParentheses(arg);
-    if (expression.asConstant().isPresent() || isPrimitiveOrWrapper(expression.symbolType()) || isSafeClassNameExpression(expression, new HashSet<>())) {
+    if (expression.asConstant().isPresent() || isPrimitiveOrWrapper(expression.symbolType())
+      || isSafeExpression(expression, SAFE_CONCATENATION_METHODS, new HashSet<>())) {
       return false;
     }
     if (expression instanceof ConditionalExpressionTree conditional) {
@@ -243,16 +252,16 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     return type.isPrimitive() || type.isPrimitiveWrapper();
   }
 
-  private static boolean isSafeClassNameExpression(ExpressionTree arg, Set<Symbol> visitedSymbols) {
+  private static boolean isSafeExpression(ExpressionTree arg, MethodMatchers safeMethods, Set<Symbol> visitedSymbols) {
     ExpressionTree expression = ExpressionUtils.skipParentheses(arg);
     if (expression instanceof MethodInvocationTree methodInvocation) {
-      return CLASS_NAME_METHODS.matches(methodInvocation);
+      return safeMethods.matches(methodInvocation);
     }
     if (expression instanceof IdentifierTree identifier) {
       Symbol symbol = identifier.symbol();
       if (symbol.isLocalVariable() && !symbol.isParameter() && visitedSymbols.add(symbol)) {
         ExpressionTree singleWrite = ExpressionsHelper.getSingleWriteUsage(symbol);
-        return singleWrite != null && isSafeClassNameExpression(singleWrite, visitedSymbols);
+        return singleWrite != null && isSafeExpression(singleWrite, safeMethods, visitedSymbols);
       }
     }
     return false;
@@ -275,7 +284,7 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
       boolean isFirstLocaleArgument = firstArg && type.is("java.util.Locale");
       // Primitives will not lead to SQL injection, so the code is compliant.
       if (!isFirstLocaleArgument && !type.isUnknown() && !isPrimitiveOrWrapper(type)
-        && arg.asConstant().isEmpty() && !isSafeClassNameExpression(arg, new HashSet<>())) {
+        && arg.asConstant().isEmpty() && !isSafeExpression(arg, CLASS_NAME_METHODS, new HashSet<>())) {
         return true;
       }
       firstArg = false;

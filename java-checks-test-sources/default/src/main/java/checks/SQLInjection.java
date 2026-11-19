@@ -241,6 +241,62 @@ class SQLInjection {
     // Known FP: the caller passes Class#getName(), but local-variable backtracking does not resolve parameters.
     statement.execute("SELECT " + className); // Noncompliant
   }
+
+  void quotedIdentifiers(Statement statement, String input, String table) throws SQLException {
+    statement.execute("DROP TABLE IF EXISTS " + statement.enquoteIdentifier(input, true)); // Compliant
+    statement.execute("DROP TABLE IF EXISTS " + (statement.enquoteIdentifier(input, false))); // Compliant
+
+    String quotedName = statement.enquoteIdentifier(input, true);
+    statement.execute("DROP TABLE IF EXISTS " + quotedName); // Compliant
+
+    String schema = statement.enquoteIdentifier(input, false);
+    statement.execute("VACUUM " + schema + "." + statement.enquoteIdentifier(table, false)); // Compliant
+
+    String alias = quotedName;
+    statement.execute("SELECT " + alias + "." + alias); // Compliant
+
+    String assignedOnce;
+    assignedOnce = statement.enquoteIdentifier(input, false);
+    statement.execute("DROP TABLE IF EXISTS " + assignedOnce); // Compliant
+
+    String query = "DROP TABLE IF EXISTS " + quotedName;
+    statement.execute(query); // Compliant
+
+    String appendedQuery = "DROP TABLE IF EXISTS ";
+    appendedQuery += quotedName;
+    statement.execute(appendedQuery); // Compliant
+  }
+
+  void quotedIdentifierSubtype(PreparedStatement statement, String input) throws SQLException {
+    statement.execute("DROP TABLE IF EXISTS " + statement.enquoteIdentifier(input, true)); // Compliant
+  }
+
+  void unsafeQuotedIdentifiers(Statement statement, String input) throws SQLException {
+    statement.execute("SELECT " + statement.enquoteIdentifier(input, true) + input); // Noncompliant
+    //                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    statement.execute("SELECT " + input + statement.enquoteIdentifier(input, false)); // Noncompliant
+    //                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    String reassigned = statement.enquoteIdentifier(input, true);
+    reassigned = input;
+    statement.execute("SELECT " + reassigned); // Noncompliant
+    //                ^^^^^^^^^^^^^^^^^^^^^^
+
+    statement.execute("SELECT " + enquoteIdentifier(input, true)); // Noncompliant
+    //                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  }
+
+  void quotedIdentifierFormatting(Statement statement, String input) throws SQLException {
+    String quotedName = statement.enquoteIdentifier(input, true);
+    statement.execute(String.format("SELECT %s", quotedName)); // Noncompliant
+    //                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    statement.execute("SELECT %s".formatted(statement.enquoteIdentifier(input, false))); // Noncompliant
+    //                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  }
+
+  String enquoteIdentifier(String input, boolean alwaysQuote) {
+    return input;
+  }
 }
 
 
