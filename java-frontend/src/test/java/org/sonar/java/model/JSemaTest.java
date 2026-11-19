@@ -150,4 +150,28 @@ class JSemaTest {
     assertThat(other.returnType().type().isUnknown()).isTrue();
   }
 
+  @Test
+  void constantOfAFieldFromTypeInfoIsKept() {
+    sema.ingestDocument(JsonParser.parseString("""
+      {"symbols": [
+        {"id": "p.Cfg", "kind": "type", "name": "Cfg"},
+        {"id": "p.Cfg#NAME", "kind": "field", "name": "NAME", "owner": "p.Cfg"}]}
+      """).getAsJsonObject());
+    JTypeSymbol owner = (JTypeSymbol) sema.resolve("p.Cfg");
+    JsonObject member = JsonParser.parseString("""
+      {"id": "p.Cfg#NAME", "name": "NAME", "k": "f", "constant": "abc"}
+      """).getAsJsonObject();
+
+    Symbol field = sema.memberFromTypeInfo(owner, member);
+
+    assertThat(((Symbol.VariableSymbol) field).constantValue()).isPresent();
+
+    // A field only ever read through its symbol takes the constant from the served type information.
+    sema.ingestTypes(JsonParser.parseString("""
+      {"p.Cfg": {"origin": "project", "kind": "class", "typeParameters": 0, "annotations": [], "members": [
+        {"id": "p.Cfg#NAME", "name": "NAME", "k": "f", "constant": "abc"}]}}
+      """).getAsJsonObject());
+    assertThat(((Symbol.VariableSymbol) sema.resolve("p.Cfg#NAME")).constantValue()).isPresent();
+  }
+
 }

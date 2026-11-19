@@ -1543,6 +1543,10 @@ public final class JSema implements Sema {
       if (declaredAnnotations(project.id).stream().anyMatch(annotation -> "java.lang.Deprecated".equals(annotation.name()))) {
         project.deprecated(true);
       }
+      String constant = text(member, "constant");
+      if (constant != null && project instanceof JVariableSymbol field && field.declaration() == null) {
+        field.constantValue(constantOf(field.type(), constant));
+      }
       return project;
     }
     String name = text(member, "name");
@@ -1708,6 +1712,27 @@ public final class JSema implements Sema {
     } else if (symbol.isTypeSymbol()) {
       symbol.type(rawNamed(erase(id)));
     }
+  }
+
+  /** The constant the served type information gives a field of another source file, if any. */
+  @Nullable
+  Object servedConstant(JVariableSymbol field) {
+    String id = field.id;
+    int hash = id == null ? -1 : id.indexOf('#');
+    if (hash < 0 || !declaresType(erase(id.substring(0, hash)))) {
+      return null;
+    }
+    JsonArray members = typeInfos.get(sourceName(erase(id.substring(0, hash)))).getAsJsonArray(MEMBERS);
+    if (members != null) {
+      for (JsonElement element : members) {
+        JsonObject member = element.getAsJsonObject();
+        String constant = text(member, "constant");
+        if (constant != null && id.equals(text(member, "id"))) {
+          return constantOf(field.type(), constant);
+        }
+      }
+    }
+    return null;
   }
 
   /** The implicit valueOf and values of an enum come without a return type fact: derive it from the owner. */

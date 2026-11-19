@@ -68,7 +68,8 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
   @Override
   public Optional<Object> constantValue() {
     if (constant == null) {
-      constant = Optional.ofNullable(declaredConstant());
+      Object declared = declaredConstant();
+      constant = Optional.ofNullable(declared != null ? declared : sema.servedConstant(this));
     }
     return constant;
   }
