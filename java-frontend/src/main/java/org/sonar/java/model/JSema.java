@@ -1968,14 +1968,15 @@ public final class JSema implements Sema {
     return null;
   }
 
-  private static boolean takesNoFunction(Symbol.MethodSymbol method, Set<Integer> functions) {
+  private boolean takesNoFunction(Symbol.MethodSymbol method, Set<Integer> functions) {
     List<Type> parameters = method.parameterTypes();
     for (int index : functions) {
       if (index >= parameters.size()) {
         continue;
       }
       Type target = parameters.get(index).erasure();
-      if (target.isPrimitive() || target.isArray() || (target.isClass() && !target.isUnknown() && !target.isTypeVar() && !target.symbol().isInterface() && !target.symbol().isUnknown())) {
+      if (target.isPrimitive() || target.isArray() || (target.isClass() && !target.isUnknown() && !target.isTypeVar() && !target.symbol().isUnknown()
+        && (!target.symbol().isInterface() || (declaresType(target.fullyQualifiedName()) && functionalMethod(target) == null)))) {
         return true;
       }
     }

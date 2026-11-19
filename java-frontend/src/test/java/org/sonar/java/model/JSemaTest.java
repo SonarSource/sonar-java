@@ -174,4 +174,24 @@ class JSemaTest {
     assertThat(((Symbol.VariableSymbol) sema.resolve("p.Cfg#NAME")).constantValue()).isPresent();
   }
 
+  @Test
+  void aLambdaArgumentSelectsOnlyAnOverloadTakingAFunctionalInterface() {
+    sema.ingestTypes(JsonParser.parseString("""
+      {"p.Owner": {"origin": "project", "kind": "class", "typeParameters": 0, "annotations": [], "members": [
+        {"k": "m", "name": "m", "desc": "(Lp/Matcher;)V"},
+        {"k": "m", "name": "m", "desc": "(Lp/Task;)V"}]},
+       "p.Matcher": {"origin": "project", "kind": "interface", "typeParameters": 0, "annotations": [], "members": [
+        {"k": "m", "name": "matches", "desc": "()Z", "abstract": true},
+        {"k": "m", "name": "describe", "desc": "()Ljava/lang/String;", "abstract": true}]},
+       "p.Task": {"origin": "project", "kind": "interface", "typeParameters": 0, "annotations": [], "members": [
+        {"k": "m", "name": "run", "desc": "()V", "abstract": true}]}}
+      """).getAsJsonObject());
+
+    // An interface with two abstract methods is no lambda target, so the other overload is the one picked.
+    Symbol.MethodSymbol picked = sema.declaredMethod("p.Owner", "m", List.of(sema.getClassType("java.lang.Object")), java.util.Set.of(0));
+
+    assertThat(picked).isNotNull();
+    assertThat(picked.parameterTypes().get(0).fullyQualifiedName()).isEqualTo("p.Task");
+  }
+
 }
