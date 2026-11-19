@@ -1594,6 +1594,14 @@ public final class JSema implements Sema {
     }
     if (member.get("retType") instanceof JsonObject retType) {
       method.declaredReturn(retType);
+      // a parameterized return keeps its arguments, so the member's return type is the one a call reports
+      if (!method.isStatic() && retType.has("args")) {
+        JType plain = typeFromFact(retType, Map.of(), true);
+        if (!plain.isUnknown() && plain.isParameterized()
+          && plain.args.stream().noneMatch(argument -> argument.isCapture() || argument.isWildcard())) {
+          method.returnTypeSymbol(plain.symbol());
+        }
+      }
     }
     method.returnsSelf(member.has("retSelf") && member.get("retSelf").getAsBoolean());
     if (member.get("default") instanceof JsonObject defaultValue) {

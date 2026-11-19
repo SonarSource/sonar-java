@@ -100,4 +100,28 @@ class JSemaTest {
     assertThat(sema.projectThrown("p.Box#other()")).isNull();
   }
 
+  @Test
+  void libraryMemberKeepsTheTypeArgumentsOfItsDeclaredReturn() {
+    sema.ingestTypes(JsonParser.parseString("""
+      {"java.lang.String": {"origin": "library", "kind": "class", "typeParameters": 0, "annotations": [], "members": []},
+       "java.util.List": {"origin": "library", "kind": "interface", "typeParameters": 1, "annotations": [], "members": []},
+       "p.Lib": {"origin": "library", "kind": "class", "typeParameters": 0, "annotations": [], "members": [
+        {"name": "names", "desc": "()Ljava/util/List;",
+          "retType": {"id": "java.util.List", "args": [{"id": "java.lang.String"}]}},
+        {"name": "wild", "desc": "()Ljava/util/List;",
+          "retType": {"id": "java.util.List", "args": [{"kind": "wildcard"}]}}]}}
+      """).getAsJsonObject());
+    JTypeSymbol owner = (JTypeSymbol) sema.getClassType("p.Lib").symbol();
+    JMethodSymbol names = (JMethodSymbol) owner.memberSymbols().stream().filter(member -> "names".equals(member.name())).findFirst().orElseThrow();
+    JMethodSymbol wild = (JMethodSymbol) owner.memberSymbols().stream().filter(member -> "wild".equals(member.name())).findFirst().orElseThrow();
+
+    // A fully spelled parameterized return is the member's own return type, so a call view is the member itself.
+    assertThat(names.returnType().type().isParameterized()).isTrue();
+    Type returned = JType.named(sema, "java.util.List", List.of(JType.named(sema, "java.lang.String", List.of())));
+    assertThat(sema.invocationView(names, null, List.of(), returned)).isSameAs(names);
+
+    // A wildcard argument keeps the erased return.
+    assertThat(wild.returnType().type().isParameterized()).isFalse();
+  }
+
 }
