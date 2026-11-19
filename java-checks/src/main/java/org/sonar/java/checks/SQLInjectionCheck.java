@@ -430,7 +430,7 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     return symbol.isLocalVariable() && !symbol.isParameter()
       && symbol.declaration() instanceof VariableTree variable
       && isFixedBuilderInitializer(variable.initializer(), scope)
-      && symbol.usages().stream().allMatch(SQLInjectionCheck::isFixedContentBuilderUsage);
+      && symbol.usages().stream().allMatch(usage -> isFixedContentBuilderUsage(usage, variable));
   }
 
   private static boolean isFixedBuilderInitializer(@Nullable ExpressionTree initializer, Scope scope) {
@@ -440,7 +440,7 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     return scope.followsHelpers && initializer instanceof MethodInvocationTree call && isFixedContentHelperCall(call);
   }
 
-  private static boolean isFixedContentBuilderUsage(IdentifierTree usage) {
+  private static boolean isFixedContentBuilderUsage(IdentifierTree usage, VariableTree declaration) {
     Tree current = usage;
     while (current.parent() instanceof MemberSelectExpressionTree select && select.expression() == current
       && select.parent() instanceof MethodInvocationTree call && call.methodSelect() == select) {
@@ -453,10 +453,19 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
       current = call;
     }
     Tree parent = current.parent();
-    return parent instanceof ReturnStatementTree
+    return (parent instanceof ReturnStatementTree && enclosingScope(parent) == enclosingScope(declaration))
       || parent instanceof ExpressionStatementTree
       || parent.is(Tree.Kind.PLUS)
       || (parent instanceof Arguments arguments && arguments.parent() instanceof MethodInvocationTree call && FORMAT_METHODS.matches(call));
+  }
+
+  @Nullable
+  private static Tree enclosingScope(Tree tree) {
+    Tree current = tree.parent();
+    while (current != null && !(current instanceof MethodTree || current instanceof LambdaExpressionTree || current instanceof ClassTree)) {
+      current = current.parent();
+    }
+    return current;
   }
 
   /**

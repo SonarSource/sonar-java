@@ -549,8 +549,20 @@ class SQLFormat {
   }
 
   private String lambdaReturn() {
-    Supplier<String> supplier = () -> "x";
+    Supplier<String> supplier = () -> {
+      return fieldFragment;
+    };
     return " AND l = :l";
+  }
+
+  private String anonymousClassReturn() {
+    Supplier<String> supplier = new Supplier<>() {
+      @Override
+      public String get() {
+        return fieldFragment;
+      }
+    };
+    return " AND a = :a";
   }
 
   String nonPrivateHelper() {
@@ -571,6 +583,7 @@ class SQLFormat {
     fixedJdbc.query("SELECT 1 FROM t WHERE x = %s".formatted(literalStatic()), (rs, i) -> 1); // Compliant
     fixedJdbc.query("SELECT 1 FROM t" + callingHelper(), (rs, i) -> 1); // Noncompliant
     fixedJdbc.query("SELECT 1 FROM t" + lambdaReturn(), (rs, i) -> 1); // Compliant
+    fixedJdbc.query("SELECT 1 FROM t" + anonymousClassReturn(), (rs, i) -> 1); // Compliant
 
     fixedJdbc.query("SELECT 1 FROM t" + dynamicWhere(param), (rs, i) -> 1); // Noncompliant
     fixedJdbc.query("SELECT 1 FROM t" + dynamicBuilderWhere(param), (rs, i) -> 1); // Noncompliant
@@ -671,6 +684,23 @@ class SQLFormat {
     StringBuilder alias = original;
     alias.append(param);
     fixedJdbc.query("SELECT 1 FROM t" + original, (rs, i) -> 1); // Noncompliant
+
+    StringBuilder escaping = literalBuilder(a);
+    Supplier<StringBuilder> blockLeak = () -> {
+      return escaping;
+    };
+    blockLeak.get().append(param);
+    fixedJdbc.query("SELECT 1 FROM t" + escaping, (rs, i) -> 1); // Noncompliant
+
+    StringBuilder escapingAnonymous = literalBuilder(a);
+    Supplier<StringBuilder> anonymousLeak = new Supplier<>() {
+      @Override
+      public StringBuilder get() {
+        return escapingAnonymous;
+      }
+    };
+    anonymousLeak.get().append(param);
+    fixedJdbc.query("SELECT 1 FROM t" + escapingAnonymous, (rs, i) -> 1); // Noncompliant
 
     StringBuilder returned = literalBuilder(a);
     fixedJdbc.query("SELECT 1 FROM t" + returned, (rs, i) -> 1); // Compliant
