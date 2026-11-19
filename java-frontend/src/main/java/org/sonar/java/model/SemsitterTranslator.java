@@ -2587,6 +2587,11 @@ final class SemsitterTranslator {
     TypeCastExpressionTreeImpl tree = new TypeCastExpressionTreeImpl(token(required(node, "(")), type, andToken, bounds, token(required(node, ")")), value);
     if (bounds.isEmpty()) {
       ascribe(tree, type.symbolType());
+      // The cast type is the target of a lambda operand (JLS 15.16). Only its parameters are rebound: typing the lambda itself would make the cast look redundant.
+      // The rebinding mirrors the ECJ-based analysis, which suppresses S1117 for a lambda parameter whose target is a nested, implicitly static interface.
+      if (value instanceof LambdaExpressionTreeImpl lambda && !type.symbolType().isUnknown()) {
+        bindLambdaParameterOwner(lambda, sema.groundType(type.symbolType()));
+      }
     } else {
       List<JType> parts = new ArrayList<>();
       parts.add(sema.asJType(type.symbolType()));

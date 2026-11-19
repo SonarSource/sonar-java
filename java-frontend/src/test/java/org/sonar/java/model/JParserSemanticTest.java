@@ -829,6 +829,31 @@ class JParserSemanticTest {
   }
 
   @Test
+  void expression_cast_lambda_parameter_has_the_cast_target() {
+    String source = """
+      package org.foo;
+      class A {
+        interface Cb { void run(String p, String m); }
+        void foo() {
+          Object v = (Cb) (p, m) -> { };
+        }
+      }
+      """;
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl foo = (MethodTreeImpl) c.members().stream().filter(MethodTreeImpl.class::isInstance).findFirst().get();
+    VariableTree v = (VariableTree) foo.block().body().get(0);
+    LambdaExpressionTreeImpl lambda = (LambdaExpressionTreeImpl) ((TypeCastTree) v.initializer()).expression();
+    JVariableSymbol p = (JVariableSymbol) symbolOf((VariableTreeImpl) lambda.parameters().get(0));
+
+    // the operand of a cast has the cast type as target: its parameters are typed and owned by the lambda
+    assertThat(p.type().is("java.lang.String")).isTrue();
+    assertThat(p.owner()).isInstanceOf(JMethodSymbol.class);
+    assertThat(((JMethodSymbol) p.owner()).isLambda()).isTrue();
+    assertThat(p.owner().name()).isEqualTo("run");
+  }
+
+  @Test
   void expression_nested_lambda() {
     String source = """
       class A {
