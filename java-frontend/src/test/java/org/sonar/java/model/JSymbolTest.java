@@ -153,7 +153,8 @@ class JSymbolTest {
     assertThat(listFieldTypeTree.typeArguments()).hasSize(1);
     Type wildcardType = listFieldTypeTree.typeArguments().get(0);
     assertThat(wildcardType.name()).isEqualTo("?");
-    assertThat(wildcardType.symbol().owner()).isEqualTo(Symbol.ROOT_PACKAGE);
+    // a wildcard answers the symbol of its bound
+    assertThat(wildcardType.symbol().owner().name()).isEqualTo("java.lang");
   }
 
   @Test
@@ -297,8 +298,50 @@ class JSymbolTest {
 
     JVariableSymbol variableSymbol = ((JVariableSymbol) symbolOf(v));
     assertThat(variableSymbol).isSameAs(v.symbol());
-    assertThat(variableSymbol.owner()).isSameAs(t);
+    JInitializerBlockSymbol initializerBlock = (JInitializerBlockSymbol) variableSymbol.owner();
+
+    if (isStatic) {
+      assertThat(initializerBlock).isSameAs(sema(cu).staticInitializerBlockSymbol((JTypeSymbol) c.symbol()));
+    } else {
+      assertThat(initializerBlock).isSameAs(sema(cu).initializerBlockSymbol((JTypeSymbol) c.symbol()));
+    }
+
     assertThat(variableSymbol).hasEnclosingClass(t);
+    assertThat(initializerBlock).hasEnclosingClass(t).hasOwner(t);
+    assertThat(initializerBlock.isStatic()).isEqualTo(isStatic);
+    assertThat(initializerBlock).hasName(isStatic ? "<clinit> (initializer block)" : "<init> (initializer block)");
+    assertThat(initializerBlock.signature()).isEqualTo(isStatic ? "E.<clinit> (initializer block)" : "E.<init> (initializer block)");
+
+    assertThat(initializerBlock.isMethodSymbol()).isTrue();
+    assertThat(initializerBlock.isVariableSymbol()).isFalse();
+    assertThat(initializerBlock.isTypeSymbol()).isFalse();
+    assertThat(initializerBlock.isEnum()).isFalse();
+    assertThat(initializerBlock.isInterface()).isFalse();
+    assertThat(initializerBlock.isPackageSymbol()).isFalse();
+    assertThat(initializerBlock.isFinal()).isFalse();
+    assertThat(initializerBlock.isAbstract()).isFalse();
+    assertThat(initializerBlock.isPrivate()).isFalse();
+    assertThat(initializerBlock.isProtected()).isFalse();
+    assertThat(initializerBlock.isPublic()).isFalse();
+    assertThat(initializerBlock.isPackageVisibility()).isFalse();
+    assertThat(initializerBlock.isDeprecated()).isFalse();
+    assertThat(initializerBlock.isVolatile()).isFalse();
+    assertThat(initializerBlock.isUnknown()).isFalse();
+
+    assertThat(initializerBlock.declaration()).isNull();
+    assertThat(initializerBlock.returnType()).isUnknown();
+    assertThat(initializerBlock).isOfUnknownType();
+    assertThat(initializerBlock.overriddenSymbols()).isEmpty();
+    assertThat(initializerBlock.usages()).isEmpty();
+    assertThat(initializerBlock.parameterTypes()).isEmpty();
+    assertThat(initializerBlock.declarationParameters()).isEmpty();
+    assertThat(initializerBlock.thrownTypes()).isEmpty();
+    assertThat(initializerBlock.isOverridable()).isFalse();
+    assertThat(initializerBlock.isParametrizedMethod()).isFalse();
+    assertThat(initializerBlock.isDefaultMethod()).isFalse();
+    assertThat(initializerBlock.isSynchronizedMethod()).isFalse();
+    assertThat(initializerBlock.isVarArgsMethod()).isFalse();
+    assertThat(initializerBlock.isNativeMethod()).isFalse();
   }
 
   @Test
@@ -388,7 +431,8 @@ class JSymbolTest {
     SymbolMetadata metadata = declarationSymbol.metadata();
     assertThat(metadata).isNotNull();
     SymbolMetadata parameterMetadata = m.parameters().get(0).symbol().metadata();
-    assertThat(parameterMetadata.annotations()).hasSize(1);
+    // an annotation on a type argument belongs to the argument, not to the parameter
+    assertThat(parameterMetadata.annotations()).isEmpty();
   }
 
 
@@ -731,7 +775,7 @@ class JSymbolTest {
   }
 
   @Test
-  void methods_with_different_type_parameters_have_different_symbols() {
+  void generic_method_and_its_invocation_share_one_symbol() {
     CompilationUnitTree cu = test("""
       class C {
         <T> int f(String s);
@@ -746,12 +790,12 @@ class JSymbolTest {
     var expression1 = (ExpressionStatementTree) block.body().get(0);
     var invocation1 = (MethodInvocationTree) expression1.expression();
 
-    assertNotEquals(methodDeclaration.symbol(), invocation1.methodSymbol());
-    assertNotEquals(invocation1.methodSymbol(), methodDeclaration.symbol());
+    assertEquals(methodDeclaration.symbol(), invocation1.methodSymbol());
+    assertEquals(invocation1.methodSymbol(), methodDeclaration.symbol());
   }
 
   @Test
-  void methods_with_different_type_arguments_have_different_symbols() {
+  void constructors_of_different_parameterizations_share_one_symbol() {
     CompilationUnitTree cu = test("""
       class C<T> {
         {
@@ -768,8 +812,8 @@ class JSymbolTest {
     var expression2 = (ExpressionStatementTree) block.body().get(1);
     var invocation2 = (NewClassTree) expression2.expression();
 
-    assertNotEquals(invocation2.methodSymbol(), invocation1.methodSymbol());
-    assertNotEquals(invocation1.methodSymbol(), invocation2.methodSymbol());
+    assertEquals(invocation2.methodSymbol(), invocation1.methodSymbol());
+    assertEquals(invocation1.methodSymbol(), invocation2.methodSymbol());
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {

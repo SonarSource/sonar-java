@@ -17,8 +17,12 @@
 package org.sonar.java.model;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,6 +57,47 @@ class JSemaTest {
   void typeIsStable() {
     Type first = sema.getClassType("int");
     assertThat(first).isNotNull().isSameAs(sema.getClassType("int"));
+  }
+
+  @Test
+  void projectDeclarationsAreReadInTheTypedShape() {
+    JsonObject types = JsonParser.parseString("""
+      {"p.Marker": {"origin": "project", "kind": "annotation", "typeParameters": 0,
+        "annotations": [{"name": "java.lang.annotation.Retention",
+          "values": [{"name": "value", "kind": "enum", "type": "java.lang.annotation.RetentionPolicy", "const": "RUNTIME"}]}],
+        "members": []},
+       "p.Box": {"origin": "project", "kind": "class", "typeParameters": 1, "annotations": [], "members": [
+        {"id": "p.Box#run()", "throws": ["java.io.IOException", "T"],
+          "annotations": [{"name": "p.Tag", "values": [
+            {"name": "limit", "kind": "int", "value": 3},
+            {"name": "inner", "kind": "annotation", "value": {"name": "p.Tag", "values": []}},
+            {"name": "items", "kind": "array", "value": [{"name": "value", "kind": "string", "value": "a"}]},
+            {"name": "folded", "kind": "expression", "text": "A + B"}]}],
+          "facts": {"kind": "method", "props": {"thrown_types": ["java.io.IOException,T"]}}},
+        {"id": "p.Box#plain()", "throws": [], "annotations": []}]}}
+      """).getAsJsonObject();
+    sema.ingestTypes(types);
+
+    // A type carries its own annotation values.
+    List<JSema.DeclaredAnnotation> retention = sema.declaredAnnotations("p.Marker");
+    assertThat(retention).hasSize(1);
+    assertThat(retention.get(0).name()).isEqualTo("java.lang.annotation.Retention");
+    assertThat(retention.get(0).valuesKnown()).isTrue();
+    assertThat(((Symbol.VariableSymbol) retention.get(0).values().get(0).value()).name()).isEqualTo("RUNTIME");
+
+    // A member carries its annotation values of every element kind.
+    List<SymbolMetadata.AnnotationValue> values = sema.declaredAnnotations("p.Box#run()").get(0).values();
+    assertThat(values).extracting(SymbolMetadata.AnnotationValue::name).containsExactly("limit", "inner", "items", "folded");
+    assertThat(values.get(0).value()).isEqualTo(3);
+    assertThat(values.get(1).value()).isEqualTo("p.Tag");
+    assertThat((Object[]) values.get(2).value()).containsExactly("a");
+    assertThat(values.get(3).value()).isNull();
+    assertThat(sema.declaredAnnotations("p.Box#plain()")).isEmpty();
+
+    // A member carries its declared exceptions, a served empty list included; an unserved member has none.
+    assertThat(sema.projectThrown("p.Box#run()")).hasSize(2);
+    assertThat(sema.projectThrown("p.Box#plain()")).isEmpty();
+    assertThat(sema.projectThrown("p.Box#other()")).isNull();
   }
 
 }

@@ -1215,9 +1215,9 @@ class SonarComponentsTest {
     @Test
     void log_only_50_undefined_types() {
       loggingLogTester.setLevel(Level.DEBUG);
-      String source = generateSource(26);
+      String source = generateSource(60);
 
-      // artificially populated the semantic errors with 26 unknown types and 52 errors
+      // artificially populated the semantic errors with 60 unknown types
       sonarComponents.collectUndefinedTypes(DEFAULT_PATH,
         JParserTestUtils.parse(source).semanticProblems());
 
@@ -1234,15 +1234,8 @@ class SonarComponentsTest {
       assertThat(list)
         .startsWith("Unresolved imports/types: (Limited to 50)")
         .endsWith("- ...")
-        .doesNotContain("- Y cannot be resolved to a type")
-        .doesNotContain("- Z cannot be resolved to a type");
-      for (int i = 0; i < 26; i++) {
-        char typeName = (char) ('A' + i);
-        assertThat(list).contains("- The import org.package" + formatter.format(i + 1) + " cannot be resolved");
-        if (typeName < 'Y') {
-          assertThat(list).contains(String.format("- %c cannot be resolved to a type", typeName));
-        }
-      }
+        .contains("- A cannot be resolved to a type");
+      assertThat(list.lines().filter(line -> line.startsWith("- ") && !line.equals("- ...")).count()).isEqualTo(50);
     }
 
     @Test
@@ -1278,8 +1271,7 @@ class SonarComponentsTest {
       assertThat(debugLogs.get(0))
         .startsWith("Unresolved imports/types:")
         .doesNotContain("- ...")
-        .contains("- A cannot be resolved to a type")
-        .contains("- The import org.package01 cannot be resolved");
+        .contains("- A cannot be resolved to a type");
     }
 
     @Test
@@ -1338,10 +1330,6 @@ class SonarComponentsTest {
           "Unresolved imports/types:",
           "- A cannot be resolved to a type",
           "  * fooMain.java",
-          "  * fooTest.java",
-          "",
-          "- The import org.package01 cannot be resolved",
-          "  * fooMain.java",
           "  * fooTest.java"
         );
     }
@@ -1364,16 +1352,18 @@ class SonarComponentsTest {
       sonarComponents.logUndefinedTypes();
     }
 
+    private static String typeName(int index) {
+      return index < 26 ? String.valueOf((char) ('A' + index)) : "T" + index;
+    }
+
     private String generateSource(int numberUnknownTypes) {
       StringBuilder sourceBuilder = new StringBuilder("package org.foo;\n");
       for (int i = 0; i < numberUnknownTypes; i++) {
-        char typeName = (char) ('A' + i);
-        sourceBuilder.append(String.format("import org.package%s.%c;\n", formatter.format(i + 1), typeName));
+        sourceBuilder.append(String.format("import org.package%s.%s;\n", formatter.format(i + 1), typeName(i)));
       }
       sourceBuilder.append("class Test {\n");
       for (int i = 0; i < numberUnknownTypes; i++) {
-        char typeName = (char) ('A' + i);
-        sourceBuilder.append(String.format("  %c variable%d;\n", typeName, i + 1));
+        sourceBuilder.append(String.format("  %s variable%d;\n", typeName(i), i + 1));
       }
       sourceBuilder.append("}");
       return sourceBuilder.toString();

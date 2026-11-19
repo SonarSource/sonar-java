@@ -84,7 +84,7 @@ import static org.mockito.Mockito.when;
 
 class JavaAstScannerTest {
 
-  public static final InputFile TRIVIAL_COMPILATION_UNIT = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");
+  public static final InputFile TRIVIAL_COMPILATION_UNIT = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.java");
   public static final JavaFileScanner PROBLEMATIC_VISITOR = ctx -> {
     throw new StackOverflowError();
   };
@@ -159,7 +159,7 @@ class JavaAstScannerTest {
     JavaAstScanner scanner = new JavaAstScanner(null, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
     scanner.setVisitorBridge(new VisitorsBridge(listener));
 
-    scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerParseError.txt")));
+    scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerParseError.java")));
     verify(listener).processRecognitionException(any(RecognitionException.class));
   }
 
@@ -183,43 +183,6 @@ class JavaAstScannerTest {
   void test_should_use_java_version() {
     scanWithJavaVersion(16, Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java")));
     assertThat(logTester.logs(Level.ERROR)).isEmpty();
-  }
-
-  @Test
-  void test_do_not_log_fail_parsing_with_incorrect_version() {
-    scanWithJavaVersion(8, Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java")));
-    assertThat(logTester.logs(Level.ERROR))
-      .containsExactlyInAnyOrder(
-        "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
-        "Parse error at line 3 column 13: Switch Expressions are supported from Java 14 onwards only");
-  }
-
-  @Test
-  void ecj_does_not_raise_problems_on_non_compiling_switch_expression() {
-    var source = """
-      public class File {
-        void java15SwitchExpression() {
-          int h = 24;
-          int i = switch (1) {
-            case 2 -> 1;
-            default -> 2;
-          };
-          int j = 42;
-        }
-      }
-      """;
-    JavaVersionImpl oldJavaVersionThatDoesNotSupportSwitchExpressions = new JavaVersionImpl(8);
-
-    // BUG in ECJ 3.41: When the Java source version is 8, ECJ incorrectly does not report errors for switch expressions (introduced in later Java versions).
-    // But now the bug has been fixed in ECJ 3.42, so the following code throws a RecognitionException as expected.
-    assertThatThrownBy(() -> JParserTestUtils.parse(source, oldJavaVersionThatDoesNotSupportSwitchExpressions))
-      .isInstanceOf(RecognitionException.class)
-      .hasMessage("Parse error at line 4 column 13: Switch Expressions are supported from Java 14 onwards only");
-    // Affected tests:
-    // - module_info_should_not_be_analyzed_or_change_the_version
-    // - remove_info_ro_warning_log_related_to_module_info
-    // - test_should_log_fail_parsing_with_incorrect_version
-    // Once the ECJ bug is fixed, these tests should be updated to expect logging error.
   }
 
   @ParameterizedTest
@@ -277,7 +240,7 @@ class JavaAstScannerTest {
     SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null, null);
     sonarComponent.setSensorContext(context);
     scanner.setVisitorBridge(new VisitorsBridge(Collections.singleton(new CheckThrowingException(new NullPointerException("foo"))), new ArrayList<>(), sonarComponent));
-    InputFile scannedFile = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");
+    InputFile scannedFile = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.java");
 
     scanner.scan(Collections.singletonList(scannedFile));
     assertThat(logTester.logs(Level.ERROR)).hasSize(1).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$CheckThrowingException -  on file '"
@@ -285,7 +248,7 @@ class JavaAstScannerTest {
       + "', To help improve the SonarSource Java Analyzer, please report this problem to SonarSource: see https://community.sonarsource.com/");
     logTester.clear();
     scanner.setVisitorBridge(new VisitorsBridge(new AnnotatedCheck(new NullPointerException("foo"))));
-    scannedFile = TestUtils.inputFile("src/test/resources/AstScannerParseError.txt");
+    scannedFile = TestUtils.inputFile("src/test/resources/AstScannerParseError.java");
     scanner.scan(Collections.singletonList(scannedFile));
     assertThat(logTester.logs(Level.ERROR)).hasSize(3).contains("Unable to run check class org.sonar.java.ast.JavaAstScannerTest$AnnotatedCheck - AnnotatedCheck on file '"
       + scannedFile.toString()
@@ -296,7 +259,7 @@ class JavaAstScannerTest {
   void should_propagate_SOError() {
     JavaAstScanner scanner = new JavaAstScanner(null, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
     scanner.setVisitorBridge(new VisitorsBridge(new CheckThrowingSOError()));
-    List<InputFile> files = Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt"));
+    List<InputFile> files = Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerNoParseError.java"));
 
     assertThatCode(() -> scanner.scan(files))
       .withFailMessage("Should have triggered a StackOverflowError and not reach this point.")
@@ -321,10 +284,8 @@ class JavaAstScannerTest {
     List<String> filteredLogs = TestUtils.filterOutAnalysisProgressLogLines(logs);
     assertThat(filteredLogs).contains("1/1 source file has been analyzed");
     assertThat(filteredLogs.size()).isBetween(3,4);
-    assertThat(logTester.logs(Level.ERROR))
-      .containsExactlyInAnyOrder(
-        "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
-        "Parse error at line 3 column 13: Switch Expressions are supported from Java 14 onwards only");
+    // the language level does not restrict what the analyzer reads
+    assertThat(logTester.logs(Level.ERROR)).isEmpty();
     assertThat(logTester.logs(Level.WARN))
       // two files, only one log
       .hasSize(1)
@@ -344,10 +305,7 @@ class JavaAstScannerTest {
       ));
     assertThat(logTester.logs(Level.INFO)).isEmpty();
     assertThat(logTester.logs(Level.WARN)).isEmpty();
-    assertThat(logTester.logs(Level.ERROR))
-          .containsExactlyInAnyOrder(
-            "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
-            "Parse error at line 3 column 13: Switch Expressions are supported from Java 14 onwards only");
+    assertThat(logTester.logs(Level.ERROR)).isEmpty();
   }
 
   @Test
@@ -380,7 +338,7 @@ class JavaAstScannerTest {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.reportAnalysisError(any(RecognitionException.class), any(InputFile.class))).thenReturn(true);
     scanner.setVisitorBridge(new VisitorsBridge(Collections.singletonList(listener), new ArrayList<>(), sonarComponents));
-    scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerParseError.txt")));
+    scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerParseError.java")));
     verify(sonarComponents).reportAnalysisError(any(RecognitionException.class), any(InputFile.class));
     verifyNoInteractions(listener);
   }
@@ -491,7 +449,7 @@ class JavaAstScannerTest {
     MapSettings settings = new MapSettings().setProperty(SonarComponents.SONAR_FAIL_ON_STACKOVERFLOW, false);
     assertDoesNotThrow(() -> scanFilesWithVisitorsAndContext(List.of(TRIVIAL_COMPILATION_UNIT), List.of(PROBLEMATIC_VISITOR), settings));
     assertThat(logTester.logs(Level.ERROR))
-      .containsExactly("A stack overflow error occurred while analyzing file: 'src/test/resources/AstScannerNoParseError.txt'");
+      .containsExactly("A stack overflow error occurred while analyzing file: 'src/test/resources/AstScannerNoParseError.java'");
   }
 
   @ParameterizedTest

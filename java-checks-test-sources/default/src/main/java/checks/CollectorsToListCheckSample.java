@@ -13,8 +13,8 @@ import lombok.val;
 public class CollectorsToListCheckSample {
 
   void lombok_val() {
-    // Lombok val is not supported, in this case the symbolType of the collect method invocation is unknown
-    val unknownSymbolStream = Stream.of("A", "B", "C").collect(Collectors.toList()); // Compliant
+    // ECJ has no Lombok support, so val stayed unknown and the call was not reported; the declared type is now inferred.
+    val unknownSymbolStream = Stream.of("A", "B", "C").collect(Collectors.toList()); // Noncompliant
   }
 
   static class ListWrapper {

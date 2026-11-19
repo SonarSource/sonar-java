@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -79,6 +80,11 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
     if (declaration == null || declaration.initializer() == null || declaration.type() == null || !isStaticFinalOrInterfaceMember()) {
       return null;
     }
+    Type declaredType = declaration.type().symbolType();
+    if (!declaredType.isPrimitive() && !declaredType.is("java.lang.String")) {
+      // a boxed variable is never a constant variable
+      return null;
+    }
     ExpressionTree initializer = declaration.initializer();
     Object value = initializer.is(Tree.Kind.LONG_LITERAL, Tree.Kind.FLOAT_LITERAL, Tree.Kind.DOUBLE_LITERAL)
       ? literalNumber((LiteralTree) initializer)
@@ -121,7 +127,7 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
   @Override
   public boolean isLocalVariable() {
-    return local || (owner().isMethodSymbol() && !parameter);
+    return local || owner().isMethodSymbol();
   }
 
   @Override
@@ -179,7 +185,7 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
     @Override
     public boolean isEffectivelyFinal() {
-      return true;
+      return false;
     }
 
     @Override
@@ -199,7 +205,7 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
     @Override
     public SymbolMetadata metadata() {
-      return Symbols.EMPTY_METADATA;
+      return PlaceholderMetadata.INSTANCE;
     }
 
     @Override
@@ -210,6 +216,52 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
     @Override
     public boolean isFinal() {
       return false;
+    }
+  }
+  /** A parameter no source declares carries no annotation, so nothing is known to be nullable or not. */
+  private static final class PlaceholderMetadata implements SymbolMetadata {
+    static final PlaceholderMetadata INSTANCE = new PlaceholderMetadata();
+
+    @Override
+    public boolean isAnnotatedWith(String fullyQualifiedName) {
+      return false;
+    }
+
+    @Nullable
+    @Override
+    public List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
+      return null;
+    }
+
+    @Override
+    public List<AnnotationInstance> annotations() {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public List<AnnotationInstance> symbolAnnotations() {
+      return Collections.emptyList();
+    }
+
+    @Override
+    public NullabilityData nullabilityData() {
+      return JSymbolMetadata.noNullabilityAnnotationAt(NullabilityLevel.PACKAGE);
+    }
+
+    @Override
+    public NullabilityData nullabilityData(NullabilityTarget target) {
+      return JSymbolMetadata.noNullabilityAnnotationAt(NullabilityLevel.PACKAGE);
+    }
+
+    @Nullable
+    @Override
+    public AnnotationTree findAnnotationTree(AnnotationInstance annotationInstance) {
+      return null;
+    }
+
+    @Override
+    public SymbolMetadata[] parametersMetadata() {
+      return new SymbolMetadata[0];
     }
   }
 }

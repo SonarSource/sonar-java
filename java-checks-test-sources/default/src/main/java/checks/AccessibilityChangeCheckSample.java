@@ -14,7 +14,9 @@ class AccessibilityChangeCheckSample {
     this.getClass().getDeclaredField(fieldName).setInt(this, value); // Noncompliant {{This accessibility bypass should be removed.}}
   }
 
-  record Person(String name, int age) {
+  static class Person {
+    Person(String name, int age) {
+    }
   }
 
   void accessibilityChangeOnRecordFields() throws NoSuchFieldException, IllegalAccessException, ClassNotFoundException {

@@ -242,8 +242,8 @@ class RedundantTypeCastCheckSample_G<T> {
       return s;
     }
     String foo() {
-      // FN introduced due to ECJ 3.44
-      return (String) getValue(""); // Compliant
+      // ECJ 3.44 does not infer K as String here and misses the redundant cast; javac does.
+      return (String) getValue(""); // Noncompliant
     }
   }
 
@@ -338,7 +338,8 @@ abstract class MyClass {
   }
 
   MyClass qix3() {
-    return ((MyOtherClass) foo()); // Noncompliant
+    // In a cast context foo() is typed MyClass (javac keeps the checkcast), so the downcast is needed; ECJ wrongly typed it as MyOtherClass and reported it.
+    return ((MyOtherClass) foo()); // Compliant
   }
 }
 abstract class MyOtherClass extends MyClass {

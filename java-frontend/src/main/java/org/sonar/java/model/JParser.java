@@ -31,8 +31,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import org.sonar.java.semsitter.BridgeExtractor;
-import org.sonar.java.semsitter.PlatformDetection;
+import org.sonar.java.semsitter.EmbeddedAnalyzer;
 import org.sonar.java.semsitter.SemsitterBridge;
 
 public final class JParser {
@@ -65,6 +64,7 @@ public final class JParser {
         document = bridge.cst(file.toString());
       }
       JSema sema = new JSema();
+      sema.noLibraries(classpath.isEmpty());
       sema.ingestDocument(document);
       // Types load lazily while rules run, so the bridge outlives this call.
       sema.loadTypes(names -> {
@@ -74,7 +74,14 @@ public final class JParser {
           throw new UncheckedIOException(failure);
         }
       });
-      return SemsitterTranslator.translate(sema, document);
+      sema.loadPackages(name -> {
+        try {
+          return bridge == null ? null : bridge.hasPackage(name);
+        } catch (IOException failure) {
+          throw new UncheckedIOException(failure);
+        }
+      });
+      return SemsitterTranslator.translate(sema, document, javaVersion(version));
     } catch (RecognitionException syntaxError) {
       throw syntaxError;
     } catch (Exception failure) {
@@ -82,6 +89,14 @@ public final class JParser {
       throw new RecognitionException(1, "SemSitter: unable to parse " + unitName, failure);
     } finally {
       deleteQuietly(directory);
+    }
+  }
+
+  private static int javaVersion(String version) {
+    try {
+      return Integer.parseInt(version);
+    } catch (NumberFormatException notANumber) {
+      return Integer.MAX_VALUE;
     }
   }
 
@@ -132,19 +147,19 @@ public final class JParser {
     return Files.createTempDirectory("sonar-java-unit");
   }
 
-  static Path bridgePath() {
-    String configured = System.getProperty("sonar.java.semsitter.bridge");
+  /** The SemSitter analyzer executable: {@code -Dsonar.java.semsitter.executable}, else {@code SEMSITTER_ANALYZER}, else the packaged one. */
+  public static Path bridgePath() {
+    String configured = System.getProperty("sonar.java.semsitter.executable");
     if (configured == null || configured.isBlank()) {
-      configured = System.getenv("SEMSITTER_BRIDGE");
+      configured = System.getenv("SEMSITTER_ANALYZER");
     }
     if (configured != null && !configured.isBlank()) {
       return Path.of(configured);
     }
     try {
-      Path target = Path.of(System.getProperty("java.io.tmpdir"), "sonar-java", "semsitter-bridge");
-      return BridgeExtractor.extract(target, new PlatformDetection().getPlatform());
-    } catch (Exception failure) {
-      throw new RecognitionException(1, "SemSitter bridge is unavailable: " + failure.getMessage(), failure);
+      return EmbeddedAnalyzer.extract();
+    } catch (IOException failure) {
+      throw new RecognitionException(1, "SemSitter server is unavailable: " + failure.getMessage(), failure);
     }
   }
 

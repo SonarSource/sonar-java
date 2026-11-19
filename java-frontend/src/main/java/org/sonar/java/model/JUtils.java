@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
@@ -77,7 +78,11 @@ public final class JUtils {
 
   @Nullable
   public static Object defaultValue(Symbol.MethodSymbol method) {
-    return null;
+    MethodTree declaration = method.declaration();
+    if (declaration == null && method instanceof JMethodSymbol library) {
+      return library.sema.annotationDefault(library);
+    }
+    return declaration == null || declaration.defaultValue() == null ? null : ExpressionUtils.resolveAsConstant(declaration.defaultValue());
   }
 
   /**
@@ -147,13 +152,18 @@ public final class JUtils {
     Set<Type> result = new HashSet<>();
     Symbol.TypeSymbol symbol = type.symbol();
     Type superClass = symbol.superClass();
-    if (superClass != null && !superClass.isUnknown()) {
+    if (superClass != null && (!superClass.isUnknown() || isRecovered(superClass))) {
       result.add(superClass);
     }
     symbol.interfaces().stream()
-      .filter(iface -> !iface.isUnknown())
+      .filter(iface -> !iface.isUnknown() || isRecovered(iface))
       .forEach(result::add);
     return result;
+  }
+
+  /** A type the sources name but nothing declares: it is kept among supertypes, unlike the unknown type itself. */
+  static boolean isRecovered(Type type) {
+    return type.isUnknown() && type != Type.UNKNOWN && !type.name().isEmpty() && !type.fullyQualifiedName().startsWith("!");
   }
 
   @Nullable

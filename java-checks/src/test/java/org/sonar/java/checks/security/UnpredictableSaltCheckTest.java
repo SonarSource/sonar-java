@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class UnpredictableSaltCheckTest {
@@ -34,10 +35,13 @@ class UnpredictableSaltCheckTest {
 
   @Test
   void test_non_compiling() {
-    CheckVerifier.newVerifier()
+    // an array creation without dimension nor initializer is a syntax error: the file is reported as a parse error
+    CheckVerifier verifier = CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/security/UnpredictableSaltCheck.java"))
-      .withCheck(new UnpredictableSaltCheck())
-      .verifyIssues();
+      .withCheck(new UnpredictableSaltCheck());
+    assertThatThrownBy(verifier::verifyIssues)
+      .isInstanceOf(AssertionError.class)
+      .hasMessageContaining("Parse error at line 18");
   }
 
   @Test

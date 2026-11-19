@@ -40,6 +40,7 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.testing.VisitorsBridgeForTests;
@@ -90,6 +91,9 @@ public class FilterVerifier {
 
     Set<AnalyzerMessage> issues = new HashSet<>();
     for (var testJavaFileScannerContext : visitorsBridge.testContexts()) {
+      if (testJavaFileScannerContext.getTree() instanceof JavaTree.CompilationUnitTreeImpl unit && unit.hasError()) {
+        throw new AssertionError("Should not fail analysis (syntax error at line " + unit.errorLine() + ")");
+      }
       issues.addAll(testJavaFileScannerContext.getIssues());
     }
 

@@ -20,6 +20,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -40,8 +42,10 @@ import org.sonar.java.classpath.DependencyVersionInference;
 import org.sonar.java.collections.CollectionUtils;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
+import org.sonar.java.model.JParser;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.semsitter.SemsitterBridge;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -158,12 +162,26 @@ public class JavaFrontend {
       scanAndMeasureTask(sourceFiles, astScanner::scan, "Main");
       scanAndMeasureTask(testFiles, astScannerForTests::scan, "Test");
       scanAndMeasureTask(generatedFiles, astScannerForGeneratedFiles::scan, "Generated");
-    } else if (sonarComponents.isAutoScan()) {
-      scanAsBatch(new AutoScanBatchContext(), sourceFiles, testFiles);
     } else {
-      scanAsBatch(new DefaultBatchModeContext(astScanner, "Main"), sourceFiles);
-      scanAsBatch(new DefaultBatchModeContext(astScannerForTests, "Test"), testFiles);
-      scanAsBatch(new DefaultBatchModeContext(astScannerForGeneratedFiles, "Generated"), generatedFiles);
+      // The server scans the files of all groups once, whatever the number of batches.
+      List<String> allFiles = analyzedPaths(List.of(sourceFiles, testFiles, generatedFiles));
+      SemsitterBridge.scanFiles(allFiles);
+      if (!allFiles.isEmpty()) {
+        prepareModuleScan();
+      }
+      try {
+        if (sonarComponents.isAutoScan()) {
+          scanAsBatch(new AutoScanBatchContext(), sourceFiles, testFiles);
+        } else {
+          scanAsBatch(new DefaultBatchModeContext(astScanner, "Main"), sourceFiles);
+          scanAsBatch(new DefaultBatchModeContext(astScannerForTests, "Test"), testFiles);
+          scanAsBatch(new DefaultBatchModeContext(astScannerForGeneratedFiles, "Generated"), generatedFiles);
+        }
+      } finally {
+        SemsitterBridge.scanFiles(List.of());
+        SemsitterBridge.moduleRoot(null);
+        SemsitterBridge.moduleSettings(Map.of());
+      }
     }
 
     DependencyVersionInference dependencyService = new DependencyVersionInference();
@@ -193,6 +211,7 @@ public class JavaFrontend {
     for (Iterable<? extends InputFile> group : inputFiles) {
       files.addAll(astScanner.filterModuleInfo(group).toList());
     }
+    inServerOrder(files);
     try {
       try {
         if (!files.isEmpty()) {
@@ -213,6 +232,62 @@ public class JavaFrontend {
       if (astScanner.shouldFailAnalysis()) {
         throw new AnalysisException(BATCH_ERROR_MESSAGE, e);
       }
+    }
+  }
+
+  /**
+   * Sorts the files by path, the order the server builds files ahead in: read in another order, each file it built ahead
+   * goes unused and the next one is built while the analysis waits. Files without a path keep their order.
+   */
+  private static void inServerOrder(List<InputFile> files) {
+    Map<InputFile, String> paths = new HashMap<>();
+    try {
+      files.forEach(file -> paths.put(file, file.path().toAbsolutePath().toString().replace('\\', '/')));
+    } catch (RuntimeException noPath) {
+      return;
+    }
+    files.sort(Comparator.comparing(paths::get));
+  }
+
+  /** The absolute paths of the files of all groups; empty when one has none, which leaves the server to its source roots. */
+  private static List<String> analyzedPaths(List<Iterable<? extends InputFile>> groups) {
+    List<String> paths = new ArrayList<>();
+    try {
+      for (Iterable<? extends InputFile> group : groups) {
+        group.forEach(file -> paths.add(file.path().toAbsolutePath().toString()));
+      }
+    } catch (RuntimeException noPath) {
+      return List.of();
+    }
+    return paths;
+  }
+
+  private void publishModule() {
+    if (sonarComponents.context() == null) {
+      return;
+    }
+    SemsitterBridge.moduleRoot(sonarComponents.context().fileSystem().baseDir().toPath());
+    var config = sonarComponents.context().config();
+    Map<String, List<String>> settings = new HashMap<>();
+    settings.put("jvm.libraries", List.of(config.getStringArray("sonar.java.libraries")));
+    settings.put("jvm.binaries", List.of(config.getStringArray("sonar.java.binaries")));
+    settings.put("jvm.test_libraries", List.of(config.getStringArray("sonar.java.test.libraries")));
+    settings.put("jvm.test_binaries", List.of(config.getStringArray("sonar.java.test.binaries")));
+    config.get("sonar.java.jdkHome").ifPresent(home -> settings.put("jvm.jdk_home", List.of(home)));
+    settings.values().removeIf(List::isEmpty);
+    SemsitterBridge.moduleSettings(settings);
+  }
+
+  /** Sets the module and its classpath for the server and has it scan them while the first files are read. */
+  private void prepareModuleScan() {
+    if (sonarComponents.context() == null) {
+      return;
+    }
+    publishModule();
+    try {
+      SemsitterBridge.prepare(JParser.bridgePath());
+    } catch (RuntimeException unavailable) {
+      // the first file reports an unavailable server
     }
   }
 
@@ -237,6 +312,7 @@ public class JavaFrontend {
   private void scanBatch(BatchModeContext context, List<InputFile> batchFiles, AnalysisProgress analysisProgress) {
     analysisProgress.startBatch(batchFiles.size());
     Set<Runnable> environmentsCleaners = new HashSet<>();
+    publishModule();
     JParserConfig.Mode.BATCH
       .create(javaVersion, context.getClasspath(), sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage())
       .parse(batchFiles, sonarComponents::analysisCancelled, analysisProgress, (input, result) -> scanAsBatchCallback(input, result, context, environmentsCleaners));

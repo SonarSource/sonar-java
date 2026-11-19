@@ -17,12 +17,14 @@
 package org.sonar.java.model;
 
 import com.google.gson.JsonObject;
+import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import org.sonar.java.semsitter.SemsitterBridge;
 import java.util.function.BiConsumer;
@@ -118,12 +120,12 @@ public abstract class JParserConfig {
       try {
         openBridge(files);
         for (InputFile inputFile : files) {
-          if (isCanceled.getAsBoolean()) {
-            break;
-          }
           executionTimeReport.start(inputFile);
           action.accept(inputFile, parseFile(inputFile));
           executionTimeReport.end();
+          if (isCanceled.getAsBoolean()) {
+            throw new CancellationException("Analysis cancelled");
+          }
         }
       } finally {
         closeBridge();
@@ -183,8 +185,13 @@ public abstract class JParserConfig {
       if (bridge == null) {
         return new Result(JParser.parse(javaVersion.effectiveJavaVersionAsString(), inputFile.filename(), inputFile.contents()));
       }
+      if (!inputFile.filename().endsWith(".java")) {
+        // The analyzer only claims .java files; a custom suffix is reported as a file it cannot parse.
+        return new Result(new RecognitionException(1, "Parse error: unsupported file suffix for " + inputFile.filename()));
+      }
       JsonObject document = bridge.cst(inputFile.path().toAbsolutePath().toString());
       JSema sema = new JSema();
+      sema.noLibraries(classpath.isEmpty());
       sema.ingestDocument(document);
       sema.loadTypes(names -> {
         if (bridge == null) {
@@ -196,7 +203,18 @@ public abstract class JParserConfig {
           throw new UncheckedIOException(failure);
         }
       });
-      return new Result(SemsitterTranslator.translate(sema, document));
+      sema.loadPackages(name -> {
+        try {
+          return bridge == null ? null : bridge.hasPackage(name);
+        } catch (IOException failure) {
+          throw new UncheckedIOException(failure);
+        }
+      });
+      JavaTree.CompilationUnitTreeImpl unit = SemsitterTranslator.translate(sema, document, javaVersion.isNotSet() ? Integer.MAX_VALUE : javaVersion.asInt());
+      if (unit.hasError()) {
+        return new Result(new RecognitionException(unit.errorLine(), "Parse error at line " + unit.errorLine() + " column " + unit.errorColumn()));
+      }
+      return new Result(unit);
     } catch (Exception e) {
       return new Result(e);
     } finally {

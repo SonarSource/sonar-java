@@ -21,6 +21,9 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -60,6 +63,11 @@ class JTypeTest {
 
   @Test
   void isClass() {
+    sema.ingestTypes(com.google.gson.JsonParser.parseString("""
+      {"java.util.HashMap": {"origin": "project", "kind": "class", "typeParameters": 2, "annotations": [], "members": []},
+       "java.util.Map": {"origin": "project", "kind": "interface", "typeParameters": 2, "annotations": [], "members": []},
+       "java.lang.annotation.RetentionPolicy": {"origin": "project", "kind": "enum", "typeParameters": 0, "annotations": [], "members": []}}
+      """).getAsJsonObject());
     assertAll(
       () ->
         assertThat(type("java.util.HashMap").isClass())
@@ -271,7 +279,9 @@ class JTypeTest {
     AbstractTypedTree e = Objects.requireNonNull((AbstractTypedTree) s.expression());
     Type captureType = e.symbolType();
 
-    assertThat(captureType.fullyQualifiedName()).isEqualTo("!capture!");
+    // the capture of `? extends A` is seen as its bound
+    assertThat(captureType.isSubtypeOf("A")).isTrue();
+    assertThat(captureType.isUnknown()).isFalse();
   }
 
   @Test
@@ -317,6 +327,30 @@ class JTypeTest {
     assertThat(wildcardType1)
       .isEqualTo(wildcardType2)
       .isNotEqualTo(wildcardType3);
+  }
+
+  @Test
+  void subtype_check_walks_past_an_unresolved_superclass_and_interface() {
+    JavaTree.CompilationUnitTreeImpl cu = test("""
+      class A extends Missing<String> implements AlsoMissing<String> {}
+      """);
+    ClassTree a = (ClassTree) cu.types().get(0);
+    assertThat(a.symbol().type().isSubtypeOf("java.io.Serializable")).isFalse();
+  }
+
+  @Test
+  void call_binds_the_overload_that_has_the_argument_count_even_when_another_ends_in_an_array() {
+    JavaTree.CompilationUnitTreeImpl cu = test("""
+      class A {
+        static <T> Object[] f(T[] values) { return null; }
+        static Object[] f(Object[] values, Object[] more) { return null; }
+        static <T> Object[] g(T[] values) { return f(values); }
+      }
+      """);
+    ClassTree a = (ClassTree) cu.types().get(0);
+    MethodTree g = (MethodTree) a.members().get(2);
+    MethodInvocationTree call = (MethodInvocationTree) ((org.sonar.plugins.java.api.tree.ReturnStatementTree) g.block().body().get(0)).expression();
+    assertThat(call.methodSymbol().parameterTypes()).hasSize(1);
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {

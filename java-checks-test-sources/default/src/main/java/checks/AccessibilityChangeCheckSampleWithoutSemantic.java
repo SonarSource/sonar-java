@@ -14,7 +14,9 @@ class AccessibilityChangeCheckSampleWithoutSemantic {
     this.getClass().getDeclaredField(fieldName).setInt(this, value); // Noncompliant
   }
 
-  record Person(String name, int age) {
+  static class Person {
+    Person(String name, int age) {
+    }
   }
 
   void accessibilityChangeOnRecordFields() throws NoSuchFieldException, IllegalAccessException, ClassNotFoundException {

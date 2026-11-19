@@ -269,8 +269,12 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     }
 
     Object[] array = (Object[]) value;
+    if (Stream.of(array).anyMatch(el -> !(el instanceof String))) {
+      // a path whose value is not a known constant cannot be compared with the method parameters
+      throw new DoNotReport();
+    }
     return Stream.of(array)
-      .map(el -> (String) el)
+      .map(String.class::cast)
       .toList();
   }
 

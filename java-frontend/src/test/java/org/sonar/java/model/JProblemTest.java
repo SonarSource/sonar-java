@@ -94,5 +94,4 @@ class JProblemTest {
       new JProblem("a", ProblemKind.UNDEFINED_TYPE).hashCode(),
       new JProblem("a", ProblemKind.PREVIEW_FEATURE_USED).hashCode());
   }
-
 }

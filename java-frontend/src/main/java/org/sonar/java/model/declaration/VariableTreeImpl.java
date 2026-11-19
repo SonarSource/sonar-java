@@ -129,7 +129,7 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   }
 
   public void setSymbol(Symbol symbol) {
-    this.variableSymbol = (Symbol.VariableSymbol) Objects.requireNonNull(symbol);
+    this.variableSymbol = Objects.requireNonNull(symbol) instanceof Symbol.VariableSymbol variable ? variable : null;
   }
 
   @Override

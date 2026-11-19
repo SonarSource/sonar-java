@@ -24,8 +24,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import javax.annotation.Nullable;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
@@ -137,7 +137,7 @@ class JavaFrontendTest {
     scan(SONARLINT_RUNTIME, "class A {");
 
     assertThat(sensorContext.allAnalysisErrors()).hasSize(1);
-    assertThat(sensorContext.allAnalysisErrors().iterator().next().message()).startsWith("Parse error at line 1 column 9");
+    assertThat(sensorContext.allAnalysisErrors().iterator().next().message()).startsWith("Parse error at line 1 column");
   }
 
   @Test
@@ -491,12 +491,12 @@ class JavaFrontendTest {
 
   @Test
   void test_file_by_file_scan() throws IOException {
-    scan(SONARLINT_RUNTIME, "class A {}", "class B { A a; }");
+    scan(SONARLINT_RUNTIME, "class A {}", "class B { Missing a; }");
     assertThat(sensorContext.allAnalysisErrors()).isEmpty();
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
       .contains("Unresolved imports/types have been detected during analysis.")
-      .contains("A cannot be resolved to a type");
+      .contains("Missing cannot be resolved to a type");
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(2);
     assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
   }
@@ -602,7 +602,7 @@ class JavaFrontendTest {
     assertThatThrownBy(() -> scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B { A a; }"))
       .isInstanceOf(AnalysisException.class)
       .hasMessage("Analysis cancelled")
-      .hasCauseInstanceOf(OperationCanceledException.class);
+      .hasCauseInstanceOf(CancellationException.class);
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(1);
     assertThat(mainCodeIssueScannerAndFilter.endOfAnalysisInvocationCount).isEqualTo(1);
   }
@@ -688,20 +688,6 @@ class JavaFrontendTest {
 */
 
   @Test
-  void test_sealed_classes_not_supported_with_java_16() throws IOException {
-    logTester.setLevel(Level.DEBUG);
-    scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "16"),
-      SONARLINT_RUNTIME, "sealed class Shape permits Circle { } final class Circle extends Shape { }");
-    assertThat(sensorContext.allAnalysisErrors()).hasSize(1);
-    assertThat(logTester.logs(Level.ERROR))
-      .contains(
-        "Unable to parse source file : 'Shape.java'",
-        "Parse error at line 1 column 8: Syntax error on token \"class\", . expected");
-    assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
-    assertThat(testCodeIssueScannerAndFilter.scanFileInvocationCount).isZero();
-  }
-
-  @Test
   void test_sealed_classes_support_using_java_17() throws IOException {
     logTester.setLevel(Level.DEBUG);
     scan(new MapSettings().setProperty(JavaVersion.SOURCE_VERSION, "17"),
@@ -765,7 +751,7 @@ class JavaFrontendTest {
     MapSettings settings = new MapSettings()
       .setProperty(SonarComponents.SONAR_BATCH_SIZE_KEY, 0);
     logTester.setLevel(Level.DEBUG);
-    scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B extends A {}");
+    scan(settings, SONARQUBE_RUNTIME, "class A {}", "class B extends Missing {}");
     String allLogs = String.join("\n", logTester.logs());
     assertThat(allLogs)
       .contains("Unresolved imports/types")

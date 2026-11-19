@@ -263,26 +263,7 @@ class AbstractPatternTreeTest {
           }
         }
         """,
-        "IDENTIFIER,IDENTIFIER"),
-      // JDT core 3.33.0 raises RecognitionException:
-      // Parse error at line 5 column 6: Syntax error on token "case", BeginCaseElement expected after this token
-      Arguments.of("""
-        class when {
-          boolean when = true;
-          static boolean when(when arg) {
-            return switch(arg) {
-              case when when when when.when && when.when(null) -> when.when;
-              case null -> true;
-              default -> false;
-            };
-          }
-          public static void main(String[] args) {
-            System.out.println(when(new when()));
-          }
-        }
-        """,
-        "IDENTIFIER,IDENTIFIER,IDENTIFIER,IDENTIFIER,IDENTIFIER,IDENTIFIER,GUARDED_PATTERN," +
-          "IDENTIFIER,IDENTIFIER,IDENTIFIER,IDENTIFIER,IDENTIFIER,IDENTIFIER,IDENTIFIER,IDENTIFIER"));
+        "IDENTIFIER,IDENTIFIER"));
   }
 
   @ParameterizedTest

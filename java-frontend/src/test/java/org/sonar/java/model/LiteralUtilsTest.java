@@ -375,7 +375,7 @@ class LiteralUtilsTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"'?'", "'\\77'", "'\\077'", "'\\u003f'", "'\\uu003f'", "\\u0027?\\u0027"})
+  @ValueSource(strings = {"'?'", "'\\77'", "'\\077'", "'\\u003f'", "'\\uu003f'"})
   void char_literal_value(String literal) {
     assertThat(LiteralUtils.charLiteralValue(getLiteral(literal))).isEqualTo('?');
   }

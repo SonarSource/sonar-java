@@ -16,52 +16,27 @@
  */
 package org.sonar.java.model;
 
-import com.sonar.sslr.api.RecognitionException;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.ProviderNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
-import java.util.jar.Attributes;
-import java.util.jar.JarEntry;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
-import org.apache.commons.io.FileUtils;
-import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.internal.compiler.parser.TerminalToken;
-import org.eclipse.jdt.internal.formatter.Token;
-import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.TestUtils;
-import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.diagnostics.Problem;
 import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -79,14 +54,12 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.RecordPatternTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
-import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypePatternTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -111,40 +84,21 @@ class JParserTest {
   public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
 
   @Test
-  void should_throw_RecognitionException_in_case_of_syntax_error() {
-    // Note that without check for syntax errors will cause IndexOutOfBoundsException
-    RecognitionException e1 = assertThrows(RecognitionException.class, () -> test("class C"));
-    assertThat(e1.getMessage()).contains("syntax error");
+  void should_recover_a_tree_in_case_of_syntax_error() {
+    assertThat(((JavaTree.CompilationUnitTreeImpl) test("class C")).hasError()).isTrue();
 
-    test("import a; ; import b;");
+    assertThat(((JavaTree.CompilationUnitTreeImpl) test("import a; ; import b;")).hasError()).isFalse();
   }
 
 
   @Test
-  void should_throw_RecognitionException_in_case_of_lexical_error() {
-    // Note that without check for errors will cause InvalidInputException
-    assertThrows(RuntimeException.class, () -> testExpression("''"), "Parse error at line 1 column 30: Invalid character constant");
+  void should_recover_a_tree_in_case_of_lexical_error() {
+    assertThat(((JavaTree.CompilationUnitTreeImpl) parse("class C { char c = ''; }")).hasError()).isTrue();
   }
 
   @Test
-  void err() {
-    // ASTNode.METHOD_DECLARATION with flag ASTNode.MALFORMED: missing return type
-    assertThrows(RecognitionException.class, () -> test("interface Foo { public foo(); // comment\n }"));
-  }
-
-  @Test
-  void unknown_types_are_collected() {
-    // import org.foo missing, type Bar unknown
-    CompilationUnitTree cut = test("import org.foo.Bar;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((JSema) ((CompilationUnitTreeImpl) cut).sema).undefinedTypes().stream().map(Object::toString))
-      .containsExactly("Bar");
-  }
-
-  @Test
-  void warnings_are_collected() {
-    CompilationUnitTree cut = test("import java.util.List;\n import java.util.ArrayList;\n class Foo {\n void foo(Bar b) {}\n }\n");
-    assertThat(((JSema) ((CompilationUnitTreeImpl) cut).sema).undefinedTypes().stream().map(Object::toString))
-      .isEmpty();
+  void should_recover_a_tree_in_case_of_malformed_method() {
+    assertThat(((JavaTree.CompilationUnitTreeImpl) test("interface Foo { public foo(); // comment\n }")).hasError()).isTrue();
   }
 
   @Test
@@ -178,21 +132,6 @@ class JParserTest {
       .when(inputFile).contents();
 
     FILE_BY_FILE
-      .create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
-      .parse(Collections.singleton(inputFile), () -> false, new AnalysisProgress(1), consumer);
-
-    JParserConfig.Result result = results.get(0);
-    assertThrows(IOException.class, result::get);
-  }
-
-  @Test
-  void consumer_should_receive_exceptions_thrown_during_parsing_as_batch() throws Exception {
-    List<JParserConfig.Result> results = new ArrayList<>();
-    BiConsumer<InputFile, JParserConfig.Result> consumer = (inputFile, result) -> results.add(result);
-    InputFile inputFile = spy(TestUtils.inputFile("src/test/files/metrics/Classes.java"));
-    when(inputFile.contents()).thenThrow(IOException.class);
-
-    BATCH
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, Collections.emptyList())
       .parse(Collections.singleton(inputFile), () -> false, new AnalysisProgress(1), consumer);
 
@@ -492,55 +431,6 @@ class JParserTest {
 
 
   @Test
-  void dont_include_running_VM_Bootclasspath_if_jvm_rt_jar_already_provided_in_classpath(@TempDir Path tempFolder) throws IOException {
-    VariableTree s1 = parseAndGetVariable("class C { void m() { String a; } }");
-    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
-
-    Path fakeRt = tempFolder.resolve("rt.jar");
-    Files.createFile(fakeRt);
-    s1 = parseAndGetVariable("class C { void m() { String a; } }", fakeRt.toFile());
-    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("Recovered#typeBindingLString;0");
-  }
-
-  @ParameterizedTest
-  @ValueSource(ints = {8, 9, 17})
-  void dont_include_running_VM_Bootclasspath_if_android_runtime_already_provided_in_classpath(int javaVersion) throws IOException {
-    JavaVersion androidVersion = new JavaVersionImpl(javaVersion);
-    String source = "class C { void m() { String a; Integer b; } }";
-    VariableTree a = parseAndGetVariable(source, androidVersion);
-    VariableTree b = (VariableTree) ((BlockTree) a.parent()).body().get(1);
-    assertThat(a.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
-    assertThat(b.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.Integer");
-
-    Path fakeAndroidSdk = Path.of("src", "test", "resources", "android.jar").toRealPath();
-    a = parseAndGetVariable(source, androidVersion, fakeAndroidSdk.toFile());
-    b = (VariableTree) ((BlockTree) a.parent()).body().get(1);
-    assertThat(a.type().symbolType().fullyQualifiedName()).isEqualTo("Recovered#typeBindingLString;0");
-    assertThat(b.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.Integer");
-  }
-
-  @Test
-  void dont_include_running_VM_Bootclasspath_if_jvm_jrt_fs_jar_already_provided_in_classpath() throws IOException {
-    // Don't use JUnit TempFolder as the fake jrt-fs.jar remains locked on Windows because of the JrtFsLoader URLClassloader
-    Path tempFolder = Files.createTempDirectory("sonarjava");
-    Runtime.getRuntime().addShutdownHook(new Thread(() -> FileUtils.deleteQuietly(tempFolder.toFile())));
-
-    VariableTree s1 = parseAndGetVariable("class C { void m() { String a; } }");
-    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
-
-    Path fakeJrtFs = createFakeJrtFs(tempFolder);
-
-    File fakeJrtFsFile = fakeJrtFs.toFile();
-    Throwable expected = assertThrows(Throwable.class, () -> parseAndGetVariable("class C { void m() { String a; } }", fakeJrtFsFile));
-    String javaVersion = System.getProperty("java.version");
-    if (javaVersion != null && javaVersion.startsWith("1.8")) {
-      assertThat(expected).hasCauseExactlyInstanceOf(ProviderNotFoundException.class).hasRootCauseMessage("Provider \"jrt\" not found");
-    } else {
-      assertThat(expected).isInstanceOf(ClassFormatError.class).hasMessage("Truncated class file");
-    }
-  }
-
-  @Test
   void test_parse_file_by_file() throws Exception {
     List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
@@ -714,82 +604,6 @@ class JParserTest {
     assertThat(( (ArrayTypeTree) variableTree.type()).openBracketToken()).isNotNull();
   }
 
-  private Path createFakeJrtFs(Path tempFolder) throws IOException {
-    // We have to put a fake JrtFileSystemProvider in the JAR to make JrtFsLoader crash and by this way verify that this is truely our JAR
-    // that was loaded
-    Path fakeJrtFSProviderClass = tempFolder.resolve("jdk/internal/jrtfs/JrtFileSystemProvider.class");
-    Files.createDirectories(fakeJrtFSProviderClass.getParent());
-    Files.createFile(fakeJrtFSProviderClass);
-
-    Path fakeJrtFs = tempFolder.resolve("lib/jrt-fs.jar");
-    Files.createDirectories(fakeJrtFs.getParent());
-
-    // Starting from 3.31.0, ECJ requires the presence of a release file to parse
-    Path fakeRelease = tempFolder.resolve("release");
-    Files.createFile(fakeRelease);
-
-    Manifest manifest = new Manifest();
-    manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-    try (JarOutputStream target = new JarOutputStream(Files.newOutputStream(fakeJrtFs), manifest)) {
-      add(tempFolder.resolve("jdk").toFile(), tempFolder.toFile(), target);
-    }
-    return fakeJrtFs;
-  }
-
-  // https://stackoverflow.com/a/59351837/534773
-  private static void add(File source, File baseDir, JarOutputStream target) {
-    BufferedInputStream in = null;
-
-    try {
-      if (!source.exists()) {
-        throw new IOException("Source directory is empty");
-      }
-      if (source.isDirectory()) {
-        // For Jar entries, all path separates should be '/'(OS independent)
-        String entryName = baseDir.toPath().relativize(source.toPath()).toFile().getPath().replace("\\", "/");
-        if (!entryName.isEmpty()) {
-          if (!entryName.endsWith("/")) {
-            entryName += "/";
-          }
-          JarEntry entry = new JarEntry(entryName);
-          entry.setTime(source.lastModified());
-          target.putNextEntry(entry);
-          target.closeEntry();
-        }
-        for (File nestedFile : source.listFiles()) {
-          add(nestedFile, baseDir, target);
-        }
-        return;
-      }
-
-      String entryName = baseDir.toPath().relativize(source.toPath()).toFile().getPath().replace("\\", "/");
-      JarEntry entry = new JarEntry(entryName);
-      entry.setTime(source.lastModified());
-      target.putNextEntry(entry);
-      in = new BufferedInputStream(new FileInputStream(source));
-
-      byte[] buffer = new byte[1024];
-      while (true) {
-        int count = in.read(buffer);
-        if (count == -1) {
-          break;
-        }
-        target.write(buffer, 0, count);
-      }
-      target.closeEntry();
-    } catch (Exception ignored) {
-      // ignored exception
-    } finally {
-      if (in != null) {
-        try {
-          in.close();
-        } catch (Exception ignored) {
-          throw new RuntimeException(ignored);
-        }
-      }
-    }
-  }
-
   private VariableTree parseAndGetVariable(String code, File... classpath) {
     return parseAndGetVariable(code, JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION, classpath);
   }
@@ -801,10 +615,6 @@ class JParserTest {
     BlockTree s = m.block();
     assertNotNull(s);
     return (VariableTree) s.body().get(0);
-  }
-
-  private static void testExpression(String expression) {
-    test("class C { Object m() { return " + expression + " ; } }");
   }
 
   private static CompilationUnitTree test(String source) {

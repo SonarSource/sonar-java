@@ -111,6 +111,10 @@ abstract class JSymbol implements Symbol {
     modifiers.addAll(other.modifiers);
   }
 
+  void removeModifier(String modifier) {
+    modifiers.remove(modifier);
+  }
+
   void addModifiers(Collection<String> values) {
     for (String value : values) {
       for (String part : value.split(",")) {
@@ -278,7 +282,11 @@ abstract class JSymbol implements Symbol {
     if (this instanceof JTypeSymbol typeSymbol && typeSymbol.isTypeParameter()) {
       return owner() instanceof TypeSymbol ownerType ? ownerType : null;
     }
-    Symbol current = this;
+    // A nested or local type is enclosed by the class declaring it; a top-level one by itself.
+    Symbol current = this.isTypeSymbol() ? owner() : this;
+    if (this.isTypeSymbol() && !(current instanceof Symbol.MethodSymbol) && !current.isTypeSymbol()) {
+      return (TypeSymbol) this;
+    }
     while (current != null && !current.isTypeSymbol()) {
       if (current.isPackageSymbol() || current.isUnknown()) {
         return null;

@@ -70,22 +70,22 @@ class ClassesLayoutTest {
 
   @Test
   void type() {
-    assertThat(countFields(JType.class)).isEqualTo(7);
+    assertThat(countFields(JType.class)).isEqualTo(8);
   }
 
   @Test
   void symbol_type() {
-    assertThat(countFields(JTypeSymbol.class)).isEqualTo(11);
+    assertThat(countFields(JTypeSymbol.class)).isEqualTo(29);
   }
 
   @Test
   void symbol_method() {
-    assertThat(countFields(JMethodSymbol.class)).isEqualTo(11);
+    assertThat(countFields(JMethodSymbol.class)).isEqualTo(31);
   }
 
   @Test
   void symbol_variable() {
-    assertThat(countFields(JVariableSymbol.class)).isEqualTo(7);
+    assertThat(countFields(JVariableSymbol.class)).isEqualTo(19);
   }
 
   /** Count number of fields in instances, including inherited fields. */

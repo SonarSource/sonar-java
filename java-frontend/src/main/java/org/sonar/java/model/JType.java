@@ -38,6 +38,9 @@ final class JType implements Type, Type.ArrayType {
     NAMED, PRIMITIVE, VOID, NULL, ARRAY, TYPEVAR, UNKNOWN, INTERSECTION, CAPTURE, WILDCARD
   }
 
+  /** Marks a parameterization the compiler builds itself; compared by identity. */
+  private static final List<JType> INFERRED = Collections.unmodifiableList(new ArrayList<>());
+
   private static final Set<String> NUMERIC = Set.of("byte", "char", "short", "int", "long", "float", "double");
 
   final JSema sema;
@@ -70,6 +73,11 @@ final class JType implements Type, Type.ArrayType {
 
   static JType named(JSema sema, String fqn, List<JType> args) {
     return new JType(sema, Kind.NAMED, fqn, List.copyOf(args), null, null, List.of());
+  }
+
+  /** A parameterization the compiler builds itself, like the type of a class literal: its arguments are not checked. */
+  static JType inferred(JSema sema, String fqn, List<JType> args) {
+    return new JType(sema, Kind.NAMED, fqn, List.copyOf(args), null, null, INFERRED);
   }
 
   static JType primitive(JSema sema, String name) {
@@ -198,11 +206,22 @@ final class JType implements Type, Type.ArrayType {
     if (!visited.add(fullyQualifiedName() + ">" + superType.fullyQualifiedName())) {
       return false;
     }
-    if (sameErasure(superType) && argumentsMatch(superType)) {
+    if (superType.isTypeVar()) {
+      if (isTypeVar() && superType instanceof JType other && Objects.equals(typeVarId, other.typeVarId)) {
+        return true;
+      }
+      if (!isTypeVar()) {
+        return false;
+      }
+    }
+    if (!isArray() && sameErasure(superType) && argumentsMatch(superType)) {
       return true;
     }
     if (isPrimitive() && superType.isPrimitive()) {
       return widensTo(fullyQualifiedName(), superType.fullyQualifiedName());
+    }
+    if (kind == Kind.INTERSECTION) {
+      return intersection.stream().anyMatch(bound -> bound.isSubtypeOf(superType, visited));
     }
     if (isArray()) {
       if (superType.isArray()) {
@@ -210,7 +229,11 @@ final class JType implements Type, Type.ArrayType {
       }
       return superType.is("java.lang.Object") || superType.is("java.lang.Cloneable") || superType.is("java.io.Serializable");
     }
-    if (isPrimitive() || superType.isPrimitive() || isTypeVar()) {
+    if (isTypeVar()) {
+      return sema.typeVariableBounds(typeVarId).stream()
+        .anyMatch(bound -> bound instanceof JType upper && !upper.isUnknown() && upper != this && upper.isSubtypeOf(superType, visited));
+    }
+    if (isPrimitive() || superType.isPrimitive()) {
       return false;
     }
     Symbol.TypeSymbol owner = declaredSymbol();
@@ -219,11 +242,11 @@ final class JType implements Type, Type.ArrayType {
     }
     // Supertypes are walked erased: their arguments name the owner's type variables, not this type's arguments.
     Type superClass = owner.superClass();
-    if (superClass != null && ((JType) superClass.erasure()).isSubtypeOf(superType, visited)) {
+    if (superClass != null && superClass.erasure() instanceof JType erasedSuper && erasedSuper.isSubtypeOf(superType, visited)) {
       return true;
     }
     for (Type iface : owner.interfaces()) {
-      if (((JType) iface.erasure()).isSubtypeOf(superType, visited)) {
+      if (iface.erasure() instanceof JType erasedIface && erasedIface.isSubtypeOf(superType, visited)) {
         return true;
       }
     }
@@ -235,19 +258,33 @@ final class JType implements Type, Type.ArrayType {
   }
 
   private boolean argumentsMatch(Type superType) {
-    if (!isParameterized() || !superType.isParameterized()) {
+    List<Type> theirs = superType.typeArguments();
+    if (args.isEmpty() || theirs.isEmpty()) {
       return true;
     }
-    List<Type> theirs = superType.typeArguments();
     if (args.size() != theirs.size()) {
       return false;
     }
     for (int i = 0; i < args.size(); i++) {
-      if (!args.get(i).is(theirs.get(i).fullyQualifiedName())) {
+      if (!contains(theirs.get(i), args.get(i))) {
         return false;
       }
     }
     return true;
+  }
+
+  /** Whether the type argument {@code mine} is contained by {@code theirs} (JLS 4.5.1). */
+  private static boolean contains(Type theirs, JType mine) {
+    if (theirs instanceof JType wanted && wanted.isWildcard()) {
+      if (wanted.lower != null) {
+        return mine.isWildcard() ? mine.lower != null && wanted.lower.isSubtypeOf(mine.lower) : wanted.lower.isSubtypeOf(mine);
+      }
+      if (wanted.element == null || wanted.element.is("java.lang.Object")) {
+        return true;
+      }
+      return mine.isSubtypeOf(wanted.element);
+    }
+    return !mine.isWildcard() && mine.is(theirs.fullyQualifiedName());
   }
 
   private static boolean widensTo(String from, String to) {
@@ -337,13 +374,7 @@ final class JType implements Type, Type.ArrayType {
       return this;
     }
     if (isRawType()) {
-      Symbol.TypeSymbol owner = declaredSymbol();
-      int count = owner instanceof JTypeSymbol typeSymbol ? typeSymbol.typeParameterCount() : 0;
-      List<JType> variables = new java.util.ArrayList<>();
-      for (int i = 0; i < count; i++) {
-        variables.add(typeVar(sema, "T" + i, fqn + "<" + i + ">"));
-      }
-      return named(sema, fqn, variables);
+      return declaredSymbol() instanceof JTypeSymbol typeSymbol ? typeSymbol.declaringType(this) : this;
     }
     return sema.getClassType(fqn);
   }
@@ -358,7 +389,8 @@ final class JType implements Type, Type.ArrayType {
     }
     if (kind == Kind.NAMED) {
       Symbol.TypeSymbol owner = declaredSymbol();
-      return owner.isUnknown();
+      // the compiler cannot bind a parameterization with an argument nothing declares
+      return owner.isUnknown() || (intersection != INFERRED && args.stream().anyMatch(JType::isUnknown));
     }
     return false;
   }
@@ -381,8 +413,15 @@ final class JType implements Type, Type.ArrayType {
     if (kind == Kind.ARRAY) {
       return element.name() + "[]";
     }
+    if (kind == Kind.WILDCARD) {
+      if (lower != null) {
+        return "? super " + lower.name();
+      }
+      return element == null || element.is("java.lang.Object") ? "?" : "? extends " + element.name();
+    }
     int boundary = Math.max(fqn.lastIndexOf('.'), fqn.lastIndexOf('$'));
-    return boundary < 0 ? fqn : fqn.substring(boundary + 1);
+    String simple = boundary < 0 ? fqn : fqn.substring(boundary + 1);
+    return JSema.isAnonymousName(simple) ? "" : simple;
   }
 
   @Override
@@ -418,12 +457,22 @@ final class JType implements Type, Type.ArrayType {
     if (kind == Kind.NAMED && !args.isEmpty()) {
       return sema.getClassType(fqn);
     }
+    if (kind == Kind.TYPEVAR && typeVarId != null) {
+      Type bound = sema.typeVariableBound(typeVarId);
+      return bound == this ? this : bound.erasure();
+    }
     return this;
   }
 
   @Override
   public boolean isParameterized() {
-    return kind == Kind.NAMED && !args.isEmpty();
+    return kind == Kind.NAMED && !args.isEmpty() && !isGenericSelf();
+  }
+
+  /** The type written with its own type parameters is the generic declaration itself, not a parameterization. */
+  private boolean isGenericSelf() {
+    String owner = fqn + "`" + args.size() + "<";
+    return args.stream().allMatch(argument -> argument.kind == Kind.TYPEVAR && argument.typeVarId != null && argument.typeVarId.startsWith(owner));
   }
 
   @Override
@@ -454,10 +503,21 @@ final class JType implements Type, Type.ArrayType {
     if (this == obj) {
       return true;
     }
-    if (!(obj instanceof JType other)) {
+    if (!(obj instanceof JType other) || kind == Kind.CAPTURE) {
       return false;
     }
-    return kind == other.kind && fqn.equals(other.fqn) && args.equals(other.args) && Objects.equals(typeVarId, other.typeVarId);
+    if (kind == Kind.WILDCARD) {
+      return other.kind == Kind.WILDCARD && Objects.equals(element, other.element) && Objects.equals(lower, other.lower);
+    }
+    return kind == other.kind && fqn.equals(other.fqn) && args.equals(other.args) && (kind != Kind.ARRAY || Objects.equals(element, other.element)) && sameTypeVariable(other);
+  }
+
+  /** A type variable a signature names by its simple name is the one of that name the declaration spells with its full id. */
+  private boolean sameTypeVariable(JType other) {
+    if (Objects.equals(typeVarId, other.typeVarId)) {
+      return true;
+    }
+    return kind == Kind.TYPEVAR && typeVarId != null && other.typeVarId != null && (typeVarId.indexOf('<') < 0 || other.typeVarId.indexOf('<') < 0);
   }
 
   @Override
