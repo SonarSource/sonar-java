@@ -19,6 +19,7 @@ package org.sonar.java;
 public final class JavaConstants {
 
   public static final String JAVA_CATEGORY = "java";
+  public static final String LANGUAGE_CATEGORY = "Language";
 
   private JavaConstants() {
   }

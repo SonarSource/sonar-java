@@ -25,17 +25,20 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.stream.StreamSupport;
+
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
+import org.eclipse.jdt.core.dom.SystemReleaseClasspath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
@@ -54,11 +57,13 @@ public abstract class JDTParser implements JParser {
 
   private static final Logger LOG = LoggerFactory.getLogger(JDTParser.class);
   private static final String MAXIMUM_ECJ_WARNINGS = "42000";
-  private static final Set<String> JRE_JARS = new HashSet<>(Arrays.asList("rt.jar", "jrt-fs.jar", "android.jar"));
+  private static final String JRT_FS_JAR = "jrt-fs.jar";
+  private static final Set<String> JRE_JARS = new HashSet<>(Arrays.asList("rt.jar", JRT_FS_JAR, "android.jar"));
 
   final JavaVersion javaVersion;
   final List<File> classpath;
   final boolean shouldIgnoreUnnamedModuleForSplitPackage;
+  private final boolean shouldUseJdkReleaseOption;
 
   public static JParser create(JParser.Mode mode, JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
     if (shouldIgnoreUnnamedModuleForSplitPackage) {
@@ -75,17 +80,25 @@ public abstract class JDTParser implements JParser {
     return currentVersion.arePreviewFeaturesEnabled();
   }
 
-  private JDTParser(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
+  private JDTParser(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage,
+                    boolean shouldUseJdkReleaseOption) {
     this.javaVersion = javaVersion;
     this.classpath = classpath;
     this.shouldIgnoreUnnamedModuleForSplitPackage = shouldIgnoreUnnamedModuleForSplitPackage;
+    this.shouldUseJdkReleaseOption = shouldUseJdkReleaseOption;
   }
 
   protected ASTParser jdtAstParser() {
     ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
     Map<String, String> options = new HashMap<>(JavaCore.getOptions());
-    JavaCore.setComplianceOptions(javaVersion.effectiveJavaVersionAsString(), options);
+
+    String javaSourceVersion = javaVersion.effectiveJavaVersionAsString();
+    JavaCore.setComplianceOptions(javaSourceVersion, options);
     options.put(JavaCore.COMPILER_PB_MAX_PER_UNIT, MAXIMUM_ECJ_WARNINGS);
+    if (shouldUseJdkReleaseOption) {
+      // This is used by jdt to set the specific --release of the JDK APIs, when applicable
+      options.put(SystemReleaseClasspath.OPTION_RELEASE, javaSourceVersion);
+    }
     if (shouldIgnoreUnnamedModuleForSplitPackage) {
       options.put(JavaCore.COMPILER_IGNORE_UNNAMED_MODULE_FOR_SPLIT_PACKAGE, "enabled");
     }
@@ -93,15 +106,23 @@ public abstract class JDTParser implements JParser {
       options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
     }
     // enabling all supported compiler warnings
-    JDTProblem.compilerOptions()
-      .forEach(option -> options.put(option, "warning"));
+    JDTProblem.compilerOptions().forEach(option -> options.put(option, "warning"));
+
+    List<File> environment = classpath;
+
+    // IF the classpath has no JRE libraries, we tell jdt to rely on the running one and also try to set --release, if applicable
+    boolean includeRunningVMBootclasspath = environment.stream().noneMatch(f -> JRE_JARS.contains(f.getName()));
+
+    // If we want to target a specific release for the JDK APIs, and there are already modular JDK libraries in the classpath
+    if (shouldUseJdkReleaseOption && classpathContainsModularJdk()) {
+      // We remove those libraries from the classpath, and tell jdt which JDK home we need to use.
+      // A view of that JDK home with the correct API level will be provided by jdt
+      environment = removeJdkLibsAndProvideJdtWithJavaHome(options);
+    }
 
     astParser.setCompilerOptions(options);
 
-    boolean includeRunningVMBootclasspath = classpath.stream()
-      .noneMatch(f -> JRE_JARS.contains(f.getName()));
-
-    astParser.setEnvironment(classpath.stream()
+    astParser.setEnvironment(environment.stream()
       .map(File::getAbsolutePath)
       .toArray(String[]::new), new String[]{}, new String[]{}, includeRunningVMBootclasspath);
 
@@ -111,11 +132,42 @@ public abstract class JDTParser implements JParser {
     return astParser;
   }
 
+  /**
+   * Removes the runtime image of a modular JDK ({@code <jdk>/lib/jrt-fs.jar}, added to the classpath for
+   * {@code sonar.java.jdkHome}), and provides JDT with the JAVA_HOME where it should apply the --release option
+   * to only have a specific version of the APIs in the classpath. (SystemReleaseClasspath.resolveTargetRelease)
+   *
+   * @return the original classpath, without the jrt-fs.jar
+   */
+  @VisibleForTesting
+  List<File> removeJdkLibsAndProvideJdtWithJavaHome(Map<String, String> options) {
+    for (File runtimeImage : classpath) {
+      Optional<File> jdkHome = jdkHomeOfRuntimeImage(runtimeImage);
+      if (jdkHome.isPresent()) {
+        options.put(SystemReleaseClasspath.OPTION_JAVA_HOME, jdkHome.get().getAbsolutePath());
+        return classpath.stream().filter(f -> !f.equals(runtimeImage)).toList();
+      }
+    }
+    return classpath;
+  }
+
+  private static Optional<File> jdkHomeOfRuntimeImage(File file) {
+    File lib = file.getParentFile();
+    if (JRT_FS_JAR.equals(file.getName()) && lib != null && "lib".equals(lib.getName())) {
+      return Optional.ofNullable(lib.getParentFile());
+    }
+    return Optional.empty();
+  }
+
+  private boolean classpathContainsModularJdk() {
+    return classpath.stream().anyMatch(f -> JRT_FS_JAR.equals(f.getName()));
+  }
+
   @VisibleForTesting
   static class Batch extends JDTParser {
 
-    Batch(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
-      super(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
+    Batch(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage, boolean shouldUseJdkReleaseOption) {
+      super(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage, shouldUseJdkReleaseOption);
     }
 
     @Override
@@ -179,15 +231,16 @@ public abstract class JDTParser implements JParser {
 
     private void fallbackToFileByFileMode(List<InputFile> inputFiles, BooleanSupplier isCanceled, AnalysisProgress analysisProgress, BiConsumer<InputFile, JParseResult> action) {
       LOG.warn("Fallback to file by file analysis for {} files", inputFiles.size());
-      FileByFile fileByFile = new FileByFile(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
+      FileByFile fileByFile = new FileByFile(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage, shouldUseJdkReleaseOption);
       fileByFile.parse(inputFiles, isCanceled, analysisProgress, action);
     }
   }
 
   private static class FileByFile extends JDTParser {
 
-    private FileByFile(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
-      super(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
+    private FileByFile(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage,
+      boolean shouldUseJdkReleaseOption) {
+      super(javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage, shouldUseJdkReleaseOption);
     }
 
     @Override

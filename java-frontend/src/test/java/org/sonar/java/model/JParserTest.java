@@ -36,6 +36,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -79,6 +80,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -94,8 +96,85 @@ import static org.sonar.java.model.JParserTestUtils.parse;
 
 class JParserTest {
 
+  private static final String JDK_API_SOURCE = """
+    class Example {
+      java.util.jar.Pack200 removedInJdk14;
+      java.lang.Record addedInJdk16;
+    }
+    """;
+
   @RegisterExtension
   public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
+
+  @Test
+  void should_only_see_the_jdk_api_of_the_requested_release() {
+    assumeRunningJdkCanServeOlderReleases();
+    Set<String> undefinedAt11 = undefinedTypes("11", JDK_API_SOURCE);
+    assertThat(undefinedAt11).containsExactly("java.lang.Record cannot be resolved to a type");
+    assertThat(undefinedTypes("17", JDK_API_SOURCE)).containsExactly("java.util.jar.Pack200 cannot be resolved to a type");
+  }
+
+  @Test
+  void should_see_the_whole_jdk_api_when_the_release_option_is_not_used() {
+    assumeRunningJdkCanServeOlderReleases();
+    ASTParser astParser = FILE_BY_FILE.create(JavaVersionImpl.fromString("11"), List.of()).astParser();
+
+    Set<String> undefinedTypes = JParser.parse(astParser, "11", "Example", JDK_API_SOURCE).semanticProblems().stream().map(Problem::message)
+      .collect(Collectors.toSet());
+
+    assertThat(undefinedTypes).containsExactly("java.util.jar.Pack200 cannot be resolved to a type");
+  }
+
+  @Test
+  void should_use_the_release_api_of_the_jdk_provided_in_the_classpath() {
+    File runtimeImage = new File(System.getProperty("java.home"), "lib/jrt-fs.jar");
+    assumeTrue(runtimeImage.isFile());
+    assumeRunningJdkCanServeOlderReleases();
+    List<File> classpath = List.of(runtimeImage);
+    int jdkVersion = Runtime.version().feature();
+
+    assertThat(undefinedTypes("11", JDK_API_SOURCE, classpath)).containsExactly("java.lang.Record cannot be resolved to a type");
+    assertThat(undefinedTypes(Integer.toString(jdkVersion), JDK_API_SOURCE, classpath)).containsExactly("java.util.jar.Pack200 cannot be resolved to a type");
+    assertThat(undefinedTypes(Integer.toString(jdkVersion + 1), JDK_API_SOURCE, classpath)).containsExactly("java.util.jar.Pack200 cannot be resolved to a type");
+  }
+
+  @Test
+  void should_only_see_the_jdk_api_of_the_requested_release_in_batch_mode(@TempDir Path temp) throws Exception {
+    assumeRunningJdkCanServeOlderReleases();
+    Path file = Files.writeString(temp.resolve("Example.java"), JDK_API_SOURCE);
+    List<Set<String>> undefinedTypes = new ArrayList<>();
+
+    BATCH
+      .create(JavaVersionImpl.fromString("11"), List.of(runningJdkRuntimeImage()), false, true)
+      .parse(Set.of(TestUtils.inputFile(file.toFile())), () -> false, new AnalysisProgress(1), (inputFile, result) -> {
+        try {
+          undefinedTypes.add(result.get().semanticProblems().stream().map(Problem::message).collect(Collectors.toSet()));
+        } catch (Exception e) {
+          throw new IllegalStateException(e);
+        }
+      });
+
+    assertThat(undefinedTypes).containsExactly(Set.of("java.lang.Record cannot be resolved to a type"));
+  }
+
+  private static void assumeRunningJdkCanServeOlderReleases() {
+    assumeTrue(new File(System.getProperty("java.home"), "lib/ct.sym").isFile(), "the running JVM has no lib/ct.sym");
+    assumeTrue(Runtime.version().feature() > 17, "the running JVM must be newer than Java 17");
+  }
+
+  private static Set<String> undefinedTypes(String release, String source) {
+    return undefinedTypes(release, source, List.of(runningJdkRuntimeImage()));
+  }
+
+  private static File runningJdkRuntimeImage() {
+    return new File(System.getProperty("java.home"), "lib/jrt-fs.jar");
+  }
+
+  private static Set<String> undefinedTypes(String release, String source, List<File> classpath) {
+    ASTParser astParser = FILE_BY_FILE.create(JavaVersionImpl.fromString(release), classpath, false, true).astParser();
+    return JParser.parse(astParser, release, "Example", source).semanticProblems().stream().map(Problem::message)
+      .collect(Collectors.toSet());
+  }
 
   @Test
   void should_throw_RecognitionException_in_case_of_syntax_error() {
