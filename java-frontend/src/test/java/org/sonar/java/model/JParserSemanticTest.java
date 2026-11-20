@@ -1874,6 +1874,24 @@ class JParserSemanticTest {
   }
 
   @Test
+  void cast_of_conditional_to_type_variable_is_not_redundant() {
+    String source = """
+      package test;
+      import java.util.Map;
+      abstract class C<K, V, M extends Map<K, V>> {
+        abstract M self();
+        abstract Map<K, V> put(K k, V v);
+        @SuppressWarnings("unchecked")
+        M needed(boolean b, K k, V v) { return (M) (b ? put(k, v) : self()); }
+        Map<K, V> redundant(boolean b, Map<K, V> x, M y) { return (Map<K, V>) (b ? x : y); }
+      }
+      """;
+    List<Warning> warnings = test(source).warnings(ProblemKind.REDUNDANT_CAST);
+    assertThat(warnings).hasSize(1);
+    assertThat(warnings.get(0).syntaxTree().firstToken().range().start().line()).isEqualTo(8);
+  }
+
+  @Test
   void test_varialbe_equals_inNestedLambdas() {
     String source = """
           package org.foo;

@@ -506,6 +506,9 @@ final class SemsitterTranslator {
     } else {
       types.push(Symbol.TypeSymbol.UNKNOWN_TYPE);
     }
+    // translated before the members so that the bounds of the type parameters are known inside the bodies
+    Node typeParameters = field(node, "type_parameters");
+    TypeParameterListTreeImpl typeParameterList = typeParameters == null ? null : typeParameters(typeParameters);
     List<Tree> members;
     try {
       members = body == null ? new ArrayList<>() : membersOf(body);
@@ -530,9 +533,8 @@ final class SemsitterTranslator {
       keywordToken = new InternalSyntaxToken(keywordToken.line(), keywordToken.column() + 1, "interface", List.of(), false);
     }
     tree.complete(modifiers(node), keywordToken, name);
-    Node typeParameters = field(node, "type_parameters");
-    if (typeParameters != null) {
-      tree.completeTypeParameters(typeParameters(typeParameters));
+    if (typeParameterList != null) {
+      tree.completeTypeParameters(typeParameterList);
     }
     if (kind == Tree.Kind.ANNOTATION_TYPE) {
       Node at = keyword(node, "@");
@@ -728,6 +730,9 @@ final class SemsitterTranslator {
   }
 
   private MethodTreeImpl methodInScope(Node node) {
+    // translated before the parameters and the body so that the bounds of the type parameters are known there
+    Node typeParameters = field(node, "type_parameters");
+    TypeParameterListTreeImpl typeParameterList = typeParameters == null ? null : typeParameters(typeParameters);
     Node parameters = field(node, "parameters");
     FormalParametersListTreeImpl formals = new FormalParametersListTreeImpl(
       parameters == null ? null : token(required(parameters, "(")),
@@ -771,9 +776,8 @@ final class SemsitterTranslator {
       block,
       body == null ? token(required(node, ";")) : null)
       .completeWithModifiers(modifiers(node));
-    Node typeParameters = field(node, "type_parameters");
-    if (typeParameters != null) {
-      tree.completeWithTypeParameters(typeParameters(typeParameters));
+    if (typeParameterList != null) {
+      tree.completeWithTypeParameters(typeParameterList);
     }
     bindDeclaration(tree, nameNode(node), name);
     return tree;
@@ -2540,6 +2544,18 @@ final class SemsitterTranslator {
     }
     if (second.isNullType()) {
       return first;
+    }
+    // a type variable is compared by its bound: erasing it would make the variable look like its own bound
+    if ((first.isTypeVar() || second.isTypeVar()) && !first.isPrimitive() && !second.isPrimitive()) {
+      if (second.isSubtypeOf(first)) {
+        return first;
+      }
+      if (first.isSubtypeOf(second)) {
+        return second;
+      }
+      Type firstBound = first instanceof JType variable && variable.isTypeVar() ? sema.typeVariableBound(variable.typeVarId) : first;
+      Type secondBound = second instanceof JType variable && variable.isTypeVar() ? sema.typeVariableBound(variable.typeVarId) : second;
+      return !secondBound.isSubtypeOf(firstBound.erasure()) && firstBound.isSubtypeOf(secondBound.erasure()) ? secondBound : firstBound;
     }
     if (!first.isPrimitive() && !second.isPrimitive() && second.isSubtypeOf(first.erasure())) {
       return first;
