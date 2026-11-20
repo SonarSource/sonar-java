@@ -1,7 +1,9 @@
 package checks;
 
 import java.time.Clock;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.chrono.JapaneseDate;
 import java.util.Optional;
 
@@ -16,6 +18,15 @@ class ValueBasedObjectIdentityCheckSample {
 //             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     int hash2 = System.identityHashCode(i); // Noncompliant {{Use ".hashCode()" instead of "System.identityHashCode()" to compute the hash code for objects of value-based types.}}
 //              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  }
+
+  void compliantEnumIdentityChecks(Month month1, Month month2, DayOfWeek day1, DayOfWeek day2) {
+    boolean sameMonth = month1 == month2; // Compliant: enum types are an exception to the rule and can always be compared with '=='
+    boolean differentMonth = month1 != month2;
+    boolean sameDay = day1 == day2;
+    boolean differentDay = day1 != day2;
+    int monthHash = System.identityHashCode(month1);
+    int dayHash = System.identityHashCode(day1);
   }
 
   void compliantIdentityChecks(int i, int j, String s, String t, Integer k, Integer l, Clock c1, Clock c2) {

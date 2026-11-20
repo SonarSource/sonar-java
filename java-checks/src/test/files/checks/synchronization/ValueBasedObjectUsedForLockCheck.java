@@ -1,5 +1,7 @@
 import java.time.Clock;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.chrono.HijrahDate;
 import java.time.chrono.JapaneseDate;
 import java.time.chrono.MinguoDate;
@@ -35,6 +37,10 @@ class A {
 
     Clock clock = Clock.systemUTC();
     synchronized (clock) { } // Compliant
+    Month month = Month.JANUARY;
+    synchronized (month) { } // Compliant: enum types are an exception and can be safely used here
+    DayOfWeek day = DayOfWeek.MONDAY;
+    synchronized (day) { }
     Object object = new Object();
     synchronized (object) { } // Compliant
     DateTimeFormatterBuilder dateTimeFormatter = new DateTimeFormatterBuilder();
