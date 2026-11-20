@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.config.Configuration;
@@ -174,6 +175,16 @@ class SemSitterParserProviderTest {
     provider.configure(settings(Map.of()));
 
     assertThat(provider.isEnabled()).isFalse();
+  }
+
+  @Test
+  void bundled_server_enables_the_frontend_without_a_configured_executable() {
+    SemSitterParserProvider provider = new SemSitterParserProvider(connector, Map.<String, String>of()::get, translator, () -> Optional.of(Path.of("bundled-server")));
+
+    provider.configure(settings(Map.of()));
+
+    assertThat(provider.isEnabled()).isTrue();
+    assertThat(connections).isEmpty();
   }
 
   @Test
