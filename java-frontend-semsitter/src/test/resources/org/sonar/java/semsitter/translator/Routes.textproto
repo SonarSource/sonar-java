@@ -1,0 +1,2021 @@
+tree {
+  kind: "program"
+  named: true
+  start_line: 1
+  end_line: 29
+  end_byte: 376
+  children {
+    kind: "package_declaration"
+    named: true
+    start_line: 1
+    end_line: 1
+    end_col: 10
+    end_byte: 10
+    children {
+      kind: "package"
+      start_line: 1
+      end_line: 1
+      end_col: 7
+      end_byte: 7
+      text: "package"
+    }
+    children {
+      kind: "identifier"
+      named: true
+      start_line: 1
+      start_col: 8
+      end_line: 1
+      end_col: 9
+      start_byte: 8
+      end_byte: 9
+      text: "e"
+    }
+    children {
+      kind: ";"
+      start_line: 1
+      start_col: 9
+      end_line: 1
+      end_col: 10
+      start_byte: 9
+      end_byte: 10
+      text: ";"
+    }
+  }
+  children {
+    kind: "class_declaration"
+    named: true
+    start_line: 3
+    end_line: 28
+    end_col: 1
+    start_byte: 12
+    end_byte: 375
+    children {
+      kind: "class"
+      start_line: 3
+      end_line: 3
+      end_col: 5
+      start_byte: 12
+      end_byte: 17
+      text: "class"
+    }
+    children {
+      kind: "identifier"
+      named: true
+      field: "name"
+      start_line: 3
+      start_col: 6
+      end_line: 3
+      end_col: 12
+      start_byte: 18
+      end_byte: 24
+      text: "Routes"
+      decls: "e.Routes"
+    }
+    children {
+      kind: "class_body"
+      named: true
+      field: "body"
+      start_line: 3
+      start_col: 13
+      end_line: 28
+      end_col: 1
+      start_byte: 25
+      end_byte: 375
+      children {
+        kind: "{"
+        start_line: 3
+        start_col: 13
+        end_line: 3
+        end_col: 14
+        start_byte: 25
+        end_byte: 26
+        text: "{"
+      }
+      children {
+        kind: "field_declaration"
+        named: true
+        start_line: 4
+        start_col: 2
+        end_line: 4
+        end_col: 56
+        start_byte: 29
+        end_byte: 83
+        children {
+          kind: "modifiers"
+          named: true
+          start_line: 4
+          start_col: 2
+          end_line: 4
+          end_col: 14
+          start_byte: 29
+          end_byte: 41
+          children {
+            kind: "static"
+            start_line: 4
+            start_col: 2
+            end_line: 4
+            end_col: 8
+            start_byte: 29
+            end_byte: 35
+            text: "static"
+          }
+          children {
+            kind: "final"
+            start_line: 4
+            start_col: 9
+            end_line: 4
+            end_col: 14
+            start_byte: 36
+            end_byte: 41
+            text: "final"
+          }
+        }
+        children {
+          kind: "type_identifier"
+          named: true
+          field: "type"
+          start_line: 4
+          start_col: 15
+          end_line: 4
+          end_col: 21
+          start_byte: 42
+          end_byte: 48
+          text: "String"
+          refs {
+            access: "ref"
+            outcome: "bound"
+            target: "java.lang.String"
+          }
+        }
+        children {
+          kind: "variable_declarator"
+          named: true
+          field: "declarator"
+          start_line: 4
+          start_col: 22
+          end_line: 4
+          end_col: 55
+          start_byte: 49
+          end_byte: 82
+          children {
+            kind: "identifier"
+            named: true
+            field: "name"
+            start_line: 4
+            start_col: 22
+            end_line: 4
+            end_col: 27
+            start_byte: 49
+            end_byte: 54
+            text: "ADMIN"
+            decls: "e.Routes#ADMIN"
+          }
+          children {
+            kind: "="
+            start_line: 4
+            start_col: 28
+            end_line: 4
+            end_col: 29
+            start_byte: 55
+            end_byte: 56
+            text: "="
+          }
+          children {
+            kind: "binary_expression"
+            named: true
+            field: "value"
+            start_line: 4
+            start_col: 30
+            end_line: 4
+            end_col: 55
+            start_byte: 57
+            end_byte: 82
+            children {
+              kind: "field_access"
+              named: true
+              field: "left"
+              start_line: 4
+              start_col: 30
+              end_line: 4
+              end_col: 44
+              start_byte: 57
+              end_byte: 71
+              children {
+                kind: "identifier"
+                named: true
+                field: "object"
+                start_line: 4
+                start_col: 30
+                end_line: 4
+                end_col: 37
+                start_byte: 57
+                end_byte: 64
+                text: "Missing"
+                refs {
+                  access: "r"
+                  outcome: "unresolved"
+                  reason: "not_found"
+                }
+              }
+              children {
+                kind: "."
+                start_line: 4
+                start_col: 37
+                end_line: 4
+                end_col: 38
+                start_byte: 64
+                end_byte: 65
+                text: "."
+              }
+              children {
+                kind: "identifier"
+                named: true
+                field: "field"
+                start_line: 4
+                start_col: 38
+                end_line: 4
+                end_col: 44
+                start_byte: 65
+                end_byte: 71
+                text: "PREFIX"
+              }
+            }
+            children {
+              kind: "+"
+              field: "operator"
+              start_line: 4
+              start_col: 45
+              end_line: 4
+              end_col: 46
+              start_byte: 72
+              end_byte: 73
+              text: "+"
+            }
+            children {
+              kind: "string_literal"
+              named: true
+              field: "right"
+              start_line: 4
+              start_col: 47
+              end_line: 4
+              end_col: 55
+              start_byte: 74
+              end_byte: 82
+              text: "\"/admin\""
+              children {
+                kind: "\""
+                start_line: 4
+                start_col: 47
+                end_line: 4
+                end_col: 48
+                start_byte: 74
+                end_byte: 75
+                text: "\""
+              }
+              children {
+                kind: "string_fragment"
+                named: true
+                start_line: 4
+                start_col: 48
+                end_line: 4
+                end_col: 54
+                start_byte: 75
+                end_byte: 81
+                text: "/admin"
+              }
+              children {
+                kind: "\""
+                start_line: 4
+                start_col: 54
+                end_line: 4
+                end_col: 55
+                start_byte: 81
+                end_byte: 82
+                text: "\""
+              }
+            }
+          }
+        }
+        children {
+          kind: ";"
+          start_line: 4
+          start_col: 55
+          end_line: 4
+          end_col: 56
+          start_byte: 82
+          end_byte: 83
+          text: ";"
+        }
+      }
+      children {
+        kind: "field_declaration"
+        named: true
+        start_line: 5
+        start_col: 2
+        end_line: 5
+        end_col: 39
+        start_byte: 86
+        end_byte: 123
+        children {
+          kind: "modifiers"
+          named: true
+          start_line: 5
+          start_col: 2
+          end_line: 5
+          end_col: 14
+          start_byte: 86
+          end_byte: 98
+          children {
+            kind: "static"
+            start_line: 5
+            start_col: 2
+            end_line: 5
+            end_col: 8
+            start_byte: 86
+            end_byte: 92
+            text: "static"
+          }
+          children {
+            kind: "final"
+            start_line: 5
+            start_col: 9
+            end_line: 5
+            end_col: 14
+            start_byte: 93
+            end_byte: 98
+            text: "final"
+          }
+        }
+        children {
+          kind: "type_identifier"
+          named: true
+          field: "type"
+          start_line: 5
+          start_col: 15
+          end_line: 5
+          end_col: 21
+          start_byte: 99
+          end_byte: 105
+          text: "String"
+          refs {
+            access: "ref"
+            outcome: "bound"
+            target: "java.lang.String"
+          }
+        }
+        children {
+          kind: "variable_declarator"
+          named: true
+          field: "declarator"
+          start_line: 5
+          start_col: 22
+          end_line: 5
+          end_col: 38
+          start_byte: 106
+          end_byte: 122
+          children {
+            kind: "identifier"
+            named: true
+            field: "name"
+            start_line: 5
+            start_col: 22
+            end_line: 5
+            end_col: 27
+            start_byte: 106
+            end_byte: 111
+            text: "LOCAL"
+            decls: "e.Routes#LOCAL"
+          }
+          children {
+            kind: "="
+            start_line: 5
+            start_col: 28
+            end_line: 5
+            end_col: 29
+            start_byte: 112
+            end_byte: 113
+            text: "="
+          }
+          children {
+            kind: "string_literal"
+            named: true
+            field: "value"
+            start_line: 5
+            start_col: 30
+            end_line: 5
+            end_col: 38
+            start_byte: 114
+            end_byte: 122
+            text: "\"/local\""
+            children {
+              kind: "\""
+              start_line: 5
+              start_col: 30
+              end_line: 5
+              end_col: 31
+              start_byte: 114
+              end_byte: 115
+              text: "\""
+            }
+            children {
+              kind: "string_fragment"
+              named: true
+              start_line: 5
+              start_col: 31
+              end_line: 5
+              end_col: 37
+              start_byte: 115
+              end_byte: 121
+              text: "/local"
+            }
+            children {
+              kind: "\""
+              start_line: 5
+              start_col: 37
+              end_line: 5
+              end_col: 38
+              start_byte: 121
+              end_byte: 122
+              text: "\""
+            }
+          }
+        }
+        children {
+          kind: ";"
+          start_line: 5
+          start_col: 38
+          end_line: 5
+          end_col: 39
+          start_byte: 122
+          end_byte: 123
+          text: ";"
+        }
+      }
+      children {
+        kind: "annotation_type_declaration"
+        named: true
+        start_line: 7
+        start_col: 2
+        end_line: 9
+        end_col: 3
+        start_byte: 127
+        end_byte: 170
+        children {
+          kind: "@interface"
+          start_line: 7
+          start_col: 2
+          end_line: 7
+          end_col: 12
+          start_byte: 127
+          end_byte: 137
+          text: "@interface"
+        }
+        children {
+          kind: "identifier"
+          named: true
+          field: "name"
+          start_line: 7
+          start_col: 13
+          end_line: 7
+          end_col: 17
+          start_byte: 138
+          end_byte: 142
+          text: "Path"
+          decls: "e.Routes$Path"
+        }
+        children {
+          kind: "annotation_type_body"
+          named: true
+          field: "body"
+          start_line: 7
+          start_col: 18
+          end_line: 9
+          end_col: 3
+          start_byte: 143
+          end_byte: 170
+          children {
+            kind: "{"
+            start_line: 7
+            start_col: 18
+            end_line: 7
+            end_col: 19
+            start_byte: 143
+            end_byte: 144
+            text: "{"
+          }
+          children {
+            kind: "annotation_type_element_declaration"
+            named: true
+            start_line: 8
+            start_col: 4
+            end_line: 8
+            end_col: 21
+            start_byte: 149
+            end_byte: 166
+            children {
+              kind: "array_type"
+              named: true
+              field: "type"
+              start_line: 8
+              start_col: 4
+              end_line: 8
+              end_col: 12
+              start_byte: 149
+              end_byte: 157
+              children {
+                kind: "type_identifier"
+                named: true
+                field: "element"
+                start_line: 8
+                start_col: 4
+                end_line: 8
+                end_col: 10
+                start_byte: 149
+                end_byte: 155
+                text: "String"
+                refs {
+                  access: "ref"
+                  outcome: "bound"
+                  target: "java.lang.String"
+                }
+              }
+              children {
+                kind: "dimensions"
+                named: true
+                field: "dimensions"
+                start_line: 8
+                start_col: 10
+                end_line: 8
+                end_col: 12
+                start_byte: 155
+                end_byte: 157
+                children {
+                  kind: "["
+                  start_line: 8
+                  start_col: 10
+                  end_line: 8
+                  end_col: 11
+                  start_byte: 155
+                  end_byte: 156
+                  text: "["
+                }
+                children {
+                  kind: "]"
+                  start_line: 8
+                  start_col: 11
+                  end_line: 8
+                  end_col: 12
+                  start_byte: 156
+                  end_byte: 157
+                  text: "]"
+                }
+              }
+            }
+            children {
+              kind: "identifier"
+              named: true
+              field: "name"
+              start_line: 8
+              start_col: 13
+              end_line: 8
+              end_col: 18
+              start_byte: 158
+              end_byte: 163
+              text: "value"
+              decls: "e.Routes$Path#value()"
+            }
+            children {
+              kind: "("
+              start_line: 8
+              start_col: 18
+              end_line: 8
+              end_col: 19
+              start_byte: 163
+              end_byte: 164
+              text: "("
+            }
+            children {
+              kind: ")"
+              start_line: 8
+              start_col: 19
+              end_line: 8
+              end_col: 20
+              start_byte: 164
+              end_byte: 165
+              text: ")"
+            }
+            children {
+              kind: ";"
+              start_line: 8
+              start_col: 20
+              end_line: 8
+              end_col: 21
+              start_byte: 165
+              end_byte: 166
+              text: ";"
+            }
+          }
+          children {
+            kind: "}"
+            start_line: 9
+            start_col: 2
+            end_line: 9
+            end_col: 3
+            start_byte: 169
+            end_byte: 170
+            text: "}"
+          }
+        }
+      }
+      children {
+        kind: "enum_declaration"
+        named: true
+        start_line: 11
+        start_col: 2
+        end_line: 11
+        end_col: 17
+        start_byte: 174
+        end_byte: 189
+        children {
+          kind: "enum"
+          start_line: 11
+          start_col: 2
+          end_line: 11
+          end_col: 6
+          start_byte: 174
+          end_byte: 178
+          text: "enum"
+        }
+        children {
+          kind: "identifier"
+          named: true
+          field: "name"
+          start_line: 11
+          start_col: 7
+          end_line: 11
+          end_col: 11
+          start_byte: 179
+          end_byte: 183
+          text: "Kind"
+          decls: "e.Routes$Kind"
+        }
+        children {
+          kind: "enum_body"
+          named: true
+          field: "body"
+          start_line: 11
+          start_col: 12
+          end_line: 11
+          end_col: 17
+          start_byte: 184
+          end_byte: 189
+          children {
+            kind: "{"
+            start_line: 11
+            start_col: 12
+            end_line: 11
+            end_col: 13
+            start_byte: 184
+            end_byte: 185
+            text: "{"
+          }
+          children {
+            kind: "enum_constant"
+            named: true
+            start_line: 11
+            start_col: 14
+            end_line: 11
+            end_col: 15
+            start_byte: 186
+            end_byte: 187
+            children {
+              kind: "identifier"
+              named: true
+              field: "name"
+              start_line: 11
+              start_col: 14
+              end_line: 11
+              end_col: 15
+              start_byte: 186
+              end_byte: 187
+              text: "A"
+              decls: "e.Routes$Kind#A"
+            }
+          }
+          children {
+            kind: "}"
+            start_line: 11
+            start_col: 16
+            end_line: 11
+            end_col: 17
+            start_byte: 188
+            end_byte: 189
+            text: "}"
+          }
+        }
+      }
+      children {
+        kind: "annotation_type_declaration"
+        named: true
+        start_line: 13
+        start_col: 2
+        end_line: 15
+        end_col: 3
+        start_byte: 193
+        end_byte: 234
+        children {
+          kind: "@interface"
+          start_line: 13
+          start_col: 2
+          end_line: 13
+          end_col: 12
+          start_byte: 193
+          end_byte: 203
+          text: "@interface"
+        }
+        children {
+          kind: "identifier"
+          named: true
+          field: "name"
+          start_line: 13
+          start_col: 13
+          end_line: 13
+          end_col: 19
+          start_byte: 204
+          end_byte: 210
+          text: "Tagged"
+          decls: "e.Routes$Tagged"
+        }
+        children {
+          kind: "annotation_type_body"
+          named: true
+          field: "body"
+          start_line: 13
+          start_col: 20
+          end_line: 15
+          end_col: 3
+          start_byte: 211
+          end_byte: 234
+          children {
+            kind: "{"
+            start_line: 13
+            start_col: 20
+            end_line: 13
+            end_col: 21
+            start_byte: 211
+            end_byte: 212
+            text: "{"
+          }
+          children {
+            kind: "annotation_type_element_declaration"
+            named: true
+            start_line: 14
+            start_col: 4
+            end_line: 14
+            end_col: 17
+            start_byte: 217
+            end_byte: 230
+            children {
+              kind: "type_identifier"
+              named: true
+              field: "type"
+              start_line: 14
+              start_col: 4
+              end_line: 14
+              end_col: 8
+              start_byte: 217
+              end_byte: 221
+              text: "Kind"
+              refs {
+                access: "ref"
+                outcome: "bound"
+                target: "e.Routes$Kind"
+              }
+            }
+            children {
+              kind: "identifier"
+              named: true
+              field: "name"
+              start_line: 14
+              start_col: 9
+              end_line: 14
+              end_col: 14
+              start_byte: 222
+              end_byte: 227
+              text: "value"
+              decls: "e.Routes$Tagged#value()"
+            }
+            children {
+              kind: "("
+              start_line: 14
+              start_col: 14
+              end_line: 14
+              end_col: 15
+              start_byte: 227
+              end_byte: 228
+              text: "("
+            }
+            children {
+              kind: ")"
+              start_line: 14
+              start_col: 15
+              end_line: 14
+              end_col: 16
+              start_byte: 228
+              end_byte: 229
+              text: ")"
+            }
+            children {
+              kind: ";"
+              start_line: 14
+              start_col: 16
+              end_line: 14
+              end_col: 17
+              start_byte: 229
+              end_byte: 230
+              text: ";"
+            }
+          }
+          children {
+            kind: "}"
+            start_line: 15
+            start_col: 2
+            end_line: 15
+            end_col: 3
+            start_byte: 233
+            end_byte: 234
+            text: "}"
+          }
+        }
+      }
+      children {
+        kind: "method_declaration"
+        named: true
+        start_line: 17
+        start_col: 2
+        end_line: 19
+        end_col: 3
+        start_byte: 238
+        end_byte: 281
+        children {
+          kind: "modifiers"
+          named: true
+          start_line: 17
+          start_col: 2
+          end_line: 17
+          end_col: 14
+          start_byte: 238
+          end_byte: 250
+          children {
+            kind: "annotation"
+            named: true
+            start_line: 17
+            start_col: 2
+            end_line: 17
+            end_col: 14
+            start_byte: 238
+            end_byte: 250
+            children {
+              kind: "@"
+              start_line: 17
+              start_col: 2
+              end_line: 17
+              end_col: 3
+              start_byte: 238
+              end_byte: 239
+              text: "@"
+            }
+            children {
+              kind: "identifier"
+              named: true
+              field: "name"
+              start_line: 17
+              start_col: 3
+              end_line: 17
+              end_col: 7
+              start_byte: 239
+              end_byte: 243
+              text: "Path"
+              refs {
+                access: "ref"
+                outcome: "bound"
+                target: "e.Routes$Path"
+              }
+            }
+            children {
+              kind: "annotation_argument_list"
+              named: true
+              field: "arguments"
+              start_line: 17
+              start_col: 7
+              end_line: 17
+              end_col: 14
+              start_byte: 243
+              end_byte: 250
+              children {
+                kind: "("
+                start_line: 17
+                start_col: 7
+                end_line: 17
+                end_col: 8
+                start_byte: 243
+                end_byte: 244
+                text: "("
+              }
+              children {
+                kind: "identifier"
+                named: true
+                start_line: 17
+                start_col: 8
+                end_line: 17
+                end_col: 13
+                start_byte: 244
+                end_byte: 249
+                text: "ADMIN"
+                refs {
+                  access: "r"
+                  outcome: "bound"
+                  target: "e.Routes#ADMIN"
+                }
+              }
+              children {
+                kind: ")"
+                start_line: 17
+                start_col: 13
+                end_line: 17
+                end_col: 14
+                start_byte: 249
+                end_byte: 250
+                text: ")"
+              }
+            }
+          }
+        }
+        children {
+          kind: "void_type"
+          named: true
+          field: "type"
+          start_line: 18
+          start_col: 2
+          end_line: 18
+          end_col: 6
+          start_byte: 253
+          end_byte: 257
+          text: "void"
+        }
+        children {
+          kind: "identifier"
+          named: true
+          field: "name"
+          start_line: 18
+          start_col: 7
+          end_line: 18
+          end_col: 22
+          start_byte: 258
+          end_byte: 273
+          text: "unknownConstant"
+          decls: "e.Routes#unknownConstant()"
+        }
+        children {
+          kind: "formal_parameters"
+          named: true
+          field: "parameters"
+          start_line: 18
+          start_col: 22
+          end_line: 18
+          end_col: 24
+          start_byte: 273
+          end_byte: 275
+          children {
+            kind: "("
+            start_line: 18
+            start_col: 22
+            end_line: 18
+            end_col: 23
+            start_byte: 273
+            end_byte: 274
+            text: "("
+          }
+          children {
+            kind: ")"
+            start_line: 18
+            start_col: 23
+            end_line: 18
+            end_col: 24
+            start_byte: 274
+            end_byte: 275
+            text: ")"
+          }
+        }
+        children {
+          kind: "block"
+          named: true
+          field: "body"
+          start_line: 18
+          start_col: 25
+          end_line: 19
+          end_col: 3
+          start_byte: 276
+          end_byte: 281
+          children {
+            kind: "{"
+            start_line: 18
+            start_col: 25
+            end_line: 18
+            end_col: 26
+            start_byte: 276
+            end_byte: 277
+            text: "{"
+          }
+          children {
+            kind: "}"
+            start_line: 19
+            start_col: 2
+            end_line: 19
+            end_col: 3
+            start_byte: 280
+            end_byte: 281
+            text: "}"
+          }
+        }
+      }
+      children {
+        kind: "method_declaration"
+        named: true
+        start_line: 21
+        start_col: 2
+        end_line: 23
+        end_col: 3
+        start_byte: 285
+        end_byte: 326
+        children {
+          kind: "modifiers"
+          named: true
+          start_line: 21
+          start_col: 2
+          end_line: 21
+          end_col: 14
+          start_byte: 285
+          end_byte: 297
+          children {
+            kind: "annotation"
+            named: true
+            start_line: 21
+            start_col: 2
+            end_line: 21
+            end_col: 14
+            start_byte: 285
+            end_byte: 297
+            children {
+              kind: "@"
+              start_line: 21
+              start_col: 2
+              end_line: 21
+              end_col: 3
+              start_byte: 285
+              end_byte: 286
+              text: "@"
+            }
+            children {
+              kind: "identifier"
+              named: true
+              field: "name"
+              start_line: 21
+              start_col: 3
+              end_line: 21
+              end_col: 7
+              start_byte: 286
+              end_byte: 290
+              text: "Path"
+              refs {
+                access: "ref"
+                outcome: "bound"
+                target: "e.Routes$Path"
+              }
+            }
+            children {
+              kind: "annotation_argument_list"
+              named: true
+              field: "arguments"
+              start_line: 21
+              start_col: 7
+              end_line: 21
+              end_col: 14
+              start_byte: 290
+              end_byte: 297
+              children {
+                kind: "("
+                start_line: 21
+                start_col: 7
+                end_line: 21
+                end_col: 8
+                start_byte: 290
+                end_byte: 291
+                text: "("
+              }
+              children {
+                kind: "identifier"
+                named: true
+                start_line: 21
+                start_col: 8
+                end_line: 21
+                end_col: 13
+                start_byte: 291
+                end_byte: 296
+                text: "LOCAL"
+                refs {
+                  access: "r"
+                  outcome: "bound"
+                  target: "e.Routes#LOCAL"
+                  facts {
+                    key: "constant"
+                    value {
+                      text: "/local"
+                    }
+                  }
+                }
+              }
+              children {
+                kind: ")"
+                start_line: 21
+                start_col: 13
+                end_line: 21
+                end_col: 14
+                start_byte: 296
+                end_byte: 297
+                text: ")"
+              }
+            }
+          }
+        }
+        children {
+          kind: "void_type"
+          named: true
+          field: "type"
+          start_line: 22
+          start_col: 2
+          end_line: 22
+          end_col: 6
+          start_byte: 300
+          end_byte: 304
+          text: "void"
+        }
+        children {
+          kind: "identifier"
+          named: true
+          field: "name"
+          start_line: 22
+          start_col: 7
+          end_line: 22
+          end_col: 20
+          start_byte: 305
+          end_byte: 318
+          text: "knownConstant"
+          decls: "e.Routes#knownConstant()"
+        }
+        children {
+          kind: "formal_parameters"
+          named: true
+          field: "parameters"
+          start_line: 22
+          start_col: 20
+          end_line: 22
+          end_col: 22
+          start_byte: 318
+          end_byte: 320
+          children {
+            kind: "("
+            start_line: 22
+            start_col: 20
+            end_line: 22
+            end_col: 21
+            start_byte: 318
+            end_byte: 319
+            text: "("
+          }
+          children {
+            kind: ")"
+            start_line: 22
+            start_col: 21
+            end_line: 22
+            end_col: 22
+            start_byte: 319
+            end_byte: 320
+            text: ")"
+          }
+        }
+        children {
+          kind: "block"
+          named: true
+          field: "body"
+          start_line: 22
+          start_col: 23
+          end_line: 23
+          end_col: 3
+          start_byte: 321
+          end_byte: 326
+          children {
+            kind: "{"
+            start_line: 22
+            start_col: 23
+            end_line: 22
+            end_col: 24
+            start_byte: 321
+            end_byte: 322
+            text: "{"
+          }
+          children {
+            kind: "}"
+            start_line: 23
+            start_col: 2
+            end_line: 23
+            end_col: 3
+            start_byte: 325
+            end_byte: 326
+            text: "}"
+          }
+        }
+      }
+      children {
+        kind: "method_declaration"
+        named: true
+        start_line: 25
+        start_col: 2
+        end_line: 27
+        end_col: 3
+        start_byte: 330
+        end_byte: 373
+        children {
+          kind: "modifiers"
+          named: true
+          start_line: 25
+          start_col: 2
+          end_line: 25
+          end_col: 17
+          start_byte: 330
+          end_byte: 345
+          children {
+            kind: "annotation"
+            named: true
+            start_line: 25
+            start_col: 2
+            end_line: 25
+            end_col: 17
+            start_byte: 330
+            end_byte: 345
+            children {
+              kind: "@"
+              start_line: 25
+              start_col: 2
+              end_line: 25
+              end_col: 3
+              start_byte: 330
+              end_byte: 331
+              text: "@"
+            }
+            children {
+              kind: "identifier"
+              named: true
+              field: "name"
+              start_line: 25
+              start_col: 3
+              end_line: 25
+              end_col: 9
+              start_byte: 331
+              end_byte: 337
+              text: "Tagged"
+              refs {
+                access: "ref"
+                outcome: "bound"
+                target: "e.Routes$Tagged"
+              }
+            }
+            children {
+              kind: "annotation_argument_list"
+              named: true
+              field: "arguments"
+              start_line: 25
+              start_col: 9
+              end_line: 25
+              end_col: 17
+              start_byte: 337
+              end_byte: 345
+              children {
+                kind: "("
+                start_line: 25
+                start_col: 9
+                end_line: 25
+                end_col: 10
+                start_byte: 337
+                end_byte: 338
+                text: "("
+              }
+              children {
+                kind: "field_access"
+                named: true
+                start_line: 25
+                start_col: 10
+                end_line: 25
+                end_col: 16
+                start_byte: 338
+                end_byte: 344
+                children {
+                  kind: "identifier"
+                  named: true
+                  field: "object"
+                  start_line: 25
+                  start_col: 10
+                  end_line: 25
+                  end_col: 14
+                  start_byte: 338
+                  end_byte: 342
+                  text: "Kind"
+                  refs {
+                    access: "ref"
+                    outcome: "bound"
+                    target: "e.Routes$Kind"
+                  }
+                }
+                children {
+                  kind: "."
+                  start_line: 25
+                  start_col: 14
+                  end_line: 25
+                  end_col: 15
+                  start_byte: 342
+                  end_byte: 343
+                  text: "."
+                }
+                children {
+                  kind: "identifier"
+                  named: true
+                  field: "field"
+                  start_line: 25
+                  start_col: 15
+                  end_line: 25
+                  end_col: 16
+                  start_byte: 343
+                  end_byte: 344
+                  text: "A"
+                  refs {
+                    access: "r"
+                    outcome: "bound"
+                    target: "e.Routes$Kind#A"
+                  }
+                }
+              }
+              children {
+                kind: ")"
+                start_line: 25
+                start_col: 16
+                end_line: 25
+                end_col: 17
+                start_byte: 344
+                end_byte: 345
+                text: ")"
+              }
+            }
+          }
+        }
+        children {
+          kind: "void_type"
+          named: true
+          field: "type"
+          start_line: 26
+          start_col: 2
+          end_line: 26
+          end_col: 6
+          start_byte: 348
+          end_byte: 352
+          text: "void"
+        }
+        children {
+          kind: "identifier"
+          named: true
+          field: "name"
+          start_line: 26
+          start_col: 7
+          end_line: 26
+          end_col: 19
+          start_byte: 353
+          end_byte: 365
+          text: "enumConstant"
+          decls: "e.Routes#enumConstant()"
+        }
+        children {
+          kind: "formal_parameters"
+          named: true
+          field: "parameters"
+          start_line: 26
+          start_col: 19
+          end_line: 26
+          end_col: 21
+          start_byte: 365
+          end_byte: 367
+          children {
+            kind: "("
+            start_line: 26
+            start_col: 19
+            end_line: 26
+            end_col: 20
+            start_byte: 365
+            end_byte: 366
+            text: "("
+          }
+          children {
+            kind: ")"
+            start_line: 26
+            start_col: 20
+            end_line: 26
+            end_col: 21
+            start_byte: 366
+            end_byte: 367
+            text: ")"
+          }
+        }
+        children {
+          kind: "block"
+          named: true
+          field: "body"
+          start_line: 26
+          start_col: 22
+          end_line: 27
+          end_col: 3
+          start_byte: 368
+          end_byte: 373
+          children {
+            kind: "{"
+            start_line: 26
+            start_col: 22
+            end_line: 26
+            end_col: 23
+            start_byte: 368
+            end_byte: 369
+            text: "{"
+          }
+          children {
+            kind: "}"
+            start_line: 27
+            start_col: 2
+            end_line: 27
+            end_col: 3
+            start_byte: 372
+            end_byte: 373
+            text: "}"
+          }
+        }
+      }
+      children {
+        kind: "}"
+        start_line: 28
+        end_line: 28
+        end_col: 1
+        start_byte: 374
+        end_byte: 375
+        text: "}"
+      }
+    }
+  }
+}
+path: "e/Routes.java"
+semantic: true
+symbols {
+  id: "e.Routes#<init>()"
+  kind: "constructor"
+  name: "Routes"
+  owner: "e.Routes"
+  facts {
+    key: "implicit"
+    value {
+      flag: true
+    }
+  }
+}
+symbols {
+  id: "e.Routes$Kind#<init>()"
+  kind: "constructor"
+  name: "Kind"
+  owner: "e.Routes$Kind"
+  facts {
+    key: "implicit"
+    value {
+      flag: true
+    }
+  }
+}
+symbols {
+  id: "e.Routes$Kind#valueOf(java.lang.String)"
+  kind: "method"
+  name: "valueOf"
+  owner: "e.Routes$Kind"
+  facts {
+    key: "implicit"
+    value {
+      flag: true
+    }
+  }
+}
+symbols {
+  id: "e.Routes$Kind#values()"
+  kind: "method"
+  name: "values"
+  owner: "e.Routes$Kind"
+  facts {
+    key: "implicit"
+    value {
+      flag: true
+    }
+  }
+}
+symbols {
+  id: "e.Routes"
+  kind: "type"
+  name: "Routes"
+  place {
+    start_byte: 18
+    end_byte: 24
+    line: 3
+    column: 6
+  }
+}
+symbols {
+  id: "e.Routes#ADMIN"
+  kind: "field"
+  name: "ADMIN"
+  owner: "e.Routes"
+  place {
+    start_byte: 49
+    end_byte: 54
+    line: 4
+    column: 22
+  }
+  facts {
+    key: "type"
+    value {
+      type {
+        kind: "named"
+        id: "java.lang.String"
+        origin: "jdk"
+        source: "declared"
+      }
+    }
+  }
+}
+symbols {
+  id: "e.Routes#LOCAL"
+  kind: "constant"
+  name: "LOCAL"
+  owner: "e.Routes"
+  place {
+    start_byte: 106
+    end_byte: 111
+    line: 5
+    column: 22
+  }
+  facts {
+    key: "constant"
+    value {
+      text: "/local"
+    }
+  }
+}
+symbols {
+  id: "e.Routes$Path"
+  kind: "type"
+  name: "Path"
+  owner: "e.Routes"
+  place {
+    start_byte: 138
+    end_byte: 142
+    line: 7
+    column: 13
+  }
+}
+symbols {
+  id: "e.Routes$Path#value()"
+  kind: "method"
+  name: "value"
+  owner: "e.Routes$Path"
+  place {
+    start_byte: 158
+    end_byte: 163
+    line: 8
+    column: 13
+  }
+}
+symbols {
+  id: "e.Routes$Kind"
+  kind: "type"
+  name: "Kind"
+  owner: "e.Routes"
+  place {
+    start_byte: 179
+    end_byte: 183
+    line: 11
+    column: 7
+  }
+}
+symbols {
+  id: "e.Routes$Kind#A"
+  kind: "enum_member"
+  name: "A"
+  owner: "e.Routes$Kind"
+  place {
+    start_byte: 186
+    end_byte: 187
+    line: 11
+    column: 14
+  }
+}
+symbols {
+  id: "e.Routes$Tagged"
+  kind: "type"
+  name: "Tagged"
+  owner: "e.Routes"
+  place {
+    start_byte: 204
+    end_byte: 210
+    line: 13
+    column: 13
+  }
+}
+symbols {
+  id: "e.Routes$Tagged#value()"
+  kind: "method"
+  name: "value"
+  owner: "e.Routes$Tagged"
+  place {
+    start_byte: 222
+    end_byte: 227
+    line: 14
+    column: 9
+  }
+}
+symbols {
+  id: "e.Routes#unknownConstant()"
+  kind: "method"
+  name: "unknownConstant"
+  owner: "e.Routes"
+  place {
+    start_byte: 258
+    end_byte: 273
+    line: 18
+    column: 7
+  }
+  facts {
+    key: "returns"
+    value {
+      type {
+        kind: "named"
+        id: "void"
+        source: "declared"
+      }
+    }
+  }
+}
+symbols {
+  id: "e.Routes#knownConstant()"
+  kind: "method"
+  name: "knownConstant"
+  owner: "e.Routes"
+  place {
+    start_byte: 305
+    end_byte: 318
+    line: 22
+    column: 7
+  }
+  facts {
+    key: "returns"
+    value {
+      type {
+        kind: "named"
+        id: "void"
+        source: "declared"
+      }
+    }
+  }
+}
+symbols {
+  id: "e.Routes#enumConstant()"
+  kind: "method"
+  name: "enumConstant"
+  owner: "e.Routes"
+  place {
+    start_byte: 353
+    end_byte: 365
+    line: 26
+    column: 7
+  }
+  facts {
+    key: "returns"
+    value {
+      type {
+        kind: "named"
+        id: "void"
+        source: "declared"
+      }
+    }
+  }
+}
+facts {
+  key: "e.Routes"
+  value {
+    kind: "class"
+    tier: "IN_PROJECT"
+    parent: "e/Routes.java::<module>"
+    props {
+      name: "simple_name"
+      values: "Routes"
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Routes"
+    }
+  }
+}
+facts {
+  key: "e.Routes#ADMIN"
+  value {
+    kind: "field"
+    tier: "IN_PROJECT"
+    parent: "e.Routes"
+    props {
+      name: "member_name"
+      values: "ADMIN"
+    }
+    props {
+      name: "modifiers"
+      values: "static,final"
+    }
+    props {
+      name: "simple_name"
+      values: "ADMIN"
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Routes"
+    }
+    type: "java.lang.String"
+  }
+}
+facts {
+  key: "e.Routes#LOCAL"
+  value {
+    kind: "field"
+    tier: "IN_PROJECT"
+    parent: "e.Routes"
+    props {
+      name: "member_name"
+      values: "LOCAL"
+    }
+    props {
+      name: "modifiers"
+      values: "static,final"
+    }
+    props {
+      name: "simple_name"
+      values: "LOCAL"
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Routes"
+    }
+    type: "java.lang.String"
+  }
+}
+facts {
+  key: "e.Routes#enumConstant()"
+  value {
+    kind: "method"
+    tier: "IN_PROJECT"
+    parent: "e.Routes"
+    props {
+      name: "annotation_values"
+      values: "[{\"elements\":[{\"name\":\"value\",\"value\":{\"constant\":\"A\",\"kind\":\"enum\",\"type\":\"e.Routes$Kind\"}}],\"id\":\"e.Routes$Tagged\"}]"
+    }
+    props {
+      name: "member_name"
+      values: "enumConstant"
+    }
+    props {
+      name: "param_types"
+      values: ""
+    }
+    props {
+      name: "simple_name"
+      values: "enumConstant"
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Routes"
+    }
+    returns: "void"
+    annotations: "e.Routes$Tagged"
+  }
+}
+facts {
+  key: "e.Routes#knownConstant()"
+  value {
+    kind: "method"
+    tier: "IN_PROJECT"
+    parent: "e.Routes"
+    props {
+      name: "annotation_values"
+      values: "[{\"elements\":[{\"name\":\"value\",\"value\":{\"kind\":\"string\",\"value\":\"/local\"}}],\"id\":\"e.Routes$Path\"}]"
+    }
+    props {
+      name: "member_name"
+      values: "knownConstant"
+    }
+    props {
+      name: "param_types"
+      values: ""
+    }
+    props {
+      name: "simple_name"
+      values: "knownConstant"
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Routes"
+    }
+    returns: "void"
+    annotations: "e.Routes$Path"
+  }
+}
+facts {
+  key: "e.Routes#unknownConstant()"
+  value {
+    kind: "method"
+    tier: "IN_PROJECT"
+    parent: "e.Routes"
+    props {
+      name: "annotation_values"
+      values: "[{\"elements\":[{\"name\":\"value\",\"value\":{\"kind\":\"expression\",\"text\":\"ADMIN\"}}],\"id\":\"e.Routes$Path\"}]"
+    }
+    props {
+      name: "member_name"
+      values: "unknownConstant"
+    }
+    props {
+      name: "param_types"
+      values: ""
+    }
+    props {
+      name: "simple_name"
+      values: "unknownConstant"
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Routes"
+    }
+    returns: "void"
+    annotations: "e.Routes$Path"
+  }
+}
+facts {
+  key: "e.Routes$Kind"
+  value {
+    kind: "enum"
+    tier: "IN_PROJECT"
+    parent: "e.Routes"
+    props {
+      name: "simple_name"
+      values: "Kind"
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Routes$Kind"
+    }
+  }
+}
+facts {
+  key: "e.Routes$Kind#<init>()"
+  value {
+    kind: "method"
+    tier: "IN_PROJECT"
+    parent: "e.Routes$Kind"
+    props {
+      name: "member_name"
+      values: "Kind"
+    }
+    props {
+      name: "param_types"
+      values: ""
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Routes$Kind"
+    }
+  }
+}
+facts {
+  key: "e.Routes$Kind#A"
+  value {
+    kind: "field"
+    tier: "IN_PROJECT"
+    parent: "e.Routes$Kind"
+    props {
+      name: "member_name"
+      values: "A"
+    }
+    props {
+      name: "simple_name"
+      values: "A"
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Routes$Kind"
+    }
+    type: "e.Routes$Kind"
+  }
+}
+facts {
+  key: "e.Routes$Path"
+  value {
+    kind: "annotation"
+    tier: "IN_PROJECT"
+    parent: "e.Routes"
+    props {
+      name: "simple_name"
+      values: "Path"
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Routes$Path"
+    }
+  }
+}
+facts {
+  key: "e.Routes$Path#value()"
+  value {
+    kind: "method"
+    tier: "IN_PROJECT"
+    parent: "e.Routes$Path"
+    props {
+      name: "member_name"
+      values: "value"
+    }
+    props {
+      name: "param_types"
+      values: ""
+    }
+    props {
+      name: "simple_name"
+      values: "value"
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Routes$Path"
+    }
+    returns: "java.lang.String[]"
+  }
+}
+facts {
+  key: "e.Routes$Tagged"
+  value {
+    kind: "annotation"
+    tier: "IN_PROJECT"
+    parent: "e.Routes"
+    props {
+      name: "simple_name"
+      values: "Tagged"
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Routes$Tagged"
+    }
+  }
+}
+facts {
+  key: "e.Routes$Tagged#value()"
+  value {
+    kind: "method"
+    tier: "IN_PROJECT"
+    parent: "e.Routes$Tagged"
+    props {
+      name: "member_name"
+      values: "value"
+    }
+    props {
+      name: "param_types"
+      values: ""
+    }
+    props {
+      name: "simple_name"
+      values: "value"
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Routes$Tagged"
+    }
+    returns: "e.Routes$Kind"
+  }
+}
+facts {
+  key: "java.lang.String"
+  value {
+    kind: "class"
+    tier: "EXTERNAL_KNOWN"
+  }
+}

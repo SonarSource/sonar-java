@@ -16,6 +16,7 @@
  */
 package org.sonar.java.model;
 
+import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 
 public class AnnotationValueImpl implements SymbolMetadata.AnnotationValue {
@@ -23,7 +24,7 @@ public class AnnotationValueImpl implements SymbolMetadata.AnnotationValue {
   private final String name;
   private final Object value;
 
-  public AnnotationValueImpl(String name, Object value) {
+  public AnnotationValueImpl(String name, @Nullable Object value) {
     this.name = name;
     this.value = value;
   }
