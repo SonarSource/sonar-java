@@ -34,6 +34,15 @@ jobs:
       - uses: jdx/mise-action@90f833d396d0cc3674b631d2d225e306476c303a # v5.2.10
         with:
           version: 2026.10.20
+      - name: Configure Maven
+        uses: SonarSource/ci-github-actions/config-maven@v2
+        with:
+          repox-url: https://repox-internal.dev.sonar.build
+          artifactory-reader-role: private-reader
+          use-develocity: ${{ env.USE_DEVELOCITY }}
+          develocity-url: ${{ env.DEVELOCITY_URL }}
+      - name: Install analyzer-wire
+        run: bash ./.github/scripts/install-analyzer-wire.sh
       - uses: SonarSource/ci-github-actions/build-maven@v2
         id: build-maven
         env:
@@ -438,6 +447,9 @@ jobs:
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
           disable-caching: 'true'
+      - name: Install analyzer-wire
+        shell: bash
+        run: bash ./.github/scripts/install-analyzer-wire.sh
       - name: Run Maven
         env:
           JAVA_TOOL_OPTIONS: ""
