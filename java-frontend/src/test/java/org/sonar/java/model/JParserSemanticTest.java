@@ -898,6 +898,31 @@ class JParserSemanticTest {
   }
 
   @Test
+  void diamond_anonymous_class_overrides_the_parameterized_supertype_method() {
+    String source = """
+      package org.foo;
+      import java.util.function.Function;
+      class A {
+        Function<String, String> foo() {
+          return new Function<>() {
+            public String apply(String s) { return s; }
+          };
+        }
+      }
+      """;
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl foo = (MethodTreeImpl) c.members().get(0);
+    NewClassTreeImpl creation = (NewClassTreeImpl) ((ReturnStatementTreeImpl) foo.block().body().get(0)).expression();
+    MethodTreeImpl apply = (MethodTreeImpl) creation.classBody().members().get(0);
+
+    // the diamond gives the anonymous class its supertype arguments, so apply(String) overrides apply(T)
+    assertThat(apply.symbol().overriddenSymbols()).hasSize(1);
+    assertThat(creation.classBody().symbol().interfaces()).singleElement().satisfies(type -> assertThat(type.fullyQualifiedName()).isEqualTo("java.util.function.Function"));
+    assertThat(creation.classBody().symbol().interfaces().get(0).isParameterized()).isTrue();
+  }
+
+  @Test
   void expression_nested_lambda() {
     String source = """
       class A {

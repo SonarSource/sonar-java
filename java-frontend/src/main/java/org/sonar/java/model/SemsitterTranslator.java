@@ -1840,12 +1840,18 @@ final class SemsitterTranslator {
     if (!(tree.identifier() instanceof JavaTree.ParameterizedTypeTreeImpl generic) || !generic.typeArguments().isEmpty() || !target.isParameterized()) {
       return;
     }
-    Type inferred = sema.inferDiamond(tree.symbolType(), sema.groundType(target));
+    boolean anonymous = tree.classBody() != null && tree.classBody().symbol() instanceof JTypeSymbol body && !body.isUnknown();
+    // an anonymous class keeps its own type; the diamond parameterizes the supertype it names
+    Type inferred = sema.inferDiamond(anonymous ? generic.symbolType() : tree.symbolType(), sema.groundType(target));
     if (!inferred.isParameterized()) {
       return;
     }
-    ascribe(tree, inferred);
     ascribe(generic, inferred);
+    if (anonymous) {
+      ((JTypeSymbol) tree.classBody().symbol()).declaredSupertype(inferred);
+      return;
+    }
+    ascribe(tree, inferred);
     if (tree.getConstructorIdentifier() instanceof IdentifierTreeImpl identifier) {
       ascribe(identifier, inferred);
       if (identifier.symbol() instanceof JMethodSymbol constructor && !constructor.isUnknown()) {

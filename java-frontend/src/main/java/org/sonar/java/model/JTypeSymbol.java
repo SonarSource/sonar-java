@@ -140,6 +140,15 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     this.interfaceTypeFacts = interfaceTypes;
   }
 
+  /** The parameterization an anonymous class takes from a diamond on its named supertype. */
+  void declaredSupertype(Type inferred) {
+    if (inferred.symbol().isInterface()) {
+      declaredInterfaces = List.of(inferred);
+    } else {
+      declaredSuperClass = inferred;
+    }
+  }
+
   void memberFacts(List<JsonObject> memberFacts) {
     this.memberFacts = memberFacts;
     this.members = null;
@@ -259,7 +268,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
     if (!parent.isInterface() || parent.isUnknown()) {
       return null;
     }
-    return sema.getClassType(erased);
+    return withDeclaredArguments(sema.getClassType(erased), declaredInterfaces);
   }
 
   private List<Type> withInterfaceSuper(List<Type> interfaces) {
