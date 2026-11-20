@@ -176,7 +176,8 @@ public final class SemSitterClient implements AutoCloseable {
       }
       return new Answer(header, payload);
     } catch (IOException e) {
-      throw new IOException(e.getMessage().startsWith("SemSitter") ? e.getMessage() : "SemSitter server: " + e.getMessage(), e);
+      String message = e.getMessage().startsWith("SemSitter") ? e.getMessage() : ("SemSitter server: " + e.getMessage());
+      throw new IOException(message, e);
     }
   }
 
@@ -212,6 +213,13 @@ public final class SemSitterClient implements AutoCloseable {
     return line.toString(StandardCharsets.UTF_8);
   }
 
-  private record Answer(JsonObject header, byte[] payload) {
+  private static final class Answer {
+    private final JsonObject header;
+    private final byte[] payload;
+
+    private Answer(JsonObject header, byte[] payload) {
+      this.header = header;
+      this.payload = payload;
+    }
   }
 }
