@@ -546,10 +546,16 @@ final class SemsitterTranslator {
     }
     if (kind == Tree.Kind.RECORD) {
       Node parameters = field(node, "parameters");
-      tree.completeRecordComponents(
-        parameters == null ? synthetic("(") : token(required(parameters, "(")),
-        parameters == null ? List.of() : parameters(parameters),
-        parameters == null ? synthetic(")") : token(required(parameters, ")")));
+      // the components must not shadow same-named variables of the enclosing method after the record
+      scopes.addFirst(new HashMap<>());
+      try {
+        tree.completeRecordComponents(
+          parameters == null ? synthetic("(") : token(required(parameters, "(")),
+          parameters == null ? List.of() : parameters(parameters),
+          parameters == null ? synthetic(")") : token(required(parameters, ")")));
+      } finally {
+        scopes.removeFirst();
+      }
     }
     Node superclass = childKind(node, "superclass");
     if (superclass != null) {

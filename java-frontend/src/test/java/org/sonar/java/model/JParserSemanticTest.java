@@ -854,6 +854,26 @@ class JParserSemanticTest {
   }
 
   @Test
+  void record_components_do_not_shadow_variables_of_the_enclosing_method() {
+    String source = """
+      package org.foo;
+      class A {
+        int foo(int flags) {
+          record R(int flags) { }
+          return flags;
+        }
+      }
+      """;
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl foo = (MethodTreeImpl) c.members().get(0);
+    IdentifierTree used = (IdentifierTree) ((ReturnStatementTreeImpl) foo.block().body().get(1)).expression();
+
+    // the use after the local record is the parameter of the method, not the record component
+    assertThat(used.symbol()).isSameAs(foo.parameters().get(0).symbol());
+  }
+
+  @Test
   void expression_nested_lambda() {
     String source = """
       class A {
