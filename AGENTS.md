@@ -17,6 +17,12 @@ For step-by-step guidance on implementing a new rule (including metadata generat
 
 ---
 
+# Maven Development Builds
+
+Always pass `-Dmaven.build.cache.enabled=true` to Maven commands during local development. Keep the existing goal, profiles, and test flags for the task; the extension caches modules and does not select individual tests. Use `-Dmaven.build.cache.enabled=false` for uncached reference or release checks. See `docs/maven-build-cache.md` for cache scope and rollback.
+
+---
+
 # Repository Structure
 
 ## Maven Module Structure

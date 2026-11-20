@@ -13,6 +13,11 @@
   <name>SonarQube Java :: AWS Checks</name>
   <description>Code Analyzer for Java :: Analyzer's checks for AWS</description>
 
+  <properties>
+    <maven.build.cache.input.1>../java-checks-test-sources/aws/src</maven.build.cache.input.1>
+    <maven.build.cache.input.2>../java-checks-test-sources/default/src</maven.build.cache.input.2>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.sonarsource.api.plugin</groupId>

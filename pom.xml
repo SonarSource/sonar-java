@@ -85,6 +85,10 @@
     <jdk.min.version>21</jdk.min.version>
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
+    <maven.test.skip>false</maven.test.skip>
+    <maven.test.skip.exec>false</maven.test.skip.exec>
+    <skipTests>false</skipTests>
+    <maven.test.failure.ignore>false</maven.test.failure.ignore>
 
     <sonar.version>26.11.0.134175</sonar.version>
     <!-- Required by shadow scans -->
@@ -388,6 +392,13 @@
 
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <release>${maven.compiler.release}</release>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>de.thetaphi</groupId>
         <artifactId>forbiddenapis</artifactId>
         <executions>
@@ -457,6 +468,10 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <skip>${maven.test.skip}</skip>
+          <skipExec>${maven.test.skip.exec}</skipExec>
+          <skipTests>${skipTests}</skipTests>
+          <testFailureIgnore>${maven.test.failure.ignore}</testFailureIgnore>
           <runOrder>alphabetical</runOrder>
           <environmentVariables>
             <M2_REPO>${settings.localRepository}</M2_REPO>
@@ -466,5 +481,55 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>partial-test-selection-no-cache</id>
+      <activation>
+        <property>
+          <name>test</name>
+        </property>
+      </activation>
+      <properties>
+        <maven.build.cache.skipCache>true</maven.build.cache.skipCache>
+        <maven.build.cache.skipSave>true</maven.build.cache.skipSave>
+      </properties>
+    </profile>
+    <profile>
+      <id>apache-build-cache</id>
+      <activation>
+        <property>
+          <name>maven.build.cache.enabled</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+              <archive>
+                <manifestEntries>
+                  <Implementation-Build>_</Implementation-Build>
+                </manifestEntries>
+              </archive>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
+            <artifactId>sonar-packaging-maven-plugin</artifactId>
+            <configuration>
+              <archive>
+                <manifestEntries>
+                  <Build-Time>_</Build-Time>
+                </manifestEntries>
+              </archive>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

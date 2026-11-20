@@ -92,7 +92,9 @@ for guidance on when samples belong in the dedicated test-source modules instead
 
 To build the plugin and run its unit tests, execute this command from the project's root directory:
 
-    mvn clean install
+    mvn clean install -Dmaven.build.cache.enabled=true
+
+Always pass `-Dmaven.build.cache.enabled=true` for local development Maven builds. Use `-Dmaven.build.cache.enabled=false` for uncached reference or release builds. See [the Maven build cache guide](docs/maven-build-cache.md) for cache scope, isolation, and rollback.
 
 ### Note that
 Running unit tests within the IDE might incur in some issues because of the way the project is built with Maven.

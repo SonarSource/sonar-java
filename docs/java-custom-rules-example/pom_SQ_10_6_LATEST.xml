@@ -28,6 +28,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Make sure to be compatible with java 8 -->
     <maven.compiler.release>8</maven.compiler.release>
+    <maven.test.skip>false</maven.test.skip>
+    <maven.test.skip.exec>false</maven.test.skip.exec>
+    <skipTests>false</skipTests>
+    <maven.test.failure.ignore>false</maven.test.failure.ignore>
   </properties>
 
   <dependencies>
@@ -140,6 +144,7 @@
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
+          <release>${maven.compiler.release}</release>
         </configuration>
       </plugin>
 
@@ -147,6 +152,12 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.5.6</version>
+        <configuration>
+          <skip>${maven.test.skip}</skip>
+          <skipExec>${maven.test.skip.exec}</skipExec>
+          <skipTests>${skipTests}</skipTests>
+          <testFailureIgnore>${maven.test.failure.ignore}</testFailureIgnore>
+        </configuration>
       </plugin>
 
       <plugin>
@@ -232,5 +243,20 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>partial-test-selection-no-cache</id>
+      <activation>
+        <property>
+          <name>test</name>
+        </property>
+      </activation>
+      <properties>
+        <maven.build.cache.skipCache>true</maven.build.cache.skipCache>
+        <maven.build.cache.skipSave>true</maven.build.cache.skipSave>
+      </properties>
+    </profile>
+  </profiles>
 
 </project>
