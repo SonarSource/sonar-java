@@ -1931,6 +1931,24 @@ class JParserSemanticTest {
   }
 
   @Test
+  void cast_widening_to_the_returned_type_is_redundant() {
+    String source = """
+      package test;
+      import java.util.Collection;
+      import java.util.List;
+      import java.util.function.Supplier;
+      class C {
+        Collection<String> widened(List<String> l) { return (Collection<String>) l; }
+        List<String> narrowed(Collection<String> c) { return (List<String>) c; }
+        Supplier<Collection<String>> inLambda(List<String> l) { return () -> { return (Collection<String>) l; }; }
+      }
+      """;
+    List<Warning> warnings = test(source).warnings(ProblemKind.REDUNDANT_CAST);
+    assertThat(warnings).hasSize(1);
+    assertThat(warnings.get(0).syntaxTree().firstToken().range().start().line()).isEqualTo(6);
+  }
+
+  @Test
   void test_varialbe_equals_inNestedLambdas() {
     String source = """
           package org.foo;

@@ -190,6 +190,19 @@ final class CompilerWarnings extends BaseTreeVisitor {
     return sameArity == 1 ? java.util.Optional.of(method.parameterTypes().get(index)) : java.util.Optional.empty();
   }
 
+  /** The declared return type of the method a return statement belongs to; none inside a lambda. */
+  private static java.util.Optional<Type> returnedAs(Tree statement) {
+    Tree enclosing = statement.parent();
+    while (enclosing != null && !(enclosing instanceof org.sonar.plugins.java.api.tree.MethodTree) && !(enclosing instanceof org.sonar.plugins.java.api.tree.LambdaExpressionTree)
+      && !(enclosing instanceof org.sonar.plugins.java.api.tree.ClassTree)) {
+      enclosing = enclosing.parent();
+    }
+    if (enclosing instanceof org.sonar.plugins.java.api.tree.MethodTree method && method.returnType() != null) {
+      return java.util.Optional.of(method.returnType().symbolType());
+    }
+    return java.util.Optional.empty();
+  }
+
   /** The declared type of the variable the cast initializes or is assigned to. */
   private static java.util.Optional<Type> assignedTo(org.sonar.plugins.java.api.tree.TypeCastTree cast) {
     Tree child = cast;
@@ -206,6 +219,9 @@ final class CompilerWarnings extends BaseTreeVisitor {
     }
     if (parent instanceof org.sonar.plugins.java.api.tree.Arguments arguments) {
       return soleParameterType(arguments, child);
+    }
+    if (parent instanceof org.sonar.plugins.java.api.tree.ReturnStatementTree) {
+      return returnedAs(parent);
     }
     return java.util.Optional.empty();
   }
