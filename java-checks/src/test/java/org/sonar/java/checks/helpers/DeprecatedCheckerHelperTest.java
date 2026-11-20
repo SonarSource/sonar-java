@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
@@ -28,6 +29,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DeprecatedCheckerHelperTest {
+
+  @ParameterizedTest
+  @ValueSource(strings = {"Deprecated", "java.lang.Deprecated"})
+  void deprecatedAnnotation(String name) {
+    var classTree = parseClass("@" + name + "(since = \"9\", forRemoval = true) class A {}");
+    var annotation = DeprecatedCheckerHelper.deprecatedAnnotation(classTree);
+    assertThat(annotation).isNotNull();
+    assertThat(DeprecatedCheckerHelper.getAnnotationAttributeValue(annotation, "since", String.class)).contains("9");
+    assertThat(DeprecatedCheckerHelper.getAnnotationAttributeValue(annotation, "forRemoval", Boolean.class)).contains(true);
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"other.Deprecated", "java.lang.Override"})
+  void unrelatedAnnotation(String name) {
+    assertThat(DeprecatedCheckerHelper.deprecatedAnnotation(parseClass("@" + name + " class A {}"))).isNull();
+  }
 
   @Test
   void getAnnotationAttributeValue() {

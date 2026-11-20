@@ -54,7 +54,8 @@ class MissingDeprecatedCheckSample {
   }
 
   @java.lang.Deprecated
-  public void foo9() {
+  public void foo9() { // Noncompliant {{Add the missing @deprecated Javadoc tag.}}
+//            ^^^^
 
     @Deprecated
     int local1 = 0;
@@ -153,3 +154,49 @@ interface mockito {
   @Deprecated
   <T> T createMock(Class<T> toMock, Method... mockedMethods);
 }
+
+class QualifiedDeprecation {
+
+  static class Annotations {
+    @interface Deprecated {}
+  }
+
+  /** @deprecated Use replacement instead. */
+  @Annotations.Deprecated
+  public void customAnnotation() {} // Noncompliant {{Add the missing @Deprecated annotation.}}
+//            ^^^^^^^^^^^^^^^^
+
+  /** @deprecated Use replacement instead. */
+  @java.lang.Deprecated
+  public void method() {}
+
+  /** @deprecated Use replacement instead. */
+  @java.lang.Deprecated
+  public int field;
+
+  @java.lang.Deprecated
+  public int undocumentedField; // Noncompliant {{Add the missing @deprecated Javadoc tag.}}
+//           ^^^^^^^^^^^^^^^^^
+
+  public enum State {
+    UNKNOWN;
+
+    /** @deprecated Use {@link #forNumber(int)} instead. */
+    @java.lang.Deprecated
+    public static State valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static State forNumber(int value) {
+      return UNKNOWN;
+    }
+  }
+}
+
+/** @deprecated Use replacement instead. */
+@java.lang.Deprecated
+class QualifiedDeprecatedClass {}
+
+@java.lang.Deprecated
+class UndocumentedQualifiedDeprecatedClass {} // Noncompliant {{Add the missing @deprecated Javadoc tag.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
