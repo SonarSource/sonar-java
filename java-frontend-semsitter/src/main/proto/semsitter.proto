@@ -1,0 +1,313 @@
+// Protocol between SonarJava and the SemSitter Java analyzer server (udg-java-server).
+// Each message is written length-delimited (varint size, then the message) on the standard
+// streams of the server: requests on its input, responses on its output.
+syntax = "proto3";
+
+package sonar.semsitter;
+
+option java_multiple_files = true;
+option java_package = "org.sonar.java.semsitter.protocol";
+
+message Request {
+  // Echoed by the response.
+  uint32 id = 1;
+  oneof command {
+    HelloRequest hello = 2;
+    SetSettingsRequest set_settings = 3;
+    FullGenRequest full_gen = 4;
+    GetFileRequest get_file = 5;
+    GetTypesRequest get_types = 6;
+    HasPackageRequest has_package = 7;
+    QuitRequest quit = 8;
+  }
+}
+
+message HelloRequest {
+}
+
+message SetSettingsRequest {
+  // Replaces the settings of the session, such as jvm.libraries or jvm.java_version.
+  map<string, StringList> settings = 1;
+}
+
+message FullGenRequest {
+  // Scans exactly these files; none scans the source roots.
+  repeated string files = 1;
+}
+
+message GetFileRequest {
+  string path = 1;
+  // Files after this one to prepare in the background.
+  uint32 ahead = 2;
+}
+
+message GetTypesRequest {
+  // Erased binary names, nested types joined with '$'.
+  repeated string names = 1;
+}
+
+message HasPackageRequest {
+  repeated string names = 1;
+}
+
+message QuitRequest {
+}
+
+message Response {
+  uint32 id = 1;
+  // Present when the scan has unresolved imports and no dependencies are configured.
+  repeated string warnings = 2;
+  // Unset for a quit request.
+  oneof result {
+    string error = 3;
+    HelloResponse hello = 4;
+    SetSettingsResponse set_settings = 5;
+    FullGenResponse full_gen = 6;
+    Document document = 7;
+    TypesResponse types = 8;
+    HasPackageResponse has_package = 9;
+  }
+}
+
+message HelloResponse {
+  // Semantic version; a client rejects another major version.
+  string protocol = 1;
+}
+
+message SetSettingsResponse {
+  bool rescanned = 1;
+  repeated string diagnostics = 2;
+}
+
+message FullGenResponse {
+  uint32 files = 1;
+  uint32 failures = 2;
+  repeated string diagnostics = 3;
+}
+
+message TypesResponse {
+  map<string, TypeDeclaration> declarations = 1;
+  // Requested names declared by the project.
+  repeated string project = 2;
+  // Requested names an earlier answer carried, not repeated.
+  repeated string already_sent = 3;
+  // Requested names no source, JDK or library declares.
+  repeated string missing = 4;
+}
+
+message HasPackageResponse {
+  map<string, bool> packages = 1;
+}
+
+message StringList {
+  repeated string values = 1;
+}
+
+// The syntax tree of one file with its declarations, references, symbols and graph facts.
+message Document {
+  string path = 1;
+  bool has_error = 2;
+  bool semantic = 3;
+  Node tree = 4;
+  repeated Symbol symbols = 5;
+  map<string, Fact> facts = 6;
+}
+
+// Lines are 1-based, columns are 0-based UTF-16 code units.
+message Node {
+  string kind = 1;
+  bool named = 2;
+  string field = 3;
+  bool missing = 4;
+  uint32 start_line = 5;
+  uint32 start_column = 6;
+  uint32 end_line = 7;
+  uint32 end_column = 8;
+  uint32 start_byte = 9;
+  uint32 end_byte = 10;
+  string text = 11;
+  repeated Node children = 12;
+  // Ids of the symbols the node declares.
+  repeated string declarations = 13;
+  repeated Reference references = 14;
+}
+
+message Reference {
+  string access = 1;
+  string outcome = 2;
+  string target = 3;
+  string reason = 4;
+  bool bounded = 5;
+  map<string, FactValue> facts = 6;
+}
+
+message Symbol {
+  string id = 1;
+  string kind = 2;
+  string name = 3;
+  string owner = 4;
+  // Unset for a synthesized symbol.
+  Place place = 5;
+  map<string, FactValue> facts = 6;
+}
+
+message Place {
+  uint32 start_byte = 1;
+  uint32 end_byte = 2;
+  uint32 line = 3;
+  uint32 column = 4;
+}
+
+message FactValue {
+  oneof value {
+    bool flag = 1;
+    StringList ids = 2;
+    string text = 3;
+    TypeRef type = 4;
+  }
+}
+
+message Fact {
+  string kind = 1;
+  string tier = 2;
+  string parent = 3;
+  map<string, StringList> props = 4;
+  repeated string extends = 5;
+  repeated string implements = 6;
+  repeated string permits = 7;
+  repeated string returns = 8;
+  repeated string type = 9;
+  repeated string params = 10;
+  repeated string overrides = 11;
+  repeated string annotations = 12;
+}
+
+message TypeRef {
+  enum Kind {
+    // A class, primitive or void type, by id.
+    NAMED = 0;
+    ARRAY = 1;
+    TYPE_VARIABLE = 2;
+    WILDCARD = 3;
+    UNKNOWN = 4;
+  }
+  Kind kind = 1;
+  string id = 2;
+  repeated TypeRef arguments = 3;
+  // The enclosing type of Outer<X>.Inner.
+  TypeRef outer = 4;
+  TypeRef element = 5;
+  TypeRef extends_bound = 6;
+  TypeRef super_bound = 7;
+}
+
+message TypeDeclaration {
+  // project, classpath, jdk or framework-db.
+  string origin = 1;
+  string id = 2;
+  string kind = 3;
+  optional string superclass = 4;
+  repeated string interfaces = 5;
+  repeated string modifiers = 6;
+  repeated Annotation annotations = 7;
+  uint32 type_parameter_count = 8;
+  repeated string type_variables = 9;
+  repeated TypeBounds type_variable_bounds = 10;
+  TypeRef superclass_type = 11;
+  repeated TypeRef interface_types = 12;
+  repeated TypeAnnotation type_annotations = 13;
+  repeated Member members = 14;
+}
+
+message TypeBounds {
+  repeated TypeRef bounds = 1;
+}
+
+// A library member is described by its fields, a project member by its id and facts.
+message Member {
+  enum Kind {
+    KIND_UNSPECIFIED = 0;
+    METHOD = 1;
+    FIELD = 2;
+  }
+  Kind kind = 1;
+  string id = 2;
+  string name = 3;
+  string jvm_descriptor = 4;
+  string visibility = 5;
+  bool is_static = 6;
+  bool is_abstract = 7;
+  bool is_final = 8;
+  bool is_synchronized = 9;
+  bool is_varargs = 10;
+  bool is_enum_constant = 11;
+  optional string constant = 12;
+  repeated Annotation annotations = 13;
+  repeated TypeAnnotation type_annotations = 14;
+  repeated AnnotationList parameter_annotations = 15;
+  ElementValue default_value = 16;
+  repeated string throws = 17;
+  repeated TypeRef throws_types = 18;
+  repeated string use_ids = 19;
+  repeated string type_variables = 20;
+  repeated TypeBounds type_variable_bounds = 21;
+  TypeRef return_type = 22;
+  repeated TypeRef parameter_types = 23;
+  repeated string parameter_variables = 24;
+  // Index of the class type variable the method returns.
+  optional uint32 return_parameter = 25;
+  bool returns_self = 26;
+  TypeRef declared_type = 27;
+  Fact facts = 28;
+}
+
+message Annotation {
+  string name = 1;
+  repeated ElementValue values = 2;
+}
+
+message AnnotationList {
+  repeated Annotation annotations = 1;
+}
+
+message TypeAnnotation {
+  enum Target {
+    TYPE = 0;
+    PARAMETER = 1;
+    SUPERCLASS = 2;
+    INTERFACE = 3;
+  }
+  Annotation annotation = 1;
+  Target target = 2;
+  uint32 index = 3;
+  // Steps into the annotated type: "[]", "?" or "<n>".
+  repeated string path = 4;
+}
+
+message ElementValue {
+  string name = 1;
+  oneof value {
+    bool boolean_value = 2;
+    sint32 byte_value = 3;
+    uint32 char_value = 4;
+    sint32 short_value = 5;
+    sint32 int_value = 6;
+    sint64 long_value = 7;
+    float float_value = 8;
+    double double_value = 9;
+    string string_value = 10;
+    string class_value = 11;
+    EnumConstant enum_value = 12;
+    Annotation annotation_value = 13;
+    ElementValueList array_value = 14;
+  }
+}
+
+message EnumConstant {
+  string type = 1;
+  string constant = 2;
+}
+
+message ElementValueList {
+  repeated ElementValue values = 1;
+}

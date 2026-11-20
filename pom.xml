@@ -51,6 +51,7 @@
   <modules>
     <module>java-checks-test-sources</module>
     <module>java-frontend</module>
+    <module>java-frontend-semsitter</module>
     <module>java-checks-testkit</module>
     <module>java-checks</module>
     <module>java-checks-aws</module>
@@ -98,6 +99,7 @@
     <orchestrator.version>6.4.4.4797</orchestrator.version>
     <sonar.integration.tester.version>1.7.0.11463</sonar.integration.tester.version>
     <sslr.version>1.26.0.4194</sslr.version>
+    <protobuf.version>4.36.2</protobuf.version>
     <argLine>-Xmx512m</argLine>
     <gitRepositoryName>sonar-java</gitRepositoryName>
     <!-- Use more recent version than the one in parent-oss to support jreMinVersion -->
@@ -338,6 +340,11 @@
         <artifactId>gson</artifactId>
         <version>2.15.0</version>
         <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>${protobuf.version}</version>
       </dependency>
       <!-- staxmate is used by java-surefire -->
       <dependency>
