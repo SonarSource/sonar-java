@@ -39,7 +39,6 @@ import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -368,13 +367,12 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     ExpressionTree delimiter = mit.arguments().get(0);
     return ExpressionUtils.skipParentheses(mit.arguments().get(1)) instanceof MethodInvocationTree copies
       && N_COPIES.matches(copies)
-      && copies.arguments().size() == 2
       && isFixed(delimiter, scope)
       && isFixed(copies.arguments().get(1), scope);
   }
 
   private static boolean isJoinOfMappedFixedElement(MethodInvocationTree collect, Scope scope) {
-    if (!STREAM_COLLECT.matches(collect) || collect.arguments().size() != 1
+    if (!STREAM_COLLECT.matches(collect)
       || !(ExpressionUtils.skipParentheses(collect.arguments().get(0)) instanceof MethodInvocationTree joining)
       || !COLLECTORS_JOINING.matches(joining)
       || !joining.arguments().stream().allMatch(argument -> isFixed(argument, scope))) {
@@ -383,7 +381,6 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     return collect.methodSelect() instanceof MemberSelectExpressionTree select
       && ExpressionUtils.skipParentheses(select.expression()) instanceof MethodInvocationTree map
       && STREAM_MAP.matches(map)
-      && map.arguments().size() == 1
       && map.arguments().get(0) instanceof LambdaExpressionTree lambda
       && lambda.body() instanceof ExpressionTree body
       && isFixed(body, scope);
@@ -413,7 +410,7 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     while (root instanceof MethodInvocationTree call && call.methodSelect() instanceof MemberSelectExpressionTree callSelect && BUILDER_APPEND.matches(call)) {
       root = ExpressionUtils.skipParentheses(callSelect.expression());
     }
-    return root instanceof IdentifierTree identifier && isBuilder(identifier.symbol().type()) && isFixedContentBuilder(identifier.symbol(), scope);
+    return root instanceof IdentifierTree identifier && isFixedContentBuilder(identifier.symbol(), scope);
   }
 
   private static boolean isBuilder(Type type) {
@@ -442,8 +439,7 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isFixedContentBuilderUsage(IdentifierTree usage, VariableTree declaration) {
     Tree current = usage;
-    while (current.parent() instanceof MemberSelectExpressionTree select && select.expression() == current
-      && select.parent() instanceof MethodInvocationTree call && call.methodSelect() == select) {
+    while (current.parent() instanceof MemberSelectExpressionTree select && select.parent() instanceof MethodInvocationTree call) {
       if (BUILDER_TO_STRING.matches(call)) {
         return true;
       }
@@ -461,11 +457,8 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
 
   @Nullable
   private static Tree enclosingScope(Tree tree) {
-    Tree current = tree.parent();
-    while (current != null && !(current instanceof MethodTree || current instanceof LambdaExpressionTree || current instanceof ClassTree)) {
-      current = current.parent();
-    }
-    return current;
+    return ExpressionUtils.getParentOfType(tree, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.CLASS,
+      Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.RECORD, Tree.Kind.INITIALIZER, Tree.Kind.STATIC_INITIALIZER);
   }
 
   /**
@@ -478,30 +471,25 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     if (declaration == null || declaration.block() == null || !(method.isPrivate() || method.isStatic() || method.isFinal())) {
       return false;
     }
-    Type returnType = method.returnType().type();
-    if (!(returnType.is(JAVA_LANG_STRING) || returnType.is(STRING_BUILDER) || returnType.is(STRING_BUFFER))) {
-      return false;
-    }
-    ReturnCollector collector = new ReturnCollector();
+    ReturnCollector collector = new ReturnCollector(declaration);
     declaration.block().accept(collector);
     return !collector.returns.isEmpty()
-      && collector.returns.stream().allMatch(returnTree -> returnTree.expression() != null && isFixed(returnTree.expression(), Scope.IN_HELPER));
+      && collector.returns.stream().allMatch(returnTree -> isFixed(returnTree.expression(), Scope.IN_HELPER));
   }
 
   private static class ReturnCollector extends BaseTreeVisitor {
+    private final MethodTree method;
     private final List<ReturnStatementTree> returns = new ArrayList<>();
+
+    ReturnCollector(MethodTree method) {
+      this.method = method;
+    }
 
     @Override
     public void visitReturnStatement(ReturnStatementTree tree) {
-      returns.add(tree);
-    }
-
-    @Override
-    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-    }
-
-    @Override
-    public void visitClass(ClassTree tree) {
+      if (enclosingScope(tree) == method) {
+        returns.add(tree);
+      }
     }
   }
 
