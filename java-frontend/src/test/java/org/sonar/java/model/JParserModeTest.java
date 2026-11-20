@@ -17,6 +17,7 @@
 package org.sonar.java.model;
 
 import java.util.Collections;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.event.Level;
@@ -32,9 +33,9 @@ class JParserModeTest {
   void a_debug_message_is_logged_when_shouldIgnoreUnnamedModuleForSplitPackage_is_set() {
     JParser.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList());
     assertThat(logTester.logs()).isEmpty();
-    JParser.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), false);
+    JParser.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), false, true);
     assertThat(logTester.logs()).isEmpty();
-    JParser.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), true);
+    JParser.Mode.BATCH.create(new JavaVersionImpl(17), Collections.emptyList(), true, true);
     assertThat(logTester.logs()).containsExactly("The Java analyzer will ignore the unnamed module for split packages.");
   }
 }

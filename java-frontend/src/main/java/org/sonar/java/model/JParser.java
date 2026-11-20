@@ -34,11 +34,11 @@ public interface JParser {
     FILE_BY_FILE;
 
     public JParser create(JavaVersion javaVersion, List<File> classpath) {
-      return create(javaVersion, classpath, false);
+      return create(javaVersion, classpath, false, true);
     }
 
-    public JParser create(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage) {
-      return JDTParser.create(this, javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage);
+    public JParser create(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage, boolean shouldUseJdkReleaseOption) {
+      return JDTParser.create(this, javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage, shouldUseJdkReleaseOption);
     }
   }
 

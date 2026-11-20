@@ -106,6 +106,13 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   public static final String SONAR_IGNORE_UNNAMED_MODULE_FOR_SPLIT_PACKAGE = "sonar.java.ignoreUnnamedModuleForSplitPackage";
 
   /**
+   * When enabled, the JDK API visible to the parser is the one of the analyzed Java release, instead of the API of the JDK running the analysis.
+   * Enabled by default. When the JDK cannot serve the release, the parser falls back to the API of that JDK.
+   * Setting it to false is the way out for a project whose analysis regressed because of it.
+   */
+  public static final String SONAR_USE_JDK_RELEASE_OPTION = "sonar.java.useJdkReleaseOption";
+
+  /**
    * Describes whether the analysis should fail and halt when a StackOverflowError is encountered.
    * True by default, we still want to give the possibility to disable this behavior in case of large projects
    * for which it is costly to run a whole analysis to then just fail at the end and lose all findings.
@@ -500,6 +507,10 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
   public boolean shouldIgnoreUnnamedModuleForSplitPackage() {
     return context.config().getBoolean(SONAR_IGNORE_UNNAMED_MODULE_FOR_SPLIT_PACKAGE).orElse(false);
+  }
+
+  public boolean shouldUseJdkReleaseOption() {
+    return context.config().getBoolean(SONAR_USE_JDK_RELEASE_OPTION).orElse(true);
   }
 
   public boolean shouldFailOnStackOverflow() {

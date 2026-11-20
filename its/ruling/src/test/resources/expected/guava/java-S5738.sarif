@@ -23,78 +23,6 @@
         "id" : -1,
         "physicalLocation" : {
           "artifactLocation" : {
-            "uri" : "guava:src/com/google/common/base/Throwables.java",
-            "index" : -1
-          },
-          "region" : {
-            "startLine" : 337,
-            "startColumn" : 14,
-            "endLine" : 337,
-            "endColumn" : 25
-          }
-        }
-      } ],
-      "rank" : -1.0
-    }, {
-      "ruleId" : "java:S5738",
-      "ruleIndex" : -1,
-      "kind" : "fail",
-      "level" : "warning",
-      "message" : {
-        "text" : "Remove this call to a deprecated class, it has been marked for removal."
-      },
-      "locations" : [ {
-        "id" : -1,
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "guava:src/com/google/common/base/Throwables.java",
-            "index" : -1
-          },
-          "region" : {
-            "startLine" : 367,
-            "startColumn" : 86,
-            "endLine" : 367,
-            "endColumn" : 97
-          }
-        }
-      } ],
-      "rank" : -1.0
-    }, {
-      "ruleId" : "java:S5738",
-      "ruleIndex" : -1,
-      "kind" : "fail",
-      "level" : "warning",
-      "message" : {
-        "text" : "Remove this call to a deprecated class, it has been marked for removal."
-      },
-      "locations" : [ {
-        "id" : -1,
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "guava:src/com/google/common/base/Throwables.java",
-            "index" : -1
-          },
-          "region" : {
-            "startLine" : 370,
-            "startColumn" : 14,
-            "endLine" : 370,
-            "endColumn" : 25
-          }
-        }
-      } ],
-      "rank" : -1.0
-    }, {
-      "ruleId" : "java:S5738",
-      "ruleIndex" : -1,
-      "kind" : "fail",
-      "level" : "warning",
-      "message" : {
-        "text" : "Remove this call to a deprecated class, it has been marked for removal."
-      },
-      "locations" : [ {
-        "id" : -1,
-        "physicalLocation" : {
-          "artifactLocation" : {
             "uri" : "guava:src/com/google/common/cache/Striped64.java",
             "index" : -1
           },
@@ -103,30 +31,6 @@
             "startColumn" : 34,
             "endLine" : 321,
             "endColumn" : 50
-          }
-        }
-      } ],
-      "rank" : -1.0
-    }, {
-      "ruleId" : "java:S5738",
-      "ruleIndex" : -1,
-      "kind" : "fail",
-      "level" : "warning",
-      "message" : {
-        "text" : "Don't override this deprecated method, it has been marked for removal."
-      },
-      "locations" : [ {
-        "id" : -1,
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "guava:src/com/google/common/io/FileBackedOutputStream.java",
-            "index" : -1
-          },
-          "region" : {
-            "startLine" : 103,
-            "startColumn" : 34,
-            "endLine" : 103,
-            "endColumn" : 42
           }
         }
       } ],

@@ -41,7 +41,7 @@ class JavaPluginTest {
     Plugin.Context context = new Plugin.Context(runtime);
     javaPlugin.define(context);
     assertThat(context.getExtensions())
-      .hasSize(22)
+      .hasSize(23)
       .contains(SonarLintCache.class, SpringContextGatheringModel.class)
       .doesNotContain(SpringContextModelSensor.class);
   }
@@ -53,7 +53,7 @@ class JavaPluginTest {
     Plugin.Context context = new Plugin.Context(sqCommunity);
     javaPlugin.define(context);
     assertThat(context.getExtensions())
-      .hasSize(40)
+      .hasSize(41)
       .contains(SpringContextGatheringModel.class, SpringContextModelSensor.class)
       .doesNotContain(Jasper.class);
   }
@@ -64,7 +64,7 @@ class JavaPluginTest {
     Plugin.Context context = new Plugin.Context(sqEnterprise);
     javaPlugin.define(context);
     assertThat(context.getExtensions())
-      .hasSize(41)
+      .hasSize(42)
       .contains(Jasper.class, SpringContextGatheringModel.class, SpringContextModelSensor.class);
   }
 
