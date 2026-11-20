@@ -498,10 +498,12 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // intentionally empty: do not collect return statements from nested lambdas
     }
 
     @Override
     public void visitClass(ClassTree tree) {
+      // intentionally empty: do not collect return statements from nested classes
     }
   }
 
