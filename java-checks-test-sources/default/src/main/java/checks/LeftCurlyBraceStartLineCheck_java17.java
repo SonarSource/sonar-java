@@ -22,6 +22,31 @@ class LeftCurlyBraceStartLineCheck_java17
   { // Compliant
   }
 
+  record GenericPair<T>(T first,
+    T second) { // Noncompliant {{Move this left curly brace to the beginning of next line of code.}}
+//            ^
+  }
+
+  record GenericPairWithBraceOnNextLine<T>(T first,
+    T second)
+  {
+  }
+
+  record EmptyGenericRecord<T>(
+  ) { // Noncompliant {{Move this left curly brace to the beginning of next line of code.}}
+//  ^
+  }
+
+  record GenericSerializableRecord<T>(T value)
+    implements java.io.Serializable { // Noncompliant {{Move this left curly brace to the beginning of next line of code.}}
+//                                  ^
+  }
+
+  record GenericSerializableRecordWithBraceOnNextLine<T>(T value)
+    implements java.io.Serializable
+  {
+  }
+
   public sealed interface Shape
     permits Rectangle, Triangle { // Noncompliant
   }
