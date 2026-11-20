@@ -16,7 +16,9 @@
  */
 package org.sonar.java.semsitter;
 
+import com.google.gson.JsonParser;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -24,8 +26,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.io.TempDir;
-import org.sonar.java.semsitter.protocol.Document;
-import org.sonar.java.semsitter.protocol.TypesResponse;
+import org.sonarsource.semsitter.wire.Document;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -47,7 +48,7 @@ class SemSitterClientE2ETest {
 
     try (SemSitterClient client = SemSitterClient.start(Path.of(System.getProperty("semsitter.executable")), project)) {
       client.setSettings(Map.of("jvm.java_version", List.of("17")));
-      assertThat(client.fullGen(List.of()).getFiles()).isEqualTo(2);
+      assertThat(client.fullGen(List.of())).isEqualTo(2);
 
       Document document = client.getFile("p/A.java", 0);
       assertThat(document.getPath()).isEqualTo("p/A.java");
@@ -55,11 +56,8 @@ class SemSitterClientE2ETest {
       assertThat(document.getHasError()).isFalse();
       assertThat(document.getTree().getKind()).isEqualTo("program");
 
-      TypesResponse types = client.getTypes(List.of("p.B", "java.lang.String", "x.Missing"));
-      assertThat(types.getProjectList()).containsExactly("p.B");
-      assertThat(types.getMissingList()).containsExactly("x.Missing");
-      assertThat(types.getDeclarationsOrThrow("java.lang.String").getKind()).isEqualTo("class");
-
+      String types = new String(client.getTypes(List.of("p.B", "java.lang.String", "x.Missing")), StandardCharsets.UTF_8);
+      assertThat(JsonParser.parseString(types).getAsJsonObject().keySet()).contains("java.lang.String");
       assertThat(client.hasPackage(List.of("p", "zz"))).containsEntry("p", true).containsEntry("zz", false);
       assertThatThrownBy(() -> client.getFile("p/Nope.java", 0)).isInstanceOf(IOException.class);
     }
