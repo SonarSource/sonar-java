@@ -7,15 +7,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import org.hibernate.Session;
 import javax.persistence.EntityManager;
 
 import javax.jdo.PersistenceManager;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 class SQLInjection {
   private static final String CONSTANT = "SELECT * FROM TABLE";
@@ -428,10 +434,9 @@ class SQLFormat {
   }
 
   public void plusAssignmentConst() throws SQLException {
-    // FP, but probably rare and not worth complicating the code to fix it.
     String query = "SELECT";
     query += String.format("WHERE col = \"%c\"", "value");
-    this.stmt.execute(query); // Noncompliant
+    this.stmt.execute(query); // Compliant
   }
 
   public void plusAssignmentClassName(String input) throws SQLException {
@@ -457,5 +462,322 @@ class SQLFormat {
     em.createNativeQuery("SELECT * FROM entity ORDER BY " + (asc ? "ASC" : input)); // Noncompliant
     em.createNativeQuery("SELECT * FROM entity ORDER BY " + (asc ? input : "DESC")); // Noncompliant
     em.createNativeQuery("SELECT * FROM entity ORDER BY " + (asc ? (offset > 0 ? "A" : "B") : "C")); // Compliant
+  }
+
+  private static final String PRODUCT_OPERAND = "p.product_id";
+  private static final String IN_TEMPLATE = "SELECT * FROM t WHERE id IN (%s)";
+  private JdbcTemplate fixedJdbc;
+  private String fieldFragment;
+  @Value("${query.hint:/*+ x */}")
+  private String configuredHint;
+
+  private String literalWhere(boolean a, boolean b) {
+    StringBuilder sb = new StringBuilder();
+    if (a) {
+      sb.append(" AND account_id = :accountId");
+    }
+    if (b) {
+      sb.append(" AND room_id = :roomId").append(" AND x = 1");
+    }
+    return sb.toString();
+  }
+
+  private StringBuilder literalBuilder(boolean a) {
+    StringBuilder sb = new StringBuilder("");
+    if (a) {
+      sb.append(" AND x = :x");
+    }
+    return sb;
+  }
+
+  private static String literalStatic() {
+    return " AND y = :y";
+  }
+
+  private String literalConcat(boolean a) {
+    if (a) {
+      return " AND a = :a" + " AND b = :b";
+    }
+    return "";
+  }
+
+  private String dynamicWhere(String param) {
+    return " AND x = " + param;
+  }
+
+  private String dynamicBuilderWhere(String param) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(" AND x = ").append(param);
+    return sb.toString();
+  }
+
+  private String dynamicBuilderAliasWhere(String param) {
+    StringBuilder sb = new StringBuilder();
+    StringBuilder alias = sb;
+    alias.append(param);
+    return sb.toString();
+  }
+
+  private String escapedBuilderWhere(String param) {
+    StringBuilder sb = new StringBuilder();
+    consume(sb);
+    return sb.toString();
+  }
+
+  private String builderFromParam(String param) {
+    StringBuilder sb = new StringBuilder(param);
+    return sb.toString();
+  }
+
+  private String mixedReturns(boolean a, String param) {
+    if (a) {
+      return " AND a = :a";
+    }
+    return " AND b = " + param;
+  }
+
+  private String fieldReturn() {
+    return fieldFragment;
+  }
+
+  private String recursiveHelper(int n) {
+    return " AND r = :r" + recursiveHelper(n - 1);
+  }
+
+  private String callingHelper() {
+    return " AND c = :c" + literalConcat(true);
+  }
+
+  private String lambdaReturn() {
+    Supplier<String> supplier = () -> {
+      return fieldFragment;
+    };
+    return " AND l = :l";
+  }
+
+  private String anonymousClassReturn() {
+    Supplier<String> supplier = new Supplier<>() {
+      @Override
+      public String get() {
+        return fieldFragment;
+      }
+    };
+    return " AND a = :a";
+  }
+
+  String nonPrivateHelper() {
+    return " AND n = :n";
+  }
+
+  private void consume(StringBuilder sb) {
+  }
+
+  private final StringBuilder fieldBuilder = new StringBuilder("SELECT 1");
+
+  private List<String> columns() {
+    return null;
+  }
+
+  final String finalHelper() {
+    return " AND f = :f";
+  }
+
+  private native String nativeHelper();
+
+  private String throwingHelper() {
+    throw new IllegalStateException();
+  }
+
+  private StringBuilder dynamicBuilderHelper(String param) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(param);
+    return sb;
+  }
+
+  private String nestedBuilderHelper(boolean a) {
+    StringBuilder nested = literalBuilder(a);
+    return nested.toString();
+  }
+
+  void fixedFragmentHelpers(boolean a, boolean b, String param, MapSqlParameterSource params) {
+    fixedJdbc.query("SELECT count(*) FROM assignment" + literalWhere(a, b), (rs, i) -> 1); // Compliant
+    String sql = "SELECT count(*) FROM assignment" + literalWhere(a, b);
+    fixedJdbc.query(sql, (rs, i) -> 1); // Compliant
+    StringBuilder where = literalBuilder(a);
+    fixedJdbc.query("SELECT 1 FROM t" + where, (rs, i) -> 1); // Compliant
+    fixedJdbc.query("SELECT 1 FROM t" + literalStatic(), (rs, i) -> 1); // Compliant
+    fixedJdbc.query("SELECT 1 FROM t" + literalConcat(a), (rs, i) -> 1); // Compliant
+    fixedJdbc.query("SELECT 1 FROM t WHERE x = %s".formatted(literalStatic()), (rs, i) -> 1); // Compliant
+    fixedJdbc.query("SELECT 1 FROM t" + callingHelper(), (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t" + lambdaReturn(), (rs, i) -> 1); // Compliant
+    fixedJdbc.query("SELECT 1 FROM t" + anonymousClassReturn(), (rs, i) -> 1); // Compliant
+
+    fixedJdbc.query("SELECT 1 FROM t" + dynamicWhere(param), (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t" + dynamicBuilderWhere(param), (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t" + dynamicBuilderAliasWhere(param), (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t" + escapedBuilderWhere(param), (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t" + builderFromParam(param), (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t" + mixedReturns(a, param), (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t" + fieldReturn(), (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t" + recursiveHelper(3), (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t" + nonPrivateHelper(), (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t" + fieldFragment, (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t" + param, (rs, i) -> 1); // Noncompliant
+  }
+
+  void repeatedPlaceholders(List<String> ids, String param) {
+    String placeholders = String.join(",", Collections.nCopies(ids.size(), "?"));
+    fixedJdbc.query("SELECT 1 FROM t WHERE id IN (" + placeholders + ")", (rs, i) -> 1); // Compliant
+    fixedJdbc.query("SELECT 1 FROM t WHERE id IN (" + String.join(", ", Collections.nCopies(ids.size(), "(?)")) + ")", (rs, i) -> 1); // Compliant
+    fixedJdbc.query(IN_TEMPLATE.formatted(placeholders), (rs, i) -> 1); // Compliant
+    fixedJdbc.query(String.format(IN_TEMPLATE, placeholders), (rs, i) -> 1); // Compliant
+
+    String badElement = String.join(",", Collections.nCopies(ids.size(), param));
+    fixedJdbc.query("SELECT 1 FROM t WHERE id IN (" + badElement + ")", (rs, i) -> 1); // Noncompliant
+    String badDelimiter = String.join(param, Collections.nCopies(ids.size(), "?"));
+    fixedJdbc.query("SELECT 1 FROM t WHERE id IN (" + badDelimiter + ")", (rs, i) -> 1); // Noncompliant
+    String plainJoin = String.join(",", ids);
+    fixedJdbc.query("SELECT 1 FROM t WHERE id IN (" + plainJoin + ")", (rs, i) -> 1); // Noncompliant
+    String reassigned = String.join(",", Collections.nCopies(ids.size(), "?"));
+    reassigned = param;
+    fixedJdbc.query("SELECT 1 FROM t WHERE id IN (" + reassigned + ")", (rs, i) -> 1); // Noncompliant
+  }
+
+  void mappedPlaceholders(List<String> rows, String param) {
+    String values = rows.stream().map(r -> "(?, ?)").collect(Collectors.joining(", "));
+    fixedJdbc.query("INSERT INTO t VALUES %s".formatted(values), (rs, i) -> 1); // Compliant
+    fixedJdbc.query("INSERT INTO t VALUES " + rows.stream().map(r -> "(?)").collect(Collectors.joining(",")), (rs, i) -> 1); // Compliant
+
+    String fromElement = rows.stream().map(r -> "(" + r + ")").collect(Collectors.joining(", "));
+    fixedJdbc.query("INSERT INTO t VALUES " + fromElement, (rs, i) -> 1); // Noncompliant
+    String badDelimiter = rows.stream().map(r -> "(?)").collect(Collectors.joining(param));
+    fixedJdbc.query("INSERT INTO t VALUES " + badDelimiter, (rs, i) -> 1); // Noncompliant
+    String blockLambda = rows.stream().map(r -> { return "(?)"; }).collect(Collectors.joining(","));
+    fixedJdbc.query("INSERT INTO t VALUES " + blockLambda, (rs, i) -> 1); // Noncompliant
+  }
+
+  void loopsAndConstants(List<String> ids, List<String> columns) {
+    StringBuilder literalLoop = new StringBuilder("SELECT 1 FROM t WHERE 1 = 0");
+    for (String id : ids) {
+      literalLoop.append(" OR code = ?");
+    }
+    fixedJdbc.query(literalLoop.toString(), (rs, i) -> 1); // Compliant
+    fixedJdbc.query("SELECT 1 FROM t WHERE 1 = 0" + literalLoop.toString(), (rs, i) -> 1); // Compliant
+
+    String concatenatedLoop = "SELECT 1 FROM t WHERE 1 = 0";
+    for (String id : ids) {
+      concatenatedLoop += " OR code = ?";
+    }
+    fixedJdbc.query(concatenatedLoop, (rs, i) -> 1); // Compliant
+
+    String elementLoop = "SELECT 1 FROM t WHERE 1 = 0";
+    for (String column : columns) {
+      elementLoop += " OR " + column + " = ?";
+    }
+    fixedJdbc.query(elementLoop, (rs, i) -> 1); // Noncompliant
+
+    fixedJdbc.query("SELECT 1 FROM t WHERE %1$s = ?".formatted(PRODUCT_OPERAND), (rs, i) -> 1); // Compliant
+    String clause = "WHERE %1$s = ?".formatted(PRODUCT_OPERAND);
+    fixedJdbc.query("SELECT 1 FROM t " + clause, (rs, i) -> 1); // Compliant
+  }
+
+  void dynamicBuilderInCaller(String param) {
+    StringBuilder sb = new StringBuilder("SELECT 1 FROM t WHERE x = ");
+    sb.append(param);
+    fixedJdbc.query("SELECT 1 FROM t" + sb.toString(), (rs, i) -> 1); // Noncompliant
+    StringBuilder passed = new StringBuilder("SELECT 1 FROM t");
+    consume(passed);
+    fixedJdbc.query("SELECT 1 FROM t" + passed.toString(), (rs, i) -> 1); // Noncompliant
+    StringBuilder fixed = new StringBuilder("SELECT 1 FROM t");
+    fixed.append(" WHERE x = 1");
+    fixedJdbc.query("SELECT 1 FROM t" + fixed.toString(), (rs, i) -> 1); // Compliant
+  }
+
+  void builderEdgeCases(boolean a, String param) {
+    StringBuilder self = new StringBuilder("SELECT 1");
+    self.append(self.toString());
+    fixedJdbc.query("x" + self.toString(), (rs, i) -> 1); // Noncompliant
+
+    StringBuilder indirect = new StringBuilder("SELECT 1");
+    String snapshot = indirect.toString();
+    indirect.append(snapshot);
+    fixedJdbc.query("x" + indirect.toString(), (rs, i) -> 1); // Noncompliant
+
+    StringBuilder extended = literalBuilder(a);
+    extended.append(param);
+    fixedJdbc.query("SELECT 1 FROM t" + extended, (rs, i) -> 1); // Noncompliant
+
+    StringBuilder original = literalBuilder(a);
+    StringBuilder alias = original;
+    alias.append(param);
+    fixedJdbc.query("SELECT 1 FROM t" + original, (rs, i) -> 1); // Noncompliant
+
+    StringBuilder escaping = literalBuilder(a);
+    Supplier<StringBuilder> blockLeak = () -> {
+      return escaping;
+    };
+    blockLeak.get().append(param);
+    fixedJdbc.query("SELECT 1 FROM t" + escaping, (rs, i) -> 1); // Noncompliant
+
+    StringBuilder escapingAnonymous = literalBuilder(a);
+    Supplier<StringBuilder> anonymousLeak = new Supplier<>() {
+      @Override
+      public StringBuilder get() {
+        return escapingAnonymous;
+      }
+    };
+    anonymousLeak.get().append(param);
+    fixedJdbc.query("SELECT 1 FROM t" + escapingAnonymous, (rs, i) -> 1); // Noncompliant
+
+    StringBuilder returned = literalBuilder(a);
+    fixedJdbc.query("SELECT 1 FROM t" + returned, (rs, i) -> 1); // Compliant
+    fixedJdbc.query("SELECT 1 FROM t %s".formatted(returned), (rs, i) -> 1); // Compliant
+  }
+
+  void formatWithLocale(String param, Locale locale) {
+    fixedJdbc.query(String.format(locale, "SELECT %s", "1"), (rs, i) -> 1); // Compliant
+    fixedJdbc.query(String.format("SELECT '%s'", new Locale(param)), (rs, i) -> 1); // Noncompliant
+  }
+
+  void configuredValue() {
+    fixedJdbc.query("SELECT " + configuredHint + " 1 FROM t", (rs, i) -> 1); // Noncompliant
+  }
+
+  void conservativeShapes(String param, List<String> rows, StringBuilder parameterBuilder) {
+    fixedJdbc.query("SELECT 1 FROM t WHERE id IN (" + String.join(",", "a", "b") + ")", (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t WHERE id IN (" + String.join(",", columns()) + ")", (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t WHERE id IN " + rows.stream().collect(Collectors.toList()), (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t WHERE id IN " + rows.stream().filter(r -> true).collect(Collectors.joining(",")), (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t WHERE id IN " + rows.stream().map(String::trim).collect(Collectors.joining(",")), (rs, i) -> 1); // Noncompliant
+
+    String formatted = param.formatted("1");
+    fixedJdbc.query("SELECT 1 FROM t WHERE " + formatted, (rs, i) -> 1); // Noncompliant
+
+    StringBuilder inner = new StringBuilder("a");
+    StringBuilder outer = new StringBuilder("b");
+    outer.append(inner);
+    fixedJdbc.query("SELECT 1 FROM t" + outer, (rs, i) -> 1); // Noncompliant
+
+    StringBuilder fixed = new StringBuilder("a");
+    fixedJdbc.query("SELECT 1 FROM t" + fixed.append("b").toString(), (rs, i) -> 1); // Compliant
+    fixedJdbc.query("SELECT 1 FROM t" + new StringBuilder("a").toString(), (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t" + fieldBuilder.toString(), (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t" + parameterBuilder.toString(), (rs, i) -> 1); // Noncompliant
+
+    StringBuilder late;
+    late = new StringBuilder("a");
+    fixedJdbc.query("SELECT 1 FROM t" + late, (rs, i) -> 1); // Noncompliant
+    StringBuilder chained = new StringBuilder("a").append("b");
+    fixedJdbc.query("SELECT 1 FROM t" + chained, (rs, i) -> 1); // Noncompliant
+    StringBuilder fromDynamicHelper = dynamicBuilderHelper(param);
+    fixedJdbc.query("SELECT 1 FROM t" + fromDynamicHelper, (rs, i) -> 1); // Noncompliant
+    StringBuilder measured = new StringBuilder("a");
+    int length = measured.length();
+    fixedJdbc.query("SELECT 1 FROM t" + measured, (rs, i) -> 1); // Noncompliant
+
+    fixedJdbc.query("SELECT 1 FROM t" + nestedBuilderHelper(true), (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t" + finalHelper(), (rs, i) -> 1); // Compliant
+    fixedJdbc.query("SELECT 1 FROM t" + nativeHelper(), (rs, i) -> 1); // Noncompliant
+    fixedJdbc.query("SELECT 1 FROM t" + throwingHelper(), (rs, i) -> 1); // Noncompliant
   }
 }

@@ -306,9 +306,8 @@ class SQLFormatWS {
   }
 
   public void plusAssignmentConst() throws SQLException {
-    // FP, but probably rare and not worth complicating the code to fix it.
     String query = "SELECT";
     query += String.format("WHERE col = \"%c\"", "value");
-    this.stmt.execute(query); // Noncompliant
+    this.stmt.execute(query); // Compliant
   }
 }
