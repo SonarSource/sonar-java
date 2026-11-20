@@ -65,7 +65,7 @@ jobs:
           sources-root: 'its/sources'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DSPY_MODEL: gpt-4.1
+          DSPY_MODEL: gpt-6-luna
           PORTKEY_API_KEY_OPENAI: ${{ fromJSON(steps.secrets.outputs.vault).PORTKEY_API_KEY_OPENAI }}
           UV_INDEX_REPOX_USERNAME: vault-${{ fromJSON(steps.secrets.outputs.vault).ARTIFACTORY_ROLE }}
           UV_INDEX_REPOX_PASSWORD: ${{ fromJSON(steps.secrets.outputs.vault).ARTIFACTORY_ACCESS_TOKEN }}
