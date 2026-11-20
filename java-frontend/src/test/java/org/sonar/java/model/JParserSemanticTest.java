@@ -874,6 +874,30 @@ class JParserSemanticTest {
   }
 
   @Test
+  void nested_and_local_record_enum_and_interface_are_static() {
+    String source = """
+      package org.foo;
+      class A {
+        record R() { }
+        enum E { X }
+        interface I { }
+        class Inner { }
+        void foo() {
+          record L() { }
+          interface LI { }
+        }
+      }
+      """;
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    List<ClassTree> nested = c.members().stream().filter(ClassTree.class::isInstance).map(ClassTree.class::cast).toList();
+    assertThat(nested).extracting(type -> type.symbol().isStatic()).containsExactly(true, true, true, false);
+    MethodTreeImpl foo = (MethodTreeImpl) c.members().get(4);
+    assertThat(foo.block().body()).allSatisfy(statement -> assertThat(((ClassTree) statement).symbol().isStatic()).isTrue());
+    assertThat(c.symbol().isStatic()).isFalse();
+  }
+
+  @Test
   void expression_nested_lambda() {
     String source = """
       class A {

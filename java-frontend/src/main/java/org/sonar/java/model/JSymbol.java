@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -191,7 +192,13 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final boolean isStatic() {
-    return hasModifier("static") || (inInterface() && (isVariableSymbol() || isTypeSymbol())) || enumConstant();
+    return hasModifier("static") || (inInterface() && (isVariableSymbol() || isTypeSymbol())) || enumConstant() || implicitlyStaticType();
+  }
+
+  /** A nested or local record, enum or interface is implicitly static. */
+  private boolean implicitlyStaticType() {
+    return isTypeSymbol() && owner != null && !owner.isPackageSymbol()
+      && (enumSymbol || interfaceSymbol || declaration() instanceof ClassTree declared && declared.is(Tree.Kind.RECORD, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE));
   }
 
   @Override
