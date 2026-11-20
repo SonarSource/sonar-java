@@ -55,7 +55,7 @@ jobs:
       # PVF: publish the concrete deployed plugin version so pvf-comment.yml can dispatch a performance-validation run into peachee-java-kotlin.
       - name: Prepare PVF candidate version
         if: ${{ steps.build-maven.outputs.deployed }}
-        uses: SonarSource/core-languages-tooling-public/prepare-pvf@master
+        uses: SonarSource/core-languages-tooling-public/prepare-pvf@v1
         with:
           build-version: ${{ steps.build-maven.outputs.project-version }}
 
@@ -191,7 +191,7 @@ jobs:
           echo "Ruling QA result: ${{ needs.ruling-qa.result }}, failed=$RULING_FAILED"
 
       - name: Update ruling and notify
-        uses: SonarSource/core-languages-tooling-public/ruling-update-and-notify@master
+        uses: SonarSource/core-languages-tooling-public/ruling-update-and-notify@v1
         with:
           ruling-failed: ${{ steps.check-ruling.outputs.ruling-failed }}
         env:
