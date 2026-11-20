@@ -41,9 +41,10 @@ jobs:
           submodules: true
 
       - name: Install uv
-        uses: step-security/setup-uv@b49aac5576b90039e3e427495dda1a21aba6aaec # v10.3.3
+        uses: jdx/mise-action@d5574b52816a478f9d4e6529a3f6ff17a8a36785 # v5.2.8
         with:
-          enable-cache: true
+          version: 2026.10.20
+      - run: mise use --global uv@latest
 
       - name: Get enhancer secrets
         id: secrets
@@ -52,6 +53,7 @@ jobs:
           secrets: |
             development/kv/data/portkey/code-quality/ruling-test-unification api_key | PORTKEY_API_KEY_OPENAI;
             development/artifactory-edge-prod/token/{REPO_OWNER_NAME_DASH}-private-reader access_token | ARTIFACTORY_ACCESS_TOKEN;
+            development/artifactory-edge-prod/token/{REPO_OWNER_NAME_DASH}-private-reader role | ARTIFACTORY_ROLE;
 
       - name: Post ruling diff comment
         uses: SonarSource/core-languages-tooling-public/ruling-diff-comment@master
@@ -65,5 +67,5 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DSPY_MODEL: gpt-4.1
           PORTKEY_API_KEY_OPENAI: ${{ fromJSON(steps.secrets.outputs.vault).PORTKEY_API_KEY_OPENAI }}
-          UV_INDEX_REPOX_USERNAME: ""
+          UV_INDEX_REPOX_USERNAME: vault-${{ fromJSON(steps.secrets.outputs.vault).ARTIFACTORY_ROLE }}
           UV_INDEX_REPOX_PASSWORD: ${{ fromJSON(steps.secrets.outputs.vault).ARTIFACTORY_ACCESS_TOKEN }}
