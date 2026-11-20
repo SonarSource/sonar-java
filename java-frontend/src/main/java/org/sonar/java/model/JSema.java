@@ -919,6 +919,36 @@ public final class JSema implements Sema {
     return JType.inferred(this, declared.erasure().fullyQualifiedName(), arguments);
   }
 
+  /** Whether {@code method} returns a type variable, as the descriptor erases it or as its source declares it. */
+  boolean returnsClassVariable(JMethodSymbol method) {
+    JsonObject returned = method.isUnknown() ? null : declaredReturn(method);
+    Type declared = method.returnType().type();
+    return returned == null ? declared != null && declared.isTypeVar() : "typevar".equals(text(returned, "kind"));
+  }
+
+  /**
+   * What {@code Type::method} yields when the method returns a class type variable, read from the first
+   * parameter of {@code function}, the receiver it is applied to; null when that is not known.
+   */
+  @Nullable
+  Type unboundReferenceResult(JMethodSymbol method, Type function) {
+    JMethodSymbol functional = functionalMethod(function);
+    if (method.isStatic() || !returnsClassVariable(method) || functional == null || declaresTypeVariables(method, false)) {
+      return null;
+    }
+    List<Type> parameters = invocationParameters(functional, groundType(function), List.of());
+    if (parameters.isEmpty() || method.owner().type() == null) {
+      return null;
+    }
+    Type receiver = groundType(parameters.get(0));
+    Type declaring = receiver.isUnknown() ? null : asSuperType(receiver, method.owner().type().erasure().fullyQualifiedName(), new HashSet<>());
+    if (declaring == null || !declaring.isParameterized()) {
+      return null;
+    }
+    Type result = invocationReturn(method, declaring, List.of());
+    return result.isUnknown() || result.isTypeVar() ? null : result;
+  }
+
   /**
    * The parameter types of {@code method} when the type its call is passed as fixes the type variables of the
    * method, or null when they stay open.

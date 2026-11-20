@@ -2192,7 +2192,7 @@ final class SemsitterTranslator {
       for (int i = 0; i < typed.size(); i++) {
         if (tree.arguments().get(i).is(Tree.Kind.METHOD_INVOCATION)) {
           typed.set(i, tree.arguments().get(i).symbolType());
-        } else if (tree.arguments().get(i) instanceof MethodReferenceTreeImpl reference && i < parameters.size() && referenceResult(reference) instanceof Type produced) {
+        } else if (tree.arguments().get(i) instanceof MethodReferenceTreeImpl reference && i < parameters.size() && referenceResult(reference, parameters.get(i)) instanceof Type produced) {
           Type function = sema.functionProducing(parameters.get(i), produced);
           if (function != null) {
             typed.set(i, function);
@@ -2226,14 +2226,27 @@ final class SemsitterTranslator {
     return tree;
   }
 
-  /** The type a method reference to a bound method yields, or null when it is a constructor reference or the method is generic or unknown. */
+  /**
+   * The type a method reference yields, or null when it is a constructor reference or the method is generic or unknown.
+   * An unbound {@code Type::method} returning a class type variable takes it from the function's first parameter.
+   */
   @Nullable
-  private static Type referenceResult(MethodReferenceTreeImpl reference) {
+  private Type referenceResult(MethodReferenceTreeImpl reference, Type function) {
     if (!(reference.method().symbol() instanceof JMethodSymbol method) || method.isUnknown() || "new".equals(method.name()) || "<init>".equals(method.name())) {
       return null;
     }
     Type returned = method.returnType().type();
+    if (sema.returnsClassVariable(method) && namesType(reference.expression())) {
+      return sema.unboundReferenceResult(method, function);
+    }
     return returned == null || returned.isUnknown() || returned.isTypeVar() || returned.isVoid() ? null : returned;
+  }
+
+  private static boolean namesType(Tree expression) {
+    if (expression instanceof IdentifierTree identifier) {
+      return identifier.symbol().isTypeSymbol();
+    }
+    return expression instanceof MemberSelectExpressionTree select ? select.identifier().symbol().isTypeSymbol() : expression instanceof ParameterizedTypeTree;
   }
 
   /**

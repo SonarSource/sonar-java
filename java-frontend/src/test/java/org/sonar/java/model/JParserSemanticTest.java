@@ -854,6 +854,31 @@ class JParserSemanticTest {
   }
 
   @Test
+  void diamond_anonymous_class_overrides_the_parameterized_supertype_method() {
+    String source = """
+      package org.foo;
+      import java.util.function.Function;
+      class A {
+        Function<String, String> foo() {
+          return new Function<>() {
+            public String apply(String s) { return s; }
+          };
+        }
+      }
+      """;
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl foo = (MethodTreeImpl) c.members().get(0);
+    NewClassTreeImpl creation = (NewClassTreeImpl) ((ReturnStatementTreeImpl) foo.block().body().get(0)).expression();
+    MethodTreeImpl apply = (MethodTreeImpl) creation.classBody().members().get(0);
+
+    // the diamond gives the anonymous class its supertype arguments, so apply(String) overrides apply(T)
+    assertThat(apply.symbol().overriddenSymbols()).hasSize(1);
+    assertThat(creation.classBody().symbol().interfaces()).singleElement().satisfies(type -> assertThat(type.fullyQualifiedName()).isEqualTo("java.util.function.Function"));
+    assertThat(creation.classBody().symbol().interfaces().get(0).isParameterized()).isTrue();
+  }
+
+  @Test
   void record_components_do_not_shadow_variables_of_the_enclosing_method() {
     String source = """
       package org.foo;
@@ -898,28 +923,24 @@ class JParserSemanticTest {
   }
 
   @Test
-  void diamond_anonymous_class_overrides_the_parameterized_supertype_method() {
+  void unbound_method_reference_to_a_class_variable_getter_is_typed_by_the_first_parameter() {
     String source = """
       package org.foo;
-      import java.util.function.Function;
+      import java.util.List;
+      import java.util.Optional;
       class A {
-        Function<String, String> foo() {
-          return new Function<>() {
-            public String apply(String s) { return s; }
-          };
+        Object foo(List<Optional<String>> l) {
+          return l.stream().map(Optional::get);
         }
       }
       """;
     JavaTree.CompilationUnitTreeImpl cu = test(source);
     ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
     MethodTreeImpl foo = (MethodTreeImpl) c.members().get(0);
-    NewClassTreeImpl creation = (NewClassTreeImpl) ((ReturnStatementTreeImpl) foo.block().body().get(0)).expression();
-    MethodTreeImpl apply = (MethodTreeImpl) creation.classBody().members().get(0);
+    MethodInvocationTreeImpl map = (MethodInvocationTreeImpl) ((ReturnStatementTreeImpl) foo.block().body().get(0)).expression();
 
-    // the diamond gives the anonymous class its supertype arguments, so apply(String) overrides apply(T)
-    assertThat(apply.symbol().overriddenSymbols()).hasSize(1);
-    assertThat(creation.classBody().symbol().interfaces()).singleElement().satisfies(type -> assertThat(type.fullyQualifiedName()).isEqualTo("java.util.function.Function"));
-    assertThat(creation.classBody().symbol().interfaces().get(0).isParameterized()).isTrue();
+    // Optional<String> is the function's first parameter: get() yields String
+    assertThat(map.symbolType().typeArguments()).singleElement().satisfies(argument -> assertThat(argument.is("java.lang.String")).isTrue());
   }
 
   @Test
