@@ -41,7 +41,7 @@ import org.sonarsource.semsitter.wire.Document;
  * carries a {@link Document} and a {@code get-types} answer carries a JSON object, each prefixed by the byte count
  * the header names. The process starts with the client and ends with {@link #close()}.
  */
-public final class SemSitterClient implements AutoCloseable {
+public final class SemSitterClient implements SemSitterApi {
 
   static final String PROTOCOL_MAJOR = "2";
 
@@ -89,6 +89,7 @@ public final class SemSitterClient implements AutoCloseable {
     return command;
   }
 
+  @Override
   public void setSettings(Map<String, List<String>> settings) throws IOException {
     JsonObject request = command("set-settings");
     JsonObject values = new JsonObject();
@@ -105,6 +106,7 @@ public final class SemSitterClient implements AutoCloseable {
    * Scans {@code files}, or the source roots when empty.
    * @return how many files the server scanned
    */
+  @Override
   public int fullGen(Collection<String> files) throws IOException {
     JsonObject request = command("full-gen");
     if (!files.isEmpty()) {
@@ -115,6 +117,7 @@ public final class SemSitterClient implements AutoCloseable {
     return send(request).get("files").getAsInt();
   }
 
+  @Override
   public Document getFile(String path, int ahead) throws IOException {
     JsonObject request = command("get-file");
     request.addProperty("path", path);
@@ -127,6 +130,7 @@ public final class SemSitterClient implements AutoCloseable {
   /**
    * @return the JSON object of declarations, as {@code types.schema.json} describes it
    */
+  @Override
   public byte[] getTypes(Collection<String> names) throws IOException {
     JsonObject request = command("get-types");
     JsonArray array = new JsonArray();
@@ -135,6 +139,7 @@ public final class SemSitterClient implements AutoCloseable {
     return exchange(request).payload;
   }
 
+  @Override
   public Map<String, Boolean> hasPackage(Collection<String> names) throws IOException {
     JsonObject request = command("has-package");
     JsonArray array = new JsonArray();
