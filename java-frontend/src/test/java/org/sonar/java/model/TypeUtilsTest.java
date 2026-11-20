@@ -70,6 +70,13 @@ class TypeUtilsTest {
   }
 
   @Test
+  void isValueBasedType_returns_false_for_enum_types() {
+    assertThat(isValueBasedType("java.time.Month m")).isFalse();
+    assertThat(isValueBasedType("java.time.DayOfWeek d")).isFalse();
+    assertThat(isValueBasedType("java.util.concurrent.TimeUnit t")).isFalse();
+  }
+
+  @Test
   void isValueBasedType_returns_false_for_non_value_based_types() {
     assertThat(isValueBasedType("String s")).isFalse();
     assertThat(isValueBasedType("Object o")).isFalse();

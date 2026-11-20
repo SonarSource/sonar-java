@@ -43,7 +43,7 @@ public final class TypeUtils {
 
   // Check if a type is a known value-based class.
   public static boolean isValueBasedType(Type type) {
-    if (type.isUnknown() || type.is(JAVA_TIME_CLOCK)) {
+    if (type.isUnknown() || type.symbol().isEnum() || type.is(JAVA_TIME_CLOCK)) {
       return false;
     }
     return type.isPrimitiveWrapper() || VALUE_BASED_TYPES.stream().anyMatch(type::is) || JAVA_TIME_PACKAGE_PATTERN.matcher(type.fullyQualifiedName()).matches();
