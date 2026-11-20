@@ -43,6 +43,7 @@ import org.sonar.java.classpath.DependencyVersionInference;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
+import org.sonar.java.model.JParserProviders;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.springcontext.SpringContextGatheringModel;
 import org.sonar.java.model.springcontext.SpringContextModelGatherers;
@@ -127,6 +128,10 @@ public class JavaSensor implements Sensor {
 
     telemetry.aggregateAsSortedSet(JAVA_SCANNER_APP, context.config().get("sonar.scanner.app").orElse("none"));
     telemetry.aggregateAsFlag(JAVA_IS_AUTOSCAN, sonarComponents.isAutoScan());
+
+    if (!sonarComponents.isSonarLintContext()) {
+      JParserProviders.configure(context.config());
+    }
 
     JavaFrontend frontend = new JavaFrontend(javaVersion,
       sonarComponents,
