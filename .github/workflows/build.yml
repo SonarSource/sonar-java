@@ -361,6 +361,20 @@ jobs:
           secrets: |
             development/kv/data/next url | SONAR_HOST_URL;
             development/kv/data/next token | SONAR_TOKEN;
+      - name: Read Repox credentials
+        id: repox
+        uses: SonarSource/vault-action-wrapper@v3
+        with:
+          url: https://vault.dev.sonar.build
+          secrets: |
+            development/artifactory-edge-dev/token/{REPO_OWNER_NAME_DASH}-private-reader username | ARTIFACTORY_USERNAME;
+            development/artifactory-edge-dev/token/{REPO_OWNER_NAME_DASH}-private-reader access_token | ARTIFACTORY_ACCESS_TOKEN;
+      - name: Install analyzer-wire
+        env:
+          ARTIFACTORY_URL: https://repox-internal.dev.sonar.build/artifactory
+          ARTIFACTORY_USERNAME: ${{ fromJSON(steps.repox.outputs.vault).ARTIFACTORY_USERNAME }}
+          ARTIFACTORY_ACCESS_TOKEN: ${{ fromJSON(steps.repox.outputs.vault).ARTIFACTORY_ACCESS_TOKEN }}
+        run: bash ./.github/scripts/install-analyzer-wire.sh
       - uses: SonarSource/ci-github-actions/build-maven@v2
         with:
           repox-url: https://repox-internal.dev.sonar.build
