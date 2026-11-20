@@ -113,7 +113,8 @@ final class CompilerWarnings extends BaseTreeVisitor {
   public void visitTypeCast(org.sonar.plugins.java.api.tree.TypeCastTree tree) {
     Type cast = tree.type().symbolType();
     Type operand = tree.expression().symbolType();
-    boolean widening = !cast.isUnknown() && !operand.isUnknown() && operand.isSubtypeOf(cast) && sema.preservesArguments(operand, cast) && !changesTypeFor(tree, operand);
+    boolean widening = !cast.isUnknown() && !operand.isUnknown() && operand.isSubtypeOf(cast) && sema.preservesArguments(operand, cast) && !changesTypeFor(tree, operand)
+      && !isResultOfArgumentLambda(tree);
     if (widening) {
       if (cast.erasure().fullyQualifiedName().equals(operand.erasure().fullyQualifiedName()) && elementType(cast).typeArguments().isEmpty() == elementType(operand).typeArguments().isEmpty()) {
         add(ProblemKind.REDUNDANT_CAST, "Unnecessary cast from " + operand.erasure().name() + " to " + cast.erasure().name(), tree);
@@ -128,6 +129,18 @@ final class CompilerWarnings extends BaseTreeVisitor {
     }
     super.visitTypeCast(tree);
     scan(tree.bounds());
+  }
+
+  /** Whether the cast is the result of a lambda passed as an argument: it can fix the type the call infers. */
+  private static boolean isResultOfArgumentLambda(org.sonar.plugins.java.api.tree.TypeCastTree cast) {
+    Tree parent = cast.parent();
+    while (parent instanceof org.sonar.plugins.java.api.tree.ParenthesizedTree || parent instanceof org.sonar.plugins.java.api.tree.ReturnStatementTree) {
+      parent = parent.parent();
+    }
+    if (parent instanceof org.sonar.plugins.java.api.tree.BlockTree) {
+      parent = parent.parent();
+    }
+    return parent instanceof org.sonar.plugins.java.api.tree.LambdaExpressionTree lambda && lambda.parent() instanceof org.sonar.plugins.java.api.tree.Arguments;
   }
 
   /** The innermost element type of an array type; the type itself otherwise. */

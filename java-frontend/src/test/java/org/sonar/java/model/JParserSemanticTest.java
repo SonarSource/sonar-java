@@ -1911,6 +1911,26 @@ class JParserSemanticTest {
   }
 
   @Test
+  void cast_returned_by_a_lambda_argument_is_not_redundant() {
+    String source = """
+      package test;
+      import java.util.List;
+      import java.util.function.Supplier;
+      class C {
+        static <T> T call(Supplier<T> s) { return s.get(); }
+        void foo(List<String> l) {
+          Object a = call(() -> (List<String>) l);
+          Object b = call(() -> { return (List<String>) l; });
+          List<String> c = (List<String>) l;
+        }
+      }
+      """;
+    List<Warning> warnings = test(source).warnings(ProblemKind.REDUNDANT_CAST);
+    assertThat(warnings).hasSize(1);
+    assertThat(warnings.get(0).syntaxTree().firstToken().range().start().line()).isEqualTo(9);
+  }
+
+  @Test
   void test_varialbe_equals_inNestedLambdas() {
     String source = """
           package org.foo;
