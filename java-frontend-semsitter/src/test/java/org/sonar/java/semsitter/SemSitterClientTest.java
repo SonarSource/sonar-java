@@ -16,13 +16,14 @@
  */
 package org.sonar.java.semsitter;
 
+import com.google.gson.JsonParser;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.semsitter.protocol.TypesResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -47,13 +48,11 @@ class SemSitterClientTest {
   @Test
   void requests_are_answered_in_order() throws IOException {
     try (SemSitterClient client = fakeServer("2.1.0")) {
-      assertThat(client.setSettings(Map.of("jvm.libraries", List.of("a.jar", "b.jar"))).getDiagnosticsList())
-        .containsExactly("jvm.libraries=a.jar,b.jar");
-      assertThat(client.fullGen(List.of("p/A.java", "p/B.java")).getFiles()).isEqualTo(2);
+      client.setSettings(Map.of("jvm.libraries", List.of("a.jar", "b.jar")));
+      assertThat(client.fullGen(List.of("p/A.java", "p/B.java"))).isEqualTo(2);
       assertThat(client.getFile("p/A.java", 1).getPath()).isEqualTo("p/A.java");
-      TypesResponse types = client.getTypes(List.of("java.lang.String", "x.Missing"));
-      assertThat(types.getDeclarationsMap()).containsOnlyKeys("java.lang.String");
-      assertThat(types.getMissingList()).containsExactly("x.Missing");
+      assertThat(JsonParser.parseString(new String(client.getTypes(List.of("java.lang.String")), StandardCharsets.UTF_8)).getAsJsonObject()
+        .getAsJsonObject("java.lang.String").get("kind").getAsString()).isEqualTo("class");
       assertThat(client.hasPackage(List.of("java.util", "zz"))).containsExactlyInAnyOrderEntriesOf(Map.of("java.util", true, "zz", false));
     }
   }

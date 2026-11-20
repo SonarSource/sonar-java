@@ -16,6 +16,9 @@
  */
 package org.sonar.java.semsitter;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -23,22 +26,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.TreeMap;
-import org.sonar.java.semsitter.protocol.Document;
-import org.sonar.java.semsitter.protocol.FullGenResponse;
-import org.sonar.java.semsitter.protocol.HasPackageResponse;
-import org.sonar.java.semsitter.protocol.HelloResponse;
-import org.sonar.java.semsitter.protocol.Node;
-import org.sonar.java.semsitter.protocol.Request;
-import org.sonar.java.semsitter.protocol.Response;
-import org.sonar.java.semsitter.protocol.SetSettingsResponse;
-import org.sonar.java.semsitter.protocol.TypeDeclaration;
-import org.sonar.java.semsitter.protocol.TypesResponse;
+import org.sonarsource.semsitter.wire.Document;
+import org.sonarsource.semsitter.wire.Node;
 
 /**
  * Stand-in for the SemSitter server, run as a separate process by the tests. The first argument is the protocol
- * version it announces; {@code --exit-after-hello} and {@code --wrong-id} make it misbehave.
+ * version it announces. {@code --exit-after-hello} stops after the handshake and {@code --wrong-id} answers
+ * {@code get-file} with another id.
  */
 public final class FakeServer {
 
@@ -54,51 +50,65 @@ public final class FakeServer {
   }
 
   private static void serve(List<String> args, InputStream in, OutputStream out) throws IOException {
-    Request request;
-    while ((request = Request.parseDelimitedFrom(in)) != null) {
-      Response.Builder response = Response.newBuilder().setId(args.contains("--wrong-id") && request.hasGetFile() ? 0 : request.getId());
-      answer(request, response, args.get(0));
-      response.build().writeDelimitedTo(out);
+    String line;
+    while ((line = readLine(in)) != null) {
+      JsonObject request = JsonParser.parseString(line).getAsJsonObject();
+      JsonObject header = new JsonObject();
+      header.addProperty("id", args.contains("--wrong-id") && "get-file".equals(request.get("cmd").getAsString()) ? 0 : request.get("id").getAsInt());
+      header.addProperty("ok", true);
+      byte[] payload = answer(request, header, args.get(0));
+      if (payload.length > 0) {
+        header.addProperty("payload_bytes", payload.length);
+      }
+      out.write(header.toString().getBytes(StandardCharsets.UTF_8));
+      out.write('\n');
+      out.write(payload);
       out.flush();
-      if (request.hasQuit() || (request.hasHello() && args.contains("--exit-after-hello"))) {
+      if ("quit".equals(request.get("cmd").getAsString()) || ("hello".equals(request.get("cmd").getAsString()) && args.contains("--exit-after-hello"))) {
         return;
       }
     }
   }
 
-  private static void answer(Request request, Response.Builder response, String protocol) {
-    switch (request.getCommandCase()) {
-      case HELLO -> response.setHello(HelloResponse.newBuilder().setProtocol(protocol));
-      case SET_SETTINGS -> response.setSetSettings(SetSettingsResponse.newBuilder()
-        .addAllDiagnostics(new TreeMap<>(request.getSetSettings().getSettingsMap()).entrySet().stream()
-          .map(e -> e.getKey() + "=" + String.join(",", e.getValue().getValuesList()))
-          .toList()));
-      case FULL_GEN -> response.setFullGen(FullGenResponse.newBuilder().setFiles(request.getFullGen().getFilesCount()));
-      case GET_FILE -> {
-        String path = request.getGetFile().getPath();
+  private static byte[] answer(JsonObject request, JsonObject header, String protocol) {
+    switch (request.get("cmd").getAsString()) {
+      case "hello" -> header.addProperty("protocol", protocol);
+      case "set-settings" -> header.add("settings", request.get("settings"));
+      case "full-gen" -> header.addProperty("files", request.has("files") ? request.getAsJsonArray("files").size() : 0);
+      case "get-file" -> {
+        String path = request.get("path").getAsString();
         if (path.endsWith("Nope.java")) {
-          response.setError("no such file " + path);
-        } else {
-          response.setDocument(Document.newBuilder().setPath(path).setTree(Node.newBuilder().setKind("program")));
+          header.addProperty("ok", false);
+          header.addProperty("error", "no such file " + path);
+          return new byte[0];
         }
+        header.addProperty("format", "protobuf");
+        return Document.newBuilder().setPath(path).setTree(Node.newBuilder().setKind("program")).build().toByteArray();
       }
-      case GET_TYPES -> {
-        TypesResponse.Builder types = TypesResponse.newBuilder();
-        for (String name : request.getGetTypes().getNamesList()) {
-          if (name.startsWith("x.")) {
-            types.addMissing(name);
-          } else {
-            types.putDeclarations(name, TypeDeclaration.newBuilder().setOrigin("jdk").setKind("class").build());
-          }
-        }
-        response.setTypes(types);
+      case "get-types" -> {
+        header.addProperty("format", "json");
+        return "{\"java.lang.String\":{\"kind\":\"class\"}}".getBytes(StandardCharsets.UTF_8);
       }
-      case HAS_PACKAGE -> {
-        HasPackageResponse.Builder packages = HasPackageResponse.newBuilder();
-        request.getHasPackage().getNamesList().forEach(name -> packages.putPackages(name, name.startsWith("java")));
-        response.setHasPackage(packages);
+      case "has-package" -> {
+        JsonObject packages = new JsonObject();
+        request.getAsJsonArray("names").forEach(name -> packages.addProperty(name.getAsString(), name.getAsString().startsWith("java")));
+        header.add("packages", packages);
       }
-      default -> response.clearResult();
+      default -> {
+        // a quit request has no result beyond ok
+      }
     }
+    return new byte[0];
+  }
+
+  private static String readLine(InputStream in) throws IOException {
+    ByteArrayOutputStream line = new ByteArrayOutputStream();
+    for (int b = in.read(); b != '\n'; b = in.read()) {
+      if (b < 0) {
+        return line.size() == 0 ? null : line.toString(StandardCharsets.UTF_8);
+      }
+      line.write(b);
+    }
+    return line.toString(StandardCharsets.UTF_8);
   }
 }
