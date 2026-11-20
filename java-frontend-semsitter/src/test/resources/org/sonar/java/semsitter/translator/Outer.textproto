@@ -1,0 +1,482 @@
+tree {
+  kind: "program"
+  named: true
+  start_line: 1
+  end_line: 6
+  end_byte: 64
+  children {
+    kind: "package_declaration"
+    named: true
+    start_line: 1
+    end_line: 1
+    end_col: 10
+    end_byte: 10
+    children {
+      kind: "package"
+      start_line: 1
+      end_line: 1
+      end_col: 7
+      end_byte: 7
+      text: "package"
+    }
+    children {
+      kind: "identifier"
+      named: true
+      start_line: 1
+      start_col: 8
+      end_line: 1
+      end_col: 9
+      start_byte: 8
+      end_byte: 9
+      text: "e"
+    }
+    children {
+      kind: ";"
+      start_line: 1
+      start_col: 9
+      end_line: 1
+      end_col: 10
+      start_byte: 9
+      end_byte: 10
+      text: ";"
+    }
+  }
+  children {
+    kind: "class_declaration"
+    named: true
+    start_line: 3
+    end_line: 5
+    end_col: 1
+    start_byte: 12
+    end_byte: 63
+    children {
+      kind: "class"
+      start_line: 3
+      end_line: 3
+      end_col: 5
+      start_byte: 12
+      end_byte: 17
+      text: "class"
+    }
+    children {
+      kind: "identifier"
+      named: true
+      field: "name"
+      start_line: 3
+      start_col: 6
+      end_line: 3
+      end_col: 11
+      start_byte: 18
+      end_byte: 23
+      text: "Outer"
+      decls: "e.Outer`1"
+    }
+    children {
+      kind: "type_parameters"
+      named: true
+      field: "type_parameters"
+      start_line: 3
+      start_col: 11
+      end_line: 3
+      end_col: 14
+      start_byte: 23
+      end_byte: 26
+      children {
+        kind: "<"
+        start_line: 3
+        start_col: 11
+        end_line: 3
+        end_col: 12
+        start_byte: 23
+        end_byte: 24
+        text: "<"
+      }
+      children {
+        kind: "type_parameter"
+        named: true
+        start_line: 3
+        start_col: 12
+        end_line: 3
+        end_col: 13
+        start_byte: 24
+        end_byte: 25
+        children {
+          kind: "type_identifier"
+          named: true
+          start_line: 3
+          start_col: 12
+          end_line: 3
+          end_col: 13
+          start_byte: 24
+          end_byte: 25
+          text: "T"
+          decls: "e.Outer`1<T>"
+        }
+      }
+      children {
+        kind: ">"
+        start_line: 3
+        start_col: 13
+        end_line: 3
+        end_col: 14
+        start_byte: 25
+        end_byte: 26
+        text: ">"
+      }
+    }
+    children {
+      kind: "class_body"
+      named: true
+      field: "body"
+      start_line: 3
+      start_col: 15
+      end_line: 5
+      end_col: 1
+      start_byte: 27
+      end_byte: 63
+      children {
+        kind: "{"
+        start_line: 3
+        start_col: 15
+        end_line: 3
+        end_col: 16
+        start_byte: 27
+        end_byte: 28
+        text: "{"
+      }
+      children {
+        kind: "enum_declaration"
+        named: true
+        start_line: 4
+        start_col: 2
+        end_line: 4
+        end_col: 32
+        start_byte: 31
+        end_byte: 61
+        children {
+          kind: "enum"
+          start_line: 4
+          start_col: 2
+          end_line: 4
+          end_col: 6
+          start_byte: 31
+          end_byte: 35
+          text: "enum"
+        }
+        children {
+          kind: "identifier"
+          named: true
+          field: "name"
+          start_line: 4
+          start_col: 7
+          end_line: 4
+          end_col: 11
+          start_byte: 36
+          end_byte: 40
+          text: "Type"
+          decls: "e.Outer`1$Type"
+        }
+        children {
+          kind: "enum_body"
+          named: true
+          field: "body"
+          start_line: 4
+          start_col: 12
+          end_line: 4
+          end_col: 32
+          start_byte: 41
+          end_byte: 61
+          children {
+            kind: "{"
+            start_line: 4
+            start_col: 12
+            end_line: 4
+            end_col: 13
+            start_byte: 41
+            end_byte: 42
+            text: "{"
+          }
+          children {
+            kind: "enum_constant"
+            named: true
+            start_line: 4
+            start_col: 14
+            end_line: 4
+            end_col: 21
+            start_byte: 43
+            end_byte: 50
+            children {
+              kind: "identifier"
+              named: true
+              field: "name"
+              start_line: 4
+              start_col: 14
+              end_line: 4
+              end_col: 21
+              start_byte: 43
+              end_byte: 50
+              text: "FLOAT32"
+              decls: "e.Outer`1$Type#FLOAT32"
+            }
+          }
+          children {
+            kind: ","
+            start_line: 4
+            start_col: 21
+            end_line: 4
+            end_col: 22
+            start_byte: 50
+            end_byte: 51
+            text: ","
+          }
+          children {
+            kind: "enum_constant"
+            named: true
+            start_line: 4
+            start_col: 23
+            end_line: 4
+            end_col: 30
+            start_byte: 52
+            end_byte: 59
+            children {
+              kind: "identifier"
+              named: true
+              field: "name"
+              start_line: 4
+              start_col: 23
+              end_line: 4
+              end_col: 30
+              start_byte: 52
+              end_byte: 59
+              text: "FLOAT64"
+              decls: "e.Outer`1$Type#FLOAT64"
+            }
+          }
+          children {
+            kind: "}"
+            start_line: 4
+            start_col: 31
+            end_line: 4
+            end_col: 32
+            start_byte: 60
+            end_byte: 61
+            text: "}"
+          }
+        }
+      }
+      children {
+        kind: "}"
+        start_line: 5
+        end_line: 5
+        end_col: 1
+        start_byte: 62
+        end_byte: 63
+        text: "}"
+      }
+    }
+  }
+}
+path: "e/Outer.java"
+semantic: true
+symbols {
+  id: "e.Outer`1#<init>()"
+  kind: "constructor"
+  name: "Outer"
+  owner: "e.Outer`1"
+  facts {
+    key: "implicit"
+    value {
+      flag: true
+    }
+  }
+}
+symbols {
+  id: "e.Outer`1$Type#<init>()"
+  kind: "constructor"
+  name: "Type"
+  owner: "e.Outer`1$Type"
+  facts {
+    key: "implicit"
+    value {
+      flag: true
+    }
+  }
+}
+symbols {
+  id: "e.Outer`1$Type#valueOf(java.lang.String)"
+  kind: "method"
+  name: "valueOf"
+  owner: "e.Outer`1$Type"
+  facts {
+    key: "implicit"
+    value {
+      flag: true
+    }
+  }
+}
+symbols {
+  id: "e.Outer`1$Type#values()"
+  kind: "method"
+  name: "values"
+  owner: "e.Outer`1$Type"
+  facts {
+    key: "implicit"
+    value {
+      flag: true
+    }
+  }
+}
+symbols {
+  id: "e.Outer`1"
+  kind: "type"
+  name: "Outer"
+  place {
+    start_byte: 18
+    end_byte: 23
+    line: 3
+    column: 6
+  }
+}
+symbols {
+  id: "e.Outer`1<T>"
+  kind: "type"
+  name: "T"
+  owner: "e.Outer`1"
+  place {
+    start_byte: 24
+    end_byte: 25
+    line: 3
+    column: 12
+  }
+}
+symbols {
+  id: "e.Outer`1$Type"
+  kind: "type"
+  name: "Type"
+  owner: "e.Outer`1"
+  place {
+    start_byte: 36
+    end_byte: 40
+    line: 4
+    column: 7
+  }
+}
+symbols {
+  id: "e.Outer`1$Type#FLOAT32"
+  kind: "enum_member"
+  name: "FLOAT32"
+  owner: "e.Outer`1$Type"
+  place {
+    start_byte: 43
+    end_byte: 50
+    line: 4
+    column: 14
+  }
+}
+symbols {
+  id: "e.Outer`1$Type#FLOAT64"
+  kind: "enum_member"
+  name: "FLOAT64"
+  owner: "e.Outer`1$Type"
+  place {
+    start_byte: 52
+    end_byte: 59
+    line: 4
+    column: 23
+  }
+}
+facts {
+  key: "e.Outer`1"
+  value {
+    kind: "class"
+    tier: "IN_PROJECT"
+    parent: "e/Outer.java::<module>"
+    props {
+      name: "simple_name"
+      values: "Outer"
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Outer`1"
+    }
+    params: "e.Outer`1::`0"
+  }
+}
+facts {
+  key: "e.Outer`1$Type"
+  value {
+    kind: "enum"
+    tier: "IN_PROJECT"
+    parent: "e.Outer`1"
+    props {
+      name: "simple_name"
+      values: "Type"
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Outer`1$Type"
+    }
+  }
+}
+facts {
+  key: "e.Outer`1$Type#<init>()"
+  value {
+    kind: "method"
+    tier: "IN_PROJECT"
+    parent: "e.Outer`1$Type"
+    props {
+      name: "member_name"
+      values: "Type"
+    }
+    props {
+      name: "param_types"
+      values: ""
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Outer`1$Type"
+    }
+  }
+}
+facts {
+  key: "e.Outer`1$Type#FLOAT32"
+  value {
+    kind: "field"
+    tier: "IN_PROJECT"
+    parent: "e.Outer`1$Type"
+    props {
+      name: "member_name"
+      values: "FLOAT32"
+    }
+    props {
+      name: "simple_name"
+      values: "FLOAT32"
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Outer`1$Type"
+    }
+    type: "e.Outer`1$Type"
+  }
+}
+facts {
+  key: "e.Outer`1$Type#FLOAT64"
+  value {
+    kind: "field"
+    tier: "IN_PROJECT"
+    parent: "e.Outer`1$Type"
+    props {
+      name: "member_name"
+      values: "FLOAT64"
+    }
+    props {
+      name: "simple_name"
+      values: "FLOAT64"
+    }
+    props {
+      name: "type_fqn"
+      values: "e.Outer`1$Type"
+    }
+    type: "e.Outer`1$Type"
+  }
+}

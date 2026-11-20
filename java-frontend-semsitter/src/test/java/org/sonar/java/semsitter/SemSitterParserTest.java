@@ -72,7 +72,7 @@ class SemSitterParserTest {
     assertThat(starts).hasValue(1);
     assertThat(realPath(startedOn[0])).isEqualTo(realPath(project.resolve("src").resolve("p")));
     assertThat(server.scanned).containsExactly("B.java", "q/A.java");
-    assertThat(server.requests).containsExactly("set-settings", "full-gen", "get-file B.java", "get-types", "get-file q/A.java", "get-types");
+    assertThat(server.requests).containsExactly("set-settings", "full-gen", "get-file B.java", "get-file q/A.java");
     assertThat(server.closed).isTrue();
     assertThat(results.keySet()).containsExactly("B.java", "A.java");
     for (JParseResult result : results.values()) {
@@ -88,7 +88,7 @@ class SemSitterParserTest {
 
     parser(JParser.Mode.BATCH, new JavaVersionImpl(), List.of(), root -> server).parse(List.of(z, a), () -> false, new AnalysisProgress(2), this::collect);
 
-    assertThat(server.requests).containsExactly("set-settings", "full-gen", "get-file A.java", "get-types", "get-file Z.java", "get-types");
+    assertThat(server.requests).containsExactly("set-settings", "full-gen", "get-file A.java", "get-file Z.java");
     assertThat(server.ahead).isEqualTo(SemSitterParser.FILES_AHEAD);
   }
 
