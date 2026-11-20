@@ -18,6 +18,7 @@ package org.sonar.java.semsitter;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import com.sonar.sslr.api.RecognitionException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -162,6 +163,7 @@ public final class SemSitterParser implements JParser {
     private final int javaVersion;
     private final boolean noLibraries;
     private final DocumentTranslator translator;
+    private final SessionTypes types;
     private volatile boolean open = true;
 
     private Session(SemSitterApi api, Path root, int javaVersion, boolean noLibraries, DocumentTranslator translator) {
@@ -170,6 +172,7 @@ public final class SemSitterParser implements JParser {
       this.javaVersion = javaVersion;
       this.noLibraries = noLibraries;
       this.translator = translator;
+      this.types = new SessionTypes(this::serverTypes);
     }
 
     private JParseResult parse(InputFile file) {
@@ -193,9 +196,14 @@ public final class SemSitterParser implements JParser {
       if (!open) {
         return null;
       }
+      return types.get(names);
+    }
+
+    private JsonObject serverTypes(Set<String> names) {
       try {
-        byte[] answer = api.getTypes(names);
-        return JsonParser.parseReader(new InputStreamReader(new ByteArrayInputStream(answer), StandardCharsets.UTF_8)).getAsJsonObject();
+        JsonReader reader = new JsonReader(new InputStreamReader(new ByteArrayInputStream(api.getTypes(names)), StandardCharsets.UTF_8));
+        reader.setNestingLimit(Integer.MAX_VALUE);
+        return JsonParser.parseReader(reader).getAsJsonObject();
       } catch (IOException failure) {
         throw new UncheckedIOException(failure);
       }

@@ -16,6 +16,8 @@
  */
 package org.sonar.java.semsitter;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -30,6 +32,8 @@ import org.sonarsource.semsitter.wire.Node;
 
 /**
  * An in-memory {@link SemSitterApi}: it answers {@code get-file} from the documents it was given and records every request.
+ * With {@code declarations}, {@code get-types} answers each declaration once, as the server does in a session; without,
+ * it answers {@code types}.
  */
 final class ScriptedServer implements SemSitterApi {
 
@@ -39,6 +43,8 @@ final class ScriptedServer implements SemSitterApi {
   final Map<String, Document> documents = new HashMap<>();
   final Map<String, Boolean> packages = new HashMap<>();
   String types = "{}";
+  final Map<String, String> declarations = new HashMap<>();
+  private final Set<String> sentTypes = new HashSet<>();
   Map<String, List<String>> settings;
   int ahead = -1;
   boolean closed;
@@ -77,7 +83,13 @@ final class ScriptedServer implements SemSitterApi {
   @Override
   public byte[] getTypes(Collection<String> names) {
     requests.add("get-types");
-    return types.getBytes(StandardCharsets.UTF_8);
+    if (declarations.isEmpty()) {
+      return types.getBytes(StandardCharsets.UTF_8);
+    }
+    JsonObject answer = new JsonObject();
+    names.stream().filter(declarations::containsKey).filter(sentTypes::add)
+      .forEach(name -> answer.add(name, JsonParser.parseString(declarations.get(name))));
+    return answer.toString().getBytes(StandardCharsets.UTF_8);
   }
 
   @Override

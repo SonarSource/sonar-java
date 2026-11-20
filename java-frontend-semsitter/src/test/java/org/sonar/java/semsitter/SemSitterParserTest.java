@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
@@ -88,6 +89,22 @@ class SemSitterParserTest {
 
     assertThat(server.requests).containsExactly("set-settings", "full-gen", "get-file A.java", "get-file Z.java");
     assertThat(server.ahead).isEqualTo(SemSitterParser.FILES_AHEAD);
+  }
+
+  @Test
+  void every_file_gets_the_types_the_server_already_sent_for_another_file() {
+    server.declarations.put("org.junit.Test", "{\"kind\":\"annotation\"}");
+    Map<String, Set<String>> declared = new LinkedHashMap<>();
+    DocumentTranslator recording = (document, types, packages, noLibraries, javaVersion) -> {
+      declared.put(document.getPath(), types.apply(Set.of("org.junit.Test")).keySet());
+      return JParseResult.failure(new RecognitionException(1, "translated"));
+    };
+
+    new SemSitterParser(JParser.Mode.BATCH, new JavaVersionImpl(), List.of(), root -> server, () -> fallback, recording, project.resolve("no-jdk"))
+      .parse(List.of(file("ATest.java"), file("BTest.java")), () -> false, new AnalysisProgress(2), this::collect);
+
+    assertThat(declared).containsOnlyKeys("ATest.java", "BTest.java").allSatisfy((path, types) -> assertThat(types).containsExactly("org.junit.Test"));
+    assertThat(server.requests).containsOnlyOnce("get-types");
   }
 
   @Test
