@@ -156,13 +156,13 @@ class SemSitterParserProviderTest {
   }
 
   @Test
-  void flag_service_failure_keeps_the_default_frontend() {
+  void flag_service_failure_gives_the_flag_its_default_value() {
     SemSitterParserProvider provider = provider(Map.of());
     connectionFailure = new IllegalStateException("offline");
 
     provider.configure(settings(Map.of(SemSitterParserProvider.EXECUTABLE_PROPERTY, "/bin/semsitter", SemSitterParserProvider.CLIENT_ID_PROPERTY, "sdk")));
 
-    assertThat(provider.isEnabled()).isFalse();
+    assertThat(provider.isEnabled()).isEqualTo(SemSitterParserProvider.FLAG_DEFAULT);
   }
 
   @Test

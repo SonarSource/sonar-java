@@ -44,7 +44,7 @@ public final class SemSitterParserProvider implements JParserProvider {
   public static final String CLIENT_ID_PROPERTY = "sonar.java.semsitter.launchDarkly.clientSideId";
   public static final String EXECUTABLE_ENVIRONMENT = "SEMSITTER_ANALYZER";
   public static final String CLIENT_ID_ENVIRONMENT = "SONAR_JAVA_LAUNCHDARKLY_CLIENT_ID";
-  static final boolean FLAG_DEFAULT = false;
+  static final boolean FLAG_DEFAULT = true;
 
   private static final Logger LOG = LoggerFactory.getLogger(SemSitterParserProvider.class);
   private static final String PROJECT_KEY_PROPERTY = "sonar.projectKey";
