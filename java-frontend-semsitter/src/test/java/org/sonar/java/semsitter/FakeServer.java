@@ -34,9 +34,12 @@ import org.sonarsource.semsitter.wire.Node;
 /**
  * Stand-in for the SemSitter server, run as a separate process by the tests. The first argument is the protocol
  * version it announces. {@code --exit-after-hello} stops after the handshake and {@code --wrong-id} answers
- * {@code get-file} with another id.
+ * {@code get-file} with another id. A requested path ending with {@code Deep.java} gets a tree nested
+ * {@link #DEEP_TREE_DEPTH} levels deep.
  */
 public final class FakeServer {
+
+  static final int DEEP_TREE_DEPTH = 1_000;
 
   private FakeServer() {
   }
@@ -83,7 +86,13 @@ public final class FakeServer {
           return new byte[0];
         }
         header.addProperty("format", "protobuf");
-        return Document.newBuilder().setPath(path).setTree(Node.newBuilder().setKind("program")).build().toByteArray();
+        Node.Builder tree = Node.newBuilder().setKind("program");
+        if (path.endsWith("Deep.java")) {
+          for (int depth = 0; depth < DEEP_TREE_DEPTH; depth++) {
+            tree = Node.newBuilder().setKind("parenthesized_expression").addChildren(tree);
+          }
+        }
+        return Document.newBuilder().setPath(path).setTree(tree).build().toByteArray();
       }
       case "get-types" -> {
         header.addProperty("format", "json");

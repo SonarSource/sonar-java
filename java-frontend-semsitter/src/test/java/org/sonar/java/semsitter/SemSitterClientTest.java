@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.sonarsource.semsitter.wire.Node;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -64,6 +65,20 @@ class SemSitterClientTest {
         .isInstanceOf(IOException.class)
         .hasMessage("SemSitter server: no such file p/Nope.java");
       assertThat(client.getFile("p/A.java", 0).getPath()).isEqualTo("p/A.java");
+    }
+  }
+
+  @Test
+  void deeply_nested_document_is_read() throws IOException {
+    try (SemSitterClient client = fakeServer("2.0.0")) {
+      Node node = client.getFile("p/Deep.java", 0).getTree();
+      int depth = 0;
+      while (node.getChildrenCount() > 0) {
+        node = node.getChildren(0);
+        depth++;
+      }
+      assertThat(depth).isEqualTo(FakeServer.DEEP_TREE_DEPTH);
+      assertThat(node.getKind()).isEqualTo("program");
     }
   }
 

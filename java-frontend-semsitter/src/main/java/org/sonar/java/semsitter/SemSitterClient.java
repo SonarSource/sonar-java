@@ -20,6 +20,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.protobuf.CodedInputStream;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -118,7 +119,9 @@ public final class SemSitterClient implements AutoCloseable {
     JsonObject request = command("get-file");
     request.addProperty("path", path);
     request.addProperty("ahead", ahead);
-    return Document.parseFrom(exchange(request).payload);
+    CodedInputStream input = CodedInputStream.newInstance(exchange(request).payload);
+    input.setRecursionLimit(Integer.MAX_VALUE);
+    return Document.parseFrom(input);
   }
 
   /**
