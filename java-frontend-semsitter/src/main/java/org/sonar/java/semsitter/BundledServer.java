@@ -26,18 +26,19 @@ import java.util.Optional;
 
 /**
  * The SemSitter server shipped inside this plugin for the performance-validation runners, which are Linux x64 and have
- * no server installed. Other platforms get nothing, so an analysis there keeps the default frontend unless an
- * executable is configured.
+ * no server installed. It is used only while the performance-validation benchmark is running. Every other analysis
+ * keeps the default frontend unless an executable is configured.
  */
 final class BundledServer {
 
   static final String RESOURCE = "udg-java-server-x86_64-unknown-linux-musl";
+  static final String PERFORMANCE_VALIDATION_CONTEXT = "sonar.java.context";
 
   private BundledServer() {
   }
 
   static Optional<Path> extract() {
-    if (!linuxAmd64()) {
+    if (!performanceValidation() || !linuxAmd64()) {
       return Optional.empty();
     }
     try (InputStream in = BundledServer.class.getResourceAsStream(RESOURCE)) {
@@ -55,6 +56,10 @@ final class BundledServer {
     } catch (IOException failure) {
       return Optional.empty();
     }
+  }
+
+  private static boolean performanceValidation() {
+    return PERFORMANCE_VALIDATION_CONTEXT.equals(System.getProperty("sensor.context.key"));
   }
 
   private static boolean linuxAmd64() {

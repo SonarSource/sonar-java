@@ -31,13 +31,25 @@ class BundledServerTest {
   Path project;
 
   @Test
-  void bundled_linux_server_speaks_the_protocol() throws Exception {
-    Optional<Path> server = BundledServer.extract();
-    assumeTrue(server.isPresent());
+  void bundled_server_stays_unused_outside_performance_validation() {
+    System.clearProperty("sensor.context.key");
 
-    try (SemSitterClient client = SemSitterClient.start(server.get(), project)) {
-      assertThat(client).isNotNull();
+    assertThat(BundledServer.extract()).isEmpty();
+  }
+
+  @Test
+  void bundled_linux_server_speaks_the_protocol() throws Exception {
+    System.setProperty("sensor.context.key", BundledServer.PERFORMANCE_VALIDATION_CONTEXT);
+    try {
+      Optional<Path> server = BundledServer.extract();
+      assumeTrue(server.isPresent());
+
+      try (SemSitterClient client = SemSitterClient.start(server.get(), project)) {
+        assertThat(client).isNotNull();
+      }
+      assertThat(Files.isExecutable(server.get())).isTrue();
+    } finally {
+      System.clearProperty("sensor.context.key");
     }
-    assertThat(Files.isExecutable(server.get())).isTrue();
   }
 }
