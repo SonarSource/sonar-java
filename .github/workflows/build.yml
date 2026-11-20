@@ -186,8 +186,8 @@ jobs:
         with:
           secrets: |
             development/kv/data/portkey/code-quality/ruling-test-unification api_key | PORTKEY_API_KEY_OPENAI;
-            development/artifactory-edge-prod/token/{REPO_OWNER_NAME_DASH}-private-reader access_token | ARTIFACTORY_ACCESS_TOKEN;
-            development/artifactory-edge-prod/token/{REPO_OWNER_NAME_DASH}-private-reader role | ARTIFACTORY_ROLE;
+            development/artifactory/token/{REPO_OWNER_NAME_DASH}-private-reader access_token | ARTIFACTORY_ACCESS_TOKEN;
+            development/artifactory/token/{REPO_OWNER_NAME_DASH}-private-reader role | ARTIFACTORY_ROLE;
 
       - name: Check ruling-qa results
         id: check-ruling
