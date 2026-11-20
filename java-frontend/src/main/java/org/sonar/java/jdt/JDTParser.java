@@ -65,7 +65,8 @@ public abstract class JDTParser implements JParser {
   final boolean shouldIgnoreUnnamedModuleForSplitPackage;
   final boolean shouldUseJdkReleaseOption;
 
-  public static JParser create(JParser.Mode mode, JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage, boolean shouldUseJdkReleaseOption) {
+  public static JParser create(JParser.Mode mode, JavaVersion javaVersion, List<File> classpath,
+                               boolean shouldIgnoreUnnamedModuleForSplitPackage, boolean shouldUseJdkReleaseOption) {
     if (shouldIgnoreUnnamedModuleForSplitPackage) {
       LOG.info("The Java analyzer will ignore the unnamed module for split packages.");
     }
