@@ -18,7 +18,6 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -51,24 +50,9 @@ public class SystemOutOrErrUsageCheck extends IssuableSubscriptionVisitor {
   }
 
   private void visitMemberSelectExpression(MemberSelectExpressionTree mset) {
-    String name = mset.identifier().name();
-    if ("out".equals(name) && isSystem(mset.expression())) {
-      reportIssue(mset, "Replace this use of System.out by a logger.");
-    } else if ("err".equals(name) && isSystem(mset.expression())) {
-      reportIssue(mset, "Replace this use of System.err by a logger.");
-    } else if (isIoPrintFunction(mset)) {
+    if (isIoPrintFunction(mset)) {
       reportIssue(mset, "Replace this use of IO." + mset.identifier().name() + " by a logger.");
     }
-  }
-
-  private static boolean isSystem(ExpressionTree expression) {
-    IdentifierTree identifierTree = null;
-    if (expression.is(Tree.Kind.IDENTIFIER)) {
-      identifierTree = (IdentifierTree) expression;
-    } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
-      identifierTree = ((MemberSelectExpressionTree) expression).identifier();
-    }
-    return identifierTree != null && "System".equals(identifierTree.name());
   }
 
   private static boolean isIoPrintFunction(MemberSelectExpressionTree mset) {
