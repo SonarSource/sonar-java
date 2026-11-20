@@ -115,7 +115,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
     Type operand = tree.expression().symbolType();
     boolean widening = !cast.isUnknown() && !operand.isUnknown() && operand.isSubtypeOf(cast) && sema.preservesArguments(operand, cast) && !changesTypeFor(tree, operand);
     if (widening) {
-      if (cast.erasure().fullyQualifiedName().equals(operand.erasure().fullyQualifiedName()) && cast.typeArguments().isEmpty() == operand.typeArguments().isEmpty()) {
+      if (cast.erasure().fullyQualifiedName().equals(operand.erasure().fullyQualifiedName()) && elementType(cast).typeArguments().isEmpty() == elementType(operand).typeArguments().isEmpty()) {
         add(ProblemKind.REDUNDANT_CAST, "Unnecessary cast from " + operand.erasure().name() + " to " + cast.erasure().name(), tree);
       }
     }
@@ -128,6 +128,15 @@ final class CompilerWarnings extends BaseTreeVisitor {
     }
     super.visitTypeCast(tree);
     scan(tree.bounds());
+  }
+
+  /** The innermost element type of an array type; the type itself otherwise. */
+  private static Type elementType(Type type) {
+    Type element = type;
+    while (element.isArray() && element instanceof Type.ArrayType array) {
+      element = array.elementType();
+    }
+    return element;
   }
 
   /** Whether the cast is the array an element is read from. */

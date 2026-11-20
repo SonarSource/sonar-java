@@ -1892,6 +1892,25 @@ class JParserSemanticTest {
   }
 
   @Test
+  void cast_of_array_is_compared_by_element_type() {
+    String source = """
+      package test;
+      import java.util.List;
+      class C {
+        Class<?>[] classes = {};
+        List<String>[] lists = null;
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        Class<String>[] rawElements() { return (Class[]) classes; }
+        @SuppressWarnings("unchecked")
+        List<String>[] sameElements() { return (List<String>[]) lists; }
+      }
+      """;
+    List<Warning> warnings = test(source).warnings(ProblemKind.REDUNDANT_CAST);
+    assertThat(warnings).hasSize(1);
+    assertThat(warnings.get(0).syntaxTree().firstToken().range().start().line()).isEqualTo(9);
+  }
+
+  @Test
   void test_varialbe_equals_inNestedLambdas() {
     String source = """
           package org.foo;
