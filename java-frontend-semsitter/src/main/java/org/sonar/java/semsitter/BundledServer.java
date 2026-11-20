@@ -23,38 +23,81 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
+import javax.annotation.Nullable;
 
 /**
  * The SemSitter server shipped inside this plugin for the performance-validation runners, which are Linux x64 and have
- * no server installed. Other platforms get nothing, so an analysis there keeps the default frontend unless an
- * executable is configured.
+ * no server installed. It is used only while the performance-validation benchmark is running. Every other analysis
+ * keeps the default frontend unless an executable is configured.
  */
 final class BundledServer {
 
   static final String RESOURCE = "udg-java-server-x86_64-unknown-linux-musl";
+  static final String PERFORMANCE_VALIDATION_CONTEXT = "sonar.java.context";
+  private static final AtomicReference<Path> COPY = new AtomicReference<>();
 
   private BundledServer() {
   }
 
   static Optional<Path> extract() {
-    if (!linuxAmd64()) {
+    if (!performanceValidation() || !linuxAmd64()) {
       return Optional.empty();
+    }
+    return Optional.of(copyOnce());
+  }
+
+  /**
+   * Copies the server once per JVM, to a file of the user that no concurrent analysis on the same host writes to. A
+   * server that cannot be extracted fails the analysis, so that a performance validation never silently runs ECJ.
+   */
+  private static synchronized Path copyOnce() {
+    Path copy = COPY.get();
+    if (copy != null) {
+      return copy;
     }
     try (InputStream in = BundledServer.class.getResourceAsStream(RESOURCE)) {
-      if (in == null) {
-        return Optional.empty();
-      }
-      Path destination = Path.of(System.getProperty("java.io.tmpdir"), RESOURCE);
-      Path partial = Path.of(destination.toString() + ".part");
-      Files.copy(in, partial, StandardCopyOption.REPLACE_EXISTING);
-      Files.move(partial, destination, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-      if (!destination.toFile().setExecutable(true)) {
-        return Optional.empty();
-      }
-      return Optional.of(destination);
+      copy = install(in, Files.createDirectories(Path.of(System.getProperty("user.home"), ".sonar", "semsitter")));
+      COPY.set(copy);
+      return copy;
     } catch (IOException failure) {
-      return Optional.empty();
+      throw new IllegalStateException("The bundled SemSitter server could not be extracted: " + failure.getMessage(), failure);
     }
+  }
+
+  /** Writes the server to a new executable file of {@code directory}, deleted when the JVM exits or right away if the copy fails. */
+  static Path install(@Nullable InputStream in, Path directory) throws IOException {
+    if (in == null) {
+      throw new IllegalStateException("The SemSitter server is not bundled in this plugin.");
+    }
+    Path destination = Files.createTempFile(directory, RESOURCE, "");
+    if (!copyTo(in, destination)) {
+      delete(destination);
+      throw new IllegalStateException("The bundled SemSitter server could not be copied to " + destination);
+    }
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> delete(destination)));
+    return destination;
+  }
+
+  private static boolean copyTo(InputStream in, Path destination) {
+    try {
+      Files.copy(in, destination, StandardCopyOption.REPLACE_EXISTING);
+      return destination.toFile().setExecutable(true);
+    } catch (IOException failure) {
+      return false;
+    }
+  }
+
+  private static boolean delete(Path path) {
+    try {
+      return Files.deleteIfExists(path);
+    } catch (IOException failure) {
+      return false;
+    }
+  }
+
+  private static boolean performanceValidation() {
+    return PERFORMANCE_VALIDATION_CONTEXT.equals(System.getProperty("sensor.context.key"));
   }
 
   private static boolean linuxAmd64() {
