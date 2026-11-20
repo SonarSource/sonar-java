@@ -149,7 +149,6 @@ final class JDTSymbolMetadata implements SymbolMetadata {
   public List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
     for (AnnotationInstance a : annotations()) {
       if (a.symbol().type().is(fullyQualifiedNameOfAnnotation)) {
-        // TODO what about repeating annotations?
         return a.values();
       }
     }
