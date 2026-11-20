@@ -50,7 +50,7 @@ jobs:
         uses: SonarSource/vault-action-wrapper@v3
         with:
           secrets: |
-            development/portkey/code-quality/ruling-test-unification api_key | PORTKEY_API_KEY_OPENAI;
+            development/kv/data/portkey/code-quality/ruling-test-unification api_key | PORTKEY_API_KEY_OPENAI;
             development/artifactory-edge-prod/token/{REPO_OWNER_NAME_DASH}-private-reader access_token | ARTIFACTORY_ACCESS_TOKEN;
 
       - name: Post ruling diff comment
