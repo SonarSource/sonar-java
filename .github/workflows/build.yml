@@ -34,6 +34,20 @@ jobs:
       - uses: jdx/mise-action@d5574b52816a478f9d4e6529a3f6ff17a8a36785 # v5.2.8
         with:
           version: 2026.10.20
+      - name: Read Repox credentials
+        id: repox
+        uses: SonarSource/vault-action-wrapper@v3
+        with:
+          url: https://vault.dev.sonar.build
+          secrets: |
+            development/artifactory-edge-dev/token/{REPO_OWNER_NAME_DASH}-private-reader username | ARTIFACTORY_USERNAME;
+            development/artifactory-edge-dev/token/{REPO_OWNER_NAME_DASH}-private-reader access_token | ARTIFACTORY_ACCESS_TOKEN;
+      - name: Install analyzer-wire
+        env:
+          ARTIFACTORY_URL: https://repox-internal.dev.sonar.build/artifactory
+          ARTIFACTORY_USERNAME: ${{ fromJSON(steps.repox.outputs.vault).ARTIFACTORY_USERNAME }}
+          ARTIFACTORY_ACCESS_TOKEN: ${{ fromJSON(steps.repox.outputs.vault).ARTIFACTORY_ACCESS_TOKEN }}
+        run: bash ./.github/scripts/install-analyzer-wire.sh
       - uses: SonarSource/ci-github-actions/build-maven@v2
         id: build-maven
         env:
@@ -347,6 +361,20 @@ jobs:
           secrets: |
             development/kv/data/next url | SONAR_HOST_URL;
             development/kv/data/next token | SONAR_TOKEN;
+      - name: Read Repox credentials
+        id: repox
+        uses: SonarSource/vault-action-wrapper@v3
+        with:
+          url: https://vault.dev.sonar.build
+          secrets: |
+            development/artifactory-edge-dev/token/{REPO_OWNER_NAME_DASH}-private-reader username | ARTIFACTORY_USERNAME;
+            development/artifactory-edge-dev/token/{REPO_OWNER_NAME_DASH}-private-reader access_token | ARTIFACTORY_ACCESS_TOKEN;
+      - name: Install analyzer-wire
+        env:
+          ARTIFACTORY_URL: https://repox-internal.dev.sonar.build/artifactory
+          ARTIFACTORY_USERNAME: ${{ fromJSON(steps.repox.outputs.vault).ARTIFACTORY_USERNAME }}
+          ARTIFACTORY_ACCESS_TOKEN: ${{ fromJSON(steps.repox.outputs.vault).ARTIFACTORY_ACCESS_TOKEN }}
+        run: bash ./.github/scripts/install-analyzer-wire.sh
       - uses: SonarSource/ci-github-actions/build-maven@v2
         with:
           repox-url: https://repox-internal.dev.sonar.build
@@ -438,6 +466,9 @@ jobs:
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
           disable-caching: 'true'
+      - name: Install analyzer-wire
+        shell: bash
+        run: bash ./.github/scripts/install-analyzer-wire.sh
       - name: Run Maven
         env:
           JAVA_TOOL_OPTIONS: ""
