@@ -600,7 +600,7 @@ final class JSymbolMetadata implements SymbolMetadata {
       Symbol symbol = expression instanceof MemberSelectExpressionTree select ? select.identifier().symbol()
         : (expression instanceof IdentifierTree identifier ? identifier.symbol() : null);
       if (symbol instanceof Symbol.VariableSymbol variable && !variable.isUnknown()) {
-        return variable.constantValue().orElse(variable);
+        return variable.constantValue().orElse(variable.isEnum() ? variable : null);
       }
       if (symbol != null && symbol.isUnknown()) {
         return Symbol.UNKNOWN_SYMBOL;

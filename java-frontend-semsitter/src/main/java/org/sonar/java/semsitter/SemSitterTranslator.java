@@ -712,19 +712,29 @@ final class SemSitterTranslator {
       // An enum with a constant body is not final.
       enumSymbol.removeModifier("final");
     }
-    if (enumType != null && !enumType.isUnknown()) {
-      String owner = enumType.type().fullyQualifiedName();
-      Symbol.MethodSymbol constructor = sema.declaredMethod(owner, "<init>", argumentTypes(args));
-      bind(name, constructor != null || !args.isEmpty() ? constructor : sema.resolve(owner + "#<init>()"));
-      if (name.symbol() instanceof Symbol.MethodSymbol method && !method.isUnknown()) {
-        recordUse(method, name);
-      }
+    boolean knownEnum = enumType != null && !enumType.isUnknown();
+    bindEnumConstructor(name, args, knownEnum ? enumType : null);
+    if (knownEnum) {
       ascribe(name, enumType.type());
       if (tree.symbol() instanceof JSymbol field && field.type().isUnknown()) {
         field.type(enumType.type());
       }
     }
     return tree;
+  }
+
+  /** The name of an enum constant is also its constructor call: it names the constructor of {@code enumType}, or nothing. */
+  private void bindEnumConstructor(IdentifierTreeImpl name, ArgumentListTreeImpl args, @Nullable Symbol.TypeSymbol enumType) {
+    Symbol constructor = null;
+    if (enumType != null) {
+      String owner = enumType.type().fullyQualifiedName();
+      Symbol.MethodSymbol declared = sema.declaredMethod(owner, "<init>", argumentTypes(args));
+      constructor = declared != null || !args.isEmpty() ? declared : sema.resolve(owner + "#<init>()");
+    }
+    bind(name, constructor instanceof Symbol.MethodSymbol ? constructor : null);
+    if (name.symbol() instanceof Symbol.MethodSymbol method && !method.isUnknown()) {
+      recordUse(method, name);
+    }
   }
 
   private MethodTreeImpl annotationElement(Node node) {
