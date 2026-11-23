@@ -63,6 +63,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
 
   JMethodSymbol(JSema sema, @Nullable String id, String name) {
     super(sema, Kind.METHOD, id, name);
+    owner(Symbol.TypeSymbol.UNKNOWN_TYPE);
     this.signature = id == null ? name : JSema.erase(id);
   }
 
