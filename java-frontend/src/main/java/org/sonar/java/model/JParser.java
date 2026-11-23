@@ -17,6 +17,7 @@
 package org.sonar.java.model;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
@@ -39,6 +40,18 @@ public interface JParser {
 
     public JParser create(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage, boolean shouldUseJdkReleaseOption) {
       return JDTParser.create(this, javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage, shouldUseJdkReleaseOption);
+    }
+  }
+
+  static JavaTree.CompilationUnitTreeImpl parse(InputFile inputFile, List<File> classpath, JavaVersion javaVersion) {
+    List<JParseResult> results = new ArrayList<>(1);
+    Mode.FILE_BY_FILE.create(javaVersion, classpath).parse(List.of(inputFile), () -> false, new AnalysisProgress(1), (input, result) -> results.add(result));
+    try {
+      return results.getFirst().get();
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new IllegalStateException("Unable to parse file '" + inputFile.absolutePath() + "'", e);
     }
   }
 

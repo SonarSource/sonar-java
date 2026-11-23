@@ -20,12 +20,9 @@ import com.google.common.io.Files;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.sonar.java.AnalysisProgress;
-import org.sonar.java.model.JParseResult;
 import org.sonar.java.model.JParser;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.*;
@@ -82,16 +79,7 @@ public abstract class JParserTestUtils {
       .setContents(source)
       .setCharset(StandardCharsets.UTF_8)
       .build();
-    List<JParseResult> results = new ArrayList<>();
-    JParser.Mode.FILE_BY_FILE.create(version, classpath)
-      .parse(List.of(inputFile), () -> false, new AnalysisProgress(1), (input, result) -> results.add(result));
-    try {
-      return results.getFirst().get();
-    } catch (RuntimeException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new IllegalStateException("Unable to parse source", e);
-    }
+    return JParser.parse(inputFile, classpath, version);
   }
 
 }

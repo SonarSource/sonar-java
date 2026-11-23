@@ -22,15 +22,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.UnaryOperator;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.java.AnalysisProgress;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.verifier.TestUtils;
-import org.sonar.java.model.JParseResult;
 import org.sonar.java.model.JParser;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.model.springcontext.BeanDefinitionGatherer;
@@ -45,7 +42,6 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 /**
@@ -169,16 +165,6 @@ public final class SpringContextModelTestUtils {
   }
 
   private static CompilationUnitTree parse(File file, List<File> classpath) {
-    List<JParseResult> results = new ArrayList<>();
-    JavaVersion version = JParser.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    JParser.Mode.FILE_BY_FILE.create(version, classpath)
-      .parse(List.of(inputFile(file)), () -> false, new AnalysisProgress(1), (input, result) -> results.add(result));
-    try {
-      return results.getFirst().get();
-    } catch (RuntimeException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new IllegalStateException("Unable to parse file '" + file.getAbsolutePath() + "'", e);
-    }
+    return JParser.parse(inputFile(file), classpath, JParser.MAXIMUM_SUPPORTED_JAVA_VERSION);
   }
 }
