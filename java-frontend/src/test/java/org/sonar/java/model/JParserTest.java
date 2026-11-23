@@ -113,7 +113,7 @@ class JParserTest {
   public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
 
   @Test
-  void should_parse_input_file_with_empty_classpath() throws Exception {
+  void should_parse_input_file_with_empty_classpath() throws IOException {
     InputFile input = inputFile("SingleFile.java", "class SingleFile { String value; }");
 
     CompilationUnitTree tree = JParser.parse(input, List.of(), MAXIMUM_SUPPORTED_JAVA_VERSION);
@@ -127,7 +127,7 @@ class JParserTest {
   }
 
   @Test
-  void should_parse_input_file_with_supplied_classpath() throws Exception {
+  void should_parse_input_file_with_supplied_classpath() throws IOException {
     InputFile input = inputFile("Dependency.java", "class Example { org.apache.commons.collections.Bag value; }");
 
     CompilationUnitTree withoutClasspath = JParser.parse(input, List.of(), MAXIMUM_SUPPORTED_JAVA_VERSION);
@@ -143,7 +143,7 @@ class JParserTest {
   }
 
   @Test
-  void should_parse_input_file_with_supplied_java_version() throws Exception {
+  void should_parse_input_file_with_supplied_java_version() throws IOException {
     assumeRunningJdkCanServeOlderReleases();
     InputFile input = inputFile("Version.java", JDK_API_SOURCE);
     List<File> classpath = List.of(runningJdkRuntimeImage());
@@ -167,14 +167,28 @@ class JParserTest {
   }
 
   @Test
-  void should_rethrow_file_reading_exception_when_parsing_input_file() throws IOException {
+  void should_wrap_file_reading_exception_when_parsing_input_file() throws IOException {
     InputFile input = mock(InputFile.class);
     when(input.absolutePath()).thenReturn("/tmp/Example.java");
     when(input.filename()).thenReturn("Example.java");
     IOException expected = new IOException("Unable to read source");
     when(input.contents()).thenThrow(expected);
 
-    IOException actual = assertThrows(IOException.class, () -> JParser.parse(input, List.of(), MAXIMUM_SUPPORTED_JAVA_VERSION));
+    IllegalStateException actual = assertThrows(IllegalStateException.class, () -> JParser.parse(input, List.of(), MAXIMUM_SUPPORTED_JAVA_VERSION));
+
+    assertThat(actual).hasMessage("Unable to parse file '/tmp/Example.java'");
+    assertSame(expected, actual.getCause());
+  }
+
+  @Test
+  void should_rethrow_runtime_exception_when_parsing_input_file() throws IOException {
+    InputFile input = mock(InputFile.class);
+    when(input.absolutePath()).thenReturn("/tmp/Example.java");
+    when(input.filename()).thenReturn("Example.java");
+    RuntimeException expected = new IllegalArgumentException("Unable to read source");
+    when(input.contents()).thenThrow(expected);
+
+    RuntimeException actual = assertThrows(RuntimeException.class, () -> JParser.parse(input, List.of(), MAXIMUM_SUPPORTED_JAVA_VERSION));
 
     assertSame(expected, actual);
   }

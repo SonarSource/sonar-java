@@ -44,10 +44,16 @@ public interface JParser {
     }
   }
 
-  static CompilationUnitTree parse(InputFile inputFile, List<File> classpath, JavaVersion javaVersion) throws Exception {
+  static CompilationUnitTree parse(InputFile inputFile, List<File> classpath, JavaVersion javaVersion) {
     List<JParseResult> results = new ArrayList<>(1);
     Mode.FILE_BY_FILE.create(javaVersion, classpath).parse(List.of(inputFile), () -> false, new AnalysisProgress(1), (input, result) -> results.add(result));
-    return results.getFirst().get();
+    try {
+      return results.getFirst().get();
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new IllegalStateException("Unable to parse file '" + inputFile.absolutePath() + "'", e);
+    }
   }
 
   void parse(Iterable<InputFile> inputFiles, BooleanSupplier isCanceled, AnalysisProgress analysisProgress, BiConsumer<InputFile, JParseResult> action);

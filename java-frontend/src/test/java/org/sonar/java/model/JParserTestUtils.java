@@ -124,13 +124,7 @@ public class JParserTestUtils {
       .setContents(source)
       .setCharset(StandardCharsets.UTF_8)
       .build();
-    try {
-      return JParser.parse(inputFile, classpath, version);
-    } catch (RuntimeException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new IllegalStateException("Unable to parse source", e);
-    }
+    return JParser.parse(inputFile, classpath, version);
   }
 
   public static List<File> checksTestClassPath() throws IOException {

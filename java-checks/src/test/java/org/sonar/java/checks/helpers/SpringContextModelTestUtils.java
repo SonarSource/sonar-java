@@ -165,12 +165,6 @@ public final class SpringContextModelTestUtils {
   }
 
   private static CompilationUnitTree parse(File file, List<File> classpath) {
-    try {
-      return JParser.parse(inputFile(file), classpath, JParser.MAXIMUM_SUPPORTED_JAVA_VERSION);
-    } catch (RuntimeException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new IllegalStateException("Unable to parse file '" + file.getAbsolutePath() + "'", e);
-    }
+    return JParser.parse(inputFile(file), classpath, JParser.MAXIMUM_SUPPORTED_JAVA_VERSION);
   }
 }
