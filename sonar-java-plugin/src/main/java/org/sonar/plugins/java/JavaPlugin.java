@@ -45,11 +45,23 @@ import org.sonar.plugins.surefire.SurefireExtensions;
 
 public class JavaPlugin implements Plugin {
 
-  @SuppressWarnings("unchecked")
   @Override
   public void define(Context context) {
     List<Object> list = new ArrayList<>();
 
+    addProductSpecificExtensions(context, list);
+    if (supportJspTranspilation(context)) {
+      list.add(Jasper.class);
+    }
+    list.addAll(ClasspathProperties.getProperties());
+    list.addAll(coreExtensions());
+
+    list.add(AnalysisWarningsWrapper.class);
+    list.add(DefaultModuleMetadata.class);
+    context.addExtensions(Collections.unmodifiableList(list));
+  }
+
+  private static void addProductSpecificExtensions(Context context, List<Object> list) {
     if (context.getRuntime().getProduct() == SonarProduct.SONARLINT) {
       list.add(NoOpTelemetry.class);
       // Some custom rules (i.e. DBD) depend on the presence of SonarLintCache when executing in a SonarLint context.
@@ -66,11 +78,16 @@ public class JavaPlugin implements Plugin {
 
       ExternalReportExtensions.define(context);
     }
-    if (supportJspTranspilation(context)) {
-      list.add(Jasper.class);
-    }
-    list.addAll(ClasspathProperties.getProperties());
-    list.addAll(Arrays.asList(
+  }
+
+  private static boolean supportJspTranspilation(Context context) {
+    // currently, only security rules are interested in jsp
+    return context.getRuntime().getProduct() == SonarProduct.SONARQUBE
+      && context.getRuntime().getEdition() != SonarEdition.COMMUNITY;
+  }
+
+  private static List<Object> coreExtensions() {
+    return Arrays.asList(
       ClasspathForMain.class,
       ClasspathForTest.class,
       Java.class,
@@ -147,16 +164,6 @@ public class JavaPlugin implements Plugin {
         .defaultValue("True")
         .build(),
       JavaSensor.class,
-      PostAnalysisIssueFilter.class));
-
-    list.add(AnalysisWarningsWrapper.class);
-    list.add(DefaultModuleMetadata.class);
-    context.addExtensions(Collections.unmodifiableList(list));
-  }
-
-  private static boolean supportJspTranspilation(Context context) {
-    // currently, only security rules are interested in jsp
-    return context.getRuntime().getProduct() == SonarProduct.SONARQUBE
-      && context.getRuntime().getEdition() != SonarEdition.COMMUNITY;
+      PostAnalysisIssueFilter.class);
   }
 }
