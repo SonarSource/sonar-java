@@ -1,0 +1,4084 @@
+{
+  "e.Routes": {
+    "annotations": [],
+    "id": "e.Routes",
+    "interfaces": [],
+    "kind": "class",
+    "members": [
+      {
+        "annotations": [],
+        "facts": {
+          "kind": "field",
+          "parent": "e.Routes",
+          "props": {
+            "member_name": [
+              "ADMIN"
+            ],
+            "modifiers": [
+              "static,final"
+            ],
+            "simple_name": [
+              "ADMIN"
+            ],
+            "type_fqn": [
+              "e.Routes"
+            ]
+          },
+          "tier": "IN_PROJECT",
+          "type": [
+            "java.lang.String"
+          ]
+        },
+        "id": "e.Routes#ADMIN"
+      },
+      {
+        "annotations": [],
+        "constant": "/local",
+        "facts": {
+          "kind": "field",
+          "parent": "e.Routes",
+          "props": {
+            "member_name": [
+              "LOCAL"
+            ],
+            "modifiers": [
+              "static,final"
+            ],
+            "simple_name": [
+              "LOCAL"
+            ],
+            "type_fqn": [
+              "e.Routes"
+            ]
+          },
+          "tier": "IN_PROJECT",
+          "type": [
+            "java.lang.String"
+          ]
+        },
+        "id": "e.Routes#LOCAL"
+      },
+      {
+        "annotations": [
+          {
+            "name": "e.Routes$Tagged",
+            "values": [
+              {
+                "const": "A",
+                "kind": "enum",
+                "name": "value",
+                "type": "e.Routes$Kind"
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "annotations": [
+            "e.Routes$Tagged"
+          ],
+          "kind": "method",
+          "parent": "e.Routes",
+          "props": {
+            "annotation_values": [
+              "[{\"elements\":[{\"name\":\"value\",\"value\":{\"constant\":\"A\",\"kind\":\"enum\",\"type\":\"e.Routes$Kind\"}}],\"id\":\"e.Routes$Tagged\"}]"
+            ],
+            "member_name": [
+              "enumConstant"
+            ],
+            "param_types": [
+              ""
+            ],
+            "simple_name": [
+              "enumConstant"
+            ],
+            "type_fqn": [
+              "e.Routes"
+            ]
+          },
+          "returns": [
+            "void"
+          ],
+          "tier": "IN_PROJECT"
+        },
+        "id": "e.Routes#enumConstant()",
+        "throws": [],
+        "varargs": false
+      },
+      {
+        "annotations": [
+          {
+            "name": "e.Routes$Path",
+            "values": [
+              {
+                "kind": "string",
+                "name": "value",
+                "value": "/local"
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "annotations": [
+            "e.Routes$Path"
+          ],
+          "kind": "method",
+          "parent": "e.Routes",
+          "props": {
+            "annotation_values": [
+              "[{\"elements\":[{\"name\":\"value\",\"value\":{\"kind\":\"string\",\"value\":\"/local\"}}],\"id\":\"e.Routes$Path\"}]"
+            ],
+            "member_name": [
+              "knownConstant"
+            ],
+            "param_types": [
+              ""
+            ],
+            "simple_name": [
+              "knownConstant"
+            ],
+            "type_fqn": [
+              "e.Routes"
+            ]
+          },
+          "returns": [
+            "void"
+          ],
+          "tier": "IN_PROJECT"
+        },
+        "id": "e.Routes#knownConstant()",
+        "throws": [],
+        "varargs": false
+      },
+      {
+        "annotations": [
+          {
+            "name": "e.Routes$Path",
+            "values": [
+              {
+                "kind": "expression",
+                "name": "value",
+                "text": "ADMIN"
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "annotations": [
+            "e.Routes$Path"
+          ],
+          "kind": "method",
+          "parent": "e.Routes",
+          "props": {
+            "annotation_values": [
+              "[{\"elements\":[{\"name\":\"value\",\"value\":{\"kind\":\"expression\",\"text\":\"ADMIN\"}}],\"id\":\"e.Routes$Path\"}]"
+            ],
+            "member_name": [
+              "unknownConstant"
+            ],
+            "param_types": [
+              ""
+            ],
+            "simple_name": [
+              "unknownConstant"
+            ],
+            "type_fqn": [
+              "e.Routes"
+            ]
+          },
+          "returns": [
+            "void"
+          ],
+          "tier": "IN_PROJECT"
+        },
+        "id": "e.Routes#unknownConstant()",
+        "throws": [],
+        "varargs": false
+      },
+      {
+        "annotations": [],
+        "facts": {
+          "kind": "enum",
+          "parent": "e.Routes",
+          "props": {
+            "simple_name": [
+              "Kind"
+            ],
+            "type_fqn": [
+              "e.Routes$Kind"
+            ]
+          },
+          "tier": "IN_PROJECT"
+        },
+        "id": "e.Routes$Kind"
+      },
+      {
+        "annotations": [],
+        "facts": {
+          "kind": "annotation",
+          "parent": "e.Routes",
+          "props": {
+            "simple_name": [
+              "Path"
+            ],
+            "type_fqn": [
+              "e.Routes$Path"
+            ]
+          },
+          "tier": "IN_PROJECT"
+        },
+        "id": "e.Routes$Path"
+      },
+      {
+        "annotations": [],
+        "facts": {
+          "kind": "annotation",
+          "parent": "e.Routes",
+          "props": {
+            "simple_name": [
+              "Tagged"
+            ],
+            "type_fqn": [
+              "e.Routes$Tagged"
+            ]
+          },
+          "tier": "IN_PROJECT"
+        },
+        "id": "e.Routes$Tagged"
+      }
+    ],
+    "modifiers": [],
+    "origin": "project",
+    "typeParameters": 0,
+    "typeVars": []
+  },
+  "e.Routes$Kind": {
+    "annotations": [],
+    "id": "e.Routes$Kind",
+    "interfaceTypes": [],
+    "interfaces": [],
+    "kind": "enum",
+    "members": [
+      {
+        "annotations": [],
+        "facts": {
+          "kind": "method",
+          "parent": "e.Routes$Kind",
+          "props": {
+            "member_name": [
+              "Kind"
+            ],
+            "param_types": [
+              ""
+            ],
+            "type_fqn": [
+              "e.Routes$Kind"
+            ]
+          },
+          "tier": "IN_PROJECT"
+        },
+        "id": "e.Routes$Kind#\u003cinit\u003e()",
+        "throws": [],
+        "varargs": false
+      },
+      {
+        "annotations": [],
+        "facts": {
+          "kind": "field",
+          "parent": "e.Routes$Kind",
+          "props": {
+            "member_name": [
+              "A"
+            ],
+            "simple_name": [
+              "A"
+            ],
+            "type_fqn": [
+              "e.Routes$Kind"
+            ]
+          },
+          "tier": "IN_PROJECT",
+          "type": [
+            "e.Routes$Kind"
+          ]
+        },
+        "id": "e.Routes$Kind#A"
+      },
+      {
+        "annotations": [],
+        "facts": {
+          "kind": "method",
+          "parent": "e.Routes$Kind",
+          "props": {
+            "member_name": [
+              "values"
+            ],
+            "modifiers": [
+              "public",
+              "static"
+            ],
+            "param_types": [
+              ""
+            ],
+            "type_fqn": [
+              "e.Routes$Kind"
+            ]
+          },
+          "returns": [
+            "e.Routes$Kind[]"
+          ],
+          "tier": "IN_PROJECT"
+        },
+        "id": "e.Routes$Kind#values()",
+        "throws": [],
+        "varargs": false
+      },
+      {
+        "annotations": [],
+        "facts": {
+          "kind": "method",
+          "params": [
+            "java.lang.String"
+          ],
+          "parent": "e.Routes$Kind",
+          "props": {
+            "member_name": [
+              "valueOf"
+            ],
+            "modifiers": [
+              "public",
+              "static"
+            ],
+            "param_types": [
+              "java.lang.String"
+            ],
+            "type_fqn": [
+              "e.Routes$Kind"
+            ]
+          },
+          "returns": [
+            "e.Routes$Kind"
+          ],
+          "tier": "IN_PROJECT"
+        },
+        "id": "e.Routes$Kind#valueOf(java.lang.String)",
+        "throws": [],
+        "varargs": false
+      }
+    ],
+    "modifiers": [
+      "static"
+    ],
+    "origin": "project",
+    "super": "java.lang.Enum",
+    "superType": {
+      "args": [
+        {
+          "args": [],
+          "id": "e.Routes$Kind"
+        }
+      ],
+      "id": "java.lang.Enum"
+    },
+    "typeParameters": 0,
+    "typeVars": []
+  },
+  "e.Routes$Path": {
+    "annotations": [],
+    "id": "e.Routes$Path",
+    "interfaces": [
+      "java.lang.annotation.Annotation"
+    ],
+    "kind": "annotation",
+    "members": [
+      {
+        "annotations": [],
+        "facts": {
+          "kind": "method",
+          "parent": "e.Routes$Path",
+          "props": {
+            "member_name": [
+              "value"
+            ],
+            "param_types": [
+              ""
+            ],
+            "simple_name": [
+              "value"
+            ],
+            "type_fqn": [
+              "e.Routes$Path"
+            ]
+          },
+          "returns": [
+            "java.lang.String[]"
+          ],
+          "tier": "IN_PROJECT"
+        },
+        "id": "e.Routes$Path#value()",
+        "throws": [],
+        "varargs": false
+      }
+    ],
+    "modifiers": [
+      "static"
+    ],
+    "origin": "project",
+    "typeParameters": 0,
+    "typeVars": []
+  },
+  "e.Routes$Tagged": {
+    "annotations": [],
+    "id": "e.Routes$Tagged",
+    "interfaces": [
+      "java.lang.annotation.Annotation"
+    ],
+    "kind": "annotation",
+    "members": [
+      {
+        "annotations": [],
+        "facts": {
+          "kind": "method",
+          "parent": "e.Routes$Tagged",
+          "props": {
+            "member_name": [
+              "value"
+            ],
+            "param_types": [
+              ""
+            ],
+            "simple_name": [
+              "value"
+            ],
+            "type_fqn": [
+              "e.Routes$Tagged"
+            ]
+          },
+          "returns": [
+            "e.Routes$Kind"
+          ],
+          "tier": "IN_PROJECT"
+        },
+        "id": "e.Routes$Tagged#value()",
+        "throws": [],
+        "varargs": false
+      }
+    ],
+    "modifiers": [
+      "static"
+    ],
+    "origin": "project",
+    "typeParameters": 0,
+    "typeVars": []
+  },
+  "java.io.Serializable": {
+    "annotations": [],
+    "interfaces": [],
+    "kind": "interface",
+    "members": [],
+    "modifiers": [
+      "public",
+      "abstract"
+    ],
+    "origin": "classpath",
+    "typeParameters": 0,
+    "typeVars": []
+  },
+  "java.lang.CharSequence": {
+    "annotations": [],
+    "interfaces": [],
+    "kind": "interface",
+    "members": [
+      {
+        "abstract": true,
+        "annotations": [],
+        "desc": "()I",
+        "final": false,
+        "k": "m",
+        "name": "length",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": true,
+        "annotations": [],
+        "desc": "(I)C",
+        "final": false,
+        "k": "m",
+        "name": "charAt",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Z",
+        "final": false,
+        "k": "m",
+        "name": "isEmpty",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": true,
+        "annotations": [],
+        "desc": "(II)Ljava/lang/CharSequence;",
+        "final": false,
+        "k": "m",
+        "name": "subSequence",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": true,
+        "annotations": [],
+        "desc": "()Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "toString",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/util/stream/IntStream;",
+        "final": false,
+        "k": "m",
+        "name": "chars",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/util/stream/IntStream;",
+        "final": false,
+        "k": "m",
+        "name": "codePoints",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)I",
+        "final": false,
+        "k": "m",
+        "name": "compare",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      }
+    ],
+    "modifiers": [
+      "public",
+      "abstract"
+    ],
+    "origin": "classpath",
+    "typeParameters": 0,
+    "typeVars": []
+  },
+  "java.lang.Comparable": {
+    "annotations": [],
+    "interfaceTypes": [],
+    "interfaces": [],
+    "kind": "interface",
+    "members": [
+      {
+        "abstract": true,
+        "annotations": [],
+        "desc": "(Ljava/lang/Object;)I",
+        "final": false,
+        "k": "m",
+        "name": "compareTo",
+        "paramTypes": [
+          {
+            "id": "T",
+            "kind": "typevar"
+          }
+        ],
+        "paramVars": [
+          "c0"
+        ],
+        "retSelf": false,
+        "retType": {
+          "id": "int"
+        },
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "typeVarBounds": [],
+        "typeVars": [],
+        "varargs": false,
+        "vis": "public"
+      }
+    ],
+    "modifiers": [
+      "public",
+      "abstract"
+    ],
+    "origin": "classpath",
+    "superType": {
+      "args": [],
+      "id": "java.lang.Object"
+    },
+    "typeParameters": 1,
+    "typeVarBounds": [
+      [
+        {
+          "args": [],
+          "id": "java.lang.Object"
+        }
+      ]
+    ],
+    "typeVars": [
+      "T"
+    ]
+  },
+  "java.lang.Enum": {
+    "annotations": [],
+    "interfaceTypes": [
+      {
+        "args": [],
+        "id": "java.lang.constant.Constable"
+      },
+      {
+        "args": [
+          {
+            "id": "E",
+            "kind": "typevar"
+          }
+        ],
+        "id": "java.lang.Comparable"
+      },
+      {
+        "args": [],
+        "id": "java.io.Serializable"
+      }
+    ],
+    "interfaces": [
+      "java.lang.constant.Constable",
+      "java.lang.Comparable",
+      "java.io.Serializable"
+    ],
+    "kind": "class",
+    "members": [
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/lang/String;",
+        "final": true,
+        "k": "m",
+        "name": "name",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()I",
+        "final": true,
+        "k": "m",
+        "name": "ordinal",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;I)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "toString",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/Object;)Z",
+        "final": true,
+        "k": "m",
+        "name": "equals",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()I",
+        "final": true,
+        "k": "m",
+        "name": "hashCode",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/lang/Object;",
+        "final": true,
+        "k": "m",
+        "name": "clone",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [
+          "java.lang.CloneNotSupportedException"
+        ],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/Enum;)I",
+        "final": true,
+        "k": "m",
+        "name": "compareTo",
+        "paramTypes": [
+          {
+            "id": "E",
+            "kind": "typevar"
+          }
+        ],
+        "paramVars": [
+          "c0"
+        ],
+        "retSelf": false,
+        "retType": {
+          "id": "int"
+        },
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "typeVarBounds": [],
+        "typeVars": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/lang/Class;",
+        "final": true,
+        "k": "m",
+        "name": "getDeclaringClass",
+        "paramTypes": [],
+        "paramVars": [],
+        "retSelf": false,
+        "retType": {
+          "args": [
+            {
+              "id": "E",
+              "kind": "typevar"
+            }
+          ],
+          "id": "java.lang.Class"
+        },
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "typeVarBounds": [],
+        "typeVars": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/util/Optional;",
+        "final": true,
+        "k": "m",
+        "name": "describeConstable",
+        "paramTypes": [],
+        "paramVars": [],
+        "retSelf": false,
+        "retType": {
+          "args": [
+            {
+              "args": [
+                {
+                  "id": "E",
+                  "kind": "typevar"
+                }
+              ],
+              "id": "java.lang.Enum$EnumDesc"
+            }
+          ],
+          "id": "java.util.Optional"
+        },
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "typeVarBounds": [],
+        "typeVars": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;",
+        "final": false,
+        "k": "m",
+        "name": "valueOf",
+        "paramTypes": [
+          {
+            "args": [
+              {
+                "id": "T",
+                "kind": "typevar"
+              }
+            ],
+            "id": "java.lang.Class"
+          },
+          {
+            "args": [],
+            "id": "java.lang.String"
+          }
+        ],
+        "paramVars": [
+          "",
+          ""
+        ],
+        "retSelf": false,
+        "retType": {
+          "id": "T",
+          "kind": "typevar"
+        },
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "typeVarBounds": [
+          [
+            {
+              "args": [
+                {
+                  "id": "T",
+                  "kind": "typevar"
+                }
+              ],
+              "id": "java.lang.Enum"
+            }
+          ]
+        ],
+        "typeVars": [
+          "T"
+        ],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [
+          {
+            "name": "java.lang.Deprecated",
+            "values": [
+              {
+                "kind": "string",
+                "name": "since",
+                "value": "18"
+              },
+              {
+                "kind": "boolean",
+                "name": "forRemoval",
+                "value": true
+              }
+            ]
+          }
+        ],
+        "desc": "()V",
+        "final": true,
+        "k": "m",
+        "name": "finalize",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/io/ObjectInputStream;)V",
+        "final": false,
+        "k": "m",
+        "name": "readObject",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [
+          "java.io.IOException",
+          "java.lang.ClassNotFoundException"
+        ],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()V",
+        "final": false,
+        "k": "m",
+        "name": "readObjectNoData",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [
+          "java.io.ObjectStreamException"
+        ],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "annotations": [],
+        "desc": "Ljava/lang/String;",
+        "enum": false,
+        "final": true,
+        "k": "f",
+        "name": "name",
+        "static": false,
+        "vis": "private"
+      },
+      {
+        "annotations": [],
+        "desc": "I",
+        "enum": false,
+        "final": true,
+        "k": "f",
+        "name": "ordinal",
+        "static": false,
+        "vis": "private"
+      },
+      {
+        "annotations": [
+          {
+            "name": "jdk.internal.vm.annotation.Stable",
+            "values": []
+          }
+        ],
+        "desc": "I",
+        "enum": false,
+        "final": false,
+        "k": "f",
+        "name": "hash",
+        "static": false,
+        "vis": "private"
+      }
+    ],
+    "modifiers": [
+      "public",
+      "abstract"
+    ],
+    "origin": "classpath",
+    "super": "java.lang.Object",
+    "superType": {
+      "args": [],
+      "id": "java.lang.Object"
+    },
+    "typeParameters": 1,
+    "typeVarBounds": [
+      [
+        {
+          "args": [
+            {
+              "id": "E",
+              "kind": "typevar"
+            }
+          ],
+          "id": "java.lang.Enum"
+        }
+      ]
+    ],
+    "typeVars": [
+      "E"
+    ]
+  },
+  "java.lang.Object": {
+    "annotations": [],
+    "interfaces": [],
+    "kind": "class",
+    "members": [
+      {
+        "abstract": false,
+        "annotations": [
+          {
+            "name": "jdk.internal.vm.annotation.IntrinsicCandidate",
+            "values": []
+          }
+        ],
+        "desc": "()V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [
+          {
+            "name": "jdk.internal.vm.annotation.IntrinsicCandidate",
+            "values": []
+          }
+        ],
+        "desc": "()Ljava/lang/Class;",
+        "final": true,
+        "k": "m",
+        "name": "getClass",
+        "paramTypes": [],
+        "paramVars": [],
+        "retSelf": false,
+        "retType": {
+          "args": [
+            {
+              "kind": "wildcard"
+            }
+          ],
+          "id": "java.lang.Class"
+        },
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "typeVarBounds": [],
+        "typeVars": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [
+          {
+            "name": "jdk.internal.vm.annotation.IntrinsicCandidate",
+            "values": []
+          }
+        ],
+        "desc": "()I",
+        "final": false,
+        "k": "m",
+        "name": "hashCode",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/Object;)Z",
+        "final": false,
+        "k": "m",
+        "name": "equals",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [
+          {
+            "name": "jdk.internal.vm.annotation.IntrinsicCandidate",
+            "values": []
+          }
+        ],
+        "desc": "()Ljava/lang/Object;",
+        "final": false,
+        "k": "m",
+        "name": "clone",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [
+          "java.lang.CloneNotSupportedException"
+        ],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "toString",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [
+          {
+            "name": "jdk.internal.vm.annotation.IntrinsicCandidate",
+            "values": []
+          }
+        ],
+        "desc": "()V",
+        "final": true,
+        "k": "m",
+        "name": "notify",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [
+          {
+            "name": "jdk.internal.vm.annotation.IntrinsicCandidate",
+            "values": []
+          }
+        ],
+        "desc": "()V",
+        "final": true,
+        "k": "m",
+        "name": "notifyAll",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()V",
+        "final": true,
+        "k": "m",
+        "name": "wait",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [
+          "java.lang.InterruptedException"
+        ],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(J)V",
+        "final": true,
+        "k": "m",
+        "name": "wait",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [
+          "java.lang.InterruptedException"
+        ],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(J)V",
+        "final": true,
+        "k": "m",
+        "name": "wait0",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [
+          "java.lang.InterruptedException"
+        ],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(JI)V",
+        "final": true,
+        "k": "m",
+        "name": "wait",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [
+          "java.lang.InterruptedException"
+        ],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [
+          {
+            "name": "java.lang.Deprecated",
+            "values": [
+              {
+                "kind": "string",
+                "name": "since",
+                "value": "9"
+              },
+              {
+                "kind": "boolean",
+                "name": "forRemoval",
+                "value": true
+              }
+            ]
+          }
+        ],
+        "desc": "()V",
+        "final": false,
+        "k": "m",
+        "name": "finalize",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [
+          "java.lang.Throwable"
+        ],
+        "varargs": false,
+        "vis": "public"
+      }
+    ],
+    "modifiers": [
+      "public"
+    ],
+    "origin": "classpath",
+    "typeParameters": 0,
+    "typeVars": []
+  },
+  "java.lang.String": {
+    "annotations": [],
+    "interfaceTypes": [
+      {
+        "args": [],
+        "id": "java.io.Serializable"
+      },
+      {
+        "args": [
+          {
+            "args": [],
+            "id": "java.lang.String"
+          }
+        ],
+        "id": "java.lang.Comparable"
+      },
+      {
+        "args": [],
+        "id": "java.lang.CharSequence"
+      },
+      {
+        "args": [],
+        "id": "java.lang.constant.Constable"
+      },
+      {
+        "args": [],
+        "id": "java.lang.constant.ConstantDesc"
+      }
+    ],
+    "interfaces": [
+      "java.io.Serializable",
+      "java.lang.Comparable",
+      "java.lang.CharSequence",
+      "java.lang.constant.Constable",
+      "java.lang.constant.ConstantDesc"
+    ],
+    "kind": "class",
+    "members": [
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [
+          {
+            "name": "jdk.internal.vm.annotation.IntrinsicCandidate",
+            "values": []
+          }
+        ],
+        "desc": "(Ljava/lang/String;)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([C)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([CII)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([CII)Ljava/lang/Void;",
+        "final": false,
+        "k": "m",
+        "name": "rangeCheck",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([III)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [
+          {
+            "name": "java.lang.Deprecated",
+            "values": [
+              {
+                "kind": "string",
+                "name": "since",
+                "value": "1.1"
+              }
+            ]
+          }
+        ],
+        "desc": "([BIII)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [
+          {
+            "name": "java.lang.Deprecated",
+            "values": [
+              {
+                "kind": "string",
+                "name": "since",
+                "value": "1.1"
+              }
+            ]
+          }
+        ],
+        "desc": "([BI)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BIILjava/lang/String;)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [
+          "java.io.UnsupportedEncodingException"
+        ],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BIILjava/nio/charset/Charset;)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/nio/charset/Charset;[BII)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BIIZ)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "newStringUTF8NoRepl",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BLjava/nio/charset/Charset;)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "newStringNoRepl",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [
+          "java.nio.charset.CharacterCodingException"
+        ],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BLjava/nio/charset/Charset;)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "newStringNoRepl1",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BIZ)[B",
+        "final": false,
+        "k": "m",
+        "name": "safeTrim",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(IF)I",
+        "final": false,
+        "k": "m",
+        "name": "scale",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;)Ljava/nio/charset/Charset;",
+        "final": false,
+        "k": "m",
+        "name": "lookupCharset",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [
+          "java.io.UnsupportedEncodingException"
+        ],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/nio/charset/Charset;B[B)[B",
+        "final": false,
+        "k": "m",
+        "name": "encode",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/nio/charset/Charset;B[BZ)[B",
+        "final": false,
+        "k": "m",
+        "name": "encodeWithEncoder",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;)[B",
+        "final": false,
+        "k": "m",
+        "name": "getBytesUTF8NoRepl",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([B)Z",
+        "final": false,
+        "k": "m",
+        "name": "isASCII",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;Ljava/nio/charset/Charset;)[B",
+        "final": false,
+        "k": "m",
+        "name": "getBytesNoRepl",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [
+          "java.nio.charset.CharacterCodingException"
+        ],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;Ljava/nio/charset/Charset;)[B",
+        "final": false,
+        "k": "m",
+        "name": "getBytesNoRepl1",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(B[B)[B",
+        "final": false,
+        "k": "m",
+        "name": "encodeASCII",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BI)V",
+        "final": false,
+        "k": "m",
+        "name": "replaceNegatives",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(B[B)[B",
+        "final": false,
+        "k": "m",
+        "name": "encode8859_1",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(B[BZ)[B",
+        "final": false,
+        "k": "m",
+        "name": "encode8859_1",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BI[CII)I",
+        "final": false,
+        "k": "m",
+        "name": "decodeASCII",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(I)Z",
+        "final": false,
+        "k": "m",
+        "name": "isNotContinuation",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(III)Z",
+        "final": false,
+        "k": "m",
+        "name": "isMalformed3",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(II)Z",
+        "final": false,
+        "k": "m",
+        "name": "isMalformed3_2",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(III)Z",
+        "final": false,
+        "k": "m",
+        "name": "isMalformed4",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(II)Z",
+        "final": false,
+        "k": "m",
+        "name": "isMalformed4_2",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(I)Z",
+        "final": false,
+        "k": "m",
+        "name": "isMalformed4_3",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(II)C",
+        "final": false,
+        "k": "m",
+        "name": "decode2",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(III)C",
+        "final": false,
+        "k": "m",
+        "name": "decode3",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(IIII)I",
+        "final": false,
+        "k": "m",
+        "name": "decode4",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BII[BIZ)I",
+        "final": false,
+        "k": "m",
+        "name": "decodeUTF8_UTF16",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/nio/charset/CharsetDecoder;[C[BII)I",
+        "final": false,
+        "k": "m",
+        "name": "decodeWithDecoder",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [
+          "java.nio.charset.CharacterCodingException"
+        ],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BI)I",
+        "final": false,
+        "k": "m",
+        "name": "malformed3",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BI)I",
+        "final": false,
+        "k": "m",
+        "name": "malformed4",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(II)V",
+        "final": false,
+        "k": "m",
+        "name": "throwMalformed",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([B)V",
+        "final": false,
+        "k": "m",
+        "name": "throwMalformed",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(I)V",
+        "final": false,
+        "k": "m",
+        "name": "throwUnmappable",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([B)V",
+        "final": false,
+        "k": "m",
+        "name": "throwUnmappable",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(B[BZ)[B",
+        "final": false,
+        "k": "m",
+        "name": "encodeUTF8",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BZ)[B",
+        "final": false,
+        "k": "m",
+        "name": "encodeUTF8_UTF16",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BLjava/lang/String;)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [
+          "java.io.UnsupportedEncodingException"
+        ],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BLjava/nio/charset/Charset;)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BII)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([B)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/StringBuffer;)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/StringBuilder;)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()I",
+        "final": false,
+        "k": "m",
+        "name": "length",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Z",
+        "final": false,
+        "k": "m",
+        "name": "isEmpty",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(I)C",
+        "final": false,
+        "k": "m",
+        "name": "charAt",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(I)I",
+        "final": false,
+        "k": "m",
+        "name": "codePointAt",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(I)I",
+        "final": false,
+        "k": "m",
+        "name": "codePointBefore",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(II)I",
+        "final": false,
+        "k": "m",
+        "name": "codePointCount",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(II)I",
+        "final": false,
+        "k": "m",
+        "name": "offsetByCodePoints",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(II[CI)V",
+        "final": false,
+        "k": "m",
+        "name": "getChars",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [
+          {
+            "name": "java.lang.Deprecated",
+            "values": [
+              {
+                "kind": "string",
+                "name": "since",
+                "value": "1.1"
+              }
+            ]
+          }
+        ],
+        "desc": "(II[BI)V",
+        "final": false,
+        "k": "m",
+        "name": "getBytes",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;)[B",
+        "final": false,
+        "k": "m",
+        "name": "getBytes",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [
+          "java.io.UnsupportedEncodingException"
+        ],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/nio/charset/Charset;)[B",
+        "final": false,
+        "k": "m",
+        "name": "getBytes",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()[B",
+        "final": false,
+        "k": "m",
+        "name": "getBytes",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/Object;)Z",
+        "final": false,
+        "k": "m",
+        "name": "equals",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/StringBuffer;)Z",
+        "final": false,
+        "k": "m",
+        "name": "contentEquals",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/AbstractStringBuilder;)Z",
+        "final": false,
+        "k": "m",
+        "name": "nonSyncContentEquals",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/CharSequence;)Z",
+        "final": false,
+        "k": "m",
+        "name": "contentEquals",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;)Z",
+        "final": false,
+        "k": "m",
+        "name": "equalsIgnoreCase",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;)I",
+        "final": false,
+        "k": "m",
+        "name": "compareTo",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;)I",
+        "final": false,
+        "k": "m",
+        "name": "compareToIgnoreCase",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(ILjava/lang/String;II)Z",
+        "final": false,
+        "k": "m",
+        "name": "regionMatches",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(ZILjava/lang/String;II)Z",
+        "final": false,
+        "k": "m",
+        "name": "regionMatches",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;I)Z",
+        "final": false,
+        "k": "m",
+        "name": "startsWith",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;)Z",
+        "final": false,
+        "k": "m",
+        "name": "startsWith",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;)Z",
+        "final": false,
+        "k": "m",
+        "name": "endsWith",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()I",
+        "final": false,
+        "k": "m",
+        "name": "hashCode",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(I)I",
+        "final": false,
+        "k": "m",
+        "name": "indexOf",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(II)I",
+        "final": false,
+        "k": "m",
+        "name": "indexOf",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(III)I",
+        "final": false,
+        "k": "m",
+        "name": "indexOf",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(I)I",
+        "final": false,
+        "k": "m",
+        "name": "lastIndexOf",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(II)I",
+        "final": false,
+        "k": "m",
+        "name": "lastIndexOf",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;)I",
+        "final": false,
+        "k": "m",
+        "name": "indexOf",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;I)I",
+        "final": false,
+        "k": "m",
+        "name": "indexOf",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;II)I",
+        "final": false,
+        "k": "m",
+        "name": "indexOf",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BBILjava/lang/String;I)I",
+        "final": false,
+        "k": "m",
+        "name": "indexOf",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;)I",
+        "final": false,
+        "k": "m",
+        "name": "lastIndexOf",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;I)I",
+        "final": false,
+        "k": "m",
+        "name": "lastIndexOf",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BBILjava/lang/String;I)I",
+        "final": false,
+        "k": "m",
+        "name": "lastIndexOf",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(I)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "substring",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(II)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "substring",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(II)Ljava/lang/CharSequence;",
+        "final": false,
+        "k": "m",
+        "name": "subSequence",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "concat",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(CC)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "replace",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;)Z",
+        "final": false,
+        "k": "m",
+        "name": "matches",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/CharSequence;)Z",
+        "final": false,
+        "k": "m",
+        "name": "contains",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "replaceFirst",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "replaceAll",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "replace",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;I)[Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "split",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;I)[Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "splitWithDelimiters",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;IZ)[Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "split",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(CIZ)[Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "split",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;)[Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "split",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/CharSequence;[Ljava/lang/CharSequence;)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "join",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": true,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [
+          {
+            "name": "jdk.internal.vm.annotation.ForceInline",
+            "values": []
+          }
+        ],
+        "desc": "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;I)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "join",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/CharSequence;Ljava/lang/Iterable;)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "join",
+        "paramTypes": [
+          {
+            "args": [],
+            "id": "java.lang.CharSequence"
+          },
+          {
+            "args": [
+              {
+                "extends": {
+                  "args": [],
+                  "id": "java.lang.CharSequence"
+                },
+                "kind": "wildcard"
+              }
+            ],
+            "id": "java.lang.Iterable"
+          }
+        ],
+        "paramVars": [
+          "",
+          ""
+        ],
+        "retSelf": false,
+        "retType": {
+          "args": [],
+          "id": "java.lang.String"
+        },
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "typeVarBounds": [],
+        "typeVars": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/util/Locale;)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "toLowerCase",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "toLowerCase",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/util/Locale;)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "toUpperCase",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "toUpperCase",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "trim",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "strip",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "stripLeading",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "stripTrailing",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Z",
+        "final": false,
+        "k": "m",
+        "name": "isBlank",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/util/stream/Stream;",
+        "final": false,
+        "k": "m",
+        "name": "lines",
+        "paramTypes": [],
+        "paramVars": [],
+        "retSelf": false,
+        "retType": {
+          "args": [
+            {
+              "args": [],
+              "id": "java.lang.String"
+            }
+          ],
+          "id": "java.util.stream.Stream"
+        },
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "typeVarBounds": [],
+        "typeVars": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(I)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "indent",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()I",
+        "final": false,
+        "k": "m",
+        "name": "indexOfNonWhitespace",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()I",
+        "final": false,
+        "k": "m",
+        "name": "lastIndexOfNonWhitespace",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "stripIndent",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/util/List;)I",
+        "final": false,
+        "k": "m",
+        "name": "outdent",
+        "paramTypes": [
+          {
+            "args": [
+              {
+                "args": [],
+                "id": "java.lang.String"
+              }
+            ],
+            "id": "java.util.List"
+          }
+        ],
+        "paramVars": [
+          ""
+        ],
+        "retSelf": false,
+        "retType": {
+          "id": "int"
+        },
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "typeVarBounds": [],
+        "typeVars": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "translateEscapes",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/util/function/Function;)Ljava/lang/Object;",
+        "final": false,
+        "k": "m",
+        "name": "transform",
+        "paramTypes": [
+          {
+            "args": [
+              {
+                "kind": "wildcard",
+                "super": {
+                  "args": [],
+                  "id": "java.lang.String"
+                }
+              },
+              {
+                "extends": {
+                  "id": "R",
+                  "kind": "typevar"
+                },
+                "kind": "wildcard"
+              }
+            ],
+            "id": "java.util.function.Function"
+          }
+        ],
+        "paramVars": [
+          ""
+        ],
+        "retSelf": false,
+        "retType": {
+          "id": "R",
+          "kind": "typevar"
+        },
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "typeVarBounds": [
+          [
+            {
+              "args": [],
+              "id": "java.lang.Object"
+            }
+          ]
+        ],
+        "typeVars": [
+          "R"
+        ],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "toString",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/util/stream/IntStream;",
+        "final": false,
+        "k": "m",
+        "name": "chars",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/util/stream/IntStream;",
+        "final": false,
+        "k": "m",
+        "name": "codePoints",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()[C",
+        "final": false,
+        "k": "m",
+        "name": "toCharArray",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "format",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": true,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/util/Locale;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "format",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": true,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([Ljava/lang/Object;)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "formatted",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": true,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/Object;)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "valueOf",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([C)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "valueOf",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([CII)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "valueOf",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([CII)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "copyValueOf",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([C)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "copyValueOf",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Z)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "valueOf",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(C)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "valueOf",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(I)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "valueOf",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(J)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "valueOf",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(F)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "valueOf",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(D)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "valueOf",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "intern",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(I)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "repeat",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BIII)V",
+        "final": false,
+        "k": "m",
+        "name": "repeatCopyRest",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BIB)V",
+        "final": false,
+        "k": "m",
+        "name": "getBytes",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BIIBI)V",
+        "final": false,
+        "k": "m",
+        "name": "getBytes",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([CIILjava/lang/Void;)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/AbstractStringBuilder;Ljava/lang/Void;)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "([BB)V",
+        "final": false,
+        "k": "m",
+        "name": "\u003cinit\u003e",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()B",
+        "final": false,
+        "k": "m",
+        "name": "coder",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()[B",
+        "final": false,
+        "k": "m",
+        "name": "value",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Z",
+        "final": false,
+        "k": "m",
+        "name": "isLatin1",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(II)V",
+        "final": false,
+        "k": "m",
+        "name": "checkIndex",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(II)V",
+        "final": false,
+        "k": "m",
+        "name": "checkOffset",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(III)I",
+        "final": false,
+        "k": "m",
+        "name": "checkBoundsOffCount",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(III)V",
+        "final": false,
+        "k": "m",
+        "name": "checkBoundsBeginEnd",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(I)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "valueOfCodePoint",
+        "retSelf": false,
+        "static": true,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "()Ljava/util/Optional;",
+        "final": false,
+        "k": "m",
+        "name": "describeConstable",
+        "paramTypes": [],
+        "paramVars": [],
+        "retSelf": false,
+        "retType": {
+          "args": [
+            {
+              "args": [],
+              "id": "java.lang.String"
+            }
+          ],
+          "id": "java.util.Optional"
+        },
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "typeVarBounds": [],
+        "typeVars": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": false,
+        "annotations": [],
+        "desc": "(Ljava/lang/invoke/MethodHandles$Lookup;)Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "resolveConstantDesc",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "annotations": [
+          {
+            "name": "jdk.internal.vm.annotation.Stable",
+            "values": []
+          }
+        ],
+        "desc": "[B",
+        "enum": false,
+        "final": true,
+        "k": "f",
+        "name": "value",
+        "static": false,
+        "vis": "private"
+      },
+      {
+        "annotations": [],
+        "desc": "B",
+        "enum": false,
+        "final": true,
+        "k": "f",
+        "name": "coder",
+        "static": false,
+        "vis": "private"
+      },
+      {
+        "annotations": [],
+        "desc": "I",
+        "enum": false,
+        "final": false,
+        "k": "f",
+        "name": "hash",
+        "static": false,
+        "vis": "private"
+      },
+      {
+        "annotations": [],
+        "desc": "Z",
+        "enum": false,
+        "final": false,
+        "k": "f",
+        "name": "hashIsZero",
+        "static": false,
+        "vis": "private"
+      },
+      {
+        "annotations": [],
+        "constant": "-6849794470754667710",
+        "desc": "J",
+        "enum": false,
+        "final": true,
+        "k": "f",
+        "name": "serialVersionUID",
+        "static": true,
+        "vis": "private"
+      },
+      {
+        "annotations": [],
+        "desc": "Z",
+        "enum": false,
+        "final": true,
+        "k": "f",
+        "name": "COMPACT_STRINGS",
+        "static": true,
+        "vis": "package"
+      },
+      {
+        "annotations": [],
+        "desc": "[Ljava/io/ObjectStreamField;",
+        "enum": false,
+        "final": true,
+        "k": "f",
+        "name": "serialPersistentFields",
+        "static": true,
+        "vis": "private"
+      },
+      {
+        "annotations": [],
+        "constant": "�",
+        "desc": "C",
+        "enum": false,
+        "final": true,
+        "k": "f",
+        "name": "REPL",
+        "static": true,
+        "vis": "private"
+      },
+      {
+        "annotations": [],
+        "desc": "Ljava/util/Comparator;",
+        "enum": false,
+        "final": true,
+        "k": "f",
+        "name": "CASE_INSENSITIVE_ORDER",
+        "static": true,
+        "vis": "public"
+      },
+      {
+        "annotations": [],
+        "constant": "0",
+        "desc": "B",
+        "enum": false,
+        "final": true,
+        "k": "f",
+        "name": "LATIN1",
+        "static": true,
+        "vis": "package"
+      },
+      {
+        "annotations": [],
+        "constant": "1",
+        "desc": "B",
+        "enum": false,
+        "final": true,
+        "k": "f",
+        "name": "UTF16",
+        "static": true,
+        "vis": "package"
+      }
+    ],
+    "modifiers": [
+      "public",
+      "final"
+    ],
+    "origin": "classpath",
+    "super": "java.lang.Object",
+    "superType": {
+      "args": [],
+      "id": "java.lang.Object"
+    },
+    "typeParameters": 0,
+    "typeVarBounds": [],
+    "typeVars": []
+  },
+  "java.lang.annotation.Annotation": {
+    "annotations": [],
+    "interfaces": [],
+    "kind": "interface",
+    "members": [
+      {
+        "abstract": true,
+        "annotations": [],
+        "desc": "(Ljava/lang/Object;)Z",
+        "final": false,
+        "k": "m",
+        "name": "equals",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": true,
+        "annotations": [],
+        "desc": "()I",
+        "final": false,
+        "k": "m",
+        "name": "hashCode",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": true,
+        "annotations": [],
+        "desc": "()Ljava/lang/String;",
+        "final": false,
+        "k": "m",
+        "name": "toString",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "varargs": false,
+        "vis": "public"
+      },
+      {
+        "abstract": true,
+        "annotations": [],
+        "desc": "()Ljava/lang/Class;",
+        "final": false,
+        "k": "m",
+        "name": "annotationType",
+        "paramTypes": [],
+        "paramVars": [],
+        "retSelf": false,
+        "retType": {
+          "args": [
+            {
+              "extends": {
+                "args": [],
+                "id": "java.lang.annotation.Annotation"
+              },
+              "kind": "wildcard"
+            }
+          ],
+          "id": "java.lang.Class"
+        },
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "typeVarBounds": [],
+        "typeVars": [],
+        "varargs": false,
+        "vis": "public"
+      }
+    ],
+    "modifiers": [
+      "public",
+      "abstract"
+    ],
+    "origin": "classpath",
+    "typeParameters": 0,
+    "typeVars": []
+  },
+  "java.lang.constant.Constable": {
+    "annotations": [],
+    "interfaces": [],
+    "kind": "interface",
+    "members": [
+      {
+        "abstract": true,
+        "annotations": [],
+        "desc": "()Ljava/util/Optional;",
+        "final": false,
+        "k": "m",
+        "name": "describeConstable",
+        "paramTypes": [],
+        "paramVars": [],
+        "retSelf": false,
+        "retType": {
+          "args": [
+            {
+              "extends": {
+                "args": [],
+                "id": "java.lang.constant.ConstantDesc"
+              },
+              "kind": "wildcard"
+            }
+          ],
+          "id": "java.util.Optional"
+        },
+        "static": false,
+        "synchronized": false,
+        "throws": [],
+        "typeVarBounds": [],
+        "typeVars": [],
+        "varargs": false,
+        "vis": "public"
+      }
+    ],
+    "modifiers": [
+      "public",
+      "abstract"
+    ],
+    "origin": "classpath",
+    "typeParameters": 0,
+    "typeVars": []
+  },
+  "java.lang.constant.ConstantDesc": {
+    "annotations": [],
+    "interfaces": [],
+    "kind": "interface",
+    "members": [
+      {
+        "abstract": true,
+        "annotations": [],
+        "desc": "(Ljava/lang/invoke/MethodHandles$Lookup;)Ljava/lang/Object;",
+        "final": false,
+        "k": "m",
+        "name": "resolveConstantDesc",
+        "retSelf": false,
+        "static": false,
+        "synchronized": false,
+        "throws": [
+          "java.lang.ReflectiveOperationException"
+        ],
+        "varargs": false,
+        "vis": "public"
+      }
+    ],
+    "modifiers": [
+      "public",
+      "abstract"
+    ],
+    "origin": "classpath",
+    "typeParameters": 0,
+    "typeVars": []
+  }
+}
