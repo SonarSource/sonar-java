@@ -113,6 +113,73 @@ class JParserTest {
   public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
 
   @Test
+  void should_parse_input_file_with_empty_classpath() throws Exception {
+    InputFile input = inputFile("SingleFile.java", "class SingleFile { String value; }");
+
+    CompilationUnitTree tree = JParser.parse(input, List.of(), MAXIMUM_SUPPORTED_JAVA_VERSION);
+
+    assertThat(tree.types()).hasSize(1);
+    ClassTree type = (ClassTree) tree.types().getFirst();
+    assertThat(type.simpleName().name()).isEqualTo("SingleFile");
+    VariableTree field = (VariableTree) type.members().getFirst();
+    assertThat(field.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
+    assertThat(tree.semanticProblems()).isEmpty();
+  }
+
+  @Test
+  void should_parse_input_file_with_supplied_classpath() throws Exception {
+    InputFile input = inputFile("Dependency.java", "class Example { org.apache.commons.collections.Bag value; }");
+
+    CompilationUnitTree withoutClasspath = JParser.parse(input, List.of(), MAXIMUM_SUPPORTED_JAVA_VERSION);
+    assertThat(withoutClasspath.semanticProblems()).isNotEmpty();
+
+    List<File> classpath = List.of(new File("target/test-projects/commons-collections/bin"));
+    CompilationUnitTree tree = JParser.parse(input, classpath, MAXIMUM_SUPPORTED_JAVA_VERSION);
+
+    assertThat(tree.semanticProblems()).isEmpty();
+    ClassTree type = (ClassTree) tree.types().getFirst();
+    VariableTree field = (VariableTree) type.members().getFirst();
+    assertThat(field.type().symbolType().fullyQualifiedName()).isEqualTo("org.apache.commons.collections.Bag");
+  }
+
+  @Test
+  void should_parse_input_file_with_supplied_java_version() throws Exception {
+    assumeRunningJdkCanServeOlderReleases();
+    InputFile input = inputFile("Version.java", JDK_API_SOURCE);
+    List<File> classpath = List.of(runningJdkRuntimeImage());
+
+    CompilationUnitTree java11 = JParser.parse(input, classpath, new JavaVersionImpl(11));
+    CompilationUnitTree java17 = JParser.parse(input, classpath, new JavaVersionImpl(17));
+
+    assertThat(java11.semanticProblems()).extracting(Problem::message)
+      .containsExactly("java.lang.Record cannot be resolved to a type");
+    assertThat(java17.semanticProblems()).extracting(Problem::message)
+      .containsExactly("java.util.jar.Pack200 cannot be resolved to a type");
+  }
+
+  @Test
+  void should_throw_syntax_errors_when_parsing_input_file() throws IOException {
+    InputFile input = inputFile("Invalid.java", "class Example");
+
+    RecognitionException exception = assertThrows(RecognitionException.class, () -> JParser.parse(input, List.of(), MAXIMUM_SUPPORTED_JAVA_VERSION));
+
+    assertThat(exception.getLine()).isEqualTo(1);
+  }
+
+  @Test
+  void should_rethrow_file_reading_exception_when_parsing_input_file() throws IOException {
+    InputFile input = mock(InputFile.class);
+    when(input.absolutePath()).thenReturn("/tmp/Example.java");
+    when(input.filename()).thenReturn("Example.java");
+    IOException expected = new IOException("Unable to read source");
+    when(input.contents()).thenThrow(expected);
+
+    IOException actual = assertThrows(IOException.class, () -> JParser.parse(input, List.of(), MAXIMUM_SUPPORTED_JAVA_VERSION));
+
+    assertSame(expected, actual);
+  }
+
+  @Test
   void should_only_see_the_jdk_api_of_the_requested_release() throws IOException {
     assumeRunningJdkCanServeOlderReleases();
     Set<String> undefinedAt11 = undefinedTypes("11", JDK_API_SOURCE);

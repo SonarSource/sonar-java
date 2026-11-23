@@ -158,7 +158,7 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 * `org.sonar.java.model.JParser` is now an interface, independent of the underlying parser implementation, and replaces `JParserConfig`.
   Create parsers with `JParser.Mode.BATCH.create(JavaVersion, List<File>)` or `JParser.Mode.FILE_BY_FILE.create(JavaVersion, List<File>)`. Both factories also accept an optional third `boolean` argument to ignore the unnamed module for split packages.
   `JParserConfig` has been removed together with `JParserConfig#astParser()`, `JParserConfig#parse(String unitName, String source)`, and the `ParserConfigConstructor` interface. The string-based `parse(String version, String unitName, String source)` overload and the static `JParser.parse(JParser, String, String, String)` have also been removed.
-  Migrate consumers of these entry points to `JParser.Mode#create(...)` and `JParser#parse(Iterable<InputFile>, BooleanSupplier, AnalysisProgress, BiConsumer<InputFile, JParseResult>)` for all parsing, including a single file supplied as `List.of(inputFile)`.
+  Migrate single-file consumers to `JParser.parse(inputFile, classpath, javaVersion)`. For multiple files or custom parser options, use `JParser.Mode#create(...)` and `JParser#parse(Iterable<InputFile>, BooleanSupplier, AnalysisProgress, BiConsumer<InputFile, JParseResult>)`.
   `MAXIMUM_SUPPORTED_JAVA_VERSION` has moved from `JParserConfig` to `JParser.MAXIMUM_SUPPORTED_JAVA_VERSION`.
   The Java version and classpath are set when creating the parser; source contents, filename, and charset come from each `InputFile`.
   The input parameter now takes `Iterable<InputFile>` instead of `Iterable<? extends InputFile>`; callers must supply an `Iterable<InputFile>`, and implementations must update their override signatures.
@@ -175,6 +175,7 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 **Added**
 
+* New static method: `JParser.parse(InputFile, List<File>, JavaVersion)`. Creates a file-by-file parser with the supplied classpath and Java version and returns the file's `CompilationUnitTree`, or rethrows the original parsing or file-reading exception. Callers must handle or declare `Exception`.
 * New method: `Symbol.MethodSymbol#annotationElementDefaultValue()`. Returns an annotation element's default value, or `null` if it has none.
   Values use the same representation as `SymbolMetadata.AnnotationValue#value()`: constants, type symbols, variable symbols, annotation instances, or arrays of these values.
 * New beta interfaces in `org.sonar.plugins.java.api.diagnostics`: `Problem` exposes `type()` and `message()`; `Warning` extends `Problem` and adds `syntaxTree()`, which returns the associated, non-null AST node.
