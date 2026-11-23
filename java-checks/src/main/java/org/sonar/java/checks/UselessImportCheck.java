@@ -155,7 +155,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
     public void visitIdentifier(IdentifierTree identifier) {
       Symbol symbol = identifier.symbol();
       if (symbol.isTypeSymbol() && !isQualifiedMember(identifier)) {
-        types.add(((Symbol.TypeSymbol) symbol).type().fullyQualifiedName().replace('$', '.'));
+        types.add((symbol).type().fullyQualifiedName().replace('$', '.'));
       }
     }
 
