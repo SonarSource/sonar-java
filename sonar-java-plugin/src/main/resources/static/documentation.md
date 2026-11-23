@@ -175,7 +175,7 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 **Added**
 
-* New static method: `JParser.parse(InputFile, List<File>, JavaVersion)`. Creates a file-by-file parser with the supplied classpath and Java version and returns the file's `CompilationUnitTree`. Checked exceptions are wrapped in an `IllegalStateException` with the input file's path in the message and the original exception as the cause. Runtime exceptions are rethrown unchanged, so callers do not need to handle or declare checked parsing exceptions.
+* New static method: `JParser.parse(InputFile, List<File>, JavaVersion)`. Creates a file-by-file parser with the supplied classpath and Java version and returns the file's `JavaTree.CompilationUnitTreeImpl`. Checked exceptions are wrapped in an `IllegalStateException` with the input file's path in the message and the original exception as the cause. Runtime exceptions are rethrown unchanged, so callers do not need to handle or declare checked parsing exceptions.
 * New method: `Symbol.MethodSymbol#annotationElementDefaultValue()`. Returns an annotation element's default value, or `null` if it has none.
   Values use the same representation as `SymbolMetadata.AnnotationValue#value()`: constants, type symbols, variable symbols, annotation instances, or arrays of these values.
 * New beta interfaces in `org.sonar.plugins.java.api.diagnostics`: `Problem` exposes `type()` and `message()`; `Warning` extends `Problem` and adds `syntaxTree()`, which returns the associated, non-null AST node.

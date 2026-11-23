@@ -25,7 +25,6 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.jdt.JDTParser;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 public interface JParser {
 
@@ -44,7 +43,7 @@ public interface JParser {
     }
   }
 
-  static CompilationUnitTree parse(InputFile inputFile, List<File> classpath, JavaVersion javaVersion) {
+  static JavaTree.CompilationUnitTreeImpl parse(InputFile inputFile, List<File> classpath, JavaVersion javaVersion) {
     List<JParseResult> results = new ArrayList<>(1);
     Mode.FILE_BY_FILE.create(javaVersion, classpath).parse(List.of(inputFile), () -> false, new AnalysisProgress(1), (input, result) -> results.add(result));
     try {
