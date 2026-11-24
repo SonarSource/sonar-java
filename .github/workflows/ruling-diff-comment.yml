@@ -41,13 +41,13 @@ jobs:
           submodules: true
 
       - name: Install uv
-        uses: jdx/mise-action@d5574b52816a478f9d4e6529a3f6ff17a8a36785 # v5.2.8
+        uses: step-security/setup-uv@b49aac5576b90039e3e427495dda1a21aba6aaec # v10.3.3
         with:
-          version: 2026.10.20
-      - run: mise use --global uv@latest
+          enable-cache: true
 
       - name: Get enhancer secrets
         id: secrets
+        continue-on-error: true
         uses: SonarSource/vault-action-wrapper@v3
         with:
           secrets: |
@@ -66,6 +66,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DSPY_MODEL: gpt-6-luna
-          PORTKEY_API_KEY_OPENAI: ${{ fromJSON(steps.secrets.outputs.vault).PORTKEY_API_KEY_OPENAI }}
-          UV_INDEX_REPOX_USERNAME: vault-${{ fromJSON(steps.secrets.outputs.vault).ARTIFACTORY_ROLE }}
-          UV_INDEX_REPOX_PASSWORD: ${{ fromJSON(steps.secrets.outputs.vault).ARTIFACTORY_ACCESS_TOKEN }}
+          PORTKEY_API_KEY_OPENAI: ${{ fromJSON(steps.secrets.outputs.vault || '{}').PORTKEY_API_KEY_OPENAI }}
+          UV_INDEX_REPOX_USERNAME: ${{ steps.secrets.outputs.vault && format('vault-{0}', fromJSON(steps.secrets.outputs.vault).ARTIFACTORY_ROLE) || '' }}
+          UV_INDEX_REPOX_PASSWORD: ${{ fromJSON(steps.secrets.outputs.vault || '{}').ARTIFACTORY_ACCESS_TOKEN }}
