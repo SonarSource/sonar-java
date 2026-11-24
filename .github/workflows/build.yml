@@ -417,18 +417,13 @@ jobs:
           SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_TOKEN }}
           JAVA_TOOL_OPTIONS: "" # Set an empty value to avoid issues with runners hanging and significantly slowing down builds
-      - name: Restore Apache Maven build cache
-        id: apache-build-cache
-        uses: ./.github/actions/apache-maven-build-cache
-        with:
-          namespace: custom-rules
       - name: Build Java Custom Rules Example
         env:
           SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_TOKEN }}
         working-directory: docs/java-custom-rules-example
         run: |
-          mvn clean package -f pom_SQ_10_6_LATEST.xml --batch-mode -Dmaven.build.cache.enabled=true -Ddevelocity.cache.local.enabled=false -Ddevelocity.cache.remote.enabled=false
+          mvn clean package -f pom_SQ_10_6_LATEST.xml --batch-mode
       - name: Check License Compliance
         run: |
           # See https://xtranet.sonarsource.com/display/DEV/Open+Source+Licenses
@@ -436,15 +431,6 @@ jobs:
             --batch-mode \
             "-Dlicense.missingFile=${PWD}/missing-dep-licenses.properties" \
             -DuseMissingFile
-      - name: Save Apache Maven build cache
-        if: >-
-          github.repository == 'SonarSource/sonar-java' &&
-          ((github.event_name == 'push' && github.ref == 'refs/heads/master') ||
-          (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository))
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-        with:
-          path: ~/.m2/build-cache
-          key: ${{ steps.apache-build-cache.outputs.key }}
 
   qa-os-win:
     name: Build and Unit Test on Windows

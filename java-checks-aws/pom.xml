@@ -16,6 +16,9 @@
   <properties>
     <maven.build.cache.input.1>../java-checks-test-sources/aws/src</maven.build.cache.input.1>
     <maven.build.cache.input.2>../java-checks-test-sources/default/src</maven.build.cache.input.2>
+    <maven.build.cache.input.3>../java-checks-test-sources/pom.xml</maven.build.cache.input.3>
+    <maven.build.cache.input.4>../java-checks-test-sources/aws/pom.xml</maven.build.cache.input.4>
+    <maven.build.cache.input.5>../java-checks-test-sources/default/pom.xml</maven.build.cache.input.5>
   </properties>
 
   <dependencies>

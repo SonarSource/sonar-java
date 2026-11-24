@@ -15,6 +15,10 @@
     <name>SonarQube Java :: Check List</name>
     <description>Code Analyzer for Java :: Generate the list of checks at build time</description>
     <inceptionYear>2024</inceptionYear>
+
+    <properties>
+      <maven.build.cache.input.1>../sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java</maven.build.cache.input.1>
+    </properties>
     
     <dependencies>
       <dependency>
