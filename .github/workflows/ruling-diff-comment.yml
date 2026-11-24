@@ -29,6 +29,7 @@ concurrency:
 permissions:
   contents: read
   pull-requests: write
+  issues: write
 
 jobs:
   ruling-diff-comment:
@@ -45,7 +46,7 @@ jobs:
           enable-cache: true
 
       - name: Post ruling diff comment
-        uses: SonarSource/core-languages-tooling-public/ruling-diff-comment@master
+        uses: SonarSource/core-languages-tooling-public/ruling-diff-comment@d23bc854d3d4c58fae40d2058ba9f704f460dab3
         with:
           pr-number: ${{ inputs.pr-number || github.event.pull_request.number }}
           repository: ${{ github.repository }}

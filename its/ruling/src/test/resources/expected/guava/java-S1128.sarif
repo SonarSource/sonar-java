@@ -23,30 +23,6 @@
         "id" : -1,
         "physicalLocation" : {
           "artifactLocation" : {
-            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
-            "index" : -1
-          },
-          "region" : {
-            "startLine" : 67,
-            "startColumn" : 8,
-            "endLine" : 67,
-            "endColumn" : 27
-          }
-        }
-      } ],
-      "rank" : -1.0
-    }, {
-      "ruleId" : "java:S1128",
-      "ruleIndex" : -1,
-      "kind" : "fail",
-      "level" : "warning",
-      "message" : {
-        "text" : "Remove this unused import 'java.util.Map.Entry'."
-      },
-      "locations" : [ {
-        "id" : -1,
-        "physicalLocation" : {
-          "artifactLocation" : {
             "uri" : "guava:src/com/google/common/collect/ArrayTable.java",
             "index" : -1
           },

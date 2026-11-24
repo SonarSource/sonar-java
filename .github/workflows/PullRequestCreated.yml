@@ -11,8 +11,7 @@ jobs:
     permissions:
       id-token: write
     # For external PR, ticket should be created manually
-    if: |
-        github.event.pull_request.head.repo.full_name == github.repository
+    if: ${{ false }}
     steps:
       - id: secrets
         uses: SonarSource/vault-action-wrapper@v3
