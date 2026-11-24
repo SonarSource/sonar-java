@@ -45,7 +45,11 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.semsitter.wire.Document;
+import org.sonarsource.semsitter.wire.Fact;
 import org.sonarsource.semsitter.wire.FactEntry;
+import org.sonarsource.semsitter.wire.FactValue;
+import org.sonarsource.semsitter.wire.Prop;
+import org.sonarsource.semsitter.wire.TypeRef;
 
 /**
  * Semantic model of one translated file. Symbols are created from the SemSitter dump and from the
@@ -53,6 +57,8 @@ import org.sonarsource.semsitter.wire.FactEntry;
  */
 public final class JSema implements Sema {
   private static final String ANNOTATIONS = "annotations";
+  private static final String EXTENDS = "extends";
+  private static final String WILDCARD = "wildcard";
   private static final String MEMBERS = "members";
   private static final String THROWS = "throws";
   private static final int MEMBER_IDS_LIMIT = 200_000;
@@ -68,12 +74,12 @@ public final class JSema implements Sema {
   private static final Set<String> OBJECT_METHODS = Set.of("equals/1", "hashCode/0", "toString/0");
   private static final Pattern LAMBDA_SEGMENTS = Pattern.compile("^(\\$lambda\\$[^$()]*\\(\\))+");
 
-  private final Map<String, JsonObject> facts = new HashMap<>();
-  private final Map<String, JsonObject> dumpSymbols = new LinkedHashMap<>();
+  private final Map<String, Fact> facts = new HashMap<>();
+  private final Map<String, org.sonarsource.semsitter.wire.Symbol> dumpSymbols = new LinkedHashMap<>();
   private final Map<String, JsonObject> typeInfos = new HashMap<>();
   private final Map<String, List<DeclaredAnnotation>> libraryAnnotations = new HashMap<>();
   private final Map<String, List<String>> projectThrows = new HashMap<>();
-  private final Map<String, JsonObject> projectMemberFacts = new HashMap<>();
+  private final Map<String, Fact> projectMemberFacts = new HashMap<>();
   private final Map<String, Boolean> projectVarArgs = new HashMap<>();
   private final Map<String, List<DeclaredAnnotation>> packageAnnotations = new HashMap<>();
   private final Map<String, JsonObject> projectFieldTypes = new HashMap<>();
@@ -105,13 +111,12 @@ public final class JSema implements Sema {
    */
   public void ingestDocument(Document document) {
     for (FactEntry entry : document.getFactsList()) {
-      facts.put(entry.getKey(), DocumentFacts.fact(entry.getValue()));
+      facts.put(entry.getKey(), entry.getValue());
     }
     for (org.sonarsource.semsitter.wire.Symbol element : document.getSymbolsList()) {
-      JsonObject symbol = DocumentFacts.symbol(element);
       String id = element.getId();
       if (!id.isEmpty()) {
-        dumpSymbols.put(id, symbol);
+        dumpSymbols.put(id, element);
         if ("type".equals(element.getKind()) && id.indexOf('<') < 0) {
           binaryName(erase(id));
         }
@@ -254,14 +259,21 @@ public final class JSema implements Sema {
     for (String id : facts.keySet()) {
       addTypeName(names, id);
     }
-    for (JsonObject symbol : dumpSymbols.values()) {
-      addTypeName(names, text(symbol, "id"));
-      JsonObject type = symbol.getAsJsonObject("facts");
-      if (type != null && type.getAsJsonObject("type") != null) {
-        collectFactNames(names, type.getAsJsonObject("type"));
+    for (org.sonarsource.semsitter.wire.Symbol symbol : dumpSymbols.values()) {
+      addTypeName(names, symbol.getId());
+      TypeRef type = typeFact(symbol);
+      if (type != null) {
+        collectFactNames(names, type);
       }
     }
     return names;
+  }
+
+  /** The declared type a document gives a symbol, or null when it gives none. */
+  @Nullable
+  private static TypeRef typeFact(org.sonarsource.semsitter.wire.Symbol symbol) {
+    FactValue value = symbol.getFactsMap().get("type");
+    return value != null && value.hasType() ? value.getType() : null;
   }
 
   private static void addTypeName(Set<String> names, @Nullable String id) {
@@ -279,20 +291,13 @@ public final class JSema implements Sema {
     }
   }
 
-  private static void collectFactNames(Set<String> names, JsonObject fact) {
-    String id = text(fact, "id");
-    if (id != null) {
-      addTypeName(names, id);
+  private static void collectFactNames(Set<String> names, TypeRef type) {
+    addTypeName(names, type.getId());
+    for (TypeRef argument : type.getArgumentsList()) {
+      collectFactNames(names, argument);
     }
-    if (fact.has("args")) {
-      for (JsonElement arg : fact.getAsJsonArray("args")) {
-        if (arg.isJsonObject()) {
-          collectFactNames(names, arg.getAsJsonObject());
-        }
-      }
-    }
-    if (fact.has("elem") && fact.get("elem").isJsonObject()) {
-      collectFactNames(names, fact.getAsJsonObject("elem"));
+    if (type.hasElement()) {
+      collectFactNames(names, type.getElement());
     }
   }
 
@@ -439,8 +444,8 @@ public final class JSema implements Sema {
     if (typed != null && !typed.isEmpty()) {
       return typed;
     }
-    JsonObject fact = facts.get(id);
-    return fact == null ? List.of() : strings(fact, ANNOTATIONS).stream().map(name -> new DeclaredAnnotation(erase(name), List.of(), false)).toList();
+    Fact fact = facts.get(id);
+    return fact == null ? List.of() : fact.getAnnotationsList().stream().map(name -> new DeclaredAnnotation(erase(name), List.of(), false)).toList();
   }
 
   /** Thrown types a {@code types} answer gives a project method, or null when it was not answered. */
@@ -474,13 +479,32 @@ public final class JSema implements Sema {
           projectVarArgs.put(id, varArgs.getAsBoolean());
         }
         if (member.get("facts") instanceof JsonObject memberFact) {
-          projectMemberFacts.putIfAbsent(id, memberFact);
+          projectMemberFacts.computeIfAbsent(id, key -> fact(memberFact));
         }
         if (member.get("declaredType") instanceof JsonObject declared && (declared.get("args") instanceof JsonArray || "typevar".equals(text(declared, "kind")))) {
           projectFieldTypes.putIfAbsent(id, declared);
         }
       }
     }
+  }
+
+  /** The graph fact a {@code types} answer gives a project member, in the shape a document gives it. */
+  private static Fact fact(JsonObject json) {
+    Fact.Builder fact = Fact.newBuilder()
+      .setKind(Objects.requireNonNullElse(text(json, "kind"), ""))
+      .setParent(Objects.requireNonNullElse(text(json, "parent"), ""))
+      .addAllExtends(strings(json, EXTENDS))
+      .addAllImplements(strings(json, "implements"))
+      .addAllReturns(strings(json, "returns"))
+      .addAllType(strings(json, "type"))
+      .addAllParams(strings(json, "params"))
+      .addAllAnnotations(strings(json, ANNOTATIONS));
+    if (json.get("props") instanceof JsonObject props) {
+      for (String name : props.keySet()) {
+        fact.addProps(Prop.newBuilder().setName(name).addAllValues(strings(props, name)));
+      }
+    }
+    return fact.build();
   }
 
   /** Annotations written directly on the parameters of a method, as the member's type-annotation facts tell them. */
@@ -1016,7 +1040,7 @@ public final class JSema implements Sema {
       if (variables.contains(id)) {
         bound.putIfAbsent(id, known.isPrimitive() ? known.primitiveWrapperType() : known);
       }
-    } else if ("wildcard".equals(kind)) {
+    } else if (WILDCARD.equals(kind)) {
       JsonObject limit = declared.get("super") instanceof JsonObject lower ? lower : declared.get("extends") instanceof JsonObject upper ? upper : null;
       if (limit != null) {
         bindFromType(limit, known, variables, bound);
@@ -1676,12 +1700,9 @@ public final class JSema implements Sema {
     if (symbols.containsKey(id)) {
       return;
     }
-    JsonObject dump = dumpSymbols.get(id);
-    String kind = text(dump, "kind");
-    String name = text(dump, "name");
-    if (name == null) {
-      name = "";
-    }
+    org.sonarsource.semsitter.wire.Symbol dump = dumpSymbols.get(id);
+    String kind = dump.getKind();
+    String name = dump.getName();
     if ("label".equals(kind)) {
       return;
     }
@@ -1694,20 +1715,20 @@ public final class JSema implements Sema {
     } else if ("method".equals(kind) || "constructor".equals(kind)) {
       symbol = new JMethodSymbol(this, id, "constructor".equals(kind) ? "<init>" : name);
     } else {
-      symbol = new JVariableSymbol(this, id, name, kind == null ? "field" : kind);
+      symbol = new JVariableSymbol(this, id, name, kind);
     }
     symbols.put(id, symbol);
   }
 
   private void linkDumpSymbol(String id) {
     JSymbol symbol = symbols.get(id);
-    JsonObject dump = dumpSymbols.get(id);
+    org.sonarsource.semsitter.wire.Symbol dump = dumpSymbols.get(id);
     if (symbol == null || dump == null) {
       return;
     }
-    JsonObject fact = facts.get(id);
-    String ownerId = text(dump, "owner");
-    String parent = text(fact, "parent");
+    Fact fact = facts.get(id);
+    String ownerId = text(dump.getOwner());
+    String parent = fact == null ? null : text(fact.getParent());
     if ((ownerId == null && symbol instanceof JMethodSymbol) || (ownerId != null && parent != null && !parent.contains("::") && !facts.containsKey(ownerId) && !dumpSymbols.containsKey(ownerId))) {
       ownerId = parent;
     }
@@ -1719,22 +1740,22 @@ public final class JSema implements Sema {
     if (fact != null) {
       applyFact(symbol, fact);
     }
-    if ((symbol.isMethodSymbol() || symbol.isVariableSymbol()) && (fact == null || !"IN_PROJECT".equals(text(fact, "tier")))) {
+    if ((symbol.isMethodSymbol() || symbol.isVariableSymbol()) && (fact == null || !"IN_PROJECT".equals(fact.getTier()))) {
       applyLibraryMember(symbol, id);
     }
-    JsonObject details = dump.getAsJsonObject("facts");
-    if (symbol.isVariableSymbol() && details != null && details.getAsJsonObject("type") != null) {
-      symbol.type(typeFromFact(details.getAsJsonObject("type")));
+    TypeRef declaredType = typeFact(dump);
+    if (symbol.isVariableSymbol() && declaredType != null) {
+      symbol.type(typeFromRef(declaredType));
     } else if (symbol.isVariableSymbol() && fact != null && symbol.type().isUnknown()) {
       // A use before the declaration is translated still sees a primitive type.
-      List<String> declared = strings(fact, "type");
+      List<String> declared = fact.getTypeList();
       if (declared.size() == 1 && PRIMITIVES.contains(declared.get(0))) {
         symbol.type(primitiveType(declared.get(0)));
       }
     }
     if (symbol instanceof JMethodSymbol method) {
       fillMethod(method, fact, id);
-      implicitEnumMethod(method, id, ownerId, details);
+      implicitEnumMethod(method, id, ownerId, dump);
     } else if (symbol instanceof JTypeSymbol typeSymbol && typeSymbol.isTypeParameter()) {
       symbol.type(JType.typeVar(this, symbol.name(), id));
     } else if (symbol.isTypeSymbol()) {
@@ -1764,8 +1785,9 @@ public final class JSema implements Sema {
   }
 
   /** The implicit valueOf and values of an enum come without a return type fact: derive it from the owner. */
-  private void implicitEnumMethod(JMethodSymbol method, String id, @Nullable String ownerId, @Nullable JsonObject details) {
-    if (details == null || !details.has("implicit") || ownerId == null) {
+  private void implicitEnumMethod(JMethodSymbol method, String id, @Nullable String ownerId, org.sonarsource.semsitter.wire.Symbol dump) {
+    FactValue implicit = dump.getFactsMap().get("implicit");
+    if (implicit == null || implicit.getValueCase() == FactValue.ValueCase.VALUE_NOT_SET || ownerId == null) {
       return;
     }
     MemberId parsed = parseMember(id);
@@ -1904,8 +1926,8 @@ public final class JSema implements Sema {
     if (parsed.params == null) {
       JVariableSymbol field = new JVariableSymbol(this, id, parsed.name, "field");
       field.owner(owner);
-      JsonObject fieldFact = factOf(id);
-      List<String> fieldType = fieldFact == null ? List.of() : flat(fieldFact, "type");
+      Fact fieldFact = factOf(id);
+      List<String> fieldType = fieldFact == null ? List.of() : flat(fieldFact.getTypeList());
       if (fieldFact != null && fieldType.isEmpty() && owner instanceof JTypeSymbol enumType && enumType.isEnum() && enumType.type() != null) {
         // the facts of an enum constant carry no type: it is of its enum
         applyFact(field, fieldFact);
@@ -1938,7 +1960,7 @@ public final class JSema implements Sema {
       }
       method.parameterTypes(types);
     }
-    JsonObject methodFact = factOf(id);
+    Fact methodFact = factOf(id);
     if (methodFact != null && !parsed.arityOnly) {
       applyFact(method, methodFact);
     }
@@ -1949,8 +1971,8 @@ public final class JSema implements Sema {
 
   /** The facts of a project member: those of this file, else those a {@code types} answer gave with it. */
   @Nullable
-  private JsonObject factOf(String id) {
-    JsonObject fact = facts.get(id);
+  private Fact factOf(String id) {
+    Fact fact = facts.get(id);
     return fact != null ? fact : projectMemberFacts.get(id);
   }
 
@@ -2316,15 +2338,13 @@ public final class JSema implements Sema {
     TYPED, ARITY, VARARGS
   }
 
-  private void fillMethod(JMethodSymbol method, @Nullable JsonObject fact, String id) {
+  private void fillMethod(JMethodSymbol method, @Nullable Fact fact, String id) {
     MemberId parsed = parseMember(id);
-    if (fact != null && fact.has("returns")) {
-      List<String> returns = flat(fact, "returns");
-      if (!returns.isEmpty()) {
-        method.returnTypeSymbol(typeFromName(returns.get(0)).symbol());
-      }
+    List<String> returns = fact == null ? List.of() : flat(fact.getReturnsList());
+    if (!returns.isEmpty()) {
+      method.returnTypeSymbol(typeFromName(returns.get(0)).symbol());
     }
-    List<String> factParams = fact == null ? List.of() : flat(fact, "params");
+    List<String> factParams = fact == null ? List.of() : flat(fact.getParamsList());
     if (!factParams.isEmpty() && (parsed == null || parsed.arityOnly || factParams.size() == parsed.arity)) {
       List<Type> types = new ArrayList<>();
       for (String param : factParams) {
@@ -2341,8 +2361,7 @@ public final class JSema implements Sema {
     if ("<init>".equals(method.name())) {
       method.returnTypeSymbol(primitiveSymbol("void"));
     }
-    JsonObject factProps = fact == null ? null : fact.getAsJsonObject("props");
-    List<String> declaredParams = factProps == null ? List.of() : flat(factProps, "param_types");
+    List<String> declaredParams = fact == null ? List.of() : flat(prop(fact, "param_types"));
     Boolean served = projectVarArgs.get(id);
     if (served != null) {
       method.varArgs(served);
@@ -2354,14 +2373,14 @@ public final class JSema implements Sema {
     method.parametrized(id.replace("<init>", "").replace("<clinit>", "").indexOf('<') >= 0);
   }
 
-  private void applyFact(JSymbol symbol, JsonObject fact) {
-    String kind = text(fact, "kind");
+  private void applyFact(JSymbol symbol, Fact fact) {
+    String kind = fact.getKind();
     if (symbol instanceof JTypeSymbol type) {
       boolean interfaceKind = "interface".equals(kind) || "annotation".equals(kind);
       type.interfaceSymbol(interfaceKind);
       type.annotationSymbol("annotation".equals(kind));
-      List<String> extend = strings(fact, "extends");
-      List<String> implement = strings(fact, "implements");
+      List<String> extend = fact.getExtendsList();
+      List<String> implement = fact.getImplementsList();
       type.enumSymbol("enum".equals(kind) || extend.stream().map(JSema::erase).anyMatch("java.lang.Enum"::equals));
       if (interfaceKind) {
         type.interfaceNames(extend.isEmpty() ? implement : extend);
@@ -2370,14 +2389,11 @@ public final class JSema implements Sema {
         type.interfaceNames(implement);
       }
     }
-    JsonObject props = fact.getAsJsonObject("props");
-    if (props != null) {
-      symbol.addModifiers(flat(props, "modifiers"));
-    }
+    symbol.addModifiers(flat(prop(fact, "modifiers")));
     if (symbol instanceof JTypeSymbol) {
-      symbol.addModifiers(implicitTypeModifiers(kind, text(fact, "parent")));
+      symbol.addModifiers(implicitTypeModifiers(kind, text(fact.getParent())));
     }
-    for (String annotation : strings(fact, ANNOTATIONS)) {
+    for (String annotation : fact.getAnnotationsList()) {
       if ("java.lang.Deprecated".equals(erase(annotation))) {
         symbol.deprecated(true);
       }
@@ -2392,7 +2408,7 @@ public final class JSema implements Sema {
    * Modifiers Java implies: member interfaces, enums, records and annotations are static; enums and records are
    * final (an enum constant with a body is not modelled).
    */
-  private List<String> implicitTypeModifiers(@Nullable String kind, @Nullable String parent) {
+  private List<String> implicitTypeModifiers(String kind, @Nullable String parent) {
     List<String> implied = new ArrayList<>();
     boolean member = parent != null && !parent.endsWith("::<module>") && facts.get(parent) != null
       && isTypeFact(facts.get(parent));
@@ -2405,8 +2421,8 @@ public final class JSema implements Sema {
     return implied;
   }
 
-  private static boolean isTypeFact(JsonObject fact) {
-    String kind = text(fact, "kind");
+  private static boolean isTypeFact(Fact fact) {
+    String kind = fact.getKind();
     return "class".equals(kind) || "interface".equals(kind) || "enum".equals(kind) || RECORD.equals(kind)
       || "annotation".equals(kind) || "exception".equals(kind);
   }
@@ -2488,18 +2504,11 @@ public final class JSema implements Sema {
     if (ARRAY.equals(kind) && fact.getAsJsonObject("elem") != null) {
       return JType.array(this, typeFromFact(fact.getAsJsonObject("elem"), substitution, captureWildcard));
     }
-    if ("wildcard".equals(kind)) {
+    if (WILDCARD.equals(kind)) {
       return wildcardFromFact(fact, substitution, captureWildcard);
     }
     if ("typevar".equals(kind)) {
-      String id = text(fact, "id");
-      Type substituted = substitution.get(id);
-      if (substituted != null) {
-        return asJType(substituted);
-      }
-      int open = id == null ? -1 : id.lastIndexOf('<');
-      String name = open >= 0 && id.endsWith(">") ? id.substring(open + 1, id.length() - 1) : id;
-      return JType.typeVar(this, name == null ? "" : name, id);
+      return typeVariable(text(fact, "id"), substitution);
     }
     if ("unknown".equals(kind)) {
       return JType.unknown(this);
@@ -2516,6 +2525,42 @@ public final class JSema implements Sema {
         }
       }
     }
+    return namedType(id, args, captureWildcard);
+  }
+
+  /** The type a document declares for a symbol; its wildcards are unbounded. */
+  private JType typeFromRef(TypeRef type) {
+    String kind = type.getKind();
+    if (ARRAY.equals(kind) && type.hasElement()) {
+      return JType.array(this, typeFromRef(type.getElement()));
+    }
+    if (WILDCARD.equals(kind)) {
+      return JType.wildcard(this, asJType(getClassType("java.lang.Object")));
+    }
+    if ("typevar".equals(kind)) {
+      return typeVariable(text(type.getId()), Map.of());
+    }
+    if ("unknown".equals(kind) || type.getId().isEmpty()) {
+      return JType.unknown(this);
+    }
+    List<JType> args = new ArrayList<>();
+    for (TypeRef argument : type.getArgumentsList()) {
+      args.add(typeFromRef(argument));
+    }
+    return namedType(type.getId(), args, false);
+  }
+
+  private JType typeVariable(@Nullable String id, Map<String, Type> substitution) {
+    Type substituted = substitution.get(id);
+    if (substituted != null) {
+      return asJType(substituted);
+    }
+    int open = id == null ? -1 : id.lastIndexOf('<');
+    String name = open >= 0 && id.endsWith(">") ? id.substring(open + 1, id.length() - 1) : id;
+    return JType.typeVar(this, name == null ? "" : name, id);
+  }
+
+  private JType namedType(String id, List<JType> args, boolean captureWildcard) {
     String erased = erase(id);
     if (PRIMITIVES.contains(erased)) {
       return primitiveType(erased);
@@ -2553,7 +2598,7 @@ public final class JSema implements Sema {
 
   private JType wildcardFromFact(JsonObject fact, Map<String, Type> substitution, boolean capture) {
     JType object = asJType(getClassType("java.lang.Object"));
-    JType upper = fact.get("extends") instanceof JsonObject bound ? typeFromFact(bound, substitution) : object;
+    JType upper = fact.get(EXTENDS) instanceof JsonObject bound ? typeFromFact(bound, substitution) : object;
     if (capture) {
       return JType.capture(this, upper.isUnknown() ? object : upper);
     }
@@ -2606,11 +2651,11 @@ public final class JSema implements Sema {
     String owner = name.substring(0, marker);
     int position = Integer.parseInt(name.substring(digits));
     int seen = 0;
-    for (Map.Entry<String, JsonObject> entry : dumpSymbols.entrySet()) {
+    for (Map.Entry<String, org.sonarsource.semsitter.wire.Symbol> entry : dumpSymbols.entrySet()) {
       String key = entry.getKey();
       String prefix = key.startsWith(owner + "<") ? owner : (key.startsWith(erase(owner) + "<") ? erase(owner) : null);
       boolean declared = prefix != null && key.length() > prefix.length() + 2 && key.endsWith(">")
-        && key.indexOf('<', prefix.length() + 1) < 0 && "type".equals(text(entry.getValue(), "kind"));
+        && key.indexOf('<', prefix.length() + 1) < 0 && "type".equals(entry.getValue().getKind());
       if (declared && seen++ == position) {
         if (resolve(key) instanceof JTypeSymbol variable && variable.isTypeParameter()) {
           if (variable.type().isUnknown()) {
@@ -2778,7 +2823,7 @@ public final class JSema implements Sema {
     typesByName.putIfAbsent(id, symbol);
     symbol.owner(resolve(parsed.owner + "#" + parsed.name.substring(0, lastSegment)));
     symbol.type(rawNamed(id));
-    JsonObject fact = facts.get(id);
+    Fact fact = facts.get(id);
     if (fact != null) {
       applyFact(symbol, fact);
     }
@@ -2886,6 +2931,22 @@ public final class JSema implements Sema {
     return element != null && element.isJsonPrimitive() ? element.getAsString() : null;
   }
 
+  @Nullable
+  private static String text(String value) {
+    return value.isEmpty() ? null : value;
+  }
+
+  /** The values of the last property named {@code name}, as a later key of a JSON object replaces an earlier one. */
+  private static List<String> prop(Fact fact, String name) {
+    List<String> values = List.of();
+    for (Prop prop : fact.getPropsList()) {
+      if (name.equals(prop.getName())) {
+        values = prop.getValuesList();
+      }
+    }
+    return values;
+  }
+
   private static boolean truth(JsonObject object, String key) {
     return object.has(key) && object.get(key).isJsonPrimitive() && object.get(key).getAsBoolean();
   }
@@ -2911,8 +2972,12 @@ public final class JSema implements Sema {
   }
 
   private static List<String> flat(JsonObject object, String key) {
+    return flat(strings(object, key));
+  }
+
+  private static List<String> flat(List<String> strings) {
     List<String> values = new ArrayList<>();
-    for (String value : strings(object, key)) {
+    for (String value : strings) {
       for (String part : value.split(",")) {
         if (!part.isBlank()) {
           values.add(part.trim());
