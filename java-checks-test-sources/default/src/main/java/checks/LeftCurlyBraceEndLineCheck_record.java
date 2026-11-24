@@ -35,3 +35,27 @@ record TestRecordSyntaxV3(Integer value)
   public static final String CONST_1 = "IDK";
   public static final String CONST_2 = "IDK";
 }
+
+record GenericPair<T>(T first,
+  T second) { // Compliant
+}
+
+record GenericPairWithMisplacedBrace<T>(T first,
+  T second)
+  { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+//^
+}
+
+record EmptyGenericRecord<T>(
+) { // Compliant
+}
+
+record GenericSerializableRecord<T>(T value)
+  implements java.io.Serializable { // Compliant
+}
+
+record GenericSerializableRecordWithMisplacedBrace<T>(T value)
+  implements java.io.Serializable
+  { // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+//^
+}

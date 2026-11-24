@@ -88,13 +88,13 @@ public abstract class LeftCurlyBraceBaseTreeVisitor extends BaseTreeVisitor impl
     if (superClass != null) {
       return getIdentifierToken(superClass);
     }
+    SyntaxToken recordCloseParenToken = classTree.recordCloseParenToken();
+    if (recordCloseParenToken != null) {
+      return recordCloseParenToken;
+    }
     TypeParameters typeParameters = classTree.typeParameters();
     if (!typeParameters.isEmpty()) {
       return typeParameters.closeBracketToken();
-    }
-    // JDK 16 records
-    if(classTree.recordCloseParenToken() != null) {
-      return classTree.recordCloseParenToken();
     }
     IdentifierTree simpleName = classTree.simpleName();
     if (simpleName != null) {
