@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
-import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -57,6 +56,7 @@ abstract class JSymbol implements Symbol {
   private boolean deprecated;
   private static final String PRIVATE = "private";
   private final Set<String> modifiers = new HashSet<>();
+  private SymbolMetadata metadata;
   private int hash;
 
   JSymbol(JSema sema, Kind kind, @Nullable String id, String name) {
@@ -286,7 +286,10 @@ abstract class JSymbol implements Symbol {
 
   @Override
   public final SymbolMetadata metadata() {
-    return Symbols.EMPTY_METADATA;
+    if (metadata == null) {
+      metadata = new JSymbolMetadata(this);
+    }
+    return metadata;
   }
 
   @Nullable

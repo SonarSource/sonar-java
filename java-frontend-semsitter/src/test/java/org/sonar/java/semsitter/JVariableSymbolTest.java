@@ -128,8 +128,19 @@ class JVariableSymbolTest {
     assertThat(metadata.symbolAnnotations()).isEmpty();
     assertThat(metadata.nullabilityData().isNonNull(SymbolMetadata.NullabilityLevel.PACKAGE, false, false)).isFalse();
     assertThat(metadata.nullabilityData(SymbolMetadata.NullabilityTarget.PARAMETER).isNullable(SymbolMetadata.NullabilityLevel.PACKAGE, false, false)).isFalse();
+    assertThat(metadata.nullabilityData()).isEqualTo(method.metadata().nullabilityData(SymbolMetadata.NullabilityTarget.PARAMETER));
     assertThat(metadata.findAnnotationTree(null)).isNull();
     assertThat(metadata.parametersMetadata()).isEmpty();
+  }
+
+  @Test
+  void parameter_placeholder_of_an_unknown_method_has_unknown_nullability() {
+    JSema sema = new JSema();
+    JMethodSymbol method = new JMethodSymbol(sema, null, "m");
+    method.unknown(true);
+    Symbol.VariableSymbol placeholder = (Symbol.VariableSymbol) sema.factTypes().parameterPlaceholder(method, 0, sema.primitiveType("int"));
+
+    assertThat(placeholder.metadata().nullabilityData()).isEqualTo(JSymbolMetadata.unknownNullabilityAt(SymbolMetadata.NullabilityLevel.VARIABLE));
   }
 
   private Optional<Object> constant(JSema sema, List<VariableTree> fields, String name, String... modifiers) {
