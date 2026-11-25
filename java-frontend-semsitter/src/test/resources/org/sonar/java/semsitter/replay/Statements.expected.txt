@@ -1,1 +1,1 @@
-FAILURE Unsupported construct: object_creation_expression
+FAILURE Unsupported construct: local_variable_declaration

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
@@ -34,6 +35,7 @@ import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
+import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.VarTypeTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.StaticInitializerTreeImpl;
@@ -69,6 +71,10 @@ import static org.sonar.java.semsitter.CstNodes.requiredField;
 /** Translates methods, fields, variables, initializers, modifiers and annotations. */
 final class MemberTranslator extends TranslatorPart {
 
+  private static final String DIMENSIONS = "dimensions";
+  private static final String SPREAD_PARAMETER = "spread_parameter";
+  private static final String VALUE = "value";
+
   MemberTranslator(TranslationState state) {
     super(state);
   }
@@ -76,7 +82,7 @@ final class MemberTranslator extends TranslatorPart {
   MethodTreeImpl method(CstNode node) {
     state.scopes.addFirst(new HashMap<>());
     CstNode typeNode = field(node, "type");
-    state.returnTargets.push(typeNode == null || field(node, "dimensions") != null ? Type.UNKNOWN : syntacticType(typeNode));
+    state.returnTargets.push(typeNode == null || field(node, DIMENSIONS) != null ? Type.UNKNOWN : syntacticType(typeNode));
     try {
       return methodInScope(node);
     } finally {
@@ -89,33 +95,11 @@ final class MemberTranslator extends TranslatorPart {
     // translated before the parameters and the body so that the bounds of the type parameters are known there
     CstNode typeParameters = field(node, "type_parameters");
     TypeParameterListTreeImpl typeParameterList = typeParameters == null ? null : typeTrees().typeParameters(typeParameters);
-    CstNode parameters = field(node, "parameters");
-    FormalParametersListTreeImpl formals = new FormalParametersListTreeImpl(
-      parameters == null ? null : token(required(parameters, "(")),
-      parameters == null ? null : token(required(parameters, ")")));
-    if (parameters != null) {
-      for (CstNode child : parameters.children()) {
-        if ("formal_parameter".equals(child.k()) || "spread_parameter".equals(child.k()) || "receiver_parameter".equals(child.k())) {
-          formals.add(variable(child));
-        } else if (",".equals(child.text())) {
-          ((VariableTreeImpl) formals.get(formals.size() - 1)).setEndToken(token(child));
-        }
-      }
-    }
+    FormalParametersListTreeImpl formals = formalParameters(field(node, "parameters"));
     CstNode body = field(node, "body");
     BlockTreeImpl block = body == null ? null : statements().block(body);
     CstNode typeNode = field(node, "type");
-    TypeTree returnType = null;
-    if (typeNode != null) {
-      TypeTree written = names().recoverQualifiedType(typeTrees().type(typeNode));
-      List<AnnotationTree> afterTypeParameters = node.children().stream().filter(CstNodes::isAnnotation).<AnnotationTree>map(this::annotation).toList();
-      TypeTree element = written;
-      while (element instanceof ArrayTypeTree array) {
-        element = array.type();
-      }
-      TypeTranslator.annotateLeftmost(element, afterTypeParameters);
-      returnType = typeTrees().arrayType(written, field(node, "dimensions"));
-    }
+    TypeTree returnType = typeNode == null ? null : returnType(node, typeNode);
     IdentifierTreeImpl name = names().identifier(requiredField(node, "name", firstOf(node, "identifier")));
     CstNode thrown = childKind(node, "throws");
     MethodTreeImpl tree = new MethodTreeImpl(
@@ -134,10 +118,37 @@ final class MemberTranslator extends TranslatorPart {
     return tree;
   }
 
+  private FormalParametersListTreeImpl formalParameters(@Nullable CstNode parameters) {
+    FormalParametersListTreeImpl formals = new FormalParametersListTreeImpl(
+      parameters == null ? null : token(required(parameters, "(")),
+      parameters == null ? null : token(required(parameters, ")")));
+    if (parameters != null) {
+      for (CstNode child : parameters.children()) {
+        if ("formal_parameter".equals(child.k()) || SPREAD_PARAMETER.equals(child.k()) || "receiver_parameter".equals(child.k())) {
+          formals.add(variable(child));
+        } else if (",".equals(child.text())) {
+          formals.get(formals.size() - 1).setEndToken(token(child));
+        }
+      }
+    }
+    return formals;
+  }
+
+  private TypeTree returnType(CstNode node, CstNode typeNode) {
+    TypeTree written = names().recoverQualifiedType(typeTrees().type(typeNode));
+    List<AnnotationTree> afterTypeParameters = node.children().stream().filter(CstNodes::isAnnotation).<AnnotationTree>map(this::annotation).toList();
+    TypeTree element = written;
+    while (element instanceof ArrayTypeTree array) {
+      element = array.type();
+    }
+    TypeTranslator.annotateLeftmost(element, afterTypeParameters);
+    return typeTrees().arrayType(written, field(node, DIMENSIONS));
+  }
+
   List<VariableTree> parameters(CstNode parameters) {
     List<VariableTreeImpl> trees = new ArrayList<>();
     for (CstNode child : parameters.children()) {
-      if ("formal_parameter".equals(child.k()) || "spread_parameter".equals(child.k())) {
+      if ("formal_parameter".equals(child.k()) || SPREAD_PARAMETER.equals(child.k())) {
         trees.add(variable(child));
       } else if (",".equals(child.text())) {
         trees.get(trees.size() - 1).setEndToken(token(child));
@@ -158,7 +169,7 @@ final class MemberTranslator extends TranslatorPart {
         // an unresolved qualified name of a local or a parameter is not typed by what is written
         ascribe(select, JType.unknown(sema));
       }
-    } else if ("spread_parameter".equals(declaration.k())) {
+    } else if (SPREAD_PARAMETER.equals(declaration.k())) {
       type = spreadType(declaration);
     } else {
       type = typeTrees().catchType(required(declaration, "catch_type"));
@@ -192,9 +203,10 @@ final class MemberTranslator extends TranslatorPart {
   private VariableTreeImpl declarator(CstNode node, ModifiersTreeImpl modifiers, TypeTree type) {
     IdentifierTreeImpl name = names().identifier(requiredField(node, "name", firstOf(node, "identifier")));
     VariableTreeImpl tree = new VariableTreeImpl(name).completeModifiersAndType(modifiers, applyDimensions(type, node));
-    CstNode value = field(node, "value");
+    CstNode value = field(node, VALUE);
     if (value != null) {
       ExpressionTree initializer = expressions().expression(value);
+      expressions().ascribeTarget(initializer, tree.type().symbolType());
       tree.completeTypeAndInitializer(tree.type(), token(required(node, "=")), initializer);
     }
     bindDeclaration(tree, nameNode(node), name);
@@ -211,7 +223,7 @@ final class MemberTranslator extends TranslatorPart {
   }
 
   private TypeTree applyDimensions(TypeTree type, CstNode node) {
-    CstNode dimensions = field(node, "dimensions");
+    CstNode dimensions = field(node, DIMENSIONS);
     if (dimensions == null) {
       return type;
     }
@@ -221,7 +233,8 @@ final class MemberTranslator extends TranslatorPart {
   BlockTreeImpl staticInitializer(CstNode node) {
     BlockTreeImpl block = statements().block(node);
     ownInitializerVariables(block, true);
-    return new StaticInitializerTreeImpl(token(required(node, "static")), (InternalSyntaxToken) block.openBraceToken(), block.body(), (InternalSyntaxToken) block.closeBraceToken());
+    return new StaticInitializerTreeImpl(token(required(node, "static")),
+      (InternalSyntaxToken) block.openBraceToken(), block.body(), (InternalSyntaxToken) block.closeBraceToken());
   }
 
   /** Variables declared in an initializer block belong to the block, not to the class. */
@@ -263,7 +276,7 @@ final class MemberTranslator extends TranslatorPart {
     IdentifierTreeImpl name = names().identifier(key);
     // An element name is never a local variable or a parameter of the same name.
     bindUse(name, key, true);
-    ExpressionTree value = expressions().expression(requiredField(node, "value", lastNamed(node)));
+    ExpressionTree value = expressions().expression(requiredField(node, VALUE, lastNamed(node)));
     AssignmentExpressionTreeImpl tree = new AssignmentExpressionTreeImpl(Tree.Kind.ASSIGNMENT, name, token(required(node, "=")), value);
     ascribe(tree, value.symbolType());
     return tree;
@@ -306,7 +319,32 @@ final class MemberTranslator extends TranslatorPart {
         }
       }
     }
+    typeArrayValues(type, arguments);
     return tree;
+  }
+
+  /** An array value of an annotation, {@code @A({x, y})}, has the type of the element it is given to. */
+  private void typeArrayValues(TypeTree type, ArgumentListTreeImpl arguments) {
+    if (!type.symbolType().isClass()) {
+      return;
+    }
+    for (ExpressionTree argument : arguments) {
+      String element = VALUE;
+      ExpressionTree value = argument;
+      if (argument instanceof AssignmentExpressionTreeImpl assignment && assignment.variable() instanceof IdentifierTreeImpl name) {
+        element = name.name();
+        value = assignment.expression();
+      }
+      Symbol.MethodSymbol method = value instanceof NewArrayTreeImpl array && array.type() == null
+        ? sema.lookup().declaredMethod(type.symbolType().fullyQualifiedName(), element, List.of())
+        : null;
+      if (method != null && method.returnType() != null) {
+        expressions().ascribeTarget(value, method.returnType().type());
+        if (argument instanceof AssignmentExpressionTreeImpl assignment) {
+          ascribe(assignment, value.symbolType());
+        }
+      }
+    }
   }
 
   List<AnnotationTree> annotations(CstNode node) {
