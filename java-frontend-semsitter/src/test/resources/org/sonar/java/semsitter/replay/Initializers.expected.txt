@@ -1,1 +1,1 @@
-FAILURE Unsupported construct: expression_statement
+FAILURE Unsupported construct: lambda_expression

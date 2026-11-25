@@ -1,1 +1,1 @@
-FAILURE Unsupported construct: return_statement
+FAILURE Unsupported construct: switch_expression

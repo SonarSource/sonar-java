@@ -1,1 +1,1095 @@
-FAILURE Unsupported construct: return_statement
+COMPILATION_UNIT @1:1
+IMPORT @1:1
+TOKEN @1:1
+MEMBER_SELECT @1:8 : ?
+MEMBER_SELECT @1:8 : ?
+IDENTIFIER @1:8 id java unknown : ?
+TOKEN @1:8
+TOKEN @1:12
+IDENTIFIER @1:13 id io unknown : ?
+TOKEN @1:13
+TOKEN @1:15
+IDENTIFIER @1:16 id Closeable unknown : ?
+TOKEN @1:16
+TOKEN @1:25
+IMPORT @2:1
+TOKEN @2:1
+MEMBER_SELECT @2:8 : ?
+MEMBER_SELECT @2:8 : ?
+IDENTIFIER @2:8 id java unknown : ?
+TOKEN @2:8
+TOKEN @2:12
+IDENTIFIER @2:13 id io unknown : ?
+TOKEN @2:13
+TOKEN @2:15
+IDENTIFIER @2:16 id IOException unknown : ?
+TOKEN @2:16
+TOKEN @2:27
+IMPORT @3:1
+TOKEN @3:1
+MEMBER_SELECT @3:8 : ?
+MEMBER_SELECT @3:8 : ?
+IDENTIFIER @3:8 id java unknown : ?
+TOKEN @3:8
+TOKEN @3:12
+IDENTIFIER @3:13 id util unknown : ?
+TOKEN @3:13
+TOKEN @3:17
+IDENTIFIER @3:18 id AbstractList unknown : ?
+TOKEN @3:18
+TOKEN @3:30
+IMPORT @4:1
+TOKEN @4:1
+MEMBER_SELECT @4:8 : ?
+MEMBER_SELECT @4:8 : ?
+IDENTIFIER @4:8 id java unknown : ?
+TOKEN @4:8
+TOKEN @4:12
+IDENTIFIER @4:13 id util unknown : ?
+TOKEN @4:13
+TOKEN @4:17
+IDENTIFIER @4:18 id Comparator unknown : ?
+TOKEN @4:18
+TOKEN @4:28
+IMPORT @5:1
+TOKEN @5:1
+MEMBER_SELECT @5:8 : ?
+MEMBER_SELECT @5:8 : ?
+IDENTIFIER @5:8 id java unknown : ?
+TOKEN @5:8
+TOKEN @5:12
+IDENTIFIER @5:13 id util unknown : ?
+TOKEN @5:13
+TOKEN @5:17
+IDENTIFIER @5:18 id Iterator unknown : ?
+TOKEN @5:18
+TOKEN @5:26
+IMPORT @6:1
+TOKEN @6:1
+MEMBER_SELECT @6:8 : ?
+MEMBER_SELECT @6:8 : ?
+IDENTIFIER @6:8 id java unknown : ?
+TOKEN @6:8
+TOKEN @6:12
+IDENTIFIER @6:13 id util unknown : ?
+TOKEN @6:13
+TOKEN @6:17
+IDENTIFIER @6:18 id List unknown : ?
+TOKEN @6:18
+TOKEN @6:22
+IMPORT @7:1
+TOKEN @7:1
+MEMBER_SELECT @7:8 : ?
+MEMBER_SELECT @7:8 : ?
+MEMBER_SELECT @7:8 : ?
+IDENTIFIER @7:8 id java unknown : ?
+TOKEN @7:8
+TOKEN @7:12
+IDENTIFIER @7:13 id util unknown : ?
+TOKEN @7:13
+TOKEN @7:17
+IDENTIFIER @7:18 id function unknown : ?
+TOKEN @7:18
+TOKEN @7:26
+IDENTIFIER @7:27 id Function unknown : ?
+TOKEN @7:27
+TOKEN @7:35
+CLASS @9:1 class .Inheritance [t package] : Inheritance super java.lang.Object interfaces []
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inheritance flags [package] members [<init>, Animal, Base, Dog, Mapper, Names, Puppy, use] lookupToString 0 outermost Inheritance annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring Inheritance
+MODIFIERS
+TOKEN @9:1
+IDENTIFIER @9:7 id Inheritance .Inheritance [t package] : Inheritance : Inheritance
+TOKEN @9:7
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @9:19
+INTERFACE @11:3 class Inheritance.Animal [t static package interface] : Inheritance$Animal super java.lang.Object interfaces [java.lang.Comparable<Inheritance$Animal>]
+  details declared true usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inheritance flags [static, package, interface] members [compareTo, greet, name] lookupToString 0 outermost Inheritance annotation false subtypeOf [java.lang.Object, java.lang.Comparable] superTypes [java.lang.Comparable<Inheritance$Animal>, java.lang.Object] numerical false wrapper false raw false declaring Animal
+MODIFIERS
+TOKEN @11:3
+IDENTIFIER @11:13 id Animal Inheritance.Animal [t static package interface] : Inheritance$Animal : Inheritance$Animal
+TOKEN @11:13
+TYPE_PARAMETERS
+TOKEN @11:20
+LIST @11:28
+PARAMETERIZED_TYPE @11:28 : java.lang.Comparable<Inheritance$Animal>
+IDENTIFIER @11:28 id Comparable java.lang.Comparable [t public interface] : java.lang.Comparable<Inheritance$Animal> : java.lang.Comparable<Inheritance$Animal>
+TOKEN @11:28
+TYPE_ARGUMENTS @11:38
+TOKEN @11:38
+IDENTIFIER @11:39 id Animal Inheritance.Animal [t static package interface] : Inheritance$Animal : Inheritance$Animal
+TOKEN @11:39
+TOKEN @11:45
+LIST
+TOKEN @11:47
+METHOD @12:5 method Animal.name [m abstract public] : ? () returns java.lang.String throws [] sig Inheritance$Animal#name()Ljava/lang/String; overrides false
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Animal flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+IDENTIFIER @12:5 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @12:5
+IDENTIFIER @12:12 id name Animal.name [m abstract public] : ? () returns java.lang.String throws [] sig Inheritance$Animal#name()Ljava/lang/String; : java.lang.String
+TOKEN @12:12
+TOKEN @12:16
+TOKEN @12:17
+TOKEN @12:18
+METHOD @14:5 method Animal.greet [m public] : ? () returns java.lang.String throws [] sig Inheritance$Animal#greet()Ljava/lang/String; overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Animal flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS @14:5
+TOKEN @14:5
+TYPE_PARAMETERS
+IDENTIFIER @14:13 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @14:13
+IDENTIFIER @14:20 id greet Animal.greet [m public] : ? () returns java.lang.String throws [] sig Inheritance$Animal#greet()Ljava/lang/String; : java.lang.String
+TOKEN @14:20
+TOKEN @14:25
+TOKEN @14:26
+BLOCK @14:28
+TOKEN @14:28
+RETURN_STATEMENT @15:7
+TOKEN @15:7
+PLUS @15:14 : java.lang.String
+STRING_LITERAL @15:14 : java.lang.String = I am 
+TOKEN @15:14
+TOKEN @15:22
+METHOD_INVOCATION @15:24 call Animal.name [m abstract public] : ? () returns java.lang.String throws [] sig Inheritance$Animal#name()Ljava/lang/String; : java.lang.String
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Animal flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+IDENTIFIER @15:24 id name Animal.name [m abstract public] : ? () returns java.lang.String throws [] sig Inheritance$Animal#name()Ljava/lang/String; : java.lang.String
+TOKEN @15:24
+ARGUMENTS @15:28
+TOKEN @15:28
+TOKEN @15:29
+TOKEN @15:30
+TOKEN @16:5
+METHOD @18:5 method Animal.compareTo [m public] : ? (Inheritance$Animal) returns int throws [] sig Inheritance$Animal#compareTo(LInheritance$Animal;)I overrides true
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Animal flags [public] overridden [Comparable.compareTo[]] overridable true generic false default true synchronized false varargs false native false parameters [other] parameterMetadata []
+MODIFIERS @18:5
+ANNOTATION @18:5 : java.lang.Override
+TOKEN @18:5
+IDENTIFIER @18:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+TOKEN @18:6
+ARGUMENTS
+TOKEN @19:5
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @19:13 : int
+TOKEN @19:13
+IDENTIFIER @19:17 id compareTo Animal.compareTo [m public] : ? (Inheritance$Animal) returns int throws [] sig Inheritance$Animal#compareTo(LInheritance$Animal;)I : int
+TOKEN @19:17
+TOKEN @19:26
+VARIABLE @19:27 var compareTo.other [v package] : Inheritance$Animal
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Animal flags [package] local true parameter true effectivelyFinal true constant null owner compareTo Inheritance$Animal#compareTo(LInheritance$Animal;)I [public] returns int parameters 1 thrown 0 overridden 1 declared true usages 1 metadata 0 enclosing Animal type true kinds truefalsefalse other truefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @19:27 id Animal Inheritance.Animal [t static package interface] : Inheritance$Animal : Inheritance$Animal
+TOKEN @19:27
+IDENTIFIER @19:34 id other compareTo.other [v package] : Inheritance$Animal : Inheritance$Animal
+TOKEN @19:34
+TOKEN @19:39
+BLOCK @19:41
+TOKEN @19:41
+RETURN_STATEMENT @20:7
+TOKEN @20:7
+METHOD_INVOCATION @20:14 call String.compareTo [m public] : ? (java.lang.String) returns int throws [] sig java.lang.String#compareTo(Ljava/lang/String;)I : int
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [Comparable.compareTo[]] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @20:14 : ?
+METHOD_INVOCATION @20:14 call Animal.name [m abstract public] : ? () returns java.lang.String throws [] sig Inheritance$Animal#name()Ljava/lang/String; : java.lang.String
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Animal flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+IDENTIFIER @20:14 id name Animal.name [m abstract public] : ? () returns java.lang.String throws [] sig Inheritance$Animal#name()Ljava/lang/String; : java.lang.String
+TOKEN @20:14
+ARGUMENTS @20:18
+TOKEN @20:18
+TOKEN @20:19
+TOKEN @20:20
+IDENTIFIER @20:21 id compareTo String.compareTo [m public] : ? (java.lang.String) returns int throws [] sig java.lang.String#compareTo(Ljava/lang/String;)I : int
+TOKEN @20:21
+ARGUMENTS @20:30
+TOKEN @20:30
+METHOD_INVOCATION @20:31 call Animal.name [m abstract public] : ? () returns java.lang.String throws [] sig Inheritance$Animal#name()Ljava/lang/String; : java.lang.String
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Animal flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @20:31 : ?
+IDENTIFIER @20:31 id other compareTo.other [v package] : Inheritance$Animal : Inheritance$Animal
+TOKEN @20:31
+TOKEN @20:36
+IDENTIFIER @20:37 id name Animal.name [m abstract public] : ? () returns java.lang.String throws [] sig Inheritance$Animal#name()Ljava/lang/String; : java.lang.String
+TOKEN @20:37
+ARGUMENTS @20:41
+TOKEN @20:41
+TOKEN @20:42
+TOKEN @20:43
+TOKEN @20:44
+TOKEN @21:5
+TOKEN @22:3
+CLASS @24:3 class Inheritance.Base [t static abstract package] : Inheritance$Base super java.lang.Object interfaces [Inheritance$Animal, java.io.Closeable]
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inheritance flags [static, abstract, package] members [<init>, close, equals, hashCode, legs, move, name] lookupToString 0 outermost Inheritance annotation false subtypeOf [java.lang.Object, java.lang.Comparable] superTypes [Inheritance$Animal, java.io.Closeable, java.lang.AutoCloseable, java.lang.Comparable<Inheritance$Animal>, java.lang.Object] numerical false wrapper false raw false declaring Base
+MODIFIERS @24:3
+TOKEN @24:3
+TOKEN @24:12
+TOKEN @24:19
+IDENTIFIER @24:25 id Base Inheritance.Base [t static abstract package] : Inheritance$Base : Inheritance$Base
+TOKEN @24:25
+TYPE_PARAMETERS
+TOKEN @24:30
+LIST @24:41
+IDENTIFIER @24:41 id Animal Inheritance.Animal [t static package interface] : Inheritance$Animal : Inheritance$Animal
+TOKEN @24:41
+TOKEN @24:47
+IDENTIFIER @24:49 id Closeable java.io.Closeable [t public interface] : java.io.Closeable : java.io.Closeable
+TOKEN @24:49
+LIST
+TOKEN @24:59
+VARIABLE @25:5 var Base.legs [v protected] : int
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Base flags [protected] local false parameter false effectivelyFinal false constant null
+MODIFIERS @25:5
+TOKEN @25:5
+PRIMITIVE_TYPE @25:15 : int
+TOKEN @25:15
+IDENTIFIER @25:19 id legs Base.legs [v protected] : int : int
+TOKEN @25:19
+TOKEN @25:23
+METHOD @27:5 method Base.move [m abstract protected] : ? () returns void throws [] sig Inheritance$Base#move()V overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Base flags [abstract, protected] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS @27:5
+TOKEN @27:5
+TOKEN @27:15
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @27:24 : void
+TOKEN @27:24
+IDENTIFIER @27:29 id move Base.move [m abstract protected] : ? () returns void throws [] sig Inheritance$Base#move()V : void
+TOKEN @27:29
+TOKEN @27:33
+TOKEN @27:34
+TOKEN @27:35
+METHOD @29:5 method Base.name [m public] : ? () returns java.lang.String throws [] sig Inheritance$Base#name()Ljava/lang/String; overrides true
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Base flags [public] overridden [Animal.name[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS @29:5
+ANNOTATION @29:5 : java.lang.Override
+TOKEN @29:5
+IDENTIFIER @29:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+TOKEN @29:6
+ARGUMENTS
+TOKEN @30:5
+TYPE_PARAMETERS
+IDENTIFIER @30:12 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @30:12
+IDENTIFIER @30:19 id name Base.name [m public] : ? () returns java.lang.String throws [] sig Inheritance$Base#name()Ljava/lang/String; : java.lang.String
+TOKEN @30:19
+TOKEN @30:23
+TOKEN @30:24
+BLOCK @30:26
+TOKEN @30:26
+RETURN_STATEMENT @31:7
+TOKEN @31:7
+METHOD_INVOCATION @31:14 call Class.getSimpleName [m public] : ? () returns java.lang.String throws [] sig java.lang.Class#getSimpleName()Ljava/lang/String; : java.lang.String
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Class flags [public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @31:14 : ?
+METHOD_INVOCATION @31:14 call Object.getClass [m final public] : ? () returns java.lang.Class<Inheritance$Base> throws [] sig java.lang.Object#getClass()Ljava/lang/Class; : java.lang.Class<Inheritance$Base>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Object flags [final, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+IDENTIFIER @31:14 id getClass Object.getClass [m final public] : ? () returns java.lang.Class<Inheritance$Base> throws [] sig java.lang.Object#getClass()Ljava/lang/Class; : java.lang.Class<Inheritance$Base>
+TOKEN @31:14
+ARGUMENTS @31:22
+TOKEN @31:22
+TOKEN @31:23
+TOKEN @31:24
+IDENTIFIER @31:25 id getSimpleName Class.getSimpleName [m public] : ? () returns java.lang.String throws [] sig java.lang.Class#getSimpleName()Ljava/lang/String; : java.lang.String
+TOKEN @31:25
+ARGUMENTS @31:38
+TOKEN @31:38
+TOKEN @31:39
+TOKEN @31:40
+TOKEN @32:5
+METHOD @34:5 method Base.close [m public] : ? () returns void throws [java.io.IOException] sig Inheritance$Base#close()V overrides true
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Base flags [public] overridden [Closeable.close[], AutoCloseable.close[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS @34:5
+ANNOTATION @34:5 : java.lang.Override
+TOKEN @34:5
+IDENTIFIER @34:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+TOKEN @34:6
+ARGUMENTS
+TOKEN @35:5
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @35:12 : void
+TOKEN @35:12
+IDENTIFIER @35:17 id close Base.close [m public] : ? () returns void throws [java.io.IOException] sig Inheritance$Base#close()V : void
+TOKEN @35:17
+TOKEN @35:22
+TOKEN @35:23
+TOKEN @35:25
+LIST @35:32
+IDENTIFIER @35:32 id IOException java.io.IOException [t public] : java.io.IOException : java.io.IOException
+TOKEN @35:32
+BLOCK @35:44
+TOKEN @35:44
+TOKEN @36:5
+METHOD @38:5 method Base.equals [m public] : ? (java.lang.Object) returns boolean throws [] sig Inheritance$Base#equals(Ljava/lang/Object;)Z overrides true
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Base flags [public] overridden [Object.equals[]] overridable true generic false default false synchronized false varargs false native false parameters [other] parameterMetadata []
+MODIFIERS @38:5
+ANNOTATION @38:5 : java.lang.Override
+TOKEN @38:5
+IDENTIFIER @38:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+TOKEN @38:6
+ARGUMENTS
+TOKEN @39:5
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @39:12 : boolean
+TOKEN @39:12
+IDENTIFIER @39:20 id equals Base.equals [m public] : ? (java.lang.Object) returns boolean throws [] sig Inheritance$Base#equals(Ljava/lang/Object;)Z : boolean
+TOKEN @39:20
+TOKEN @39:26
+VARIABLE @39:27 var equals.other [v package] : java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Base flags [package] local true parameter true effectivelyFinal true constant null owner equals Inheritance$Base#equals(Ljava/lang/Object;)Z [public] returns boolean parameters 1 thrown 0 overridden 1 declared true usages 0 metadata 0 enclosing Base type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @39:27 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @39:27
+IDENTIFIER @39:34 id other equals.other [v package] : java.lang.Object : java.lang.Object
+TOKEN @39:34
+TOKEN @39:39
+BLOCK @39:41
+TOKEN @39:41
+RETURN_STATEMENT @40:7
+TOKEN @40:7
+METHOD_INVOCATION @40:14 call Object.equals [m public] : ? (java.lang.Object) returns boolean throws [] sig java.lang.Object#equals(Ljava/lang/Object;)Z : boolean
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Object flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @40:14 : ?
+IDENTIFIER @40:14 id super Base.super [v final] : java.lang.Object : java.lang.Object
+TOKEN @40:14
+TOKEN @40:19
+IDENTIFIER @40:20 id equals Object.equals [m public] : ? (java.lang.Object) returns boolean throws [] sig java.lang.Object#equals(Ljava/lang/Object;)Z : boolean
+TOKEN @40:20
+ARGUMENTS @40:26
+TOKEN @40:26
+IDENTIFIER @40:27 id other equals.other [v package] : java.lang.Object : java.lang.Object
+TOKEN @40:27
+TOKEN @40:32
+TOKEN @40:33
+TOKEN @41:5
+METHOD @43:5 method Base.hashCode [m public] : ? () returns int throws [] sig Inheritance$Base#hashCode()I overrides true
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Base flags [public] overridden [Object.hashCode[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS @43:5
+ANNOTATION @43:5 : java.lang.Override
+TOKEN @43:5
+IDENTIFIER @43:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+TOKEN @43:6
+ARGUMENTS
+TOKEN @44:5
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @44:12 : int
+TOKEN @44:12
+IDENTIFIER @44:16 id hashCode Base.hashCode [m public] : ? () returns int throws [] sig Inheritance$Base#hashCode()I : int
+TOKEN @44:16
+TOKEN @44:24
+TOKEN @44:25
+BLOCK @44:27
+TOKEN @44:27
+RETURN_STATEMENT @45:7
+TOKEN @45:7
+IDENTIFIER @45:14 id legs Base.legs [v protected] : int : int
+TOKEN @45:14
+TOKEN @45:18
+TOKEN @46:5
+TOKEN @47:3
+CLASS @49:3 class Inheritance.Dog [t static package] : Inheritance$Dog super Inheritance$Base interfaces []
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inheritance flags [static, package] members [<init>, greet, move, toString] lookupToString 1 outermost Inheritance annotation false subtypeOf [java.lang.Object, java.lang.Comparable] superTypes [Inheritance$Animal, Inheritance$Base, java.io.Closeable, java.lang.AutoCloseable, java.lang.Comparable<Inheritance$Animal>, java.lang.Object] numerical false wrapper false raw false declaring Dog
+MODIFIERS @49:3
+TOKEN @49:3
+TOKEN @49:10
+IDENTIFIER @49:16 id Dog Inheritance.Dog [t static package] : Inheritance$Dog : Inheritance$Dog
+TOKEN @49:16
+TYPE_PARAMETERS
+TOKEN @49:20
+IDENTIFIER @49:28 id Base Inheritance.Base [t static abstract package] : Inheritance$Base : Inheritance$Base
+TOKEN @49:28
+LIST
+LIST
+TOKEN @49:33
+METHOD @50:5 method Dog.move [m protected] : ? () returns void throws [] sig Inheritance$Dog#move()V overrides true
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Dog flags [protected] overridden [Base.move[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS @50:5
+ANNOTATION @50:5 : java.lang.Override
+TOKEN @50:5
+IDENTIFIER @50:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+TOKEN @50:6
+ARGUMENTS
+TOKEN @51:5
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @51:15 : void
+TOKEN @51:15
+IDENTIFIER @51:20 id move Dog.move [m protected] : ? () returns void throws [] sig Inheritance$Dog#move()V : void
+TOKEN @51:20
+TOKEN @51:24
+TOKEN @51:25
+BLOCK @51:27
+TOKEN @51:27
+EXPRESSION_STATEMENT @52:7
+ASSIGNMENT @52:7 : int
+IDENTIFIER @52:7 id legs Base.legs [v protected] : int : int
+TOKEN @52:7
+TOKEN @52:12
+INT_LITERAL @52:14 : int = 4
+TOKEN @52:14
+TOKEN @52:15
+TOKEN @53:5
+METHOD @55:5 method Dog.greet [m public] : ? () returns java.lang.String throws [] sig Inheritance$Dog#greet()Ljava/lang/String; overrides true
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Dog flags [public] overridden [Animal.greet[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS @55:5
+ANNOTATION @55:5 : java.lang.Override
+TOKEN @55:5
+IDENTIFIER @55:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+TOKEN @55:6
+ARGUMENTS
+TOKEN @56:5
+TYPE_PARAMETERS
+IDENTIFIER @56:12 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @56:12
+IDENTIFIER @56:19 id greet Dog.greet [m public] : ? () returns java.lang.String throws [] sig Inheritance$Dog#greet()Ljava/lang/String; : java.lang.String
+TOKEN @56:19
+TOKEN @56:24
+TOKEN @56:25
+BLOCK @56:27
+TOKEN @56:27
+RETURN_STATEMENT @57:7
+TOKEN @57:7
+PLUS @57:14 : java.lang.String
+STRING_LITERAL @57:14 : java.lang.String = Woof 
+TOKEN @57:14
+TOKEN @57:22
+METHOD_INVOCATION @57:24 call Animal.greet [m public] : ? () returns java.lang.String throws [] sig Inheritance$Animal#greet()Ljava/lang/String; : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Animal flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @57:24 : ?
+IDENTIFIER @57:24 id super Dog.super [v final] : Inheritance$Base : Inheritance$Base
+TOKEN @57:24
+TOKEN @57:29
+IDENTIFIER @57:30 id greet Animal.greet [m public] : ? () returns java.lang.String throws [] sig Inheritance$Animal#greet()Ljava/lang/String; : java.lang.String
+TOKEN @57:30
+ARGUMENTS @57:35
+TOKEN @57:35
+TOKEN @57:36
+TOKEN @57:37
+TOKEN @58:5
+METHOD @60:5 method Dog.toString [m public] : ? () returns java.lang.String throws [] sig Inheritance$Dog#toString()Ljava/lang/String; overrides true
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Dog flags [public] overridden [Object.toString[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS @60:5
+ANNOTATION @60:5 : java.lang.Override
+TOKEN @60:5
+IDENTIFIER @60:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+TOKEN @60:6
+ARGUMENTS
+TOKEN @61:5
+TYPE_PARAMETERS
+IDENTIFIER @61:12 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @61:12
+IDENTIFIER @61:19 id toString Dog.toString [m public] : ? () returns java.lang.String throws [] sig Inheritance$Dog#toString()Ljava/lang/String; : java.lang.String
+TOKEN @61:19
+TOKEN @61:27
+TOKEN @61:28
+BLOCK @61:30
+TOKEN @61:30
+RETURN_STATEMENT @62:7
+TOKEN @62:7
+METHOD_INVOCATION @62:14 call Base.name [m public] : ? () returns java.lang.String throws [] sig Inheritance$Base#name()Ljava/lang/String; : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Base flags [public] overridden [Animal.name[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+IDENTIFIER @62:14 id name Base.name [m public] : ? () returns java.lang.String throws [] sig Inheritance$Base#name()Ljava/lang/String; : java.lang.String
+TOKEN @62:14
+ARGUMENTS @62:18
+TOKEN @62:18
+TOKEN @62:19
+TOKEN @62:20
+TOKEN @63:5
+TOKEN @64:3
+CLASS @66:3 class Inheritance.Puppy [t static final package] : Inheritance$Puppy super Inheritance$Dog interfaces []
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inheritance flags [static, final, package] members [<init>, move] lookupToString 0 outermost Inheritance annotation false subtypeOf [java.lang.Object, java.lang.Comparable] superTypes [Inheritance$Animal, Inheritance$Base, Inheritance$Dog, java.io.Closeable, java.lang.AutoCloseable, java.lang.Comparable<Inheritance$Animal>, java.lang.Object] numerical false wrapper false raw false declaring Puppy
+MODIFIERS @66:3
+TOKEN @66:3
+TOKEN @66:10
+TOKEN @66:16
+IDENTIFIER @66:22 id Puppy Inheritance.Puppy [t static final package] : Inheritance$Puppy : Inheritance$Puppy
+TOKEN @66:22
+TYPE_PARAMETERS
+TOKEN @66:28
+IDENTIFIER @66:36 id Dog Inheritance.Dog [t static package] : Inheritance$Dog : Inheritance$Dog
+TOKEN @66:36
+LIST
+LIST
+TOKEN @66:40
+METHOD @67:5 method Puppy.move [m protected] : ? () returns void throws [] sig Inheritance$Puppy#move()V overrides true
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Puppy flags [protected] overridden [Dog.move[], Base.move[]] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS @67:5
+ANNOTATION @67:5 : java.lang.Override
+TOKEN @67:5
+IDENTIFIER @67:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+TOKEN @67:6
+ARGUMENTS
+TOKEN @68:5
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @68:15 : void
+TOKEN @68:15
+IDENTIFIER @68:20 id move Puppy.move [m protected] : ? () returns void throws [] sig Inheritance$Puppy#move()V : void
+TOKEN @68:20
+TOKEN @68:24
+TOKEN @68:25
+BLOCK @68:27
+TOKEN @68:27
+EXPRESSION_STATEMENT @69:7
+METHOD_INVOCATION @69:7 call Dog.move [m protected] : ? () returns void throws [] sig Inheritance$Dog#move()V : void
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Dog flags [protected] overridden [Base.move[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @69:7 : ?
+IDENTIFIER @69:7 id super Puppy.super [v final] : Inheritance$Dog : Inheritance$Dog
+TOKEN @69:7
+TOKEN @69:12
+IDENTIFIER @69:13 id move Dog.move [m protected] : ? () returns void throws [] sig Inheritance$Dog#move()V : void
+TOKEN @69:13
+ARGUMENTS @69:17
+TOKEN @69:17
+TOKEN @69:18
+TOKEN @69:19
+TOKEN @70:5
+TOKEN @71:3
+CLASS @73:3 class Inheritance.Names [t static package] : Inheritance$Names super java.util.AbstractList<java.lang.String> interfaces []
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inheritance flags [static, package] members [<init>, get, iterator, size] lookupToString 0 outermost Inheritance annotation false subtypeOf [java.lang.Object, java.util.Collection] superTypes [java.lang.Iterable<java.lang.String>, java.lang.Object, java.util.AbstractCollection<java.lang.String>, java.util.AbstractList<java.lang.String>, java.util.Collection<java.lang.String>, java.util.List<java.lang.String>, java.util.SequencedCollection<java.lang.String>] numerical false wrapper false raw false declaring Names
+MODIFIERS @73:3
+TOKEN @73:3
+TOKEN @73:10
+IDENTIFIER @73:16 id Names Inheritance.Names [t static package] : Inheritance$Names : Inheritance$Names
+TOKEN @73:16
+TYPE_PARAMETERS
+TOKEN @73:22
+PARAMETERIZED_TYPE @73:30 : java.util.AbstractList<java.lang.String>
+IDENTIFIER @73:30 id AbstractList java.util.AbstractList [t abstract public] : java.util.AbstractList<java.lang.String> : java.util.AbstractList<java.lang.String>
+TOKEN @73:30
+TYPE_ARGUMENTS @73:42
+TOKEN @73:42
+IDENTIFIER @73:43 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @73:43
+TOKEN @73:49
+LIST
+LIST
+TOKEN @73:51
+METHOD @74:5 method Names.get [m public] : ? (int) returns java.lang.String throws [] sig Inheritance$Names#get(I)Ljava/lang/String; overrides true
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Names flags [public] overridden [AbstractList.get[], List.get[]] overridable true generic false default false synchronized false varargs false native false parameters [index] parameterMetadata []
+MODIFIERS @74:5
+ANNOTATION @74:5 : java.lang.Override
+TOKEN @74:5
+IDENTIFIER @74:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+TOKEN @74:6
+ARGUMENTS
+TOKEN @75:5
+TYPE_PARAMETERS
+IDENTIFIER @75:12 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @75:12
+IDENTIFIER @75:19 id get Names.get [m public] : ? (int) returns java.lang.String throws [] sig Inheritance$Names#get(I)Ljava/lang/String; : java.lang.String
+TOKEN @75:19
+TOKEN @75:22
+VARIABLE @75:23 var get.index [v package] : int
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Names flags [package] local true parameter true effectivelyFinal true constant null owner get Inheritance$Names#get(I)Ljava/lang/String; [public] returns java.lang.String parameters 1 thrown 0 overridden 2 declared true usages 1 metadata 0 enclosing Names type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @75:23 : int
+TOKEN @75:23
+IDENTIFIER @75:27 id index get.index [v package] : int : int
+TOKEN @75:27
+TOKEN @75:32
+BLOCK @75:34
+TOKEN @75:34
+RETURN_STATEMENT @76:7
+TOKEN @76:7
+PLUS @76:14 : java.lang.String
+STRING_LITERAL @76:14 : java.lang.String = n
+TOKEN @76:14
+TOKEN @76:18
+IDENTIFIER @76:20 id index get.index [v package] : int : int
+TOKEN @76:20
+TOKEN @76:25
+TOKEN @77:5
+METHOD @79:5 method Names.size [m public] : ? () returns int throws [] sig Inheritance$Names#size()I overrides true
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Names flags [public] overridden [AbstractCollection.size[], Collection.size[], List.size[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS @79:5
+ANNOTATION @79:5 : java.lang.Override
+TOKEN @79:5
+IDENTIFIER @79:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+TOKEN @79:6
+ARGUMENTS
+TOKEN @80:5
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @80:12 : int
+TOKEN @80:12
+IDENTIFIER @80:16 id size Names.size [m public] : ? () returns int throws [] sig Inheritance$Names#size()I : int
+TOKEN @80:16
+TOKEN @80:20
+TOKEN @80:21
+BLOCK @80:23
+TOKEN @80:23
+RETURN_STATEMENT @81:7
+TOKEN @81:7
+INT_LITERAL @81:14 : int = 3
+TOKEN @81:14
+TOKEN @81:15
+TOKEN @82:5
+METHOD @84:5 method Names.iterator [m public] : ? () returns java.util.Iterator<java.lang.String> throws [] sig Inheritance$Names#iterator()Ljava/util/Iterator; overrides true
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Names flags [public] overridden [AbstractList.iterator[], AbstractCollection.iterator[], Collection.iterator[], Iterable.iterator[], List.iterator[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS @84:5
+ANNOTATION @84:5 : java.lang.Override
+TOKEN @84:5
+IDENTIFIER @84:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+TOKEN @84:6
+ARGUMENTS
+TOKEN @85:5
+TYPE_PARAMETERS
+PARAMETERIZED_TYPE @85:12 : java.util.Iterator<java.lang.String>
+IDENTIFIER @85:12 id Iterator java.util.Iterator [t public interface] : java.util.Iterator<java.lang.String> : java.util.Iterator<java.lang.String>
+TOKEN @85:12
+TYPE_ARGUMENTS @85:20
+TOKEN @85:20
+IDENTIFIER @85:21 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @85:21
+TOKEN @85:27
+IDENTIFIER @85:29 id iterator Names.iterator [m public] : ? () returns java.util.Iterator<java.lang.String> throws [] sig Inheritance$Names#iterator()Ljava/util/Iterator; : java.util.Iterator<java.lang.String>
+TOKEN @85:29
+TOKEN @85:37
+TOKEN @85:38
+BLOCK @85:40
+TOKEN @85:40
+RETURN_STATEMENT @86:7
+TOKEN @86:7
+METHOD_INVOCATION @86:14 call AbstractList.iterator [m public] : ? () returns java.util.Iterator<E erasure java.lang.Object> throws [] sig java.util.AbstractList#iterator()Ljava/util/Iterator; : java.util.Iterator<E erasure java.lang.Object>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing AbstractList flags [public] overridden [AbstractCollection.iterator[], Collection.iterator[], Iterable.iterator[], List.iterator[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @86:14 : ?
+IDENTIFIER @86:14 id super Names.super [v final] : java.util.AbstractList<java.lang.String> : java.util.AbstractList<java.lang.String>
+TOKEN @86:14
+TOKEN @86:19
+IDENTIFIER @86:20 id iterator AbstractList.iterator [m public] : ? () returns java.util.Iterator<E erasure java.lang.Object> throws [] sig java.util.AbstractList#iterator()Ljava/util/Iterator; : java.util.Iterator<E erasure java.lang.Object>
+TOKEN @86:20
+ARGUMENTS @86:28
+TOKEN @86:28
+TOKEN @86:29
+TOKEN @86:30
+TOKEN @87:5
+TOKEN @88:3
+CLASS @90:3 class Inheritance.Mapper [t static package] : Inheritance$Mapper super java.lang.Object interfaces [java.util.function.Function<T erasure java.lang.Object,java.lang.String>, java.util.Comparator<T erasure java.lang.Object>]
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inheritance flags [static, package] members [<init>, apply, compare] lookupToString 0 outermost Inheritance annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object, java.util.Comparator<T erasure java.lang.Object>, java.util.function.Function<T erasure java.lang.Object,java.lang.String>] numerical false wrapper false raw true declaring Mapper
+MODIFIERS @90:3
+TOKEN @90:3
+TOKEN @90:10
+IDENTIFIER @90:16 id Mapper Inheritance.Mapper [t static package] : Inheritance$Mapper : Inheritance$Mapper
+TOKEN @90:16
+TYPE_PARAMETERS @90:22
+TOKEN @90:22
+TYPE_PARAMETER @90:23
+IDENTIFIER @90:23 id T Mapper.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @90:23
+TOKEN @90:24
+TOKEN @90:26
+LIST @90:37
+PARAMETERIZED_TYPE @90:37 : java.util.function.Function<T erasure java.lang.Object,java.lang.String>
+IDENTIFIER @90:37 id Function java.util.function.Function [t public interface] : java.util.function.Function<T erasure java.lang.Object,java.lang.String> : java.util.function.Function<T erasure java.lang.Object,java.lang.String>
+TOKEN @90:37
+TYPE_ARGUMENTS @90:45
+TOKEN @90:45
+IDENTIFIER @90:46 id T Mapper.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @90:46
+TOKEN @90:47
+IDENTIFIER @90:49 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @90:49
+TOKEN @90:55
+TOKEN @90:56
+PARAMETERIZED_TYPE @90:58 : java.util.Comparator<T erasure java.lang.Object>
+IDENTIFIER @90:58 id Comparator java.util.Comparator [t public interface] : java.util.Comparator<T erasure java.lang.Object> : java.util.Comparator<T erasure java.lang.Object>
+TOKEN @90:58
+TYPE_ARGUMENTS @90:68
+TOKEN @90:68
+IDENTIFIER @90:69 id T Mapper.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @90:69
+TOKEN @90:70
+LIST
+TOKEN @90:72
+METHOD @91:5 method Mapper.apply [m public] : ? (T erasure java.lang.Object) returns java.lang.String throws [] sig Inheritance$Mapper#apply(Ljava/lang/Object;)Ljava/lang/String; overrides true
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Mapper flags [public] overridden [Function.apply[]] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+MODIFIERS @91:5
+ANNOTATION @91:5 : java.lang.Override
+TOKEN @91:5
+IDENTIFIER @91:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+TOKEN @91:6
+ARGUMENTS
+TOKEN @92:5
+TYPE_PARAMETERS
+IDENTIFIER @92:12 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @92:12
+IDENTIFIER @92:19 id apply Mapper.apply [m public] : ? (T erasure java.lang.Object) returns java.lang.String throws [] sig Inheritance$Mapper#apply(Ljava/lang/Object;)Ljava/lang/String; : java.lang.String
+TOKEN @92:19
+TOKEN @92:24
+VARIABLE @92:25 var apply.value [v package] : T erasure java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Mapper flags [package] local true parameter true effectivelyFinal true constant null owner apply Inheritance$Mapper#apply(Ljava/lang/Object;)Ljava/lang/String; [public] returns java.lang.String parameters 1 thrown 0 overridden 1 declared true usages 3 metadata 0 enclosing Mapper type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @92:25 id T Mapper.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @92:25
+IDENTIFIER @92:27 id value apply.value [v package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @92:27
+TOKEN @92:32
+BLOCK @92:34
+TOKEN @92:34
+RETURN_STATEMENT @93:7
+TOKEN @93:7
+METHOD_INVOCATION @93:14 call String.valueOf [m static public] : ? (java.lang.Object) returns java.lang.String throws [] sig java.lang.String#valueOf(Ljava/lang/Object;)Ljava/lang/String; : java.lang.String
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @93:14 : ?
+IDENTIFIER @93:14 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @93:14
+TOKEN @93:20
+IDENTIFIER @93:21 id valueOf String.valueOf [m static public] : ? (java.lang.Object) returns java.lang.String throws [] sig java.lang.String#valueOf(Ljava/lang/Object;)Ljava/lang/String; : java.lang.String
+TOKEN @93:21
+ARGUMENTS @93:28
+TOKEN @93:28
+IDENTIFIER @93:29 id value apply.value [v package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @93:29
+TOKEN @93:34
+TOKEN @93:35
+TOKEN @94:5
+METHOD @96:5 method Mapper.compare [m public] : ? (T erasure java.lang.Object,T erasure java.lang.Object) returns int throws [] sig Inheritance$Mapper#compare(Ljava/lang/Object;Ljava/lang/Object;)I overrides true
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Mapper flags [public] overridden [Comparator.compare[]] overridable true generic false default false synchronized false varargs false native false parameters [left, right] parameterMetadata []
+MODIFIERS @96:5
+ANNOTATION @96:5 : java.lang.Override
+TOKEN @96:5
+IDENTIFIER @96:6 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+TOKEN @96:6
+ARGUMENTS
+TOKEN @97:5
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @97:12 : int
+TOKEN @97:12
+IDENTIFIER @97:16 id compare Mapper.compare [m public] : ? (T erasure java.lang.Object,T erasure java.lang.Object) returns int throws [] sig Inheritance$Mapper#compare(Ljava/lang/Object;Ljava/lang/Object;)I : int
+TOKEN @97:16
+TOKEN @97:23
+VARIABLE @97:24 var compare.left [v package] : T erasure java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Mapper flags [package] local true parameter true effectivelyFinal true constant null owner compare Inheritance$Mapper#compare(Ljava/lang/Object;Ljava/lang/Object;)I [public] returns int parameters 2 thrown 0 overridden 1 declared true usages 1 metadata 0 enclosing Mapper type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+IDENTIFIER @97:24 id T Mapper.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @97:24
+IDENTIFIER @97:26 id left compare.left [v package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @97:26
+TOKEN @97:30
+VARIABLE @97:32 var compare.right [v package] : T erasure java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Mapper flags [package] local true parameter true effectivelyFinal true constant null owner compare Inheritance$Mapper#compare(Ljava/lang/Object;Ljava/lang/Object;)I [public] returns int parameters 2 thrown 0 overridden 1 declared true usages 1 metadata 0 enclosing Mapper type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+IDENTIFIER @97:32 id T Mapper.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @97:32
+IDENTIFIER @97:34 id right compare.right [v package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @97:34
+TOKEN @97:39
+BLOCK @97:41
+TOKEN @97:41
+RETURN_STATEMENT @98:7
+TOKEN @98:7
+METHOD_INVOCATION @98:14 call String.compareTo [m public] : ? (java.lang.String) returns int throws [] sig java.lang.String#compareTo(Ljava/lang/String;)I : int
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [Comparable.compareTo[]] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @98:14 : ?
+METHOD_INVOCATION @98:14 call Mapper.apply [m public] : ? (T erasure java.lang.Object) returns java.lang.String throws [] sig Inheritance$Mapper#apply(Ljava/lang/Object;)Ljava/lang/String; : java.lang.String
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Mapper flags [public] overridden [Function.apply[]] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+IDENTIFIER @98:14 id apply Mapper.apply [m public] : ? (T erasure java.lang.Object) returns java.lang.String throws [] sig Inheritance$Mapper#apply(Ljava/lang/Object;)Ljava/lang/String; : java.lang.String
+TOKEN @98:14
+ARGUMENTS @98:19
+TOKEN @98:19
+IDENTIFIER @98:20 id left compare.left [v package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @98:20
+TOKEN @98:24
+TOKEN @98:25
+IDENTIFIER @98:26 id compareTo String.compareTo [m public] : ? (java.lang.String) returns int throws [] sig java.lang.String#compareTo(Ljava/lang/String;)I : int
+TOKEN @98:26
+ARGUMENTS @98:35
+TOKEN @98:35
+METHOD_INVOCATION @98:36 call Mapper.apply [m public] : ? (T erasure java.lang.Object) returns java.lang.String throws [] sig Inheritance$Mapper#apply(Ljava/lang/Object;)Ljava/lang/String; : java.lang.String
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Mapper flags [public] overridden [Function.apply[]] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+IDENTIFIER @98:36 id apply Mapper.apply [m public] : ? (T erasure java.lang.Object) returns java.lang.String throws [] sig Inheritance$Mapper#apply(Ljava/lang/Object;)Ljava/lang/String; : java.lang.String
+TOKEN @98:36
+ARGUMENTS @98:41
+TOKEN @98:41
+IDENTIFIER @98:42 id right compare.right [v package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @98:42
+TOKEN @98:47
+TOKEN @98:48
+TOKEN @98:49
+TOKEN @99:5
+TOKEN @100:3
+METHOD @102:3 method Inheritance.use [m package] : ? (Inheritance$Dog,Inheritance$Puppy,Inheritance$Names,Inheritance$Mapper<java.lang.Integer>) returns void throws [java.io.IOException] sig Inheritance#use(LInheritance$Dog;LInheritance$Puppy;LInheritance$Names;LInheritance$Mapper;)V overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inheritance flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [dog, puppy, names, mapper] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @102:3 : void
+TOKEN @102:3
+IDENTIFIER @102:8 id use Inheritance.use [m package] : ? (Inheritance$Dog,Inheritance$Puppy,Inheritance$Names,Inheritance$Mapper<java.lang.Integer>) returns void throws [java.io.IOException] sig Inheritance#use(LInheritance$Dog;LInheritance$Puppy;LInheritance$Names;LInheritance$Mapper;)V : void
+TOKEN @102:8
+TOKEN @102:11
+VARIABLE @102:12 var use.dog [v package] : Inheritance$Dog
+  details declared true usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inheritance flags [package] local true parameter true effectivelyFinal true constant null owner use Inheritance#use(LInheritance$Dog;LInheritance$Puppy;LInheritance$Names;LInheritance$Mapper;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Inheritance type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+IDENTIFIER @102:12 id Dog Inheritance.Dog [t static package] : Inheritance$Dog : Inheritance$Dog
+TOKEN @102:12
+IDENTIFIER @102:16 id dog use.dog [v package] : Inheritance$Dog : Inheritance$Dog
+TOKEN @102:16
+TOKEN @102:19
+VARIABLE @102:21 var use.puppy [v package] : Inheritance$Puppy
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inheritance flags [package] local true parameter true effectivelyFinal true constant null owner use Inheritance#use(LInheritance$Dog;LInheritance$Puppy;LInheritance$Names;LInheritance$Mapper;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Inheritance type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+IDENTIFIER @102:21 id Puppy Inheritance.Puppy [t static final package] : Inheritance$Puppy : Inheritance$Puppy
+TOKEN @102:21
+IDENTIFIER @102:27 id puppy use.puppy [v package] : Inheritance$Puppy : Inheritance$Puppy
+TOKEN @102:27
+TOKEN @102:32
+VARIABLE @102:34 var use.names [v package] : Inheritance$Names
+  details declared true usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inheritance flags [package] local true parameter true effectivelyFinal true constant null owner use Inheritance#use(LInheritance$Dog;LInheritance$Puppy;LInheritance$Names;LInheritance$Mapper;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Inheritance type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+IDENTIFIER @102:34 id Names Inheritance.Names [t static package] : Inheritance$Names : Inheritance$Names
+TOKEN @102:34
+IDENTIFIER @102:40 id names use.names [v package] : Inheritance$Names : Inheritance$Names
+TOKEN @102:40
+TOKEN @102:45
+VARIABLE @102:47 var use.mapper [v package] : Inheritance$Mapper<java.lang.Integer>
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inheritance flags [package] local true parameter true effectivelyFinal true constant null owner use Inheritance#use(LInheritance$Dog;LInheritance$Puppy;LInheritance$Names;LInheritance$Mapper;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Inheritance type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @102:47 : Inheritance$Mapper<java.lang.Integer>
+IDENTIFIER @102:47 id Mapper Inheritance.Mapper [t static package] : Inheritance$Mapper<java.lang.Integer> : Inheritance$Mapper<java.lang.Integer>
+TOKEN @102:47
+TYPE_ARGUMENTS @102:53
+TOKEN @102:53
+IDENTIFIER @102:54 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @102:54
+TOKEN @102:61
+IDENTIFIER @102:63 id mapper use.mapper [v package] : Inheritance$Mapper<java.lang.Integer> : Inheritance$Mapper<java.lang.Integer>
+TOKEN @102:63
+TOKEN @102:69
+TOKEN @102:71
+LIST @102:78
+IDENTIFIER @102:78 id IOException java.io.IOException [t public] : java.io.IOException : java.io.IOException
+TOKEN @102:78
+BLOCK @102:90
+TOKEN @102:90
+EXPRESSION_STATEMENT @103:5
+METHOD_INVOCATION @103:5 call Dog.move [m protected] : ? () returns void throws [] sig Inheritance$Dog#move()V : void
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Dog flags [protected] overridden [Base.move[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @103:5 : ?
+IDENTIFIER @103:5 id dog use.dog [v package] : Inheritance$Dog : Inheritance$Dog
+TOKEN @103:5
+TOKEN @103:8
+IDENTIFIER @103:9 id move Dog.move [m protected] : ? () returns void throws [] sig Inheritance$Dog#move()V : void
+TOKEN @103:9
+ARGUMENTS @103:13
+TOKEN @103:13
+TOKEN @103:14
+TOKEN @103:15
+EXPRESSION_STATEMENT @104:5
+METHOD_INVOCATION @104:5 call Puppy.move [m protected] : ? () returns void throws [] sig Inheritance$Puppy#move()V : void
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Puppy flags [protected] overridden [Dog.move[], Base.move[]] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @104:5 : ?
+IDENTIFIER @104:5 id puppy use.puppy [v package] : Inheritance$Puppy : Inheritance$Puppy
+TOKEN @104:5
+TOKEN @104:10
+IDENTIFIER @104:11 id move Puppy.move [m protected] : ? () returns void throws [] sig Inheritance$Puppy#move()V : void
+TOKEN @104:11
+ARGUMENTS @104:15
+TOKEN @104:15
+TOKEN @104:16
+TOKEN @104:17
+EXPRESSION_STATEMENT @105:5
+METHOD_INVOCATION @105:5 call Dog.greet [m public] : ? () returns java.lang.String throws [] sig Inheritance$Dog#greet()Ljava/lang/String; : java.lang.String
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Dog flags [public] overridden [Animal.greet[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @105:5 : ?
+IDENTIFIER @105:5 id dog use.dog [v package] : Inheritance$Dog : Inheritance$Dog
+TOKEN @105:5
+TOKEN @105:8
+IDENTIFIER @105:9 id greet Dog.greet [m public] : ? () returns java.lang.String throws [] sig Inheritance$Dog#greet()Ljava/lang/String; : java.lang.String
+TOKEN @105:9
+ARGUMENTS @105:14
+TOKEN @105:14
+TOKEN @105:15
+TOKEN @105:16
+EXPRESSION_STATEMENT @106:5
+METHOD_INVOCATION @106:5 call Dog.greet [m public] : ? () returns java.lang.String throws [] sig Inheritance$Dog#greet()Ljava/lang/String; : java.lang.String
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Dog flags [public] overridden [Animal.greet[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @106:5 : ?
+IDENTIFIER @106:5 id puppy use.puppy [v package] : Inheritance$Puppy : Inheritance$Puppy
+TOKEN @106:5
+TOKEN @106:10
+IDENTIFIER @106:11 id greet Dog.greet [m public] : ? () returns java.lang.String throws [] sig Inheritance$Dog#greet()Ljava/lang/String; : java.lang.String
+TOKEN @106:11
+ARGUMENTS @106:16
+TOKEN @106:16
+TOKEN @106:17
+TOKEN @106:18
+EXPRESSION_STATEMENT @107:5
+METHOD_INVOCATION @107:5 call Base.close [m public] : ? () returns void throws [java.io.IOException] sig Inheritance$Base#close()V : void
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Base flags [public] overridden [Closeable.close[], AutoCloseable.close[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @107:5 : ?
+IDENTIFIER @107:5 id dog use.dog [v package] : Inheritance$Dog : Inheritance$Dog
+TOKEN @107:5
+TOKEN @107:8
+IDENTIFIER @107:9 id close Base.close [m public] : ? () returns void throws [java.io.IOException] sig Inheritance$Base#close()V : void
+TOKEN @107:9
+ARGUMENTS @107:14
+TOKEN @107:14
+TOKEN @107:15
+TOKEN @107:16
+EXPRESSION_STATEMENT @108:5
+METHOD_INVOCATION @108:5 call Names.get [m public] : ? (int) returns java.lang.String throws [] sig Inheritance$Names#get(I)Ljava/lang/String; : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Names flags [public] overridden [AbstractList.get[], List.get[]] overridable true generic false default false synchronized false varargs false native false parameters [index] parameterMetadata []
+MEMBER_SELECT @108:5 : ?
+IDENTIFIER @108:5 id names use.names [v package] : Inheritance$Names : Inheritance$Names
+TOKEN @108:5
+TOKEN @108:10
+IDENTIFIER @108:11 id get Names.get [m public] : ? (int) returns java.lang.String throws [] sig Inheritance$Names#get(I)Ljava/lang/String; : java.lang.String
+TOKEN @108:11
+ARGUMENTS @108:14
+TOKEN @108:14
+INT_LITERAL @108:15 : int = 0
+TOKEN @108:15
+TOKEN @108:16
+TOKEN @108:17
+EXPRESSION_STATEMENT @109:5
+METHOD_INVOCATION @109:5 call Names.size [m public] : ? () returns int throws [] sig Inheritance$Names#size()I : int
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Names flags [public] overridden [AbstractCollection.size[], Collection.size[], List.size[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @109:5 : ?
+IDENTIFIER @109:5 id names use.names [v package] : Inheritance$Names : Inheritance$Names
+TOKEN @109:5
+TOKEN @109:10
+IDENTIFIER @109:11 id size Names.size [m public] : ? () returns int throws [] sig Inheritance$Names#size()I : int
+TOKEN @109:11
+ARGUMENTS @109:15
+TOKEN @109:15
+TOKEN @109:16
+TOKEN @109:17
+EXPRESSION_STATEMENT @110:5
+METHOD_INVOCATION @110:5 call Iterator.next [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Iterator#next()Ljava/lang/Object; : java.lang.Object
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Iterator flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @110:5 : ?
+METHOD_INVOCATION @110:5 call Names.iterator [m public] : ? () returns java.util.Iterator<java.lang.String> throws [] sig Inheritance$Names#iterator()Ljava/util/Iterator; : java.util.Iterator<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Names flags [public] overridden [AbstractList.iterator[], AbstractCollection.iterator[], Collection.iterator[], Iterable.iterator[], List.iterator[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @110:5 : ?
+IDENTIFIER @110:5 id names use.names [v package] : Inheritance$Names : Inheritance$Names
+TOKEN @110:5
+TOKEN @110:10
+IDENTIFIER @110:11 id iterator Names.iterator [m public] : ? () returns java.util.Iterator<java.lang.String> throws [] sig Inheritance$Names#iterator()Ljava/util/Iterator; : java.util.Iterator<java.lang.String>
+TOKEN @110:11
+ARGUMENTS @110:19
+TOKEN @110:19
+TOKEN @110:20
+TOKEN @110:21
+IDENTIFIER @110:22 id next Iterator.next [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Iterator#next()Ljava/lang/Object; : java.lang.Object
+TOKEN @110:22
+ARGUMENTS @110:26
+TOKEN @110:26
+TOKEN @110:27
+TOKEN @110:28
+EXPRESSION_STATEMENT @111:5
+METHOD_INVOCATION @111:5 call Mapper.apply [m public] : ? (java.lang.Integer) returns java.lang.String throws [] sig Inheritance$Mapper#apply(Ljava/lang/Object;)Ljava/lang/String; : java.lang.String
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Mapper flags [public] overridden [Function.apply[]] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+MEMBER_SELECT @111:5 : ?
+IDENTIFIER @111:5 id mapper use.mapper [v package] : Inheritance$Mapper<java.lang.Integer> : Inheritance$Mapper<java.lang.Integer>
+TOKEN @111:5
+TOKEN @111:11
+IDENTIFIER @111:12 id apply Mapper.apply [m public] : ? (java.lang.Integer) returns java.lang.String throws [] sig Inheritance$Mapper#apply(Ljava/lang/Object;)Ljava/lang/String; : java.lang.String
+TOKEN @111:12
+ARGUMENTS @111:17
+TOKEN @111:17
+INT_LITERAL @111:18 : int = 1
+TOKEN @111:18
+TOKEN @111:19
+TOKEN @111:20
+EXPRESSION_STATEMENT @112:5
+METHOD_INVOCATION @112:5 call Mapper.compare [m public] : ? (java.lang.Integer,java.lang.Integer) returns int throws [] sig Inheritance$Mapper#compare(Ljava/lang/Object;Ljava/lang/Object;)I : int
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Mapper flags [public] overridden [Comparator.compare[]] overridable true generic false default false synchronized false varargs false native false parameters [left, right] parameterMetadata []
+MEMBER_SELECT @112:5 : ?
+IDENTIFIER @112:5 id mapper use.mapper [v package] : Inheritance$Mapper<java.lang.Integer> : Inheritance$Mapper<java.lang.Integer>
+TOKEN @112:5
+TOKEN @112:11
+IDENTIFIER @112:12 id compare Mapper.compare [m public] : ? (java.lang.Integer,java.lang.Integer) returns int throws [] sig Inheritance$Mapper#compare(Ljava/lang/Object;Ljava/lang/Object;)I : int
+TOKEN @112:12
+ARGUMENTS @112:19
+TOKEN @112:19
+INT_LITERAL @112:20 : int = 1
+TOKEN @112:20
+TOKEN @112:21
+INT_LITERAL @112:23 : int = 2
+TOKEN @112:23
+TOKEN @112:24
+TOKEN @112:25
+EXPRESSION_STATEMENT @113:5
+METHOD_INVOCATION @113:5 call Comparator.reversed [m public] : ? () returns java.util.Comparator<T erasure java.lang.Object> throws [] sig java.util.Comparator#reversed()Ljava/util/Comparator; : java.util.Comparator<T erasure java.lang.Object>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Comparator flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @113:5 : ?
+IDENTIFIER @113:5 id mapper use.mapper [v package] : Inheritance$Mapper<java.lang.Integer> : Inheritance$Mapper<java.lang.Integer>
+TOKEN @113:5
+TOKEN @113:11
+IDENTIFIER @113:12 id reversed Comparator.reversed [m public] : ? () returns java.util.Comparator<T erasure java.lang.Object> throws [] sig java.util.Comparator#reversed()Ljava/util/Comparator; : java.util.Comparator<T erasure java.lang.Object>
+TOKEN @113:12
+ARGUMENTS @113:20
+TOKEN @113:20
+TOKEN @113:21
+TOKEN @113:22
+VARIABLE @114:5 var use.view [v package] : java.util.List<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inheritance flags [package] local true parameter false effectivelyFinal true constant null owner use Inheritance#use(LInheritance$Dog;LInheritance$Puppy;LInheritance$Names;LInheritance$Mapper;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Inheritance type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @114:5 : java.util.List<java.lang.String>
+IDENTIFIER @114:5 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @114:5
+TYPE_ARGUMENTS @114:9
+TOKEN @114:9
+IDENTIFIER @114:10 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @114:10
+TOKEN @114:16
+IDENTIFIER @114:18 id view use.view [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @114:18
+TOKEN @114:23
+METHOD_INVOCATION @114:25 call AbstractList.subList [m public] : ? (int,int) returns java.util.List<E erasure java.lang.Object> throws [] sig java.util.AbstractList#subList(II)Ljava/util/List; : java.util.List<E erasure java.lang.Object>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing AbstractList flags [public] overridden [List.subList[]] overridable true generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
+MEMBER_SELECT @114:25 : ?
+IDENTIFIER @114:25 id names use.names [v package] : Inheritance$Names : Inheritance$Names
+TOKEN @114:25
+TOKEN @114:30
+IDENTIFIER @114:31 id subList AbstractList.subList [m public] : ? (int,int) returns java.util.List<E erasure java.lang.Object> throws [] sig java.util.AbstractList#subList(II)Ljava/util/List; : java.util.List<E erasure java.lang.Object>
+TOKEN @114:31
+ARGUMENTS @114:38
+TOKEN @114:38
+INT_LITERAL @114:39 : int = 0
+TOKEN @114:39
+TOKEN @114:40
+INT_LITERAL @114:42 : int = 1
+TOKEN @114:42
+TOKEN @114:43
+TOKEN @114:44
+EXPRESSION_STATEMENT @115:5
+METHOD_INVOCATION @115:5 call List.size [m abstract public] : ? () returns int throws [] sig java.util.List#size()I : int
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [Collection.size[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @115:5 : ?
+IDENTIFIER @115:5 id view use.view [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @115:5
+TOKEN @115:9
+IDENTIFIER @115:10 id size List.size [m abstract public] : ? () returns int throws [] sig java.util.List#size()I : int
+TOKEN @115:10
+ARGUMENTS @115:14
+TOKEN @115:14
+TOKEN @115:15
+TOKEN @115:16
+VARIABLE @116:5 var use.animal [v package] : Inheritance$Animal
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inheritance flags [package] local true parameter false effectivelyFinal true constant null owner use Inheritance#use(LInheritance$Dog;LInheritance$Puppy;LInheritance$Names;LInheritance$Mapper;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Inheritance type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+IDENTIFIER @116:5 id Animal Inheritance.Animal [t static package interface] : Inheritance$Animal : Inheritance$Animal
+TOKEN @116:5
+IDENTIFIER @116:12 id animal use.animal [v package] : Inheritance$Animal : Inheritance$Animal
+TOKEN @116:12
+TOKEN @116:19
+IDENTIFIER @116:21 id dog use.dog [v package] : Inheritance$Dog : Inheritance$Dog
+TOKEN @116:21
+TOKEN @116:24
+EXPRESSION_STATEMENT @117:5
+METHOD_INVOCATION @117:5 call Animal.compareTo [m public] : ? (Inheritance$Animal) returns int throws [] sig Inheritance$Animal#compareTo(LInheritance$Animal;)I : int
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Animal flags [public] overridden [Comparable.compareTo[]] overridable true generic false default true synchronized false varargs false native false parameters [other] parameterMetadata []
+MEMBER_SELECT @117:5 : ?
+IDENTIFIER @117:5 id animal use.animal [v package] : Inheritance$Animal : Inheritance$Animal
+TOKEN @117:5
+TOKEN @117:11
+IDENTIFIER @117:12 id compareTo Animal.compareTo [m public] : ? (Inheritance$Animal) returns int throws [] sig Inheritance$Animal#compareTo(LInheritance$Animal;)I : int
+TOKEN @117:12
+ARGUMENTS @117:21
+TOKEN @117:21
+IDENTIFIER @117:22 id puppy use.puppy [v package] : Inheritance$Puppy : Inheritance$Puppy
+TOKEN @117:22
+TOKEN @117:27
+TOKEN @117:28
+TOKEN @118:3
+TOKEN @119:1
+TOKEN @120:1

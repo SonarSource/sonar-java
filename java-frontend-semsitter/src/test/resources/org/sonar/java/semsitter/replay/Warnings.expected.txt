@@ -1,1 +1,1 @@
-FAILURE Unsupported construct: local_variable_declaration
+FAILURE Unsupported construct: lambda_expression

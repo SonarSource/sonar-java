@@ -1,1 +1,571 @@
-FAILURE Unsupported construct: return_statement
+COMPILATION_UNIT @1:1
+IMPORT @1:1
+TOKEN @1:1
+MEMBER_SELECT @1:8 : ?
+MEMBER_SELECT @1:8 : ?
+MEMBER_SELECT @1:8 : ?
+IDENTIFIER @1:8 id java unknown : ?
+TOKEN @1:8
+TOKEN @1:12
+IDENTIFIER @1:13 id lang unknown : ?
+TOKEN @1:13
+TOKEN @1:17
+IDENTIFIER @1:18 id annotation unknown : ?
+TOKEN @1:18
+TOKEN @1:28
+IDENTIFIER @1:29 id Documented unknown : ?
+TOKEN @1:29
+TOKEN @1:39
+IMPORT @2:1
+TOKEN @2:1
+MEMBER_SELECT @2:8 : ?
+MEMBER_SELECT @2:8 : ?
+MEMBER_SELECT @2:8 : ?
+IDENTIFIER @2:8 id java unknown : ?
+TOKEN @2:8
+TOKEN @2:12
+IDENTIFIER @2:13 id lang unknown : ?
+TOKEN @2:13
+TOKEN @2:17
+IDENTIFIER @2:18 id annotation unknown : ?
+TOKEN @2:18
+TOKEN @2:28
+IDENTIFIER @2:29 id ElementType unknown : ?
+TOKEN @2:29
+TOKEN @2:40
+IMPORT @3:1
+TOKEN @3:1
+MEMBER_SELECT @3:8 : ?
+MEMBER_SELECT @3:8 : ?
+MEMBER_SELECT @3:8 : ?
+IDENTIFIER @3:8 id java unknown : ?
+TOKEN @3:8
+TOKEN @3:12
+IDENTIFIER @3:13 id lang unknown : ?
+TOKEN @3:13
+TOKEN @3:17
+IDENTIFIER @3:18 id annotation unknown : ?
+TOKEN @3:18
+TOKEN @3:28
+IDENTIFIER @3:29 id Retention unknown : ?
+TOKEN @3:29
+TOKEN @3:38
+IMPORT @4:1
+TOKEN @4:1
+MEMBER_SELECT @4:8 : ?
+MEMBER_SELECT @4:8 : ?
+MEMBER_SELECT @4:8 : ?
+IDENTIFIER @4:8 id java unknown : ?
+TOKEN @4:8
+TOKEN @4:12
+IDENTIFIER @4:13 id lang unknown : ?
+TOKEN @4:13
+TOKEN @4:17
+IDENTIFIER @4:18 id annotation unknown : ?
+TOKEN @4:18
+TOKEN @4:28
+IDENTIFIER @4:29 id RetentionPolicy unknown : ?
+TOKEN @4:29
+TOKEN @4:44
+IMPORT @5:1
+TOKEN @5:1
+MEMBER_SELECT @5:8 : ?
+MEMBER_SELECT @5:8 : ?
+MEMBER_SELECT @5:8 : ?
+IDENTIFIER @5:8 id java unknown : ?
+TOKEN @5:8
+TOKEN @5:12
+IDENTIFIER @5:13 id lang unknown : ?
+TOKEN @5:13
+TOKEN @5:17
+IDENTIFIER @5:18 id annotation unknown : ?
+TOKEN @5:18
+TOKEN @5:28
+IDENTIFIER @5:29 id Target unknown : ?
+TOKEN @5:29
+TOKEN @5:35
+IMPORT @6:1
+TOKEN @6:1
+MEMBER_SELECT @6:8 : ?
+MEMBER_SELECT @6:8 : ?
+IDENTIFIER @6:8 id java unknown : ?
+TOKEN @6:8
+TOKEN @6:12
+IDENTIFIER @6:13 id util unknown : ?
+TOKEN @6:13
+TOKEN @6:17
+IDENTIFIER @6:18 id List unknown : ?
+TOKEN @6:18
+TOKEN @6:22
+CLASS @8:1 class .Annotations [t package] : Annotations super java.lang.Object interfaces []
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Annotations flags [package] members [<init>, Callback, Config, Mode, PATH, configured, removed, safe, single, toString, unused] lookupToString 1 outermost Annotations annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring Annotations
+MODIFIERS @8:1
+ANNOTATION @8:1 : java.lang.SuppressWarnings
+TOKEN @8:1
+IDENTIFIER @8:2 id SuppressWarnings java.lang.SuppressWarnings [t public interface] : java.lang.SuppressWarnings : java.lang.SuppressWarnings
+TOKEN @8:2
+ARGUMENTS @8:18
+TOKEN @8:18
+NEW_ARRAY @8:19 : java.lang.String[]
+TOKEN @8:19
+LIST @8:20
+STRING_LITERAL @8:20 : java.lang.String = unchecked
+TOKEN @8:20
+TOKEN @8:31
+STRING_LITERAL @8:33 : java.lang.String = rawtypes
+TOKEN @8:33
+TOKEN @8:43
+TOKEN @8:44
+TOKEN @9:1
+IDENTIFIER @9:7 id Annotations .Annotations [t package] : Annotations : Annotations
+TOKEN @9:7
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @9:19
+VARIABLE @11:3 var Annotations.PATH [v static final package] : java.lang.String
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Annotations flags [static, final, package] local false parameter false effectivelyFinal true constant /root
+MODIFIERS @11:3
+TOKEN @11:3
+TOKEN @11:10
+IDENTIFIER @11:16 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @11:16
+IDENTIFIER @11:23 id PATH Annotations.PATH [v static final package] : java.lang.String : java.lang.String = /root
+TOKEN @11:23
+TOKEN @11:28
+STRING_LITERAL @11:30 : java.lang.String = /root
+TOKEN @11:30
+TOKEN @11:37
+ENUM @13:3 class Annotations.Mode [t static final package enum] : Annotations$Mode super java.lang.Enum<Annotations$Mode> interfaces []
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Annotations flags [static, final, package, enum] members [<init>, A, B, valueOf, values] lookupToString 0 outermost Annotations annotation false subtypeOf [java.lang.Object, java.io.Serializable, java.lang.Comparable] superTypes [java.io.Serializable, java.lang.Comparable<Annotations$Mode>, java.lang.Enum<Annotations$Mode>, java.lang.Object, java.lang.constant.Constable] numerical false wrapper false raw false declaring Mode
+MODIFIERS
+TOKEN @13:3
+IDENTIFIER @13:8 id Mode Annotations.Mode [t static final package enum] : Annotations$Mode : Annotations$Mode
+TOKEN @13:8
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @13:13
+ENUM_CONSTANT @14:5 var Mode.A [v static final public enum] : Annotations$Mode
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Mode flags [static, final, public, enum] local false parameter false effectivelyFinal true constant null
+MODIFIERS
+NEW_CLASS @14:5 new Mode.<init> [m private] : ? () returns void throws [] sig Annotations$Mode#<init>(Ljava/lang/String;I)V : ?
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Mode flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+IDENTIFIER @14:5 id A Mode.<init> [m private] : ? () returns void throws [] sig Annotations$Mode#<init>(Ljava/lang/String;I)V : Annotations$Mode
+TOKEN @14:5
+ARGUMENTS
+TOKEN @14:6
+ENUM_CONSTANT @14:8 var Mode.B [v static final public enum] : Annotations$Mode
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Mode flags [static, final, public, enum] local false parameter false effectivelyFinal true constant null
+MODIFIERS
+NEW_CLASS @14:8 new Mode.<init> [m private] : ? () returns void throws [] sig Annotations$Mode#<init>(Ljava/lang/String;I)V : ?
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Mode flags [private] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+IDENTIFIER @14:8 id B Mode.<init> [m private] : ? () returns void throws [] sig Annotations$Mode#<init>(Ljava/lang/String;I)V : Annotations$Mode
+TOKEN @14:8
+ARGUMENTS
+TOKEN @15:3
+ANNOTATION_TYPE @17:3 class Annotations.Config [t static package interface] : Annotations$Config super java.lang.Object interfaces [java.lang.annotation.Annotation]
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Annotations flags [static, package, interface] members [mode, paths, priority, type, value] lookupToString 0 outermost Annotations annotation true subtypeOf [java.lang.Object, java.lang.annotation.Annotation] superTypes [java.lang.Object, java.lang.annotation.Annotation] numerical false wrapper false raw false declaring Config
+MODIFIERS @17:3
+ANNOTATION @17:3 : java.lang.annotation.Documented
+TOKEN @17:3
+IDENTIFIER @17:4 id Documented java.lang.annotation.Documented [t public interface] : java.lang.annotation.Documented : java.lang.annotation.Documented
+TOKEN @17:4
+ARGUMENTS
+ANNOTATION @18:3 : java.lang.annotation.Retention
+TOKEN @18:3
+IDENTIFIER @18:4 id Retention java.lang.annotation.Retention [t public interface] : java.lang.annotation.Retention : java.lang.annotation.Retention
+TOKEN @18:4
+ARGUMENTS @18:13
+TOKEN @18:13
+MEMBER_SELECT @18:14 : java.lang.annotation.RetentionPolicy
+IDENTIFIER @18:14 id RetentionPolicy java.lang.annotation.RetentionPolicy [t final public enum] : java.lang.annotation.RetentionPolicy : java.lang.annotation.RetentionPolicy
+TOKEN @18:14
+TOKEN @18:29
+IDENTIFIER @18:30 id RUNTIME RetentionPolicy.RUNTIME [v static final public enum] : java.lang.annotation.RetentionPolicy : java.lang.annotation.RetentionPolicy
+TOKEN @18:30
+TOKEN @18:37
+ANNOTATION @19:3 : java.lang.annotation.Target
+TOKEN @19:3
+IDENTIFIER @19:4 id Target java.lang.annotation.Target [t public interface] : java.lang.annotation.Target : java.lang.annotation.Target
+TOKEN @19:4
+ARGUMENTS @19:10
+TOKEN @19:10
+NEW_ARRAY @19:11 : java.lang.annotation.ElementType[]
+TOKEN @19:11
+LIST @19:12
+MEMBER_SELECT @19:12 : java.lang.annotation.ElementType
+IDENTIFIER @19:12 id ElementType java.lang.annotation.ElementType [t final public enum] : java.lang.annotation.ElementType : java.lang.annotation.ElementType
+TOKEN @19:12
+TOKEN @19:23
+IDENTIFIER @19:24 id METHOD ElementType.METHOD [v static final public enum] : java.lang.annotation.ElementType : java.lang.annotation.ElementType
+TOKEN @19:24
+TOKEN @19:30
+MEMBER_SELECT @19:32 : java.lang.annotation.ElementType
+IDENTIFIER @19:32 id ElementType java.lang.annotation.ElementType [t final public enum] : java.lang.annotation.ElementType : java.lang.annotation.ElementType
+TOKEN @19:32
+TOKEN @19:43
+IDENTIFIER @19:44 id FIELD ElementType.FIELD [v static final public enum] : java.lang.annotation.ElementType : java.lang.annotation.ElementType
+TOKEN @19:44
+TOKEN @19:49
+MEMBER_SELECT @19:51 : java.lang.annotation.ElementType
+IDENTIFIER @19:51 id ElementType java.lang.annotation.ElementType [t final public enum] : java.lang.annotation.ElementType : java.lang.annotation.ElementType
+TOKEN @19:51
+TOKEN @19:62
+IDENTIFIER @19:63 id PARAMETER ElementType.PARAMETER [v static final public enum] : java.lang.annotation.ElementType : java.lang.annotation.ElementType
+TOKEN @19:63
+TOKEN @19:72
+MEMBER_SELECT @19:74 : java.lang.annotation.ElementType
+IDENTIFIER @19:74 id ElementType java.lang.annotation.ElementType [t final public enum] : java.lang.annotation.ElementType : java.lang.annotation.ElementType
+TOKEN @19:74
+TOKEN @19:85
+IDENTIFIER @19:86 id TYPE ElementType.TYPE [v static final public enum] : java.lang.annotation.ElementType : java.lang.annotation.ElementType
+TOKEN @19:86
+TOKEN @19:90
+TOKEN @19:91
+TOKEN @20:3
+TOKEN @20:4
+IDENTIFIER @20:14 id Config Annotations.Config [t static package interface] : Annotations$Config : Annotations$Config
+TOKEN @20:14
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @20:21
+METHOD @21:5 method Config.value [m abstract public] : ? () returns java.lang.String throws [] sig Annotations$Config#value()Ljava/lang/String; overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Config flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+IDENTIFIER @21:5 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @21:5
+IDENTIFIER @21:12 id value Config.value [m abstract public] : ? () returns java.lang.String throws [] sig Annotations$Config#value()Ljava/lang/String; : java.lang.String
+TOKEN @21:12
+TOKEN @21:17
+TOKEN @21:18
+TOKEN @21:20
+STRING_LITERAL @21:28 : java.lang.String = 
+TOKEN @21:28
+TOKEN @21:30
+METHOD @23:5 method Config.paths [m abstract public] : ? () returns java.lang.String[] throws [] sig Annotations$Config#paths()[Ljava/lang/String; overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Config flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+ARRAY_TYPE @23:5 : java.lang.String[]
+IDENTIFIER @23:5 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @23:5
+TOKEN @23:11
+TOKEN @23:12
+IDENTIFIER @23:14 id paths Config.paths [m abstract public] : ? () returns java.lang.String[] throws [] sig Annotations$Config#paths()[Ljava/lang/String; : java.lang.String[]
+TOKEN @23:14
+TOKEN @23:19
+TOKEN @23:20
+TOKEN @23:22
+NEW_ARRAY @23:30 : ?
+TOKEN @23:30
+LIST
+TOKEN @23:31
+TOKEN @23:32
+METHOD @25:5 method Config.mode [m abstract public] : ? () returns Annotations$Mode throws [] sig Annotations$Config#mode()LAnnotations$Mode; overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Config flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+IDENTIFIER @25:5 id Mode Annotations.Mode [t static final package enum] : Annotations$Mode : Annotations$Mode
+TOKEN @25:5
+IDENTIFIER @25:10 id mode Config.mode [m abstract public] : ? () returns Annotations$Mode throws [] sig Annotations$Config#mode()LAnnotations$Mode; : Annotations$Mode
+TOKEN @25:10
+TOKEN @25:14
+TOKEN @25:15
+TOKEN @25:17
+MEMBER_SELECT @25:25 : Annotations$Mode
+IDENTIFIER @25:25 id Mode Annotations.Mode [t static final package enum] : Annotations$Mode : Annotations$Mode
+TOKEN @25:25
+TOKEN @25:29
+IDENTIFIER @25:30 id A Mode.A [v static final public enum] : Annotations$Mode : Annotations$Mode
+TOKEN @25:30
+TOKEN @25:31
+METHOD @27:5 method Config.priority [m abstract public] : ? () returns int throws [] sig Annotations$Config#priority()I overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Config flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @27:5 : int
+TOKEN @27:5
+IDENTIFIER @27:9 id priority Config.priority [m abstract public] : ? () returns int throws [] sig Annotations$Config#priority()I : int
+TOKEN @27:9
+TOKEN @27:17
+TOKEN @27:18
+TOKEN @27:20
+INT_LITERAL @27:28 : int = 1
+TOKEN @27:28
+TOKEN @27:29
+METHOD @29:5 method Config.type [m abstract public] : ? () returns java.lang.Class<java.lang.Object> throws [] sig Annotations$Config#type()Ljava/lang/Class; overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Config flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PARAMETERIZED_TYPE @29:5 : java.lang.Class<java.lang.Object>
+IDENTIFIER @29:5 id Class java.lang.Class [t final public] : java.lang.Class<java.lang.Object> : java.lang.Class<java.lang.Object>
+TOKEN @29:5
+TYPE_ARGUMENTS @29:10
+TOKEN @29:10
+UNBOUNDED_WILDCARD @29:11
+TOKEN @29:11
+TOKEN @29:12
+IDENTIFIER @29:14 id type Config.type [m abstract public] : ? () returns java.lang.Class<java.lang.Object> throws [] sig Annotations$Config#type()Ljava/lang/Class; : java.lang.Class<java.lang.Object>
+TOKEN @29:14
+TOKEN @29:18
+TOKEN @29:19
+TOKEN @29:21
+MEMBER_SELECT @29:29 : java.lang.Class<java.lang.Object>
+IDENTIFIER @29:29 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @29:29
+TOKEN @29:35
+IDENTIFIER @29:36 id class unknown : ?
+TOKEN @29:36
+TOKEN @29:41
+TOKEN @30:3
+VARIABLE @32:3 var Annotations.single [v package] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Annotations flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS @32:3
+ANNOTATION @32:3 : Annotations$Config
+TOKEN @32:3
+IDENTIFIER @32:4 id Config Annotations.Config [t static package interface] : Annotations$Config : Annotations$Config
+TOKEN @32:4
+ARGUMENTS @32:10
+TOKEN @32:10
+STRING_LITERAL @32:11 : java.lang.String = single
+TOKEN @32:11
+TOKEN @32:19
+PRIMITIVE_TYPE @33:3 : int
+TOKEN @33:3
+IDENTIFIER @33:7 id single Annotations.single [v package] : int : int
+TOKEN @33:7
+TOKEN @33:13
+METHOD @35:3 method Annotations.configured [m package] : ? (java.lang.String) returns void throws [] sig Annotations#configured(Ljava/lang/String;)V overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Annotations flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [parameter] parameterMetadata []
+MODIFIERS @35:3
+ANNOTATION @35:3 : Annotations$Config
+TOKEN @35:3
+IDENTIFIER @35:4 id Config Annotations.Config [t static package interface] : Annotations$Config : Annotations$Config
+TOKEN @35:4
+ARGUMENTS @35:10
+TOKEN @35:10
+ASSIGNMENT @35:11 : java.lang.String
+IDENTIFIER @35:11 id value Config.value [m abstract public] : ? () returns java.lang.String throws [] sig Annotations$Config#value()Ljava/lang/String; : java.lang.String
+TOKEN @35:11
+TOKEN @35:17
+IDENTIFIER @35:19 id PATH Annotations.PATH [v static final package] : java.lang.String : java.lang.String = /root
+TOKEN @35:19
+TOKEN @35:23
+ASSIGNMENT @35:25 : java.lang.String[]
+IDENTIFIER @35:25 id paths Config.paths [m abstract public] : ? () returns java.lang.String[] throws [] sig Annotations$Config#paths()[Ljava/lang/String; : java.lang.String[]
+TOKEN @35:25
+TOKEN @35:31
+NEW_ARRAY @35:33 : java.lang.String[]
+TOKEN @35:33
+LIST @35:34
+PLUS @35:34 : java.lang.String = /root/a
+IDENTIFIER @35:34 id PATH Annotations.PATH [v static final package] : java.lang.String : java.lang.String = /root
+TOKEN @35:34
+TOKEN @35:39
+STRING_LITERAL @35:41 : java.lang.String = /a
+TOKEN @35:41
+TOKEN @35:45
+STRING_LITERAL @35:47 : java.lang.String = /b
+TOKEN @35:47
+TOKEN @35:51
+TOKEN @35:52
+ASSIGNMENT @35:54 : Annotations$Mode
+IDENTIFIER @35:54 id mode Config.mode [m abstract public] : ? () returns Annotations$Mode throws [] sig Annotations$Config#mode()LAnnotations$Mode; : Annotations$Mode
+TOKEN @35:54
+TOKEN @35:59
+MEMBER_SELECT @35:61 : Annotations$Mode
+IDENTIFIER @35:61 id Mode Annotations.Mode [t static final package enum] : Annotations$Mode : Annotations$Mode
+TOKEN @35:61
+TOKEN @35:65
+IDENTIFIER @35:66 id B Mode.B [v static final public enum] : Annotations$Mode : Annotations$Mode
+TOKEN @35:66
+TOKEN @35:67
+ASSIGNMENT @35:69 : int
+IDENTIFIER @35:69 id priority Config.priority [m abstract public] : ? () returns int throws [] sig Annotations$Config#priority()I : int
+TOKEN @35:69
+TOKEN @35:78
+PLUS @35:80 : int = 5
+INT_LITERAL @35:80 : int = 2
+TOKEN @35:80
+TOKEN @35:82
+INT_LITERAL @35:84 : int = 3
+TOKEN @35:84
+TOKEN @35:85
+ASSIGNMENT @35:87 : java.lang.Class<java.lang.String>
+IDENTIFIER @35:87 id type Config.type [m abstract public] : ? () returns java.lang.Class<java.lang.Object> throws [] sig Annotations$Config#type()Ljava/lang/Class; : java.lang.Class<java.lang.Object>
+TOKEN @35:87
+TOKEN @35:92
+MEMBER_SELECT @35:94 : java.lang.Class<java.lang.String>
+IDENTIFIER @35:94 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @35:94
+TOKEN @35:100
+IDENTIFIER @35:101 id class unknown : ?
+TOKEN @35:101
+TOKEN @35:106
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @36:3 : void
+TOKEN @36:3
+IDENTIFIER @36:8 id configured Annotations.configured [m package] : ? (java.lang.String) returns void throws [] sig Annotations#configured(Ljava/lang/String;)V : void
+TOKEN @36:8
+TOKEN @36:18
+VARIABLE @36:19 var configured.parameter [v package] : java.lang.String
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Annotations flags [package] local true parameter true effectivelyFinal true constant null owner configured Annotations#configured(Ljava/lang/String;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Annotations type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS @36:19
+ANNOTATION @36:19 : Annotations$Config
+TOKEN @36:19
+IDENTIFIER @36:20 id Config Annotations.Config [t static package interface] : Annotations$Config : Annotations$Config
+TOKEN @36:20
+ARGUMENTS @36:26
+TOKEN @36:26
+STRING_LITERAL @36:27 : java.lang.String = param
+TOKEN @36:27
+TOKEN @36:34
+IDENTIFIER @36:36 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @36:36
+IDENTIFIER @36:43 id parameter configured.parameter [v package] : java.lang.String : java.lang.String
+TOKEN @36:43
+TOKEN @36:52
+BLOCK @36:54
+TOKEN @36:54
+TOKEN @37:3
+METHOD @39:3 method Annotations.removed [m package deprecated] : ? () returns void throws [] sig Annotations#removed()V overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Annotations flags [package, deprecated] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS @39:3
+ANNOTATION @39:3 : java.lang.Deprecated
+TOKEN @39:3
+IDENTIFIER @39:4 id Deprecated java.lang.Deprecated [t public interface] : java.lang.Deprecated : java.lang.Deprecated
+TOKEN @39:4
+ARGUMENTS @39:14
+TOKEN @39:14
+ASSIGNMENT @39:15 : java.lang.String
+IDENTIFIER @39:15 id since Deprecated.since [m abstract public] : ? () returns java.lang.String throws [] sig java.lang.Deprecated#since()Ljava/lang/String; : java.lang.String
+TOKEN @39:15
+TOKEN @39:21
+STRING_LITERAL @39:23 : java.lang.String = 1.0
+TOKEN @39:23
+TOKEN @39:28
+ASSIGNMENT @39:30 : boolean
+IDENTIFIER @39:30 id forRemoval Deprecated.forRemoval [m abstract public] : ? () returns boolean throws [] sig java.lang.Deprecated#forRemoval()Z : boolean
+TOKEN @39:30
+TOKEN @39:41
+BOOLEAN_LITERAL @39:43 : boolean = true
+TOKEN @39:43
+TOKEN @39:47
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @40:3 : void
+TOKEN @40:3
+IDENTIFIER @40:8 id removed Annotations.removed [m package deprecated] : ? () returns void throws [] sig Annotations#removed()V : void
+TOKEN @40:8
+TOKEN @40:15
+TOKEN @40:16
+BLOCK @40:18
+TOKEN @40:18
+TOKEN @41:3
+METHOD @43:3 method Annotations.safe [m final package] : ? (java.util.List[]) returns void throws [] sig Annotations#safe([Ljava/util/List;)V overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Annotations flags [final, package] overridden [] overridable false generic false default false synchronized false varargs true native false parameters [lists] parameterMetadata []
+MODIFIERS @43:3
+ANNOTATION @43:3 : java.lang.SafeVarargs
+TOKEN @43:3
+IDENTIFIER @43:4 id SafeVarargs java.lang.SafeVarargs [t public interface] : java.lang.SafeVarargs : java.lang.SafeVarargs
+TOKEN @43:4
+ARGUMENTS
+TOKEN @44:3
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @44:9 : void
+TOKEN @44:9
+IDENTIFIER @44:14 id safe Annotations.safe [m final package] : ? (java.util.List[]) returns void throws [] sig Annotations#safe([Ljava/util/List;)V : void
+TOKEN @44:14
+TOKEN @44:18
+VARIABLE @44:19 var safe.lists [v package] : java.util.List[]
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Annotations flags [package] local true parameter true effectivelyFinal true constant null owner safe Annotations#safe([Ljava/util/List;)V [final, package] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Annotations type true kinds truefalsefalse other falsefalsetruefalsefalsefalse1falsefalse
+MODIFIERS
+ARRAY_TYPE @44:19 : java.util.List[]
+PARAMETERIZED_TYPE @44:19 : java.util.List<java.lang.String>
+IDENTIFIER @44:19 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @44:19
+TYPE_ARGUMENTS @44:23
+TOKEN @44:23
+IDENTIFIER @44:24 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @44:24
+TOKEN @44:30
+TOKEN @44:31
+IDENTIFIER @44:35 id lists safe.lists [v package] : java.util.List[] : java.util.List[]
+TOKEN @44:35
+TOKEN @44:40
+BLOCK @44:42
+TOKEN @44:42
+TOKEN @45:3
+INTERFACE @47:3 class Annotations.Callback [t static package interface] : Annotations$Callback super java.lang.Object interfaces []
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Annotations flags [static, package, interface] members [call] lookupToString 0 outermost Annotations annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring Callback
+MODIFIERS @47:3
+ANNOTATION @47:3 : java.lang.FunctionalInterface
+TOKEN @47:3
+IDENTIFIER @47:4 id FunctionalInterface java.lang.FunctionalInterface [t public interface] : java.lang.FunctionalInterface : java.lang.FunctionalInterface
+TOKEN @47:4
+ARGUMENTS
+TOKEN @48:3
+IDENTIFIER @48:13 id Callback Annotations.Callback [t static package interface] : Annotations$Callback : Annotations$Callback
+TOKEN @48:13
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @48:22
+METHOD @49:5 method Callback.call [m abstract public] : ? () returns void throws [] sig Annotations$Callback#call()V overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Callback flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @49:5 : void
+TOKEN @49:5
+IDENTIFIER @49:10 id call Callback.call [m abstract public] : ? () returns void throws [] sig Annotations$Callback#call()V : void
+TOKEN @49:10
+TOKEN @49:14
+TOKEN @49:15
+TOKEN @49:16
+TOKEN @50:3
+METHOD @52:3 method Annotations.toString [m public] : ? () returns java.lang.String throws [] sig Annotations#toString()Ljava/lang/String; overrides true
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Annotations flags [public] overridden [Object.toString[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS @52:3
+ANNOTATION @52:3 : java.lang.Override
+TOKEN @52:3
+IDENTIFIER @52:4 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+TOKEN @52:4
+ARGUMENTS
+TOKEN @53:3
+TYPE_PARAMETERS
+IDENTIFIER @53:10 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @53:10
+IDENTIFIER @53:17 id toString Annotations.toString [m public] : ? () returns java.lang.String throws [] sig Annotations#toString()Ljava/lang/String; : java.lang.String
+TOKEN @53:17
+TOKEN @53:25
+TOKEN @53:26
+BLOCK @53:28
+TOKEN @53:28
+RETURN_STATEMENT @54:5
+TOKEN @54:5
+STRING_LITERAL @54:12 : java.lang.String = annotations
+TOKEN @54:12
+TOKEN @54:25
+TOKEN @55:3
+VARIABLE @57:3 var Annotations.unused [v private] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Annotations flags [private] local false parameter false effectivelyFinal false constant null
+MODIFIERS @57:3
+ANNOTATION @57:3 : java.lang.SuppressWarnings
+TOKEN @57:3
+IDENTIFIER @57:4 id SuppressWarnings java.lang.SuppressWarnings [t public interface] : java.lang.SuppressWarnings : java.lang.SuppressWarnings
+TOKEN @57:4
+ARGUMENTS @57:20
+TOKEN @57:20
+STRING_LITERAL @57:21 : java.lang.String = unused
+TOKEN @57:21
+TOKEN @57:29
+TOKEN @58:3
+PRIMITIVE_TYPE @58:11 : int
+TOKEN @58:11
+IDENTIFIER @58:15 id unused Annotations.unused [v private] : int : int
+TOKEN @58:15
+TOKEN @58:21
+TOKEN @59:1
+TOKEN @60:1
