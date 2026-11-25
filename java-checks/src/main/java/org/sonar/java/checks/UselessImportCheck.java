@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -36,7 +37,9 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.diagnostics.ProblemKind;
 import org.sonar.plugins.java.api.diagnostics.Warning;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -154,9 +157,43 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitIdentifier(IdentifierTree identifier) {
       Symbol symbol = identifier.symbol();
-      if (symbol.isTypeSymbol() && !isQualifiedMember(identifier)) {
+      if (symbol.isTypeSymbol() && !isQualifiedMember(identifier) && !isInMemberScope(identifier, symbol)) {
         types.add((symbol).type().fullyQualifiedName().replace('$', '.'));
       }
+    }
+
+    /**
+     * A member type of an enclosing class, or inherited from a supertype of it, is in scope without any import. Supertypes are only
+     * followed through classes declared in the analyzed sources: the members of binary classes can be hidden by non-public member types
+     * which the API of the targeted release does not expose.
+     */
+    private static boolean isInMemberScope(IdentifierTree identifier, Symbol type) {
+      Symbol owner = type.owner();
+      if (owner == null || !owner.isTypeSymbol()) {
+        return false;
+      }
+      Tree current = identifier.parent();
+      while (current != null) {
+        if (current instanceof ClassTree classTree && isOwnerReachableFrom(classTree.symbol(), owner, new HashSet<>())) {
+          return true;
+        }
+        current = current.parent();
+      }
+      return false;
+    }
+
+    private static boolean isOwnerReachableFrom(Symbol.TypeSymbol candidate, Symbol owner, Set<Symbol> visited) {
+      if (candidate.type().fullyQualifiedName().equals(owner.type().fullyQualifiedName())) {
+        return true;
+      }
+      if (candidate.declaration() == null || !visited.add(candidate)) {
+        return false;
+      }
+      return directSuperTypes(candidate).anyMatch(superType -> isOwnerReachableFrom(superType.symbol(), owner, visited));
+    }
+
+    private static Stream<Type> directSuperTypes(Symbol.TypeSymbol symbol) {
+      return Stream.concat(Stream.ofNullable(symbol.superClass()), symbol.interfaces().stream());
     }
 
     private static boolean isQualifiedMember(IdentifierTree identifier) {

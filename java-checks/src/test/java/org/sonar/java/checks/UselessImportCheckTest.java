@@ -116,4 +116,12 @@ class UselessImportCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void imports_redundant_because_of_inherited_member_types() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/UselessImportCheck/RedundantViaMemberScope.java"))
+      .withCheck(new UselessImportCheck())
+      .verifyIssues();
+  }
+
 }
