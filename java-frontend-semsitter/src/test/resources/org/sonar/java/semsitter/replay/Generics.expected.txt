@@ -1,1 +1,1047 @@
-FAILURE Unsupported construct: method_reference
+COMPILATION_UNIT @1:1
+IMPORT @1:1
+TOKEN @1:1
+MEMBER_SELECT @1:8 : ?
+MEMBER_SELECT @1:8 : ?
+IDENTIFIER @1:8 id java unknown : ?
+TOKEN @1:8
+TOKEN @1:12
+IDENTIFIER @1:13 id util unknown : ?
+TOKEN @1:13
+TOKEN @1:17
+IDENTIFIER @1:18 id ArrayList unknown : ?
+TOKEN @1:18
+TOKEN @1:27
+IMPORT @2:1
+TOKEN @2:1
+MEMBER_SELECT @2:8 : ?
+MEMBER_SELECT @2:8 : ?
+IDENTIFIER @2:8 id java unknown : ?
+TOKEN @2:8
+TOKEN @2:12
+IDENTIFIER @2:13 id util unknown : ?
+TOKEN @2:13
+TOKEN @2:17
+IDENTIFIER @2:18 id Arrays unknown : ?
+TOKEN @2:18
+TOKEN @2:24
+IMPORT @3:1
+TOKEN @3:1
+MEMBER_SELECT @3:8 : ?
+MEMBER_SELECT @3:8 : ?
+IDENTIFIER @3:8 id java unknown : ?
+TOKEN @3:8
+TOKEN @3:12
+IDENTIFIER @3:13 id util unknown : ?
+TOKEN @3:13
+TOKEN @3:17
+IDENTIFIER @3:18 id Collections unknown : ?
+TOKEN @3:18
+TOKEN @3:29
+IMPORT @4:1
+TOKEN @4:1
+MEMBER_SELECT @4:8 : ?
+MEMBER_SELECT @4:8 : ?
+IDENTIFIER @4:8 id java unknown : ?
+TOKEN @4:8
+TOKEN @4:12
+IDENTIFIER @4:13 id util unknown : ?
+TOKEN @4:13
+TOKEN @4:17
+IDENTIFIER @4:18 id HashMap unknown : ?
+TOKEN @4:18
+TOKEN @4:25
+IMPORT @5:1
+TOKEN @5:1
+MEMBER_SELECT @5:8 : ?
+MEMBER_SELECT @5:8 : ?
+IDENTIFIER @5:8 id java unknown : ?
+TOKEN @5:8
+TOKEN @5:12
+IDENTIFIER @5:13 id util unknown : ?
+TOKEN @5:13
+TOKEN @5:17
+IDENTIFIER @5:18 id List unknown : ?
+TOKEN @5:18
+TOKEN @5:22
+IMPORT @6:1
+TOKEN @6:1
+MEMBER_SELECT @6:8 : ?
+MEMBER_SELECT @6:8 : ?
+IDENTIFIER @6:8 id java unknown : ?
+TOKEN @6:8
+TOKEN @6:12
+IDENTIFIER @6:13 id util unknown : ?
+TOKEN @6:13
+TOKEN @6:17
+IDENTIFIER @6:18 id Map unknown : ?
+TOKEN @6:18
+TOKEN @6:21
+IMPORT @7:1
+TOKEN @7:1
+MEMBER_SELECT @7:8 : ?
+MEMBER_SELECT @7:8 : ?
+IDENTIFIER @7:8 id java unknown : ?
+TOKEN @7:8
+TOKEN @7:12
+IDENTIFIER @7:13 id util unknown : ?
+TOKEN @7:13
+TOKEN @7:17
+IDENTIFIER @7:18 id Optional unknown : ?
+TOKEN @7:18
+TOKEN @7:26
+IMPORT @8:1
+TOKEN @8:1
+MEMBER_SELECT @8:8 : ?
+MEMBER_SELECT @8:8 : ?
+MEMBER_SELECT @8:8 : ?
+IDENTIFIER @8:8 id java unknown : ?
+TOKEN @8:8
+TOKEN @8:12
+IDENTIFIER @8:13 id util unknown : ?
+TOKEN @8:13
+TOKEN @8:17
+IDENTIFIER @8:18 id function unknown : ?
+TOKEN @8:18
+TOKEN @8:26
+IDENTIFIER @8:27 id Function unknown : ?
+TOKEN @8:27
+TOKEN @8:35
+CLASS @10:1 class .Generics [t package] : Generics super java.lang.Object interfaces []
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] members [37:48, <init>, Box, box, copied, empty, entry, field, firstItem, firstNumber, fixed, invert, inverted, items, map, mapped, max, maxInt, maxString, maybe, numbers, orElse, size, unboxed, values] lookupToString 0 outermost Generics annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw true declaring Generics
+MODIFIERS
+TOKEN @10:1
+IDENTIFIER @10:7 id Generics .Generics [t package] : Generics : Generics
+TOKEN @10:7
+TYPE_PARAMETERS @10:15
+TOKEN @10:15
+TYPE_PARAMETER @10:16
+IDENTIFIER @10:16 id T Generics.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @10:16
+TOKEN @10:17
+LIST
+LIST
+TOKEN @10:19
+CLASS @12:3 class Generics.Box [t static package] : Generics$Box super java.lang.Object interfaces []
+  details declared true usages 5 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [static, package] members [<init>, get, map, value] lookupToString 0 outermost Generics annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw true declaring Box
+MODIFIERS @12:3
+TOKEN @12:3
+TOKEN @12:10
+IDENTIFIER @12:16 id Box Generics.Box [t static package] : Generics$Box : Generics$Box
+TOKEN @12:16
+TYPE_PARAMETERS @12:19
+TOKEN @12:19
+TYPE_PARAMETER @12:20
+IDENTIFIER @12:20 id E Box.E [t package] : E erasure java.lang.Object : E erasure java.lang.Object
+TOKEN @12:20
+TOKEN @12:21
+LIST
+LIST
+TOKEN @12:23
+VARIABLE @13:5 var Box.value [v package] : E erasure java.lang.Object
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Box flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @13:5 id E Box.E [t package] : E erasure java.lang.Object : E erasure java.lang.Object
+TOKEN @13:5
+IDENTIFIER @13:7 id value Box.value [v package] : E erasure java.lang.Object : E erasure java.lang.Object
+TOKEN @13:7
+TOKEN @13:12
+CONSTRUCTOR @15:5 method Box.<init> [m package] : ? (E erasure java.lang.Object) returns void throws [] sig Generics$Box#<init>(Ljava/lang/Object;)V overrides false
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Box flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+IDENTIFIER @15:5 id Box Box.<init> [m package] : ? (E erasure java.lang.Object) returns void throws [] sig Generics$Box#<init>(Ljava/lang/Object;)V : void
+TOKEN @15:5
+TOKEN @15:8
+VARIABLE @15:9 var <init>.value [v package] : E erasure java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Box flags [package] local true parameter true effectivelyFinal true constant null owner <init> Generics$Box#<init>(Ljava/lang/Object;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 2 metadata 0 enclosing Box type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @15:9 id E Box.E [t package] : E erasure java.lang.Object : E erasure java.lang.Object
+TOKEN @15:9
+IDENTIFIER @15:11 id value <init>.value [v package] : E erasure java.lang.Object : E erasure java.lang.Object
+TOKEN @15:11
+TOKEN @15:16
+BLOCK @15:18
+TOKEN @15:18
+EXPRESSION_STATEMENT @16:7
+ASSIGNMENT @16:7 : E erasure java.lang.Object
+MEMBER_SELECT @16:7 : E erasure java.lang.Object
+IDENTIFIER @16:7 id this Box.this [v final] : Generics$Box : Generics$Box
+TOKEN @16:7
+TOKEN @16:11
+IDENTIFIER @16:12 id value Box.value [v package] : E erasure java.lang.Object : E erasure java.lang.Object
+TOKEN @16:12
+TOKEN @16:18
+IDENTIFIER @16:20 id value <init>.value [v package] : E erasure java.lang.Object : E erasure java.lang.Object
+TOKEN @16:20
+TOKEN @16:25
+TOKEN @17:5
+METHOD @19:5 method Box.get [m package] : ? () returns E erasure java.lang.Object throws [] sig Generics$Box#get()Ljava/lang/Object; overrides false
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Box flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+IDENTIFIER @19:5 id E Box.E [t package] : E erasure java.lang.Object : E erasure java.lang.Object
+TOKEN @19:5
+IDENTIFIER @19:7 id get Box.get [m package] : ? () returns E erasure java.lang.Object throws [] sig Generics$Box#get()Ljava/lang/Object; : E erasure java.lang.Object
+TOKEN @19:7
+TOKEN @19:10
+TOKEN @19:11
+BLOCK @19:13
+TOKEN @19:13
+RETURN_STATEMENT @20:7
+TOKEN @20:7
+IDENTIFIER @20:14 id value Box.value [v package] : E erasure java.lang.Object : E erasure java.lang.Object
+TOKEN @20:14
+TOKEN @20:19
+TOKEN @21:5
+METHOD @23:5 method Box.map [m package] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns Generics$Box<R erasure java.lang.Object> throws [] sig Generics$Box#map(Ljava/util/function/Function;)LGenerics$Box; overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Box flags [package] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [mapper] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS @23:5
+TOKEN @23:5
+TYPE_PARAMETER @23:6
+IDENTIFIER @23:6 id R map.R [t package] : R erasure java.lang.Object : R erasure java.lang.Object
+TOKEN @23:6
+TOKEN @23:7
+PARAMETERIZED_TYPE @23:9 : Generics$Box<R erasure java.lang.Object>
+IDENTIFIER @23:9 id Box Generics.Box [t static package] : Generics$Box<R erasure java.lang.Object> : Generics$Box<R erasure java.lang.Object>
+TOKEN @23:9
+TYPE_ARGUMENTS @23:12
+TOKEN @23:12
+IDENTIFIER @23:13 id R map.R [t package] : R erasure java.lang.Object : R erasure java.lang.Object
+TOKEN @23:13
+TOKEN @23:14
+IDENTIFIER @23:16 id map Box.map [m package] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns Generics$Box<R erasure java.lang.Object> throws [] sig Generics$Box#map(Ljava/util/function/Function;)LGenerics$Box; : Generics$Box<R erasure java.lang.Object>
+TOKEN @23:16
+TOKEN @23:19
+VARIABLE @23:20 var map.mapper [v package] : java.util.function.Function<java.lang.Object,java.lang.Object>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Box flags [package] local true parameter true effectivelyFinal true constant null owner map Generics$Box#map(Ljava/util/function/Function;)LGenerics$Box; [package] returns Generics$Box<R erasure java.lang.Object> parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing Box type true kinds truefalsefalse other falsefalsefalsefalsetruetrue1falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @23:20 : java.util.function.Function<java.lang.Object,java.lang.Object>
+IDENTIFIER @23:20 id Function java.util.function.Function [t public interface] : java.util.function.Function<java.lang.Object,java.lang.Object> : java.util.function.Function<java.lang.Object,java.lang.Object>
+TOKEN @23:20
+TYPE_ARGUMENTS @23:28
+TOKEN @23:28
+SUPER_WILDCARD @23:29
+TOKEN @23:29
+TOKEN @23:31
+IDENTIFIER @23:37 id E Box.E [t package] : E erasure java.lang.Object : E erasure java.lang.Object
+TOKEN @23:37
+TOKEN @23:38
+EXTENDS_WILDCARD @23:40
+TOKEN @23:40
+TOKEN @23:42
+IDENTIFIER @23:50 id R map.R [t package] : R erasure java.lang.Object : R erasure java.lang.Object
+TOKEN @23:50
+TOKEN @23:51
+IDENTIFIER @23:53 id mapper map.mapper [v package] : java.util.function.Function<java.lang.Object,java.lang.Object> : java.util.function.Function<java.lang.Object,java.lang.Object>
+TOKEN @23:53
+TOKEN @23:59
+BLOCK @23:61
+TOKEN @23:61
+RETURN_STATEMENT @24:7
+TOKEN @24:7
+NEW_CLASS @24:14 new Box.<init> [m package] : ? (E erasure java.lang.Object) returns void throws [] sig Generics$Box#<init>(Ljava/lang/Object;)V : Generics$Box
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Box flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+TOKEN @24:14
+PARAMETERIZED_TYPE @24:18 : Generics$Box
+IDENTIFIER @24:18 id Box Box.<init> [m package] : ? (E erasure java.lang.Object) returns void throws [] sig Generics$Box#<init>(Ljava/lang/Object;)V : Generics$Box
+TOKEN @24:18
+TYPE_ARGUMENTS @24:21
+TOKEN @24:21
+TOKEN @24:22
+ARGUMENTS @24:23
+TOKEN @24:23
+METHOD_INVOCATION @24:24 call Function.apply [m abstract public] : ? (java.lang.Object) returns java.lang.Object throws [] sig java.util.function.Function#apply(Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Function flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @24:24 : ?
+IDENTIFIER @24:24 id mapper map.mapper [v package] : java.util.function.Function<java.lang.Object,java.lang.Object> : java.util.function.Function<java.lang.Object,java.lang.Object>
+TOKEN @24:24
+TOKEN @24:30
+IDENTIFIER @24:31 id apply Function.apply [m abstract public] : ? (java.lang.Object) returns java.lang.Object throws [] sig java.util.function.Function#apply(Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+TOKEN @24:31
+ARGUMENTS @24:36
+TOKEN @24:36
+IDENTIFIER @24:37 id value Box.value [v package] : E erasure java.lang.Object : E erasure java.lang.Object
+TOKEN @24:37
+TOKEN @24:42
+TOKEN @24:43
+TOKEN @24:44
+TOKEN @25:5
+TOKEN @26:3
+VARIABLE @28:3 var Generics.field [v package] : T erasure java.lang.Object
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @28:3 id T Generics.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @28:3
+IDENTIFIER @28:5 id field Generics.field [v package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @28:5
+TOKEN @28:10
+VARIABLE @29:3 var Generics.items [v package] : java.util.List<T erasure java.lang.Object>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @29:3 : java.util.List<T erasure java.lang.Object>
+IDENTIFIER @29:3 id List java.util.List [t public interface] : java.util.List<T erasure java.lang.Object> : java.util.List<T erasure java.lang.Object>
+TOKEN @29:3
+TYPE_ARGUMENTS @29:7
+TOKEN @29:7
+IDENTIFIER @29:8 id T Generics.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @29:8
+TOKEN @29:9
+IDENTIFIER @29:11 id items Generics.items [v package] : java.util.List<T erasure java.lang.Object> : java.util.List<T erasure java.lang.Object>
+TOKEN @29:11
+TOKEN @29:17
+NEW_CLASS @29:19 new ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ArrayList flags [public] overridden [AbstractList.<init>[], AbstractCollection.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @29:19
+PARAMETERIZED_TYPE @29:23 : java.util.ArrayList
+IDENTIFIER @29:23 id ArrayList ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+TOKEN @29:23
+TYPE_ARGUMENTS @29:32
+TOKEN @29:32
+TOKEN @29:33
+ARGUMENTS @29:34
+TOKEN @29:34
+TOKEN @29:35
+TOKEN @29:36
+VARIABLE @30:3 var Generics.map [v package] : java.util.Map<java.lang.String,java.util.List<java.lang.Integer>>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @30:3 : java.util.Map<java.lang.String,java.util.List<java.lang.Integer>>
+IDENTIFIER @30:3 id Map java.util.Map [t public interface] : java.util.Map<java.lang.String,java.util.List<java.lang.Integer>> : java.util.Map<java.lang.String,java.util.List<java.lang.Integer>>
+TOKEN @30:3
+TYPE_ARGUMENTS @30:6
+TOKEN @30:6
+IDENTIFIER @30:7 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @30:7
+TOKEN @30:13
+PARAMETERIZED_TYPE @30:15 : java.util.List<java.lang.Integer>
+IDENTIFIER @30:15 id List java.util.List [t public interface] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
+TOKEN @30:15
+TYPE_ARGUMENTS @30:19
+TOKEN @30:19
+IDENTIFIER @30:20 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @30:20
+TOKEN @30:27
+TOKEN @30:28
+IDENTIFIER @30:30 id map Generics.map [v package] : java.util.Map<java.lang.String,java.util.List<java.lang.Integer>> : java.util.Map<java.lang.String,java.util.List<java.lang.Integer>>
+TOKEN @30:30
+TOKEN @30:34
+NEW_CLASS @30:36 new HashMap.<init> [m public] : ? () returns void throws [] sig java.util.HashMap#<init>()V : java.util.HashMap
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing HashMap flags [public] overridden [AbstractMap.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @30:36
+PARAMETERIZED_TYPE @30:40 : java.util.HashMap
+IDENTIFIER @30:40 id HashMap HashMap.<init> [m public] : ? () returns void throws [] sig java.util.HashMap#<init>()V : java.util.HashMap
+TOKEN @30:40
+TYPE_ARGUMENTS @30:47
+TOKEN @30:47
+TOKEN @30:48
+ARGUMENTS @30:49
+TOKEN @30:49
+TOKEN @30:50
+TOKEN @30:51
+VARIABLE @31:3 var Generics.box [v package] : Generics$Box<java.lang.String>
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @31:3 : Generics$Box<java.lang.String>
+IDENTIFIER @31:3 id Box Generics.Box [t static package] : Generics$Box<java.lang.String> : Generics$Box<java.lang.String>
+TOKEN @31:3
+TYPE_ARGUMENTS @31:6
+TOKEN @31:6
+IDENTIFIER @31:7 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @31:7
+TOKEN @31:13
+IDENTIFIER @31:15 id box Generics.box [v package] : Generics$Box<java.lang.String> : Generics$Box<java.lang.String>
+TOKEN @31:15
+TOKEN @31:19
+NEW_CLASS @31:21 new Box.<init> [m package] : ? (E erasure java.lang.Object) returns void throws [] sig Generics$Box#<init>(Ljava/lang/Object;)V : Generics$Box
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Box flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+TOKEN @31:21
+PARAMETERIZED_TYPE @31:25 : Generics$Box
+IDENTIFIER @31:25 id Box Box.<init> [m package] : ? (E erasure java.lang.Object) returns void throws [] sig Generics$Box#<init>(Ljava/lang/Object;)V : Generics$Box
+TOKEN @31:25
+TYPE_ARGUMENTS @31:28
+TOKEN @31:28
+TOKEN @31:29
+ARGUMENTS @31:30
+TOKEN @31:30
+STRING_LITERAL @31:31 : java.lang.String = text
+TOKEN @31:31
+TOKEN @31:37
+TOKEN @31:38
+VARIABLE @32:3 var Generics.mapped [v package] : Generics$Box<java.lang.Integer>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @32:3 : Generics$Box<java.lang.Integer>
+IDENTIFIER @32:3 id Box Generics.Box [t static package] : Generics$Box<java.lang.Integer> : Generics$Box<java.lang.Integer>
+TOKEN @32:3
+TYPE_ARGUMENTS @32:6
+TOKEN @32:6
+IDENTIFIER @32:7 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @32:7
+TOKEN @32:14
+IDENTIFIER @32:16 id mapped Generics.mapped [v package] : Generics$Box<java.lang.Integer> : Generics$Box<java.lang.Integer>
+TOKEN @32:16
+TOKEN @32:23
+METHOD_INVOCATION @32:25 call Box.map [m package] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns Generics$Box<R erasure java.lang.Object> throws [] sig Generics$Box#map(Ljava/util/function/Function;)LGenerics$Box; : Generics$Box<R erasure java.lang.Object>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Box flags [package] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [mapper] parameterMetadata []
+MEMBER_SELECT @32:25 : ?
+IDENTIFIER @32:25 id box Generics.box [v package] : Generics$Box<java.lang.String> : Generics$Box<java.lang.String>
+TOKEN @32:25
+TOKEN @32:28
+IDENTIFIER @32:29 id map Box.map [m package] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns Generics$Box<R erasure java.lang.Object> throws [] sig Generics$Box#map(Ljava/util/function/Function;)LGenerics$Box; : Generics$Box<R erasure java.lang.Object>
+TOKEN @32:29
+ARGUMENTS @32:32
+TOKEN @32:32
+METHOD_REFERENCE @32:33 : java.util.function.Function<java.lang.Object,java.lang.Object>
+IDENTIFIER @32:33 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @32:33
+TOKEN @32:39
+IDENTIFIER @32:41 id length String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
+TOKEN @32:41
+TOKEN @32:47
+TOKEN @32:48
+VARIABLE @33:3 var Generics.unboxed [v package] : java.lang.String
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @33:3 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @33:3
+IDENTIFIER @33:10 id unboxed Generics.unboxed [v package] : java.lang.String : java.lang.String
+TOKEN @33:10
+TOKEN @33:18
+METHOD_INVOCATION @33:20 call Box.get [m package] : ? () returns E erasure java.lang.Object throws [] sig Generics$Box#get()Ljava/lang/Object; : E erasure java.lang.Object
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Box flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @33:20 : ?
+IDENTIFIER @33:20 id box Generics.box [v package] : Generics$Box<java.lang.String> : Generics$Box<java.lang.String>
+TOKEN @33:20
+TOKEN @33:23
+IDENTIFIER @33:24 id get Box.get [m package] : ? () returns E erasure java.lang.Object throws [] sig Generics$Box#get()Ljava/lang/Object; : E erasure java.lang.Object
+TOKEN @33:24
+ARGUMENTS @33:27
+TOKEN @33:27
+TOKEN @33:28
+TOKEN @33:29
+VARIABLE @34:3 var Generics.size [v package] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @34:3 : int
+TOKEN @34:3
+IDENTIFIER @34:7 id size Generics.size [v package] : int : int
+TOKEN @34:7
+TOKEN @34:12
+METHOD_INVOCATION @34:14 call Box.get [m package] : ? () returns E erasure java.lang.Object throws [] sig Generics$Box#get()Ljava/lang/Object; : E erasure java.lang.Object
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Box flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @34:14 : ?
+IDENTIFIER @34:14 id mapped Generics.mapped [v package] : Generics$Box<java.lang.Integer> : Generics$Box<java.lang.Integer>
+TOKEN @34:14
+TOKEN @34:20
+IDENTIFIER @34:21 id get Box.get [m package] : ? () returns E erasure java.lang.Object throws [] sig Generics$Box#get()Ljava/lang/Object; : E erasure java.lang.Object
+TOKEN @34:21
+ARGUMENTS @34:24
+TOKEN @34:24
+TOKEN @34:25
+TOKEN @34:26
+VARIABLE @35:3 var Generics.fixed [v package] : java.util.List<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @35:3 : java.util.List<java.lang.String>
+IDENTIFIER @35:3 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @35:3
+TYPE_ARGUMENTS @35:7
+TOKEN @35:7
+IDENTIFIER @35:8 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @35:8
+TOKEN @35:14
+IDENTIFIER @35:16 id fixed Generics.fixed [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @35:16
+TOKEN @35:22
+METHOD_INVOCATION @35:24 call Arrays.asList [m static public] : ? (java.lang.String[]) returns java.util.List throws [] sig java.util.Arrays#asList([Ljava/lang/Object;)Ljava/util/List; : java.util.List
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Arrays flags [static, public] overridden [] overridable false generic false default false synchronized false varargs true native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @35:24 : ?
+IDENTIFIER @35:24 id Arrays java.util.Arrays [t final public] : java.util.Arrays : java.util.Arrays
+TOKEN @35:24
+TOKEN @35:30
+IDENTIFIER @35:31 id asList Arrays.asList [m static public] : ? (java.lang.String[]) returns java.util.List throws [] sig java.util.Arrays#asList([Ljava/lang/Object;)Ljava/util/List; : java.util.List
+TOKEN @35:31
+ARGUMENTS @35:37
+TOKEN @35:37
+STRING_LITERAL @35:38 : java.lang.String = a
+TOKEN @35:38
+TOKEN @35:41
+STRING_LITERAL @35:43 : java.lang.String = b
+TOKEN @35:43
+TOKEN @35:46
+TOKEN @35:47
+VARIABLE @36:3 var Generics.empty [v package] : java.util.List<java.lang.Integer>
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @36:3 : java.util.List<java.lang.Integer>
+IDENTIFIER @36:3 id List java.util.List [t public interface] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
+TOKEN @36:3
+TYPE_ARGUMENTS @36:7
+TOKEN @36:7
+IDENTIFIER @36:8 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @36:8
+TOKEN @36:15
+IDENTIFIER @36:17 id empty Generics.empty [v package] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
+TOKEN @36:17
+TOKEN @36:23
+METHOD_INVOCATION @36:25 call Collections.emptyList [m static final public] : ? () returns java.util.List throws [] sig java.util.Collections#emptyList()Ljava/util/List; : java.util.List
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collections flags [static, final, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @36:25 : ?
+IDENTIFIER @36:25 id Collections java.util.Collections [t public] : java.util.Collections : java.util.Collections
+TOKEN @36:25
+TOKEN @36:36
+IDENTIFIER @36:37 id emptyList Collections.emptyList [m static final public] : ? () returns java.util.List throws [] sig java.util.Collections#emptyList()Ljava/util/List; : java.util.List
+TOKEN @36:37
+ARGUMENTS @36:46
+TOKEN @36:46
+TOKEN @36:47
+TOKEN @36:48
+VARIABLE @37:3 var Generics.maybe [v package] : java.util.Optional<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @37:3 : java.util.Optional<java.lang.String>
+IDENTIFIER @37:3 id Optional java.util.Optional [t final public] : java.util.Optional<java.lang.String> : java.util.Optional<java.lang.String>
+TOKEN @37:3
+TYPE_ARGUMENTS @37:11
+TOKEN @37:11
+IDENTIFIER @37:12 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @37:12
+TOKEN @37:18
+IDENTIFIER @37:20 id maybe Generics.maybe [v package] : java.util.Optional<java.lang.String> : java.util.Optional<java.lang.String>
+TOKEN @37:20
+TOKEN @37:26
+METHOD_INVOCATION @37:28 call Optional.map [m public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.Optional<U erasure java.lang.Object> throws [] sig java.util.Optional#map(Ljava/util/function/Function;)Ljava/util/Optional; : java.util.Optional<U erasure java.lang.Object>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Optional flags [public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @37:28 : ?
+METHOD_INVOCATION @37:28 call Optional.of [m static public] : ? (java.lang.String) returns java.util.Optional throws [] sig java.util.Optional#of(Ljava/lang/Object;)Ljava/util/Optional; : java.util.Optional
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Optional flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @37:28 : ?
+IDENTIFIER @37:28 id Optional java.util.Optional [t final public] : java.util.Optional : java.util.Optional
+TOKEN @37:28
+TOKEN @37:36
+IDENTIFIER @37:37 id of Optional.of [m static public] : ? (java.lang.String) returns java.util.Optional throws [] sig java.util.Optional#of(Ljava/lang/Object;)Ljava/util/Optional; : java.util.Optional
+TOKEN @37:37
+ARGUMENTS @37:39
+TOKEN @37:39
+STRING_LITERAL @37:40 : java.lang.String = x
+TOKEN @37:40
+TOKEN @37:43
+TOKEN @37:44
+IDENTIFIER @37:45 id map Optional.map [m public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.Optional<U erasure java.lang.Object> throws [] sig java.util.Optional#map(Ljava/util/function/Function;)Ljava/util/Optional; : java.util.Optional<U erasure java.lang.Object>
+TOKEN @37:45
+ARGUMENTS @37:48
+TOKEN @37:48
+LAMBDA_EXPRESSION @37:49 : java.util.function.Function<java.lang.Object,java.lang.Object>
+VARIABLE @37:49 var apply.s [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Function flags [package] local true parameter true effectivelyFinal true constant null owner apply java.util.function.Function#apply(Ljava/lang/Object;)Ljava/lang/Object; [abstract, public] returns java.lang.Object parameters 1 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing Function type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+INFERED_TYPE
+IDENTIFIER @37:49 id s apply.s [v package] : java.lang.String : java.lang.String
+TOKEN @37:49
+TOKEN @37:51
+PLUS @37:54 : java.lang.String
+IDENTIFIER @37:54 id s apply.s [v package] : java.lang.String : java.lang.String
+TOKEN @37:54
+TOKEN @37:56
+STRING_LITERAL @37:58 : java.lang.String = y
+TOKEN @37:58
+TOKEN @37:61
+TOKEN @37:62
+VARIABLE @38:3 var Generics.orElse [v package] : java.lang.String
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @38:3 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @38:3
+IDENTIFIER @38:10 id orElse Generics.orElse [v package] : java.lang.String : java.lang.String
+TOKEN @38:10
+TOKEN @38:17
+METHOD_INVOCATION @38:19 call Optional.orElse [m public] : ? (java.lang.String) returns java.lang.Object throws [] sig java.util.Optional#orElse(Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Optional flags [public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @38:19 : ?
+IDENTIFIER @38:19 id maybe Generics.maybe [v package] : java.util.Optional<java.lang.String> : java.util.Optional<java.lang.String>
+TOKEN @38:19
+TOKEN @38:24
+IDENTIFIER @38:25 id orElse Optional.orElse [m public] : ? (java.lang.String) returns java.lang.Object throws [] sig java.util.Optional#orElse(Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+TOKEN @38:25
+ARGUMENTS @38:31
+TOKEN @38:31
+STRING_LITERAL @38:32 : java.lang.String = none
+TOKEN @38:32
+TOKEN @38:38
+TOKEN @38:39
+VARIABLE @39:3 var Generics.numbers [v package] : java.util.List<java.lang.Number>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @39:3 : java.util.List<java.lang.Number>
+IDENTIFIER @39:3 id List java.util.List [t public interface] : java.util.List<java.lang.Number> : java.util.List<java.lang.Number>
+TOKEN @39:3
+TYPE_ARGUMENTS @39:7
+TOKEN @39:7
+EXTENDS_WILDCARD @39:8
+TOKEN @39:8
+TOKEN @39:10
+IDENTIFIER @39:18 id Number java.lang.Number [t abstract public] : java.lang.Number : java.lang.Number
+TOKEN @39:18
+TOKEN @39:24
+IDENTIFIER @39:26 id numbers Generics.numbers [v package] : java.util.List<java.lang.Number> : java.util.List<java.lang.Number>
+TOKEN @39:26
+TOKEN @39:34
+METHOD_INVOCATION @39:36 call List.of [m static public] : ? (java.lang.Integer,java.lang.Integer) returns java.util.List throws [] sig java.util.List#of(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List; : java.util.List
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
+MEMBER_SELECT @39:36 : ?
+IDENTIFIER @39:36 id List java.util.List [t public interface] : java.util.List : java.util.List
+TOKEN @39:36
+TOKEN @39:40
+IDENTIFIER @39:41 id of List.of [m static public] : ? (java.lang.Integer,java.lang.Integer) returns java.util.List throws [] sig java.util.List#of(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List; : java.util.List
+TOKEN @39:41
+ARGUMENTS @39:43
+TOKEN @39:43
+INT_LITERAL @39:44 : int = 1
+TOKEN @39:44
+TOKEN @39:45
+DOUBLE_LITERAL @39:47 : double
+TOKEN @39:47
+TOKEN @39:50
+TOKEN @39:51
+VARIABLE @40:3 var Generics.firstNumber [v package] : java.lang.Number
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @40:3 id Number java.lang.Number [t abstract public] : java.lang.Number : java.lang.Number
+TOKEN @40:3
+IDENTIFIER @40:10 id firstNumber Generics.firstNumber [v package] : java.lang.Number : java.lang.Number
+TOKEN @40:10
+TOKEN @40:22
+METHOD_INVOCATION @40:24 call List.get [m abstract public] : ? (int) returns java.lang.Object throws [] sig java.util.List#get(I)Ljava/lang/Object; : java.lang.Object
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @40:24 : ?
+IDENTIFIER @40:24 id numbers Generics.numbers [v package] : java.util.List<java.lang.Number> : java.util.List<java.lang.Number>
+TOKEN @40:24
+TOKEN @40:31
+IDENTIFIER @40:32 id get List.get [m abstract public] : ? (int) returns java.lang.Object throws [] sig java.util.List#get(I)Ljava/lang/Object; : java.lang.Object
+TOKEN @40:32
+ARGUMENTS @40:35
+TOKEN @40:35
+INT_LITERAL @40:36 : int = 0
+TOKEN @40:36
+TOKEN @40:37
+TOKEN @40:38
+METHOD @42:3 method Generics.max [m static package] : ? (A erasure java.lang.Comparable,A erasure java.lang.Comparable) returns Generics#max<:java.lang.Comparable<>>( throws [] sig Generics#max(Ljava/lang/Comparable;Ljava/lang/Comparable;)LGenerics#max<:java/lang/Comparable<>>(; overrides false
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [static, package] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [left, right] parameterMetadata []
+MODIFIERS @42:3
+TOKEN @42:3
+TYPE_PARAMETERS @42:10
+TOKEN @42:10
+TYPE_PARAMETER @42:11
+IDENTIFIER @42:11 id A max.A [t package] : A erasure java.lang.Comparable : A erasure java.lang.Comparable
+TOKEN @42:11
+TOKEN @42:13
+LIST @42:21
+PARAMETERIZED_TYPE @42:21 : java.lang.Comparable<A erasure java.lang.Comparable>
+IDENTIFIER @42:21 id Comparable java.lang.Comparable [t public interface] : java.lang.Comparable<A erasure java.lang.Comparable> : java.lang.Comparable<A erasure java.lang.Comparable>
+TOKEN @42:21
+TYPE_ARGUMENTS @42:31
+TOKEN @42:31
+IDENTIFIER @42:32 id A max.A [t package] : A erasure java.lang.Comparable : A erasure java.lang.Comparable
+TOKEN @42:32
+TOKEN @42:33
+TOKEN @42:34
+IDENTIFIER @42:36 id A max.A [t package] : A erasure java.lang.Comparable : A erasure java.lang.Comparable
+TOKEN @42:36
+IDENTIFIER @42:38 id max Generics.max [m static package] : ? (A erasure java.lang.Comparable,A erasure java.lang.Comparable) returns Generics#max<:java.lang.Comparable<>>( throws [] sig Generics#max(Ljava/lang/Comparable;Ljava/lang/Comparable;)LGenerics#max<:java/lang/Comparable<>>(; : Generics#max<:java.lang.Comparable<>>(
+TOKEN @42:38
+TOKEN @42:41
+VARIABLE @42:42 var max.left [v package] : A erasure java.lang.Comparable
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local true parameter true effectivelyFinal true constant null owner max Generics#max(Ljava/lang/Comparable;Ljava/lang/Comparable;)LGenerics#max<:java/lang/Comparable<>>(; [static, package] returns Generics#max<:java.lang.Comparable<>>( parameters 2 thrown 0 overridden 0 declared true usages 2 metadata 0 enclosing Generics type true kinds truefalsefalse other falsefalsefalsefalsefalsetrue2falsefalse
+MODIFIERS
+IDENTIFIER @42:42 id A max.A [t package] : A erasure java.lang.Comparable : A erasure java.lang.Comparable
+TOKEN @42:42
+IDENTIFIER @42:44 id left max.left [v package] : A erasure java.lang.Comparable : A erasure java.lang.Comparable
+TOKEN @42:44
+TOKEN @42:48
+VARIABLE @42:50 var max.right [v package] : A erasure java.lang.Comparable
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local true parameter true effectivelyFinal true constant null owner max Generics#max(Ljava/lang/Comparable;Ljava/lang/Comparable;)LGenerics#max<:java/lang/Comparable<>>(; [static, package] returns Generics#max<:java.lang.Comparable<>>( parameters 2 thrown 0 overridden 0 declared true usages 2 metadata 0 enclosing Generics type true kinds truefalsefalse other falsefalsefalsefalsefalsetrue2falsefalse
+MODIFIERS
+IDENTIFIER @42:50 id A max.A [t package] : A erasure java.lang.Comparable : A erasure java.lang.Comparable
+TOKEN @42:50
+IDENTIFIER @42:52 id right max.right [v package] : A erasure java.lang.Comparable : A erasure java.lang.Comparable
+TOKEN @42:52
+TOKEN @42:57
+BLOCK @42:59
+TOKEN @42:59
+RETURN_STATEMENT @43:5
+TOKEN @43:5
+CONDITIONAL_EXPRESSION @43:12 : A erasure java.lang.Comparable
+GREATER_THAN @43:12 : boolean
+METHOD_INVOCATION @43:12 call Comparable.compareTo [m abstract public] : ? (java.lang.Object) returns int throws [] sig java.lang.Comparable#compareTo(Ljava/lang/Object;)I : int
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Comparable flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @43:12 : ?
+IDENTIFIER @43:12 id left max.left [v package] : A erasure java.lang.Comparable : A erasure java.lang.Comparable
+TOKEN @43:12
+TOKEN @43:16
+IDENTIFIER @43:17 id compareTo Comparable.compareTo [m abstract public] : ? (java.lang.Object) returns int throws [] sig java.lang.Comparable#compareTo(Ljava/lang/Object;)I : int
+TOKEN @43:17
+ARGUMENTS @43:26
+TOKEN @43:26
+IDENTIFIER @43:27 id right max.right [v package] : A erasure java.lang.Comparable : A erasure java.lang.Comparable
+TOKEN @43:27
+TOKEN @43:32
+TOKEN @43:34
+INT_LITERAL @43:36 : int = 0
+TOKEN @43:36
+TOKEN @43:38
+IDENTIFIER @43:40 id left max.left [v package] : A erasure java.lang.Comparable : A erasure java.lang.Comparable
+TOKEN @43:40
+TOKEN @43:45
+IDENTIFIER @43:47 id right max.right [v package] : A erasure java.lang.Comparable : A erasure java.lang.Comparable
+TOKEN @43:47
+TOKEN @43:52
+TOKEN @44:3
+VARIABLE @46:3 var Generics.maxInt [v package] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @46:3 : int
+TOKEN @46:3
+IDENTIFIER @46:7 id maxInt Generics.maxInt [v package] : int : int
+TOKEN @46:7
+TOKEN @46:14
+METHOD_INVOCATION @46:16 call Generics.max [m static package] : ? (java.lang.Integer,java.lang.Integer) returns Generics#max<:java.lang.Comparable<>>( throws [] sig Generics#max(Ljava/lang/Comparable;Ljava/lang/Comparable;)LGenerics#max<:java/lang/Comparable<>>(; : Generics#max<:java.lang.Comparable<>>(
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [static, package] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [left, right] parameterMetadata []
+IDENTIFIER @46:16 id max Generics.max [m static package] : ? (java.lang.Integer,java.lang.Integer) returns Generics#max<:java.lang.Comparable<>>( throws [] sig Generics#max(Ljava/lang/Comparable;Ljava/lang/Comparable;)LGenerics#max<:java/lang/Comparable<>>(; : Generics#max<:java.lang.Comparable<>>(
+TOKEN @46:16
+ARGUMENTS @46:19
+TOKEN @46:19
+INT_LITERAL @46:20 : int = 1
+TOKEN @46:20
+TOKEN @46:21
+INT_LITERAL @46:23 : int = 2
+TOKEN @46:23
+TOKEN @46:24
+TOKEN @46:25
+VARIABLE @47:3 var Generics.maxString [v package] : java.lang.String
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @47:3 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @47:3
+IDENTIFIER @47:10 id maxString Generics.maxString [v package] : java.lang.String : java.lang.String
+TOKEN @47:10
+TOKEN @47:20
+METHOD_INVOCATION @47:22 call Generics.max [m static package] : ? (java.lang.String,java.lang.String) returns Generics#max<:java.lang.Comparable<>>( throws [] sig Generics#max(Ljava/lang/Comparable;Ljava/lang/Comparable;)LGenerics#max<:java/lang/Comparable<>>(; : Generics#max<:java.lang.Comparable<>>(
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [static, package] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [left, right] parameterMetadata []
+IDENTIFIER @47:22 id max Generics.max [m static package] : ? (java.lang.String,java.lang.String) returns Generics#max<:java.lang.Comparable<>>( throws [] sig Generics#max(Ljava/lang/Comparable;Ljava/lang/Comparable;)LGenerics#max<:java/lang/Comparable<>>(; : Generics#max<:java.lang.Comparable<>>(
+TOKEN @47:22
+ARGUMENTS @47:25
+TOKEN @47:25
+STRING_LITERAL @47:26 : java.lang.String = a
+TOKEN @47:26
+TOKEN @47:29
+STRING_LITERAL @47:31 : java.lang.String = b
+TOKEN @47:31
+TOKEN @47:34
+TOKEN @47:35
+VARIABLE @48:3 var Generics.firstItem [v package] : T erasure java.lang.Object
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @48:3 id T Generics.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @48:3
+IDENTIFIER @48:5 id firstItem Generics.firstItem [v package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @48:5
+TOKEN @48:15
+METHOD_INVOCATION @48:17 call List.get [m abstract public] : ? (int) returns java.lang.Object throws [] sig java.util.List#get(I)Ljava/lang/Object; : java.lang.Object
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @48:17 : ?
+IDENTIFIER @48:17 id items Generics.items [v package] : java.util.List<T erasure java.lang.Object> : java.util.List<T erasure java.lang.Object>
+TOKEN @48:17
+TOKEN @48:22
+IDENTIFIER @48:23 id get List.get [m abstract public] : ? (int) returns java.lang.Object throws [] sig java.util.List#get(I)Ljava/lang/Object; : java.lang.Object
+TOKEN @48:23
+ARGUMENTS @48:26
+TOKEN @48:26
+INT_LITERAL @48:27 : int = 0
+TOKEN @48:27
+TOKEN @48:28
+TOKEN @48:29
+VARIABLE @49:3 var Generics.copied [v package] : java.util.List<java.lang.String>
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @49:3 : java.util.List<java.lang.String>
+IDENTIFIER @49:3 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @49:3
+TYPE_ARGUMENTS @49:7
+TOKEN @49:7
+IDENTIFIER @49:8 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @49:8
+TOKEN @49:14
+IDENTIFIER @49:16 id copied Generics.copied [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @49:16
+TOKEN @49:23
+NEW_CLASS @49:25 new ArrayList.<init> [m public] : ? (java.util.Collection<java.lang.Object>) returns void throws [] sig java.util.ArrayList#<init>(Ljava/util/Collection;)V : java.util.ArrayList
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ArrayList flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+TOKEN @49:25
+PARAMETERIZED_TYPE @49:29 : java.util.ArrayList
+IDENTIFIER @49:29 id ArrayList ArrayList.<init> [m public] : ? (java.util.Collection<java.lang.Object>) returns void throws [] sig java.util.ArrayList#<init>(Ljava/util/Collection;)V : java.util.ArrayList
+TOKEN @49:29
+TYPE_ARGUMENTS @49:38
+TOKEN @49:38
+TOKEN @49:39
+ARGUMENTS @49:40
+TOKEN @49:40
+IDENTIFIER @49:41 id fixed Generics.fixed [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @49:41
+TOKEN @49:46
+TOKEN @49:47
+VARIABLE @50:3 var Generics.entry [v package] : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @50:3 : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>
+MEMBER_SELECT @50:3 : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>
+IDENTIFIER @50:3 id Map java.util.Map [t public interface] : java.util.Map : java.util.Map
+TOKEN @50:3
+TOKEN @50:6
+IDENTIFIER @50:7 id Entry java.util.Entry [t static public interface] : java.util.Map$Entry : java.util.Map$Entry
+TOKEN @50:7
+TYPE_ARGUMENTS @50:12
+TOKEN @50:12
+IDENTIFIER @50:13 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @50:13
+TOKEN @50:19
+PARAMETERIZED_TYPE @50:21 : java.util.List<java.lang.Integer>
+IDENTIFIER @50:21 id List java.util.List [t public interface] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
+TOKEN @50:21
+TYPE_ARGUMENTS @50:25
+TOKEN @50:25
+IDENTIFIER @50:26 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @50:26
+TOKEN @50:33
+TOKEN @50:34
+IDENTIFIER @50:36 id entry Generics.entry [v package] : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>> : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>
+TOKEN @50:36
+TOKEN @50:42
+METHOD_INVOCATION @50:44 call Iterator.next [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Iterator#next()Ljava/lang/Object; : java.lang.Object
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Iterator flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @50:44 : ?
+METHOD_INVOCATION @50:44 call Set.iterator [m abstract public] : ? () returns java.util.Iterator<E erasure java.lang.Object> throws [] sig java.util.Set#iterator()Ljava/util/Iterator; : java.util.Iterator<E erasure java.lang.Object>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Set flags [abstract, public] overridden [Collection.iterator[], Iterable.iterator[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @50:44 : ?
+METHOD_INVOCATION @50:44 call Map.entrySet [m abstract public] : ? () returns java.util.Set<java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Object>> throws [] sig java.util.Map#entrySet()Ljava/util/Set; : java.util.Set<java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Object>>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @50:44 : ?
+IDENTIFIER @50:44 id map Generics.map [v package] : java.util.Map<java.lang.String,java.util.List<java.lang.Integer>> : java.util.Map<java.lang.String,java.util.List<java.lang.Integer>>
+TOKEN @50:44
+TOKEN @50:47
+IDENTIFIER @50:48 id entrySet Map.entrySet [m abstract public] : ? () returns java.util.Set<java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Object>> throws [] sig java.util.Map#entrySet()Ljava/util/Set; : java.util.Set<java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Object>>
+TOKEN @50:48
+ARGUMENTS @50:56
+TOKEN @50:56
+TOKEN @50:57
+TOKEN @50:58
+IDENTIFIER @50:59 id iterator Set.iterator [m abstract public] : ? () returns java.util.Iterator<E erasure java.lang.Object> throws [] sig java.util.Set#iterator()Ljava/util/Iterator; : java.util.Iterator<E erasure java.lang.Object>
+TOKEN @50:59
+ARGUMENTS @50:67
+TOKEN @50:67
+TOKEN @50:68
+TOKEN @50:69
+IDENTIFIER @50:70 id next Iterator.next [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Iterator#next()Ljava/lang/Object; : java.lang.Object
+TOKEN @50:70
+ARGUMENTS @50:74
+TOKEN @50:74
+TOKEN @50:75
+TOKEN @50:76
+VARIABLE @51:3 var Generics.values [v package] : java.util.List<java.lang.Integer>
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @51:3 : java.util.List<java.lang.Integer>
+IDENTIFIER @51:3 id List java.util.List [t public interface] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
+TOKEN @51:3
+TYPE_ARGUMENTS @51:7
+TOKEN @51:7
+IDENTIFIER @51:8 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @51:8
+TOKEN @51:15
+IDENTIFIER @51:17 id values Generics.values [v package] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
+TOKEN @51:17
+TOKEN @51:24
+METHOD_INVOCATION @51:26 call Entry.getValue [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Map$Entry#getValue()Ljava/lang/Object; : java.lang.Object
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Entry flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @51:26 : ?
+IDENTIFIER @51:26 id entry Generics.entry [v package] : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>> : java.util.Map$Entry<java.lang.String,java.util.List<java.lang.Integer>>
+TOKEN @51:26
+TOKEN @51:31
+IDENTIFIER @51:32 id getValue Entry.getValue [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Map$Entry#getValue()Ljava/lang/Object; : java.lang.Object
+TOKEN @51:32
+ARGUMENTS @51:40
+TOKEN @51:40
+TOKEN @51:41
+TOKEN @51:42
+METHOD @53:3 method Generics.invert [m package] : ? (java.util.Map<K erasure java.lang.Object,V erasure java.lang.Object>) returns java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object> throws [] sig Generics#invert(Ljava/util/Map;)Ljava/util/Map; overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [source] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS @53:3
+TOKEN @53:3
+TYPE_PARAMETER @53:4
+IDENTIFIER @53:4 id K invert.K [t package] : K erasure java.lang.Object : K erasure java.lang.Object
+TOKEN @53:4
+TOKEN @53:5
+TYPE_PARAMETER @53:7
+IDENTIFIER @53:7 id V invert.V [t package] : V erasure java.lang.Object : V erasure java.lang.Object
+TOKEN @53:7
+TOKEN @53:8
+PARAMETERIZED_TYPE @53:10 : java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object>
+IDENTIFIER @53:10 id Map java.util.Map [t public interface] : java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object> : java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object>
+TOKEN @53:10
+TYPE_ARGUMENTS @53:13
+TOKEN @53:13
+IDENTIFIER @53:14 id V invert.V [t package] : V erasure java.lang.Object : V erasure java.lang.Object
+TOKEN @53:14
+TOKEN @53:15
+IDENTIFIER @53:17 id K invert.K [t package] : K erasure java.lang.Object : K erasure java.lang.Object
+TOKEN @53:17
+TOKEN @53:18
+IDENTIFIER @53:20 id invert Generics.invert [m package] : ? (java.util.Map<K erasure java.lang.Object,V erasure java.lang.Object>) returns java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object> throws [] sig Generics#invert(Ljava/util/Map;)Ljava/util/Map; : java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object>
+TOKEN @53:20
+TOKEN @53:26
+VARIABLE @53:27 var invert.source [v package] : java.util.Map<K erasure java.lang.Object,V erasure java.lang.Object>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local true parameter true effectivelyFinal true constant null owner invert Generics#invert(Ljava/util/Map;)Ljava/util/Map; [package] returns java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object> parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing Generics type true kinds truefalsefalse other falsefalsefalsefalsetruetrue1falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @53:27 : java.util.Map<K erasure java.lang.Object,V erasure java.lang.Object>
+IDENTIFIER @53:27 id Map java.util.Map [t public interface] : java.util.Map<K erasure java.lang.Object,V erasure java.lang.Object> : java.util.Map<K erasure java.lang.Object,V erasure java.lang.Object>
+TOKEN @53:27
+TYPE_ARGUMENTS @53:30
+TOKEN @53:30
+IDENTIFIER @53:31 id K invert.K [t package] : K erasure java.lang.Object : K erasure java.lang.Object
+TOKEN @53:31
+TOKEN @53:32
+IDENTIFIER @53:34 id V invert.V [t package] : V erasure java.lang.Object : V erasure java.lang.Object
+TOKEN @53:34
+TOKEN @53:35
+IDENTIFIER @53:37 id source invert.source [v package] : java.util.Map<K erasure java.lang.Object,V erasure java.lang.Object> : java.util.Map<K erasure java.lang.Object,V erasure java.lang.Object>
+TOKEN @53:37
+TOKEN @53:43
+BLOCK @53:45
+TOKEN @53:45
+VARIABLE @54:5 var invert.result [v package] : java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object>
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local true parameter false effectivelyFinal true constant null owner invert Generics#invert(Ljava/util/Map;)Ljava/util/Map; [package] returns java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object> parameters 1 thrown 0 overridden 0 declared true usages 1 metadata 0 enclosing Generics type true kinds truefalsefalse other falsefalsefalsefalsetruetrue1falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @54:5 : java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object>
+IDENTIFIER @54:5 id Map java.util.Map [t public interface] : java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object> : java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object>
+TOKEN @54:5
+TYPE_ARGUMENTS @54:8
+TOKEN @54:8
+IDENTIFIER @54:9 id V invert.V [t package] : V erasure java.lang.Object : V erasure java.lang.Object
+TOKEN @54:9
+TOKEN @54:10
+IDENTIFIER @54:12 id K invert.K [t package] : K erasure java.lang.Object : K erasure java.lang.Object
+TOKEN @54:12
+TOKEN @54:13
+IDENTIFIER @54:15 id result invert.result [v package] : java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object> : java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object>
+TOKEN @54:15
+TOKEN @54:22
+NEW_CLASS @54:24 new HashMap.<init> [m public] : ? () returns void throws [] sig java.util.HashMap#<init>()V : java.util.HashMap
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing HashMap flags [public] overridden [AbstractMap.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @54:24
+PARAMETERIZED_TYPE @54:28 : java.util.HashMap
+IDENTIFIER @54:28 id HashMap HashMap.<init> [m public] : ? () returns void throws [] sig java.util.HashMap#<init>()V : java.util.HashMap
+TOKEN @54:28
+TYPE_ARGUMENTS @54:35
+TOKEN @54:35
+TOKEN @54:36
+ARGUMENTS @54:37
+TOKEN @54:37
+TOKEN @54:38
+TOKEN @54:39
+EXPRESSION_STATEMENT @55:5
+METHOD_INVOCATION @55:5 call Map.forEach [m public] : ? (java.util.function.BiConsumer<java.lang.Object,java.lang.Object>) returns void throws [] sig java.util.Map#forEach(Ljava/util/function/BiConsumer;)V : void
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @55:5 : ?
+IDENTIFIER @55:5 id source invert.source [v package] : java.util.Map<K erasure java.lang.Object,V erasure java.lang.Object> : java.util.Map<K erasure java.lang.Object,V erasure java.lang.Object>
+TOKEN @55:5
+TOKEN @55:11
+IDENTIFIER @55:12 id forEach Map.forEach [m public] : ? (java.util.function.BiConsumer<java.lang.Object,java.lang.Object>) returns void throws [] sig java.util.Map#forEach(Ljava/util/function/BiConsumer;)V : void
+TOKEN @55:12
+ARGUMENTS @55:19
+TOKEN @55:19
+LAMBDA_EXPRESSION @55:20 : java.util.function.BiConsumer<java.lang.Object,java.lang.Object>
+TOKEN @55:20
+VARIABLE @55:21 var accept.k [v package] : java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing BiConsumer flags [package] local true parameter true effectivelyFinal true constant null owner accept java.util.function.BiConsumer#accept(Ljava/lang/Object;Ljava/lang/Object;)V [abstract, public] returns void parameters 2 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing BiConsumer type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+INFERED_TYPE
+IDENTIFIER @55:21 id k accept.k [v package] : java.lang.Object : java.lang.Object
+TOKEN @55:21
+TOKEN @55:22
+VARIABLE @55:24 var accept.v [v package] : java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing BiConsumer flags [package] local true parameter true effectivelyFinal true constant null owner accept java.util.function.BiConsumer#accept(Ljava/lang/Object;Ljava/lang/Object;)V [abstract, public] returns void parameters 2 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing BiConsumer type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+INFERED_TYPE
+IDENTIFIER @55:24 id v accept.v [v package] : java.lang.Object : java.lang.Object
+TOKEN @55:24
+TOKEN @55:25
+TOKEN @55:27
+METHOD_INVOCATION @55:30 call Map.put [m abstract public] : ? (V erasure java.lang.Object,K erasure java.lang.Object) returns java.lang.Object throws [] sig java.util.Map#put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
+MEMBER_SELECT @55:30 : ?
+IDENTIFIER @55:30 id result invert.result [v package] : java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object> : java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object>
+TOKEN @55:30
+TOKEN @55:36
+IDENTIFIER @55:37 id put Map.put [m abstract public] : ? (V erasure java.lang.Object,K erasure java.lang.Object) returns java.lang.Object throws [] sig java.util.Map#put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+TOKEN @55:37
+ARGUMENTS @55:40
+TOKEN @55:40
+IDENTIFIER @55:41 id v accept.v [v package] : java.lang.Object : java.lang.Object
+TOKEN @55:41
+TOKEN @55:42
+IDENTIFIER @55:44 id k accept.k [v package] : java.lang.Object : java.lang.Object
+TOKEN @55:44
+TOKEN @55:45
+TOKEN @55:46
+TOKEN @55:47
+RETURN_STATEMENT @56:5
+TOKEN @56:5
+IDENTIFIER @56:12 id result invert.result [v package] : java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object> : java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object>
+TOKEN @56:12
+TOKEN @56:18
+TOKEN @57:3
+VARIABLE @59:3 var Generics.inverted [v package] : java.util.Map<java.lang.Integer,java.lang.String>
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @59:3 : java.util.Map<java.lang.Integer,java.lang.String>
+IDENTIFIER @59:3 id Map java.util.Map [t public interface] : java.util.Map<java.lang.Integer,java.lang.String> : java.util.Map<java.lang.Integer,java.lang.String>
+TOKEN @59:3
+TYPE_ARGUMENTS @59:6
+TOKEN @59:6
+IDENTIFIER @59:7 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @59:7
+TOKEN @59:14
+IDENTIFIER @59:16 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @59:16
+TOKEN @59:22
+IDENTIFIER @59:24 id inverted Generics.inverted [v package] : java.util.Map<java.lang.Integer,java.lang.String> : java.util.Map<java.lang.Integer,java.lang.String>
+TOKEN @59:24
+TOKEN @59:33
+METHOD_INVOCATION @59:35 call Generics.invert [m package] : ? (java.util.Map<K erasure java.lang.Object,V erasure java.lang.Object>) returns java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object> throws [] sig Generics#invert(Ljava/util/Map;)Ljava/util/Map; : java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Generics flags [package] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [source] parameterMetadata []
+IDENTIFIER @59:35 id invert Generics.invert [m package] : ? (java.util.Map<K erasure java.lang.Object,V erasure java.lang.Object>) returns java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object> throws [] sig Generics#invert(Ljava/util/Map;)Ljava/util/Map; : java.util.Map<V erasure java.lang.Object,K erasure java.lang.Object>
+TOKEN @59:35
+ARGUMENTS @59:41
+TOKEN @59:41
+METHOD_INVOCATION @59:42 call Map.of [m static public] : ? (java.lang.String,java.lang.Integer) returns java.util.Map throws [] sig java.util.Map#of(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map; : java.util.Map
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
+MEMBER_SELECT @59:42 : ?
+IDENTIFIER @59:42 id Map java.util.Map [t public interface] : java.util.Map : java.util.Map
+TOKEN @59:42
+TOKEN @59:45
+IDENTIFIER @59:46 id of Map.of [m static public] : ? (java.lang.String,java.lang.Integer) returns java.util.Map throws [] sig java.util.Map#of(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map; : java.util.Map
+TOKEN @59:46
+ARGUMENTS @59:48
+TOKEN @59:48
+STRING_LITERAL @59:49 : java.lang.String = a
+TOKEN @59:49
+TOKEN @59:52
+INT_LITERAL @59:54 : int = 1
+TOKEN @59:54
+TOKEN @59:55
+TOKEN @59:56
+TOKEN @59:57
+TOKEN @60:1
+TOKEN @61:1

@@ -1,1 +1,1069 @@
-FAILURE Unsupported construct: lambda_expression
+COMPILATION_UNIT @1:1
+IMPORT @1:1
+TOKEN @1:1
+MEMBER_SELECT @1:8 : ?
+MEMBER_SELECT @1:8 : ?
+IDENTIFIER @1:8 id java unknown : ?
+TOKEN @1:8
+TOKEN @1:12
+IDENTIFIER @1:13 id io unknown : ?
+TOKEN @1:13
+TOKEN @1:15
+IDENTIFIER @1:16 id FileNotFoundException unknown : ?
+TOKEN @1:16
+TOKEN @1:37
+IMPORT @2:1
+TOKEN @2:1
+MEMBER_SELECT @2:8 : ?
+MEMBER_SELECT @2:8 : ?
+IDENTIFIER @2:8 id java unknown : ?
+TOKEN @2:8
+TOKEN @2:12
+IDENTIFIER @2:13 id io unknown : ?
+TOKEN @2:13
+TOKEN @2:15
+IDENTIFIER @2:16 id IOException unknown : ?
+TOKEN @2:16
+TOKEN @2:27
+IMPORT @3:1
+TOKEN @3:1
+MEMBER_SELECT @3:8 : ?
+MEMBER_SELECT @3:8 : ?
+IDENTIFIER @3:8 id java unknown : ?
+TOKEN @3:8
+TOKEN @3:12
+IDENTIFIER @3:13 id io unknown : ?
+TOKEN @3:13
+TOKEN @3:15
+IDENTIFIER @3:16 id InputStream unknown : ?
+TOKEN @3:16
+TOKEN @3:27
+IMPORT @4:1
+TOKEN @4:1
+MEMBER_SELECT @4:8 : ?
+MEMBER_SELECT @4:8 : ?
+IDENTIFIER @4:8 id java unknown : ?
+TOKEN @4:8
+TOKEN @4:12
+IDENTIFIER @4:13 id util unknown : ?
+TOKEN @4:13
+TOKEN @4:17
+IDENTIFIER @4:18 id ArrayList unknown : ?
+TOKEN @4:18
+TOKEN @4:27
+IMPORT @5:1
+TOKEN @5:1
+MEMBER_SELECT @5:8 : ?
+MEMBER_SELECT @5:8 : ?
+IDENTIFIER @5:8 id java unknown : ?
+TOKEN @5:8
+TOKEN @5:12
+IDENTIFIER @5:13 id util unknown : ?
+TOKEN @5:13
+TOKEN @5:17
+IDENTIFIER @5:18 id HashMap unknown : ?
+TOKEN @5:18
+TOKEN @5:25
+IMPORT @6:1
+TOKEN @6:1
+MEMBER_SELECT @6:8 : ?
+MEMBER_SELECT @6:8 : ?
+IDENTIFIER @6:8 id java unknown : ?
+TOKEN @6:8
+TOKEN @6:12
+IDENTIFIER @6:13 id util unknown : ?
+TOKEN @6:13
+TOKEN @6:17
+IDENTIFIER @6:18 id List unknown : ?
+TOKEN @6:18
+TOKEN @6:22
+IMPORT @7:1
+TOKEN @7:1
+MEMBER_SELECT @7:8 : ?
+MEMBER_SELECT @7:8 : ?
+IDENTIFIER @7:8 id java unknown : ?
+TOKEN @7:8
+TOKEN @7:12
+IDENTIFIER @7:13 id util unknown : ?
+TOKEN @7:13
+TOKEN @7:17
+IDENTIFIER @7:18 id Map unknown : ?
+TOKEN @7:18
+TOKEN @7:21
+IMPORT @8:1
+TOKEN @8:1
+MEMBER_SELECT @8:8 : ?
+MEMBER_SELECT @8:8 : ?
+IDENTIFIER @8:8 id java unknown : ?
+TOKEN @8:8
+TOKEN @8:12
+IDENTIFIER @8:13 id util unknown : ?
+TOKEN @8:13
+TOKEN @8:17
+IDENTIFIER @8:18 id Set unknown : ?
+TOKEN @8:18
+TOKEN @8:21
+IMPORT @9:1
+TOKEN @9:1
+MEMBER_SELECT @9:8 : ?
+MEMBER_SELECT @9:8 : ?
+MEMBER_SELECT @9:8 : ?
+IDENTIFIER @9:8 id java unknown : ?
+TOKEN @9:8
+TOKEN @9:12
+IDENTIFIER @9:13 id util unknown : ?
+TOKEN @9:13
+TOKEN @9:17
+IDENTIFIER @9:18 id concurrent unknown : ?
+TOKEN @9:18
+TOKEN @9:28
+IDENTIFIER @9:29 id Callable unknown : ?
+TOKEN @9:29
+TOKEN @9:37
+IMPORT @10:1
+TOKEN @10:1
+TOKEN @10:8
+MEMBER_SELECT @10:15 : ?
+MEMBER_SELECT @10:15 : ?
+MEMBER_SELECT @10:15 : ?
+IDENTIFIER @10:15 id java unknown : ?
+TOKEN @10:15
+TOKEN @10:19
+IDENTIFIER @10:20 id lang unknown : ?
+TOKEN @10:20
+TOKEN @10:24
+IDENTIFIER @10:25 id Math unknown : ?
+TOKEN @10:25
+TOKEN @10:29
+IDENTIFIER @10:30 id max unknown : ?
+TOKEN @10:30
+TOKEN @10:33
+IMPORT @11:1
+TOKEN @11:1
+TOKEN @11:8
+MEMBER_SELECT @11:15 : ?
+MEMBER_SELECT @11:15 : ?
+MEMBER_SELECT @11:15 : ?
+IDENTIFIER @11:15 id java unknown : ?
+TOKEN @11:15
+TOKEN @11:19
+IDENTIFIER @11:20 id lang unknown : ?
+TOKEN @11:20
+TOKEN @11:24
+IDENTIFIER @11:25 id Math unknown : ?
+TOKEN @11:25
+TOKEN @11:29
+IDENTIFIER @11:30 id min unknown : ?
+TOKEN @11:30
+TOKEN @11:33
+IMPORT @12:1
+TOKEN @12:1
+TOKEN @12:8
+MEMBER_SELECT @12:15 : ?
+MEMBER_SELECT @12:15 : ?
+MEMBER_SELECT @12:15 : ?
+IDENTIFIER @12:15 id java unknown : ?
+TOKEN @12:15
+TOKEN @12:19
+IDENTIFIER @12:20 id util unknown : ?
+TOKEN @12:20
+TOKEN @12:24
+IDENTIFIER @12:25 id Collections unknown : ?
+TOKEN @12:25
+TOKEN @12:36
+IDENTIFIER @12:37 id * unknown : ?
+TOKEN @12:37
+TOKEN @12:38
+CLASS @14:1 class .Warnings [t package] : Warnings super java.lang.Object interfaces []
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] members [<init>, assignments, casts, catches, effectivelyFinal, field] lookupToString 0 outermost Warnings annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring Warnings
+MODIFIERS
+TOKEN @14:1
+IDENTIFIER @14:7 id Warnings .Warnings [t package] : Warnings : Warnings
+TOKEN @14:7
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @14:16
+VARIABLE @16:3 var Warnings.field [v package] : int
+  details declared true usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PRIMITIVE_TYPE @16:3 : int
+TOKEN @16:3
+IDENTIFIER @16:7 id field Warnings.field [v package] : int : int
+TOKEN @16:7
+TOKEN @16:12
+METHOD @18:3 method Warnings.casts [m package] : ? (java.lang.Object,java.lang.String,int,long,java.util.List<java.lang.String>) returns void throws [] sig Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [o, s, i, l, list] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @18:3 : void
+TOKEN @18:3
+IDENTIFIER @18:8 id casts Warnings.casts [m package] : ? (java.lang.Object,java.lang.String,int,long,java.util.List<java.lang.String>) returns void throws [] sig Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V : void
+TOKEN @18:8
+TOKEN @18:13
+VARIABLE @18:14 var casts.o [v package] : java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter true effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+IDENTIFIER @18:14 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @18:14
+IDENTIFIER @18:21 id o casts.o [v package] : java.lang.Object : java.lang.Object
+TOKEN @18:21
+TOKEN @18:22
+VARIABLE @18:24 var casts.s [v package] : java.lang.String
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter true effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+IDENTIFIER @18:24 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @18:24
+IDENTIFIER @18:31 id s casts.s [v package] : java.lang.String : java.lang.String
+TOKEN @18:31
+TOKEN @18:32
+VARIABLE @18:34 var casts.i [v package] : int
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter true effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @18:34 : int
+TOKEN @18:34
+IDENTIFIER @18:38 id i casts.i [v package] : int : int
+TOKEN @18:38
+TOKEN @18:39
+VARIABLE @18:41 var casts.l [v package] : long
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter true effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @18:41 : long
+TOKEN @18:41
+IDENTIFIER @18:46 id l casts.l [v package] : long : long
+TOKEN @18:46
+TOKEN @18:47
+VARIABLE @18:49 var casts.list [v package] : java.util.List<java.lang.String>
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter true effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @18:49 : java.util.List<java.lang.String>
+IDENTIFIER @18:49 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @18:49
+TYPE_ARGUMENTS @18:53
+TOKEN @18:53
+IDENTIFIER @18:54 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @18:54
+TOKEN @18:60
+IDENTIFIER @18:62 id list casts.list [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @18:62
+TOKEN @18:66
+BLOCK @18:68
+TOKEN @18:68
+VARIABLE @19:5 var casts.same [v package] : java.lang.String
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+IDENTIFIER @19:5 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @19:5
+IDENTIFIER @19:12 id same casts.same [v package] : java.lang.String : java.lang.String
+TOKEN @19:12
+TOKEN @19:17
+TYPE_CAST @19:19 : java.lang.String
+TOKEN @19:19
+IDENTIFIER @19:20 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @19:20
+LIST
+TOKEN @19:26
+IDENTIFIER @19:28 id s casts.s [v package] : java.lang.String : java.lang.String
+TOKEN @19:28
+TOKEN @19:29
+VARIABLE @20:5 var casts.widened [v package] : java.lang.Object
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+IDENTIFIER @20:5 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @20:5
+IDENTIFIER @20:12 id widened casts.widened [v package] : java.lang.Object : java.lang.Object
+TOKEN @20:12
+TOKEN @20:20
+TYPE_CAST @20:22 : java.lang.Object
+TOKEN @20:22
+IDENTIFIER @20:23 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @20:23
+LIST
+TOKEN @20:29
+IDENTIFIER @20:31 id s casts.s [v package] : java.lang.String : java.lang.String
+TOKEN @20:31
+TOKEN @20:32
+VARIABLE @21:5 var casts.promoted [v package] : long
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @21:5 : long
+TOKEN @21:5
+IDENTIFIER @21:10 id promoted casts.promoted [v package] : long : long
+TOKEN @21:10
+TOKEN @21:19
+TYPE_CAST @21:21 : long
+TOKEN @21:21
+PRIMITIVE_TYPE @21:22 : long
+TOKEN @21:22
+LIST
+TOKEN @21:26
+IDENTIFIER @21:28 id i casts.i [v package] : int : int
+TOKEN @21:28
+TOKEN @21:29
+VARIABLE @22:5 var casts.narrowed [v package] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @22:5 : int
+TOKEN @22:5
+IDENTIFIER @22:9 id narrowed casts.narrowed [v package] : int : int
+TOKEN @22:9
+TOKEN @22:18
+TYPE_CAST @22:20 : int
+TOKEN @22:20
+PRIMITIVE_TYPE @22:21 : int
+TOKEN @22:21
+LIST
+TOKEN @22:24
+IDENTIFIER @22:26 id l casts.l [v package] : long : long
+TOKEN @22:26
+TOKEN @22:27
+VARIABLE @23:5 var casts.mixed [v package] : double
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @23:5 : double
+TOKEN @23:5
+IDENTIFIER @23:12 id mixed casts.mixed [v package] : double : double
+TOKEN @23:12
+TOKEN @23:18
+DIVIDE @23:20 : double
+TYPE_CAST @23:20 : double
+TOKEN @23:20
+PRIMITIVE_TYPE @23:21 : double
+TOKEN @23:21
+LIST
+TOKEN @23:27
+IDENTIFIER @23:29 id i casts.i [v package] : int : int
+TOKEN @23:29
+TOKEN @23:31
+INT_LITERAL @23:33 : int = 2
+TOKEN @23:33
+TOKEN @23:34
+VARIABLE @24:5 var casts.downcast [v package] : java.lang.String
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+IDENTIFIER @24:5 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @24:5
+IDENTIFIER @24:12 id downcast casts.downcast [v package] : java.lang.String : java.lang.String
+TOKEN @24:12
+TOKEN @24:21
+TYPE_CAST @24:23 : java.lang.String
+TOKEN @24:23
+IDENTIFIER @24:24 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @24:24
+LIST
+TOKEN @24:30
+IDENTIFIER @24:32 id o casts.o [v package] : java.lang.Object : java.lang.Object
+TOKEN @24:32
+TOKEN @24:33
+VARIABLE @25:5 var casts.fromList [v package] : java.lang.Object
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+IDENTIFIER @25:5 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @25:5
+IDENTIFIER @25:12 id fromList casts.fromList [v package] : java.lang.Object : java.lang.Object
+TOKEN @25:12
+TOKEN @25:21
+TYPE_CAST @25:23 : java.lang.Object
+TOKEN @25:23
+IDENTIFIER @25:24 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @25:24
+LIST
+TOKEN @25:30
+METHOD_INVOCATION @25:32 call List.get [m abstract public] : ? (int) returns java.lang.Object throws [] sig java.util.List#get(I)Ljava/lang/Object; : java.lang.Object
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @25:32 : ?
+IDENTIFIER @25:32 id list casts.list [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @25:32
+TOKEN @25:36
+IDENTIFIER @25:37 id get List.get [m abstract public] : ? (int) returns java.lang.Object throws [] sig java.util.List#get(I)Ljava/lang/Object; : java.lang.Object
+TOKEN @25:37
+ARGUMENTS @25:40
+TOKEN @25:40
+INT_LITERAL @25:41 : int = 0
+TOKEN @25:41
+TOKEN @25:42
+TOKEN @25:43
+VARIABLE @26:5 var casts.boxed [v package] : java.lang.Integer
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+IDENTIFIER @26:5 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @26:5
+IDENTIFIER @26:13 id boxed casts.boxed [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @26:13
+TOKEN @26:19
+TYPE_CAST @26:21 : java.lang.Integer
+TOKEN @26:21
+IDENTIFIER @26:22 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @26:22
+LIST
+TOKEN @26:29
+IDENTIFIER @26:31 id i casts.i [v package] : int : int
+TOKEN @26:31
+TOKEN @26:32
+VARIABLE @27:5 var casts.unboxed [v package] : int
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @27:5 : int
+TOKEN @27:5
+IDENTIFIER @27:9 id unboxed casts.unboxed [v package] : int : int
+TOKEN @27:9
+TOKEN @27:17
+TYPE_CAST @27:19 : int
+TOKEN @27:19
+PRIMITIVE_TYPE @27:20 : int
+TOKEN @27:20
+LIST
+TOKEN @27:23
+IDENTIFIER @27:25 id boxed casts.boxed [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @27:25
+TOKEN @27:30
+VARIABLE @28:5 var casts.lambda [v package] : java.lang.Runnable
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+IDENTIFIER @28:5 id Runnable java.lang.Runnable [t public interface] : java.lang.Runnable : java.lang.Runnable
+TOKEN @28:5
+IDENTIFIER @28:14 id lambda casts.lambda [v package] : java.lang.Runnable : java.lang.Runnable
+TOKEN @28:14
+TOKEN @28:21
+TYPE_CAST @28:23 : java.lang.Runnable
+TOKEN @28:23
+IDENTIFIER @28:24 id Runnable java.lang.Runnable [t public interface] : java.lang.Runnable : java.lang.Runnable
+TOKEN @28:24
+LIST
+TOKEN @28:32
+LAMBDA_EXPRESSION @28:34 : ?
+TOKEN @28:34
+TOKEN @28:35
+TOKEN @28:37
+BLOCK @28:40
+TOKEN @28:40
+TOKEN @29:5
+TOKEN @29:6
+VARIABLE @30:5 var casts.generic [v package] : java.util.List<java.lang.String>
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @30:5 : java.util.List<java.lang.String>
+IDENTIFIER @30:5 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @30:5
+TYPE_ARGUMENTS @30:9
+TOKEN @30:9
+IDENTIFIER @30:10 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @30:10
+TOKEN @30:16
+IDENTIFIER @30:18 id generic casts.generic [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @30:18
+TOKEN @30:26
+TYPE_CAST @30:28 : java.util.List<java.lang.String>
+TOKEN @30:28
+PARAMETERIZED_TYPE @30:29 : java.util.List<java.lang.String>
+IDENTIFIER @30:29 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @30:29
+TYPE_ARGUMENTS @30:33
+TOKEN @30:33
+IDENTIFIER @30:34 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @30:34
+TOKEN @30:40
+LIST
+TOKEN @30:41
+IDENTIFIER @30:43 id list casts.list [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @30:43
+TOKEN @30:47
+VARIABLE @31:5 var casts.array [v package] : java.lang.Object
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+IDENTIFIER @31:5 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @31:5
+IDENTIFIER @31:12 id array casts.array [v package] : java.lang.Object : java.lang.Object
+TOKEN @31:12
+TOKEN @31:18
+TYPE_CAST @31:20 : java.lang.Object[]
+TOKEN @31:20
+ARRAY_TYPE @31:21 : java.lang.Object[]
+IDENTIFIER @31:21 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @31:21
+TOKEN @31:27
+TOKEN @31:28
+LIST
+TOKEN @31:29
+NEW_ARRAY @31:31 : java.lang.String[]
+TOKEN @31:31
+IDENTIFIER @31:35 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @31:35
+ARRAY_DIMENSION @31:41
+TOKEN @31:41
+INT_LITERAL @31:42 : int = 0
+TOKEN @31:42
+TOKEN @31:43
+LIST
+TOKEN @31:44
+VARIABLE @32:5 var casts.letter [v package] : char
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner casts Warnings#casts(Ljava/lang/Object;Ljava/lang/String;IJLjava/util/List;)V [package] returns void parameters 5 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse5falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @32:5 : char
+TOKEN @32:5
+IDENTIFIER @32:10 id letter casts.letter [v package] : char : char
+TOKEN @32:10
+TOKEN @32:17
+TYPE_CAST @32:19 : char
+TOKEN @32:19
+PRIMITIVE_TYPE @32:20 : char
+TOKEN @32:20
+LIST
+TOKEN @32:24
+INT_LITERAL @32:26 : int = 65
+TOKEN @32:26
+TOKEN @32:28
+TOKEN @33:3
+METHOD @35:3 method Warnings.assignments [m package] : ? (int) returns void throws [] sig Warnings#assignments(I)V overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [value] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @35:3 : void
+TOKEN @35:3
+IDENTIFIER @35:8 id assignments Warnings.assignments [m package] : ? (int) returns void throws [] sig Warnings#assignments(I)V : void
+TOKEN @35:8
+TOKEN @35:19
+VARIABLE @35:20 var assignments.value [v package] : int
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter true effectivelyFinal false constant null owner assignments Warnings#assignments(I)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @35:20 : int
+TOKEN @35:20
+IDENTIFIER @35:24 id value assignments.value [v package] : int : int
+TOKEN @35:24
+TOKEN @35:29
+BLOCK @35:31
+TOKEN @35:31
+VARIABLE @36:5 var assignments.local [v package] : int
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal false constant null owner assignments Warnings#assignments(I)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @36:5 : int
+TOKEN @36:5
+IDENTIFIER @36:9 id local assignments.local [v package] : int : int
+TOKEN @36:9
+TOKEN @36:15
+INT_LITERAL @36:17 : int = 1
+TOKEN @36:17
+TOKEN @36:18
+EXPRESSION_STATEMENT @37:5
+ASSIGNMENT @37:5 : int
+IDENTIFIER @37:5 id local assignments.local [v package] : int : int
+TOKEN @37:5
+TOKEN @37:11
+IDENTIFIER @37:13 id local assignments.local [v package] : int : int
+TOKEN @37:13
+TOKEN @37:18
+EXPRESSION_STATEMENT @38:5
+ASSIGNMENT @38:5 : int
+MEMBER_SELECT @38:5 : int
+IDENTIFIER @38:5 id this Warnings.this [v final] : Warnings : Warnings
+TOKEN @38:5
+TOKEN @38:9
+IDENTIFIER @38:10 id field Warnings.field [v package] : int : int
+TOKEN @38:10
+TOKEN @38:16
+MEMBER_SELECT @38:18 : int
+IDENTIFIER @38:18 id this Warnings.this [v final] : Warnings : Warnings
+TOKEN @38:18
+TOKEN @38:22
+IDENTIFIER @38:23 id field Warnings.field [v package] : int : int
+TOKEN @38:23
+TOKEN @38:28
+EXPRESSION_STATEMENT @39:5
+ASSIGNMENT @39:5 : int
+IDENTIFIER @39:5 id field Warnings.field [v package] : int : int
+TOKEN @39:5
+TOKEN @39:11
+IDENTIFIER @39:13 id field Warnings.field [v package] : int : int
+TOKEN @39:13
+TOKEN @39:18
+EXPRESSION_STATEMENT @40:5
+ASSIGNMENT @40:5 : int
+IDENTIFIER @40:5 id value assignments.value [v package] : int : int
+TOKEN @40:5
+TOKEN @40:11
+IDENTIFIER @40:13 id value assignments.value [v package] : int : int
+TOKEN @40:13
+TOKEN @40:18
+VARIABLE @41:5 var assignments.other [v package] : int
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal false constant null owner assignments Warnings#assignments(I)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @41:5 : int
+TOKEN @41:5
+IDENTIFIER @41:9 id other assignments.other [v package] : int : int
+TOKEN @41:9
+TOKEN @41:15
+IDENTIFIER @41:17 id local assignments.local [v package] : int : int
+TOKEN @41:17
+TOKEN @41:22
+EXPRESSION_STATEMENT @42:5
+ASSIGNMENT @42:5 : int
+IDENTIFIER @42:5 id other assignments.other [v package] : int : int
+TOKEN @42:5
+TOKEN @42:11
+METHOD_INVOCATION @42:13 call Math.max [m static public] : ? (int,int) returns int throws [] sig java.lang.Math#max(II)I : int
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Math flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
+IDENTIFIER @42:13 id max Math.max [m static public] : ? (int,int) returns int throws [] sig java.lang.Math#max(II)I : int
+TOKEN @42:13
+ARGUMENTS @42:16
+TOKEN @42:16
+IDENTIFIER @42:17 id other assignments.other [v package] : int : int
+TOKEN @42:17
+TOKEN @42:22
+INT_LITERAL @42:24 : int = 2
+TOKEN @42:24
+TOKEN @42:25
+TOKEN @42:26
+TOKEN @43:3
+METHOD @45:3 method Warnings.catches [m package] : ? (java.io.InputStream) returns void throws [] sig Warnings#catches(Ljava/io/InputStream;)V overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [in] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @45:3 : void
+TOKEN @45:3
+IDENTIFIER @45:8 id catches Warnings.catches [m package] : ? (java.io.InputStream) returns void throws [] sig Warnings#catches(Ljava/io/InputStream;)V : void
+TOKEN @45:8
+TOKEN @45:15
+VARIABLE @45:16 var catches.in [v package] : java.io.InputStream
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter true effectivelyFinal true constant null owner catches Warnings#catches(Ljava/io/InputStream;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @45:16 id InputStream java.io.InputStream [t abstract public] : java.io.InputStream : java.io.InputStream
+TOKEN @45:16
+IDENTIFIER @45:28 id in catches.in [v package] : java.io.InputStream : java.io.InputStream
+TOKEN @45:28
+TOKEN @45:30
+BLOCK @45:32
+TOKEN @45:32
+TRY_STATEMENT @46:5
+TOKEN @46:5
+BLOCK @46:9
+TOKEN @46:9
+EXPRESSION_STATEMENT @47:7
+METHOD_INVOCATION @47:7 call InputStream.read [m abstract public] : ? () returns int throws [java.io.IOException] sig java.io.InputStream#read()I : int
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing InputStream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @47:7 : ?
+IDENTIFIER @47:7 id in catches.in [v package] : java.io.InputStream : java.io.InputStream
+TOKEN @47:7
+TOKEN @47:9
+IDENTIFIER @47:10 id read InputStream.read [m abstract public] : ? () returns int throws [java.io.IOException] sig java.io.InputStream#read()I : int
+TOKEN @47:10
+ARGUMENTS @47:14
+TOKEN @47:14
+TOKEN @47:15
+TOKEN @47:16
+TOKEN @48:5
+CATCH @48:7
+TOKEN @48:7
+TOKEN @48:13
+VARIABLE @48:14 var catches.e [v package] : java.io.IOException
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner catches Warnings#catches(Ljava/io/InputStream;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @48:14 id IOException java.io.IOException [t public] : java.io.IOException : java.io.IOException
+TOKEN @48:14
+IDENTIFIER @48:26 id e catches.e [v package] : java.io.IOException : java.io.IOException
+TOKEN @48:26
+TOKEN @48:27
+BLOCK @48:29
+TOKEN @48:29
+THROW_STATEMENT @49:7
+TOKEN @49:7
+NEW_CLASS @49:13 new IllegalStateException.<init> [m public] : ? (java.lang.Throwable) returns void throws [] sig java.lang.IllegalStateException#<init>(Ljava/lang/Throwable;)V : java.lang.IllegalStateException
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing IllegalStateException flags [public] overridden [RuntimeException.<init>[], Exception.<init>[], Throwable.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+TOKEN @49:13
+IDENTIFIER @49:17 id IllegalStateException IllegalStateException.<init> [m public] : ? (java.lang.Throwable) returns void throws [] sig java.lang.IllegalStateException#<init>(Ljava/lang/Throwable;)V : java.lang.IllegalStateException
+TOKEN @49:17
+ARGUMENTS @49:38
+TOKEN @49:38
+IDENTIFIER @49:39 id e catches.e [v package] : java.io.IOException : java.io.IOException
+TOKEN @49:39
+TOKEN @49:40
+TOKEN @49:41
+TOKEN @50:5
+CATCH @50:7
+TOKEN @50:7
+TOKEN @50:13
+VARIABLE @50:14 var catches.e [v package] : java.lang.RuntimeException
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner catches Warnings#catches(Ljava/io/InputStream;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @50:14 id RuntimeException java.lang.RuntimeException [t public] : java.lang.RuntimeException : java.lang.RuntimeException
+TOKEN @50:14
+IDENTIFIER @50:31 id e catches.e [v package] : java.lang.RuntimeException : java.lang.RuntimeException
+TOKEN @50:31
+TOKEN @50:32
+BLOCK @50:34
+TOKEN @50:34
+THROW_STATEMENT @51:7
+TOKEN @51:7
+IDENTIFIER @51:13 id e catches.e [v package] : java.lang.RuntimeException : java.lang.RuntimeException
+TOKEN @51:13
+TOKEN @51:14
+TOKEN @52:5
+TRY_STATEMENT @53:5
+TOKEN @53:5
+BLOCK @53:9
+TOKEN @53:9
+EXPRESSION_STATEMENT @54:7
+METHOD_INVOCATION @54:7 call InputStream.read [m abstract public] : ? () returns int throws [java.io.IOException] sig java.io.InputStream#read()I : int
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing InputStream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @54:7 : ?
+IDENTIFIER @54:7 id in catches.in [v package] : java.io.InputStream : java.io.InputStream
+TOKEN @54:7
+TOKEN @54:9
+IDENTIFIER @54:10 id read InputStream.read [m abstract public] : ? () returns int throws [java.io.IOException] sig java.io.InputStream#read()I : int
+TOKEN @54:10
+ARGUMENTS @54:14
+TOKEN @54:14
+TOKEN @54:15
+TOKEN @54:16
+TOKEN @55:5
+CATCH @55:7
+TOKEN @55:7
+TOKEN @55:13
+VARIABLE @55:14 var catches.e [v package] : java.io.FileNotFoundException
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner catches Warnings#catches(Ljava/io/InputStream;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @55:14 id FileNotFoundException java.io.FileNotFoundException [t public] : java.io.FileNotFoundException : java.io.FileNotFoundException
+TOKEN @55:14
+IDENTIFIER @55:36 id e catches.e [v package] : java.io.FileNotFoundException : java.io.FileNotFoundException
+TOKEN @55:36
+TOKEN @55:37
+BLOCK @55:39
+TOKEN @55:39
+EXPRESSION_STATEMENT @56:7
+METHOD_INVOCATION @56:7 call Throwable.printStackTrace [m public] : ? () returns void throws [] sig java.lang.Throwable#printStackTrace()V : void
+  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @56:7 : ?
+IDENTIFIER @56:7 id e catches.e [v package] : java.io.FileNotFoundException : java.io.FileNotFoundException
+TOKEN @56:7
+TOKEN @56:8
+IDENTIFIER @56:9 id printStackTrace Throwable.printStackTrace [m public] : ? () returns void throws [] sig java.lang.Throwable#printStackTrace()V : void
+TOKEN @56:9
+ARGUMENTS @56:24
+TOKEN @56:24
+TOKEN @56:25
+TOKEN @56:26
+TOKEN @57:5
+CATCH @57:7
+TOKEN @57:7
+TOKEN @57:13
+VARIABLE @57:14 var catches.e [v package] : java.io.IOException
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner catches Warnings#catches(Ljava/io/InputStream;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @57:14 id IOException java.io.IOException [t public] : java.io.IOException : java.io.IOException
+TOKEN @57:14
+IDENTIFIER @57:26 id e catches.e [v package] : java.io.IOException : java.io.IOException
+TOKEN @57:26
+TOKEN @57:27
+BLOCK @57:29
+TOKEN @57:29
+EXPRESSION_STATEMENT @58:7
+METHOD_INVOCATION @58:7 call Throwable.printStackTrace [m public] : ? () returns void throws [] sig java.lang.Throwable#printStackTrace()V : void
+  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @58:7 : ?
+IDENTIFIER @58:7 id e catches.e [v package] : java.io.IOException : java.io.IOException
+TOKEN @58:7
+TOKEN @58:8
+IDENTIFIER @58:9 id printStackTrace Throwable.printStackTrace [m public] : ? () returns void throws [] sig java.lang.Throwable#printStackTrace()V : void
+TOKEN @58:9
+ARGUMENTS @58:24
+TOKEN @58:24
+TOKEN @58:25
+TOKEN @58:26
+TOKEN @59:5
+TRY_STATEMENT @60:5
+TOKEN @60:5
+BLOCK @60:9
+TOKEN @60:9
+EXPRESSION_STATEMENT @61:7
+METHOD_INVOCATION @61:7 call InputStream.close [m public] : ? () returns void throws [java.io.IOException] sig java.io.InputStream#close()V : void
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing InputStream flags [public] overridden [Closeable.close[], AutoCloseable.close[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @61:7 : ?
+IDENTIFIER @61:7 id in catches.in [v package] : java.io.InputStream : java.io.InputStream
+TOKEN @61:7
+TOKEN @61:9
+IDENTIFIER @61:10 id close InputStream.close [m public] : ? () returns void throws [java.io.IOException] sig java.io.InputStream#close()V : void
+TOKEN @61:10
+ARGUMENTS @61:15
+TOKEN @61:15
+TOKEN @61:16
+TOKEN @61:17
+TOKEN @62:5
+CATCH @62:7
+TOKEN @62:7
+TOKEN @62:13
+VARIABLE @62:14 var catches.e [v package] : java.lang.Exception
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner catches Warnings#catches(Ljava/io/InputStream;)V [package] returns void parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @62:14 id Exception java.lang.Exception [t public] : java.lang.Exception : java.lang.Exception
+TOKEN @62:14
+IDENTIFIER @62:24 id e catches.e [v package] : java.lang.Exception : java.lang.Exception
+TOKEN @62:24
+TOKEN @62:25
+BLOCK @62:27
+TOKEN @62:27
+EXPRESSION_STATEMENT @63:7
+METHOD_INVOCATION @63:7 call Throwable.printStackTrace [m public] : ? () returns void throws [] sig java.lang.Throwable#printStackTrace()V : void
+  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Throwable flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @63:7 : ?
+IDENTIFIER @63:7 id e catches.e [v package] : java.lang.Exception : java.lang.Exception
+TOKEN @63:7
+TOKEN @63:8
+IDENTIFIER @63:9 id printStackTrace Throwable.printStackTrace [m public] : ? () returns void throws [] sig java.lang.Throwable#printStackTrace()V : void
+TOKEN @63:9
+ARGUMENTS @63:24
+TOKEN @63:24
+TOKEN @63:25
+TOKEN @63:26
+TOKEN @64:5
+TOKEN @65:3
+METHOD @67:3 method Warnings.effectivelyFinal [m package] : ? (java.util.List<java.lang.String>) returns void throws [java.lang.Exception] sig Warnings#effectivelyFinal(Ljava/util/List;)V overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [items] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @67:3 : void
+TOKEN @67:3
+IDENTIFIER @67:8 id effectivelyFinal Warnings.effectivelyFinal [m package] : ? (java.util.List<java.lang.String>) returns void throws [java.lang.Exception] sig Warnings#effectivelyFinal(Ljava/util/List;)V : void
+TOKEN @67:8
+TOKEN @67:24
+VARIABLE @67:25 var effectivelyFinal.items [v package] : java.util.List<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter true effectivelyFinal true constant null owner effectivelyFinal Warnings#effectivelyFinal(Ljava/util/List;)V [package] returns void parameters 1 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @67:25 : java.util.List<java.lang.String>
+IDENTIFIER @67:25 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @67:25
+TYPE_ARGUMENTS @67:29
+TOKEN @67:29
+IDENTIFIER @67:30 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @67:30
+TOKEN @67:36
+IDENTIFIER @67:38 id items effectivelyFinal.items [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @67:38
+TOKEN @67:43
+TOKEN @67:45
+LIST @67:52
+IDENTIFIER @67:52 id Exception java.lang.Exception [t public] : java.lang.Exception : java.lang.Exception
+TOKEN @67:52
+BLOCK @67:62
+TOKEN @67:62
+VARIABLE @68:5 var effectivelyFinal.notFinal [v package] : int
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal false constant null owner effectivelyFinal Warnings#effectivelyFinal(Ljava/util/List;)V [package] returns void parameters 1 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @68:5 : int
+TOKEN @68:5
+IDENTIFIER @68:9 id notFinal effectivelyFinal.notFinal [v package] : int : int
+TOKEN @68:9
+TOKEN @68:18
+INT_LITERAL @68:20 : int = 0
+TOKEN @68:20
+TOKEN @68:21
+EXPRESSION_STATEMENT @69:5
+POSTFIX_INCREMENT @69:5 : int
+IDENTIFIER @69:5 id notFinal effectivelyFinal.notFinal [v package] : int : int
+TOKEN @69:5
+TOKEN @69:13
+TOKEN @69:15
+VARIABLE @70:5 var effectivelyFinal.captured [v package] : int
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner effectivelyFinal Warnings#effectivelyFinal(Ljava/util/List;)V [package] returns void parameters 1 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @70:5 : int
+TOKEN @70:5
+IDENTIFIER @70:9 id captured effectivelyFinal.captured [v package] : int : int
+TOKEN @70:9
+TOKEN @70:18
+INT_LITERAL @70:20 : int = 1
+TOKEN @70:20
+TOKEN @70:21
+VARIABLE @71:5 var effectivelyFinal.name [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner effectivelyFinal Warnings#effectivelyFinal(Ljava/util/List;)V [package] returns void parameters 1 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @71:5 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @71:5
+IDENTIFIER @71:12 id name effectivelyFinal.name [v package] : java.lang.String : java.lang.String
+TOKEN @71:12
+TOKEN @71:17
+STRING_LITERAL @71:19 : java.lang.String = n
+TOKEN @71:19
+TOKEN @71:22
+VARIABLE @72:5 var effectivelyFinal.callable [v package] : java.util.concurrent.Callable<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner effectivelyFinal Warnings#effectivelyFinal(Ljava/util/List;)V [package] returns void parameters 1 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @72:5 : java.util.concurrent.Callable<java.lang.String>
+IDENTIFIER @72:5 id Callable java.util.concurrent.Callable [t public interface] : java.util.concurrent.Callable<java.lang.String> : java.util.concurrent.Callable<java.lang.String>
+TOKEN @72:5
+TYPE_ARGUMENTS @72:13
+TOKEN @72:13
+IDENTIFIER @72:14 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @72:14
+TOKEN @72:20
+IDENTIFIER @72:22 id callable effectivelyFinal.callable [v package] : java.util.concurrent.Callable<java.lang.String> : java.util.concurrent.Callable<java.lang.String>
+TOKEN @72:22
+TOKEN @72:31
+LAMBDA_EXPRESSION @72:33 : java.util.concurrent.Callable<java.lang.String>
+TOKEN @72:33
+TOKEN @72:34
+TOKEN @72:36
+PLUS @72:39 : java.lang.String
+IDENTIFIER @72:39 id name effectivelyFinal.name [v package] : java.lang.String : java.lang.String
+TOKEN @72:39
+TOKEN @72:44
+IDENTIFIER @72:46 id captured effectivelyFinal.captured [v package] : int : int
+TOKEN @72:46
+TOKEN @72:54
+FOR_EACH_STATEMENT @73:5
+TOKEN @73:5
+TOKEN @73:9
+VARIABLE @73:10 var effectivelyFinal.item [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner effectivelyFinal Warnings#effectivelyFinal(Ljava/util/List;)V [package] returns void parameters 1 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @73:10 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @73:10
+IDENTIFIER @73:17 id item effectivelyFinal.item [v package] : java.lang.String : java.lang.String
+TOKEN @73:17
+TOKEN @73:22
+IDENTIFIER @73:24 id items effectivelyFinal.items [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @73:24
+TOKEN @73:29
+BLOCK @73:31
+TOKEN @73:31
+VARIABLE @74:7 var effectivelyFinal.r [v package] : java.lang.Runnable
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner effectivelyFinal Warnings#effectivelyFinal(Ljava/util/List;)V [package] returns void parameters 1 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @74:7 id Runnable java.lang.Runnable [t public interface] : java.lang.Runnable : java.lang.Runnable
+TOKEN @74:7
+IDENTIFIER @74:16 id r effectivelyFinal.r [v package] : java.lang.Runnable : java.lang.Runnable
+TOKEN @74:16
+TOKEN @74:18
+LAMBDA_EXPRESSION @74:20 : java.lang.Runnable
+TOKEN @74:20
+TOKEN @74:21
+TOKEN @74:23
+METHOD_INVOCATION @74:26 call PrintStream.println [m public] : ? (java.lang.String) returns void throws [] sig java.io.PrintStream#println(Ljava/lang/String;)V : void
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing PrintStream flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @74:26 : ?
+MEMBER_SELECT @74:26 : java.io.PrintStream
+IDENTIFIER @74:26 id System java.lang.System [t final public] : java.lang.System : java.lang.System
+TOKEN @74:26
+TOKEN @74:32
+IDENTIFIER @74:33 id out System.out [v static final public] : java.io.PrintStream : java.io.PrintStream
+TOKEN @74:33
+TOKEN @74:36
+IDENTIFIER @74:37 id println PrintStream.println [m public] : ? (java.lang.String) returns void throws [] sig java.io.PrintStream#println(Ljava/lang/String;)V : void
+TOKEN @74:37
+ARGUMENTS @74:44
+TOKEN @74:44
+IDENTIFIER @74:45 id item effectivelyFinal.item [v package] : java.lang.String : java.lang.String
+TOKEN @74:45
+TOKEN @74:49
+TOKEN @74:50
+EXPRESSION_STATEMENT @75:7
+METHOD_INVOCATION @75:7 call Runnable.run [m abstract public] : ? () returns void throws [] sig java.lang.Runnable#run()V : void
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Runnable flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @75:7 : ?
+IDENTIFIER @75:7 id r effectivelyFinal.r [v package] : java.lang.Runnable : java.lang.Runnable
+TOKEN @75:7
+TOKEN @75:8
+IDENTIFIER @75:9 id run Runnable.run [m abstract public] : ? () returns void throws [] sig java.lang.Runnable#run()V : void
+TOKEN @75:9
+ARGUMENTS @75:12
+TOKEN @75:12
+TOKEN @75:13
+TOKEN @75:14
+TOKEN @76:5
+EXPRESSION_STATEMENT @77:5
+METHOD_INVOCATION @77:5 call Callable.call [m abstract public] : ? () returns java.lang.Object throws [java.lang.Exception] sig java.util.concurrent.Callable#call()Ljava/lang/Object; : java.lang.Object
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Callable flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @77:5 : ?
+IDENTIFIER @77:5 id callable effectivelyFinal.callable [v package] : java.util.concurrent.Callable<java.lang.String> : java.util.concurrent.Callable<java.lang.String>
+TOKEN @77:5
+TOKEN @77:13
+IDENTIFIER @77:14 id call Callable.call [m abstract public] : ? () returns java.lang.Object throws [java.lang.Exception] sig java.util.concurrent.Callable#call()Ljava/lang/Object; : java.lang.Object
+TOKEN @77:14
+ARGUMENTS @77:18
+TOKEN @77:18
+TOKEN @77:19
+TOKEN @77:20
+VARIABLE @78:5 var effectivelyFinal.counts [v package] : java.util.Map<java.lang.String,java.lang.Integer>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner effectivelyFinal Warnings#effectivelyFinal(Ljava/util/List;)V [package] returns void parameters 1 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @78:5 : java.util.Map<java.lang.String,java.lang.Integer>
+IDENTIFIER @78:5 id Map java.util.Map [t public interface] : java.util.Map<java.lang.String,java.lang.Integer> : java.util.Map<java.lang.String,java.lang.Integer>
+TOKEN @78:5
+TYPE_ARGUMENTS @78:8
+TOKEN @78:8
+IDENTIFIER @78:9 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @78:9
+TOKEN @78:15
+IDENTIFIER @78:17 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @78:17
+TOKEN @78:24
+IDENTIFIER @78:26 id counts effectivelyFinal.counts [v package] : java.util.Map<java.lang.String,java.lang.Integer> : java.util.Map<java.lang.String,java.lang.Integer>
+TOKEN @78:26
+TOKEN @78:33
+NEW_CLASS @78:35 new HashMap.<init> [m public] : ? () returns void throws [] sig java.util.HashMap#<init>()V : java.util.HashMap
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing HashMap flags [public] overridden [AbstractMap.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @78:35
+PARAMETERIZED_TYPE @78:39 : java.util.HashMap
+IDENTIFIER @78:39 id HashMap HashMap.<init> [m public] : ? () returns void throws [] sig java.util.HashMap#<init>()V : java.util.HashMap
+TOKEN @78:39
+TYPE_ARGUMENTS @78:46
+TOKEN @78:46
+TOKEN @78:47
+ARGUMENTS @78:48
+TOKEN @78:48
+TOKEN @78:49
+TOKEN @78:50
+VARIABLE @79:5 var effectivelyFinal.values [v package] : java.util.List<java.lang.Integer>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Warnings flags [package] local true parameter false effectivelyFinal true constant null owner effectivelyFinal Warnings#effectivelyFinal(Ljava/util/List;)V [package] returns void parameters 1 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Warnings type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @79:5 : java.util.List<java.lang.Integer>
+IDENTIFIER @79:5 id List java.util.List [t public interface] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
+TOKEN @79:5
+TYPE_ARGUMENTS @79:9
+TOKEN @79:9
+IDENTIFIER @79:10 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @79:10
+TOKEN @79:17
+IDENTIFIER @79:19 id values effectivelyFinal.values [v package] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
+TOKEN @79:19
+TOKEN @79:26
+NEW_CLASS @79:28 new ArrayList.<init> [m public] : ? (java.util.Collection<java.lang.Object>) returns void throws [] sig java.util.ArrayList#<init>(Ljava/util/Collection;)V : java.util.ArrayList
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ArrayList flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+TOKEN @79:28
+PARAMETERIZED_TYPE @79:32 : java.util.ArrayList
+IDENTIFIER @79:32 id ArrayList ArrayList.<init> [m public] : ? (java.util.Collection<java.lang.Object>) returns void throws [] sig java.util.ArrayList#<init>(Ljava/util/Collection;)V : java.util.ArrayList
+TOKEN @79:32
+TYPE_ARGUMENTS @79:41
+TOKEN @79:41
+TOKEN @79:42
+ARGUMENTS @79:43
+TOKEN @79:43
+METHOD_INVOCATION @79:44 call Map.values [m abstract public] : ? () returns java.util.Collection<V erasure java.lang.Object> throws [] sig java.util.Map#values()Ljava/util/Collection; : java.util.Collection<V erasure java.lang.Object>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @79:44 : ?
+IDENTIFIER @79:44 id counts effectivelyFinal.counts [v package] : java.util.Map<java.lang.String,java.lang.Integer> : java.util.Map<java.lang.String,java.lang.Integer>
+TOKEN @79:44
+TOKEN @79:50
+IDENTIFIER @79:51 id values Map.values [m abstract public] : ? () returns java.util.Collection<V erasure java.lang.Object> throws [] sig java.util.Map#values()Ljava/util/Collection; : java.util.Collection<V erasure java.lang.Object>
+TOKEN @79:51
+ARGUMENTS @79:57
+TOKEN @79:57
+TOKEN @79:58
+TOKEN @79:59
+TOKEN @79:60
+EXPRESSION_STATEMENT @80:5
+METHOD_INVOCATION @80:5 call List.add [m abstract public] : ? (java.lang.Integer) returns boolean throws [] sig java.util.List#add(Ljava/lang/Object;)Z : boolean
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [Collection.add[]] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @80:5 : ?
+IDENTIFIER @80:5 id values effectivelyFinal.values [v package] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
+TOKEN @80:5
+TOKEN @80:11
+IDENTIFIER @80:12 id add List.add [m abstract public] : ? (java.lang.Integer) returns boolean throws [] sig java.util.List#add(Ljava/lang/Object;)Z : boolean
+TOKEN @80:12
+ARGUMENTS @80:15
+TOKEN @80:15
+IDENTIFIER @80:16 id notFinal effectivelyFinal.notFinal [v package] : int : int
+TOKEN @80:16
+TOKEN @80:24
+TOKEN @80:25
+TOKEN @81:3
+TOKEN @82:1
+TOKEN @83:1

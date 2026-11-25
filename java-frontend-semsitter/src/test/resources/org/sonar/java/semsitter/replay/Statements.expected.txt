@@ -1,1 +1,897 @@
-FAILURE Unsupported construct: switch_expression
+COMPILATION_UNIT @1:1
+IMPORT @1:1
+TOKEN @1:1
+MEMBER_SELECT @1:8 : ?
+MEMBER_SELECT @1:8 : ?
+IDENTIFIER @1:8 id java unknown : ?
+TOKEN @1:8
+TOKEN @1:12
+IDENTIFIER @1:13 id io unknown : ?
+TOKEN @1:13
+TOKEN @1:15
+IDENTIFIER @1:16 id FileReader unknown : ?
+TOKEN @1:16
+TOKEN @1:26
+IMPORT @2:1
+TOKEN @2:1
+MEMBER_SELECT @2:8 : ?
+MEMBER_SELECT @2:8 : ?
+IDENTIFIER @2:8 id java unknown : ?
+TOKEN @2:8
+TOKEN @2:12
+IDENTIFIER @2:13 id io unknown : ?
+TOKEN @2:13
+TOKEN @2:15
+IDENTIFIER @2:16 id IOException unknown : ?
+TOKEN @2:16
+TOKEN @2:27
+IMPORT @3:1
+TOKEN @3:1
+MEMBER_SELECT @3:8 : ?
+MEMBER_SELECT @3:8 : ?
+IDENTIFIER @3:8 id java unknown : ?
+TOKEN @3:8
+TOKEN @3:12
+IDENTIFIER @3:13 id io unknown : ?
+TOKEN @3:13
+TOKEN @3:15
+IDENTIFIER @3:16 id Reader unknown : ?
+TOKEN @3:16
+TOKEN @3:22
+IMPORT @4:1
+TOKEN @4:1
+MEMBER_SELECT @4:8 : ?
+MEMBER_SELECT @4:8 : ?
+IDENTIFIER @4:8 id java unknown : ?
+TOKEN @4:8
+TOKEN @4:12
+IDENTIFIER @4:13 id util unknown : ?
+TOKEN @4:13
+TOKEN @4:17
+IDENTIFIER @4:18 id List unknown : ?
+TOKEN @4:18
+TOKEN @4:22
+CLASS @6:1 class .Statements [t package] : Statements super java.lang.Object interfaces []
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [package] members [<init>, lock, nothing, run, yields] lookupToString 0 outermost Statements annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring Statements
+MODIFIERS
+TOKEN @6:1
+IDENTIFIER @6:7 id Statements .Statements [t package] : Statements : Statements
+TOKEN @6:7
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @6:18
+VARIABLE @8:3 var Statements.lock [v final private] : java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [final, private] local false parameter false effectivelyFinal true constant null
+MODIFIERS @8:3
+TOKEN @8:3
+TOKEN @8:11
+IDENTIFIER @8:17 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @8:17
+IDENTIFIER @8:24 id lock Statements.lock [v final private] : java.lang.Object : java.lang.Object
+TOKEN @8:24
+TOKEN @8:29
+NEW_CLASS @8:31 new Object.<init> [m public] : ? () returns void throws [] sig java.lang.Object#<init>()V : java.lang.Object
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Object flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @8:31
+IDENTIFIER @8:35 id Object Object.<init> [m public] : ? () returns void throws [] sig java.lang.Object#<init>()V : java.lang.Object
+TOKEN @8:35
+ARGUMENTS @8:41
+TOKEN @8:41
+TOKEN @8:42
+TOKEN @8:43
+METHOD @10:3 method Statements.run [m package] : ? (java.lang.String,java.util.List<java.lang.String>) returns int throws [java.io.IOException] sig Statements#run(Ljava/lang/String;Ljava/util/List;)I overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [s, items] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @10:3 : int
+TOKEN @10:3
+IDENTIFIER @10:7 id run Statements.run [m package] : ? (java.lang.String,java.util.List<java.lang.String>) returns int throws [java.io.IOException] sig Statements#run(Ljava/lang/String;Ljava/util/List;)I : int
+TOKEN @10:7
+TOKEN @10:10
+VARIABLE @10:11 var run.s [v package] : java.lang.String
+  details declared true usages 5 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [package] local true parameter true effectivelyFinal true constant null owner run Statements#run(Ljava/lang/String;Ljava/util/List;)I [package] returns int parameters 2 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Statements type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+IDENTIFIER @10:11 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @10:11
+IDENTIFIER @10:18 id s run.s [v package] : java.lang.String : java.lang.String
+TOKEN @10:18
+TOKEN @10:19
+VARIABLE @10:21 var run.items [v package] : java.util.List<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [package] local true parameter true effectivelyFinal true constant null owner run Statements#run(Ljava/lang/String;Ljava/util/List;)I [package] returns int parameters 2 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Statements type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @10:21 : java.util.List<java.lang.String>
+IDENTIFIER @10:21 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @10:21
+TYPE_ARGUMENTS @10:25
+TOKEN @10:25
+IDENTIFIER @10:26 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @10:26
+TOKEN @10:32
+IDENTIFIER @10:34 id items run.items [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @10:34
+TOKEN @10:39
+TOKEN @10:41
+LIST @10:48
+IDENTIFIER @10:48 id IOException java.io.IOException [t public] : java.io.IOException : java.io.IOException
+TOKEN @10:48
+BLOCK @10:60
+TOKEN @10:60
+VARIABLE @11:5 var run.total [v package] : int
+  details declared true usages 19 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [package] local true parameter false effectivelyFinal false constant null owner run Statements#run(Ljava/lang/String;Ljava/util/List;)I [package] returns int parameters 2 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Statements type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @11:5 : int
+TOKEN @11:5
+IDENTIFIER @11:9 id total run.total [v package] : int : int
+TOKEN @11:9
+TOKEN @11:15
+INT_LITERAL @11:17 : int = 0
+TOKEN @11:17
+TOKEN @11:18
+VARIABLE @12:5 var run.limit [v final package] : int
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [final, package] local true parameter false effectivelyFinal true constant null owner run Statements#run(Ljava/lang/String;Ljava/util/List;)I [package] returns int parameters 2 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Statements type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS @12:5
+TOKEN @12:5
+PRIMITIVE_TYPE @12:11 : int
+TOKEN @12:11
+IDENTIFIER @12:15 id limit run.limit [v final package] : int : int
+TOKEN @12:15
+TOKEN @12:21
+INT_LITERAL @12:23 : int = 10
+TOKEN @12:23
+TOKEN @12:25
+VARIABLE @13:5 var run.inferred [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [package] local true parameter false effectivelyFinal true constant null owner run Statements#run(Ljava/lang/String;Ljava/util/List;)I [package] returns int parameters 2 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Statements type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+VAR_TYPE @13:5
+TOKEN @13:5
+IDENTIFIER @13:9 id inferred run.inferred [v package] : java.lang.String : java.lang.String
+TOKEN @13:9
+TOKEN @13:18
+STRING_LITERAL @13:20 : java.lang.String = local
+TOKEN @13:20
+TOKEN @13:27
+FOR_STATEMENT @14:5
+TOKEN @14:5
+TOKEN @14:9
+LIST @14:10
+VARIABLE @14:10 var run.i [v package] : int
+  details declared true usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [package] local true parameter false effectivelyFinal false constant null owner run Statements#run(Ljava/lang/String;Ljava/util/List;)I [package] returns int parameters 2 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Statements type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @14:10 : int
+TOKEN @14:10
+IDENTIFIER @14:14 id i run.i [v package] : int : int
+TOKEN @14:14
+TOKEN @14:16
+INT_LITERAL @14:18 : int = 0
+TOKEN @14:18
+TOKEN @14:19
+VARIABLE @14:10 var run.j [v package] : int
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [package] local true parameter false effectivelyFinal false constant null owner run Statements#run(Ljava/lang/String;Ljava/util/List;)I [package] returns int parameters 2 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Statements type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @14:10 : int
+TOKEN @14:10
+IDENTIFIER @14:21 id j run.j [v package] : int : int
+TOKEN @14:21
+TOKEN @14:23
+INT_LITERAL @14:25 : int = 1
+TOKEN @14:25
+TOKEN @14:26
+LESS_THAN @14:28 : boolean
+IDENTIFIER @14:28 id i run.i [v package] : int : int
+TOKEN @14:28
+TOKEN @14:30
+METHOD_INVOCATION @14:32 call String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [CharSequence.length[]] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @14:32 : ?
+IDENTIFIER @14:32 id s run.s [v package] : java.lang.String : java.lang.String
+TOKEN @14:32
+TOKEN @14:33
+IDENTIFIER @14:34 id length String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
+TOKEN @14:34
+ARGUMENTS @14:40
+TOKEN @14:40
+TOKEN @14:41
+TOKEN @14:42
+LIST @14:44
+EXPRESSION_STATEMENT @14:44
+POSTFIX_INCREMENT @14:44 : int
+IDENTIFIER @14:44 id i run.i [v package] : int : int
+TOKEN @14:44
+TOKEN @14:45
+TOKEN @14:47
+EXPRESSION_STATEMENT @14:49
+POSTFIX_INCREMENT @14:49 : int
+IDENTIFIER @14:49 id j run.j [v package] : int : int
+TOKEN @14:49
+TOKEN @14:50
+TOKEN @14:52
+BLOCK @14:54
+TOKEN @14:54
+IF_STATEMENT @15:7
+TOKEN @15:7
+TOKEN @15:10
+EQUAL_TO @15:11 : boolean
+METHOD_INVOCATION @15:11 call String.charAt [m public] : ? (int) returns char throws [] sig java.lang.String#charAt(I)C : char
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [CharSequence.charAt[]] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @15:11 : ?
+IDENTIFIER @15:11 id s run.s [v package] : java.lang.String : java.lang.String
+TOKEN @15:11
+TOKEN @15:12
+IDENTIFIER @15:13 id charAt String.charAt [m public] : ? (int) returns char throws [] sig java.lang.String#charAt(I)C : char
+TOKEN @15:13
+ARGUMENTS @15:19
+TOKEN @15:19
+IDENTIFIER @15:20 id i run.i [v package] : int : int
+TOKEN @15:20
+TOKEN @15:21
+TOKEN @15:23
+CHAR_LITERAL @15:26 : char = 120
+TOKEN @15:26
+TOKEN @15:29
+BLOCK @15:31
+TOKEN @15:31
+CONTINUE_STATEMENT @16:9
+TOKEN @16:9
+TOKEN @16:17
+TOKEN @17:7
+TOKEN @17:9
+IF_STATEMENT @17:14
+TOKEN @17:14
+TOKEN @17:17
+EQUAL_TO @17:18 : boolean
+METHOD_INVOCATION @17:18 call String.charAt [m public] : ? (int) returns char throws [] sig java.lang.String#charAt(I)C : char
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [CharSequence.charAt[]] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @17:18 : ?
+IDENTIFIER @17:18 id s run.s [v package] : java.lang.String : java.lang.String
+TOKEN @17:18
+TOKEN @17:19
+IDENTIFIER @17:20 id charAt String.charAt [m public] : ? (int) returns char throws [] sig java.lang.String#charAt(I)C : char
+TOKEN @17:20
+ARGUMENTS @17:26
+TOKEN @17:26
+IDENTIFIER @17:27 id i run.i [v package] : int : int
+TOKEN @17:27
+TOKEN @17:28
+TOKEN @17:30
+CHAR_LITERAL @17:33 : char = 121
+TOKEN @17:33
+TOKEN @17:36
+BLOCK @17:38
+TOKEN @17:38
+BREAK_STATEMENT @18:9
+TOKEN @18:9
+TOKEN @18:14
+TOKEN @19:7
+TOKEN @19:9
+BLOCK @19:14
+TOKEN @19:14
+EXPRESSION_STATEMENT @20:9
+PLUS_ASSIGNMENT @20:9 : int
+IDENTIFIER @20:9 id total run.total [v package] : int : int
+TOKEN @20:9
+TOKEN @20:15
+IDENTIFIER @20:18 id j run.j [v package] : int : int
+TOKEN @20:18
+TOKEN @20:19
+TOKEN @21:7
+TOKEN @22:5
+FOR_EACH_STATEMENT @23:5
+TOKEN @23:5
+TOKEN @23:9
+VARIABLE @23:10 var run.item [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [package] local true parameter false effectivelyFinal true constant null owner run Statements#run(Ljava/lang/String;Ljava/util/List;)I [package] returns int parameters 2 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Statements type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+IDENTIFIER @23:10 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @23:10
+IDENTIFIER @23:17 id item run.item [v package] : java.lang.String : java.lang.String
+TOKEN @23:17
+TOKEN @23:22
+IDENTIFIER @23:24 id items run.items [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @23:24
+TOKEN @23:29
+BLOCK @23:31
+TOKEN @23:31
+EXPRESSION_STATEMENT @24:7
+PLUS_ASSIGNMENT @24:7 : int
+IDENTIFIER @24:7 id total run.total [v package] : int : int
+TOKEN @24:7
+TOKEN @24:13
+METHOD_INVOCATION @24:16 call String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [CharSequence.length[]] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @24:16 : ?
+IDENTIFIER @24:16 id item run.item [v package] : java.lang.String : java.lang.String
+TOKEN @24:16
+TOKEN @24:20
+IDENTIFIER @24:21 id length String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
+TOKEN @24:21
+ARGUMENTS @24:27
+TOKEN @24:27
+TOKEN @24:28
+TOKEN @24:29
+TOKEN @25:5
+FOR_STATEMENT @26:5
+TOKEN @26:5
+TOKEN @26:9
+LIST
+TOKEN @26:10
+TOKEN @26:11
+LIST
+TOKEN @26:12
+BLOCK @26:14
+TOKEN @26:14
+BREAK_STATEMENT @27:7
+TOKEN @27:7
+TOKEN @27:12
+TOKEN @28:5
+WHILE_STATEMENT @29:5
+TOKEN @29:5
+TOKEN @29:11
+GREATER_THAN @29:12 : boolean
+IDENTIFIER @29:12 id total run.total [v package] : int : int
+TOKEN @29:12
+TOKEN @29:18
+IDENTIFIER @29:20 id limit run.limit [v final package] : int : int
+TOKEN @29:20
+TOKEN @29:25
+BLOCK @29:27
+TOKEN @29:27
+EXPRESSION_STATEMENT @30:7
+POSTFIX_DECREMENT @30:7 : int
+IDENTIFIER @30:7 id total run.total [v package] : int : int
+TOKEN @30:7
+TOKEN @30:12
+TOKEN @30:14
+TOKEN @31:5
+DO_STATEMENT @32:5
+TOKEN @32:5
+BLOCK @32:8
+TOKEN @32:8
+EXPRESSION_STATEMENT @33:7
+POSTFIX_INCREMENT @33:7 : int
+IDENTIFIER @33:7 id total run.total [v package] : int : int
+TOKEN @33:7
+TOKEN @33:12
+TOKEN @33:14
+TOKEN @34:5
+TOKEN @34:7
+TOKEN @34:13
+LESS_THAN @34:14 : boolean
+IDENTIFIER @34:14 id total run.total [v package] : int : int
+TOKEN @34:14
+TOKEN @34:20
+INT_LITERAL @34:22 : int = 3
+TOKEN @34:22
+TOKEN @34:23
+TOKEN @34:24
+LABELED_STATEMENT @35:5
+IDENTIFIER @35:5 id outer unknown : ?
+TOKEN @35:5
+TOKEN @35:10
+FOR_STATEMENT @36:5
+TOKEN @36:5
+TOKEN @36:9
+LIST @36:10
+VARIABLE @36:10 var run.i [v package] : int
+  details declared true usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [package] local true parameter false effectivelyFinal false constant null owner run Statements#run(Ljava/lang/String;Ljava/util/List;)I [package] returns int parameters 2 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Statements type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @36:10 : int
+TOKEN @36:10
+IDENTIFIER @36:14 id i run.i [v package] : int : int
+TOKEN @36:14
+TOKEN @36:16
+INT_LITERAL @36:18 : int = 0
+TOKEN @36:18
+TOKEN @36:19
+LESS_THAN @36:21 : boolean
+IDENTIFIER @36:21 id i run.i [v package] : int : int
+TOKEN @36:21
+TOKEN @36:23
+INT_LITERAL @36:25 : int = 3
+TOKEN @36:25
+TOKEN @36:26
+LIST @36:28
+EXPRESSION_STATEMENT @36:28
+POSTFIX_INCREMENT @36:28 : int
+IDENTIFIER @36:28 id i run.i [v package] : int : int
+TOKEN @36:28
+TOKEN @36:29
+TOKEN @36:31
+BLOCK @36:33
+TOKEN @36:33
+FOR_STATEMENT @37:7
+TOKEN @37:7
+TOKEN @37:11
+LIST @37:12
+VARIABLE @37:12 var run.j [v package] : int
+  details declared true usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [package] local true parameter false effectivelyFinal false constant null owner run Statements#run(Ljava/lang/String;Ljava/util/List;)I [package] returns int parameters 2 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Statements type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @37:12 : int
+TOKEN @37:12
+IDENTIFIER @37:16 id j run.j [v package] : int : int
+TOKEN @37:16
+TOKEN @37:18
+INT_LITERAL @37:20 : int = 0
+TOKEN @37:20
+TOKEN @37:21
+LESS_THAN @37:23 : boolean
+IDENTIFIER @37:23 id j run.j [v package] : int : int
+TOKEN @37:23
+TOKEN @37:25
+INT_LITERAL @37:27 : int = 3
+TOKEN @37:27
+TOKEN @37:28
+LIST @37:30
+EXPRESSION_STATEMENT @37:30
+POSTFIX_INCREMENT @37:30 : int
+IDENTIFIER @37:30 id j run.j [v package] : int : int
+TOKEN @37:30
+TOKEN @37:31
+TOKEN @37:33
+BLOCK @37:35
+TOKEN @37:35
+IF_STATEMENT @38:9
+TOKEN @38:9
+TOKEN @38:12
+EQUAL_TO @38:13 : boolean
+IDENTIFIER @38:13 id i run.i [v package] : int : int
+TOKEN @38:13
+TOKEN @38:15
+IDENTIFIER @38:18 id j run.j [v package] : int : int
+TOKEN @38:18
+TOKEN @38:19
+BLOCK @38:21
+TOKEN @38:21
+CONTINUE_STATEMENT @39:11
+TOKEN @39:11
+IDENTIFIER @39:20 id outer outer [] : ? : ?
+TOKEN @39:20
+TOKEN @39:25
+TOKEN @40:9
+IF_STATEMENT @41:9
+TOKEN @41:9
+TOKEN @41:12
+GREATER_THAN @41:13 : boolean
+IDENTIFIER @41:13 id i run.i [v package] : int : int
+TOKEN @41:13
+TOKEN @41:15
+IDENTIFIER @41:17 id j run.j [v package] : int : int
+TOKEN @41:17
+TOKEN @41:18
+BLOCK @41:20
+TOKEN @41:20
+BREAK_STATEMENT @42:11
+TOKEN @42:11
+IDENTIFIER @42:17 id outer outer [] : ? : ?
+TOKEN @42:17
+TOKEN @42:22
+TOKEN @43:9
+TOKEN @44:7
+TOKEN @45:5
+SWITCH_STATEMENT @46:5 : ?
+TOKEN @46:5
+TOKEN @46:12
+IDENTIFIER @46:13 id s run.s [v package] : java.lang.String : java.lang.String
+TOKEN @46:13
+TOKEN @46:14
+TOKEN @46:16
+CASE_GROUP @47:7
+CASE_LABEL @47:7
+TOKEN @47:7
+STRING_LITERAL @47:12 : java.lang.String = a
+TOKEN @47:12
+TOKEN @47:15
+CASE_LABEL @48:7
+TOKEN @48:7
+STRING_LITERAL @48:12 : java.lang.String = b
+TOKEN @48:12
+TOKEN @48:15
+EXPRESSION_STATEMENT @49:9
+ASSIGNMENT @49:9 : int
+IDENTIFIER @49:9 id total run.total [v package] : int : int
+TOKEN @49:9
+TOKEN @49:15
+INT_LITERAL @49:17 : int = 1
+TOKEN @49:17
+TOKEN @49:18
+BREAK_STATEMENT @50:9
+TOKEN @50:9
+TOKEN @50:14
+CASE_GROUP @51:7
+CASE_LABEL @51:7
+TOKEN @51:7
+STRING_LITERAL @51:12 : java.lang.String = c
+TOKEN @51:12
+TOKEN @51:15
+EXPRESSION_STATEMENT @52:9
+ASSIGNMENT @52:9 : int
+IDENTIFIER @52:9 id total run.total [v package] : int : int
+TOKEN @52:9
+TOKEN @52:15
+INT_LITERAL @52:17 : int = 2
+TOKEN @52:17
+TOKEN @52:18
+CASE_GROUP @53:7
+CASE_LABEL @53:7
+TOKEN @53:7
+TOKEN @53:14
+EXPRESSION_STATEMENT @54:9
+ASSIGNMENT @54:9 : int
+IDENTIFIER @54:9 id total run.total [v package] : int : int
+TOKEN @54:9
+TOKEN @54:15
+INT_LITERAL @54:17 : int = 3
+TOKEN @54:17
+TOKEN @54:18
+TOKEN @55:5
+SWITCH_STATEMENT @56:5 : ?
+TOKEN @56:5
+TOKEN @56:12
+IDENTIFIER @56:13 id total run.total [v package] : int : int
+TOKEN @56:13
+TOKEN @56:18
+TOKEN @56:20
+CASE_GROUP @57:7
+CASE_LABEL @57:7
+TOKEN @57:7
+INT_LITERAL @57:12 : int = 1
+TOKEN @57:12
+TOKEN @57:14
+YIELD_STATEMENT @57:17
+ASSIGNMENT @57:17 : int
+IDENTIFIER @57:17 id total run.total [v package] : int : int
+TOKEN @57:17
+TOKEN @57:23
+INT_LITERAL @57:25 : int = 10
+TOKEN @57:25
+TOKEN @57:27
+CASE_GROUP @58:7
+CASE_LABEL @58:7
+TOKEN @58:7
+INT_LITERAL @58:12 : int = 2
+TOKEN @58:12
+INT_LITERAL @58:15 : int = 3
+TOKEN @58:15
+TOKEN @58:17
+BLOCK @58:20
+TOKEN @58:20
+EXPRESSION_STATEMENT @59:9
+ASSIGNMENT @59:9 : int
+IDENTIFIER @59:9 id total run.total [v package] : int : int
+TOKEN @59:9
+TOKEN @59:15
+INT_LITERAL @59:17 : int = 20
+TOKEN @59:17
+TOKEN @59:19
+TOKEN @60:7
+CASE_GROUP @61:7
+CASE_LABEL @61:7
+TOKEN @61:7
+TOKEN @61:15
+THROW_STATEMENT @61:18
+TOKEN @61:18
+NEW_CLASS @61:24 new IllegalStateException.<init> [m public] : ? () returns void throws [] sig java.lang.IllegalStateException#<init>()V : java.lang.IllegalStateException
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing IllegalStateException flags [public] overridden [RuntimeException.<init>[], Exception.<init>[], Throwable.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @61:24
+IDENTIFIER @61:28 id IllegalStateException IllegalStateException.<init> [m public] : ? () returns void throws [] sig java.lang.IllegalStateException#<init>()V : java.lang.IllegalStateException
+TOKEN @61:28
+ARGUMENTS @61:49
+TOKEN @61:49
+TOKEN @61:50
+TOKEN @61:51
+TOKEN @62:5
+TRY_STATEMENT @63:5
+TOKEN @63:5
+TOKEN @63:9
+LIST @63:10
+VARIABLE @63:10 var run.reader [v final package] : java.io.Reader
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [final, package] local true parameter false effectivelyFinal true constant null owner run Statements#run(Ljava/lang/String;Ljava/util/List;)I [package] returns int parameters 2 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Statements type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+IDENTIFIER @63:10 id Reader java.io.Reader [t abstract public] : java.io.Reader : java.io.Reader
+TOKEN @63:10
+IDENTIFIER @63:17 id reader run.reader [v final package] : java.io.Reader : java.io.Reader
+TOKEN @63:17
+TOKEN @63:24
+NEW_CLASS @63:26 new FileReader.<init> [m public] : ? (java.lang.String) returns void throws [java.io.FileNotFoundException] sig java.io.FileReader#<init>(Ljava/lang/String;)V : java.io.FileReader
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing FileReader flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+TOKEN @63:26
+IDENTIFIER @63:30 id FileReader FileReader.<init> [m public] : ? (java.lang.String) returns void throws [java.io.FileNotFoundException] sig java.io.FileReader#<init>(Ljava/lang/String;)V : java.io.FileReader
+TOKEN @63:30
+ARGUMENTS @63:40
+TOKEN @63:40
+IDENTIFIER @63:41 id s run.s [v package] : java.lang.String : java.lang.String
+TOKEN @63:41
+TOKEN @63:42
+TOKEN @63:43
+VARIABLE @63:45 var run.other [v final package] : java.io.Reader
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [final, package] local true parameter false effectivelyFinal true constant null owner run Statements#run(Ljava/lang/String;Ljava/util/List;)I [package] returns int parameters 2 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Statements type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+IDENTIFIER @63:45 id Reader java.io.Reader [t abstract public] : java.io.Reader : java.io.Reader
+TOKEN @63:45
+IDENTIFIER @63:52 id other run.other [v final package] : java.io.Reader : java.io.Reader
+TOKEN @63:52
+TOKEN @63:58
+NEW_CLASS @63:60 new FileReader.<init> [m public] : ? (java.lang.String) returns void throws [java.io.FileNotFoundException] sig java.io.FileReader#<init>(Ljava/lang/String;)V : java.io.FileReader
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing FileReader flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+TOKEN @63:60
+IDENTIFIER @63:64 id FileReader FileReader.<init> [m public] : ? (java.lang.String) returns void throws [java.io.FileNotFoundException] sig java.io.FileReader#<init>(Ljava/lang/String;)V : java.io.FileReader
+TOKEN @63:64
+ARGUMENTS @63:74
+TOKEN @63:74
+IDENTIFIER @63:75 id inferred run.inferred [v package] : java.lang.String : java.lang.String
+TOKEN @63:75
+TOKEN @63:83
+TOKEN @63:84
+BLOCK @63:86
+TOKEN @63:86
+EXPRESSION_STATEMENT @64:7
+PLUS_ASSIGNMENT @64:7 : int
+IDENTIFIER @64:7 id total run.total [v package] : int : int
+TOKEN @64:7
+TOKEN @64:13
+PLUS @64:16 : int
+METHOD_INVOCATION @64:16 call Reader.read [m public] : ? () returns int throws [java.io.IOException] sig java.io.Reader#read()I : int
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Reader flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @64:16 : ?
+IDENTIFIER @64:16 id reader run.reader [v final package] : java.io.Reader : java.io.Reader
+TOKEN @64:16
+TOKEN @64:22
+IDENTIFIER @64:23 id read Reader.read [m public] : ? () returns int throws [java.io.IOException] sig java.io.Reader#read()I : int
+TOKEN @64:23
+ARGUMENTS @64:27
+TOKEN @64:27
+TOKEN @64:28
+TOKEN @64:30
+METHOD_INVOCATION @64:32 call Reader.read [m public] : ? () returns int throws [java.io.IOException] sig java.io.Reader#read()I : int
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Reader flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @64:32 : ?
+IDENTIFIER @64:32 id other run.other [v final package] : java.io.Reader : java.io.Reader
+TOKEN @64:32
+TOKEN @64:37
+IDENTIFIER @64:38 id read Reader.read [m public] : ? () returns int throws [java.io.IOException] sig java.io.Reader#read()I : int
+TOKEN @64:38
+ARGUMENTS @64:42
+TOKEN @64:42
+TOKEN @64:43
+TOKEN @64:44
+TOKEN @65:5
+CATCH @65:7
+TOKEN @65:7
+TOKEN @65:13
+VARIABLE @65:14 var run.e [v final package] : java.lang.RuntimeException
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [final, package] local true parameter false effectivelyFinal true constant null owner run Statements#run(Ljava/lang/String;Ljava/util/List;)I [package] returns int parameters 2 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Statements type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+UNION_TYPE @65:14
+LIST @65:14
+IDENTIFIER @65:14 id IllegalStateException java.lang.IllegalStateException [t public] : java.lang.IllegalStateException : java.lang.IllegalStateException
+TOKEN @65:14
+TOKEN @65:36
+IDENTIFIER @65:38 id IllegalArgumentException java.lang.IllegalArgumentException [t public] : java.lang.IllegalArgumentException : java.lang.IllegalArgumentException
+TOKEN @65:38
+IDENTIFIER @65:63 id e run.e [v final package] : java.lang.RuntimeException : java.lang.RuntimeException
+TOKEN @65:63
+TOKEN @65:64
+BLOCK @65:66
+TOKEN @65:66
+THROW_STATEMENT @66:7
+TOKEN @66:7
+NEW_CLASS @66:13 new RuntimeException.<init> [m public] : ? (java.lang.Throwable) returns void throws [] sig java.lang.RuntimeException#<init>(Ljava/lang/Throwable;)V : java.lang.RuntimeException
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing RuntimeException flags [public] overridden [Exception.<init>[], Throwable.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+TOKEN @66:13
+IDENTIFIER @66:17 id RuntimeException RuntimeException.<init> [m public] : ? (java.lang.Throwable) returns void throws [] sig java.lang.RuntimeException#<init>(Ljava/lang/Throwable;)V : java.lang.RuntimeException
+TOKEN @66:17
+ARGUMENTS @66:33
+TOKEN @66:33
+IDENTIFIER @66:34 id e run.e [v final package] : java.lang.RuntimeException : java.lang.RuntimeException
+TOKEN @66:34
+TOKEN @66:35
+TOKEN @66:36
+TOKEN @67:5
+CATCH @67:7
+TOKEN @67:7
+TOKEN @67:13
+VARIABLE @67:14 var run.e [v package] : java.io.IOException
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [package] local true parameter false effectivelyFinal true constant null owner run Statements#run(Ljava/lang/String;Ljava/util/List;)I [package] returns int parameters 2 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Statements type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+IDENTIFIER @67:14 id IOException java.io.IOException [t public] : java.io.IOException : java.io.IOException
+TOKEN @67:14
+IDENTIFIER @67:26 id e run.e [v package] : java.io.IOException : java.io.IOException
+TOKEN @67:26
+TOKEN @67:27
+BLOCK @67:29
+TOKEN @67:29
+THROW_STATEMENT @68:7
+TOKEN @68:7
+IDENTIFIER @68:13 id e run.e [v package] : java.io.IOException : java.io.IOException
+TOKEN @68:13
+TOKEN @68:14
+TOKEN @69:5
+TOKEN @69:7
+BLOCK @69:15
+TOKEN @69:15
+EXPRESSION_STATEMENT @70:7
+ASSIGNMENT @70:7 : int
+IDENTIFIER @70:7 id total run.total [v package] : int : int
+TOKEN @70:7
+TOKEN @70:13
+INT_LITERAL @70:15 : int = 0
+TOKEN @70:15
+TOKEN @70:16
+TOKEN @71:5
+SYNCHRONIZED_STATEMENT @72:5
+TOKEN @72:5
+TOKEN @72:18
+IDENTIFIER @72:19 id lock Statements.lock [v final private] : java.lang.Object : java.lang.Object
+TOKEN @72:19
+TOKEN @72:23
+BLOCK @72:25
+TOKEN @72:25
+EXPRESSION_STATEMENT @73:7
+POSTFIX_INCREMENT @73:7 : int
+IDENTIFIER @73:7 id total run.total [v package] : int : int
+TOKEN @73:7
+TOKEN @73:12
+TOKEN @73:14
+TOKEN @74:5
+ASSERT_STATEMENT @75:5
+TOKEN @75:5
+GREATER_THAN_OR_EQUAL_TO @75:12 : boolean
+IDENTIFIER @75:12 id total run.total [v package] : int : int
+TOKEN @75:12
+TOKEN @75:18
+INT_LITERAL @75:21 : int = 0
+TOKEN @75:21
+TOKEN @75:23
+STRING_LITERAL @75:25 : java.lang.String = negative
+TOKEN @75:25
+TOKEN @75:35
+EMPTY_STATEMENT @76:5
+TOKEN @76:5
+BLOCK @77:5
+TOKEN @77:5
+VARIABLE @78:7 var run.scoped [v package] : int
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [package] local true parameter false effectivelyFinal true constant null owner run Statements#run(Ljava/lang/String;Ljava/util/List;)I [package] returns int parameters 2 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing Statements type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @78:7 : int
+TOKEN @78:7
+IDENTIFIER @78:11 id scoped run.scoped [v package] : int : int
+TOKEN @78:11
+TOKEN @78:18
+INT_LITERAL @78:20 : int = 1
+TOKEN @78:20
+TOKEN @78:21
+EXPRESSION_STATEMENT @79:7
+PLUS_ASSIGNMENT @79:7 : int
+IDENTIFIER @79:7 id total run.total [v package] : int : int
+TOKEN @79:7
+TOKEN @79:13
+IDENTIFIER @79:16 id scoped run.scoped [v package] : int : int
+TOKEN @79:16
+TOKEN @79:22
+TOKEN @80:5
+CLASS @81:5 class unknown super java.lang.Object interfaces []
+MODIFIERS
+TOKEN @81:5
+IDENTIFIER @81:11 id Local unknown : ?
+TOKEN @81:11
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @81:17
+METHOD @82:7 method Local.value [m package] : ? () returns int throws [] sig Statements$1Local#value()I overrides null
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Local flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @82:7 : int
+TOKEN @82:7
+IDENTIFIER @82:11 id value Local.value [m package] : ? () returns int throws [] sig Statements$1Local#value()I : int
+TOKEN @82:11
+TOKEN @82:16
+TOKEN @82:17
+BLOCK @82:19
+TOKEN @82:19
+RETURN_STATEMENT @83:9
+TOKEN @83:9
+IDENTIFIER @83:16 id limit run.limit [v final package] : int : int
+TOKEN @83:16
+TOKEN @83:21
+TOKEN @84:7
+TOKEN @85:5
+EXPRESSION_STATEMENT @86:5
+PLUS_ASSIGNMENT @86:5 : int
+IDENTIFIER @86:5 id total run.total [v package] : int : int
+TOKEN @86:5
+TOKEN @86:11
+METHOD_INVOCATION @86:14 call Local.value [m package] : ? () returns int throws [] sig Statements$1Local#value()I : int
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Local flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @86:14 : ?
+NEW_CLASS @86:14 new Local.<init> [m package] : ? () returns void throws [] sig Statements$1Local#<init>()V : ?
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Local flags [package] overridden [Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @86:14
+IDENTIFIER @86:18 id Local Local.<init> [m package] : ? () returns void throws [] sig Statements$1Local#<init>()V : ?
+TOKEN @86:18
+ARGUMENTS @86:23
+TOKEN @86:23
+TOKEN @86:24
+TOKEN @86:25
+IDENTIFIER @86:26 id value Local.value [m package] : ? () returns int throws [] sig Statements$1Local#value()I : int
+TOKEN @86:26
+ARGUMENTS @86:31
+TOKEN @86:31
+TOKEN @86:32
+TOKEN @86:33
+RETURN_STATEMENT @87:5
+TOKEN @87:5
+IDENTIFIER @87:12 id total run.total [v package] : int : int
+TOKEN @87:12
+TOKEN @87:17
+TOKEN @88:3
+METHOD @90:3 method Statements.nothing [m package] : ? () returns void throws [] sig Statements#nothing()V overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @90:3 : void
+TOKEN @90:3
+IDENTIFIER @90:8 id nothing Statements.nothing [m package] : ? () returns void throws [] sig Statements#nothing()V : void
+TOKEN @90:8
+TOKEN @90:15
+TOKEN @90:16
+BLOCK @90:18
+TOKEN @90:18
+RETURN_STATEMENT @91:5
+TOKEN @91:5
+TOKEN @91:11
+TOKEN @92:3
+METHOD @94:3 method Statements.yields [m package] : ? (int) returns int throws [] sig Statements#yields(I)I overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [k] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @94:3 : int
+TOKEN @94:3
+IDENTIFIER @94:7 id yields Statements.yields [m package] : ? (int) returns int throws [] sig Statements#yields(I)I : int
+TOKEN @94:7
+TOKEN @94:13
+VARIABLE @94:14 var yields.k [v package] : int
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Statements flags [package] local true parameter true effectivelyFinal true constant null owner yields Statements#yields(I)I [package] returns int parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Statements type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @94:14 : int
+TOKEN @94:14
+IDENTIFIER @94:18 id k yields.k [v package] : int : int
+TOKEN @94:18
+TOKEN @94:19
+BLOCK @94:21
+TOKEN @94:21
+RETURN_STATEMENT @95:5
+TOKEN @95:5
+SWITCH_EXPRESSION @95:12 : int
+TOKEN @95:12
+TOKEN @95:19
+IDENTIFIER @95:20 id k yields.k [v package] : int : int
+TOKEN @95:20
+TOKEN @95:21
+TOKEN @95:23
+CASE_GROUP @96:7
+CASE_LABEL @96:7
+TOKEN @96:7
+INT_LITERAL @96:12 : int = 1
+TOKEN @96:12
+TOKEN @96:13
+YIELD_STATEMENT @97:9
+TOKEN @97:9
+INT_LITERAL @97:15 : int = 10
+TOKEN @97:15
+TOKEN @97:17
+CASE_GROUP @98:7
+CASE_LABEL @98:7
+TOKEN @98:7
+TOKEN @98:14
+YIELD_STATEMENT @99:9
+TOKEN @99:9
+INT_LITERAL @99:15 : int = 0
+TOKEN @99:15
+TOKEN @99:16
+TOKEN @100:5
+TOKEN @100:6
+TOKEN @101:3
+TOKEN @102:1
+TOKEN @103:1

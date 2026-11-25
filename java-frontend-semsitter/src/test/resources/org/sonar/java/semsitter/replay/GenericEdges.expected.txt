@@ -1,1 +1,1813 @@
-FAILURE Unsupported construct: method_reference
+COMPILATION_UNIT @1:1
+IMPORT @1:1
+TOKEN @1:1
+MEMBER_SELECT @1:8 : ?
+MEMBER_SELECT @1:8 : ?
+IDENTIFIER @1:8 id java unknown : ?
+TOKEN @1:8
+TOKEN @1:12
+IDENTIFIER @1:13 id io unknown : ?
+TOKEN @1:13
+TOKEN @1:15
+IDENTIFIER @1:16 id IOException unknown : ?
+TOKEN @1:16
+TOKEN @1:27
+IMPORT @2:1
+TOKEN @2:1
+MEMBER_SELECT @2:8 : ?
+MEMBER_SELECT @2:8 : ?
+IDENTIFIER @2:8 id java unknown : ?
+TOKEN @2:8
+TOKEN @2:12
+IDENTIFIER @2:13 id util unknown : ?
+TOKEN @2:13
+TOKEN @2:17
+IDENTIFIER @2:18 id ArrayList unknown : ?
+TOKEN @2:18
+TOKEN @2:27
+IMPORT @3:1
+TOKEN @3:1
+MEMBER_SELECT @3:8 : ?
+MEMBER_SELECT @3:8 : ?
+IDENTIFIER @3:8 id java unknown : ?
+TOKEN @3:8
+TOKEN @3:12
+IDENTIFIER @3:13 id util unknown : ?
+TOKEN @3:13
+TOKEN @3:17
+IDENTIFIER @3:18 id Collection unknown : ?
+TOKEN @3:18
+TOKEN @3:28
+IMPORT @4:1
+TOKEN @4:1
+MEMBER_SELECT @4:8 : ?
+MEMBER_SELECT @4:8 : ?
+IDENTIFIER @4:8 id java unknown : ?
+TOKEN @4:8
+TOKEN @4:12
+IDENTIFIER @4:13 id util unknown : ?
+TOKEN @4:13
+TOKEN @4:17
+IDENTIFIER @4:18 id Comparator unknown : ?
+TOKEN @4:18
+TOKEN @4:28
+IMPORT @5:1
+TOKEN @5:1
+MEMBER_SELECT @5:8 : ?
+MEMBER_SELECT @5:8 : ?
+IDENTIFIER @5:8 id java unknown : ?
+TOKEN @5:8
+TOKEN @5:12
+IDENTIFIER @5:13 id util unknown : ?
+TOKEN @5:13
+TOKEN @5:17
+IDENTIFIER @5:18 id HashMap unknown : ?
+TOKEN @5:18
+TOKEN @5:25
+IMPORT @6:1
+TOKEN @6:1
+MEMBER_SELECT @6:8 : ?
+MEMBER_SELECT @6:8 : ?
+IDENTIFIER @6:8 id java unknown : ?
+TOKEN @6:8
+TOKEN @6:12
+IDENTIFIER @6:13 id util unknown : ?
+TOKEN @6:13
+TOKEN @6:17
+IDENTIFIER @6:18 id Iterator unknown : ?
+TOKEN @6:18
+TOKEN @6:26
+IMPORT @7:1
+TOKEN @7:1
+MEMBER_SELECT @7:8 : ?
+MEMBER_SELECT @7:8 : ?
+IDENTIFIER @7:8 id java unknown : ?
+TOKEN @7:8
+TOKEN @7:12
+IDENTIFIER @7:13 id util unknown : ?
+TOKEN @7:13
+TOKEN @7:17
+IDENTIFIER @7:18 id List unknown : ?
+TOKEN @7:18
+TOKEN @7:22
+IMPORT @8:1
+TOKEN @8:1
+MEMBER_SELECT @8:8 : ?
+MEMBER_SELECT @8:8 : ?
+IDENTIFIER @8:8 id java unknown : ?
+TOKEN @8:8
+TOKEN @8:12
+IDENTIFIER @8:13 id util unknown : ?
+TOKEN @8:13
+TOKEN @8:17
+IDENTIFIER @8:18 id Map unknown : ?
+TOKEN @8:18
+TOKEN @8:21
+IMPORT @9:1
+TOKEN @9:1
+MEMBER_SELECT @9:8 : ?
+MEMBER_SELECT @9:8 : ?
+IDENTIFIER @9:8 id java unknown : ?
+TOKEN @9:8
+TOKEN @9:12
+IDENTIFIER @9:13 id util unknown : ?
+TOKEN @9:13
+TOKEN @9:17
+IDENTIFIER @9:18 id Optional unknown : ?
+TOKEN @9:18
+TOKEN @9:26
+IMPORT @10:1
+TOKEN @10:1
+MEMBER_SELECT @10:8 : ?
+MEMBER_SELECT @10:8 : ?
+MEMBER_SELECT @10:8 : ?
+IDENTIFIER @10:8 id java unknown : ?
+TOKEN @10:8
+TOKEN @10:12
+IDENTIFIER @10:13 id util unknown : ?
+TOKEN @10:13
+TOKEN @10:17
+IDENTIFIER @10:18 id concurrent unknown : ?
+TOKEN @10:18
+TOKEN @10:28
+IDENTIFIER @10:29 id Callable unknown : ?
+TOKEN @10:29
+TOKEN @10:37
+IMPORT @11:1
+TOKEN @11:1
+MEMBER_SELECT @11:8 : ?
+MEMBER_SELECT @11:8 : ?
+MEMBER_SELECT @11:8 : ?
+IDENTIFIER @11:8 id java unknown : ?
+TOKEN @11:8
+TOKEN @11:12
+IDENTIFIER @11:13 id util unknown : ?
+TOKEN @11:13
+TOKEN @11:17
+IDENTIFIER @11:18 id function unknown : ?
+TOKEN @11:18
+TOKEN @11:26
+IDENTIFIER @11:27 id BiFunction unknown : ?
+TOKEN @11:27
+TOKEN @11:37
+IMPORT @12:1
+TOKEN @12:1
+MEMBER_SELECT @12:8 : ?
+MEMBER_SELECT @12:8 : ?
+MEMBER_SELECT @12:8 : ?
+IDENTIFIER @12:8 id java unknown : ?
+TOKEN @12:8
+TOKEN @12:12
+IDENTIFIER @12:13 id util unknown : ?
+TOKEN @12:13
+TOKEN @12:17
+IDENTIFIER @12:18 id function unknown : ?
+TOKEN @12:18
+TOKEN @12:26
+IDENTIFIER @12:27 id Function unknown : ?
+TOKEN @12:27
+TOKEN @12:35
+IMPORT @13:1
+TOKEN @13:1
+MEMBER_SELECT @13:8 : ?
+MEMBER_SELECT @13:8 : ?
+MEMBER_SELECT @13:8 : ?
+IDENTIFIER @13:8 id java unknown : ?
+TOKEN @13:8
+TOKEN @13:12
+IDENTIFIER @13:13 id util unknown : ?
+TOKEN @13:13
+TOKEN @13:17
+IDENTIFIER @13:18 id function unknown : ?
+TOKEN @13:18
+TOKEN @13:26
+IDENTIFIER @13:27 id Supplier unknown : ?
+TOKEN @13:27
+TOKEN @13:35
+IMPORT @14:1
+TOKEN @14:1
+MEMBER_SELECT @14:8 : ?
+MEMBER_SELECT @14:8 : ?
+MEMBER_SELECT @14:8 : ?
+IDENTIFIER @14:8 id java unknown : ?
+TOKEN @14:8
+TOKEN @14:12
+IDENTIFIER @14:13 id util unknown : ?
+TOKEN @14:13
+TOKEN @14:17
+IDENTIFIER @14:18 id stream unknown : ?
+TOKEN @14:18
+TOKEN @14:24
+IDENTIFIER @14:25 id Collectors unknown : ?
+TOKEN @14:25
+TOKEN @14:35
+IMPORT @15:1
+TOKEN @15:1
+MEMBER_SELECT @15:8 : ?
+MEMBER_SELECT @15:8 : ?
+MEMBER_SELECT @15:8 : ?
+IDENTIFIER @15:8 id java unknown : ?
+TOKEN @15:8
+TOKEN @15:12
+IDENTIFIER @15:13 id util unknown : ?
+TOKEN @15:13
+TOKEN @15:17
+IDENTIFIER @15:18 id stream unknown : ?
+TOKEN @15:18
+TOKEN @15:24
+IDENTIFIER @15:25 id Stream unknown : ?
+TOKEN @15:25
+TOKEN @15:31
+CLASS @17:1 class .GenericEdges [t package] : GenericEdges super java.lang.Object interfaces []
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] members [<init>, Node, Outer, Thrower, call, edges, mapAll, nodes] lookupToString 0 outermost GenericEdges annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw true declaring GenericEdges
+MODIFIERS
+TOKEN @17:1
+IDENTIFIER @17:7 id GenericEdges .GenericEdges [t package] : GenericEdges : GenericEdges
+TOKEN @17:7
+TYPE_PARAMETERS @17:19
+TOKEN @17:19
+TYPE_PARAMETER @17:20
+IDENTIFIER @17:20 id K GenericEdges.K [t package] : K erasure java.lang.Object : K erasure java.lang.Object
+TOKEN @17:20
+TOKEN @17:21
+TYPE_PARAMETER @17:23
+IDENTIFIER @17:23 id V GenericEdges.V [t package] : V erasure java.lang.Object : V erasure java.lang.Object
+TOKEN @17:23
+TOKEN @17:24
+LIST
+LIST
+TOKEN @17:26
+CLASS @19:3 class GenericEdges.Node [t package] : GenericEdges$Node super java.lang.Object interfaces []
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] members [<init>, get, key, value] lookupToString 0 outermost GenericEdges annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring Node
+MODIFIERS
+TOKEN @19:3
+IDENTIFIER @19:9 id Node GenericEdges.Node [t package] : GenericEdges$Node : GenericEdges$Node
+TOKEN @19:9
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @19:14
+VARIABLE @20:5 var Node.key [v package] : K erasure java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Node flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @20:5 id K GenericEdges.K [t package] : K erasure java.lang.Object : K erasure java.lang.Object
+TOKEN @20:5
+IDENTIFIER @20:7 id key Node.key [v package] : K erasure java.lang.Object : K erasure java.lang.Object
+TOKEN @20:7
+TOKEN @20:10
+VARIABLE @21:5 var Node.value [v package] : V erasure java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Node flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @21:5 id V GenericEdges.V [t package] : V erasure java.lang.Object : V erasure java.lang.Object
+TOKEN @21:5
+IDENTIFIER @21:7 id value Node.value [v package] : V erasure java.lang.Object : V erasure java.lang.Object
+TOKEN @21:7
+TOKEN @21:12
+METHOD @23:5 method Node.get [m package] : ? () returns V erasure java.lang.Object throws [] sig GenericEdges$Node#get()Ljava/lang/Object; overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Node flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+IDENTIFIER @23:5 id V GenericEdges.V [t package] : V erasure java.lang.Object : V erasure java.lang.Object
+TOKEN @23:5
+IDENTIFIER @23:7 id get Node.get [m package] : ? () returns V erasure java.lang.Object throws [] sig GenericEdges$Node#get()Ljava/lang/Object; : V erasure java.lang.Object
+TOKEN @23:7
+TOKEN @23:10
+TOKEN @23:11
+BLOCK @23:13
+TOKEN @23:13
+RETURN_STATEMENT @24:7
+TOKEN @24:7
+IDENTIFIER @24:14 id value Node.value [v package] : V erasure java.lang.Object : V erasure java.lang.Object
+TOKEN @24:14
+TOKEN @24:19
+TOKEN @25:5
+TOKEN @26:3
+CLASS @28:3 class GenericEdges.Outer [t static package] : GenericEdges$Outer super java.lang.Object interfaces []
+  details declared true usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [static, package] members [<init>, Inner, make] lookupToString 0 outermost GenericEdges annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw true declaring Outer
+MODIFIERS @28:3
+TOKEN @28:3
+TOKEN @28:10
+IDENTIFIER @28:16 id Outer GenericEdges.Outer [t static package] : GenericEdges$Outer : GenericEdges$Outer
+TOKEN @28:16
+TYPE_PARAMETERS @28:21
+TOKEN @28:21
+TYPE_PARAMETER @28:22
+IDENTIFIER @28:22 id T Outer.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @28:22
+TOKEN @28:23
+LIST
+LIST
+TOKEN @28:25
+CLASS @29:5 class Outer.Inner [t package] : GenericEdges$Outer$Inner super java.lang.Object interfaces []
+  details declared true usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Outer flags [package] members [<init>, held, held] lookupToString 0 outermost GenericEdges annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw false declaring Inner
+MODIFIERS
+TOKEN @29:5
+IDENTIFIER @29:11 id Inner Outer.Inner [t package] : GenericEdges$Outer$Inner : GenericEdges$Outer$Inner
+TOKEN @29:11
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @29:17
+VARIABLE @30:7 var Inner.held [v package] : T erasure java.lang.Object
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inner flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @30:7 id T Outer.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @30:7
+IDENTIFIER @30:9 id held Inner.held [v package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @30:9
+TOKEN @30:13
+METHOD @32:7 method Inner.held [m package] : ? () returns T erasure java.lang.Object throws [] sig GenericEdges$Outer$Inner#held()Ljava/lang/Object; overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inner flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+IDENTIFIER @32:7 id T Outer.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @32:7
+IDENTIFIER @32:9 id held Inner.held [m package] : ? () returns T erasure java.lang.Object throws [] sig GenericEdges$Outer$Inner#held()Ljava/lang/Object; : T erasure java.lang.Object
+TOKEN @32:9
+TOKEN @32:13
+TOKEN @32:14
+BLOCK @32:16
+TOKEN @32:16
+RETURN_STATEMENT @33:9
+TOKEN @33:9
+IDENTIFIER @33:16 id held Inner.held [v package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @33:16
+TOKEN @33:20
+TOKEN @34:7
+TOKEN @35:5
+METHOD @37:5 method Outer.make [m package] : ? () returns GenericEdges$Outer$Inner throws [] sig GenericEdges$Outer#make()LGenericEdges$Outer$Inner; overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Outer flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+IDENTIFIER @37:5 id Inner Outer.Inner [t package] : GenericEdges$Outer$Inner : GenericEdges$Outer$Inner
+TOKEN @37:5
+IDENTIFIER @37:11 id make Outer.make [m package] : ? () returns GenericEdges$Outer$Inner throws [] sig GenericEdges$Outer#make()LGenericEdges$Outer$Inner; : GenericEdges$Outer$Inner
+TOKEN @37:11
+TOKEN @37:15
+TOKEN @37:16
+BLOCK @37:18
+TOKEN @37:18
+RETURN_STATEMENT @38:7
+TOKEN @38:7
+NEW_CLASS @38:14 new Inner.<init> [m package] : ? () returns void throws [] sig GenericEdges$Outer$Inner#<init>(LGenericEdges$Outer;)V : GenericEdges$Outer$Inner
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inner flags [package] overridden [Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @38:14
+IDENTIFIER @38:18 id Inner Inner.<init> [m package] : ? () returns void throws [] sig GenericEdges$Outer$Inner#<init>(LGenericEdges$Outer;)V : GenericEdges$Outer$Inner
+TOKEN @38:18
+ARGUMENTS @38:23
+TOKEN @38:23
+TOKEN @38:24
+TOKEN @38:25
+TOKEN @39:5
+TOKEN @40:3
+INTERFACE @42:3 class GenericEdges.Thrower [t static package interface] : GenericEdges$Thrower super java.lang.Object interfaces []
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [static, package, interface] members [run] lookupToString 0 outermost GenericEdges annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw true declaring Thrower
+MODIFIERS
+TOKEN @42:3
+IDENTIFIER @42:13 id Thrower GenericEdges.Thrower [t static package interface] : GenericEdges$Thrower : GenericEdges$Thrower
+TOKEN @42:13
+TYPE_PARAMETERS @42:20
+TOKEN @42:20
+TYPE_PARAMETER @42:21
+IDENTIFIER @42:21 id E Thrower.E [t package] : E erasure java.lang.Exception : E erasure java.lang.Exception
+TOKEN @42:21
+TOKEN @42:23
+LIST @42:31
+IDENTIFIER @42:31 id Exception java.lang.Exception [t public] : java.lang.Exception : java.lang.Exception
+TOKEN @42:31
+TOKEN @42:40
+LIST
+LIST
+TOKEN @42:42
+METHOD @43:5 method Thrower.run [m abstract public] : ? () returns void throws [E erasure java.lang.Exception] sig GenericEdges$Thrower#run()V overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Thrower flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @43:5 : void
+TOKEN @43:5
+IDENTIFIER @43:10 id run Thrower.run [m abstract public] : ? () returns void throws [E erasure java.lang.Exception] sig GenericEdges$Thrower#run()V : void
+TOKEN @43:10
+TOKEN @43:13
+TOKEN @43:14
+TOKEN @43:16
+LIST @43:23
+IDENTIFIER @43:23 id E Thrower.E [t package] : E erasure java.lang.Exception : E erasure java.lang.Exception
+TOKEN @43:23
+TOKEN @43:24
+TOKEN @44:3
+METHOD @46:3 method GenericEdges.call [m static package] : ? (GenericEdges$Thrower<E erasure java.lang.Exception>) returns void throws [E erasure java.lang.Exception] sig GenericEdges#call(LGenericEdges$Thrower;)V overrides false
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [static, package] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [thrower] parameterMetadata []
+MODIFIERS @46:3
+TOKEN @46:3
+TYPE_PARAMETERS @46:10
+TOKEN @46:10
+TYPE_PARAMETER @46:11
+IDENTIFIER @46:11 id E call.E [t package] : E erasure java.lang.Exception : E erasure java.lang.Exception
+TOKEN @46:11
+TOKEN @46:13
+LIST @46:21
+IDENTIFIER @46:21 id Exception java.lang.Exception [t public] : java.lang.Exception : java.lang.Exception
+TOKEN @46:21
+TOKEN @46:30
+PRIMITIVE_TYPE @46:32 : void
+TOKEN @46:32
+IDENTIFIER @46:37 id call GenericEdges.call [m static package] : ? (GenericEdges$Thrower<E erasure java.lang.Exception>) returns void throws [E erasure java.lang.Exception] sig GenericEdges#call(LGenericEdges$Thrower;)V : void
+TOKEN @46:37
+TOKEN @46:41
+VARIABLE @46:42 var call.thrower [v package] : GenericEdges$Thrower<E erasure java.lang.Exception>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter true effectivelyFinal true constant null owner call GenericEdges#call(LGenericEdges$Thrower;)V [static, package] returns void parameters 1 thrown 1 overridden 0 declared true usages 1 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsefalsetrue1falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @46:42 : GenericEdges$Thrower<E erasure java.lang.Exception>
+IDENTIFIER @46:42 id Thrower GenericEdges.Thrower [t static package interface] : GenericEdges$Thrower<E erasure java.lang.Exception> : GenericEdges$Thrower<E erasure java.lang.Exception>
+TOKEN @46:42
+TYPE_ARGUMENTS @46:49
+TOKEN @46:49
+IDENTIFIER @46:50 id E call.E [t package] : E erasure java.lang.Exception : E erasure java.lang.Exception
+TOKEN @46:50
+TOKEN @46:51
+IDENTIFIER @46:53 id thrower call.thrower [v package] : GenericEdges$Thrower<E erasure java.lang.Exception> : GenericEdges$Thrower<E erasure java.lang.Exception>
+TOKEN @46:53
+TOKEN @46:60
+TOKEN @46:62
+LIST @46:69
+IDENTIFIER @46:69 id E call.E [t package] : E erasure java.lang.Exception : E erasure java.lang.Exception
+TOKEN @46:69
+BLOCK @46:71
+TOKEN @46:71
+EXPRESSION_STATEMENT @47:5
+METHOD_INVOCATION @47:5 call Thrower.run [m abstract public] : ? () returns void throws [E erasure java.lang.Exception] sig GenericEdges$Thrower#run()V : void
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Thrower flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @47:5 : ?
+IDENTIFIER @47:5 id thrower call.thrower [v package] : GenericEdges$Thrower<E erasure java.lang.Exception> : GenericEdges$Thrower<E erasure java.lang.Exception>
+TOKEN @47:5
+TOKEN @47:12
+IDENTIFIER @47:13 id run Thrower.run [m abstract public] : ? () returns void throws [E erasure java.lang.Exception] sig GenericEdges$Thrower#run()V : void
+TOKEN @47:13
+ARGUMENTS @47:16
+TOKEN @47:16
+TOKEN @47:17
+TOKEN @47:18
+TOKEN @48:3
+METHOD @50:3 method GenericEdges.mapAll [m static package] : ? (java.util.Collection<java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.List<R erasure java.lang.Object> throws [] sig GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; overrides false
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [static, package] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [input, mapper] parameterMetadata []
+MODIFIERS @50:3
+TOKEN @50:3
+TYPE_PARAMETERS @50:10
+TOKEN @50:10
+TYPE_PARAMETER @50:11
+IDENTIFIER @50:11 id T mapAll.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @50:11
+TOKEN @50:12
+TYPE_PARAMETER @50:14
+IDENTIFIER @50:14 id R mapAll.R [t package] : R erasure java.lang.Object : R erasure java.lang.Object
+TOKEN @50:14
+TOKEN @50:15
+PARAMETERIZED_TYPE @50:17 : java.util.List<R erasure java.lang.Object>
+IDENTIFIER @50:17 id List java.util.List [t public interface] : java.util.List<R erasure java.lang.Object> : java.util.List<R erasure java.lang.Object>
+TOKEN @50:17
+TYPE_ARGUMENTS @50:21
+TOKEN @50:21
+IDENTIFIER @50:22 id R mapAll.R [t package] : R erasure java.lang.Object : R erasure java.lang.Object
+TOKEN @50:22
+TOKEN @50:23
+IDENTIFIER @50:25 id mapAll GenericEdges.mapAll [m static package] : ? (java.util.Collection<java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.List<R erasure java.lang.Object> throws [] sig GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; : java.util.List<R erasure java.lang.Object>
+TOKEN @50:25
+TOKEN @50:31
+VARIABLE @50:32 var mapAll.input [v package] : java.util.Collection<java.lang.Object>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter true effectivelyFinal true constant null owner mapAll GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; [static, package] returns java.util.List<R erasure java.lang.Object> parameters 2 thrown 0 overridden 0 declared true usages 2 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsefalsetrue2falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @50:32 : java.util.Collection<java.lang.Object>
+IDENTIFIER @50:32 id Collection java.util.Collection [t public interface] : java.util.Collection<java.lang.Object> : java.util.Collection<java.lang.Object>
+TOKEN @50:32
+TYPE_ARGUMENTS @50:42
+TOKEN @50:42
+EXTENDS_WILDCARD @50:43
+TOKEN @50:43
+TOKEN @50:45
+IDENTIFIER @50:53 id T mapAll.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @50:53
+TOKEN @50:54
+IDENTIFIER @50:56 id input mapAll.input [v package] : java.util.Collection<java.lang.Object> : java.util.Collection<java.lang.Object>
+TOKEN @50:56
+TOKEN @50:61
+VARIABLE @50:63 var mapAll.mapper [v package] : java.util.function.Function<java.lang.Object,java.lang.Object>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter true effectivelyFinal true constant null owner mapAll GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; [static, package] returns java.util.List<R erasure java.lang.Object> parameters 2 thrown 0 overridden 0 declared true usages 2 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsefalsetrue2falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @50:63 : java.util.function.Function<java.lang.Object,java.lang.Object>
+IDENTIFIER @50:63 id Function java.util.function.Function [t public interface] : java.util.function.Function<java.lang.Object,java.lang.Object> : java.util.function.Function<java.lang.Object,java.lang.Object>
+TOKEN @50:63
+TYPE_ARGUMENTS @50:71
+TOKEN @50:71
+SUPER_WILDCARD @50:72
+TOKEN @50:72
+TOKEN @50:74
+IDENTIFIER @50:80 id T mapAll.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @50:80
+TOKEN @50:81
+EXTENDS_WILDCARD @50:83
+TOKEN @50:83
+TOKEN @50:85
+IDENTIFIER @50:93 id R mapAll.R [t package] : R erasure java.lang.Object : R erasure java.lang.Object
+TOKEN @50:93
+TOKEN @50:94
+IDENTIFIER @50:96 id mapper mapAll.mapper [v package] : java.util.function.Function<java.lang.Object,java.lang.Object> : java.util.function.Function<java.lang.Object,java.lang.Object>
+TOKEN @50:96
+TOKEN @50:102
+BLOCK @50:104
+TOKEN @50:104
+VARIABLE @51:5 var mapAll.result [v package] : java.util.List<R erasure java.lang.Object>
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner mapAll GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; [static, package] returns java.util.List<R erasure java.lang.Object> parameters 2 thrown 0 overridden 0 declared true usages 2 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsefalsetrue2falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @51:5 : java.util.List<R erasure java.lang.Object>
+IDENTIFIER @51:5 id List java.util.List [t public interface] : java.util.List<R erasure java.lang.Object> : java.util.List<R erasure java.lang.Object>
+TOKEN @51:5
+TYPE_ARGUMENTS @51:9
+TOKEN @51:9
+IDENTIFIER @51:10 id R mapAll.R [t package] : R erasure java.lang.Object : R erasure java.lang.Object
+TOKEN @51:10
+TOKEN @51:11
+IDENTIFIER @51:13 id result mapAll.result [v package] : java.util.List<R erasure java.lang.Object> : java.util.List<R erasure java.lang.Object>
+TOKEN @51:13
+TOKEN @51:20
+NEW_CLASS @51:22 new ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ArrayList flags [public] overridden [AbstractList.<init>[], AbstractCollection.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @51:22
+PARAMETERIZED_TYPE @51:26 : java.util.ArrayList
+IDENTIFIER @51:26 id ArrayList ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+TOKEN @51:26
+TYPE_ARGUMENTS @51:35
+TOKEN @51:35
+TOKEN @51:36
+ARGUMENTS @51:37
+TOKEN @51:37
+TOKEN @51:38
+TOKEN @51:39
+FOR_EACH_STATEMENT @52:5
+TOKEN @52:5
+TOKEN @52:9
+VARIABLE @52:10 var mapAll.item [v package] : T erasure java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner mapAll GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; [static, package] returns java.util.List<R erasure java.lang.Object> parameters 2 thrown 0 overridden 0 declared true usages 2 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsefalsetrue2falsefalse
+MODIFIERS
+IDENTIFIER @52:10 id T mapAll.T [t package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @52:10
+IDENTIFIER @52:12 id item mapAll.item [v package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @52:12
+TOKEN @52:17
+IDENTIFIER @52:19 id input mapAll.input [v package] : java.util.Collection<java.lang.Object> : java.util.Collection<java.lang.Object>
+TOKEN @52:19
+TOKEN @52:24
+BLOCK @52:26
+TOKEN @52:26
+EXPRESSION_STATEMENT @53:7
+METHOD_INVOCATION @53:7 call List.add [m abstract public] : ? (R erasure java.lang.Object) returns boolean throws [] sig java.util.List#add(Ljava/lang/Object;)Z : boolean
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [Collection.add[]] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @53:7 : ?
+IDENTIFIER @53:7 id result mapAll.result [v package] : java.util.List<R erasure java.lang.Object> : java.util.List<R erasure java.lang.Object>
+TOKEN @53:7
+TOKEN @53:13
+IDENTIFIER @53:14 id add List.add [m abstract public] : ? (R erasure java.lang.Object) returns boolean throws [] sig java.util.List#add(Ljava/lang/Object;)Z : boolean
+TOKEN @53:14
+ARGUMENTS @53:17
+TOKEN @53:17
+METHOD_INVOCATION @53:18 call Function.apply [m abstract public] : ? (java.lang.Object) returns java.lang.Object throws [] sig java.util.function.Function#apply(Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Function flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @53:18 : ?
+IDENTIFIER @53:18 id mapper mapAll.mapper [v package] : java.util.function.Function<java.lang.Object,java.lang.Object> : java.util.function.Function<java.lang.Object,java.lang.Object>
+TOKEN @53:18
+TOKEN @53:24
+IDENTIFIER @53:25 id apply Function.apply [m abstract public] : ? (java.lang.Object) returns java.lang.Object throws [] sig java.util.function.Function#apply(Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+TOKEN @53:25
+ARGUMENTS @53:30
+TOKEN @53:30
+IDENTIFIER @53:31 id item mapAll.item [v package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @53:31
+TOKEN @53:35
+TOKEN @53:36
+TOKEN @53:37
+TOKEN @54:5
+RETURN_STATEMENT @55:5
+TOKEN @55:5
+IDENTIFIER @55:12 id result mapAll.result [v package] : java.util.List<R erasure java.lang.Object> : java.util.List<R erasure java.lang.Object>
+TOKEN @55:12
+TOKEN @55:18
+TOKEN @56:3
+VARIABLE @58:3 var GenericEdges.nodes [v package] : java.util.Map<K erasure java.lang.Object,GenericEdges$Node>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+PARAMETERIZED_TYPE @58:3 : java.util.Map<K erasure java.lang.Object,GenericEdges$Node>
+IDENTIFIER @58:3 id Map java.util.Map [t public interface] : java.util.Map<K erasure java.lang.Object,GenericEdges$Node> : java.util.Map<K erasure java.lang.Object,GenericEdges$Node>
+TOKEN @58:3
+TYPE_ARGUMENTS @58:6
+TOKEN @58:6
+IDENTIFIER @58:7 id K GenericEdges.K [t package] : K erasure java.lang.Object : K erasure java.lang.Object
+TOKEN @58:7
+TOKEN @58:8
+IDENTIFIER @58:10 id Node GenericEdges.Node [t package] : GenericEdges$Node : GenericEdges$Node
+TOKEN @58:10
+TOKEN @58:14
+IDENTIFIER @58:16 id nodes GenericEdges.nodes [v package] : java.util.Map<K erasure java.lang.Object,GenericEdges$Node> : java.util.Map<K erasure java.lang.Object,GenericEdges$Node>
+TOKEN @58:16
+TOKEN @58:22
+NEW_CLASS @58:24 new HashMap.<init> [m public] : ? () returns void throws [] sig java.util.HashMap#<init>()V : java.util.HashMap
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing HashMap flags [public] overridden [AbstractMap.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @58:24
+PARAMETERIZED_TYPE @58:28 : java.util.HashMap
+IDENTIFIER @58:28 id HashMap HashMap.<init> [m public] : ? () returns void throws [] sig java.util.HashMap#<init>()V : java.util.HashMap
+TOKEN @58:28
+TYPE_ARGUMENTS @58:35
+TOKEN @58:35
+TOKEN @58:36
+ARGUMENTS @58:37
+TOKEN @58:37
+TOKEN @58:38
+TOKEN @58:39
+METHOD @60:3 method GenericEdges.edges [m package] : ? (java.util.List<java.lang.Number>,java.util.List<java.lang.Object>,java.util.Map<java.lang.String,java.util.List>,java.util.Optional<java.lang.String>) returns void throws [java.io.IOException] sig GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [numbers, sink, nested, maybe] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @60:3 : void
+TOKEN @60:3
+IDENTIFIER @60:8 id edges GenericEdges.edges [m package] : ? (java.util.List<java.lang.Number>,java.util.List<java.lang.Object>,java.util.Map<java.lang.String,java.util.List>,java.util.Optional<java.lang.String>) returns void throws [java.io.IOException] sig GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V : void
+TOKEN @60:8
+TOKEN @60:13
+VARIABLE @60:14 var edges.numbers [v package] : java.util.List<java.lang.Number>
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter true effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @60:14 : java.util.List<java.lang.Number>
+IDENTIFIER @60:14 id List java.util.List [t public interface] : java.util.List<java.lang.Number> : java.util.List<java.lang.Number>
+TOKEN @60:14
+TYPE_ARGUMENTS @60:18
+TOKEN @60:18
+EXTENDS_WILDCARD @60:19
+TOKEN @60:19
+TOKEN @60:21
+IDENTIFIER @60:29 id Number java.lang.Number [t abstract public] : java.lang.Number : java.lang.Number
+TOKEN @60:29
+TOKEN @60:35
+IDENTIFIER @60:37 id numbers edges.numbers [v package] : java.util.List<java.lang.Number> : java.util.List<java.lang.Number>
+TOKEN @60:37
+TOKEN @60:44
+VARIABLE @60:46 var edges.sink [v package] : java.util.List<java.lang.Object>
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter true effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @60:46 : java.util.List<java.lang.Object>
+IDENTIFIER @60:46 id List java.util.List [t public interface] : java.util.List<java.lang.Object> : java.util.List<java.lang.Object>
+TOKEN @60:46
+TYPE_ARGUMENTS @60:50
+TOKEN @60:50
+SUPER_WILDCARD @60:51
+TOKEN @60:51
+TOKEN @60:53
+IDENTIFIER @60:59 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @60:59
+TOKEN @60:66
+IDENTIFIER @60:68 id sink edges.sink [v package] : java.util.List<java.lang.Object> : java.util.List<java.lang.Object>
+TOKEN @60:68
+TOKEN @60:72
+VARIABLE @60:74 var edges.nested [v package] : java.util.Map<java.lang.String,java.util.List>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter true effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @60:74 : java.util.Map<java.lang.String,java.util.List>
+IDENTIFIER @60:74 id Map java.util.Map [t public interface] : java.util.Map<java.lang.String,java.util.List> : java.util.Map<java.lang.String,java.util.List>
+TOKEN @60:74
+TYPE_ARGUMENTS @60:77
+TOKEN @60:77
+IDENTIFIER @60:78 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @60:78
+TOKEN @60:84
+EXTENDS_WILDCARD @60:86
+TOKEN @60:86
+TOKEN @60:88
+PARAMETERIZED_TYPE @60:96 : java.util.List<java.lang.String>
+IDENTIFIER @60:96 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @60:96
+TYPE_ARGUMENTS @60:100
+TOKEN @60:100
+IDENTIFIER @60:101 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @60:101
+TOKEN @60:107
+TOKEN @60:108
+IDENTIFIER @60:110 id nested edges.nested [v package] : java.util.Map<java.lang.String,java.util.List> : java.util.Map<java.lang.String,java.util.List>
+TOKEN @60:110
+TOKEN @60:116
+VARIABLE @60:118 var edges.maybe [v package] : java.util.Optional<java.lang.String>
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter true effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @60:118 : java.util.Optional<java.lang.String>
+IDENTIFIER @60:118 id Optional java.util.Optional [t final public] : java.util.Optional<java.lang.String> : java.util.Optional<java.lang.String>
+TOKEN @60:118
+TYPE_ARGUMENTS @60:126
+TOKEN @60:126
+IDENTIFIER @60:127 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @60:127
+TOKEN @60:133
+IDENTIFIER @60:135 id maybe edges.maybe [v package] : java.util.Optional<java.lang.String> : java.util.Optional<java.lang.String>
+TOKEN @60:135
+TOKEN @60:140
+TOKEN @61:5
+LIST @61:12
+IDENTIFIER @61:12 id IOException java.io.IOException [t public] : java.io.IOException : java.io.IOException
+TOKEN @61:12
+BLOCK @61:24
+TOKEN @61:24
+VARIABLE @62:5 var edges.first [v package] : java.lang.Number
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+IDENTIFIER @62:5 id Number java.lang.Number [t abstract public] : java.lang.Number : java.lang.Number
+TOKEN @62:5
+IDENTIFIER @62:12 id first edges.first [v package] : java.lang.Number : java.lang.Number
+TOKEN @62:12
+TOKEN @62:18
+METHOD_INVOCATION @62:20 call List.get [m abstract public] : ? (int) returns java.lang.Object throws [] sig java.util.List#get(I)Ljava/lang/Object; : java.lang.Object
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @62:20 : ?
+IDENTIFIER @62:20 id numbers edges.numbers [v package] : java.util.List<java.lang.Number> : java.util.List<java.lang.Number>
+TOKEN @62:20
+TOKEN @62:27
+IDENTIFIER @62:28 id get List.get [m abstract public] : ? (int) returns java.lang.Object throws [] sig java.util.List#get(I)Ljava/lang/Object; : java.lang.Object
+TOKEN @62:28
+ARGUMENTS @62:31
+TOKEN @62:31
+INT_LITERAL @62:32 : int = 0
+TOKEN @62:32
+TOKEN @62:33
+TOKEN @62:34
+EXPRESSION_STATEMENT @63:5
+METHOD_INVOCATION @63:5 call List.add [m abstract public] : ? (java.lang.Object) returns boolean throws [] sig java.util.List#add(Ljava/lang/Object;)Z : boolean
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [Collection.add[]] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @63:5 : ?
+IDENTIFIER @63:5 id sink edges.sink [v package] : java.util.List<java.lang.Object> : java.util.List<java.lang.Object>
+TOKEN @63:5
+TOKEN @63:9
+IDENTIFIER @63:10 id add List.add [m abstract public] : ? (java.lang.Object) returns boolean throws [] sig java.util.List#add(Ljava/lang/Object;)Z : boolean
+TOKEN @63:10
+ARGUMENTS @63:13
+TOKEN @63:13
+INT_LITERAL @63:14 : int = 1
+TOKEN @63:14
+TOKEN @63:15
+TOKEN @63:16
+VARIABLE @64:5 var edges.fromSink [v package] : java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+IDENTIFIER @64:5 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @64:5
+IDENTIFIER @64:12 id fromSink edges.fromSink [v package] : java.lang.Object : java.lang.Object
+TOKEN @64:12
+TOKEN @64:21
+METHOD_INVOCATION @64:23 call List.get [m abstract public] : ? (int) returns java.lang.Object throws [] sig java.util.List#get(I)Ljava/lang/Object; : java.lang.Object
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @64:23 : ?
+IDENTIFIER @64:23 id sink edges.sink [v package] : java.util.List<java.lang.Object> : java.util.List<java.lang.Object>
+TOKEN @64:23
+TOKEN @64:27
+IDENTIFIER @64:28 id get List.get [m abstract public] : ? (int) returns java.lang.Object throws [] sig java.util.List#get(I)Ljava/lang/Object; : java.lang.Object
+TOKEN @64:28
+ARGUMENTS @64:31
+TOKEN @64:31
+INT_LITERAL @64:32 : int = 0
+TOKEN @64:32
+TOKEN @64:33
+TOKEN @64:34
+VARIABLE @65:5 var edges.size [v package] : int
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @65:5 : int
+TOKEN @65:5
+IDENTIFIER @65:9 id size edges.size [v package] : int : int
+TOKEN @65:9
+TOKEN @65:14
+METHOD_INVOCATION @65:16 call List.size [m abstract public] : ? () returns int throws [] sig java.util.List#size()I : int
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [Collection.size[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @65:16 : ?
+METHOD_INVOCATION @65:16 call Map.get [m abstract public] : ? (java.lang.Object) returns java.lang.Object throws [] sig java.util.Map#get(Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @65:16 : ?
+IDENTIFIER @65:16 id nested edges.nested [v package] : java.util.Map<java.lang.String,java.util.List> : java.util.Map<java.lang.String,java.util.List>
+TOKEN @65:16
+TOKEN @65:22
+IDENTIFIER @65:23 id get Map.get [m abstract public] : ? (java.lang.Object) returns java.lang.Object throws [] sig java.util.Map#get(Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+TOKEN @65:23
+ARGUMENTS @65:26
+TOKEN @65:26
+STRING_LITERAL @65:27 : java.lang.String = k
+TOKEN @65:27
+TOKEN @65:30
+TOKEN @65:31
+IDENTIFIER @65:32 id size List.size [m abstract public] : ? () returns int throws [] sig java.util.List#size()I : int
+TOKEN @65:32
+ARGUMENTS @65:36
+TOKEN @65:36
+TOKEN @65:37
+TOKEN @65:38
+VARIABLE @66:5 var edges.type [v package] : java.lang.Class<java.lang.Object>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @66:5 : java.lang.Class<java.lang.Object>
+IDENTIFIER @66:5 id Class java.lang.Class [t final public] : java.lang.Class<java.lang.Object> : java.lang.Class<java.lang.Object>
+TOKEN @66:5
+TYPE_ARGUMENTS @66:10
+TOKEN @66:10
+UNBOUNDED_WILDCARD @66:11
+TOKEN @66:11
+TOKEN @66:12
+IDENTIFIER @66:14 id type edges.type [v package] : java.lang.Class<java.lang.Object> : java.lang.Class<java.lang.Object>
+TOKEN @66:14
+TOKEN @66:19
+METHOD_INVOCATION @66:21 call Object.getClass [m final public] : ? () returns java.lang.Class<java.lang.Number> throws [] sig java.lang.Object#getClass()Ljava/lang/Class; : java.lang.Class<java.lang.Number>
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Object flags [final, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @66:21 : ?
+IDENTIFIER @66:21 id first edges.first [v package] : java.lang.Number : java.lang.Number
+TOKEN @66:21
+TOKEN @66:26
+IDENTIFIER @66:27 id getClass Object.getClass [m final public] : ? () returns java.lang.Class<java.lang.Number> throws [] sig java.lang.Object#getClass()Ljava/lang/Class; : java.lang.Class<java.lang.Number>
+TOKEN @66:27
+ARGUMENTS @66:35
+TOKEN @66:35
+TOKEN @66:36
+TOKEN @66:37
+VARIABLE @67:5 var edges.typed [v package] : java.lang.Class<java.lang.Number>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @67:5 : java.lang.Class<java.lang.Number>
+IDENTIFIER @67:5 id Class java.lang.Class [t final public] : java.lang.Class<java.lang.Number> : java.lang.Class<java.lang.Number>
+TOKEN @67:5
+TYPE_ARGUMENTS @67:10
+TOKEN @67:10
+EXTENDS_WILDCARD @67:11
+TOKEN @67:11
+TOKEN @67:13
+IDENTIFIER @67:21 id Number java.lang.Number [t abstract public] : java.lang.Number : java.lang.Number
+TOKEN @67:21
+TOKEN @67:27
+IDENTIFIER @67:29 id typed edges.typed [v package] : java.lang.Class<java.lang.Number> : java.lang.Class<java.lang.Number>
+TOKEN @67:29
+TOKEN @67:35
+METHOD_INVOCATION @67:37 call Object.getClass [m final public] : ? () returns java.lang.Class<java.lang.Number> throws [] sig java.lang.Object#getClass()Ljava/lang/Class; : java.lang.Class<java.lang.Number>
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Object flags [final, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @67:37 : ?
+IDENTIFIER @67:37 id first edges.first [v package] : java.lang.Number : java.lang.Number
+TOKEN @67:37
+TOKEN @67:42
+IDENTIFIER @67:43 id getClass Object.getClass [m final public] : ? () returns java.lang.Class<java.lang.Number> throws [] sig java.lang.Object#getClass()Ljava/lang/Class; : java.lang.Class<java.lang.Number>
+TOKEN @67:43
+ARGUMENTS @67:51
+TOKEN @67:51
+TOKEN @67:52
+TOKEN @67:53
+VARIABLE @68:5 var edges.value [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+IDENTIFIER @68:5 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @68:5
+IDENTIFIER @68:12 id value edges.value [v package] : java.lang.String : java.lang.String
+TOKEN @68:12
+TOKEN @68:18
+METHOD_INVOCATION @68:20 call Optional.orElseThrow [m public] : ? (java.util.function.Supplier<java.lang.Object>) returns java.lang.Object throws [java.lang.Throwable] sig java.util.Optional#orElseThrow(Ljava/util/function/Supplier;)Ljava/lang/Object; : java.lang.Object
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Optional flags [public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @68:20 : ?
+IDENTIFIER @68:20 id maybe edges.maybe [v package] : java.util.Optional<java.lang.String> : java.util.Optional<java.lang.String>
+TOKEN @68:20
+TOKEN @68:25
+IDENTIFIER @68:26 id orElseThrow Optional.orElseThrow [m public] : ? (java.util.function.Supplier<java.lang.Object>) returns java.lang.Object throws [java.lang.Throwable] sig java.util.Optional#orElseThrow(Ljava/util/function/Supplier;)Ljava/lang/Object; : java.lang.Object
+TOKEN @68:26
+ARGUMENTS @68:37
+TOKEN @68:37
+METHOD_REFERENCE @68:38 : java.util.function.Supplier<java.lang.Object>
+IDENTIFIER @68:38 id IllegalStateException java.lang.IllegalStateException [t public] : java.lang.IllegalStateException : java.lang.IllegalStateException
+TOKEN @68:38
+TOKEN @68:59
+IDENTIFIER @68:61 id new IllegalStateException.<init> [m public] : ? () returns void throws [] sig java.lang.IllegalStateException#<init>()V : void
+TOKEN @68:61
+TOKEN @68:64
+TOKEN @68:65
+VARIABLE @69:5 var edges.other [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+IDENTIFIER @69:5 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @69:5
+IDENTIFIER @69:12 id other edges.other [v package] : java.lang.String : java.lang.String
+TOKEN @69:12
+TOKEN @69:18
+METHOD_INVOCATION @69:20 call Optional.orElseGet [m public] : ? (java.util.function.Supplier<java.lang.String>) returns java.lang.Object throws [] sig java.util.Optional#orElseGet(Ljava/util/function/Supplier;)Ljava/lang/Object; : java.lang.Object
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Optional flags [public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @69:20 : ?
+IDENTIFIER @69:20 id maybe edges.maybe [v package] : java.util.Optional<java.lang.String> : java.util.Optional<java.lang.String>
+TOKEN @69:20
+TOKEN @69:25
+IDENTIFIER @69:26 id orElseGet Optional.orElseGet [m public] : ? (java.util.function.Supplier<java.lang.String>) returns java.lang.Object throws [] sig java.util.Optional#orElseGet(Ljava/util/function/Supplier;)Ljava/lang/Object; : java.lang.Object
+TOKEN @69:26
+ARGUMENTS @69:35
+TOKEN @69:35
+LAMBDA_EXPRESSION @69:36 : java.util.function.Supplier<java.lang.String>
+TOKEN @69:36
+TOKEN @69:37
+TOKEN @69:39
+STRING_LITERAL @69:42 : java.lang.String = x
+TOKEN @69:42
+TOKEN @69:45
+TOKEN @69:46
+EXPRESSION_STATEMENT @70:5
+METHOD_INVOCATION @70:5 call GenericEdges.call [m static package] : ? (GenericEdges$Thrower<E erasure java.lang.Exception>) returns void throws [E erasure java.lang.Exception] sig GenericEdges#call(LGenericEdges$Thrower;)V : void
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [static, package] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [thrower] parameterMetadata []
+IDENTIFIER @70:5 id call GenericEdges.call [m static package] : ? (GenericEdges$Thrower<E erasure java.lang.Exception>) returns void throws [E erasure java.lang.Exception] sig GenericEdges#call(LGenericEdges$Thrower;)V : void
+TOKEN @70:5
+ARGUMENTS @70:9
+TOKEN @70:9
+LAMBDA_EXPRESSION @70:10 : GenericEdges$Thrower<E erasure java.lang.Exception>
+TOKEN @70:10
+TOKEN @70:11
+TOKEN @70:13
+BLOCK @70:16
+TOKEN @70:16
+THROW_STATEMENT @71:7
+TOKEN @71:7
+NEW_CLASS @71:13 new IOException.<init> [m public] : ? (java.lang.String) returns void throws [] sig java.io.IOException#<init>(Ljava/lang/String;)V : java.io.IOException
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing IOException flags [public] overridden [Exception.<init>[], Throwable.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+TOKEN @71:13
+IDENTIFIER @71:17 id IOException IOException.<init> [m public] : ? (java.lang.String) returns void throws [] sig java.io.IOException#<init>(Ljava/lang/String;)V : java.io.IOException
+TOKEN @71:17
+ARGUMENTS @71:28
+TOKEN @71:28
+STRING_LITERAL @71:29 : java.lang.String = io
+TOKEN @71:29
+TOKEN @71:33
+TOKEN @71:34
+TOKEN @72:5
+TOKEN @72:6
+TOKEN @72:7
+VARIABLE @73:5 var edges.outer [v package] : GenericEdges$Outer<java.lang.String>
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @73:5 : GenericEdges$Outer<java.lang.String>
+IDENTIFIER @73:5 id Outer GenericEdges.Outer [t static package] : GenericEdges$Outer<java.lang.String> : GenericEdges$Outer<java.lang.String>
+TOKEN @73:5
+TYPE_ARGUMENTS @73:10
+TOKEN @73:10
+IDENTIFIER @73:11 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @73:11
+TOKEN @73:17
+IDENTIFIER @73:19 id outer edges.outer [v package] : GenericEdges$Outer<java.lang.String> : GenericEdges$Outer<java.lang.String>
+TOKEN @73:19
+TOKEN @73:25
+NEW_CLASS @73:27 new Outer.<init> [m package] : ? () returns void throws [] sig GenericEdges$Outer#<init>()V : GenericEdges$Outer
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Outer flags [package] overridden [Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @73:27
+PARAMETERIZED_TYPE @73:31 : GenericEdges$Outer
+IDENTIFIER @73:31 id Outer Outer.<init> [m package] : ? () returns void throws [] sig GenericEdges$Outer#<init>()V : GenericEdges$Outer
+TOKEN @73:31
+TYPE_ARGUMENTS @73:36
+TOKEN @73:36
+TOKEN @73:37
+ARGUMENTS @73:38
+TOKEN @73:38
+TOKEN @73:39
+TOKEN @73:40
+VARIABLE @74:5 var edges.inner [v package] : GenericEdges$Outer$Inner
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+MEMBER_SELECT @74:5 : GenericEdges$Outer$Inner
+PARAMETERIZED_TYPE @74:5 : GenericEdges$Outer<java.lang.String>
+IDENTIFIER @74:5 id Outer GenericEdges.Outer [t static package] : GenericEdges$Outer<java.lang.String> : GenericEdges$Outer<java.lang.String>
+TOKEN @74:5
+TYPE_ARGUMENTS @74:10
+TOKEN @74:10
+IDENTIFIER @74:11 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @74:11
+TOKEN @74:17
+TOKEN @74:18
+IDENTIFIER @74:19 id Inner Outer.Inner [t package] : GenericEdges$Outer$Inner : GenericEdges$Outer$Inner
+TOKEN @74:19
+IDENTIFIER @74:25 id inner edges.inner [v package] : GenericEdges$Outer$Inner : GenericEdges$Outer$Inner
+TOKEN @74:25
+TOKEN @74:31
+METHOD_INVOCATION @74:33 call Outer.make [m package] : ? () returns GenericEdges$Outer$Inner throws [] sig GenericEdges$Outer#make()LGenericEdges$Outer$Inner; : GenericEdges$Outer$Inner
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Outer flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @74:33 : ?
+IDENTIFIER @74:33 id outer edges.outer [v package] : GenericEdges$Outer<java.lang.String> : GenericEdges$Outer<java.lang.String>
+TOKEN @74:33
+TOKEN @74:38
+IDENTIFIER @74:39 id make Outer.make [m package] : ? () returns GenericEdges$Outer$Inner throws [] sig GenericEdges$Outer#make()LGenericEdges$Outer$Inner; : GenericEdges$Outer$Inner
+TOKEN @74:39
+ARGUMENTS @74:43
+TOKEN @74:43
+TOKEN @74:44
+TOKEN @74:45
+VARIABLE @75:5 var edges.held [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+IDENTIFIER @75:5 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @75:5
+IDENTIFIER @75:12 id held edges.held [v package] : java.lang.String : java.lang.String
+TOKEN @75:12
+TOKEN @75:17
+METHOD_INVOCATION @75:19 call Inner.held [m package] : ? () returns T erasure java.lang.Object throws [] sig GenericEdges$Outer$Inner#held()Ljava/lang/Object; : T erasure java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Inner flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @75:19 : ?
+IDENTIFIER @75:19 id inner edges.inner [v package] : GenericEdges$Outer$Inner : GenericEdges$Outer$Inner
+TOKEN @75:19
+TOKEN @75:24
+IDENTIFIER @75:25 id held Inner.held [m package] : ? () returns T erasure java.lang.Object throws [] sig GenericEdges$Outer$Inner#held()Ljava/lang/Object; : T erasure java.lang.Object
+TOKEN @75:25
+ARGUMENTS @75:29
+TOKEN @75:29
+TOKEN @75:30
+TOKEN @75:31
+VARIABLE @76:5 var edges.explicit [v package] : GenericEdges$Outer$Inner
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+MEMBER_SELECT @76:5 : GenericEdges$Outer$Inner
+PARAMETERIZED_TYPE @76:5 : GenericEdges$Outer<java.lang.String>
+IDENTIFIER @76:5 id Outer GenericEdges.Outer [t static package] : GenericEdges$Outer<java.lang.String> : GenericEdges$Outer<java.lang.String>
+TOKEN @76:5
+TYPE_ARGUMENTS @76:10
+TOKEN @76:10
+IDENTIFIER @76:11 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @76:11
+TOKEN @76:17
+TOKEN @76:18
+IDENTIFIER @76:19 id Inner Outer.Inner [t package] : GenericEdges$Outer$Inner : GenericEdges$Outer$Inner
+TOKEN @76:19
+IDENTIFIER @76:25 id explicit edges.explicit [v package] : GenericEdges$Outer$Inner : GenericEdges$Outer$Inner
+TOKEN @76:25
+TOKEN @76:34
+NEW_CLASS @76:36 new unknown : ?
+IDENTIFIER @76:36 id outer edges.outer [v package] : GenericEdges$Outer<java.lang.String> : GenericEdges$Outer<java.lang.String>
+TOKEN @76:36
+TOKEN @76:41
+TOKEN @76:42
+IDENTIFIER @76:46 id Inner unknown : ?
+TOKEN @76:46
+ARGUMENTS @76:51
+TOKEN @76:51
+TOKEN @76:52
+TOKEN @76:53
+VARIABLE @77:5 var edges.explicitHeld [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+IDENTIFIER @77:5 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @77:5
+IDENTIFIER @77:12 id explicitHeld edges.explicitHeld [v package] : java.lang.String : java.lang.String
+TOKEN @77:12
+TOKEN @77:25
+MEMBER_SELECT @77:27 : T erasure java.lang.Object
+IDENTIFIER @77:27 id explicit edges.explicit [v package] : GenericEdges$Outer$Inner : GenericEdges$Outer$Inner
+TOKEN @77:27
+TOKEN @77:35
+IDENTIFIER @77:36 id held Inner.held [v package] : T erasure java.lang.Object : T erasure java.lang.Object
+TOKEN @77:36
+TOKEN @77:40
+VARIABLE @78:5 var edges.node [v package] : GenericEdges$Node
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+IDENTIFIER @78:5 id Node GenericEdges.Node [t package] : GenericEdges$Node : GenericEdges$Node
+TOKEN @78:5
+IDENTIFIER @78:10 id node edges.node [v package] : GenericEdges$Node : GenericEdges$Node
+TOKEN @78:10
+TOKEN @78:15
+METHOD_INVOCATION @78:17 call Iterator.next [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Iterator#next()Ljava/lang/Object; : java.lang.Object
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Iterator flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @78:17 : ?
+METHOD_INVOCATION @78:17 call Collection.iterator [m abstract public] : ? () returns java.util.Iterator<E erasure java.lang.Object> throws [] sig java.util.Collection#iterator()Ljava/util/Iterator; : java.util.Iterator<E erasure java.lang.Object>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collection flags [abstract, public] overridden [Iterable.iterator[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @78:17 : ?
+METHOD_INVOCATION @78:17 call Map.values [m abstract public] : ? () returns java.util.Collection<V erasure java.lang.Object> throws [] sig java.util.Map#values()Ljava/util/Collection; : java.util.Collection<V erasure java.lang.Object>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @78:17 : ?
+IDENTIFIER @78:17 id nodes GenericEdges.nodes [v package] : java.util.Map<K erasure java.lang.Object,GenericEdges$Node> : java.util.Map<K erasure java.lang.Object,GenericEdges$Node>
+TOKEN @78:17
+TOKEN @78:22
+IDENTIFIER @78:23 id values Map.values [m abstract public] : ? () returns java.util.Collection<V erasure java.lang.Object> throws [] sig java.util.Map#values()Ljava/util/Collection; : java.util.Collection<V erasure java.lang.Object>
+TOKEN @78:23
+ARGUMENTS @78:29
+TOKEN @78:29
+TOKEN @78:30
+TOKEN @78:31
+IDENTIFIER @78:32 id iterator Collection.iterator [m abstract public] : ? () returns java.util.Iterator<E erasure java.lang.Object> throws [] sig java.util.Collection#iterator()Ljava/util/Iterator; : java.util.Iterator<E erasure java.lang.Object>
+TOKEN @78:32
+ARGUMENTS @78:40
+TOKEN @78:40
+TOKEN @78:41
+TOKEN @78:42
+IDENTIFIER @78:43 id next Iterator.next [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Iterator#next()Ljava/lang/Object; : java.lang.Object
+TOKEN @78:43
+ARGUMENTS @78:47
+TOKEN @78:47
+TOKEN @78:48
+TOKEN @78:49
+VARIABLE @79:5 var edges.got [v package] : V erasure java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+IDENTIFIER @79:5 id V GenericEdges.V [t package] : V erasure java.lang.Object : V erasure java.lang.Object
+TOKEN @79:5
+IDENTIFIER @79:7 id got edges.got [v package] : V erasure java.lang.Object : V erasure java.lang.Object
+TOKEN @79:7
+TOKEN @79:11
+METHOD_INVOCATION @79:13 call Node.get [m package] : ? () returns V erasure java.lang.Object throws [] sig GenericEdges$Node#get()Ljava/lang/Object; : V erasure java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Node flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @79:13 : ?
+IDENTIFIER @79:13 id node edges.node [v package] : GenericEdges$Node : GenericEdges$Node
+TOKEN @79:13
+TOKEN @79:17
+IDENTIFIER @79:18 id get Node.get [m package] : ? () returns V erasure java.lang.Object throws [] sig GenericEdges$Node#get()Ljava/lang/Object; : V erasure java.lang.Object
+TOKEN @79:18
+ARGUMENTS @79:21
+TOKEN @79:21
+TOKEN @79:22
+TOKEN @79:23
+VARIABLE @80:5 var edges.key [v package] : K erasure java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+IDENTIFIER @80:5 id K GenericEdges.K [t package] : K erasure java.lang.Object : K erasure java.lang.Object
+TOKEN @80:5
+IDENTIFIER @80:7 id key edges.key [v package] : K erasure java.lang.Object : K erasure java.lang.Object
+TOKEN @80:7
+TOKEN @80:11
+MEMBER_SELECT @80:13 : K erasure java.lang.Object
+IDENTIFIER @80:13 id node edges.node [v package] : GenericEdges$Node : GenericEdges$Node
+TOKEN @80:13
+TOKEN @80:17
+IDENTIFIER @80:18 id key Node.key [v package] : K erasure java.lang.Object : K erasure java.lang.Object
+TOKEN @80:18
+TOKEN @80:21
+VARIABLE @81:5 var edges.lengths [v package] : java.util.List<java.lang.Integer>
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @81:5 : java.util.List<java.lang.Integer>
+IDENTIFIER @81:5 id List java.util.List [t public interface] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
+TOKEN @81:5
+TYPE_ARGUMENTS @81:9
+TOKEN @81:9
+IDENTIFIER @81:10 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @81:10
+TOKEN @81:17
+IDENTIFIER @81:19 id lengths edges.lengths [v package] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
+TOKEN @81:19
+TOKEN @81:27
+METHOD_INVOCATION @81:29 call GenericEdges.mapAll [m static package] : ? (java.util.Collection<java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.List<R erasure java.lang.Object> throws [] sig GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; : java.util.List<R erasure java.lang.Object>
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [static, package] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [input, mapper] parameterMetadata []
+IDENTIFIER @81:29 id mapAll GenericEdges.mapAll [m static package] : ? (java.util.Collection<java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.List<R erasure java.lang.Object> throws [] sig GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; : java.util.List<R erasure java.lang.Object>
+TOKEN @81:29
+ARGUMENTS @81:35
+TOKEN @81:35
+METHOD_INVOCATION @81:36 call List.of [m static public] : ? (java.lang.String,java.lang.String) returns java.util.List throws [] sig java.util.List#of(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List; : java.util.List
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
+MEMBER_SELECT @81:36 : ?
+IDENTIFIER @81:36 id List java.util.List [t public interface] : java.util.List : java.util.List
+TOKEN @81:36
+TOKEN @81:40
+IDENTIFIER @81:41 id of List.of [m static public] : ? (java.lang.String,java.lang.String) returns java.util.List throws [] sig java.util.List#of(Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List; : java.util.List
+TOKEN @81:41
+ARGUMENTS @81:43
+TOKEN @81:43
+STRING_LITERAL @81:44 : java.lang.String = a
+TOKEN @81:44
+TOKEN @81:47
+STRING_LITERAL @81:49 : java.lang.String = bb
+TOKEN @81:49
+TOKEN @81:53
+TOKEN @81:54
+METHOD_REFERENCE @81:56 : java.util.function.Function<java.lang.Object,java.lang.Object>
+IDENTIFIER @81:56 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @81:56
+TOKEN @81:62
+IDENTIFIER @81:64 id length String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
+TOKEN @81:64
+TOKEN @81:70
+TOKEN @81:71
+VARIABLE @82:5 var edges.strings [v package] : java.util.List<java.lang.String>
+  details declared true usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @82:5 : java.util.List<java.lang.String>
+IDENTIFIER @82:5 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @82:5
+TYPE_ARGUMENTS @82:9
+TOKEN @82:9
+IDENTIFIER @82:10 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @82:10
+TOKEN @82:16
+IDENTIFIER @82:18 id strings edges.strings [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @82:18
+TOKEN @82:26
+METHOD_INVOCATION @82:28 call GenericEdges.mapAll [m static package] : ? (java.util.Collection<java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.List<R erasure java.lang.Object> throws [] sig GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; : java.util.List<R erasure java.lang.Object>
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [static, package] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [input, mapper] parameterMetadata []
+TYPE_ARGUMENTS @82:41
+TOKEN @82:41
+IDENTIFIER @82:42 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @82:42
+TOKEN @82:49
+IDENTIFIER @82:51 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @82:51
+TOKEN @82:57
+MEMBER_SELECT @82:28 : ?
+IDENTIFIER @82:28 id GenericEdges .GenericEdges [t package] : GenericEdges : GenericEdges
+TOKEN @82:28
+TOKEN @82:40
+IDENTIFIER @82:58 id mapAll GenericEdges.mapAll [m static package] : ? (java.util.Collection<java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.List<R erasure java.lang.Object> throws [] sig GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; : java.util.List<R erasure java.lang.Object>
+TOKEN @82:58
+ARGUMENTS @82:64
+TOKEN @82:64
+IDENTIFIER @82:65 id lengths edges.lengths [v package] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
+TOKEN @82:65
+TOKEN @82:72
+METHOD_REFERENCE @82:74 : java.util.function.Function<java.lang.Object,java.lang.Object>
+IDENTIFIER @82:74 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @82:74
+TOKEN @82:80
+IDENTIFIER @82:82 id valueOf String.valueOf [m static public] : ? (java.lang.Object) returns java.lang.String throws [] sig java.lang.String#valueOf(Ljava/lang/Object;)Ljava/lang/String; : java.lang.String
+TOKEN @82:82
+TOKEN @82:89
+TOKEN @82:90
+VARIABLE @83:5 var edges.parts [v package] : java.util.Map<java.lang.Boolean,java.util.List<java.lang.String>>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @83:5 : java.util.Map<java.lang.Boolean,java.util.List<java.lang.String>>
+IDENTIFIER @83:5 id Map java.util.Map [t public interface] : java.util.Map<java.lang.Boolean,java.util.List<java.lang.String>> : java.util.Map<java.lang.Boolean,java.util.List<java.lang.String>>
+TOKEN @83:5
+TYPE_ARGUMENTS @83:8
+TOKEN @83:8
+IDENTIFIER @83:9 id Boolean java.lang.Boolean [t final public] : java.lang.Boolean : java.lang.Boolean
+TOKEN @83:9
+TOKEN @83:16
+PARAMETERIZED_TYPE @83:18 : java.util.List<java.lang.String>
+IDENTIFIER @83:18 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @83:18
+TYPE_ARGUMENTS @83:22
+TOKEN @83:22
+IDENTIFIER @83:23 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @83:23
+TOKEN @83:29
+TOKEN @83:30
+IDENTIFIER @83:32 id parts edges.parts [v package] : java.util.Map<java.lang.Boolean,java.util.List<java.lang.String>> : java.util.Map<java.lang.Boolean,java.util.List<java.lang.String>>
+TOKEN @83:32
+TOKEN @83:38
+METHOD_INVOCATION @83:40 call Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.lang.Object
+  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @83:40 : ?
+METHOD_INVOCATION @83:40 call Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+  details declared false usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collection flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @83:40 : ?
+IDENTIFIER @83:40 id strings edges.strings [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @83:40
+TOKEN @83:47
+IDENTIFIER @83:48 id stream Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+TOKEN @83:48
+ARGUMENTS @83:54
+TOKEN @83:54
+TOKEN @83:55
+TOKEN @83:56
+IDENTIFIER @83:57 id collect Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.lang.Object
+TOKEN @83:57
+ARGUMENTS @83:64
+TOKEN @83:64
+METHOD_INVOCATION @83:65 call Collectors.partitioningBy [m static public] : ? (java.util.function.Predicate<java.lang.Object>) returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#partitioningBy(Ljava/util/function/Predicate;)Ljava/util/stream/Collector; : java.util.stream.Collector
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collectors flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @83:65 : ?
+IDENTIFIER @83:65 id Collectors java.util.stream.Collectors [t final public] : java.util.stream.Collectors : java.util.stream.Collectors
+TOKEN @83:65
+TOKEN @83:75
+IDENTIFIER @83:76 id partitioningBy Collectors.partitioningBy [m static public] : ? (java.util.function.Predicate<java.lang.Object>) returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#partitioningBy(Ljava/util/function/Predicate;)Ljava/util/stream/Collector; : java.util.stream.Collector
+TOKEN @83:76
+ARGUMENTS @83:90
+TOKEN @83:90
+LAMBDA_EXPRESSION @83:91 : java.util.function.Predicate<java.lang.Object>
+VARIABLE @83:91 var test.s [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Predicate flags [package] local true parameter true effectivelyFinal true constant null owner test java.util.function.Predicate#test(Ljava/lang/Object;)Z [abstract, public] returns boolean parameters 1 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing Predicate type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+INFERED_TYPE
+IDENTIFIER @83:91 id s test.s [v package] : java.lang.String : java.lang.String
+TOKEN @83:91
+TOKEN @83:93
+METHOD_INVOCATION @83:96 call String.isEmpty [m public] : ? () returns boolean throws [] sig java.lang.String#isEmpty()Z : boolean
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [CharSequence.isEmpty[]] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @83:96 : ?
+IDENTIFIER @83:96 id s test.s [v package] : java.lang.String : java.lang.String
+TOKEN @83:96
+TOKEN @83:97
+IDENTIFIER @83:98 id isEmpty String.isEmpty [m public] : ? () returns boolean throws [] sig java.lang.String#isEmpty()Z : boolean
+TOKEN @83:98
+ARGUMENTS @83:105
+TOKEN @83:105
+TOKEN @83:106
+TOKEN @83:107
+TOKEN @83:108
+TOKEN @83:109
+VARIABLE @84:5 var edges.counts [v package] : java.util.Map<java.lang.String,java.lang.Integer>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @84:5 : java.util.Map<java.lang.String,java.lang.Integer>
+IDENTIFIER @84:5 id Map java.util.Map [t public interface] : java.util.Map<java.lang.String,java.lang.Integer> : java.util.Map<java.lang.String,java.lang.Integer>
+TOKEN @84:5
+TYPE_ARGUMENTS @84:8
+TOKEN @84:8
+IDENTIFIER @84:9 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @84:9
+TOKEN @84:15
+IDENTIFIER @84:17 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @84:17
+TOKEN @84:24
+IDENTIFIER @84:26 id counts edges.counts [v package] : java.util.Map<java.lang.String,java.lang.Integer> : java.util.Map<java.lang.String,java.lang.Integer>
+TOKEN @84:26
+TOKEN @84:33
+METHOD_INVOCATION @84:35 call Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.lang.Object
+  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @84:35 : ?
+METHOD_INVOCATION @84:35 call Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+  details declared false usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collection flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @84:35 : ?
+IDENTIFIER @84:35 id strings edges.strings [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @84:35
+TOKEN @84:42
+IDENTIFIER @84:43 id stream Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+TOKEN @84:43
+ARGUMENTS @84:49
+TOKEN @84:49
+TOKEN @84:50
+TOKEN @84:51
+IDENTIFIER @84:52 id collect Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.lang.Object
+TOKEN @84:52
+ARGUMENTS @84:59
+TOKEN @84:59
+METHOD_INVOCATION @84:60 call Collectors.toMap [m static public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>,java.util.function.BinaryOperator) returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#toMap(Ljava/util/function/Function;Ljava/util/function/Function;Ljava/util/function/BinaryOperator;)Ljava/util/stream/Collector; : java.util.stream.Collector
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collectors flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0, arg1, arg2] parameterMetadata []
+MEMBER_SELECT @84:60 : ?
+IDENTIFIER @84:60 id Collectors java.util.stream.Collectors [t final public] : java.util.stream.Collectors : java.util.stream.Collectors
+TOKEN @84:60
+TOKEN @84:70
+IDENTIFIER @84:71 id toMap Collectors.toMap [m static public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>,java.util.function.BinaryOperator) returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#toMap(Ljava/util/function/Function;Ljava/util/function/Function;Ljava/util/function/BinaryOperator;)Ljava/util/stream/Collector; : java.util.stream.Collector
+TOKEN @84:71
+ARGUMENTS @84:76
+TOKEN @84:76
+METHOD_INVOCATION @84:77 call Function.identity [m static public] : ? () returns java.util.function.Function throws [] sig java.util.function.Function#identity()Ljava/util/function/Function; : java.util.function.Function
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Function flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @84:77 : ?
+IDENTIFIER @84:77 id Function java.util.function.Function [t public interface] : java.util.function.Function : java.util.function.Function
+TOKEN @84:77
+TOKEN @84:85
+IDENTIFIER @84:86 id identity Function.identity [m static public] : ? () returns java.util.function.Function throws [] sig java.util.function.Function#identity()Ljava/util/function/Function; : java.util.function.Function
+TOKEN @84:86
+ARGUMENTS @84:94
+TOKEN @84:94
+TOKEN @84:95
+TOKEN @84:96
+METHOD_REFERENCE @84:98 : java.util.function.Function<java.lang.Object,java.lang.Object>
+IDENTIFIER @84:98 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @84:98
+TOKEN @84:104
+IDENTIFIER @84:106 id length String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
+TOKEN @84:106
+TOKEN @84:112
+METHOD_REFERENCE @84:114 : java.util.function.BinaryOperator
+IDENTIFIER @84:114 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @84:114
+TOKEN @84:121
+IDENTIFIER @84:123 id sum Integer.sum [m static public] : ? (int,int) returns int throws [] sig java.lang.Integer#sum(II)I : int
+TOKEN @84:123
+TOKEN @84:126
+TOKEN @84:127
+TOKEN @84:128
+VARIABLE @85:5 var edges.longest [v package] : java.util.Optional<java.lang.Integer>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @85:5 : java.util.Optional<java.lang.Integer>
+IDENTIFIER @85:5 id Optional java.util.Optional [t final public] : java.util.Optional<java.lang.Integer> : java.util.Optional<java.lang.Integer>
+TOKEN @85:5
+TYPE_ARGUMENTS @85:13
+TOKEN @85:13
+IDENTIFIER @85:14 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @85:14
+TOKEN @85:21
+IDENTIFIER @85:23 id longest edges.longest [v package] : java.util.Optional<java.lang.Integer> : java.util.Optional<java.lang.Integer>
+TOKEN @85:23
+TOKEN @85:31
+METHOD_INVOCATION @85:33 call Stream.max [m abstract public] : ? (java.util.Comparator<java.lang.Object>) returns java.util.Optional<T erasure java.lang.Object> throws [] sig java.util.stream.Stream#max(Ljava/util/Comparator;)Ljava/util/Optional; : java.util.Optional<T erasure java.lang.Object>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @85:33 : ?
+METHOD_INVOCATION @85:33 call Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+  details declared false usages 4 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collection flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @85:33 : ?
+IDENTIFIER @85:33 id lengths edges.lengths [v package] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
+TOKEN @85:33
+TOKEN @85:40
+IDENTIFIER @85:41 id stream Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+TOKEN @85:41
+ARGUMENTS @85:47
+TOKEN @85:47
+TOKEN @85:48
+TOKEN @85:49
+IDENTIFIER @85:50 id max Stream.max [m abstract public] : ? (java.util.Comparator<java.lang.Object>) returns java.util.Optional<T erasure java.lang.Object> throws [] sig java.util.stream.Stream#max(Ljava/util/Comparator;)Ljava/util/Optional; : java.util.Optional<T erasure java.lang.Object>
+TOKEN @85:50
+ARGUMENTS @85:53
+TOKEN @85:53
+METHOD_INVOCATION @85:54 call Comparator.naturalOrder [m static public] : ? () returns java.util.Comparator throws [] sig java.util.Comparator#naturalOrder()Ljava/util/Comparator; : java.util.Comparator
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Comparator flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @85:54 : ?
+IDENTIFIER @85:54 id Comparator java.util.Comparator [t public interface] : java.util.Comparator : java.util.Comparator
+TOKEN @85:54
+TOKEN @85:64
+IDENTIFIER @85:65 id naturalOrder Comparator.naturalOrder [m static public] : ? () returns java.util.Comparator throws [] sig java.util.Comparator#naturalOrder()Ljava/util/Comparator; : java.util.Comparator
+TOKEN @85:65
+ARGUMENTS @85:77
+TOKEN @85:77
+TOKEN @85:78
+TOKEN @85:79
+TOKEN @85:80
+VARIABLE @86:5 var edges.chunks [v package] : java.util.stream.Stream<java.util.List<java.lang.String>>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @86:5 : java.util.stream.Stream<java.util.List<java.lang.String>>
+IDENTIFIER @86:5 id Stream java.util.stream.Stream [t public interface] : java.util.stream.Stream<java.util.List<java.lang.String>> : java.util.stream.Stream<java.util.List<java.lang.String>>
+TOKEN @86:5
+TYPE_ARGUMENTS @86:11
+TOKEN @86:11
+PARAMETERIZED_TYPE @86:12 : java.util.List<java.lang.String>
+IDENTIFIER @86:12 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @86:12
+TYPE_ARGUMENTS @86:16
+TOKEN @86:16
+IDENTIFIER @86:17 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @86:17
+TOKEN @86:23
+TOKEN @86:24
+IDENTIFIER @86:26 id chunks edges.chunks [v package] : java.util.stream.Stream<java.util.List<java.lang.String>> : java.util.stream.Stream<java.util.List<java.lang.String>>
+TOKEN @86:26
+TOKEN @86:33
+METHOD_INVOCATION @86:35 call Stream.of [m static public] : ? (java.util.List[]) returns java.util.stream.Stream throws [] sig java.util.stream.Stream#of([Ljava/lang/Object;)Ljava/util/stream/Stream; : java.util.stream.Stream
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [static, public] overridden [] overridable false generic false default false synchronized false varargs true native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @86:35 : ?
+IDENTIFIER @86:35 id Stream java.util.stream.Stream [t public interface] : java.util.stream.Stream : java.util.stream.Stream
+TOKEN @86:35
+TOKEN @86:41
+IDENTIFIER @86:42 id of Stream.of [m static public] : ? (java.util.List[]) returns java.util.stream.Stream throws [] sig java.util.stream.Stream#of([Ljava/lang/Object;)Ljava/util/stream/Stream; : java.util.stream.Stream
+TOKEN @86:42
+ARGUMENTS @86:44
+TOKEN @86:44
+IDENTIFIER @86:45 id strings edges.strings [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @86:45
+TOKEN @86:52
+IDENTIFIER @86:54 id strings edges.strings [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @86:54
+TOKEN @86:61
+TOKEN @86:62
+VARIABLE @87:5 var edges.flat [v package] : java.util.List<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @87:5 : java.util.List<java.lang.String>
+IDENTIFIER @87:5 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @87:5
+TYPE_ARGUMENTS @87:9
+TOKEN @87:9
+IDENTIFIER @87:10 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @87:10
+TOKEN @87:16
+IDENTIFIER @87:18 id flat edges.flat [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @87:18
+TOKEN @87:23
+METHOD_INVOCATION @87:25 call Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.lang.Object
+  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @87:25 : ?
+METHOD_INVOCATION @87:25 call Stream.flatMap [m abstract public] : ? (java.util.function.Function<java.lang.Object,java.util.stream.Stream>) returns java.util.stream.Stream<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#flatMap(Ljava/util/function/Function;)Ljava/util/stream/Stream; : java.util.stream.Stream<R erasure java.lang.Object>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @87:25 : ?
+IDENTIFIER @87:25 id chunks edges.chunks [v package] : java.util.stream.Stream<java.util.List<java.lang.String>> : java.util.stream.Stream<java.util.List<java.lang.String>>
+TOKEN @87:25
+TOKEN @87:31
+IDENTIFIER @87:32 id flatMap Stream.flatMap [m abstract public] : ? (java.util.function.Function<java.lang.Object,java.util.stream.Stream>) returns java.util.stream.Stream<R erasure java.lang.Object> throws [] sig java.util.stream.Stream#flatMap(Ljava/util/function/Function;)Ljava/util/stream/Stream; : java.util.stream.Stream<R erasure java.lang.Object>
+TOKEN @87:32
+ARGUMENTS @87:39
+TOKEN @87:39
+METHOD_REFERENCE @87:40 : java.util.function.Function<java.lang.Object,java.util.stream.Stream>
+IDENTIFIER @87:40 id List java.util.List [t public interface] : java.util.List : java.util.List
+TOKEN @87:40
+TOKEN @87:44
+IDENTIFIER @87:46 id stream Collection.stream [m public] : ? () returns java.util.stream.Stream<E erasure java.lang.Object> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<E erasure java.lang.Object>
+TOKEN @87:46
+TOKEN @87:52
+TOKEN @87:53
+IDENTIFIER @87:54 id collect Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.lang.Object
+TOKEN @87:54
+ARGUMENTS @87:61
+TOKEN @87:61
+METHOD_INVOCATION @87:62 call Collectors.toList [m static public] : ? () returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#toList()Ljava/util/stream/Collector; : java.util.stream.Collector
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collectors flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @87:62 : ?
+IDENTIFIER @87:62 id Collectors java.util.stream.Collectors [t final public] : java.util.stream.Collectors : java.util.stream.Collectors
+TOKEN @87:62
+TOKEN @87:72
+IDENTIFIER @87:73 id toList Collectors.toList [m static public] : ? () returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#toList()Ljava/util/stream/Collector; : java.util.stream.Collector
+TOKEN @87:73
+ARGUMENTS @87:79
+TOKEN @87:79
+TOKEN @87:80
+TOKEN @87:81
+TOKEN @87:82
+VARIABLE @88:5 var edges.repeat [v package] : java.util.function.BiFunction<java.lang.String,java.lang.Integer,java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @88:5 : java.util.function.BiFunction<java.lang.String,java.lang.Integer,java.lang.String>
+IDENTIFIER @88:5 id BiFunction java.util.function.BiFunction [t public interface] : java.util.function.BiFunction<java.lang.String,java.lang.Integer,java.lang.String> : java.util.function.BiFunction<java.lang.String,java.lang.Integer,java.lang.String>
+TOKEN @88:5
+TYPE_ARGUMENTS @88:15
+TOKEN @88:15
+IDENTIFIER @88:16 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @88:16
+TOKEN @88:22
+IDENTIFIER @88:24 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @88:24
+TOKEN @88:31
+IDENTIFIER @88:33 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @88:33
+TOKEN @88:39
+IDENTIFIER @88:41 id repeat edges.repeat [v package] : java.util.function.BiFunction<java.lang.String,java.lang.Integer,java.lang.String> : java.util.function.BiFunction<java.lang.String,java.lang.Integer,java.lang.String>
+TOKEN @88:41
+TOKEN @88:48
+METHOD_REFERENCE @88:50 : java.util.function.BiFunction<java.lang.String,java.lang.Integer,java.lang.String>
+IDENTIFIER @88:50 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @88:50
+TOKEN @88:56
+IDENTIFIER @88:58 id repeat String.repeat [m public] : ? (int) returns java.lang.String throws [] sig java.lang.String#repeat(I)Ljava/lang/String; : java.lang.String
+TOKEN @88:58
+TOKEN @88:64
+VARIABLE @89:5 var edges.factory [v package] : java.util.function.Supplier<java.util.List<java.lang.String>>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @89:5 : java.util.function.Supplier<java.util.List<java.lang.String>>
+IDENTIFIER @89:5 id Supplier java.util.function.Supplier [t public interface] : java.util.function.Supplier<java.util.List<java.lang.String>> : java.util.function.Supplier<java.util.List<java.lang.String>>
+TOKEN @89:5
+TYPE_ARGUMENTS @89:13
+TOKEN @89:13
+PARAMETERIZED_TYPE @89:14 : java.util.List<java.lang.String>
+IDENTIFIER @89:14 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @89:14
+TYPE_ARGUMENTS @89:18
+TOKEN @89:18
+IDENTIFIER @89:19 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @89:19
+TOKEN @89:25
+TOKEN @89:26
+IDENTIFIER @89:28 id factory edges.factory [v package] : java.util.function.Supplier<java.util.List<java.lang.String>> : java.util.function.Supplier<java.util.List<java.lang.String>>
+TOKEN @89:28
+TOKEN @89:36
+METHOD_REFERENCE @89:38 : java.util.function.Supplier<java.util.List<java.lang.String>>
+IDENTIFIER @89:38 id ArrayList java.util.ArrayList [t public] : java.util.ArrayList : java.util.ArrayList
+TOKEN @89:38
+TOKEN @89:47
+IDENTIFIER @89:49 id new ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : void
+TOKEN @89:49
+TOKEN @89:52
+VARIABLE @90:5 var edges.callable [v package] : java.util.concurrent.Callable<java.lang.Integer>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @90:5 : java.util.concurrent.Callable<java.lang.Integer>
+IDENTIFIER @90:5 id Callable java.util.concurrent.Callable [t public interface] : java.util.concurrent.Callable<java.lang.Integer> : java.util.concurrent.Callable<java.lang.Integer>
+TOKEN @90:5
+TYPE_ARGUMENTS @90:13
+TOKEN @90:13
+IDENTIFIER @90:14 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @90:14
+TOKEN @90:21
+IDENTIFIER @90:23 id callable edges.callable [v package] : java.util.concurrent.Callable<java.lang.Integer> : java.util.concurrent.Callable<java.lang.Integer>
+TOKEN @90:23
+TOKEN @90:32
+METHOD_REFERENCE @90:34 : java.util.concurrent.Callable<java.lang.Integer>
+IDENTIFIER @90:34 id lengths edges.lengths [v package] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
+TOKEN @90:34
+TOKEN @90:41
+IDENTIFIER @90:43 id size List.size [m abstract public] : ? () returns int throws [] sig java.util.List#size()I : int
+TOKEN @90:43
+TOKEN @90:47
+VARIABLE @91:5 var edges.iterator [v package] : java.util.Iterator<java.lang.Number>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @91:5 : java.util.Iterator<java.lang.Number>
+IDENTIFIER @91:5 id Iterator java.util.Iterator [t public interface] : java.util.Iterator<java.lang.Number> : java.util.Iterator<java.lang.Number>
+TOKEN @91:5
+TYPE_ARGUMENTS @91:13
+TOKEN @91:13
+EXTENDS_WILDCARD @91:14
+TOKEN @91:14
+TOKEN @91:16
+IDENTIFIER @91:24 id Number java.lang.Number [t abstract public] : java.lang.Number : java.lang.Number
+TOKEN @91:24
+TOKEN @91:30
+IDENTIFIER @91:32 id iterator edges.iterator [v package] : java.util.Iterator<java.lang.Number> : java.util.Iterator<java.lang.Number>
+TOKEN @91:32
+TOKEN @91:41
+METHOD_INVOCATION @91:43 call List.iterator [m abstract public] : ? () returns java.util.Iterator<E erasure java.lang.Object> throws [] sig java.util.List#iterator()Ljava/util/Iterator; : java.util.Iterator<E erasure java.lang.Object>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [Collection.iterator[], Iterable.iterator[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @91:43 : ?
+IDENTIFIER @91:43 id numbers edges.numbers [v package] : java.util.List<java.lang.Number> : java.util.List<java.lang.Number>
+TOKEN @91:43
+TOKEN @91:50
+IDENTIFIER @91:51 id iterator List.iterator [m abstract public] : ? () returns java.util.Iterator<E erasure java.lang.Object> throws [] sig java.util.List#iterator()Ljava/util/Iterator; : java.util.Iterator<E erasure java.lang.Object>
+TOKEN @91:51
+ARGUMENTS @91:59
+TOKEN @91:59
+TOKEN @91:60
+TOKEN @91:61
+VARIABLE @92:5 var edges.anonymous [v package] : java.util.Comparator<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @92:5 : java.util.Comparator<java.lang.String>
+IDENTIFIER @92:5 id Comparator java.util.Comparator [t public interface] : java.util.Comparator<java.lang.String> : java.util.Comparator<java.lang.String>
+TOKEN @92:5
+TYPE_ARGUMENTS @92:15
+TOKEN @92:15
+IDENTIFIER @92:16 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @92:16
+TOKEN @92:22
+IDENTIFIER @92:24 id anonymous edges.anonymous [v package] : java.util.Comparator<java.lang.String> : java.util.Comparator<java.lang.String>
+TOKEN @92:24
+TOKEN @92:34
+NEW_CLASS @92:36 new Object.<init> [m public] : ? () returns void throws [] sig java.lang.Object#<init>()V : GenericEdges$1
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Object flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @92:36
+PARAMETERIZED_TYPE @92:40 : java.util.Comparator
+IDENTIFIER @92:40 id Comparator Object.<init> [m public] : ? () returns void throws [] sig java.lang.Object#<init>()V : java.util.Comparator
+TOKEN @92:40
+TYPE_ARGUMENTS @92:50
+TOKEN @92:50
+TOKEN @92:51
+ARGUMENTS @92:52
+TOKEN @92:52
+TOKEN @92:53
+CLASS @92:55 class edges. [t package] : GenericEdges$1 super java.lang.Object interfaces [java.util.Comparator]
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] members [<init>, compare] lookupToString 0 outermost GenericEdges annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object, java.util.Comparator] numerical false wrapper false raw false declaring 
+MODIFIERS
+TYPE_PARAMETERS
+LIST
+LIST
+TOKEN @92:55
+METHOD @93:7 method .compare [m public] : ? (java.lang.String,java.lang.String) returns int throws [] sig GenericEdges$1#compare(Ljava/lang/String;Ljava/lang/String;)I overrides true
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [left, right] parameterMetadata []
+MODIFIERS @93:7
+ANNOTATION @93:7 : java.lang.Override
+TOKEN @93:7
+IDENTIFIER @93:8 id Override java.lang.Override [t public interface] : java.lang.Override : java.lang.Override
+TOKEN @93:8
+ARGUMENTS
+TOKEN @94:7
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @94:14 : int
+TOKEN @94:14
+IDENTIFIER @94:18 id compare .compare [m public] : ? (java.lang.String,java.lang.String) returns int throws [] sig GenericEdges$1#compare(Ljava/lang/String;Ljava/lang/String;)I : int
+TOKEN @94:18
+TOKEN @94:25
+VARIABLE @94:26 var compare.left [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner compare GenericEdges$1#compare(Ljava/lang/String;Ljava/lang/String;)I [public] returns int parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+IDENTIFIER @94:26 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @94:26
+IDENTIFIER @94:33 id left compare.left [v package] : java.lang.String : java.lang.String
+TOKEN @94:33
+TOKEN @94:37
+VARIABLE @94:39 var compare.right [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing  flags [package] local true parameter true effectivelyFinal true constant null owner compare GenericEdges$1#compare(Ljava/lang/String;Ljava/lang/String;)I [public] returns int parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing  type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+IDENTIFIER @94:39 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @94:39
+IDENTIFIER @94:46 id right compare.right [v package] : java.lang.String : java.lang.String
+TOKEN @94:46
+TOKEN @94:51
+BLOCK @94:53
+TOKEN @94:53
+RETURN_STATEMENT @95:9
+TOKEN @95:9
+METHOD_INVOCATION @95:16 call String.compareTo [m public] : ? (java.lang.String) returns int throws [] sig java.lang.String#compareTo(Ljava/lang/String;)I : int
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [Comparable.compareTo[]] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @95:16 : ?
+IDENTIFIER @95:16 id left compare.left [v package] : java.lang.String : java.lang.String
+TOKEN @95:16
+TOKEN @95:20
+IDENTIFIER @95:21 id compareTo String.compareTo [m public] : ? (java.lang.String) returns int throws [] sig java.lang.String#compareTo(Ljava/lang/String;)I : int
+TOKEN @95:21
+ARGUMENTS @95:30
+TOKEN @95:30
+IDENTIFIER @95:31 id right compare.right [v package] : java.lang.String : java.lang.String
+TOKEN @95:31
+TOKEN @95:36
+TOKEN @95:37
+TOKEN @96:7
+TOKEN @97:5
+TOKEN @97:6
+VARIABLE @98:5 var edges.raw [v package] : java.util.List<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [package] local true parameter false effectivelyFinal true constant null owner edges GenericEdges#edges(Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Optional;)V [package] returns void parameters 4 thrown 1 overridden 0 declared true usages 0 metadata 0 enclosing GenericEdges type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @98:5 : java.util.List<java.lang.String>
+IDENTIFIER @98:5 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @98:5
+TYPE_ARGUMENTS @98:9
+TOKEN @98:9
+IDENTIFIER @98:10 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @98:10
+TOKEN @98:16
+IDENTIFIER @98:18 id raw edges.raw [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @98:18
+TOKEN @98:22
+NEW_CLASS @98:24 new ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+  details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ArrayList flags [public] overridden [AbstractList.<init>[], AbstractCollection.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @98:24
+IDENTIFIER @98:28 id ArrayList ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+TOKEN @98:28
+ARGUMENTS @98:37
+TOKEN @98:37
+TOKEN @98:38
+TOKEN @98:39
+EXPRESSION_STATEMENT @99:5
+METHOD_INVOCATION @99:5 call PrintStream.println [m public] : ? (java.lang.String) returns void throws [] sig java.io.PrintStream#println(Ljava/lang/String;)V : void
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing PrintStream flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @99:5 : ?
+MEMBER_SELECT @99:5 : java.io.PrintStream
+IDENTIFIER @99:5 id System java.lang.System [t final public] : java.lang.System : java.lang.System
+TOKEN @99:5
+TOKEN @99:11
+IDENTIFIER @99:12 id out System.out [v static final public] : java.io.PrintStream : java.io.PrintStream
+TOKEN @99:12
+TOKEN @99:15
+IDENTIFIER @99:16 id println PrintStream.println [m public] : ? (java.lang.String) returns void throws [] sig java.io.PrintStream#println(Ljava/lang/String;)V : void
+TOKEN @99:16
+ARGUMENTS @99:23
+TOKEN @99:23
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+PLUS @99:24 : java.lang.String
+IDENTIFIER @99:24 id size edges.size [v package] : int : int
+TOKEN @99:24
+TOKEN @99:29
+IDENTIFIER @99:31 id value edges.value [v package] : java.lang.String : java.lang.String
+TOKEN @99:31
+TOKEN @99:37
+IDENTIFIER @99:39 id other edges.other [v package] : java.lang.String : java.lang.String
+TOKEN @99:39
+TOKEN @99:45
+IDENTIFIER @99:47 id held edges.held [v package] : java.lang.String : java.lang.String
+TOKEN @99:47
+TOKEN @99:52
+IDENTIFIER @99:54 id explicitHeld edges.explicitHeld [v package] : java.lang.String : java.lang.String
+TOKEN @99:54
+TOKEN @99:67
+IDENTIFIER @99:69 id got edges.got [v package] : V erasure java.lang.Object : V erasure java.lang.Object
+TOKEN @99:69
+TOKEN @99:73
+IDENTIFIER @99:75 id key edges.key [v package] : K erasure java.lang.Object : K erasure java.lang.Object
+TOKEN @99:75
+TOKEN @99:79
+IDENTIFIER @99:81 id parts edges.parts [v package] : java.util.Map<java.lang.Boolean,java.util.List<java.lang.String>> : java.util.Map<java.lang.Boolean,java.util.List<java.lang.String>>
+TOKEN @99:81
+TOKEN @99:87
+IDENTIFIER @99:89 id counts edges.counts [v package] : java.util.Map<java.lang.String,java.lang.Integer> : java.util.Map<java.lang.String,java.lang.Integer>
+TOKEN @99:89
+TOKEN @99:96
+IDENTIFIER @99:98 id longest edges.longest [v package] : java.util.Optional<java.lang.Integer> : java.util.Optional<java.lang.Integer>
+TOKEN @99:98
+TOKEN @99:106
+IDENTIFIER @99:108 id flat edges.flat [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @99:108
+TOKEN @99:113
+IDENTIFIER @99:115 id repeat edges.repeat [v package] : java.util.function.BiFunction<java.lang.String,java.lang.Integer,java.lang.String> : java.util.function.BiFunction<java.lang.String,java.lang.Integer,java.lang.String>
+TOKEN @99:115
+TOKEN @99:122
+IDENTIFIER @99:124 id factory edges.factory [v package] : java.util.function.Supplier<java.util.List<java.lang.String>> : java.util.function.Supplier<java.util.List<java.lang.String>>
+TOKEN @99:124
+TOKEN @99:132
+IDENTIFIER @99:134 id callable edges.callable [v package] : java.util.concurrent.Callable<java.lang.Integer> : java.util.concurrent.Callable<java.lang.Integer>
+TOKEN @99:134
+TOKEN @100:7
+IDENTIFIER @100:9 id iterator edges.iterator [v package] : java.util.Iterator<java.lang.Number> : java.util.Iterator<java.lang.Number>
+TOKEN @100:9
+TOKEN @100:18
+IDENTIFIER @100:20 id anonymous edges.anonymous [v package] : java.util.Comparator<java.lang.String> : java.util.Comparator<java.lang.String>
+TOKEN @100:20
+TOKEN @100:30
+IDENTIFIER @100:32 id raw edges.raw [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @100:32
+TOKEN @100:36
+IDENTIFIER @100:38 id type edges.type [v package] : java.lang.Class<java.lang.Object> : java.lang.Class<java.lang.Object>
+TOKEN @100:38
+TOKEN @100:43
+IDENTIFIER @100:45 id typed edges.typed [v package] : java.lang.Class<java.lang.Number> : java.lang.Class<java.lang.Number>
+TOKEN @100:45
+TOKEN @100:51
+IDENTIFIER @100:53 id fromSink edges.fromSink [v package] : java.lang.Object : java.lang.Object
+TOKEN @100:53
+TOKEN @100:61
+TOKEN @100:62
+TOKEN @101:3
+TOKEN @102:1
+TOKEN @103:1

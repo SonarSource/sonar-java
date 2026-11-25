@@ -30,11 +30,20 @@ import static org.sonar.java.semsitter.TranslationStateFixtures.mutate;
 import static org.sonar.java.semsitter.TranslationStateFixtures.recorded;
 import static org.sonar.java.semsitter.TranslationStateFixtures.text;
 import static org.sonar.java.semsitter.TranslationStateFixtures.translate;
+import static org.sonar.java.semsitter.TranslationStateFixtures.unresolved;
 import static org.sonar.java.semsitter.TranslationStateFixtures.where;
 
 class NameTranslatorTest {
 
   private static final Predicate<Node> REFERENCE = node -> node.getRefsCount() > 0;
+
+  @Test
+  void a_static_import_of_a_missing_type_brings_in_nothing() {
+    Predicate<Node> argument = REFERENCE.and(text("argument"));
+    CompilationUnitTree unit = translate(mutate(recorded("Unresolved"), where(argument, node -> unresolved(node.toBuilder().setText("help").build()))), 21);
+
+    assertThat(describe(unit, "help")).isNotEmpty().containsOnly(".!unknown! !Unknown!");
+  }
 
   @Test
   void a_type_name_denotes_its_single_type_import() {
@@ -47,7 +56,7 @@ class NameTranslatorTest {
 
   private static List<String> describe(CompilationUnitTree unit, String name) {
     return all(unit, IdentifierTree.class).stream()
-      .filter(identifier -> name.equals(identifier.name()) && identifier.identifierToken().line() > 4)
+      .filter(identifier -> name.equals(identifier.name()) && identifier.identifierToken().range().start().line() > 4)
       .map(identifier -> (identifier.symbol().owner() == null ? "" : identifier.symbol().owner().name()) + "." + identifier.symbol().name() + " " + identifier.symbolType().fullyQualifiedName())
       .toList();
   }

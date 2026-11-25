@@ -21,14 +21,18 @@ import java.util.function.Predicate;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.semsitter.wire.Node;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.semsitter.TranslationStateFixtures.all;
 import static org.sonar.java.semsitter.TranslationStateFixtures.inner;
+import static org.sonar.java.semsitter.TranslationStateFixtures.kind;
 import static org.sonar.java.semsitter.TranslationStateFixtures.leaf;
 import static org.sonar.java.semsitter.TranslationStateFixtures.mutate;
 import static org.sonar.java.semsitter.TranslationStateFixtures.recorded;
@@ -65,6 +69,16 @@ class MemberTranslatorTest {
 
     assertThat(annotation.symbolType().fullyQualifiedName()).isEqualTo("com.example.Missing");
     assertThat(annotation.annotationType().symbolType().isUnknown()).isTrue();
+  }
+
+  @Test
+  void initializers_of_an_undeclared_class_are_translated() {
+    CompilationUnitTree unit = translate(mutate(recorded("Initializers"), where(kind("identifier").and(text("Initializers")), node -> node.toBuilder().clearDecls().build())), 21);
+
+    List<BlockTree> initializers = all(unit, BlockTree.class).stream().filter(block -> block.is(Tree.Kind.INITIALIZER, Tree.Kind.STATIC_INITIALIZER)).toList();
+
+    assertThat(((ClassTree) unit.types().get(0)).symbol().isUnknown()).isTrue();
+    assertThat(initializers).extracting(Tree::kind).containsExactly(Tree.Kind.STATIC_INITIALIZER, Tree.Kind.INITIALIZER, Tree.Kind.INITIALIZER);
   }
 
   private static Node field(Node node, String name) {

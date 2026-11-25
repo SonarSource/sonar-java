@@ -29,7 +29,6 @@ import org.sonar.java.model.JParseResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 /**
  * Translates every recorded replay sample. The tree must have the shape ECJ gives for the same source, and the semantic
@@ -60,7 +59,6 @@ class ReplayTest {
     String source = Replays.source(sample);
     JParseResult ecj = Replays.parseWithEcj(baseDir, sample, source);
     JParseResult semSitter = translate(sample);
-    assumeFalse(unsupported(semSitter), "parsed by the default frontend");
 
     if (Replays.document(sample).getHasError()) {
       assertThatThrownBy(ecj::get).isInstanceOf(RecognitionException.class);
@@ -98,17 +96,8 @@ class ReplayTest {
     });
     try {
       return SemSitterTranslator.translate(Replays.document(sample), session::get, ReplayTest::hasPackage, true, Replays.javaVersion(sample));
-    } catch (RecognitionException | UnsupportedConstructException failure) {
-      return JParseResult.failure(failure);
-    }
-  }
-
-  private static boolean unsupported(JParseResult result) {
-    try {
-      result.get();
-      return false;
-    } catch (Exception failure) {
-      return failure instanceof UnsupportedConstructException;
+    } catch (RecognitionException syntaxError) {
+      return JParseResult.failure(syntaxError);
     }
   }
 

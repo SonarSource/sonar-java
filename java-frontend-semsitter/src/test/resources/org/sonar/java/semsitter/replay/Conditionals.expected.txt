@@ -1,1 +1,1327 @@
-FAILURE Unsupported construct: lambda_expression
+COMPILATION_UNIT @1:1
+IMPORT @1:1
+TOKEN @1:1
+MEMBER_SELECT @1:8 : ?
+MEMBER_SELECT @1:8 : ?
+IDENTIFIER @1:8 id java unknown : ?
+TOKEN @1:8
+TOKEN @1:12
+IDENTIFIER @1:13 id io unknown : ?
+TOKEN @1:13
+TOKEN @1:15
+IDENTIFIER @1:16 id Serializable unknown : ?
+TOKEN @1:16
+TOKEN @1:28
+IMPORT @2:1
+TOKEN @2:1
+MEMBER_SELECT @2:8 : ?
+MEMBER_SELECT @2:8 : ?
+IDENTIFIER @2:8 id java unknown : ?
+TOKEN @2:8
+TOKEN @2:12
+IDENTIFIER @2:13 id util unknown : ?
+TOKEN @2:13
+TOKEN @2:17
+IDENTIFIER @2:18 id ArrayList unknown : ?
+TOKEN @2:18
+TOKEN @2:27
+IMPORT @3:1
+TOKEN @3:1
+MEMBER_SELECT @3:8 : ?
+MEMBER_SELECT @3:8 : ?
+IDENTIFIER @3:8 id java unknown : ?
+TOKEN @3:8
+TOKEN @3:12
+IDENTIFIER @3:13 id util unknown : ?
+TOKEN @3:13
+TOKEN @3:17
+IDENTIFIER @3:18 id Collection unknown : ?
+TOKEN @3:18
+TOKEN @3:28
+IMPORT @4:1
+TOKEN @4:1
+MEMBER_SELECT @4:8 : ?
+MEMBER_SELECT @4:8 : ?
+IDENTIFIER @4:8 id java unknown : ?
+TOKEN @4:8
+TOKEN @4:12
+IDENTIFIER @4:13 id util unknown : ?
+TOKEN @4:13
+TOKEN @4:17
+IDENTIFIER @4:18 id Comparator unknown : ?
+TOKEN @4:18
+TOKEN @4:28
+IMPORT @5:1
+TOKEN @5:1
+MEMBER_SELECT @5:8 : ?
+MEMBER_SELECT @5:8 : ?
+IDENTIFIER @5:8 id java unknown : ?
+TOKEN @5:8
+TOKEN @5:12
+IDENTIFIER @5:13 id util unknown : ?
+TOKEN @5:13
+TOKEN @5:17
+IDENTIFIER @5:18 id LinkedList unknown : ?
+TOKEN @5:18
+TOKEN @5:28
+IMPORT @6:1
+TOKEN @6:1
+MEMBER_SELECT @6:8 : ?
+MEMBER_SELECT @6:8 : ?
+IDENTIFIER @6:8 id java unknown : ?
+TOKEN @6:8
+TOKEN @6:12
+IDENTIFIER @6:13 id util unknown : ?
+TOKEN @6:13
+TOKEN @6:17
+IDENTIFIER @6:18 id List unknown : ?
+TOKEN @6:18
+TOKEN @6:22
+IMPORT @7:1
+TOKEN @7:1
+MEMBER_SELECT @7:8 : ?
+MEMBER_SELECT @7:8 : ?
+MEMBER_SELECT @7:8 : ?
+IDENTIFIER @7:8 id java unknown : ?
+TOKEN @7:8
+TOKEN @7:12
+IDENTIFIER @7:13 id util unknown : ?
+TOKEN @7:13
+TOKEN @7:17
+IDENTIFIER @7:18 id function unknown : ?
+TOKEN @7:18
+TOKEN @7:26
+IDENTIFIER @7:27 id Supplier unknown : ?
+TOKEN @7:27
+TOKEN @7:35
+CLASS @9:1 class .Conditionals [t package] : Conditionals super java.lang.Object interfaces []
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] members [<init>, casts, mix, switchTarget, unary, value] lookupToString 0 outermost Conditionals annotation false subtypeOf [java.lang.Object] superTypes [java.lang.Object] numerical false wrapper false raw true declaring Conditionals
+MODIFIERS
+TOKEN @9:1
+IDENTIFIER @9:7 id Conditionals .Conditionals [t package] : Conditionals : Conditionals
+TOKEN @9:7
+TYPE_PARAMETERS @9:19
+TOKEN @9:19
+TYPE_PARAMETER @9:20
+IDENTIFIER @9:20 id T Conditionals.T [t package] : T erasure java.lang.Number : T erasure java.lang.Number
+TOKEN @9:20
+TOKEN @9:22
+LIST @9:30
+IDENTIFIER @9:30 id Number java.lang.Number [t abstract public] : java.lang.Number : java.lang.Number
+TOKEN @9:30
+TOKEN @9:36
+LIST
+LIST
+TOKEN @9:38
+VARIABLE @11:3 var Conditionals.value [v package] : T erasure java.lang.Number
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local false parameter false effectivelyFinal false constant null
+MODIFIERS
+IDENTIFIER @11:3 id T Conditionals.T [t package] : T erasure java.lang.Number : T erasure java.lang.Number
+TOKEN @11:3
+IDENTIFIER @11:5 id value Conditionals.value [v package] : T erasure java.lang.Number : T erasure java.lang.Number
+TOKEN @11:5
+TOKEN @11:10
+METHOD @13:3 method Conditionals.mix [m package] : ? (boolean,int,long,java.lang.Integer,java.lang.Long,byte,short,char,double,java.lang.String,T erasure java.lang.Number,java.lang.Number,java.util.ArrayList<java.lang.String>,java.util.LinkedList<java.lang.String>) returns java.lang.Object throws [] sig Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [flag, i, l, boxed, boxedLong, b, s, c, d, text, t, n, arrayList, linkedList] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+IDENTIFIER @13:3 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @13:3
+IDENTIFIER @13:10 id mix Conditionals.mix [m package] : ? (boolean,int,long,java.lang.Integer,java.lang.Long,byte,short,char,double,java.lang.String,T erasure java.lang.Number,java.lang.Number,java.util.ArrayList<java.lang.String>,java.util.LinkedList<java.lang.String>) returns java.lang.Object throws [] sig Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; : java.lang.Object
+TOKEN @13:10
+TOKEN @13:13
+VARIABLE @13:14 var mix.flag [v package] : boolean
+  details declared true usages 25 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @13:14 : boolean
+TOKEN @13:14
+IDENTIFIER @13:22 id flag mix.flag [v package] : boolean : boolean
+TOKEN @13:22
+TOKEN @13:26
+VARIABLE @13:28 var mix.i [v package] : int
+  details declared true usages 6 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @13:28 : int
+TOKEN @13:28
+IDENTIFIER @13:32 id i mix.i [v package] : int : int
+TOKEN @13:32
+TOKEN @13:33
+VARIABLE @13:35 var mix.l [v package] : long
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @13:35 : long
+TOKEN @13:35
+IDENTIFIER @13:40 id l mix.l [v package] : long : long
+TOKEN @13:40
+TOKEN @13:41
+VARIABLE @13:43 var mix.boxed [v package] : java.lang.Integer
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+IDENTIFIER @13:43 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @13:43
+IDENTIFIER @13:51 id boxed mix.boxed [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @13:51
+TOKEN @13:56
+VARIABLE @13:58 var mix.boxedLong [v package] : java.lang.Long
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+IDENTIFIER @13:58 id Long java.lang.Long [t final public] : java.lang.Long : java.lang.Long
+TOKEN @13:58
+IDENTIFIER @13:63 id boxedLong mix.boxedLong [v package] : java.lang.Long : java.lang.Long
+TOKEN @13:63
+TOKEN @13:72
+VARIABLE @13:74 var mix.b [v package] : byte
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @13:74 : byte
+TOKEN @13:74
+IDENTIFIER @13:79 id b mix.b [v package] : byte : byte
+TOKEN @13:79
+TOKEN @13:80
+VARIABLE @13:82 var mix.s [v package] : short
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @13:82 : short
+TOKEN @13:82
+IDENTIFIER @13:88 id s mix.s [v package] : short : short
+TOKEN @13:88
+TOKEN @13:89
+VARIABLE @13:91 var mix.c [v package] : char
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @13:91 : char
+TOKEN @13:91
+IDENTIFIER @13:96 id c mix.c [v package] : char : char
+TOKEN @13:96
+TOKEN @13:97
+VARIABLE @13:99 var mix.d [v package] : double
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @13:99 : double
+TOKEN @13:99
+IDENTIFIER @13:106 id d mix.d [v package] : double : double
+TOKEN @13:106
+TOKEN @13:107
+VARIABLE @13:109 var mix.text [v package] : java.lang.String
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+IDENTIFIER @13:109 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @13:109
+IDENTIFIER @13:116 id text mix.text [v package] : java.lang.String : java.lang.String
+TOKEN @13:116
+TOKEN @13:120
+VARIABLE @13:122 var mix.t [v package] : T erasure java.lang.Number
+  details declared true usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+IDENTIFIER @13:122 id T Conditionals.T [t package] : T erasure java.lang.Number : T erasure java.lang.Number
+TOKEN @13:122
+IDENTIFIER @13:124 id t mix.t [v package] : T erasure java.lang.Number : T erasure java.lang.Number
+TOKEN @13:124
+TOKEN @13:125
+VARIABLE @13:127 var mix.n [v package] : java.lang.Number
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+IDENTIFIER @13:127 id Number java.lang.Number [t abstract public] : java.lang.Number : java.lang.Number
+TOKEN @13:127
+IDENTIFIER @13:134 id n mix.n [v package] : java.lang.Number : java.lang.Number
+TOKEN @13:134
+TOKEN @13:135
+VARIABLE @14:5 var mix.arrayList [v package] : java.util.ArrayList<java.lang.String>
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @14:5 : java.util.ArrayList<java.lang.String>
+IDENTIFIER @14:5 id ArrayList java.util.ArrayList [t public] : java.util.ArrayList<java.lang.String> : java.util.ArrayList<java.lang.String>
+TOKEN @14:5
+TYPE_ARGUMENTS @14:14
+TOKEN @14:14
+IDENTIFIER @14:15 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @14:15
+TOKEN @14:21
+IDENTIFIER @14:23 id arrayList mix.arrayList [v package] : java.util.ArrayList<java.lang.String> : java.util.ArrayList<java.lang.String>
+TOKEN @14:23
+TOKEN @14:32
+VARIABLE @14:34 var mix.linkedList [v package] : java.util.LinkedList<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @14:34 : java.util.LinkedList<java.lang.String>
+IDENTIFIER @14:34 id LinkedList java.util.LinkedList [t public] : java.util.LinkedList<java.lang.String> : java.util.LinkedList<java.lang.String>
+TOKEN @14:34
+TYPE_ARGUMENTS @14:44
+TOKEN @14:44
+IDENTIFIER @14:45 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @14:45
+TOKEN @14:51
+IDENTIFIER @14:53 id linkedList mix.linkedList [v package] : java.util.LinkedList<java.lang.String> : java.util.LinkedList<java.lang.String>
+TOKEN @14:53
+TOKEN @14:63
+BLOCK @14:65
+TOKEN @14:65
+VARIABLE @15:5 var mix.a1 [v package] : long
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @15:5 : long
+TOKEN @15:5
+IDENTIFIER @15:10 id a1 mix.a1 [v package] : long : long
+TOKEN @15:10
+TOKEN @15:13
+CONDITIONAL_EXPRESSION @15:15 : long
+IDENTIFIER @15:15 id flag mix.flag [v package] : boolean : boolean
+TOKEN @15:15
+TOKEN @15:20
+IDENTIFIER @15:22 id i mix.i [v package] : int : int
+TOKEN @15:22
+TOKEN @15:24
+IDENTIFIER @15:26 id l mix.l [v package] : long : long
+TOKEN @15:26
+TOKEN @15:27
+VARIABLE @16:5 var mix.a2 [v package] : int
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @16:5 : int
+TOKEN @16:5
+IDENTIFIER @16:9 id a2 mix.a2 [v package] : int : int
+TOKEN @16:9
+TOKEN @16:12
+CONDITIONAL_EXPRESSION @16:14 : int
+IDENTIFIER @16:14 id flag mix.flag [v package] : boolean : boolean
+TOKEN @16:14
+TOKEN @16:19
+IDENTIFIER @16:21 id i mix.i [v package] : int : int
+TOKEN @16:21
+TOKEN @16:23
+IDENTIFIER @16:25 id boxed mix.boxed [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @16:25
+TOKEN @16:30
+VARIABLE @17:5 var mix.a3 [v package] : java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+IDENTIFIER @17:5 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @17:5
+IDENTIFIER @17:12 id a3 mix.a3 [v package] : java.lang.Object : java.lang.Object
+TOKEN @17:12
+TOKEN @17:15
+CONDITIONAL_EXPRESSION @17:17 : long
+IDENTIFIER @17:17 id flag mix.flag [v package] : boolean : boolean
+TOKEN @17:17
+TOKEN @17:22
+IDENTIFIER @17:24 id boxed mix.boxed [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @17:24
+TOKEN @17:30
+IDENTIFIER @17:32 id boxedLong mix.boxedLong [v package] : java.lang.Long : java.lang.Long
+TOKEN @17:32
+TOKEN @17:41
+VARIABLE @18:5 var mix.a4 [v package] : short
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @18:5 : short
+TOKEN @18:5
+IDENTIFIER @18:11 id a4 mix.a4 [v package] : short : short
+TOKEN @18:11
+TOKEN @18:14
+CONDITIONAL_EXPRESSION @18:16 : short
+IDENTIFIER @18:16 id flag mix.flag [v package] : boolean : boolean
+TOKEN @18:16
+TOKEN @18:21
+IDENTIFIER @18:23 id b mix.b [v package] : byte : byte
+TOKEN @18:23
+TOKEN @18:25
+IDENTIFIER @18:27 id s mix.s [v package] : short : short
+TOKEN @18:27
+TOKEN @18:28
+VARIABLE @19:5 var mix.a5 [v package] : char
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @19:5 : char
+TOKEN @19:5
+IDENTIFIER @19:10 id a5 mix.a5 [v package] : char : char
+TOKEN @19:10
+TOKEN @19:13
+CONDITIONAL_EXPRESSION @19:15 : char
+IDENTIFIER @19:15 id flag mix.flag [v package] : boolean : boolean
+TOKEN @19:15
+TOKEN @19:20
+IDENTIFIER @19:22 id c mix.c [v package] : char : char
+TOKEN @19:22
+TOKEN @19:24
+INT_LITERAL @19:26 : int = 1
+TOKEN @19:26
+TOKEN @19:27
+VARIABLE @20:5 var mix.a6 [v package] : int
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @20:5 : int
+TOKEN @20:5
+IDENTIFIER @20:9 id a6 mix.a6 [v package] : int : int
+TOKEN @20:9
+TOKEN @20:12
+CONDITIONAL_EXPRESSION @20:14 : char
+IDENTIFIER @20:14 id flag mix.flag [v package] : boolean : boolean
+TOKEN @20:14
+TOKEN @20:19
+INT_LITERAL @20:21 : int = 1
+TOKEN @20:21
+TOKEN @20:23
+IDENTIFIER @20:25 id c mix.c [v package] : char : char
+TOKEN @20:25
+TOKEN @20:26
+VARIABLE @21:5 var mix.a7 [v package] : double
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @21:5 : double
+TOKEN @21:5
+IDENTIFIER @21:12 id a7 mix.a7 [v package] : double : double
+TOKEN @21:12
+TOKEN @21:15
+CONDITIONAL_EXPRESSION @21:17 : double
+IDENTIFIER @21:17 id flag mix.flag [v package] : boolean : boolean
+TOKEN @21:17
+TOKEN @21:22
+IDENTIFIER @21:24 id d mix.d [v package] : double : double
+TOKEN @21:24
+TOKEN @21:26
+IDENTIFIER @21:28 id i mix.i [v package] : int : int
+TOKEN @21:28
+TOKEN @21:29
+VARIABLE @22:5 var mix.a8 [v package] : java.lang.Integer
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+IDENTIFIER @22:5 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @22:5
+IDENTIFIER @22:13 id a8 mix.a8 [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @22:13
+TOKEN @22:16
+CONDITIONAL_EXPRESSION @22:18 : java.lang.Integer
+IDENTIFIER @22:18 id flag mix.flag [v package] : boolean : boolean
+TOKEN @22:18
+TOKEN @22:23
+NULL_LITERAL @22:25 : <nulltype>
+TOKEN @22:25
+TOKEN @22:30
+IDENTIFIER @22:32 id i mix.i [v package] : int : int
+TOKEN @22:32
+TOKEN @22:33
+VARIABLE @23:5 var mix.a9 [v package] : java.lang.Integer
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+IDENTIFIER @23:5 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @23:5
+IDENTIFIER @23:13 id a9 mix.a9 [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @23:13
+TOKEN @23:16
+CONDITIONAL_EXPRESSION @23:18 : java.lang.Integer
+IDENTIFIER @23:18 id flag mix.flag [v package] : boolean : boolean
+TOKEN @23:18
+TOKEN @23:23
+IDENTIFIER @23:25 id i mix.i [v package] : int : int
+TOKEN @23:25
+TOKEN @23:27
+NULL_LITERAL @23:29 : <nulltype>
+TOKEN @23:29
+TOKEN @23:33
+VARIABLE @24:5 var mix.a10 [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+IDENTIFIER @24:5 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @24:5
+IDENTIFIER @24:12 id a10 mix.a10 [v package] : java.lang.String : java.lang.String
+TOKEN @24:12
+TOKEN @24:16
+CONDITIONAL_EXPRESSION @24:18 : java.lang.String
+IDENTIFIER @24:18 id flag mix.flag [v package] : boolean : boolean
+TOKEN @24:18
+TOKEN @24:23
+NULL_LITERAL @24:25 : <nulltype>
+TOKEN @24:25
+TOKEN @24:30
+IDENTIFIER @24:32 id text mix.text [v package] : java.lang.String : java.lang.String
+TOKEN @24:32
+TOKEN @24:36
+VARIABLE @25:5 var mix.a11 [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+IDENTIFIER @25:5 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @25:5
+IDENTIFIER @25:12 id a11 mix.a11 [v package] : java.lang.String : java.lang.String
+TOKEN @25:12
+TOKEN @25:16
+CONDITIONAL_EXPRESSION @25:18 : java.lang.String
+IDENTIFIER @25:18 id flag mix.flag [v package] : boolean : boolean
+TOKEN @25:18
+TOKEN @25:23
+IDENTIFIER @25:25 id text mix.text [v package] : java.lang.String : java.lang.String
+TOKEN @25:25
+TOKEN @25:30
+NULL_LITERAL @25:32 : <nulltype>
+TOKEN @25:32
+TOKEN @25:36
+VARIABLE @26:5 var mix.a12 [v package] : java.lang.Number
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+IDENTIFIER @26:5 id Number java.lang.Number [t abstract public] : java.lang.Number : java.lang.Number
+TOKEN @26:5
+IDENTIFIER @26:12 id a12 mix.a12 [v package] : java.lang.Number : java.lang.Number
+TOKEN @26:12
+TOKEN @26:16
+CONDITIONAL_EXPRESSION @26:18 : java.lang.Number
+IDENTIFIER @26:18 id flag mix.flag [v package] : boolean : boolean
+TOKEN @26:18
+TOKEN @26:23
+IDENTIFIER @26:25 id t mix.t [v package] : T erasure java.lang.Number : T erasure java.lang.Number
+TOKEN @26:25
+TOKEN @26:27
+IDENTIFIER @26:29 id n mix.n [v package] : java.lang.Number : java.lang.Number
+TOKEN @26:29
+TOKEN @26:30
+VARIABLE @27:5 var mix.a13 [v package] : java.lang.Number
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+IDENTIFIER @27:5 id Number java.lang.Number [t abstract public] : java.lang.Number : java.lang.Number
+TOKEN @27:5
+IDENTIFIER @27:12 id a13 mix.a13 [v package] : java.lang.Number : java.lang.Number
+TOKEN @27:12
+TOKEN @27:16
+CONDITIONAL_EXPRESSION @27:18 : java.lang.Number
+IDENTIFIER @27:18 id flag mix.flag [v package] : boolean : boolean
+TOKEN @27:18
+TOKEN @27:23
+IDENTIFIER @27:25 id n mix.n [v package] : java.lang.Number : java.lang.Number
+TOKEN @27:25
+TOKEN @27:27
+IDENTIFIER @27:29 id t mix.t [v package] : T erasure java.lang.Number : T erasure java.lang.Number
+TOKEN @27:29
+TOKEN @27:30
+VARIABLE @28:5 var mix.a14 [v package] : java.util.List<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @28:5 : java.util.List<java.lang.String>
+IDENTIFIER @28:5 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @28:5
+TYPE_ARGUMENTS @28:9
+TOKEN @28:9
+IDENTIFIER @28:10 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @28:10
+TOKEN @28:16
+IDENTIFIER @28:18 id a14 mix.a14 [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @28:18
+TOKEN @28:22
+CONDITIONAL_EXPRESSION @28:24 : java.util.ArrayList<java.lang.String>
+IDENTIFIER @28:24 id flag mix.flag [v package] : boolean : boolean
+TOKEN @28:24
+TOKEN @28:29
+IDENTIFIER @28:31 id arrayList mix.arrayList [v package] : java.util.ArrayList<java.lang.String> : java.util.ArrayList<java.lang.String>
+TOKEN @28:31
+TOKEN @28:41
+IDENTIFIER @28:43 id linkedList mix.linkedList [v package] : java.util.LinkedList<java.lang.String> : java.util.LinkedList<java.lang.String>
+TOKEN @28:43
+TOKEN @28:53
+VARIABLE @29:5 var mix.a15 [v package] : java.util.Collection<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @29:5 : java.util.Collection<java.lang.String>
+IDENTIFIER @29:5 id Collection java.util.Collection [t public interface] : java.util.Collection<java.lang.String> : java.util.Collection<java.lang.String>
+TOKEN @29:5
+TYPE_ARGUMENTS @29:15
+TOKEN @29:15
+IDENTIFIER @29:16 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @29:16
+TOKEN @29:22
+IDENTIFIER @29:24 id a15 mix.a15 [v package] : java.util.Collection<java.lang.String> : java.util.Collection<java.lang.String>
+TOKEN @29:24
+TOKEN @29:28
+CONDITIONAL_EXPRESSION @29:30 : java.util.List
+IDENTIFIER @29:30 id flag mix.flag [v package] : boolean : boolean
+TOKEN @29:30
+TOKEN @29:35
+IDENTIFIER @29:37 id arrayList mix.arrayList [v package] : java.util.ArrayList<java.lang.String> : java.util.ArrayList<java.lang.String>
+TOKEN @29:37
+TOKEN @29:47
+METHOD_INVOCATION @29:49 call List.of [m static public] : ? () returns java.util.List throws [] sig java.util.List#of()Ljava/util/List; : java.util.List
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @29:49 : ?
+IDENTIFIER @29:49 id List java.util.List [t public interface] : java.util.List : java.util.List
+TOKEN @29:49
+TOKEN @29:53
+IDENTIFIER @29:54 id of List.of [m static public] : ? () returns java.util.List throws [] sig java.util.List#of()Ljava/util/List; : java.util.List
+TOKEN @29:54
+ARGUMENTS @29:56
+TOKEN @29:56
+TOKEN @29:57
+TOKEN @29:58
+VARIABLE @30:5 var mix.a16 [v package] : java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+IDENTIFIER @30:5 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @30:5
+IDENTIFIER @30:12 id a16 mix.a16 [v package] : java.lang.Object : java.lang.Object
+TOKEN @30:12
+TOKEN @30:16
+CONDITIONAL_EXPRESSION @30:18 : java.lang.String
+IDENTIFIER @30:18 id flag mix.flag [v package] : boolean : boolean
+TOKEN @30:18
+TOKEN @30:23
+IDENTIFIER @30:25 id text mix.text [v package] : java.lang.String : java.lang.String
+TOKEN @30:25
+TOKEN @30:30
+IDENTIFIER @30:32 id i mix.i [v package] : int : int
+TOKEN @30:32
+TOKEN @30:33
+VARIABLE @31:5 var mix.a17 [v package] : boolean
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @31:5 : boolean
+TOKEN @31:5
+IDENTIFIER @31:13 id a17 mix.a17 [v package] : boolean : boolean
+TOKEN @31:13
+TOKEN @31:17
+CONDITIONAL_EXPRESSION @31:19 : boolean
+IDENTIFIER @31:19 id flag mix.flag [v package] : boolean : boolean
+TOKEN @31:19
+TOKEN @31:24
+IDENTIFIER @31:26 id flag mix.flag [v package] : boolean : boolean
+TOKEN @31:26
+TOKEN @31:31
+LOGICAL_COMPLEMENT @31:33 : boolean
+TOKEN @31:33
+IDENTIFIER @31:34 id flag mix.flag [v package] : boolean : boolean
+TOKEN @31:34
+TOKEN @31:38
+VARIABLE @32:5 var mix.a18 [v package] : java.lang.Boolean
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+IDENTIFIER @32:5 id Boolean java.lang.Boolean [t final public] : java.lang.Boolean : java.lang.Boolean
+TOKEN @32:5
+IDENTIFIER @32:13 id a18 mix.a18 [v package] : java.lang.Boolean : java.lang.Boolean
+TOKEN @32:13
+TOKEN @32:17
+CONDITIONAL_EXPRESSION @32:19 : boolean
+IDENTIFIER @32:19 id flag mix.flag [v package] : boolean : boolean
+TOKEN @32:19
+TOKEN @32:24
+MEMBER_SELECT @32:26 : java.lang.Boolean = true
+IDENTIFIER @32:26 id Boolean java.lang.Boolean [t final public] : java.lang.Boolean : java.lang.Boolean
+TOKEN @32:26
+TOKEN @32:33
+IDENTIFIER @32:34 id TRUE Boolean.TRUE [v static final public] : java.lang.Boolean : java.lang.Boolean = true
+TOKEN @32:34
+TOKEN @32:39
+IDENTIFIER @32:41 id flag mix.flag [v package] : boolean : boolean
+TOKEN @32:41
+TOKEN @32:45
+VARIABLE @33:5 var mix.a19 [v package] : java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+IDENTIFIER @33:5 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @33:5
+IDENTIFIER @33:12 id a19 mix.a19 [v package] : java.lang.Object : java.lang.Object
+TOKEN @33:12
+TOKEN @33:16
+CONDITIONAL_EXPRESSION @33:18 : int
+IDENTIFIER @33:18 id flag mix.flag [v package] : boolean : boolean
+TOKEN @33:18
+TOKEN @33:23
+IDENTIFIER @33:25 id b mix.b [v package] : byte : byte
+TOKEN @33:25
+TOKEN @33:27
+IDENTIFIER @33:29 id c mix.c [v package] : char : char
+TOKEN @33:29
+TOKEN @33:30
+VARIABLE @34:5 var mix.a20 [v package] : T erasure java.lang.Number
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+IDENTIFIER @34:5 id T Conditionals.T [t package] : T erasure java.lang.Number : T erasure java.lang.Number
+TOKEN @34:5
+IDENTIFIER @34:7 id a20 mix.a20 [v package] : T erasure java.lang.Number : T erasure java.lang.Number
+TOKEN @34:7
+TOKEN @34:11
+CONDITIONAL_EXPRESSION @34:13 : T erasure java.lang.Number
+IDENTIFIER @34:13 id flag mix.flag [v package] : boolean : boolean
+TOKEN @34:13
+TOKEN @34:18
+IDENTIFIER @34:20 id t mix.t [v package] : T erasure java.lang.Number : T erasure java.lang.Number
+TOKEN @34:20
+TOKEN @34:22
+IDENTIFIER @34:24 id value Conditionals.value [v package] : T erasure java.lang.Number : T erasure java.lang.Number
+TOKEN @34:24
+TOKEN @34:29
+VARIABLE @35:5 var mix.a21 [v package] : java.util.List<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @35:5 : java.util.List<java.lang.String>
+IDENTIFIER @35:5 id List java.util.List [t public interface] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @35:5
+TYPE_ARGUMENTS @35:9
+TOKEN @35:9
+IDENTIFIER @35:10 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @35:10
+TOKEN @35:16
+IDENTIFIER @35:18 id a21 mix.a21 [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @35:18
+TOKEN @35:22
+CONDITIONAL_EXPRESSION @35:24 : java.util.ArrayList
+IDENTIFIER @35:24 id flag mix.flag [v package] : boolean : boolean
+TOKEN @35:24
+TOKEN @35:29
+NEW_CLASS @35:31 new ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ArrayList flags [public] overridden [AbstractList.<init>[], AbstractCollection.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @35:31
+PARAMETERIZED_TYPE @35:35 : java.util.ArrayList
+IDENTIFIER @35:35 id ArrayList ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+TOKEN @35:35
+TYPE_ARGUMENTS @35:44
+TOKEN @35:44
+TOKEN @35:45
+ARGUMENTS @35:46
+TOKEN @35:46
+TOKEN @35:47
+TOKEN @35:49
+NEW_CLASS @35:51 new LinkedList.<init> [m public] : ? () returns void throws [] sig java.util.LinkedList#<init>()V : java.util.LinkedList
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing LinkedList flags [public] overridden [AbstractSequentialList.<init>[], AbstractList.<init>[], AbstractCollection.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @35:51
+PARAMETERIZED_TYPE @35:55 : java.util.LinkedList
+IDENTIFIER @35:55 id LinkedList LinkedList.<init> [m public] : ? () returns void throws [] sig java.util.LinkedList#<init>()V : java.util.LinkedList
+TOKEN @35:55
+TYPE_ARGUMENTS @35:65
+TOKEN @35:65
+TOKEN @35:66
+ARGUMENTS @35:67
+TOKEN @35:67
+TOKEN @35:68
+TOKEN @35:69
+VARIABLE @36:5 var mix.a22 [v package] : java.util.function.Supplier<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner mix Conditionals#mix(ZIJLjava/lang/Integer;Ljava/lang/Long;BSCDLjava/lang/String;Ljava/lang/Number;Ljava/lang/Number;Ljava/util/ArrayList;Ljava/util/LinkedList;)Ljava/lang/Object; [package] returns java.lang.Object parameters 14 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse14falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @36:5 : java.util.function.Supplier<java.lang.String>
+IDENTIFIER @36:5 id Supplier java.util.function.Supplier [t public interface] : java.util.function.Supplier<java.lang.String> : java.util.function.Supplier<java.lang.String>
+TOKEN @36:5
+TYPE_ARGUMENTS @36:13
+TOKEN @36:13
+IDENTIFIER @36:14 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @36:14
+TOKEN @36:20
+IDENTIFIER @36:22 id a22 mix.a22 [v package] : java.util.function.Supplier<java.lang.String> : java.util.function.Supplier<java.lang.String>
+TOKEN @36:22
+TOKEN @36:26
+CONDITIONAL_EXPRESSION @36:28 : ?
+IDENTIFIER @36:28 id flag mix.flag [v package] : boolean : boolean
+TOKEN @36:28
+TOKEN @36:33
+LAMBDA_EXPRESSION @36:35 : ?
+TOKEN @36:35
+TOKEN @36:36
+TOKEN @36:38
+STRING_LITERAL @36:41 : java.lang.String = a
+TOKEN @36:41
+TOKEN @36:45
+METHOD_REFERENCE @36:47 : ?
+IDENTIFIER @36:47 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @36:47
+TOKEN @36:53
+IDENTIFIER @36:55 id new unknown : ?
+TOKEN @36:55
+TOKEN @36:58
+RETURN_STATEMENT @37:5
+TOKEN @37:5
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : java.lang.String
+PLUS @37:12 : long
+IDENTIFIER @37:12 id a1 mix.a1 [v package] : long : long
+TOKEN @37:12
+TOKEN @37:15
+IDENTIFIER @37:17 id a2 mix.a2 [v package] : int : int
+TOKEN @37:17
+TOKEN @37:20
+METHOD_INVOCATION @37:22 call String.valueOf [m static public] : ? (java.lang.Object) returns java.lang.String throws [] sig java.lang.String#valueOf(Ljava/lang/Object;)Ljava/lang/String; : java.lang.String
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @37:22 : ?
+IDENTIFIER @37:22 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @37:22
+TOKEN @37:28
+IDENTIFIER @37:29 id valueOf String.valueOf [m static public] : ? (java.lang.Object) returns java.lang.String throws [] sig java.lang.String#valueOf(Ljava/lang/Object;)Ljava/lang/String; : java.lang.String
+TOKEN @37:29
+ARGUMENTS @37:36
+TOKEN @37:36
+IDENTIFIER @37:37 id a3 mix.a3 [v package] : java.lang.Object : java.lang.Object
+TOKEN @37:37
+TOKEN @37:39
+TOKEN @37:41
+IDENTIFIER @37:43 id a4 mix.a4 [v package] : short : short
+TOKEN @37:43
+TOKEN @37:46
+IDENTIFIER @37:48 id a5 mix.a5 [v package] : char : char
+TOKEN @37:48
+TOKEN @37:51
+IDENTIFIER @37:53 id a6 mix.a6 [v package] : int : int
+TOKEN @37:53
+TOKEN @37:56
+IDENTIFIER @37:58 id a7 mix.a7 [v package] : double : double
+TOKEN @37:58
+TOKEN @37:61
+IDENTIFIER @37:63 id a8 mix.a8 [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @37:63
+TOKEN @37:66
+IDENTIFIER @37:68 id a9 mix.a9 [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @37:68
+TOKEN @37:71
+IDENTIFIER @37:73 id a10 mix.a10 [v package] : java.lang.String : java.lang.String
+TOKEN @37:73
+TOKEN @37:77
+IDENTIFIER @37:79 id a11 mix.a11 [v package] : java.lang.String : java.lang.String
+TOKEN @37:79
+TOKEN @37:83
+IDENTIFIER @37:85 id a12 mix.a12 [v package] : java.lang.Number : java.lang.Number
+TOKEN @37:85
+TOKEN @37:89
+IDENTIFIER @37:91 id a13 mix.a13 [v package] : java.lang.Number : java.lang.Number
+TOKEN @37:91
+TOKEN @37:95
+IDENTIFIER @37:97 id a14 mix.a14 [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @37:97
+TOKEN @37:101
+IDENTIFIER @37:103 id a15 mix.a15 [v package] : java.util.Collection<java.lang.String> : java.util.Collection<java.lang.String>
+TOKEN @37:103
+TOKEN @37:107
+IDENTIFIER @37:109 id a16 mix.a16 [v package] : java.lang.Object : java.lang.Object
+TOKEN @37:109
+TOKEN @37:113
+IDENTIFIER @37:115 id a17 mix.a17 [v package] : boolean : boolean
+TOKEN @37:115
+TOKEN @37:119
+IDENTIFIER @37:121 id a18 mix.a18 [v package] : java.lang.Boolean : java.lang.Boolean
+TOKEN @37:121
+TOKEN @37:125
+IDENTIFIER @37:127 id a19 mix.a19 [v package] : java.lang.Object : java.lang.Object
+TOKEN @37:127
+TOKEN @37:131
+IDENTIFIER @37:133 id a20 mix.a20 [v package] : T erasure java.lang.Number : T erasure java.lang.Number
+TOKEN @37:133
+TOKEN @37:137
+IDENTIFIER @37:139 id a21 mix.a21 [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
+TOKEN @37:139
+TOKEN @37:143
+IDENTIFIER @37:145 id a22 mix.a22 [v package] : java.util.function.Supplier<java.lang.String> : java.util.function.Supplier<java.lang.String>
+TOKEN @37:145
+TOKEN @37:148
+TOKEN @38:3
+METHOD @40:3 method Conditionals.casts [m package] : ? (java.lang.Object) returns java.lang.Object throws [] sig Conditionals#casts(Ljava/lang/Object;)Ljava/lang/Object; overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [o] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+IDENTIFIER @40:3 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @40:3
+IDENTIFIER @40:10 id casts Conditionals.casts [m package] : ? (java.lang.Object) returns java.lang.Object throws [] sig Conditionals#casts(Ljava/lang/Object;)Ljava/lang/Object; : java.lang.Object
+TOKEN @40:10
+TOKEN @40:15
+VARIABLE @40:16 var casts.o [v package] : java.lang.Object
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner casts Conditionals#casts(Ljava/lang/Object;)Ljava/lang/Object; [package] returns java.lang.Object parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @40:16 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @40:16
+IDENTIFIER @40:23 id o casts.o [v package] : java.lang.Object : java.lang.Object
+TOKEN @40:23
+TOKEN @40:24
+BLOCK @40:26
+TOKEN @40:26
+VARIABLE @41:5 var casts.task [v package] : java.lang.Runnable
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner casts Conditionals#casts(Ljava/lang/Object;)Ljava/lang/Object; [package] returns java.lang.Object parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @41:5 id Runnable java.lang.Runnable [t public interface] : java.lang.Runnable : java.lang.Runnable
+TOKEN @41:5
+IDENTIFIER @41:14 id task casts.task [v package] : java.lang.Runnable : java.lang.Runnable
+TOKEN @41:14
+TOKEN @41:19
+TYPE_CAST @41:21 : java.io.Serializable & java.lang.Runnable
+TOKEN @41:21
+IDENTIFIER @41:22 id Runnable java.lang.Runnable [t public interface] : java.lang.Runnable : java.lang.Runnable
+TOKEN @41:22
+TOKEN @41:31
+LIST @41:33
+IDENTIFIER @41:33 id Serializable java.io.Serializable [t public interface] : java.io.Serializable : java.io.Serializable
+TOKEN @41:33
+TOKEN @41:45
+LAMBDA_EXPRESSION @41:47 : ?
+TOKEN @41:47
+TOKEN @41:48
+TOKEN @41:50
+METHOD_INVOCATION @41:53 call PrintStream.println [m public] : ? (java.lang.String) returns void throws [] sig java.io.PrintStream#println(Ljava/lang/String;)V : void
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing PrintStream flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @41:53 : ?
+MEMBER_SELECT @41:53 : java.io.PrintStream
+IDENTIFIER @41:53 id System java.lang.System [t final public] : java.lang.System : java.lang.System
+TOKEN @41:53
+TOKEN @41:59
+IDENTIFIER @41:60 id out System.out [v static final public] : java.io.PrintStream : java.io.PrintStream
+TOKEN @41:60
+TOKEN @41:63
+IDENTIFIER @41:64 id println PrintStream.println [m public] : ? (java.lang.String) returns void throws [] sig java.io.PrintStream#println(Ljava/lang/String;)V : void
+TOKEN @41:64
+ARGUMENTS @41:71
+TOKEN @41:71
+STRING_LITERAL @41:72 : java.lang.String = task
+TOKEN @41:72
+TOKEN @41:78
+TOKEN @41:79
+VARIABLE @42:5 var casts.comparator [v package] : java.util.Comparator<java.lang.String>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner casts Conditionals#casts(Ljava/lang/Object;)Ljava/lang/Object; [package] returns java.lang.Object parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @42:5 : java.util.Comparator<java.lang.String>
+IDENTIFIER @42:5 id Comparator java.util.Comparator [t public interface] : java.util.Comparator<java.lang.String> : java.util.Comparator<java.lang.String>
+TOKEN @42:5
+TYPE_ARGUMENTS @42:15
+TOKEN @42:15
+IDENTIFIER @42:16 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @42:16
+TOKEN @42:22
+IDENTIFIER @42:24 id comparator casts.comparator [v package] : java.util.Comparator<java.lang.String> : java.util.Comparator<java.lang.String>
+TOKEN @42:24
+TOKEN @42:35
+TYPE_CAST @42:37 : java.io.Serializable & java.util.Comparator
+TOKEN @42:37
+PARAMETERIZED_TYPE @42:38 : java.util.Comparator<java.lang.String>
+IDENTIFIER @42:38 id Comparator java.util.Comparator [t public interface] : java.util.Comparator<java.lang.String> : java.util.Comparator<java.lang.String>
+TOKEN @42:38
+TYPE_ARGUMENTS @42:48
+TOKEN @42:48
+IDENTIFIER @42:49 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @42:49
+TOKEN @42:55
+TOKEN @42:57
+LIST @42:59
+IDENTIFIER @42:59 id Serializable java.io.Serializable [t public interface] : java.io.Serializable : java.io.Serializable
+TOKEN @42:59
+TOKEN @42:71
+LAMBDA_EXPRESSION @42:73 : ?
+TOKEN @42:73
+VARIABLE @42:74 var casts(java.lang.Object)$lambda$42:72.x [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner casts(java.lang.Object)$lambda$42:72 Conditionals#casts(java.lang.Object)$lambda$42:72()Ljava/lang/Object; [package] returns ? parameters 0 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+MODIFIERS
+INFERED_TYPE
+IDENTIFIER @42:74 id x casts(java.lang.Object)$lambda$42:72.x [v package] : java.lang.String : java.lang.String
+TOKEN @42:74
+TOKEN @42:75
+VARIABLE @42:77 var casts(java.lang.Object)$lambda$42:72.y [v package] : java.lang.String
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner casts(java.lang.Object)$lambda$42:72 Conditionals#casts(java.lang.Object)$lambda$42:72()Ljava/lang/Object; [package] returns ? parameters 0 thrown 0 overridden 0 declared false usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse0falsefalse
+MODIFIERS
+INFERED_TYPE
+IDENTIFIER @42:77 id y casts(java.lang.Object)$lambda$42:72.y [v package] : java.lang.String : java.lang.String
+TOKEN @42:77
+TOKEN @42:78
+TOKEN @42:80
+MINUS @42:83 : int
+METHOD_INVOCATION @42:83 call String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [CharSequence.length[]] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @42:83 : ?
+IDENTIFIER @42:83 id x casts(java.lang.Object)$lambda$42:72.x [v package] : java.lang.String : java.lang.String
+TOKEN @42:83
+TOKEN @42:84
+IDENTIFIER @42:85 id length String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
+TOKEN @42:85
+ARGUMENTS @42:91
+TOKEN @42:91
+TOKEN @42:92
+TOKEN @42:94
+METHOD_INVOCATION @42:96 call String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing String flags [public] overridden [CharSequence.length[]] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @42:96 : ?
+IDENTIFIER @42:96 id y casts(java.lang.Object)$lambda$42:72.y [v package] : java.lang.String : java.lang.String
+TOKEN @42:96
+TOKEN @42:97
+IDENTIFIER @42:98 id length String.length [m public] : ? () returns int throws [] sig java.lang.String#length()I : int
+TOKEN @42:98
+ARGUMENTS @42:104
+TOKEN @42:104
+TOKEN @42:105
+TOKEN @42:106
+VARIABLE @43:5 var casts.intersection [v package] : java.lang.Object
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner casts Conditionals#casts(Ljava/lang/Object;)Ljava/lang/Object; [package] returns java.lang.Object parameters 1 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse1falsefalse
+MODIFIERS
+IDENTIFIER @43:5 id Object java.lang.Object [t public] : java.lang.Object : java.lang.Object
+TOKEN @43:5
+IDENTIFIER @43:12 id intersection casts.intersection [v package] : java.lang.Object : java.lang.Object
+TOKEN @43:12
+TOKEN @43:25
+TYPE_CAST @43:27 : java.io.Serializable & java.lang.Comparable
+TOKEN @43:27
+IDENTIFIER @43:28 id Serializable java.io.Serializable [t public interface] : java.io.Serializable : java.io.Serializable
+TOKEN @43:28
+TOKEN @43:41
+LIST @43:43
+PARAMETERIZED_TYPE @43:43 : java.lang.Comparable<java.lang.String>
+IDENTIFIER @43:43 id Comparable java.lang.Comparable [t public interface] : java.lang.Comparable<java.lang.String> : java.lang.Comparable<java.lang.String>
+TOKEN @43:43
+TYPE_ARGUMENTS @43:53
+TOKEN @43:53
+IDENTIFIER @43:54 id String java.lang.String [t final public] : java.lang.String : java.lang.String
+TOKEN @43:54
+TOKEN @43:60
+TOKEN @43:61
+IDENTIFIER @43:63 id o casts.o [v package] : java.lang.Object : java.lang.Object
+TOKEN @43:63
+TOKEN @43:64
+RETURN_STATEMENT @44:5
+TOKEN @44:5
+SWITCH_EXPRESSION @44:12 : ?
+TOKEN @44:12
+TOKEN @44:19
+METHOD_INVOCATION @44:20 call Object.hashCode [m public] : ? () returns int throws [] sig java.lang.Object#hashCode()I : int
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Object flags [public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @44:20 : ?
+IDENTIFIER @44:20 id o casts.o [v package] : java.lang.Object : java.lang.Object
+TOKEN @44:20
+TOKEN @44:21
+IDENTIFIER @44:22 id hashCode Object.hashCode [m public] : ? () returns int throws [] sig java.lang.Object#hashCode()I : int
+TOKEN @44:22
+ARGUMENTS @44:30
+TOKEN @44:30
+TOKEN @44:31
+TOKEN @44:32
+TOKEN @44:34
+CASE_GROUP @45:7
+CASE_LABEL @45:7
+TOKEN @45:7
+INT_LITERAL @45:12 : int = 0
+TOKEN @45:12
+TOKEN @45:14
+YIELD_STATEMENT @45:17
+IDENTIFIER @45:17 id task casts.task [v package] : java.lang.Runnable : java.lang.Runnable
+TOKEN @45:17
+TOKEN @45:21
+CASE_GROUP @46:7
+CASE_LABEL @46:7
+TOKEN @46:7
+INT_LITERAL @46:12 : int = 1
+TOKEN @46:12
+TOKEN @46:14
+YIELD_STATEMENT @46:17
+IDENTIFIER @46:17 id comparator casts.comparator [v package] : java.util.Comparator<java.lang.String> : java.util.Comparator<java.lang.String>
+TOKEN @46:17
+TOKEN @46:27
+CASE_GROUP @47:7
+CASE_LABEL @47:7
+TOKEN @47:7
+TOKEN @47:15
+YIELD_STATEMENT @47:18
+IDENTIFIER @47:18 id intersection casts.intersection [v package] : java.lang.Object : java.lang.Object
+TOKEN @47:18
+TOKEN @47:30
+TOKEN @48:5
+TOKEN @48:6
+TOKEN @49:3
+METHOD @51:3 method Conditionals.switchTarget [m package] : ? (int,T erasure java.lang.Number) returns java.lang.Number throws [] sig Conditionals#switchTarget(ILjava/lang/Number;)Ljava/lang/Number; overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [k, t] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+IDENTIFIER @51:3 id Number java.lang.Number [t abstract public] : java.lang.Number : java.lang.Number
+TOKEN @51:3
+IDENTIFIER @51:10 id switchTarget Conditionals.switchTarget [m package] : ? (int,T erasure java.lang.Number) returns java.lang.Number throws [] sig Conditionals#switchTarget(ILjava/lang/Number;)Ljava/lang/Number; : java.lang.Number
+TOKEN @51:10
+TOKEN @51:22
+VARIABLE @51:23 var switchTarget.k [v package] : int
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner switchTarget Conditionals#switchTarget(ILjava/lang/Number;)Ljava/lang/Number; [package] returns java.lang.Number parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @51:23 : int
+TOKEN @51:23
+IDENTIFIER @51:27 id k switchTarget.k [v package] : int : int
+TOKEN @51:27
+TOKEN @51:28
+VARIABLE @51:30 var switchTarget.t [v package] : T erasure java.lang.Number
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner switchTarget Conditionals#switchTarget(ILjava/lang/Number;)Ljava/lang/Number; [package] returns java.lang.Number parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+IDENTIFIER @51:30 id T Conditionals.T [t package] : T erasure java.lang.Number : T erasure java.lang.Number
+TOKEN @51:30
+IDENTIFIER @51:32 id t switchTarget.t [v package] : T erasure java.lang.Number : T erasure java.lang.Number
+TOKEN @51:32
+TOKEN @51:33
+BLOCK @51:35
+TOKEN @51:35
+VARIABLE @52:5 var switchTarget.result [v package] : java.lang.Number
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner switchTarget Conditionals#switchTarget(ILjava/lang/Number;)Ljava/lang/Number; [package] returns java.lang.Number parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+IDENTIFIER @52:5 id Number java.lang.Number [t abstract public] : java.lang.Number : java.lang.Number
+TOKEN @52:5
+IDENTIFIER @52:12 id result switchTarget.result [v package] : java.lang.Number : java.lang.Number
+TOKEN @52:12
+TOKEN @52:19
+SWITCH_EXPRESSION @52:21 : java.lang.Number
+TOKEN @52:21
+TOKEN @52:28
+IDENTIFIER @52:29 id k switchTarget.k [v package] : int : int
+TOKEN @52:29
+TOKEN @52:30
+TOKEN @52:32
+CASE_GROUP @53:7
+CASE_LABEL @53:7
+TOKEN @53:7
+INT_LITERAL @53:12 : int = 0
+TOKEN @53:12
+TOKEN @53:14
+YIELD_STATEMENT @53:17
+INT_LITERAL @53:17 : int = 1
+TOKEN @53:17
+TOKEN @53:18
+CASE_GROUP @54:7
+CASE_LABEL @54:7
+TOKEN @54:7
+INT_LITERAL @54:12 : int = 1
+TOKEN @54:12
+TOKEN @54:14
+YIELD_STATEMENT @54:17
+LONG_LITERAL @54:17 : long = 2
+TOKEN @54:17
+TOKEN @54:19
+CASE_GROUP @55:7
+CASE_LABEL @55:7
+TOKEN @55:7
+TOKEN @55:15
+YIELD_STATEMENT @55:18
+IDENTIFIER @55:18 id t switchTarget.t [v package] : T erasure java.lang.Number : T erasure java.lang.Number
+TOKEN @55:18
+TOKEN @55:19
+TOKEN @56:5
+TOKEN @56:6
+VARIABLE @57:5 var switchTarget.numbers [v package] : java.util.List<java.lang.Number>
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner switchTarget Conditionals#switchTarget(ILjava/lang/Number;)Ljava/lang/Number; [package] returns java.lang.Number parameters 2 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse2falsefalse
+MODIFIERS
+PARAMETERIZED_TYPE @57:5 : java.util.List<java.lang.Number>
+IDENTIFIER @57:5 id List java.util.List [t public interface] : java.util.List<java.lang.Number> : java.util.List<java.lang.Number>
+TOKEN @57:5
+TYPE_ARGUMENTS @57:9
+TOKEN @57:9
+EXTENDS_WILDCARD @57:10
+TOKEN @57:10
+TOKEN @57:12
+IDENTIFIER @57:20 id Number java.lang.Number [t abstract public] : java.lang.Number : java.lang.Number
+TOKEN @57:20
+TOKEN @57:26
+IDENTIFIER @57:28 id numbers switchTarget.numbers [v package] : java.util.List<java.lang.Number> : java.util.List<java.lang.Number>
+TOKEN @57:28
+TOKEN @57:36
+SWITCH_EXPRESSION @57:38 : java.util.List<java.lang.Number>
+TOKEN @57:38
+TOKEN @57:45
+IDENTIFIER @57:46 id k switchTarget.k [v package] : int : int
+TOKEN @57:46
+TOKEN @57:47
+TOKEN @57:49
+CASE_GROUP @58:7
+CASE_LABEL @58:7
+TOKEN @58:7
+INT_LITERAL @58:12 : int = 0
+TOKEN @58:12
+TOKEN @58:14
+YIELD_STATEMENT @58:17
+METHOD_INVOCATION @58:17 call List.of [m static public] : ? (java.lang.Integer) returns java.util.List throws [] sig java.util.List#of(Ljava/lang/Object;)Ljava/util/List; : java.util.List
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+MEMBER_SELECT @58:17 : ?
+IDENTIFIER @58:17 id List java.util.List [t public interface] : java.util.List : java.util.List
+TOKEN @58:17
+TOKEN @58:21
+IDENTIFIER @58:22 id of List.of [m static public] : ? (java.lang.Integer) returns java.util.List throws [] sig java.util.List#of(Ljava/lang/Object;)Ljava/util/List; : java.util.List
+TOKEN @58:22
+ARGUMENTS @58:24
+TOKEN @58:24
+INT_LITERAL @58:25 : int = 1
+TOKEN @58:25
+TOKEN @58:26
+TOKEN @58:27
+CASE_GROUP @59:7
+CASE_LABEL @59:7
+TOKEN @59:7
+TOKEN @59:15
+YIELD_STATEMENT @59:18
+NEW_CLASS @59:18 new ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList<java.lang.Double>
+  details declared false usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ArrayList flags [public] overridden [AbstractList.<init>[], AbstractCollection.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+TOKEN @59:18
+PARAMETERIZED_TYPE @59:22 : java.util.ArrayList<java.lang.Double>
+IDENTIFIER @59:22 id ArrayList ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList<java.lang.Double>
+TOKEN @59:22
+TYPE_ARGUMENTS @59:31
+TOKEN @59:31
+IDENTIFIER @59:32 id Double java.lang.Double [t final public] : java.lang.Double : java.lang.Double
+TOKEN @59:32
+TOKEN @59:38
+ARGUMENTS @59:39
+TOKEN @59:39
+TOKEN @59:40
+TOKEN @59:41
+TOKEN @60:5
+TOKEN @60:6
+RETURN_STATEMENT @61:5
+TOKEN @61:5
+PLUS @61:12 : int
+METHOD_INVOCATION @61:12 call Number.intValue [m abstract public] : ? () returns int throws [] sig java.lang.Number#intValue()I : int
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Number flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @61:12 : ?
+IDENTIFIER @61:12 id result switchTarget.result [v package] : java.lang.Number : java.lang.Number
+TOKEN @61:12
+TOKEN @61:18
+IDENTIFIER @61:19 id intValue Number.intValue [m abstract public] : ? () returns int throws [] sig java.lang.Number#intValue()I : int
+TOKEN @61:19
+ARGUMENTS @61:27
+TOKEN @61:27
+TOKEN @61:28
+TOKEN @61:30
+METHOD_INVOCATION @61:32 call List.size [m abstract public] : ? () returns int throws [] sig java.util.List#size()I : int
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [abstract, public] overridden [Collection.size[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+MEMBER_SELECT @61:32 : ?
+IDENTIFIER @61:32 id numbers switchTarget.numbers [v package] : java.util.List<java.lang.Number> : java.util.List<java.lang.Number>
+TOKEN @61:32
+TOKEN @61:39
+IDENTIFIER @61:40 id size List.size [m abstract public] : ? () returns int throws [] sig java.util.List#size()I : int
+TOKEN @61:40
+ARGUMENTS @61:44
+TOKEN @61:44
+TOKEN @61:45
+TOKEN @61:46
+TOKEN @62:3
+METHOD @64:3 method Conditionals.unary [m package] : ? (byte,short,char,java.lang.Integer) returns int throws [] sig Conditionals#unary(BSCLjava/lang/Integer;)I overrides false
+  details declared true usages 0 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [b, s, c, boxed] parameterMetadata []
+MODIFIERS
+TYPE_PARAMETERS
+PRIMITIVE_TYPE @64:3 : int
+TOKEN @64:3
+IDENTIFIER @64:7 id unary Conditionals.unary [m package] : ? (byte,short,char,java.lang.Integer) returns int throws [] sig Conditionals#unary(BSCLjava/lang/Integer;)I : int
+TOKEN @64:7
+TOKEN @64:12
+VARIABLE @64:13 var unary.b [v package] : byte
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal false constant null owner unary Conditionals#unary(BSCLjava/lang/Integer;)I [package] returns int parameters 4 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @64:13 : byte
+TOKEN @64:13
+IDENTIFIER @64:18 id b unary.b [v package] : byte : byte
+TOKEN @64:18
+TOKEN @64:19
+VARIABLE @64:21 var unary.s [v package] : short
+  details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal false constant null owner unary Conditionals#unary(BSCLjava/lang/Integer;)I [package] returns int parameters 4 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @64:21 : short
+TOKEN @64:21
+IDENTIFIER @64:27 id s unary.s [v package] : short : short
+TOKEN @64:27
+TOKEN @64:28
+VARIABLE @64:30 var unary.c [v package] : char
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner unary Conditionals#unary(BSCLjava/lang/Integer;)I [package] returns int parameters 4 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @64:30 : char
+TOKEN @64:30
+IDENTIFIER @64:35 id c unary.c [v package] : char : char
+TOKEN @64:35
+TOKEN @64:36
+VARIABLE @64:38 var unary.boxed [v package] : java.lang.Integer
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter true effectivelyFinal true constant null owner unary Conditionals#unary(BSCLjava/lang/Integer;)I [package] returns int parameters 4 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+IDENTIFIER @64:38 id Integer java.lang.Integer [t final public] : java.lang.Integer : java.lang.Integer
+TOKEN @64:38
+IDENTIFIER @64:46 id boxed unary.boxed [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @64:46
+TOKEN @64:51
+BLOCK @64:53
+TOKEN @64:53
+VARIABLE @65:5 var unary.x [v package] : int
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner unary Conditionals#unary(BSCLjava/lang/Integer;)I [package] returns int parameters 4 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @65:5 : int
+TOKEN @65:5
+IDENTIFIER @65:9 id x unary.x [v package] : int : int
+TOKEN @65:9
+TOKEN @65:11
+PLUS @65:13 : int
+PLUS @65:13 : int
+UNARY_MINUS @65:13 : int
+TOKEN @65:13
+IDENTIFIER @65:14 id b unary.b [v package] : byte : byte
+TOKEN @65:14
+TOKEN @65:16
+BITWISE_COMPLEMENT @65:18 : int
+TOKEN @65:18
+IDENTIFIER @65:19 id s unary.s [v package] : short : short
+TOKEN @65:19
+TOKEN @65:21
+UNARY_PLUS @65:23 : int
+TOKEN @65:23
+IDENTIFIER @65:24 id c unary.c [v package] : char : char
+TOKEN @65:24
+TOKEN @65:25
+VARIABLE @66:5 var unary.y [v package] : int
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner unary Conditionals#unary(BSCLjava/lang/Integer;)I [package] returns int parameters 4 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @66:5 : int
+TOKEN @66:5
+IDENTIFIER @66:9 id y unary.y [v package] : int : int
+TOKEN @66:9
+TOKEN @66:11
+UNARY_MINUS @66:13 : int
+TOKEN @66:13
+IDENTIFIER @66:14 id boxed unary.boxed [v package] : java.lang.Integer : java.lang.Integer
+TOKEN @66:14
+TOKEN @66:19
+VARIABLE @67:5 var unary.z [v package] : long
+  details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Conditionals flags [package] local true parameter false effectivelyFinal true constant null owner unary Conditionals#unary(BSCLjava/lang/Integer;)I [package] returns int parameters 4 thrown 0 overridden 0 declared true usages 0 metadata 0 enclosing Conditionals type true kinds truefalsefalse other falsefalsefalsefalsetruefalse4falsefalse
+MODIFIERS
+PRIMITIVE_TYPE @67:5 : long
+TOKEN @67:5
+IDENTIFIER @67:10 id z unary.z [v package] : long : long
+TOKEN @67:10
+TOKEN @67:12
+UNARY_MINUS @67:14 : long = -1
+TOKEN @67:14
+LONG_LITERAL @67:15 : long = 1
+TOKEN @67:15
+TOKEN @67:17
+RETURN_STATEMENT @68:5
+TOKEN @68:5
+PLUS @68:12 : int
+PLUS @68:12 : int
+PLUS @68:12 : int
+PLUS @68:12 : int
+IDENTIFIER @68:12 id x unary.x [v package] : int : int
+TOKEN @68:12
+TOKEN @68:14
+IDENTIFIER @68:16 id y unary.y [v package] : int : int
+TOKEN @68:16
+TOKEN @68:18
+TYPE_CAST @68:20 : int
+TOKEN @68:20
+PRIMITIVE_TYPE @68:21 : int
+TOKEN @68:21
+LIST
+TOKEN @68:24
+IDENTIFIER @68:26 id z unary.z [v package] : long : long
+TOKEN @68:26
+TOKEN @68:28
+PARENTHESIZED_EXPRESSION @68:30 : byte
+TOKEN @68:30
+POSTFIX_INCREMENT @68:31 : byte
+IDENTIFIER @68:31 id b unary.b [v package] : byte : byte
+TOKEN @68:31
+TOKEN @68:32
+TOKEN @68:34
+TOKEN @68:36
+PARENTHESIZED_EXPRESSION @68:38 : short
+TOKEN @68:38
+PREFIX_DECREMENT @68:39 : short
+TOKEN @68:39
+IDENTIFIER @68:41 id s unary.s [v package] : short : short
+TOKEN @68:41
+TOKEN @68:42
+TOKEN @68:43
+TOKEN @69:3
+TOKEN @70:1
+TOKEN @71:1
