@@ -156,6 +156,20 @@ class FactTypesTest {
     assertThat(types.typeFromName("p.A::`").isTypeVar()).isFalse();
     assertThat(types.typeFromName("p.A::`x").isTypeVar()).isFalse();
     assertThat(types.typeFromName("int[]").fullyQualifiedName()).isEqualTo("int[]");
+    assertThat(types.typeFromName("java::p.G`1::`0[]")).satisfies(array -> {
+      assertThat(array.isArray()).isTrue();
+      assertThat(((Type.ArrayType) array).elementType().name()).isEqualTo("E");
+    });
+  }
+
+  @Test
+  void array_terms_are_the_arrays_of_their_element() {
+    assertThat(types.typeFromName("java::byte[]").fullyQualifiedName()).isEqualTo("byte[]");
+    assertThat(types.typeFromName("java::int[][]").fullyQualifiedName()).isEqualTo("int[][]");
+    assertThat(types.typeFromName("java::java.lang.String[]").fullyQualifiedName()).isEqualTo("java.lang.String[]");
+    assertThat(types.typeFromName("java::java.util.List`1[]").fullyQualifiedName()).isEqualTo("java.util.List[]");
+    assertThat(types.typeFromName("java::byte[]")).isEqualTo(types.typeFromName("byte[]"));
+    assertThat(types.typeFromName("java::{a1b2}").isUnknown()).isTrue();
   }
 
   @Test
