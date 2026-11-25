@@ -30,10 +30,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.diagnostics.ProblemKind;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -48,8 +52,19 @@ import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.semsitter.CastChecks.assignedTo;
+import static org.sonar.java.semsitter.CastChecks.castMessage;
+import static org.sonar.java.semsitter.CastChecks.elementType;
+import static org.sonar.java.semsitter.CastChecks.isIndexedArray;
+import static org.sonar.java.semsitter.CastChecks.isResultOfArgumentLambda;
+import static org.sonar.java.semsitter.CastChecks.isWideningPrimitiveCast;
+import static org.sonar.java.semsitter.CastChecks.promotionInput;
+import static org.sonar.java.semsitter.CastChecks.sameOperandTypes;
 import static org.sonar.java.semsitter.ImportScopes.declaredIn;
 import static org.sonar.java.semsitter.ImportScopes.denotesType;
 import static org.sonar.java.semsitter.ImportScopes.dotted;
@@ -70,13 +85,16 @@ final class CompilerWarnings extends BaseTreeVisitor {
 
   private static final Pattern JAVA_NAME = Pattern.compile("[\\p{L}_$][\\p{L}\\p{N}_$]*");
 
-  static final Set<ProblemKind> SUPPORTED_KINDS = Collections.unmodifiableSet(EnumSet.of(ProblemKind.UNUSED_IMPORT, ProblemKind.ASSIGNMENT_HAS_NO_EFFECT));
+  static final Set<ProblemKind> SUPPORTED_KINDS = Collections.unmodifiableSet(
+    EnumSet.of(ProblemKind.UNUSED_IMPORT, ProblemKind.REDUNDANT_CAST, ProblemKind.ASSIGNMENT_HAS_NO_EFFECT, ProblemKind.MASKED_CATCH));
 
   private final Map<ProblemKind, Set<JWarning>> warnings = new EnumMap<>(ProblemKind.class);
 
   private final List<IdentifierTree> identifiers = new ArrayList<>();
 
   private final Set<String> javadocNames = new HashSet<>();
+
+  private final List<TryStatementTree> tries = new ArrayList<>();
 
   private final JSema sema;
 
@@ -92,6 +110,7 @@ final class CompilerWarnings extends BaseTreeVisitor {
     unit.imports().forEach(visitor::scan);
     visitor.collectJavadocNames(unit);
     visitor.reportUnusedImports(unit);
+    visitor.reportUnreachableCatches(unit);
     unit.addWarnings(visitor.warnings);
   }
 
@@ -130,6 +149,107 @@ final class CompilerWarnings extends BaseTreeVisitor {
     scan(tree.expression());
     scan(tree.typeArguments());
     scan(tree.method().annotations());
+  }
+
+  @Override
+  public void visitTypeCast(org.sonar.plugins.java.api.tree.TypeCastTree tree) {
+    Type cast = tree.type().symbolType();
+    Type operand = tree.expression().symbolType();
+    boolean widening = !cast.isUnknown() && !operand.isUnknown() && operand.isSubtypeOf(cast) && CastChecks.satisfiesBounds(tree, operand)
+      && sema.substitution().preservesArguments(operand, cast) && !CastChecks.changesTypeFor(tree, operand, sema.substitution())
+      && !isResultOfArgumentLambda(tree);
+    boolean identity = widening && cast.erasure().fullyQualifiedName().equals(operand.erasure().fullyQualifiedName())
+      && elementType(cast).typeArguments().isEmpty() == elementType(operand).typeArguments().isEmpty();
+    boolean acceptedAsIs = !cast.isUnknown() && !operand.isUnknown() && !CastChecks.changesTypeFor(tree, operand, sema.substitution())
+      && CastChecks.castKeepsValue(operand, cast, sema.substitution())
+      && assignedTo(tree).filter(target -> !target.isUnknown() && (!cast.isPrimitive() || target.isPrimitive())
+        && CastChecks.isAssignable(operand, target, sema.substitution())).isPresent();
+    if (identity || acceptedAsIs || (widening && cast.isArray() && isIndexedArray(tree))) {
+      String target = CastChecks.intersectionName(java.util.stream.Stream.concat(java.util.stream.Stream.of(tree.type()), tree.bounds().stream())
+        .map(TypeTree::symbolType).toList());
+      add(ProblemKind.REDUNDANT_CAST, "Unnecessary cast from " + CastChecks.displayName(operand) + " to " + target, tree);
+    }
+    super.visitTypeCast(tree);
+    scan(tree.bounds());
+  }
+
+  /**
+   * A widening primitive cast on an operand is unnecessary when the operator promotes the operands to the same types without it
+   * (all casts of the expression are removed together).
+   */
+  @Override
+  public void visitBinaryExpression(BinaryExpressionTree tree) {
+    ExpressionTree left = ExpressionUtils.skipParentheses(tree.leftOperand());
+    ExpressionTree right = ExpressionUtils.skipParentheses(tree.rightOperand());
+    boolean leftCast = isWideningPrimitiveCast(left);
+    boolean rightCast = isWideningPrimitiveCast(right);
+    if (leftCast || rightCast) {
+      String leftType = promotionInput(left, leftCast);
+      String rightType = promotionInput(right, rightCast);
+      if (leftType != null && rightType != null && sameOperandTypes(tree.kind(), leftType, rightType, left, right)) {
+        if (leftCast) {
+          add(ProblemKind.REDUNDANT_CAST, castMessage(left), left);
+        }
+        if (rightCast) {
+          add(ProblemKind.REDUNDANT_CAST, castMessage(right), right);
+        }
+      }
+    }
+    super.visitBinaryExpression(tree);
+  }
+
+  @Override
+  public void visitTryStatement(TryStatementTree tree) {
+    tries.add(tree);
+    super.visitTryStatement(tree);
+  }
+
+  /** Flow analysis is not done for a unit that has unresolved names. */
+  private void reportUnreachableCatches(JavaTree.CompilationUnitTreeImpl unit) {
+    String currentPackage = unit.packageDeclaration() == null ? "" : dotted(unit.packageDeclaration().packageName());
+    boolean unresolved = identifiers.stream().anyMatch(identifier -> identifier.symbol().isUnknown() && !isUnnamed(identifier))
+      || unit.imports().stream().anyMatch(clause -> clause instanceof ImportTree tree && !isResolvable(tree, dotted(tree.qualifiedIdentifier()), currentPackage));
+    if (!unresolved) {
+      tries.forEach(this::reportUnreachableCatches);
+    }
+  }
+
+  private static boolean isUnnamed(IdentifierTree identifier) {
+    return identifier instanceof IdentifierTreeImpl impl && impl.isUnnamedVariable();
+  }
+
+  /** A catch of a checked exception that nothing left over by the previous catches can reach. */
+  private void reportUnreachableCatches(TryStatementTree tree) {
+    ThrownTypes body = new ThrownTypes();
+    body.scanTry(tree.resourceList(), tree.block());
+    if (body.unknown) {
+      return;
+    }
+    List<Type> remaining = new ArrayList<>(body.thrown);
+    for (CatchTree catchTree : tree.catches()) {
+      TypeTree parameterType = catchTree.parameter().type();
+      List<TypeTree> alternatives = parameterType instanceof UnionTypeTree union ? union.typeAlternatives() : List.of(parameterType);
+      List<Type> handled = new ArrayList<>();
+      for (TypeTree alternative : alternatives) {
+        Type type = alternative.symbolType();
+        if (type.isUnknown()) {
+          return;
+        }
+        handled.add(type);
+        if (isCheckedException(type) && remaining.stream().noneMatch(thrown -> thrown.isSubtypeOf(type) || type.isSubtypeOf(thrown))) {
+          String message = "Unreachable catch block for " + type.name()
+            + ". Only more specific exceptions are thrown and they are handled by previous catch block(s).";
+          add(ProblemKind.MASKED_CATCH, message, alternative);
+        }
+      }
+      remaining.removeIf(thrown -> handled.stream().anyMatch(thrown::isSubtypeOf));
+    }
+  }
+
+  /** Neither unchecked nor a supertype of the unchecked ones. */
+  private static boolean isCheckedException(Type type) {
+    return type.isClass() && type.isSubtypeOf("java.lang.Throwable") && !type.isSubtypeOf("java.lang.RuntimeException") && !type.isSubtypeOf("java.lang.Error")
+      && !type.is("java.lang.Exception") && !type.is("java.lang.Throwable");
   }
 
   @Override
