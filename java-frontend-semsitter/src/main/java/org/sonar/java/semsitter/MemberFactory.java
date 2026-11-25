@@ -19,8 +19,10 @@ package org.sonar.java.semsitter;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -49,6 +51,8 @@ final class MemberFactory {
 
   private final JSema sema;
   final Set<String> creating = new HashSet<>();
+  private final Map<Symbol.TypeSymbol, JInitializerBlockSymbol> initializerBlockSymbols = new HashMap<>();
+  private final Map<Symbol.TypeSymbol, JInitializerBlockSymbol> staticInitializerBlockSymbols = new HashMap<>();
 
   MemberFactory(JSema sema) {
     this.sema = sema;
@@ -350,6 +354,14 @@ final class MemberFactory {
     }
     symbol.memberFacts(members);
     symbol.unknown(false);
+  }
+
+  JInitializerBlockSymbol initializerBlockSymbol(JTypeSymbol owner) {
+    return initializerBlockSymbols.computeIfAbsent(owner, k -> new JInitializerBlockSymbol(k, false));
+  }
+
+  JInitializerBlockSymbol staticInitializerBlockSymbol(JTypeSymbol owner) {
+    return staticInitializerBlockSymbols.computeIfAbsent(owner, k -> new JInitializerBlockSymbol(k, true));
   }
 
   /** The unknown type a written name stands for when nothing declares it. */
