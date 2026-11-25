@@ -1144,9 +1144,9 @@ TOKEN @81:17
 IDENTIFIER @81:19 id lengths edges.lengths [v package] : java.util.List<java.lang.Integer> : java.util.List<java.lang.Integer>
 TOKEN @81:19
 TOKEN @81:27
-METHOD_INVOCATION @81:29 call GenericEdges.mapAll [m static package] : ? (java.util.Collection<java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.List<R erasure java.lang.Object> throws [] sig GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; : java.util.List<R erasure java.lang.Object>
+METHOD_INVOCATION @81:29 call GenericEdges.mapAll [m static package] : ? (java.util.Collection<java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.List<java.lang.Integer> throws [] sig GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; : java.util.List<java.lang.Integer>
   details declared true usages 2 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing GenericEdges flags [static, package] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [input, mapper] parameterMetadata []
-IDENTIFIER @81:29 id mapAll GenericEdges.mapAll [m static package] : ? (java.util.Collection<java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.List<R erasure java.lang.Object> throws [] sig GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; : java.util.List<R erasure java.lang.Object>
+IDENTIFIER @81:29 id mapAll GenericEdges.mapAll [m static package] : ? (java.util.Collection<java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.List<java.lang.Integer> throws [] sig GenericEdges#mapAll(Ljava/util/Collection;Ljava/util/function/Function;)Ljava/util/List; : java.util.List<java.lang.Integer>
 TOKEN @81:29
 ARGUMENTS @81:35
 TOKEN @81:35
@@ -1309,7 +1309,7 @@ TOKEN @84:24
 IDENTIFIER @84:26 id counts edges.counts [v package] : java.util.Map<java.lang.String,java.lang.Integer> : java.util.Map<java.lang.String,java.lang.Integer>
 TOKEN @84:26
 TOKEN @84:33
-METHOD_INVOCATION @84:35 call Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.util.Map<java.lang.String,java.lang.Integer>
+METHOD_INVOCATION @84:35 call Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.util.Map<!capture! erasure java.lang.Object,java.lang.Integer> throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.util.Map<java.lang.String,java.lang.Integer>
   details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Stream flags [abstract, public] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @84:35 : ?
 METHOD_INVOCATION @84:35 call Collection.stream [m public] : ? () returns java.util.stream.Stream<java.lang.String> throws [] sig java.util.Collection#stream()Ljava/util/stream/Stream; : java.util.stream.Stream<java.lang.String>
@@ -1324,17 +1324,17 @@ ARGUMENTS @84:49
 TOKEN @84:49
 TOKEN @84:50
 TOKEN @84:51
-IDENTIFIER @84:52 id collect Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.lang.Object throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.lang.Object
+IDENTIFIER @84:52 id collect Stream.collect [m abstract public] : ? (java.util.stream.Collector<java.lang.Object,A erasure java.lang.Object,R erasure java.lang.Object>) returns java.util.Map<!capture! erasure java.lang.Object,java.lang.Integer> throws [] sig java.util.stream.Stream#collect(Ljava/util/stream/Collector;)Ljava/lang/Object; : java.util.Map<!capture! erasure java.lang.Object,java.lang.Integer>
 TOKEN @84:52
 ARGUMENTS @84:59
 TOKEN @84:59
-METHOD_INVOCATION @84:60 call Collectors.toMap [m static public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>,java.util.function.BinaryOperator) returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#toMap(Ljava/util/function/Function;Ljava/util/function/Function;Ljava/util/function/BinaryOperator;)Ljava/util/stream/Collector; : java.util.stream.Collector
+METHOD_INVOCATION @84:60 call Collectors.toMap [m static public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>,java.util.function.BinaryOperator) returns java.util.stream.Collector<!capture! erasure java.lang.Object,!capture! erasure java.lang.Object,java.util.Map<!capture! erasure java.lang.Object,java.lang.Integer>> throws [] sig java.util.stream.Collectors#toMap(Ljava/util/function/Function;Ljava/util/function/Function;Ljava/util/function/BinaryOperator;)Ljava/util/stream/Collector; : java.util.stream.Collector<!capture! erasure java.lang.Object,!capture! erasure java.lang.Object,java.util.Map<!capture! erasure java.lang.Object,java.lang.Integer>>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Collectors flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [arg0, arg1, arg2] parameterMetadata []
 MEMBER_SELECT @84:60 : ?
 IDENTIFIER @84:60 id Collectors java.util.stream.Collectors [t final public] : java.util.stream.Collectors : java.util.stream.Collectors
 TOKEN @84:60
 TOKEN @84:70
-IDENTIFIER @84:71 id toMap Collectors.toMap [m static public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>,java.util.function.BinaryOperator) returns java.util.stream.Collector throws [] sig java.util.stream.Collectors#toMap(Ljava/util/function/Function;Ljava/util/function/Function;Ljava/util/function/BinaryOperator;)Ljava/util/stream/Collector; : java.util.stream.Collector
+IDENTIFIER @84:71 id toMap Collectors.toMap [m static public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>,java.util.function.Function<java.lang.Object,java.lang.Object>,java.util.function.BinaryOperator) returns java.util.stream.Collector<!capture! erasure java.lang.Object,!capture! erasure java.lang.Object,java.util.Map<!capture! erasure java.lang.Object,java.lang.Integer>> throws [] sig java.util.stream.Collectors#toMap(Ljava/util/function/Function;Ljava/util/function/Function;Ljava/util/function/BinaryOperator;)Ljava/util/stream/Collector; : java.util.stream.Collector<!capture! erasure java.lang.Object,!capture! erasure java.lang.Object,java.util.Map<!capture! erasure java.lang.Object,java.lang.Integer>>
 TOKEN @84:71
 ARGUMENTS @84:76
 TOKEN @84:76

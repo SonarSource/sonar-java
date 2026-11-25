@@ -383,13 +383,13 @@ TOKEN @32:14
 IDENTIFIER @32:16 id mapped Generics.mapped [v package] : Generics$Box<java.lang.Integer> : Generics$Box<java.lang.Integer>
 TOKEN @32:16
 TOKEN @32:23
-METHOD_INVOCATION @32:25 call Box.map [m package] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns Generics$Box<R erasure java.lang.Object> throws [] sig Generics$Box#map(Ljava/util/function/Function;)LGenerics$Box; : Generics$Box<R erasure java.lang.Object>
+METHOD_INVOCATION @32:25 call Box.map [m package] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns Generics$Box<java.lang.Integer> throws [] sig Generics$Box#map(Ljava/util/function/Function;)LGenerics$Box; : Generics$Box<java.lang.Integer>
   details declared true usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Box flags [package] overridden [] overridable true generic true default false synchronized false varargs false native false parameters [mapper] parameterMetadata []
 MEMBER_SELECT @32:25 : ?
 IDENTIFIER @32:25 id box Generics.box [v package] : Generics$Box<java.lang.String> : Generics$Box<java.lang.String>
 TOKEN @32:25
 TOKEN @32:28
-IDENTIFIER @32:29 id map Box.map [m package] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns Generics$Box<R erasure java.lang.Object> throws [] sig Generics$Box#map(Ljava/util/function/Function;)LGenerics$Box; : Generics$Box<R erasure java.lang.Object>
+IDENTIFIER @32:29 id map Box.map [m package] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns Generics$Box<java.lang.Integer> throws [] sig Generics$Box#map(Ljava/util/function/Function;)LGenerics$Box; : Generics$Box<java.lang.Integer>
 TOKEN @32:29
 ARGUMENTS @32:32
 TOKEN @32:32
@@ -512,7 +512,7 @@ TOKEN @37:18
 IDENTIFIER @37:20 id maybe Generics.maybe [v package] : java.util.Optional<java.lang.String> : java.util.Optional<java.lang.String>
 TOKEN @37:20
 TOKEN @37:26
-METHOD_INVOCATION @37:28 call Optional.map [m public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.Optional<U erasure java.lang.Object> throws [] sig java.util.Optional#map(Ljava/util/function/Function;)Ljava/util/Optional; : java.util.Optional<U erasure java.lang.Object>
+METHOD_INVOCATION @37:28 call Optional.map [m public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.Optional<java.lang.String> throws [] sig java.util.Optional#map(Ljava/util/function/Function;)Ljava/util/Optional; : java.util.Optional<java.lang.String>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Optional flags [public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @37:28 : ?
 METHOD_INVOCATION @37:28 call Optional.of [m static public] : ? (java.lang.String) returns java.util.Optional<java.lang.String> throws [] sig java.util.Optional#of(Ljava/lang/Object;)Ljava/util/Optional; : java.util.Optional<java.lang.String>
@@ -529,7 +529,7 @@ STRING_LITERAL @37:40 : java.lang.String = x
 TOKEN @37:40
 TOKEN @37:43
 TOKEN @37:44
-IDENTIFIER @37:45 id map Optional.map [m public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.Optional<U erasure java.lang.Object> throws [] sig java.util.Optional#map(Ljava/util/function/Function;)Ljava/util/Optional; : java.util.Optional<U erasure java.lang.Object>
+IDENTIFIER @37:45 id map Optional.map [m public] : ? (java.util.function.Function<java.lang.Object,java.lang.Object>) returns java.util.Optional<java.lang.String> throws [] sig java.util.Optional#map(Ljava/util/function/Function;)Ljava/util/Optional; : java.util.Optional<java.lang.String>
 TOKEN @37:45
 ARGUMENTS @37:48
 TOKEN @37:48
