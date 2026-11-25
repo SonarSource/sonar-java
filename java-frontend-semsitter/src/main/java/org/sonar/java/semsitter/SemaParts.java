@@ -30,8 +30,8 @@ final class SemaParts {
 
   SemaParts(JSema sema) {
     annotationFacts = new SemaAnnotations(sema);
-    inference = new Inference();
-    functionalInference = new FunctionalInference();
+    inference = new Inference(sema);
+    functionalInference = new FunctionalInference(sema);
     substitution = new Substitution(sema);
     libraryMembers = new LibraryMembers(sema);
     memberFactory = new MemberFactory(sema);
