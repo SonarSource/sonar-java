@@ -23,7 +23,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalysisProgress;
-import org.sonar.java.jdt.JDTParser;
 import org.sonar.plugins.java.api.JavaVersion;
 
 public interface JParser {
@@ -39,7 +38,7 @@ public interface JParser {
     }
 
     public JParser create(JavaVersion javaVersion, List<File> classpath, boolean shouldIgnoreUnnamedModuleForSplitPackage, boolean shouldUseJdkReleaseOption) {
-      return JDTParser.create(this, javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage, shouldUseJdkReleaseOption);
+      return JParserProviders.create(this, javaVersion, classpath, shouldIgnoreUnnamedModuleForSplitPackage, shouldUseJdkReleaseOption);
     }
   }
 
