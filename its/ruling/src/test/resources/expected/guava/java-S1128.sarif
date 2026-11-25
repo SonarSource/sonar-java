@@ -17,6 +17,30 @@
       "kind" : "fail",
       "level" : "warning",
       "message" : {
+        "text" : "Remove this unused import 'com.google.common.collect.Multiset.Entry'."
+      },
+      "locations" : [ {
+        "id" : -1,
+        "physicalLocation" : {
+          "artifactLocation" : {
+            "uri" : "guava:src/com/google/common/collect/ImmutableMultiset.java",
+            "index" : -1
+          },
+          "region" : {
+            "startLine" : 23,
+            "startColumn" : 8,
+            "endLine" : 23,
+            "endColumn" : 48
+          }
+        }
+      } ],
+      "rank" : -1.0
+    }, {
+      "ruleId" : "java:S1128",
+      "ruleIndex" : -1,
+      "kind" : "fail",
+      "level" : "warning",
+      "message" : {
         "text" : "Remove this unused import 'com.google.errorprone.annotations.ForOverride'."
       },
       "locations" : [ {
