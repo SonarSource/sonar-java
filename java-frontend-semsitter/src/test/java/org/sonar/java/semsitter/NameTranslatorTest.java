@@ -54,6 +54,25 @@ class NameTranslatorTest {
     assertThat(describe(unit, "List")).isNotEmpty().allMatch(description -> description.endsWith(" java.util.List"));
   }
 
+  @Test
+  void an_unresolved_name_is_the_field_a_static_import_brings_in() {
+    Predicate<Node> imported = REFERENCE.and(text("PI").or(text("E")).or(text("SECONDS")).or(text("radius")));
+    CompilationUnitTree unit = translate(mutate(recorded("StaticImports"), where(imported, TranslationStateFixtures::unresolved)), 21);
+
+    assertThat(describe(unit, "PI")).isNotEmpty().containsOnly("Math.PI double");
+    assertThat(describe(unit, "E")).isNotEmpty().containsOnly("Math.E double");
+    assertThat(describe(unit, "SECONDS")).isNotEmpty().containsOnly("TimeUnit.SECONDS java.util.concurrent.TimeUnit");
+    assertThat(describe(unit, "radius")).contains(".!unknown! !Unknown!");
+  }
+
+  @Test
+  void an_unresolved_name_is_the_field_of_its_enclosing_type_first() {
+    Predicate<Node> count = REFERENCE.and(text("count"));
+    CompilationUnitTree unit = translate(mutate(recorded("corpus/IteratorNextExceptionCheckSample"), where(count, TranslationStateFixtures::unresolved)), 21);
+
+    assertThat(describe(unit, "count")).hasSize(3).containsOnly("IteratorNextExceptionCheckSampleO.count int");
+  }
+
   private static List<String> describe(CompilationUnitTree unit, String name) {
     return all(unit, IdentifierTree.class).stream()
       .filter(identifier -> name.equals(identifier.name()) && identifier.identifierToken().range().start().line() > 4)

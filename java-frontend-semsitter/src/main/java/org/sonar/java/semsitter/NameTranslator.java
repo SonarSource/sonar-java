@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.KeywordSuper;
@@ -79,6 +80,9 @@ final class NameTranslator extends TranslatorPart {
       if (type != null) {
         bindType(identifier, type);
       }
+    }
+    if (!state.naming && identifier.symbol().isUnknown() && node.unresolved() && !"type_identifier".equals(node.k())) {
+      unresolvedField(identifier);
     }
     if (!state.naming && "type_identifier".equals(node.k())) {
       preferSingleImport(identifier);
@@ -165,6 +169,28 @@ final class NameTranslator extends TranslatorPart {
     state.imports.onDemandImports.forEach(prefix -> candidates.add(prefix + "." + name));
     candidates.add("java.lang." + name);
     return candidates.stream().filter(sema::declaresType).findFirst().orElse(null);
+  }
+
+  /**
+   * A name SemSitter left unresolved, looked up as a field of the enclosing types first, since a declared or inherited
+   * field shadows a static import, then as a static field a static import, single or on demand, brings in.
+   */
+  private void unresolvedField(IdentifierTreeImpl identifier) {
+    String name = identifier.name();
+    List<String> imported = new ArrayList<>();
+    String single = state.imports.staticImports.get(name);
+    if (single != null) {
+      imported.add(single);
+    }
+    imported.addAll(state.imports.staticOnDemandImports);
+    Stream<Symbol.VariableSymbol> members = state.types.stream().filter(type -> !type.isUnknown())
+      .map(type -> sema.lookup().declaredField(type.type().fullyQualifiedName(), name));
+    Stream<Symbol.VariableSymbol> imports = imported.stream().map(owner -> sema.lookup().declaredField(owner, name))
+      .filter(field -> field != null && field.isStatic());
+    Stream.concat(members, imports).filter(Objects::nonNull).findFirst().ifPresent(field -> {
+      bind(identifier, field);
+      ascribe(identifier, field.type());
+    });
   }
 
   private void resolveQualifiedType(ExpressionTree qualifier, IdentifierTreeImpl identifier) {
