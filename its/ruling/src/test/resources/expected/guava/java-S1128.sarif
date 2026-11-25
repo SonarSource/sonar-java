@@ -17,78 +17,6 @@
       "kind" : "fail",
       "level" : "warning",
       "message" : {
-        "text" : "Remove this unused import 'java.util.Map.Entry'."
-      },
-      "locations" : [ {
-        "id" : -1,
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "guava:src/com/google/common/cache/LocalCache.java",
-            "index" : -1
-          },
-          "region" : {
-            "startLine" : 67,
-            "startColumn" : 8,
-            "endLine" : 67,
-            "endColumn" : 27
-          }
-        }
-      } ],
-      "rank" : -1.0
-    }, {
-      "ruleId" : "java:S1128",
-      "ruleIndex" : -1,
-      "kind" : "fail",
-      "level" : "warning",
-      "message" : {
-        "text" : "Remove this unused import 'java.util.Map.Entry'."
-      },
-      "locations" : [ {
-        "id" : -1,
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "guava:src/com/google/common/collect/ArrayTable.java",
-            "index" : -1
-          },
-          "region" : {
-            "startLine" : 36,
-            "startColumn" : 8,
-            "endLine" : 36,
-            "endColumn" : 27
-          }
-        }
-      } ],
-      "rank" : -1.0
-    }, {
-      "ruleId" : "java:S1128",
-      "ruleIndex" : -1,
-      "kind" : "fail",
-      "level" : "warning",
-      "message" : {
-        "text" : "Remove this unused import 'java.util.Map.Entry'."
-      },
-      "locations" : [ {
-        "id" : -1,
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "guava:src/com/google/common/collect/DenseImmutableTable.java",
-            "index" : -1
-          },
-          "region" : {
-            "startLine" : 24,
-            "startColumn" : 8,
-            "endLine" : 24,
-            "endColumn" : 27
-          }
-        }
-      } ],
-      "rank" : -1.0
-    }, {
-      "ruleId" : "java:S1128",
-      "ruleIndex" : -1,
-      "kind" : "fail",
-      "level" : "warning",
-      "message" : {
         "text" : "Remove this unused import 'com.google.common.collect.Multiset.Entry'."
       },
       "locations" : [ {
@@ -103,30 +31,6 @@
             "startColumn" : 8,
             "endLine" : 23,
             "endColumn" : 48
-          }
-        }
-      } ],
-      "rank" : -1.0
-    }, {
-      "ruleId" : "java:S1128",
-      "ruleIndex" : -1,
-      "kind" : "fail",
-      "level" : "warning",
-      "message" : {
-        "text" : "Remove this unused import 'com.google.common.collect.Table.Cell'."
-      },
-      "locations" : [ {
-        "id" : -1,
-        "physicalLocation" : {
-          "artifactLocation" : {
-            "uri" : "guava:src/com/google/common/collect/RegularImmutableTable.java",
-            "index" : -1
-          },
-          "region" : {
-            "startLine" : 20,
-            "startColumn" : 8,
-            "endLine" : 20,
-            "endColumn" : 44
           }
         }
       } ],

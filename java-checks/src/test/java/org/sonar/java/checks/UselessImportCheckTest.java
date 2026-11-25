@@ -95,9 +95,31 @@ class UselessImportCheckTest {
   }
 
   @Test
+  void types_hidden_by_non_public_member_types_in_the_release_api() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/UselessImportCheck/HiddenMemberTypes.java"))
+      .withCheck(new UselessImportCheck())
+      .withJavaVersion(17)
+      .verifyIssues();
+
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/UselessImportCheck/HiddenMemberTypes.java"))
+      .withCheck(new UselessImportCheck())
+      .verifyIssues();
+  }
+
+  @Test
   void intersection_type() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/UselessImportCheck/IntersectionCase.java"))
+      .withCheck(new UselessImportCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void imports_redundant_because_of_inherited_member_types() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/UselessImportCheck/RedundantViaMemberScope.java"))
       .withCheck(new UselessImportCheck())
       .verifyIssues();
   }

@@ -25,6 +25,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.QuickFixHelper;
@@ -34,9 +36,15 @@ import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.diagnostics.ProblemKind;
 import org.sonar.plugins.java.api.diagnostics.Warning;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
@@ -84,12 +92,23 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   @Override
   public void leaveNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      handleWarnings(((CompilationUnitTree) tree).warnings(ProblemKind.UNUSED_IMPORT));
+      handleWarnings((CompilationUnitTree) tree);
       imports.clear();
     }
   }
 
-  private void handleWarnings(List<Warning> warnings) {
+  /**
+   * The compiler is the source of the unused imports, but its answer depends on the API of the JDK it sees. When that API is the one of an
+   * older release, member types which are not public (such as {@code LinkedHashMap.Entry}) do not exist anymore, and the compiler can
+   * consider an import as unused while its type is still referenced by simple name in the file. A warning is therefore only reported when
+   * no identifier of the file resolves to the imported type.
+   */
+  private void handleWarnings(CompilationUnitTree compilationUnit) {
+    List<Warning> warnings = compilationUnit.warnings(ProblemKind.UNUSED_IMPORT);
+    if (warnings.isEmpty()) {
+      return;
+    }
+    Set<String> typesReferencedBySimpleName = typesReferencedBySimpleName(compilationUnit);
     for (Warning warning : warnings) {
       ImportTree reportTree = (ImportTree) warning.syntaxTree();
       String importName = ExpressionsHelper.concatenate((ExpressionTree) reportTree.qualifiedIdentifier());
@@ -98,21 +117,87 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
         importName = importName.substring(0, importName.length() - 2);
       }
       if (!usedInJavaDoc.contains(importName) && !importName.startsWith("java.lang")) {
-        String message;
-        if (duplicatedImports.contains(importName)) {
-          message = "Remove this duplicated import.";
-        } else if (isImportFromSamePackage(importName, onDemand)) {
-          message = "Remove this unnecessary import: same package classes are always implicitly imported.";
-        } else {
-          message = "Remove this unused import '" + importName + "'.";
+        String message = message(reportTree, importName, onDemand, typesReferencedBySimpleName);
+        if (message != null) {
+          QuickFixHelper.newIssue(context)
+            .forRule(this)
+            .onTree(reportTree.qualifiedIdentifier())
+            .withMessage(message)
+            .withQuickFix(() -> quickFix(reportTree, imports))
+            .report();
         }
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
-          .onTree(reportTree.qualifiedIdentifier())
-          .withMessage(message)
-          .withQuickFix(() -> quickFix(reportTree, imports))
-          .report();
       }
+    }
+  }
+
+  @CheckForNull
+  private String message(ImportTree importTree, String importName, boolean onDemand, Set<String> typesReferencedBySimpleName) {
+    if (duplicatedImports.contains(importName)) {
+      return "Remove this duplicated import.";
+    }
+    if (isImportFromSamePackage(importName, onDemand)) {
+      return "Remove this unnecessary import: same package classes are always implicitly imported.";
+    }
+    if (!onDemand && !importTree.isStatic() && typesReferencedBySimpleName.contains(importName)) {
+      return null;
+    }
+    return "Remove this unused import '" + importName + "'.";
+  }
+
+  private static Set<String> typesReferencedBySimpleName(CompilationUnitTree compilationUnit) {
+    ReferencedTypesCollector collector = new ReferencedTypesCollector();
+    compilationUnit.types().forEach(type -> type.accept(collector));
+    return collector.types;
+  }
+
+  private static class ReferencedTypesCollector extends BaseTreeVisitor {
+
+    private final Set<String> types = new HashSet<>();
+
+    @Override
+    public void visitIdentifier(IdentifierTree identifier) {
+      Symbol symbol = identifier.symbol();
+      if (symbol.isTypeSymbol() && !isQualifiedMember(identifier) && !isInMemberScope(identifier, symbol)) {
+        types.add(symbol.type().fullyQualifiedName().replace('$', '.'));
+      }
+    }
+
+    /**
+     * A member type of an enclosing class, or inherited from a supertype of it, is in scope without any import. Supertypes are only
+     * followed through classes declared in the analyzed sources: the members of binary classes can be hidden by non-public member types
+     * which the API of the targeted release does not expose.
+     */
+    private static boolean isInMemberScope(IdentifierTree identifier, Symbol type) {
+      Symbol owner = type.owner();
+      if (owner == null || !owner.isTypeSymbol()) {
+        return false;
+      }
+      Tree current = identifier.parent();
+      while (current != null) {
+        if (current instanceof ClassTree classTree && isOwnerReachableFrom(classTree.symbol(), owner, new HashSet<>())) {
+          return true;
+        }
+        current = current.parent();
+      }
+      return false;
+    }
+
+    private static boolean isOwnerReachableFrom(Symbol.TypeSymbol candidate, Symbol owner, Set<Symbol> visited) {
+      if (candidate.type().fullyQualifiedName().equals(owner.type().fullyQualifiedName())) {
+        return true;
+      }
+      if (candidate.declaration() == null || !visited.add(candidate)) {
+        return false;
+      }
+      return directSuperTypes(candidate).anyMatch(superType -> isOwnerReachableFrom(superType.symbol(), owner, visited));
+    }
+
+    private static Stream<Type> directSuperTypes(Symbol.TypeSymbol symbol) {
+      return Stream.concat(Stream.ofNullable(symbol.superClass()), symbol.interfaces().stream());
+    }
+
+    private static boolean isQualifiedMember(IdentifierTree identifier) {
+      return identifier.parent() instanceof MemberSelectExpressionTree memberSelect && memberSelect.identifier() == identifier;
     }
   }
 
