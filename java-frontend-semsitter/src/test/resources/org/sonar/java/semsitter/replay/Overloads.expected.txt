@@ -401,13 +401,13 @@ IDENTIFIER @44:5 id call Overloads.call [m package] : ? (java.util.List<java.lan
 TOKEN @44:5
 ARGUMENTS @44:9
 TOKEN @44:9
-METHOD_INVOCATION @44:10 call List.of [m static public] : ? (java.lang.String) returns java.util.List throws [] sig java.util.List#of(Ljava/lang/Object;)Ljava/util/List; : java.util.List
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+METHOD_INVOCATION @44:10 call List.of [m static public] : ? (java.lang.String) returns java.util.List<java.lang.String> throws [] sig java.util.List#of(Ljava/lang/Object;)Ljava/util/List; : java.util.List<java.lang.String>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @44:10 : ?
 IDENTIFIER @44:10 id List java.util.List [t public interface] : java.util.List : java.util.List
 TOKEN @44:10
 TOKEN @44:14
-IDENTIFIER @44:15 id of List.of [m static public] : ? (java.lang.String) returns java.util.List throws [] sig java.util.List#of(Ljava/lang/Object;)Ljava/util/List; : java.util.List
+IDENTIFIER @44:15 id of List.of [m static public] : ? (java.lang.String) returns java.util.List<java.lang.String> throws [] sig java.util.List#of(Ljava/lang/Object;)Ljava/util/List; : java.util.List<java.lang.String>
 TOKEN @44:15
 ARGUMENTS @44:17
 TOKEN @44:17

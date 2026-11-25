@@ -454,11 +454,11 @@ TOKEN @28:14
 IDENTIFIER @28:16 id list Expressions.list [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
 TOKEN @28:16
 TOKEN @28:21
-NEW_CLASS @28:23 new ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+NEW_CLASS @28:23 new ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList<java.lang.String>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ArrayList flags [public] overridden [AbstractList.<init>[], AbstractCollection.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 TOKEN @28:23
-PARAMETERIZED_TYPE @28:27 : java.util.ArrayList
-IDENTIFIER @28:27 id ArrayList ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+PARAMETERIZED_TYPE @28:27 : java.util.ArrayList<java.lang.String>
+IDENTIFIER @28:27 id ArrayList ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList<java.lang.String>
 TOKEN @28:27
 TYPE_ARGUMENTS @28:36
 TOKEN @28:36

@@ -101,11 +101,11 @@ TOKEN @10:22
 IDENTIFIER @10:24 id tasks Initializers.tasks [v final package] : java.util.List<java.lang.Runnable> : java.util.List<java.lang.Runnable>
 TOKEN @10:24
 TOKEN @10:30
-NEW_CLASS @10:32 new ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+NEW_CLASS @10:32 new ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList<java.lang.Runnable>
   details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ArrayList flags [public] overridden [AbstractList.<init>[], AbstractCollection.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 TOKEN @10:32
-PARAMETERIZED_TYPE @10:36 : java.util.ArrayList
-IDENTIFIER @10:36 id ArrayList ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+PARAMETERIZED_TYPE @10:36 : java.util.ArrayList<java.lang.Runnable>
+IDENTIFIER @10:36 id ArrayList ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList<java.lang.Runnable>
 TOKEN @10:36
 TYPE_ARGUMENTS @10:45
 TOKEN @10:45
@@ -122,11 +122,11 @@ ASSIGNMENT @13:5 : java.util.List<java.lang.String>
 IDENTIFIER @13:5 id NAMES Initializers.NAMES [v static final package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
 TOKEN @13:5
 TOKEN @13:11
-NEW_CLASS @13:13 new ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+NEW_CLASS @13:13 new ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList<java.lang.String>
   details declared false usages 3 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing ArrayList flags [public] overridden [AbstractList.<init>[], AbstractCollection.<init>[], Object.<init>[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 TOKEN @13:13
-PARAMETERIZED_TYPE @13:17 : java.util.ArrayList
-IDENTIFIER @13:17 id ArrayList ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList
+PARAMETERIZED_TYPE @13:17 : java.util.ArrayList<java.lang.String>
+IDENTIFIER @13:17 id ArrayList ArrayList.<init> [m public] : ? () returns void throws [] sig java.util.ArrayList#<init>()V : java.util.ArrayList<java.lang.String>
 TOKEN @13:17
 TYPE_ARGUMENTS @13:26
 TOKEN @13:26

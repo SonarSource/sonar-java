@@ -648,13 +648,13 @@ BLOCK @85:40
 TOKEN @85:40
 RETURN_STATEMENT @86:7
 TOKEN @86:7
-METHOD_INVOCATION @86:14 call AbstractList.iterator [m public] : ? () returns java.util.Iterator<E erasure java.lang.Object> throws [] sig java.util.AbstractList#iterator()Ljava/util/Iterator; : java.util.Iterator<E erasure java.lang.Object>
+METHOD_INVOCATION @86:14 call AbstractList.iterator [m public] : ? () returns java.util.Iterator<java.lang.String> throws [] sig java.util.AbstractList#iterator()Ljava/util/Iterator; : java.util.Iterator<java.lang.String>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing AbstractList flags [public] overridden [AbstractCollection.iterator[], Collection.iterator[], Iterable.iterator[], List.iterator[]] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @86:14 : ?
 IDENTIFIER @86:14 id super Names.super [v final] : java.util.AbstractList<java.lang.String> : java.util.AbstractList<java.lang.String>
 TOKEN @86:14
 TOKEN @86:19
-IDENTIFIER @86:20 id iterator AbstractList.iterator [m public] : ? () returns java.util.Iterator<E erasure java.lang.Object> throws [] sig java.util.AbstractList#iterator()Ljava/util/Iterator; : java.util.Iterator<E erasure java.lang.Object>
+IDENTIFIER @86:20 id iterator AbstractList.iterator [m public] : ? () returns java.util.Iterator<java.lang.String> throws [] sig java.util.AbstractList#iterator()Ljava/util/Iterator; : java.util.Iterator<java.lang.String>
 TOKEN @86:20
 ARGUMENTS @86:28
 TOKEN @86:28
@@ -953,7 +953,7 @@ TOKEN @109:15
 TOKEN @109:16
 TOKEN @109:17
 EXPRESSION_STATEMENT @110:5
-METHOD_INVOCATION @110:5 call Iterator.next [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Iterator#next()Ljava/lang/Object; : java.lang.Object
+METHOD_INVOCATION @110:5 call Iterator.next [m abstract public] : ? () returns java.lang.String throws [] sig java.util.Iterator#next()Ljava/lang/Object; : java.lang.String
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Iterator flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @110:5 : ?
 METHOD_INVOCATION @110:5 call Names.iterator [m public] : ? () returns java.util.Iterator<java.lang.String> throws [] sig Inheritance$Names#iterator()Ljava/util/Iterator; : java.util.Iterator<java.lang.String>
@@ -968,7 +968,7 @@ ARGUMENTS @110:19
 TOKEN @110:19
 TOKEN @110:20
 TOKEN @110:21
-IDENTIFIER @110:22 id next Iterator.next [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Iterator#next()Ljava/lang/Object; : java.lang.Object
+IDENTIFIER @110:22 id next Iterator.next [m abstract public] : ? () returns java.lang.String throws [] sig java.util.Iterator#next()Ljava/lang/Object; : java.lang.String
 TOKEN @110:22
 ARGUMENTS @110:26
 TOKEN @110:26
@@ -1008,13 +1008,13 @@ TOKEN @112:23
 TOKEN @112:24
 TOKEN @112:25
 EXPRESSION_STATEMENT @113:5
-METHOD_INVOCATION @113:5 call Comparator.reversed [m public] : ? () returns java.util.Comparator<T erasure java.lang.Object> throws [] sig java.util.Comparator#reversed()Ljava/util/Comparator; : java.util.Comparator<T erasure java.lang.Object>
+METHOD_INVOCATION @113:5 call Comparator.reversed [m public] : ? () returns java.util.Comparator<java.lang.Integer> throws [] sig java.util.Comparator#reversed()Ljava/util/Comparator; : java.util.Comparator<java.lang.Integer>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Comparator flags [public] overridden [] overridable true generic false default true synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @113:5 : ?
 IDENTIFIER @113:5 id mapper use.mapper [v package] : Inheritance$Mapper<java.lang.Integer> : Inheritance$Mapper<java.lang.Integer>
 TOKEN @113:5
 TOKEN @113:11
-IDENTIFIER @113:12 id reversed Comparator.reversed [m public] : ? () returns java.util.Comparator<T erasure java.lang.Object> throws [] sig java.util.Comparator#reversed()Ljava/util/Comparator; : java.util.Comparator<T erasure java.lang.Object>
+IDENTIFIER @113:12 id reversed Comparator.reversed [m public] : ? () returns java.util.Comparator<java.lang.Integer> throws [] sig java.util.Comparator#reversed()Ljava/util/Comparator; : java.util.Comparator<java.lang.Integer>
 TOKEN @113:12
 ARGUMENTS @113:20
 TOKEN @113:20
@@ -1034,13 +1034,13 @@ TOKEN @114:16
 IDENTIFIER @114:18 id view use.view [v package] : java.util.List<java.lang.String> : java.util.List<java.lang.String>
 TOKEN @114:18
 TOKEN @114:23
-METHOD_INVOCATION @114:25 call AbstractList.subList [m public] : ? (int,int) returns java.util.List<E erasure java.lang.Object> throws [] sig java.util.AbstractList#subList(II)Ljava/util/List; : java.util.List<E erasure java.lang.Object>
+METHOD_INVOCATION @114:25 call AbstractList.subList [m public] : ? (int,int) returns java.util.List<java.lang.String> throws [] sig java.util.AbstractList#subList(II)Ljava/util/List; : java.util.List<java.lang.String>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing AbstractList flags [public] overridden [List.subList[]] overridable true generic false default false synchronized false varargs false native false parameters [arg0, arg1] parameterMetadata []
 MEMBER_SELECT @114:25 : ?
 IDENTIFIER @114:25 id names use.names [v package] : Inheritance$Names : Inheritance$Names
 TOKEN @114:25
 TOKEN @114:30
-IDENTIFIER @114:31 id subList AbstractList.subList [m public] : ? (int,int) returns java.util.List<E erasure java.lang.Object> throws [] sig java.util.AbstractList#subList(II)Ljava/util/List; : java.util.List<E erasure java.lang.Object>
+IDENTIFIER @114:31 id subList AbstractList.subList [m public] : ? (int,int) returns java.util.List<java.lang.String> throws [] sig java.util.AbstractList#subList(II)Ljava/util/List; : java.util.List<java.lang.String>
 TOKEN @114:31
 ARGUMENTS @114:38
 TOKEN @114:38

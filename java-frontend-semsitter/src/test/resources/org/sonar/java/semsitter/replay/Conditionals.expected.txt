@@ -536,7 +536,7 @@ IDENTIFIER @29:37 id arrayList mix.arrayList [v package] : java.util.ArrayList<j
 TOKEN @29:37
 TOKEN @29:47
 METHOD_INVOCATION @29:49 call List.of [m static public] : ? () returns java.util.List throws [] sig java.util.List#of()Ljava/util/List; : java.util.List
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @29:49 : ?
 IDENTIFIER @29:49 id List java.util.List [t public interface] : java.util.List : java.util.List
 TOKEN @29:49
@@ -1127,13 +1127,13 @@ INT_LITERAL @58:12 : int = 0
 TOKEN @58:12
 TOKEN @58:14
 YIELD_STATEMENT @58:17
-METHOD_INVOCATION @58:17 call List.of [m static public] : ? (java.lang.Integer) returns java.util.List throws [] sig java.util.List#of(Ljava/lang/Object;)Ljava/util/List; : java.util.List
-  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [static, public] overridden [] overridable false generic false default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
+METHOD_INVOCATION @58:17 call List.of [m static public] : ? (java.lang.Integer) returns java.util.List<java.lang.Integer> throws [] sig java.util.List#of(Ljava/lang/Object;)Ljava/util/List; : java.util.List<java.lang.Integer>
+  details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing List flags [static, public] overridden [] overridable false generic true default false synchronized false varargs false native false parameters [arg0] parameterMetadata []
 MEMBER_SELECT @58:17 : ?
 IDENTIFIER @58:17 id List java.util.List [t public interface] : java.util.List : java.util.List
 TOKEN @58:17
 TOKEN @58:21
-IDENTIFIER @58:22 id of List.of [m static public] : ? (java.lang.Integer) returns java.util.List throws [] sig java.util.List#of(Ljava/lang/Object;)Ljava/util/List; : java.util.List
+IDENTIFIER @58:22 id of List.of [m static public] : ? (java.lang.Integer) returns java.util.List<java.lang.Integer> throws [] sig java.util.List#of(Ljava/lang/Object;)Ljava/util/List; : java.util.List<java.lang.Integer>
 TOKEN @58:22
 ARGUMENTS @58:24
 TOKEN @58:24

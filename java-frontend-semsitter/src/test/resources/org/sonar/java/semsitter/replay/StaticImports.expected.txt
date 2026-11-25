@@ -260,14 +260,14 @@ BLOCK @20:44
 TOKEN @20:44
 RETURN_STATEMENT @21:5
 TOKEN @21:5
-PLUS @21:12 : java.lang.Object
-METHOD_INVOCATION @21:12 call Entry.getKey [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Map$Entry#getKey()Ljava/lang/Object; : java.lang.Object
+PLUS @21:12 : java.lang.String
+METHOD_INVOCATION @21:12 call Entry.getKey [m abstract public] : ? () returns java.lang.String throws [] sig java.util.Map$Entry#getKey()Ljava/lang/Object; : java.lang.String
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Entry flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @21:12 : ?
 IDENTIFIER @21:12 id entry key.entry [v package] : java.util.Map$Entry<java.lang.String,java.lang.Integer> : java.util.Map$Entry<java.lang.String,java.lang.Integer>
 TOKEN @21:12
 TOKEN @21:17
-IDENTIFIER @21:18 id getKey Entry.getKey [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Map$Entry#getKey()Ljava/lang/Object; : java.lang.Object
+IDENTIFIER @21:18 id getKey Entry.getKey [m abstract public] : ? () returns java.lang.String throws [] sig java.util.Map$Entry#getKey()Ljava/lang/Object; : java.lang.String
 TOKEN @21:18
 ARGUMENTS @21:24
 TOKEN @21:24
@@ -358,13 +358,13 @@ TOKEN @30:31
 IDENTIFIER @30:33 id entry sum.entry [v package] : java.util.Map$Entry<java.lang.String,java.lang.Integer> : java.util.Map$Entry<java.lang.String,java.lang.Integer>
 TOKEN @30:33
 TOKEN @30:39
-METHOD_INVOCATION @30:41 call Map.entrySet [m abstract public] : ? () returns java.util.Set<java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Object>> throws [] sig java.util.Map#entrySet()Ljava/util/Set; : java.util.Set<java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Object>>
+METHOD_INVOCATION @30:41 call Map.entrySet [m abstract public] : ? () returns java.util.Set<java.util.Map$Entry<java.lang.String,java.lang.Integer>> throws [] sig java.util.Map#entrySet()Ljava/util/Set; : java.util.Set<java.util.Map$Entry<java.lang.String,java.lang.Integer>>
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Map flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @30:41 : ?
 IDENTIFIER @30:41 id map sum.map [v package] : java.util.Map<java.lang.String,java.lang.Integer> : java.util.Map<java.lang.String,java.lang.Integer>
 TOKEN @30:41
 TOKEN @30:44
-IDENTIFIER @30:45 id entrySet Map.entrySet [m abstract public] : ? () returns java.util.Set<java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Object>> throws [] sig java.util.Map#entrySet()Ljava/util/Set; : java.util.Set<java.util.Map$Entry<K erasure java.lang.Object,V erasure java.lang.Object>>
+IDENTIFIER @30:45 id entrySet Map.entrySet [m abstract public] : ? () returns java.util.Set<java.util.Map$Entry<java.lang.String,java.lang.Integer>> throws [] sig java.util.Map#entrySet()Ljava/util/Set; : java.util.Set<java.util.Map$Entry<java.lang.String,java.lang.Integer>>
 TOKEN @30:45
 ARGUMENTS @30:53
 TOKEN @30:53
@@ -377,13 +377,13 @@ PLUS_ASSIGNMENT @31:7 : int
 IDENTIFIER @31:7 id total sum.total [v package] : int : int
 TOKEN @31:7
 TOKEN @31:13
-METHOD_INVOCATION @31:16 call Entry.getValue [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Map$Entry#getValue()Ljava/lang/Object; : java.lang.Object
+METHOD_INVOCATION @31:16 call Entry.getValue [m abstract public] : ? () returns java.lang.Integer throws [] sig java.util.Map$Entry#getValue()Ljava/lang/Object; : java.lang.Integer
   details declared false usages 1 metadata [] nullability UNKNOWN/UNKNOWN nonNull false nullable false strongNullable false strict truetruetrue meta false source null tree false lookups [] typeArguments [] enclosing Entry flags [abstract, public] overridden [] overridable true generic false default false synchronized false varargs false native false parameters [] parameterMetadata []
 MEMBER_SELECT @31:16 : ?
 IDENTIFIER @31:16 id entry sum.entry [v package] : java.util.Map$Entry<java.lang.String,java.lang.Integer> : java.util.Map$Entry<java.lang.String,java.lang.Integer>
 TOKEN @31:16
 TOKEN @31:21
-IDENTIFIER @31:22 id getValue Entry.getValue [m abstract public] : ? () returns java.lang.Object throws [] sig java.util.Map$Entry#getValue()Ljava/lang/Object; : java.lang.Object
+IDENTIFIER @31:22 id getValue Entry.getValue [m abstract public] : ? () returns java.lang.Integer throws [] sig java.util.Map$Entry#getValue()Ljava/lang/Object; : java.lang.Integer
 TOKEN @31:22
 ARGUMENTS @31:30
 TOKEN @31:30
